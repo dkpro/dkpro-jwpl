@@ -1,0 +1,29 @@
+#summary Documentation of the JWPL DataMachine
+
+= Usage =
+
+   # Download the Wikipedia data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site]
+      * You need 3 files:
+         * `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2`
+         * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
+         * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
+   # Run the transformation:
+      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
+         * LANGUAGE - a language string matching one in languages.txt in this release.
+         * MAIN_CATEGORY_NAME - the name of the main (top) category of the Wikipedia category hierarchy
+         * DISAMBIGUATION_CATEGORY_NAME - the name of the category that contains the disambiguation categories
+         * SOURCE_DIRECTORY - the path to the directory containing the source files
+      * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need around 4GB.
+   # This should create a lot of new data files in a "output" subfolder of each input folder.
+   # Import these data files into the database.
+      * `mysqlimport -uUSER -p --default-character-set=utf8 {database_name} ``pwd``/*.txt'`
+   # When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
+
+== Example Transformation Commands ==
+
+   * `java -jar JWPLDataMachine.jar english Categories Disambiguation ~/enwiki/20081013`
+   * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
+   * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
+   * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
+   * `java -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
+   * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina ~/nlwiki/200810408`
