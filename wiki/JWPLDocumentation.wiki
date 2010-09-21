@@ -16,7 +16,7 @@ If you have any technical questions, please write to jwpl(atsign)tk.informatik.t
       * Use the TimeMachine to create multiple Wikipedia databases corresponding to past states of Wikipedia 
    # Create a MySQL database
       * Note that other databases will also work, but this requires some tuning of the hibernate layer, as well as writing different output in the transformation step (depending on the database that should be used).
-      * If you are using MySQL 4.x or previous - please see JWPL_MySQL4.
+      * If you are using MySQL 4.x or previous - please see [JWPL_MySQL4].
       * Make sure the database encoding is set to UTF8.
       * Create a database
          * `mysqladmin -uUSER -p create DB_NAME`
