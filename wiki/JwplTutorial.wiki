@@ -1,25 +1,24 @@
 #summary Tutorials showing how to use JWPL.
 
-= Getting Started=
+== Getting Started==
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1a_HelloWorld.java Hello World 1]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1a_HelloWorld.java Hello World 1]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1b_HelloWorld.java Hello World 2]
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1b_HelloWorld.java Hello World 2]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1c_HelloWorld.java Hello World 3]
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1c_HelloWorld.java Hello World 3]
+== Working with Pages ==
 
-= Working with Pages =
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T2_PageInfo.java PageInfo]
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T2_PageInfo.java PageInfo]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T3_PageDetails.java Detailed PageInfo]
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T3_PageDetails.java Detailed PageInfo]
+== Working with Categories ==
 
-= Working with Categories =
-
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T4_Categories.java Category Info]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T4_Categories.java Category Info]
  
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T5_TownList.java Category Tree]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T5_TownList.java Category Tree]
 
-= Helper Methods =
+== Helper Methods ==
 
-[http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T6_HelperMethods.java Helper Methods]
+   * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T6_HelperMethods.java Helper Methods]
