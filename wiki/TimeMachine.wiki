@@ -44,14 +44,15 @@
 }}}
 
 === Parameters ===
- * language - The used language. The language string must correspond to one of the values enumerated in !WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic.
- * mainCategory - The title of the main category of the Wikipedia language version used. For example, "Categories" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia.
- * isambiguationCategory - The title of the disambiguation category of the Wikipedia language version used. For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia.
- * fromTimestamp - yyyymmddhhmmss - The timestamp of the first version to be extracted.
- * toTimestamp - yyyymmddhhmmss - The timestamp of the last version to be extracted.
- * each - The number of days to be used as regular interval for extracting versions.
- * metaHistoryFile - The absolute path to the pages-meta-history file. Only .xml and .xml.bz2 extensions are supported.
- * pageLinksFile - The absolute path to the pagelinks file only .sql and .sql.gz extensions are supported.
- * categoryLinksFile - The absolute path to the categorylinks file only .sql and .sql.gz extensions are supported.
- * outputDirectory - The absolute path to the directory to which the transformed files will be written. The outputDirectory will be created if it does not exist. However its parent directory must exist.
- * removeInputFilesAfterProcessing - A boolean that specifies whether the meta-history file, the pagelinks file and the categorylinks file should be removed after the processing.
+|| *Parameter* || *Description* || *Comment / Example* ||
+|| language || The used language. || The language string must correspond to one of the values enumerated in !WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic. ||
+|| mainCategory || The title of the main category of the Wikipedia language version used. || For example, "Categories" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia. ||
+|| isambiguationCategory || The title of the disambiguation category of the Wikipedia language version used. || For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. ||
+|| fromTimestamp || yyyymmddhhmmss || The timestamp of the first version to be extracted. ||
+|| toTimestamp || yyyymmddhhmmss || The timestamp of the last version to be extracted. ||
+|| each || The number of days to be used as regular interval for extracting versions.|| ||
+|| metaHistoryFile || The absolute path to the pages-meta-history file. || Only .xml and .xml.bz2 extensions are supported. ||
+|| pageLinksFile || The absolute path to the pagelinks file. || Only .sql and .sql.gz extensions are supported. ||
+|| categoryLinksFile || The absolute path to the categorylinks file. || Only .sql and .sql.gz extensions are supported. ||
+|| outputDirectory || The absolute path to the directory to which the transformed files will be written. || The outputDirectory will be created if it does not exist. However its parent directory must exist. ||
+|| removeInputFilesAfterProcessing || A boolean that specifies whether the meta-history file, the pagelinks file and the categorylinks file should be removed after the processing. || ||
