@@ -10,8 +10,6 @@ JWPL is not for you:
 
 If you have any technical questions, please write to jwpl(atsign)tk.informatik.tu-darmstadt.de.
 
-<a href="mailto:jwpl@tk.informatik.tu-darmstadt.de">jwpl@tk.informatik.tu-darmstadt.de</a>
-
 == Getting Started ==
    # Create the Wikipedia data files using the DataMachine or TimeMachine.
       * Use the DataMachine, if you just need a single database from a certain date.
