@@ -10,8 +10,6 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser.tutorial;
 
-import java.util.List;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
@@ -43,23 +41,15 @@ public class T2_InternalLinks {
 		ParsedPage pp = parser.parse(documentText);
 		
         // only the links to other Wikipedia language editions
-        List<Link> languages = pp.getLanguages();
-        for (Link language : languages) {
+        for (Link language : pp.getLanguages()) {
             System.out.println(language.getTarget());
         }
     
-        //get the sections of the parsed page
-        List<Section> sections = pp.getSections();
-        
         //get the internal links of each section
-        List<Link> internalLinks = null;
-        for(int i = 0; i<sections.size(); i++){
-            Section section = sections.get(i);
-            
+        for (Section section : pp.getSections()){
             System.out.println("Section: " + section.getTitle());
 
-            internalLinks = section.getLinks(Link.type.INTERNAL);
-            for (Link link : internalLinks) {
+            for (Link link : section.getLinks(Link.type.INTERNAL)) {
                 System.out.println("  " + link.getTarget());
             }
         }
