@@ -1,5 +1,7 @@
 #summary Tutorials showing how to use JWPL.
 
+[JWPLDocumentation Back to overview page.]
+
 == Getting Started==
 
    * [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.api/src/main/java/de/tudarmstadt/ukp/wikipedia/api/tutorial/T1a_HelloWorld.java Hello World 1]
