@@ -1,4 +1,4 @@
-#summary JWPL FAQ
+#summary Frequently Asked Questions about JWPL (mainly the installation process)
 
 <b>Q: Is it possible to load the data into $DATABASE-SERVER$ ?</b>
     Probably yes. It should always work with MySQL. However, the data is shipped as SQL insert statements that should be database vendor independent, but we have not tested it with all database servers out there. So, just try it and let us know whether it works with a certain system.
