@@ -10,7 +10,7 @@
          * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
          * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
    # Run the transformation:
-      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
+      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]` or `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
          * LANGUAGE - a language string matching one in languages.txt in this release.
          * MAIN_CATEGORY_NAME - the name of the main (top) category of the Wikipedia category hierarchy
          * DISAMBIGUATION_CATEGORY_NAME - the name of the category that contains the disambiguation categories
