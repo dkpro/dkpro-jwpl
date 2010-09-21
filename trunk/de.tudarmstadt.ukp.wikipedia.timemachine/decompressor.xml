@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>Please define a supported extension with a key and the utility's path as a value. Use %f to define a compressed file path</comment>
+  <entry key="7z">7z e -so %f</entry>
+<!--  <entry key="7z">C:/Programme/7-Zip/7z.exe e -so %f</entry> --> 
+</properties>
