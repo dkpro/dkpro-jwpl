@@ -1,0 +1,55 @@
+#summary Documentation of JWPL TimeMachine
+
+[JWPLDocumentation Back to overview page.]
+
+= Usage =
+
+   # *Attention:* Only use the !TimeMachine, if you really need to reconstruct one (or multiple) version(s) of Wikipedia corresponding to past states. The data files used for this purpose are very large. For English, unpacked size will be around 1TB. If you just want a single version of the recent Wikipedia, use the DataMachine instead.
+   # Download the Wikipedia Data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site].
+      * You need 3 files:
+         * `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.7z`
+         * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
+         * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
+   # Create a configuration file.
+      * You may edit one of the sample configuration files, which come with the source code of the !TimeMachine.
+      * The configuration file must be UTF8 encoded.
+      * Running `de.tudarmstadt.ukp.wikipedia.timemachine.domain.SettingsXML` will generate a sample file that can be edited.
+      * The elements of the configuration file are further explained below or in the [http://code.google.com/p/jwpl/source/browse/#svn/trunk/de.tudarmstadt.ukp.wikipedia.timemachine/README.TXT readme] in the TimeMachine SVN.
+   # Start the !TimeMachine
+      * `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine CONFIG_FILE`
+      * Allocate enough heap size to speed up the execution (use the `-Xmx` JVM parameter to increase heap space; e.g. `-Xmx512m` gives you 512MB heap space).
+   # If everything went well (it will take a while), the extracted data files are now available in the output directory (each in a directory with the corresponding timestamp as name).
+   # Import these data files into the database.
+     * `mysqlimport -uUSER -p --default-character-set=utf8 {database_name} ``pwd``/*.txt`
+     * When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
+
+== Example configuration file ==
+{{{<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>This a configuration formular for the JWPL TimeMachine</comment>
+  <entry key="language">greek</entry>
+  <entry key="mainCategory"></entry>
+  <entry key="disambiguationCategory"></entry>
+  <entry key="fromTimestamp">20060101000000</entry>
+  <entry key="toTimestamp">20060102000000</entry>
+  <entry key="each">1</entry>
+  <entry key="metaHistoryFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pages-meta-history.xml.bz2</entry>
+  <entry key="categoryLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-categorylinks.sql.gz</entry>
+  <entry key="pageLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pagelinks.sql.gz</entry>
+  <entry key="outputDirectory">/home/zesch/wiki_data/elwiki_test</entry>
+  <entry key="removeInputFilesAfterProcessing">false</entry>
+</properties>}}}
+
+=== Parameters ===
+ * language - The used language. The language string must correspond to one of the values enumerated in !WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic.
+ * mainCategory - The title of the main category of the Wikipedia language version used. For example, "Categories" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia.
+ * isambiguationCategory - The title of the disambiguation category of the Wikipedia language version used. For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia.
+ * fromTimestamp - yyyymmddhhmmss - The timestamp of the first version to be extracted.
+ * toTimestamp - yyyymmddhhmmss - The timestamp of the last version to be extracted.
+ * each - The number of days to be used as regular interval for extracting versions.
+ * metaHistoryFile - The absolute path to the pages-meta-history file. Only .xml and .xml.bz2 extensions are supported.
+ * pageLinksFile - The absolute path to the pagelinks file only .sql and .sql.gz extensions are supported.
+ * categoryLinksFile - The absolute path to the categorylinks file only .sql and .sql.gz extensions are supported.
+ * outputDirectory - The absolute path to the directory to which the transformed files will be written. The outputDirectory will be created if it does not exist. However its parent directory must exist.
+ * removeInputFilesAfterProcessing - A boolean that specifies whether the meta-history file, the pagelinks file and the categorylinks file should be removed after the processing.
