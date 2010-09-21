@@ -14,7 +14,7 @@
       * You may edit one of the sample configuration files, which come with the source code of the !TimeMachine.
       * The configuration file must be UTF8 encoded.
       * Running `de.tudarmstadt.ukp.wikipedia.timemachine.domain.SettingsXML` will generate a sample file that can be edited.
-      * The elements of the configuration file are further explained below or in the [http://code.google.com/p/jwpl/source/browse/#svn/trunk/de.tudarmstadt.ukp.wikipedia.timemachine/README.TXT readme] in the TimeMachine SVN.
+      * The elements of the configuration file are further explained below or in the [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.timemachine/README.TXT readme] in the !TimeMachine SVN.
    # Start the !TimeMachine
       * `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine CONFIG_FILE`
       * Allocate enough heap size to speed up the execution (use the `-Xmx` JVM parameter to increase heap space; e.g. `-Xmx512m` gives you 512MB heap space).
