@@ -12,42 +12,16 @@
 	</parent>
 	<dependencies>
 		<dependency>
-			<groupId>org.tartarus.snowball</groupId>
-			<artifactId>snowball</artifactId>
-			<version>2007.09.25</version>
-		</dependency>
-		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate</artifactId>
-			<version>3.2.7.ga</version>
 		</dependency>
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-jdk1.5</artifactId>
-			<version>0.7.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>1.9.1</version>
 		</dependency>
 		<dependency>
 			<groupId>trove</groupId>
 			<artifactId>trove</artifactId>
-			<version>2.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.6</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.13</version>
-			<type>jar</type>
-			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
 </project>
