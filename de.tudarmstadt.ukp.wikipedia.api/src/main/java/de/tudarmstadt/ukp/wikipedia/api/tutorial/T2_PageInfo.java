@@ -62,12 +62,12 @@ public class T2_PageInfo implements WikiConstants {
         System.out.println("redirect page query  : " + page.isRedirect());
         
         // the number of links pointing to this page
-        System.out.println("# of ingoing links   : " + page.getInlinks().size());
+        System.out.println("# of ingoing links   : " + page.getNumberOfInlinks());
         
         // the number of links in this page pointing to other pages
-        System.out.println("# of outgoing links  : " + page.getOutlinks().size());
+        System.out.println("# of outgoing links  : " + page.getNumberOfOutlinks());
         
         // the number of categories that are assigned to this page
-        System.out.println("# of categories      : " + page.getCategories().size());
+        System.out.println("# of categories      : " + page.getNumberOfCategories());
     }
 }
