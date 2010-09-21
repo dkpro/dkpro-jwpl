@@ -1,7 +1,16 @@
 #summary Starting page for the JWPL Documentation.
 
-= Installation =
+== Is JWPL for you? ==
 
+JWPL is for you:
+ * If you need structured access to Wikipedia in Java.
+
+JWPL is not for you:
+ * If you need to query live data. JWPL works on an optimized database, i.e. you are querying a static Wikipedia dump. This gives much better performance and lightens the load on the Wikipedia servers.
+
+If you have any technical questions, please write to jwpl@tk.informatik.tu-darmstadt.de
+
+== Getting Started ==
    # Create the Wikipedia data files using the DataMachine or TimeMachine.
       * Use the DataMachine, if you just need a single database from a certain date.
       * Use the TimeMachine to create multiple Wikipedia databases corresponding to past states of Wikipedia 
