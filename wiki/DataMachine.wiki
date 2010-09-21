@@ -1,5 +1,7 @@
 #summary Documentation of the JWPL DataMachine
 
+[JWPLDocumentation Back to overview page.]
+
 = Usage =
 
    # Download the Wikipedia data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site]
