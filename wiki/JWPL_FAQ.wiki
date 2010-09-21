@@ -11,4 +11,4 @@
     If you need to query a running Wikipedia installation, you should use another API, e.g., <a href="http://www.mediawiki.org/wiki/API">http://www.mediawiki.org/wiki/API</a> or <a href="http://search.cpan.org/~bricas/WWW-Wikipedia-1.92/lib/WWW/Wikipedia.pm">http://search.cpan.org/~bricas/WWW-Wikipedia-1.92/lib/WWW/Wikipedia.pm</a>
 
 <b>Q: How can I verify the integrity of the downloaded data.</b>
-   For each Wikipedia file there is another file with the same name and the suffix .md5. Compute the md5-HashSum of the file you downloaded (e.g. `md5sum` under *nix) and compare it with the one in the file.
+   For each Wikipedia file there is another file with the same name and the suffix .md5. Compute the md5-HashSum of the file you downloaded (e.g. `md5sum` under `*nix) and compare it with the one in the file.
