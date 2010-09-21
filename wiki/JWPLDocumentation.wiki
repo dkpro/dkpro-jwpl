@@ -19,4 +19,4 @@
    # Checkout the source code from the [http://code.google.com/p/jwpl/source/checkout SVN] and build it using Maven.
       * You may also use the pre-packaged .jars from the [http://code.google.com/p/jwpl/downloads/list download section], but those will not contain recent improvements and bug fixes.
    # Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives.
-   # If you encounter any problems, please also check the [JWPL-FAQ FAQ].
+   # If you encounter any problems, please also check the [JWPL_FAQ FAQ].
