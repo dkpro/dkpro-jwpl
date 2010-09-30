@@ -47,26 +47,50 @@ public class WikiHibernateUtil implements WikiConstants {
 
 
     private static Properties getProperties(DatabaseConfiguration config) {
-        String host     = config.getHost();
-        String db       = config.getDatabase();
         String user     = config.getUser();
         String password = config.getPassword();
-
+        
+        /*
+         * Fix by mwiesner
+         * - ensures explicit DMBS type specific configuration for hsqldb from junit tests context
+         */
+        String jdbcURL  = config.getJdbcURL();
+        String databaseDriverClass = config.getDatabaseDriver();
+        
+        String hibernateDialect = null;
+        if(jdbcURL.toLowerCase().contains("mysql"))
+        {
+        	hibernateDialect = "org.hibernate.dialect.MySQLDialect";
+        }
+        // TODO potentially other dialects might be interesting here as well now...
+        else
+        {
+        	hibernateDialect = "org.hibernate.dialect.HSQLDialect";
+        }
+        
         Properties p = new Properties();
 
+        // SQL dialect
+        p.setProperty("hibernate.dialect",hibernateDialect);
         // Database connection settings
-        p.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
-        p.setProperty("hibernate.connection.url", "jdbc:mysql://" + host + "/" + db);
+        p.setProperty("hibernate.connection.driver_class", databaseDriverClass);
+        p.setProperty("hibernate.connection.url", jdbcURL);
+        /*
+         * fix mwiesner
+         *  - needed to ensure working hsqldb queries - don't remove it...!
+         */
+        p.setProperty("hibernate.connection.useUnicode","true");
         p.setProperty("hibernate.connection.characterEncoding", "UTF-8");
-        p.setProperty("hibernate.connection.hibernate.connection.useUnicode","true");
+//        p.setProperty("hibernate.connection.hibernate.connection.characterEncoding", "UTF-8");
+//        p.setProperty("hibernate.connection.hibernate.connection.clobCharacterEncoding","UTF-8");
+        // end fix
+        
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);
 
         // JDBC connection pool (use the built-in) -->
         p.setProperty("hibernate.connection.pool_size","1");
 
-        // SQL dialect
-        p.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
 
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class","thread");
@@ -79,7 +103,6 @@ public class WikiHibernateUtil implements WikiConstants {
 
         // Do only update schema on changes
         p.setProperty("hibernate.hbm2ddl.auto","update");
-
         return p;
     }
 

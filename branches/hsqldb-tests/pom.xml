@@ -15,6 +15,19 @@
 		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/trunk</developerConnection>
 		<url>http://code.google.com/p/jwpl/source/browse/</url>
 	</scm>
+	<repositories>
+		<repository>
+			<id>JBoss Repository</id>
+			<url>http://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+			<layout>default</layout>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -25,6 +38,21 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mod4j.org.apache.commons</groupId>
+			<artifactId>logging</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-jdk14</artifactId>
+			<version>1.6.1</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
@@ -50,8 +78,8 @@
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate</artifactId>
-				<version>3.2.5.ga</version>
+				<artifactId>hibernate-core</artifactId>
+				<version>3.5.6-Final</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jgrapht</groupId>
@@ -59,9 +87,9 @@
 				<version>0.7.3</version>
 			</dependency>
 			<dependency>
-				<groupId>trove</groupId>
-				<artifactId>trove</artifactId>
-				<version>2.0.4</version>
+				<groupId>net.sf.trove4j</groupId>
+				<artifactId>trove4j</artifactId>
+				<version>2.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
