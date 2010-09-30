@@ -24,6 +24,8 @@ public class DatabaseConfiguration {
     private String user;
     private String password;
     private Language language;
+	private String jdbcURL;
+	private String databaseDriver;
     
     public DatabaseConfiguration() {}
     
@@ -33,6 +35,21 @@ public class DatabaseConfiguration {
         this.user = user;
         this.password = password;
         this.language = language;
+        
+        
+        // static mysql usecase - default by revision 49
+        this.setDatabaseDriver("com.mysql.jdbc.Driver");
+        this.setJdbcURL("jdbc:mysql://" + host + "/" + database);
+    }
+    
+    /*
+     * Fix by mwiesner
+     * - ensures explicit DMBS type specific configuration for hsqldb from junit tests context
+     */
+    public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user, String password, Language language) {
+    	this(host, database, user, password, language);
+        this.setDatabaseDriver(databaseDriver);
+        this.setJdbcURL(jdbcURL);
     }
     
     /**
@@ -97,4 +114,32 @@ public class DatabaseConfiguration {
     public Language getLanguage() {
         return language;
     }
+
+	/**
+	 * @param databaseDriver the databaseDriver to set
+	 */
+	public void setDatabaseDriver(String databaseDriver) {
+		this.databaseDriver = databaseDriver;
+	}
+
+	/**
+	 * @return the databaseDriver
+	 */
+	public String getDatabaseDriver() {
+		return databaseDriver;
+	}
+
+	/**
+	 * @param jdbcURL the jdbcURL to set
+	 */
+	public void setJdbcURL(String jdbcURL) {
+		this.jdbcURL = jdbcURL;
+	}
+
+	/**
+	 * @return the jdbcURL
+	 */
+	public String getJdbcURL() {
+		return jdbcURL;
+	}
 }

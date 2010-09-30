@@ -20,22 +20,14 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 
-public class CategoryDescendantsIteratorTest {
+public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
 
-	private Wikipedia wiki;
-	
 	@Before
 	public void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
+		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		
 		try {
 			wiki = new Wikipedia(db);
