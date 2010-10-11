@@ -329,4 +329,14 @@
 			</build>
 		</profile>
 	</profiles>
+	<distributionManagement>
+		<repository>
+			<id>ukp-central</id>
+			<url>dav:https://maggie.tk.informatik.tu-darmstadt.de/artifactory/dkpro-local</url>
+		</repository>
+		<snapshotRepository>
+			<id>ukp-central</id>
+			<url>dav:https://maggie.tk.informatik.tu-darmstadt.de/artifactory/dkpro-snapshots-local</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
