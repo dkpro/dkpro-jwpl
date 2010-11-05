@@ -24,3 +24,15 @@ for (Section section : pp.getSections()){
     }
 }
 }}}
+
+== Configuring the Parser ==
+
+This will configure the parser to drop any templates.
+
+{{{
+MediaWikiParserFactory pf = new MediaWikiParserFactory();
+pf.setTemplateParserClass( FlushTemplates.class );
+
+MediaWikiParser parser = pf.createParser();
+ParsedPage pp = parser.parse(SOME_WIKI_MARKUP);
+}}}
