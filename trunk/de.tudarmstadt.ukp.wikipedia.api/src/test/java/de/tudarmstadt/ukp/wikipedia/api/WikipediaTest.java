@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -22,12 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 public class WikipediaTest {
@@ -44,8 +44,9 @@ public class WikipediaTest {
 		db.setLanguage(Language._test);
 		try {
 			wiki = new Wikipedia(db);
-		} catch (WikiInitializationException e) {
-			fail("Wikipedia could not be initialized.");
+		} catch (Exception e) {
+			Assume.assumeNoException(e);
+			//fail("Wikipedia could not be initialized.");
 		}
 	}
 
@@ -141,7 +142,7 @@ public class WikipediaTest {
 		getNotExistingCategory("");
         getNotExistingCategory("Wikipedia_API");
 	}
-	
+
     private void getExistingCategory(String title,int pageId) {
         getExistingCategory(title, title, pageId);
     }
@@ -162,7 +163,7 @@ public class WikipediaTest {
 			fail("A WikiTitleParsingException occured while getting the title of "+ title);
 		}
 	}
-	
+
 	private void getNotExistingCategory(String title){
 		boolean exceptionThrown = false;
 		try{
@@ -172,7 +173,7 @@ public class WikipediaTest {
 		}
 		assertTrue("testing the WikiApiException for non existing category: " + title, exceptionThrown);
 	}
-	
+
 	/**
 	 * Test for getPages(PageQuery)
 	 */
@@ -192,11 +193,11 @@ public class WikipediaTest {
 		pageQuery.setMaxRedirects(1);
 		pageQuery.setMinRedirects(1);
 		getPagesForPageQuery(pageQuery,expectedPageIds);
-		
+
 		expectedPageIds.clear();
 		expectedPageIds.add(107);expectedPageIds.add(1022);
 		expectedPageIds.add(105);expectedPageIds.add(103);
-		
+
 		pageQuery = new PageQuery();
 		pageQuery.setTitlePattern("T%");
 		getPagesForPageQuery(pageQuery,expectedPageIds);
@@ -211,7 +212,7 @@ public class WikipediaTest {
 			e.printStackTrace();
 			fail("A WikiApiException occured while getting pages for a PageQuery.");
 		}
-		//Get a Set with the page ids of the retrieved pages 
+		//Get a Set with the page ids of the retrieved pages
 		List<Integer> retrievedPageIds = new ArrayList<Integer>();
 		for(Page page : pages){
 			retrievedPageIds.add(page.getPageId());
@@ -244,7 +245,7 @@ public class WikipediaTest {
 			fail("A WikiTitleParsingException occured while getting the title of a test page.");
 		}
 	}
-	
+
 	@Test
 	public void testPageId(){
 		Page p = null;
@@ -258,7 +259,7 @@ public class WikipediaTest {
 		//test the pageId
 		assertEquals("testing the pageId",1014,p.getPageId());
 	}
-	
+
 	@Test
 	public void testPageInlinks(){
 		Page p = null;
@@ -281,7 +282,7 @@ public class WikipediaTest {
 		Collections.sort(isPageIds);
 		assertEquals("inlinks",expectedPageIds,isPageIds);
 	}
-	
+
 	@Test
 	public void testPageOutlinks(){
 		Page p = null;
@@ -303,7 +304,7 @@ public class WikipediaTest {
 		Collections.sort(isPageIds);
 		assertEquals("outlinks",expectedPageIds,isPageIds);
 	}
-	
+
 	@Test
 	public void testPageRedirects(){
 		Page p = null;
@@ -316,10 +317,10 @@ public class WikipediaTest {
 
 		Set<String> redirects = new HashSet<String>();
 		redirects.add("SIR");
-		
+
 		assertEquals("testing the redirects", redirects, p.getRedirects());
 	}
-	
+
 	@Test
 	public void testPageCategories(){
 		Page p = null;
@@ -342,7 +343,7 @@ public class WikipediaTest {
 		Collections.sort(isPageIds);
 		assertEquals("categories",expectedPageIds,isPageIds);
 	}
-	
+
 	@Test
 	public void testIsRedirect(){
 		Page p1 = null;
@@ -355,16 +356,16 @@ public class WikipediaTest {
 			e.printStackTrace();
 			fail("A WikiApiException occured while getting a test page.");
 		}
-		
+
 		assertFalse("testing isRedirect", p1.isRedirect());
 		assertTrue("testing isRedirect", p2.isRedirect());
 	}
-	
+
 	@Test
 	public void testIsDisambiguation(){
 		Page p1 = null;
 		Page p2 = null;
-		
+
 		try{
 			p1 = wiki.getPage("Wikipedia API");
 			p2 = wiki.getPage("TK3");
