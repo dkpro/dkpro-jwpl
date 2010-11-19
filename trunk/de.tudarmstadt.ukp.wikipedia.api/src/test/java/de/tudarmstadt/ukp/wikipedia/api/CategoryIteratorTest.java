@@ -15,17 +15,23 @@ import static org.junit.Assume.assumeNoException;
 
 import java.util.Iterator;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 public class CategoryIteratorTest {
 
-	private Wikipedia wiki;
+	private static Wikipedia wiki;
 
-	@Before
-	public void setupWikipedia() {
+	/**
+     * Made this static so that following tests don't run if assumption fails.
+     * (With AT_Before, tests also would not be executed but marked as passed)
+     * This could be changed back as soon as JUnit ignored tests after failed
+     * assumptions
+	 */
+	@BeforeClass
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_test");
 		db.setHost("bender.tk.informatik.tu-darmstadt.de");

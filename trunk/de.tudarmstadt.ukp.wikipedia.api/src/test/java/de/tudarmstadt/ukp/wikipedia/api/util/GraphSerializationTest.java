@@ -23,6 +23,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.CategoryGraph;
@@ -47,24 +48,14 @@ public class GraphSerializationTest {
 
     private static Wikipedia wiki;
 
-    @Before
-    public void cleanupBeforeTest() {
-        File serializationFile = new File(serializationFileName);
-        serializationFile.delete();
-    }
-
-    @After
-    public void cleanupAfterTest() {
-        File serializationFile = new File(serializationFileName);
-        serializationFile.delete();
-    }
-
     /**
      * Creates a Wikipedia object.
+     * Made this static so that following tests don't run if assumption fails.
+     * (With AT_Before, tests would also not be executed but marked as passed)
      * @throws WikiInitializationException
      */
-    @Test
-    public void initializeWikipedia(){
+    @BeforeClass
+    public static void initializeWikipedia(){
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setDatabase("wikiapi_test");
         dbConfig.setHost("bender.tk.informatik.tu-darmstadt.de");
@@ -77,6 +68,20 @@ public class GraphSerializationTest {
         	assumeNoException(e);
         }
     }
+
+
+    @Before
+    public void cleanupBeforeTest() {
+        File serializationFile = new File(serializationFileName);
+        serializationFile.delete();
+    }
+
+    @After
+    public void cleanupAfterTest() {
+        File serializationFile = new File(serializationFileName);
+        serializationFile.delete();
+    }
+
 
     /**
      * Creates a CategoryGraph object using the Wikipedia object as parameter.<br>
