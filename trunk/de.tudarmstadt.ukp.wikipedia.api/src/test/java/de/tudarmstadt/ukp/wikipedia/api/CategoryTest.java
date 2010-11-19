@@ -36,7 +36,7 @@ public class CategoryTest {
      * assumptions
 	 */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_test");
 		db.setHost("bender.tk.informatik.tu-darmstadt.de");
