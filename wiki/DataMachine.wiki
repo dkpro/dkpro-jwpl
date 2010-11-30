@@ -23,9 +23,11 @@
 
 == Example Transformation Commands ==
 
-   * `java -jar JWPLDataMachine.jar english Categories Disambiguation ~/enwiki/20081013`
+   * `java -jar JWPLDataMachine.jar english Categories Disambiguation_pages ~/enwiki/20081013`
    * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
    * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
    * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
    * `java -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
    * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina ~/nlwiki/200810408`
+
+Mind that the names of the main category or the category marking disambiguation pages may change over time. E.g. the English category for disambiguation pages was called "Disambiguation" for a long time, while now it is "Disambiguation_pages".
