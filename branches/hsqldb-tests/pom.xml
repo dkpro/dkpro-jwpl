@@ -114,7 +114,7 @@
 			<dependency>
 				<groupId>javax.mail</groupId>
 				<artifactId>mail</artifactId>
-				<version>1.4.3</version>
+				<version>1.4.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -135,9 +135,11 @@
 	</dependencyManagement>
 	<modules>
 		<module>de.tudarmstadt.ukp.wikipedia.api</module>
-		<module>de.tudarmstadt.ukp.wikipedia.datamachine</module>
-		<module>de.tudarmstadt.ukp.wikipedia.timemachine</module>
-		<module>de.tudarmstadt.ukp.wikipedia.wikimachine</module>
+		<!-- 
+		 <module>de.tudarmstadt.ukp.wikipedia.datamachine</module>
+		 <module>de.tudarmstadt.ukp.wikipedia.timemachine</module>
+		 <module>de.tudarmstadt.ukp.wikipedia.wikimachine</module>
+		 -->
 	</modules>
 	<build>
 		<pluginManagement>
