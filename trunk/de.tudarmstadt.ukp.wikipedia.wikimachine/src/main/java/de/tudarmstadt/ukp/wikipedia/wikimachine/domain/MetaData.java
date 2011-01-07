@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -17,9 +17,9 @@ import java.sql.Timestamp;
 
 /**
  * Holds the meta data for a dump version.
- * 
+ *
  * @author Anouar
- * 
+ *
  */
 public class MetaData {
 
@@ -29,6 +29,7 @@ public class MetaData {
 	private String language;
 	private String mainCategory;
 	private String disambiguationCategory;
+	private String discussionCategoryPrefix;
 	private Timestamp timestamp;
 	private Integer nrOfCategories = 0;
 	private Integer nrOfPages = 0;
@@ -182,12 +183,24 @@ public class MetaData {
 		nrOfCategories++;
 	}
 
+	public void setDiscussionCategoryPrefix(String discussionCategoryPrefix)
+	{
+		this.discussionCategoryPrefix = discussionCategoryPrefix;
+	}
+
+	public String getDiscussionCategoryPrefix()
+	{
+		return discussionCategoryPrefix;
+	}
+
 	public static MetaData initWithConfig(Configuration config) {
 		MetaData result = new MetaData();
 		result.setId(SQL_NULL); // id is a auto_increment column
 		result.setLanguage(config.getLanguage());
 		result.setMainCategory(config.getMainCategory());
 		result.setDisambiguationCategory(config.getDisambiguationCategory());
+		result.setDiscussionCategoryPrefix(config.getDiscussionCategoryPrefix());
 		return result;
 	}
+
 }
