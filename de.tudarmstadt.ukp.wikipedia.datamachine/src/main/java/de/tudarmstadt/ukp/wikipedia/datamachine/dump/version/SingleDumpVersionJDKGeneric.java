@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -32,7 +32,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		extends AbstractDumpVersion {
 
 	private static final String SQL_NULL = "NULL";
-	private static final String DISCUSSION_FLAG = "Discussion:";
 
 	private Map<Integer, String> pPageIdNameMap;
 	private TIntHashSet cPageIdNameMap;
@@ -178,7 +177,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 			}
 
 			case NS_TALK: {
-				page_title = DISCUSSION_FLAG + page_title;
+				page_title = metaData.getDiscussionCategoryPrefix()+":"+ page_title;
 			}
 
 			case NS_MAIN: {
@@ -250,7 +249,8 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		outputFile
 				.addRow(metaData.getId(), metaData.getLanguage(), metaData
 						.getDisambiguationCategory(), metaData
-						.getMainCategory(), metaData.getNrOfPages(), metaData
+						.getMainCategory(),metaData.getDiscussionCategoryPrefix(),
+						metaData.getNrOfPages(), metaData
 						.getNrOfRedirects(), metaData.getNrOfDisambiguations(),
 						metaData.getNrOfCategories());
 		outputFile.flush();
