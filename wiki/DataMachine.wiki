@@ -6,14 +6,15 @@
 
    # Download the Wikipedia data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site]
       * You need 3 files:
-         * `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2`
+         * `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2` OR `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.bz2`
          * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
          * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
    # Run the transformation:
-      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]` or `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
+      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [DISCUSSION_CATEGORY_PREFIX] [SOURCE_DIRECTORY]` or `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [DISCUSSION_CATEGORY_PREFIX]  [SOURCE_DIRECTORY]`
          * LANGUAGE - a language string matching one in languages.txt in this release.
          * MAIN_CATEGORY_NAME - the name of the main (top) category of the Wikipedia category hierarchy
          * DISAMBIGUATION_CATEGORY_NAME - the name of the category that contains the disambiguation categories
+         * DISCUSSION_CATEGORY_PREFIX - the prefix for discussion pages
          * SOURCE_DIRECTORY - the path to the directory containing the source files
       * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need around 4GB.
    # This should create a lot of new data files in a "output" subfolder of each input folder.
@@ -23,11 +24,11 @@
 
 == Example Transformation Commands ==
 
-   * `java -jar JWPLDataMachine.jar english Categories Disambiguation_pages ~/enwiki/20081013`
-   * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
-   * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
-   * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
-   * `java -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
-   * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina ~/nlwiki/200810408`
+   * `java -jar JWPLDataMachine.jar english Categories Disambiguation_pages Talk ~/enwiki/20081013`
+   * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины Обсуждение ~/ruwiki/20080420`
+   * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación Discusión ~/eswiki/20080416/`
+   * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 「ノート ~/jawiki/20080408/`
+   * `java -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung Diskussion ~/dewiki/20080422/`
+   * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina Overleg ~/nlwiki/200810408`
 
 Mind that the names of the main category or the category marking disambiguation pages may change over time. E.g. the English category for disambiguation pages was called "Disambiguation" for a long time, while now it is "Disambiguation_pages".
