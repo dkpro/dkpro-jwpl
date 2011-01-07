@@ -6,7 +6,7 @@
 
    # Download the Wikipedia data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site]
       * You need 3 files:
-         * `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2` OR `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.bz2`
+         * `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2` *OR* `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.bz2`
          * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
          * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
    # Run the transformation:
