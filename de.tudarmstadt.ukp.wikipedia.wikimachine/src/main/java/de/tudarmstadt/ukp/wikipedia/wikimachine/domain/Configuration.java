@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -17,20 +17,18 @@ import java.sql.Timestamp;
 
 import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
 
-import sun.util.calendar.BaseCalendar.Date;
-
 /**
  * The <code>Configuration</code> class wraps all the parameters for the
  * execution <br>
  * of the DBMapping tool.
- * 
+ *
  * @author Anouar
- * 
+ *
  */
 public class Configuration {
 
 	private static final Timestamp TIMESTAMP_UNDEFINED = new Timestamp(
-			Date.TIME_UNDEFINED);
+			Long.MIN_VALUE);
 
 	private Timestamp fromTimestamp = TIMESTAMP_UNDEFINED;
 	private Timestamp toTimestamp = TIMESTAMP_UNDEFINED;
@@ -38,6 +36,7 @@ public class Configuration {
 	private String language;
 	private String mainCategory;
 	private String disambiguationCategory;
+	private String discussionCategoryPrefix;
 
 	protected ILogger logger;
 
@@ -113,5 +112,15 @@ public class Configuration {
 
 	public boolean checkTimeConfig() {
 		return checkEach() && checkTimestamp();
+	}
+
+	public void setDiscussionCategoryPrefix(String discussionCategoryPrefix)
+	{
+		this.discussionCategoryPrefix = discussionCategoryPrefix;
+	}
+
+	public String getDiscussionCategoryPrefix()
+	{
+		return discussionCategoryPrefix;
 	}
 }
