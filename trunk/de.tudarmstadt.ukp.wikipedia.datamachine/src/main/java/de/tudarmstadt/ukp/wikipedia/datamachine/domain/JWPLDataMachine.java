@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- *
+ * 
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -30,7 +30,7 @@ public class JWPLDataMachine {
 			+ "\tjava -jar JWPLDataMachine.jar <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>\n\n"
 			+ "The source directory must contain files\n"
 			+ "\tpagelinks.sql\n"
-			+ "\tpages-articles.xml OR pages-meta-history.xml\n"
+			+ "\tpages-articles.xml\n"
 			+ "\tcategorylinks.sql\n"
 			+ "GZip or BZip2 compressed archives of above-named files are also allowed.\n"
 			+ "Please set up a decompressor.xml for a usage of other external archive utilities (see documentation for more help).\n";
