@@ -35,5 +35,5 @@ Mind that the names of the main category or the category marking disambiguation 
 
 == Discussion Pages ==
 
-Discussion pages can only be processed if the source file contains these pages (see above).
+Discussion pages can only be included if the source file contains these pages (see above).<br/>
 All discussion pages will be marked with the prefix "Discussion:" in the page title (for all wikipedia language versions).
