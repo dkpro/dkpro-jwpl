@@ -20,7 +20,6 @@
    # This should create a lot of new data files in a "output" subfolder of each input folder.
    # Import these data files into the database.
       * `mysqlimport -uUSER -p --default-character-set=utf8 {database_name} ```pwd```/*.txt`
-
    # When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 
 == Example Transformation Commands ==
