@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -32,6 +32,8 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		extends AbstractDumpVersion {
 
 	private static final String SQL_NULL = "NULL";
+	//TODO 	This constant is used to flag page titles of discussion pages.
+	//		We should make this configurable.
 	private static final String DISCUSSION_FLAG = "Discussion:";
 
 	private Map<Integer, String> pPageIdNameMap;
