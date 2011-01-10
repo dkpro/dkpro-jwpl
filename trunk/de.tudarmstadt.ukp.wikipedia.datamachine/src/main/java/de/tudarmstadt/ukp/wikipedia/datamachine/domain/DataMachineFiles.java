@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -20,6 +20,7 @@ public class DataMachineFiles extends Files {
 	private final static String INPUT_PAGESARTICLES = "pages-articles.xml";
 	private final static String INPUT_CATEGORYLINKS = "categorylinks.sql";
 	private final static String INPUT_PAGESMETACURRENT = "pages-meta-current.xml";
+	private final static String INPUT_PAGESMETAHISTORY = "pages-meta-history.xml";
 
 	private final static String GENERATED_PAGE = "page.bin";
 	private final static String GENERATED_REVISION = "revision.bin";
@@ -35,6 +36,7 @@ public class DataMachineFiles extends Files {
 	private File inputPagesarticles = null;
 	private File inputCategorylinks = null;
 	private File inputPagesMetaCurrent = null;
+	private File inputPagesMetaHistory = null;
 
 	public DataMachineFiles(ILogger logger) {
 		super(logger);
@@ -84,12 +86,14 @@ public class DataMachineFiles extends Files {
 					inputCategorylinks = currentFile;
 				} else if (currentFileName.contains(INPUT_PAGESMETACURRENT)) {
 					inputPagesMetaCurrent = currentFile;
+				}else if (currentFileName.contains(INPUT_PAGESMETAHISTORY)){
+					inputPagesMetaHistory = currentFile;
 				}
 			}
 		}
 		// either inputPagesarticles or inputPagesMetaCurrent have to be placed
 		// in the input directory
-		return !((inputPagesarticles == null && inputPagesMetaCurrent == null)
+		return !((inputPagesarticles == null && inputPagesMetaCurrent == null && inputPagesMetaHistory == null)
 				|| inputPagelinks == null || inputCategorylinks == null);
 	}
 
@@ -154,7 +158,7 @@ public class DataMachineFiles extends Files {
 	 * page-articles XML Dump every time you need it: during processPage(),
 	 * processRevision() and processText(). See TimeMachine solution especially
 	 * the package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml
-	 * 
+	 *
 	 * @param compressGeneratedFiles
 	 */
 	public void setCompressGeneratedFiles(boolean compressGeneratedFiles) {
