@@ -166,15 +166,13 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		int page_id = pageParser.getPageId();
 		String page_title = pageParser.getPageTitle();
 		if (page_title != null) {
-			KeyType pageTitleHash = (KeyType) hashAlgorithm
-					.hashCode(page_title);
-
 			switch (page_namespace) {
 			case NS_CATEGORY: {
 				// skip redirect categories if skipCategory is enabled
 				if (!(skipCategory && pageParser.getPageIsRedirect())) {
 					cPageIdNameMap.add(page_id);
-					cNamePageIdMap.put(pageTitleHash, page_id);
+					cNamePageIdMap.put((KeyType) hashAlgorithm
+							.hashCode(page_title), page_id);
 					txtFW.addRow(page_id, page_id, page_title);
 				}
 				break;
@@ -189,7 +187,8 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 					rPageIdNameMap.put(page_id, page_title);
 				} else {
 					pPageIdNameMap.put(page_id, page_title);
-					pNamePageIdMap.put(pageTitleHash, page_id);
+					pNamePageIdMap.put((KeyType) hashAlgorithm
+							.hashCode(page_title), page_id);
 				}
 				break;
 			}
