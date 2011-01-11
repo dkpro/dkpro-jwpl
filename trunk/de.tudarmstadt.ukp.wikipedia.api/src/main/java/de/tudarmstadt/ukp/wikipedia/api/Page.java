@@ -4,26 +4,28 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
-import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
-import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
+import de.tudarmstadt.ukp.wikipedia.parser.Link;
+import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
+import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
 
 /**
  * Represents a Wikipedia article page.
@@ -35,9 +37,9 @@ import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
 public class Page
 	implements WikiConstants
 {
-	private Wikipedia wiki;
+	private final Wikipedia wiki;
 
-	private PageDAO pageDAO;
+	private final PageDAO pageDAO;
 
 	// The hibernatePage that is represented by this WikiAPI page.
 	// The indirection is necessary to shield the user from Hibernate sessions.
