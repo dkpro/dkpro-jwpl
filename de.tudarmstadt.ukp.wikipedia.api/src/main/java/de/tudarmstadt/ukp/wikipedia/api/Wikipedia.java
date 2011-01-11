@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -16,9 +16,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,23 +42,23 @@ import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
 public class Wikipedia implements WikiConstants {
 
 	private final Log logger = LogFactory.getLog(getClass());
-    private Language language;
-    private DatabaseConfiguration dbConfig;
+    private final Language language;
+    private final DatabaseConfiguration dbConfig;
 
-    private MediaWikiParser parser;
+    private final MediaWikiParser parser;
 
     /**
      * A mapping from page pageIDs to hibernateIDs.
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
      * The wikiapi startup time is way too long otherwise. */
-    private Map<Integer, Long> idMapPages;
+    private final Map<Integer, Long> idMapPages;
     /**
      * A mapping from categories pageIDs to hibernateIDs.
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
      * The wikiapi startup time is way too long otherwise. */
-    private Map<Integer, Long> idMapCategories;
+    private final Map<Integer, Long> idMapCategories;
 
-    private MetaData metaData;
+    private final MetaData metaData;
 
     /**
      * Creates a new Wikipedia object accessing the database indicated by the dbConfig parameter.
@@ -129,6 +129,46 @@ public class Wikipedia implements WikiConstants {
 
         Page page = new Page(this, pageId);
         return page;
+    }
+
+    /**
+     * Gets the discussion page for an article page with the given pageId.
+     *
+     * @param pageId The id of the page.
+     * @return The page object for a given pageId.
+     * @throws WikiApiException
+     */
+    public Page getDiscussions(int articlePageId) throws WikiApiException {
+        //Retrieve discussion page with article title
+    	//TODO not the prettiest solution, but currently discussions are only marked in the title
+    	return getDiscussionPage(getPage(articlePageId));
+    }
+
+    /**
+     * Gets the discussion page for the page with the given title.
+     * The page retrieval works as defined in {@link #getPage(String title)}
+     *
+     * @param title The title of the page for which the discussions should be retrieved.
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Page getDiscussionPage(String title) throws WikiApiException  {
+    	Page page = new Page(this, WikiConstants.DISCUSSION_PREFIX+title);
+        return page;
+    }
+
+    /**
+     * Gets the discussion page for the given article page
+     * The provided page must not be a discussion page
+     *
+     * @param articlePage the article page for which a discussion page should be retrieved
+     * @return The discussion page object for the given article page object
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Page getDiscussionPage(Page articlePage) throws WikiApiException{
+        //Retrieve discussion page with article title
+    	//TODO not the prettiest solution, but currently discussions are only marked in the title
+    	return getDiscussionPage(articlePage.getTitle().toString());
     }
 
 //// I do not want to make this public at the moment (TZ, March, 2007)

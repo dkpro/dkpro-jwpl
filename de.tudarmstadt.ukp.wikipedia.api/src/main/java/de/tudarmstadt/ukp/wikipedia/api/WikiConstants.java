@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -17,7 +17,7 @@ public interface WikiConstants {
      * A Wikipedia object can be created using one of these languages.
      */
     // Languages should be lowercase and match the corresponding snowball stemmer names.
-    public enum Language { 
+    public enum Language {
         abkhazian,
         afar,
         afrikaans,
@@ -276,10 +276,15 @@ public interface WikiConstants {
         zulu,
         _test
     }
-    
+
     /**
      * Shortcut for System.getProperty("line.separator").
      */
     public static final String LF = System.getProperty("line.separator");
 
+    /**
+     * The prefix that is added to page titles of discussion pages
+     * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
+     */
+    public static final String DISCUSSION_PREFIX = "Discussion:";
 }
