@@ -133,6 +133,12 @@ public class DataMachineFiles extends Files {
 				.getAbsolutePath() : null;
 	}
 
+	public String getInputPagesMetaHistory() {
+		return (inputPagesMetaHistory != null) ? inputPagesMetaHistory
+				.getAbsolutePath() : null;
+	}
+
+
 	private String getGeneratedPath(String fileName) {
 		String path = dataDirectory.getAbsolutePath() + File.separator
 				+ fileName;
