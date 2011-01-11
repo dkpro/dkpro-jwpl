@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,9 +12,7 @@ package de.tudarmstadt.ukp.wikipedia.datamachine.domain;
 
 import java.io.IOException;
 
-import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
 import de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.XML2Binary;
-
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.AbstractSnapshotGenerator;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.Files;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.MetaData;
@@ -32,10 +30,10 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.IEnvironmentFactory;
  * Transforms a database from mediawiki format to JWPL format.<br>
  * The transformation produces .txt files for the different tables in the JWPL
  * database.
- * 
+ *
  * @author Anouar
  * @author ivan.galkin
- * 
+ *
  */
 public class DataMachineGenerator extends AbstractSnapshotGenerator {
 
@@ -51,6 +49,7 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 		this.files = (DataMachineFiles) files;
 	}
 
+	@Override
 	public void start() throws Exception {
 		version = environmentFactory.getDumpVersion();
 		MetaData metaData = MetaData.initWithConfig(configuration);
@@ -61,7 +60,7 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 	}
 
 	private void processInputDump() throws IOException {
-		
+
 		logger.log("parse input dumps...");
 		new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()),
 				files);
@@ -94,20 +93,28 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 	 * Parse either "pages-articles.xml" or "pages-meta-current.xml". If both
 	 * files exist in the input directory "pages-meta-current.xml" will be
 	 * favored.
-	 * 
+	 *
 	 * @return the input articles dump
 	 */
 	private String getPagesArticlesFile() {
 		String pagesArticlesFile = null;
 		String parseMessage = null;
 
+		//Use of minimal dump only with articles
 		if (files.getInputPagesArticles() != null) {
 			pagesArticlesFile = files.getInputPagesArticles();
 			parseMessage = "Discussions are unavailable";
 		}
 
+		//Use of dump with discussions
 		if (files.getInputPagesMetaCurrent() != null) {
 			pagesArticlesFile = files.getInputPagesMetaCurrent();
+			parseMessage = "Discussions are available";
+		}
+
+		//Use of the huge dump with discussions and whole history
+		if (files.getInputPagesMetaHistory() != null) {
+			pagesArticlesFile = files.getInputPagesMetaHistory();
 			parseMessage = "Discussions are available";
 		}
 
