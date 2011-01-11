@@ -138,7 +138,7 @@ public class Wikipedia implements WikiConstants {
      * @return The page object for a given pageId.
      * @throws WikiApiException
      */
-    public Page getDiscussions(int articlePageId) throws WikiApiException {
+    public Page getDiscussionPage(int articlePageId) throws WikiApiException {
         //Retrieve discussion page with article title
     	//TODO not the prettiest solution, but currently discussions are only marked in the title
     	return getDiscussionPage(getPage(articlePageId));
@@ -153,8 +153,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
      */
     public Page getDiscussionPage(String title) throws WikiApiException  {
-    	Page page = new Page(this, WikiConstants.DISCUSSION_PREFIX+title);
-        return page;
+    	return getDiscussionPage(getPage(title));
     }
 
     /**
@@ -168,7 +167,9 @@ public class Wikipedia implements WikiConstants {
     public Page getDiscussionPage(Page articlePage) throws WikiApiException{
         //Retrieve discussion page with article title
     	//TODO not the prettiest solution, but currently discussions are only marked in the title
-    	return getDiscussionPage(articlePage.getTitle().toString());
+
+    	String articleTitle = articlePage.getTitle().toString();
+    	return new Page(this, articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)?articleTitle:WikiConstants.DISCUSSION_PREFIX+articleTitle);
     }
 
 //// I do not want to make this public at the moment (TZ, March, 2007)
