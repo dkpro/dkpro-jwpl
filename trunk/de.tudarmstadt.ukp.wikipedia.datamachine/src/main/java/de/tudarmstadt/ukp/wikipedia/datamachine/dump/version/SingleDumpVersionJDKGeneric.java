@@ -33,8 +33,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 	private static final String SQL_NULL = "NULL";
 	//TODO 	This constant is used to flag page titles of discussion pages.
-	//		We should make this configurable.
-	private static final String DISCUSSION_FLAG = "Discussion:";
+	//		Is also defined in wikipedia.api:WikiConstants.DISCUSSION_PREFIX
+	//		It just doesn't make sense to add a dependency just for the constant
+	private static final String DISCUSSION_PREFIX = "Discussion:";
 
 	private Map<Integer, String> pPageIdNameMap;
 	private TIntHashSet cPageIdNameMap;
@@ -180,7 +181,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 			}
 
 			case NS_TALK: {
-				page_title = DISCUSSION_FLAG + page_title;
+				page_title = DISCUSSION_PREFIX + page_title;
 			}
 
 			case NS_MAIN: {
