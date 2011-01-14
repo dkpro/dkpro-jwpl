@@ -25,6 +25,9 @@ public class DataMachineFiles extends Files {
 	private final static String GENERATED_PAGE = "page.bin";
 	private final static String GENERATED_REVISION = "revision.bin";
 	private final static String GENERATED_TEXT = "text.bin";
+	/*
+	 * discussions.bin is currently unused. Discussions are put in pages.bin
+	 */
 	private final static String GENERATED_DISCUSSIONS = "discussions.bin";
 
 	private final static String ARCHIVE_EXTENSION = ".gz";
@@ -51,6 +54,7 @@ public class DataMachineFiles extends Files {
 		this.inputPagesarticles = files.inputPagesarticles;
 		this.inputCategorylinks = files.inputCategorylinks;
 		this.inputPagesMetaCurrent = files.inputPagesMetaCurrent;
+		this.inputPagesMetaHistory = files.inputPagesMetaHistory;
 	}
 
 	private File setOutputDirectory(File parentDirectory) {
@@ -77,6 +81,9 @@ public class DataMachineFiles extends Files {
 		File[] filesInDataDirectory = dataDirectory.listFiles();
 		if (filesInDataDirectory.length > 2) {
 			for (File currentFile : filesInDataDirectory) {
+
+				//TODO improve file check. Only accept files that come in a supported compression format
+				//e.g. we cannot currently use INPUT_PAGESMETAHISTORY in 7zip format
 				String currentFileName = currentFile.getName();
 				if (currentFileName.contains(INPUT_PAGESARTICLES)) {
 					inputPagesarticles = currentFile;
@@ -86,7 +93,7 @@ public class DataMachineFiles extends Files {
 					inputCategorylinks = currentFile;
 				} else if (currentFileName.contains(INPUT_PAGESMETACURRENT)) {
 					inputPagesMetaCurrent = currentFile;
-				}else if (currentFileName.contains(INPUT_PAGESMETAHISTORY)){
+				} else if (currentFileName.contains(INPUT_PAGESMETAHISTORY)){
 					inputPagesMetaHistory = currentFile;
 				}
 			}
