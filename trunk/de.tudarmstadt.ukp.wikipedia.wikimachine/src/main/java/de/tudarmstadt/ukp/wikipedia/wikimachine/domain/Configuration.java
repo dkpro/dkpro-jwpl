@@ -62,8 +62,9 @@ public class Configuration {
 	public boolean checkTimestamp() {
 		boolean result = !toTimestamp.equals(TIMESTAMP_UNDEFINED)
 				&& !fromTimestamp.equals(TIMESTAMP_UNDEFINED)
-				&& this.toTimestamp.after(this.fromTimestamp);
+				&& (this.toTimestamp.after(this.fromTimestamp)||this.toTimestamp.equals(this.fromTimestamp));
 		if (!result) {
+
 			logger.log("fromTimestamp is after toTimestamp");
 		}
 		return result;
