@@ -20,7 +20,6 @@ public class DataMachineFiles extends Files {
 	private final static String INPUT_PAGESARTICLES = "pages-articles.xml";
 	private final static String INPUT_CATEGORYLINKS = "categorylinks.sql";
 	private final static String INPUT_PAGESMETACURRENT = "pages-meta-current.xml";
-	private final static String INPUT_PAGESMETAHISTORY = "pages-meta-history.xml";
 
 	private final static String GENERATED_PAGE = "page.bin";
 	private final static String GENERATED_REVISION = "revision.bin";
@@ -39,7 +38,6 @@ public class DataMachineFiles extends Files {
 	private File inputPagesarticles = null;
 	private File inputCategorylinks = null;
 	private File inputPagesMetaCurrent = null;
-	private File inputPagesMetaHistory = null;
 
 	public DataMachineFiles(ILogger logger) {
 		super(logger);
@@ -54,7 +52,6 @@ public class DataMachineFiles extends Files {
 		this.inputPagesarticles = files.inputPagesarticles;
 		this.inputCategorylinks = files.inputCategorylinks;
 		this.inputPagesMetaCurrent = files.inputPagesMetaCurrent;
-		this.inputPagesMetaHistory = files.inputPagesMetaHistory;
 	}
 
 	private File setOutputDirectory(File parentDirectory) {
@@ -83,7 +80,6 @@ public class DataMachineFiles extends Files {
 			for (File currentFile : filesInDataDirectory) {
 
 				//TODO improve file check. Only accept files that come in a supported compression format
-				//e.g. we cannot currently use INPUT_PAGESMETAHISTORY in 7zip format
 				String currentFileName = currentFile.getName();
 				if (currentFileName.contains(INPUT_PAGESARTICLES)) {
 					inputPagesarticles = currentFile;
@@ -93,14 +89,12 @@ public class DataMachineFiles extends Files {
 					inputCategorylinks = currentFile;
 				} else if (currentFileName.contains(INPUT_PAGESMETACURRENT)) {
 					inputPagesMetaCurrent = currentFile;
-				} else if (currentFileName.contains(INPUT_PAGESMETAHISTORY)){
-					inputPagesMetaHistory = currentFile;
 				}
 			}
 		}
 		// either inputPagesarticles or inputPagesMetaCurrent have to be placed
 		// in the input directory
-		return !((inputPagesarticles == null && inputPagesMetaCurrent == null && inputPagesMetaHistory == null)
+		return !((inputPagesarticles == null && inputPagesMetaCurrent == null )
 				|| inputPagelinks == null || inputCategorylinks == null);
 	}
 
@@ -137,11 +131,6 @@ public class DataMachineFiles extends Files {
 
 	public String getInputPagesMetaCurrent() {
 		return (inputPagesMetaCurrent != null) ? inputPagesMetaCurrent
-				.getAbsolutePath() : null;
-	}
-
-	public String getInputPagesMetaHistory() {
-		return (inputPagesMetaHistory != null) ? inputPagesMetaHistory
 				.getAbsolutePath() : null;
 	}
 
