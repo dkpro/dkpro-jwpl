@@ -112,12 +112,6 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 			parseMessage = "Discussions are available";
 		}
 
-		//Use of the huge dump with discussions and whole history
-		if (files.getInputPagesMetaHistory() != null) {
-			pagesArticlesFile = files.getInputPagesMetaHistory();
-			parseMessage = "Discussions are available";
-		}
-
 		logger.log(parseMessage);
 		return pagesArticlesFile;
 	}
