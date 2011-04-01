@@ -54,9 +54,11 @@ public class CategorylinksParser extends SQLFileParser {
 		return clTo;
 	}
 
-	public boolean next() throws IOException {
-		if (EOF_reached)
-			return false;
+	@Override
+    public boolean next() throws IOException {
+		if (EOF_reached) {
+            return false;
+		}
 		// read '('
 		st.nextToken();
 		// read cl_from
@@ -75,12 +77,22 @@ public class CategorylinksParser extends SQLFileParser {
 		st.nextToken();
 		// read cl_timestamp
 		st.nextToken();
-		// read ')'
+
+		boolean EOE = false;  // end of entry
+		while (!EOE) {
+	        st.nextToken();
+	        // corresponds to closing parenthesis
+	        if (st.ttype == 41) {
+	            EOE = true;
+	        }
+		}
+		
+		// read ',' or ';'. If ';' is found then skip statement or expect eof.
 		st.nextToken();
-		// read ',' or ';'. If ';' is found then skip statement or espect eof.
-		st.nextToken();
-		if (st.toString().substring(7, 8).equals(";"))
-			skipStatements();
+		
+		if (st.toString().substring(7, 8).equals(";")) {
+            skipStatements();
+		}
 		return true;
 	}
 }
