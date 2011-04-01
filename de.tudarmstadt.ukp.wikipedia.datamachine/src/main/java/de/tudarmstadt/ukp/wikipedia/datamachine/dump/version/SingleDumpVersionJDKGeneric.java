@@ -115,6 +115,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	public void processCategoryLinksRow(CategorylinksParser clParser)
 			throws IOException {
 		String cl_to = clParser.getClTo();
+		
 		if (cl_to != null) {
 			KeyType clToHash = (KeyType) hashAlgorithm.hashCode(cl_to);
 
@@ -138,7 +139,10 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 			}
 		}
-
+		else {
+		    throw new IOException("Parsin error." + CategorylinksParser.class.getName() + 
+		                          " returned null value in " + this.getClass().getName());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
