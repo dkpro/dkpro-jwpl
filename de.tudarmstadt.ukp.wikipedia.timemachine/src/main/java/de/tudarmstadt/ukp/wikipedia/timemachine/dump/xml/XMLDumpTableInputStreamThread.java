@@ -27,13 +27,17 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
  *
  */
 class XMLDumpTableInputStreamThread extends Thread {
-	private static final String NAMESPACES = "NS_MAIN, NS_CATEGORY";
+	/**
+	 * Enable the main and category pages as well as discussions
+	 */
+	private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
 
 	/**
 	 * Generalization <code>org.mediawiki.importer.XmlDumpReader</code> that
 	 * parses the XML dump
 	 */
 	private AbstractXmlDumpReader xmlReader;
+
 	/**
 	 * completion flag for a conversion process
 	 */
@@ -58,15 +62,15 @@ class XMLDumpTableInputStreamThread extends Thread {
 		switch (table) {
 		case PAGE:
 			xmlReader = new PageReader(iStream, new NamespaceFilter(
-					new PageWriter(oStream), NAMESPACES));
+					new PageWriter(oStream), ENABLED_NAMESPACES));
 			break;
 		case REVISION:
 			xmlReader = new RevisionReader(iStream, new NamespaceFilter(
-					new RevisionWriter(oStream), NAMESPACES));
+					new RevisionWriter(oStream), ENABLED_NAMESPACES));
 			break;
 		case TEXT:
 			xmlReader = new TextReader(iStream, new NamespaceFilter(
-					new TextWriter(oStream), NAMESPACES));
+					new TextWriter(oStream), ENABLED_NAMESPACES));
 			break;
 
 		}
