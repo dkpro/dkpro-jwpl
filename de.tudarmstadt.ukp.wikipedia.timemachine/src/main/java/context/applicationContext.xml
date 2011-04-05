@@ -102,7 +102,7 @@
 	de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.BinaryDumpTableInputStream
 	-->
 	<!-- variants [timemachine]
-	de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.light.XMLDumpTableInputStream [more fast and robust, but few tested]
+	de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.XMLDumpTableInputStream [more fast and robust, but few tested]
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.original.XMLDumpTableInputStream [default]
 	-->
 
