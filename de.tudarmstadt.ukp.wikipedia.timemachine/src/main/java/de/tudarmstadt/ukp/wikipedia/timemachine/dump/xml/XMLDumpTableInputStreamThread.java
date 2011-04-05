@@ -8,7 +8,7 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.light;
+package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +17,6 @@ import java.io.OutputStream;
 import org.apache.log4j.Logger;
 import org.mediawiki.importer.NamespaceFilter;
 
-import de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.PageWriter;
-import de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.RevisionWriter;
-import de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.TextWriter;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
 

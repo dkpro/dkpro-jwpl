@@ -8,7 +8,7 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.light;
+package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 
 import java.io.InputStream;
 
@@ -24,9 +24,9 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
  * @author ivan.galkin
  * 
  */
-public class PageReader extends AbstractXmlDumpReader {
+public class RevisionReader extends AbstractXmlDumpReader {
 
-	public PageReader(InputStream inputStream, DumpWriter writer) {
+	public RevisionReader(InputStream inputStream, DumpWriter writer) {
 		super(inputStream, writer);
 	}
 
