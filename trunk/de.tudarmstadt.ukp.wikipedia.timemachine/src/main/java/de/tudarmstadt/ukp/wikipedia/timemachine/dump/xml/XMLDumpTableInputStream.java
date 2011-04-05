@@ -8,7 +8,7 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.light;
+package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

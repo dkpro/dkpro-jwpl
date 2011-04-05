@@ -8,7 +8,7 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.light;
+package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 
 import java.io.InputStream;
 
@@ -24,9 +24,9 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
  * @author ivan.galkin
  * 
  */
-public class RevisionReader extends AbstractXmlDumpReader {
+public class TextReader extends AbstractXmlDumpReader {
 
-	public RevisionReader(InputStream inputStream, DumpWriter writer) {
+	public TextReader(InputStream inputStream, DumpWriter writer) {
 		super(inputStream, writer);
 	}
 
@@ -43,7 +43,6 @@ public class RevisionReader extends AbstractXmlDumpReader {
 	@Override
 	protected void setupEndElements() {
 		endElements.put(REVISION, REVISION);
-		endElements.put(TIMESTAMP, TIMESTAMP);
 		endElements.put(TEXT, TEXT);
 		endElements.put(CONTRIBUTOR, CONTRIBUTOR);
 		endElements.put(ID, ID);
