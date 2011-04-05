@@ -115,7 +115,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	public void processCategoryLinksRow(CategorylinksParser clParser)
 			throws IOException {
 		String cl_to = clParser.getClTo();
-		
+
 		if (cl_to != null) {
 			KeyType clToHash = (KeyType) hashAlgorithm.hashCode(cl_to);
 
@@ -140,7 +140,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 			}
 		}
 		else {
-		    throw new IOException("Parsin error." + CategorylinksParser.class.getName() + 
+		    throw new IOException("Parsin error." + CategorylinksParser.class.getName() +
 		                          " returned null value in " + this.getClass().getName());
 		}
 	}
@@ -171,31 +171,36 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		String page_title = pageParser.getPageTitle();
 		if (page_title != null) {
 			switch (page_namespace) {
-			case NS_CATEGORY: {
-				// skip redirect categories if skipCategory is enabled
-				if (!(skipCategory && pageParser.getPageIsRedirect())) {
-					cPageIdNameMap.add(page_id);
-					cNamePageIdMap.put((KeyType) hashAlgorithm
-							.hashCode(page_title), page_id);
-					txtFW.addRow(page_id, page_id, page_title);
+				case NS_CATEGORY: {
+					// skip redirect categories if skipCategory is enabled
+					if (!(skipCategory && pageParser.getPageIsRedirect())) {
+						cPageIdNameMap.add(page_id);
+						cNamePageIdMap.put(
+								(KeyType) hashAlgorithm.hashCode(page_title),
+								page_id);
+						txtFW.addRow(page_id, page_id, page_title);
+					}
+					break;
 				}
-				break;
-			}
 
-			case NS_TALK: {
-				page_title = DISCUSSION_PREFIX + page_title;
-			}
-
-			case NS_MAIN: {
-				if (pageParser.getPageIsRedirect()) {
-					rPageIdNameMap.put(page_id, page_title);
-				} else {
-					pPageIdNameMap.put(page_id, page_title);
-					pNamePageIdMap.put((KeyType) hashAlgorithm
-							.hashCode(page_title), page_id);
+				case NS_TALK: {
+					page_title = DISCUSSION_PREFIX + page_title;
+					//the NS_MAIN block will also be executed
+					//for NS_TALK pages ...
 				}
-				break;
-			}
+
+				case NS_MAIN: {
+					if (pageParser.getPageIsRedirect()) {
+						rPageIdNameMap.put(page_id, page_title);
+					}
+					else {
+						pPageIdNameMap.put(page_id, page_title);
+						pNamePageIdMap.put(
+								(KeyType) hashAlgorithm.hashCode(page_title),
+								page_id);
+					}
+					break;
+				}
 			}
 		}
 
