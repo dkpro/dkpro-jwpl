@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -25,12 +25,12 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
 
 /**
  * Thread for converting of XML stream to SQL stream.
- * 
+ *
  * @author ivan.galkin
- * 
+ *
  */
 class XMLDumpTableInputStreamThread extends Thread {
-	private static final String NAMESPACES = "NS_MAIN,NS_CATEGORY";
+	private static final String NAMESPACES = "NS_MAIN, NS_CATEGORY";
 
 	/**
 	 * Generalization <code>org.mediawiki.importer.XmlDumpReader</code> that
@@ -47,7 +47,7 @@ class XMLDumpTableInputStreamThread extends Thread {
 
 	/**
 	 * Initiate input and output streams
-	 * 
+	 *
 	 * @param iStream
 	 *            XML input stream
 	 * @param oStream
