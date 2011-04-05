@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,15 +12,41 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.version;
 
 import java.io.IOException;
 
-import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.Files;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.MetaData;
+import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
 
 public abstract class AbstractDumpVersion implements IDumpVersion {
+
+	/*
+	 * Wikipedia namespace codes according to
+	 * http://en.wikipedia.org/wiki/Wikipedia:MediaWiki_namespace
+	 */
 	protected static final int NS_MAIN = 0;
 	protected static final int NS_TALK = 1;
+	protected static final int NS_USER = 2;
+	protected static final int NS_USER_TALK = 3;
+	protected static final int NS_WIKIPEDIA = 4;
+	protected static final int NS_WIKIPEDIA_TALK = 5;
+	protected static final int NS_FILE = 6;
+	protected static final int NS_FILE_TALK = 7;
+	protected static final int NS_MEDIAWIKI = 8;
+	protected static final int NS_MEDIAWIKI_TALK = 9;
+	protected static final int NS_TEMPLATE = 10;
+	protected static final int NS_TEMPLATE_TALK = 11;
+	protected static final int NS_HELP = 12;
+	protected static final int NS_HELP_TALK = 13;
 	protected static final int NS_CATEGORY = 14;
+	protected static final int NS_CATEGORY_TALK = 15;
+	protected static final int NS_THREAD = 90;
+	protected static final int NS_THREAD_TALK = 91;
+	protected static final int NS_SUMMARY = 92;
+	protected static final int NS_SUMMARY_TALK = 93;
+	protected static final int NS_PORTAL = 100;
+	protected static final int NS_PORTAL_TALK = 101;
+	protected static final int NS_BOOK = 108;
+	protected static final int NS_BOOK_TALK = 109;
 
 	protected int timestamp;
 	protected MetaData metaData;
@@ -163,7 +189,7 @@ public abstract class AbstractDumpVersion implements IDumpVersion {
 	 * Returns the String value of the bit 1 if the given boolean is true<br>
 	 * and an empty String otherwise. This the way bit values are written<br>
 	 * in .txt dump files.
-	 * 
+	 *
 	 * @param b
 	 * @return
 	 */
