@@ -606,42 +606,6 @@ public class Page
 		return outAnchors;
 	}
 
-	// // TZ: old buggy implementation of getPlainText(). To be removed in next clean-up session :)
-	// /**
-	// * Returns the Wikipedia article as plain text.
-	// * Page.getText() returns the Wikipedia article with all Wiki markup.
-	// *
-	// * @return The plain text of a Wikipedia article without all markup.
-	// * @throws WikiApiException
-	// */
-	// protected String getPlainText() throws WikiApiException {
-	// String plainText = getText();
-	//
-	// plainText = plainText.replaceAll("<.+?>"," ");
-	// plainText = plainText.replaceAll("__.+?__"," ");
-	// plainText = plainText.replaceAll("\\[http.+?\\]"," ");
-	// plainText = plainText.replaceAll("\\[Bild.+?\\]"," ");
-	// plainText = plainText.replaceAll("\\{\\|.+?\\|\\}"," ");
-	// plainText = plainText.replaceAll(" - "," ");
-	//
-	// plainText = plainText.replace('[',' ');
-	// plainText = plainText.replace(']',' ');
-	// plainText = plainText.replace('=',' ');
-	// plainText = plainText.replace('*',' ');
-	// plainText = plainText.replace('\'',' ');
-	// plainText = plainText.replace('.',' ');
-	// plainText = plainText.replace(',',' ');
-	// plainText = plainText.replace(';',' ');
-	// plainText = plainText.replace('|',' ');
-	// plainText = plainText.replace(':',' ');
-	// plainText = plainText.replace('{',' ');
-	// plainText = plainText.replace('}',' ');
-	// plainText = plainText.replace('(',' ');
-	// plainText = plainText.replace(')',' ');
-	// plainText = plainText.replaceAll("\\s{2,}"," ");
-	//
-	// return this.getTitle() + " " + plainText;
-	// }
 
 	/**
 	 * Returns a string with infos about this page object.
