@@ -37,6 +37,7 @@
   	<dependency>
   		<groupId>org.wikimedia</groupId>
   		<artifactId>mwdumper</artifactId>
+  		<version>1.16.ukpfatjar</version>
   	</dependency>
   </dependencies>
 </project>
