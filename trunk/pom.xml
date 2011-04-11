@@ -100,7 +100,7 @@
 			<dependency>
 				<groupId>org.wikimedia</groupId>
 				<artifactId>mwdumper</artifactId>
-				<version>1.16</version>
+				<version>1.16-ukp-1</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
