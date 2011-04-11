@@ -1,0 +1,88 @@
+#summary Setting up Maven and Eclipse for DKPro Core development
+#sidebar TableOfContents
+
+= Maven Setup = 
+
+This projects makes use of some libraries that are not readily available in public Maven repositories. Therefore we have set up a Maven repository which provides these libraries as well as releases of this project. To use this repository, we suggest you use the [http://maven.apache.org/settings.html settings.xml] in the hidden subdirectory `.m2` of your home directory and augment it with the following sections:
+
+{{{
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <profiles>
+    <profile>
+      <id>ukp-oss</id>
+      <repositories>
+        <repository>
+          <id>ukp-central</id>
+          <url>http://zoidberg.tk.informatik.tu-darmstadt.de/artifactory/repo/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+    </profile>
+  </profiles>
+  <activeProfiles>
+    <activeProfile>ukp-oss</activeProfile>
+  </activeProfiles>
+</settings>
+}}}
+
+= Eclipse Setup =
+
+We use the following tools for development:
+
+    * [http://eclipse.org/ Eclipse] 3.5 or higher. We recommend the _Eclipse Classic_ distribution.
+    * [http://subclipse.tigris.org/ Subclipse] 1.6.x
+        * update site: `http://subclipse.tigris.org/update_1.6.x`
+    * [http://m2eclipse.sonatype.org/ m2eclipse] 0.10.0 or higher.
+        * update site: `http://m2eclipse.sonatype.org/sites/m2e`
+    * Maven SCM handler for Subclipse
+        * update site: `http://m2eclipse.sonatype.org/sites/m2e-extras`
+
+=== For Windows Users ===
+
+*Note:* On your machine the Java path may be different, e.g. because you are using a localized Windows version it may be `C:\Programme\...` -or- because you may have a Java version other than 1.6.0.01.
+
+   1 Edit your `eclipse.ini` and add/change the following lines (the `-vmargs` line should be present already):
+{{{
+-vm
+C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
+-vmargs
+}}}
+      * Make sure that the linebreaks are as shown above (the formatting is actually necessary)
+   1 Open Eclipse
+      * Open the *preferences *
+      * Go to *Java -> Installed JREs*
+      * Click *Search* and choose your Java directory
+      * *Close* the preferences and *re-open* them
+      * *Select* _jdk1.6.0_01_ as your JRE (this should match the entry you added in the eclipse.ini)
+
+= Checking out =
+
+   * Open the *SVN Repositories* perspective in Eclipse (Menu -> Window -> Show View -> Other... -> SVN -> SVN Repositories)
+   * *Add* a SVN repository with the URL `http://jwpl.googlecode.com/svn`
+   * *Expand* the new repository node in the SVN Repositories view
+   * Right-click on *trunk* and select *Check out as Maven project*
+      * *Note:* if you do not see this menu item, make sure you have installed the _Maven SCM handler for Subclipse_.
+   * (optional) Eclipse will create a large number of projects now. We recommend to group these projects into a _working set_:
+      * Select *Next*
+      * Check *Add project(s) to working set*
+      * Click *More...*
+      * Click *New...*
+      * Double-click *Java*
+      * Enter the working set name `JWPL`
+      * Click *Finish*
+      * Click *OK*
+      * Select the working set `JWPL` from the working set drop-down box
+      * *Note:* when you are completely through with these and the following steps, remember to go to the Package Explorer view. There is a small triangular icon in its top right corner. Click on that and select Top Level Elements -> Working Sets.
+   * Click *Finish*.
+
+However, Eclipse displays them as projects at the same node level as uimafit-parent in the _Package Explorer_ view.
