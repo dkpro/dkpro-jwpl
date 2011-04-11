@@ -1,4 +1,4 @@
-#summary Setting up Maven and Eclipse for DKPro Core development
+#summary Setting up Maven and Eclipse for JWPL development
 #sidebar TableOfContents
 
 = Maven Setup = 
