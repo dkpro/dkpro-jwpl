@@ -4,17 +4,18 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The page class that is actually persisted by Hibernate.
- * It is accessed via a equally named class in the api package to hide session management from the user. 
+ * It is accessed via a equally named class in the api package to hide session management from the user.
  * @author zesch
  *
  */
@@ -31,7 +32,7 @@ public class Page {
 
     /** A no argument constructor as required by Hibernate. */
     public Page () {};
-    
+
     public long getId() {
         return id;
     }
@@ -105,7 +106,16 @@ public class Page {
         return isDisambiguation;
     }
 
-    public void setIsDisambiguation(boolean isDisambiguation) {
-        this.isDisambiguation = isDisambiguation;
+    public void setIsDisambiguation(Boolean isDisambiguation) {
+    	try{
+    		if(isDisambiguation == null){
+    			isDisambiguation = false;
+    		}
+    		this.isDisambiguation = isDisambiguation;
+    	}
+    	catch(Exception e)
+    	{
+    		this.isDisambiguation = false;
+    	}
     }
 }
