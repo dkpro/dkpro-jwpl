@@ -106,16 +106,11 @@ public class Page {
         return isDisambiguation;
     }
 
-    public void setIsDisambiguation(Boolean isDisambiguation) {
-    	try{
-    		if(isDisambiguation == null){
-    			isDisambiguation = false;
-    		}
-    		this.isDisambiguation = isDisambiguation;
-    	}
-    	catch(Exception e)
-    	{
-    		this.isDisambiguation = false;
-    	}
-    }
+	public void setIsDisambiguation(Boolean isDisambiguation)
+	{
+		if (isDisambiguation == null) {
+			isDisambiguation = false;
+		}
+		this.isDisambiguation = isDisambiguation;
+	}
 }
