@@ -1,6 +1,8 @@
 #summary Documentation of JWPL TimeMachine
 
 [JWPLDocumentation Back to overview page.]
+= Note =
+Soon, a new release of the TimeMachine will be published as part of the Wikipedia Revision Toolkit. This toolkit will also include a new JWPL component that grants access to Wikipedia's edit history. 
 
 = Usage =
 
