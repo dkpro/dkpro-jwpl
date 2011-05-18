@@ -12,3 +12,6 @@
 
 <b>Q: How can I verify the integrity of the downloaded data.</b>
    For each Wikipedia file there is another file with the same name and the suffix .md5. Compute the md5-HashSum of the file you downloaded (e.g. `md5sum` under `*`nix) and compare it with the one in the file.
+
+<b>Q: I have a question that is not answered by any of the Wiki pages. Whom should I contact?</b>
+   For any technical questions about JWPL, please use the [http://groups.google.com/group/jwpl JWPL Mailing List]
