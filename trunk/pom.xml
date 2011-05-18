@@ -349,14 +349,19 @@
 			</build>
 		</profile>
 	</profiles>
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>ukp-oss</id>
+			<url>http://zoidberg.tk.informatik.tu-darmstadt.de/artifactory/repo/</url>
+		</repository>
+	</repositories>
 	<distributionManagement>
 		<repository>
-			<id>ukp-central</id>
-			<url>dav:https://maggie.tk.informatik.tu-darmstadt.de/artifactory/dkpro-local</url>
+			<id>ukp-oss</id>
+			<url>dav:https://zoidberg.tk.informatik.tu-darmstadt.de/artifactory/public-ukp-releases-local</url>
 		</repository>
-		<snapshotRepository>
-			<id>ukp-central</id>
-			<url>dav:https://maggie.tk.informatik.tu-darmstadt.de/artifactory/dkpro-snapshots-local</url>
-		</snapshotRepository>
 	</distributionManagement>
 </project>
