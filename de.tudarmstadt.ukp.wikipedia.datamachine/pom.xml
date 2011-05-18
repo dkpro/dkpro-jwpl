@@ -2,18 +2,18 @@
 	<parent>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-  <version>0.6.0</version>
+  <version>0.7.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-  <version>0.6.0</version>
+  <version>0.7.0-SNAPSHOT</version>
   <name>DataMachine</name>
   <dependencies>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-  		<version>0.6.0</version>
+  		<version>0.7.0-SNAPSHOT</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
