@@ -18,6 +18,7 @@
          * SOURCE_DIRECTORY - the path to the directory containing the source files
       * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need around 4GB.
    # This should create a lot of new data files in a "output" subfolder of each input folder.
+   # Create a database with the necessary tables  using [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql jwpl_tables.sql]
    # Import these data files into the database.
       * `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} ```pwd```/*.txt`
    # When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
