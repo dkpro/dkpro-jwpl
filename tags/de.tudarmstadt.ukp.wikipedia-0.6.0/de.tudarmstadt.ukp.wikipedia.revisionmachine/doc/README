@@ -1,0 +1,34 @@
+Known issues - to be included in the open source version (e.g. as issues in the bug tracker)
+
+I) 
+Handling of surrogate characters
+
+There are 4 possible modes of handling UTF8 surrogate characters.
+Currently, the only reliable mode is "Discard Revision", in which any revision that contains surrogate characters is discarded.
+The other three modes in "de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.SurrogateModes" have been disabled for now.
+The corresponding config-section in the config tool has also been made invisible (de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels.InputPanel)
+The disabled parts are marked with TODO-markers
+
+In order to use the other three surrogate modes, which try to handle surrogate characters differently,
+the corresponding code has to be checked. Afterwards, the modes can be reenables in the config tool (InputPanel.java) and the SurrogateModes-class
+
+II)
+output/logger/debug-paths in config files
+
+The config tool has been fixed to ensure that those paths have a trailing File.separator.
+The system seems to just concatenate the path string with the filename string.
+If someone manually creates/alters a config file, this could be still the a bug-source.
+It would be best to find all occurences where paths are built (path+filename) and ensure at those points
+that a file.separator is put in between.
+
+As long as the config tool is used, this should no longer be a problem.
+
+III)
+Page-filter in DiffTool_ST, ArticleConsumer
+
+The only implementation of the interface IArticleNameChecker is currently EnglishArticleNameChecker();
+For each wikipedia language version, a separate implementation has to be created 
+and has to be chosen by DiffTool_ST/ArticleConsumer according to the current language that is used!!!
+
+It is also unclear why filter-object is both created in DiffTool_ST AND ArticleConsumer!!!
+Should only happen in one place.  
