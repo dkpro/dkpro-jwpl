@@ -50,7 +50,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate</artifactId>
-				<version>3.2.5.ga</version>
+				<version>3.2.7.ga</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jgrapht</groupId>
