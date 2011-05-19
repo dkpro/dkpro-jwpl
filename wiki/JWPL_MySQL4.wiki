@@ -1,5 +1,7 @@
 #summary How to use JWPL with MySQL4
 
+[JWPL_Core Back to the JWPL Core overview page]
+
 MySQL 4.x supports only 4GB MyISAM tables with the default settings.
 Unfortunately, the English Wikipedia is already much larger than this. Given the growth rates, many Wikipedias will reach that size sooner than later.
 
