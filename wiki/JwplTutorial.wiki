@@ -1,4 +1,4 @@
-#summary Tutorials showing how to use JWPL.
+#summary Tutorials showing how to use JWPL Core.
 
 [JWPLDocumentation Back to overview page.]
 
