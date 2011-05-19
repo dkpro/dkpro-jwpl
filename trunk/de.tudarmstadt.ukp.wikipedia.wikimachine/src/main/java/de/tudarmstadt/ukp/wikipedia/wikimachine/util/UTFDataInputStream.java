@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -17,11 +17,11 @@ import java.io.InputStream;
 /**
  * This is a inverse class of {@link UTFDataOutputStream} witch goal is to
  * reminder the length limitation of written UTF-8 strings
- * 
+ *
  * @author i_galkin
- * 
+ *
  * @see UTFDataOutputStream
- * 
+ *
  */
 public class UTFDataInputStream extends DataInputStream {
 
@@ -33,36 +33,34 @@ public class UTFDataInputStream extends DataInputStream {
 
 	/**
 	 * Read a fragmented UTF-8 String
-	 * 
+	 *
 	 * @return a String written with
 	 *         {@link UTFDataOutputStream#writeFragmentedUTF(String)}
 	 * @throws IOException
-	 * 
+	 *
 	 * @see UTFDataOutputStream#writeFragmentedUTF(String)
 	 */
 	public String readFragmentedUTF() throws IOException {
 
-		// FIXME could it give more performance to use StringBuffer or
-		// StringBulder? Is the count of large strings greater as a count of
-		// short strings?
-
-		String result = super.readUTF();
+		//String result = super.readUTF();
+		StringBuffer result = new StringBuffer(super.readUTF());
 		boolean fragmentFlag = super.readBoolean();
 		while (fragmentFlag != END_REACHED) {
-			result = result.concat(super.readUTF());
+			//result = result.concat(super.readUTF());
+			result.append(super.readUTF());
 			fragmentFlag = super.readBoolean();
 		}
-		return result;
+		return result.toString();
 
 	}
 
 	/**
 	 * Read a byte array formed UTF-8 String
-	 * 
+	 *
 	 * @return a String written with
 	 *         {@link UTFDataOutputStream#writeUTFAsArray(String)}
 	 * @throws IOException
-	 * 
+	 *
 	 * @see UTFDataOutputStream#writeUTFAsArray(String)
 	 */
 	public String readUTFAsArray() throws IOException {
