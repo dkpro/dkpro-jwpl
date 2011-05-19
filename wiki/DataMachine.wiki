@@ -16,7 +16,7 @@
          * MAIN_CATEGORY_NAME - the name of the main (top) category of the Wikipedia category hierarchy
          * DISAMBIGUATION_CATEGORY_NAME - the name of the category that contains the disambiguation categories
          * SOURCE_DIRECTORY - the path to the directory containing the source files
-      * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need around 4GB.
+      * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need at least 4GB.
    # This should create a lot of new data files in a "output" subfolder of each input folder.
    # Create a database with the necessary tables  using [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql jwpl_tables.sql]
    # Import the data files into the database.
