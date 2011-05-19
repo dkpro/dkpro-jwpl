@@ -1,6 +1,6 @@
 #summary Tutorials showing how to use JWPL Core.
 
-[JWPLDocumentation Back to overview page.]
+[JWPL_Core Back to JWPL Core main page.]
 
 == Getting Started==
 
