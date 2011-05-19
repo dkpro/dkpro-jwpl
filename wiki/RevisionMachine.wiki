@@ -1,1 +1,5 @@
 #summary Documentation of the RevisionMachine.
+
+Documentation coming soon.
+
+For now, please have a look at [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper], which describes the Wikipedia Revision Toolkit
