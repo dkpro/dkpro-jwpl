@@ -1,5 +1,7 @@
 #summary Description of the Parser for the MediaWiki syntax included in JWPL.
 
+[JWPL_Core Back to the JWPL Core overview page]
+
 The JWPL parser analyzes the structure of a text with MediaWiki markup and represents it as a Java object. This allows for structured access to the contents of e.g. Wikipedia or Wiktionary. There is no standalone release of the parser, as it is part of the JWPL Wikipedia API release. However, it can be used perfectly without accessing Wikipedia with JWPL.
 
 == Code Example ==
