@@ -1,6 +1,6 @@
 #summary Getting started with JWPL Core.
 
-[JWPL_Core back to JWPL Core overview]
+[JWPL_Core Back to the JWPL Core overview page]
 
 == Getting Started ==
    # Create the Wikipedia data files using the DataMachine or TimeMachine.
@@ -21,3 +21,5 @@
       * You may also use the pre-packaged .jars from the [http://code.google.com/p/jwpl/downloads/list download section], but those will not contain recent improvements and bug fixes.
    # Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives.
    # If you encounter any problems, please also check the [JWPL_FAQ FAQ].
+
+[JWPL_Core Back to the JWPL Core overview page]
