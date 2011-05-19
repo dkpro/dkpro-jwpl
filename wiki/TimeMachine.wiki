@@ -4,7 +4,7 @@
 
 = Usage =
 
-   # *Attention:* Only use the !TimeMachine, if you really need to reconstruct one (or multiple) version(s) of Wikipedia corresponding to past states. The data files used for this purpose are very large. For English, unpacked size will be around 1TB. If you just want a single version of the recent Wikipedia, use the DataMachine instead.
+   # *Attention:* Only use the !TimeMachine, if you really need to reconstruct one (or multiple) version(s) of Wikipedia corresponding to past states. The data files used for this purpose are very large. For English, unpacked size will be larger than 5 TB. If you just want a single version of the recent Wikipedia, use the DataMachine instead.
    # Download the Wikipedia Data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site].
       * You need 3 files:
          * `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.7z`
