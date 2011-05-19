@@ -11,7 +11,7 @@ JWPL is not for you:
 == Documentation ==
   * Documentation for [JWPL_Core JWPL Core]
   * Documentation for the [WikipediaRevisionToolkit Wikipedia Revision Toolkit]
-  * [DeveloperSetup Developer Setup: Setting up Maven and Eclipse for JWPL development]
+  * Developer Setup: [DeveloperSetup Setting up Maven and Eclipse for JWPL development]
 
 == Support ==
 If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
