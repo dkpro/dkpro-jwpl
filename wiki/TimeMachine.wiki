@@ -1,4 +1,4 @@
-#summary Documentation of the !TimeMachine
+#summary Documentation of the TimeMachine
 
 [JWPLDocumentation Back to overview page.]
 
