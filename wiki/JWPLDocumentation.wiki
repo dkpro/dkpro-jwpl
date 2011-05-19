@@ -8,8 +8,9 @@ JWPL is for you:
 JWPL is not for you:
  * If you need to query live data. JWPL works on an optimized database, i.e. you are querying a static Wikipedia dump. This gives much better performance and lightens the load on the Wikipedia servers.
 
-If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
-
 == Documentation ==
   * Documentation for [JWPL_Core JWPL Core]
   * Documentation for the [WikipediaRevisionToolkit Wikipedia Revision Toolkit]
+
+== Support ==
+If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
