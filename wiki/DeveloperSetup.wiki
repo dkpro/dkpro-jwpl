@@ -1,6 +1,8 @@
 #summary Setting up Maven and Eclipse for JWPL development
 #sidebar TableOfContents
 
+[JWPLDocumentation Back to the main page]
+
 = Maven Setup = 
 
 This projects makes use of some libraries that are not readily available in public Maven repositories. Therefore we have set up a Maven repository *which provides these libraries as well as releases of this project*. To use this repository, we suggest you use the [http://maven.apache.org/settings.html settings.xml] in the hidden subdirectory `.m2` of your home directory and augment it with the following sections:
