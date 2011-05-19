@@ -11,5 +11,5 @@ JWPL is not for you:
 If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
 
 == Documentation ==
-# Documenation for [JWPL_CORE JWPL Core]
-# Documenation for the [WikipediaRevisionToolkit Wikipedia Revision Toolkit]
+  * Documentation for [JWPL_Core JWPL Core]
+  * Documentation for the [WikipediaRevisionToolkit Wikipedia Revision Toolkit]
