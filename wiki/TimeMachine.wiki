@@ -1,6 +1,6 @@
 #summary Documentation of the TimeMachine
 
-[JWPLDocumentation Back to overview page.]
+[WikipediaRevisionToolkit Back to overview page.]
 
 = Usage =
 
