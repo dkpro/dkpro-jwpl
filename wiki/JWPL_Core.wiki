@@ -1,0 +1,22 @@
+#summary Main page for JWPL Core.
+
+
+== Getting Started ==
+   # Create the Wikipedia data files using the DataMachine or TimeMachine.
+      * Use the DataMachine, if you just need a single database from a certain date.
+      * Use the TimeMachine to create multiple Wikipedia databases corresponding to past states of Wikipedia 
+   # Create a MySQL database
+      * Note that other databases will also work, but this requires some tuning of the hibernate layer, as well as writing different output in the transformation step (depending on the database that should be used).
+      * If you are using MySQL 4.x or previous - please see [JWPL_MySQL4].
+      * Make sure the database encoding is set to UTF8.
+      * Create a database
+         * `mysqladmin -uUSER -p create DB_NAME`
+   # Import the data into a MySQL database.
+      * `gunzip < DUMPFILE.sql.gz | mysql -uUSER -p --default-character-set=utf8 DB_NAME`
+      * For a large Wikipedia, this may take a while
+      * If you encounter a "broken pipe" error in this step, try adding the `--max_allowed_packet` parameter to the above query. Set it to something reasonable high, e.g. `--max_allowed_packet=128M`.
+      * Setting the `--max_allowed_packet` parameter on the console only changes it for the client, but the problem can also be on the server side. Thus, if adding `max_allowed_packet=128M` does not work on the command line, try entering it into the `my.cnf` file in the MySql directory under the `[mysqld]` section.
+   # Checkout the source code from the [http://code.google.com/p/jwpl/source/checkout SVN] and build it using Maven.
+      * You may also use the pre-packaged .jars from the [http://code.google.com/p/jwpl/downloads/list download section], but those will not contain recent improvements and bug fixes.
+   # Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives.
+   # If you encounter any problems, please also check the [JWPL_FAQ FAQ].
