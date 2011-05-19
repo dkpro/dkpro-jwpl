@@ -1,1 +1,3 @@
+#summary Main page for the Wikipedia Revision Toolkit
+
 Coming soon
