@@ -113,6 +113,7 @@ public abstract class AbstractConsumer
 	{
 
 		this.setConsumerState(ConsumerStates.INIT);
+		//OF: Do we have to call getIntance here? Removed assignment to variable
 		ConfigurationManager.getInstance();
 
 		this.producer = producer;

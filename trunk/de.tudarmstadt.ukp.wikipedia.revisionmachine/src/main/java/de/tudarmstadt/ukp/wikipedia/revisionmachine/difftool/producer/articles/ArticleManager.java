@@ -88,6 +88,7 @@ public class ArticleManager
 
 		this.logger = articleProducer.getLogger();
 
+		//OF: Do we have to call getIntance here? Removed assignment to variable
 		ConfigurationManager.getInstance();
 
 		this.articleProducer = articleProducer;
