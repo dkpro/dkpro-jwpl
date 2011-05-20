@@ -37,11 +37,11 @@ import org.apache.tools.bzip2.CBZip2OutputStream;
 public class Bzip2Archiver
 {
 
-	// Size to write in memory while compressing
-	private static final int COMPRESSING_STEP_SIZE_IN_BYTES = 10000000;
+	// Size to write in memory while compressing (in bytes)
+	private static final int COMPRESSION_CACHE = 10000000;
 
-	// Size to write in memory while decompressing
-	private static final int DECOMPRESSING_STEP_SIZE_IN_BYTES = 10000000;
+	// Size to write in memory while decompressing (in bytes)
+	private static final int DECOMPRESSION_CACHE = 10000000;
 
 	/**
 	 * Creates bz2 archive file from file in path
@@ -67,9 +67,9 @@ public class Bzip2Archiver
 			CBZip2OutputStream bzip2 = new CBZip2OutputStream(bufStr);
 
 			while (input.available() > 0) {
-				int size = COMPRESSING_STEP_SIZE_IN_BYTES;
+				int size = COMPRESSION_CACHE;
 
-				if (input.available() < COMPRESSING_STEP_SIZE_IN_BYTES) {
+				if (input.available() < COMPRESSION_CACHE) {
 					size = input.available();
 				}
 				byte[] bytes = new byte[size];
@@ -174,12 +174,12 @@ public class Bzip2Archiver
 		FileOutputStream outStr = new FileOutputStream(unarchived);
 
 		while (true) {
-			byte[] compressedBytes = new byte[DECOMPRESSING_STEP_SIZE_IN_BYTES];
+			byte[] compressedBytes = new byte[DECOMPRESSION_CACHE];
 
 			int byteRead = input.read(compressedBytes);
 
 			outStr.write(compressedBytes, 0, byteRead);
-			if (byteRead != DECOMPRESSING_STEP_SIZE_IN_BYTES) {
+			if (byteRead != DECOMPRESSION_CACHE) {
 				break;
 			}
 		}
