@@ -129,7 +129,7 @@ public class InputFactory
 		Bzip2Archiver archiver = new Bzip2Archiver();
 		InputStreamReader reader = null;
 		try {
-			reader = archiver.getUncompressionStream(archivePath, WIKIPEDIA_ENCODING);
+			reader = archiver.getDecompressionStream(archivePath, WIKIPEDIA_ENCODING);
 		}
 		catch (IOException e) {
 

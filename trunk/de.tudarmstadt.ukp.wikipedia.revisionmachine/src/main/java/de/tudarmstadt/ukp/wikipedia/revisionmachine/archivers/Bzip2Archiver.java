@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -29,10 +29,10 @@ import org.apache.tools.bzip2.CBZip2InputStream;
 import org.apache.tools.bzip2.CBZip2OutputStream;
 
 /**
- * Class provides basic bzip2 compression/uncompression functionality
- * 
+ * Class provides basic bzip2 compression/decompression functionality
+ *
  * @author a_vovk
- * 
+ *
  */
 public class Bzip2Archiver
 {
@@ -40,12 +40,12 @@ public class Bzip2Archiver
 	// Size to write in memory while compressing
 	private static final int COMPRESSING_STEP_SIZE_IN_BYTES = 10000000;
 
-	// Size to write in memory while uncompressing
-	private static final int UNCOMPRESSING_STEP_SIZE_IN_BYTES = 10000000;
+	// Size to write in memory while decompressing
+	private static final int DECOMPRESSING_STEP_SIZE_IN_BYTES = 10000000;
 
 	/**
 	 * Creates bz2 archive file from file in path
-	 * 
+	 *
 	 * @param path
 	 *            to file to compress
 	 */
@@ -92,7 +92,7 @@ public class Bzip2Archiver
 
 	/**
 	 * Creates stream for compression
-	 * 
+	 *
 	 * @param path
 	 *            path to file to compress
 	 * @return compression stream
@@ -116,16 +116,16 @@ public class Bzip2Archiver
 	}
 
 	/**
-	 * Creates Stream for Uncompression
-	 * 
+	 * Creates Stream for decompression
+	 *
 	 * @param path
 	 *            path to file to uncompress
 	 * @param encoding
 	 *            ecoding to use
-	 * @return uncompression stream
+	 * @return decompression stream
 	 * @throws IOException
 	 */
-	public InputStreamReader getUncompressionStream(String path, String encoding)
+	public InputStreamReader getDecompressionStream(String path, String encoding)
 		throws IOException
 	{
 		File fileToUncompress = new File(path);
@@ -146,12 +146,12 @@ public class Bzip2Archiver
 
 	/**
 	 * Uncompress bz2 file
-	 * 
+	 *
 	 * @param path
 	 *            path to file to uncompress
 	 * @throws IOException
 	 */
-	public void uncompress(String path)
+	public void decompress(String path)
 		throws IOException
 	{
 		File bzip2 = new File(path);
@@ -174,12 +174,12 @@ public class Bzip2Archiver
 		FileOutputStream outStr = new FileOutputStream(unarchived);
 
 		while (true) {
-			byte[] compressedBytes = new byte[UNCOMPRESSING_STEP_SIZE_IN_BYTES];
+			byte[] compressedBytes = new byte[DECOMPRESSING_STEP_SIZE_IN_BYTES];
 
 			int byteRead = input.read(compressedBytes);
 
 			outStr.write(compressedBytes, 0, byteRead);
-			if (byteRead != UNCOMPRESSING_STEP_SIZE_IN_BYTES) {
+			if (byteRead != DECOMPRESSING_STEP_SIZE_IN_BYTES) {
 				break;
 			}
 		}
