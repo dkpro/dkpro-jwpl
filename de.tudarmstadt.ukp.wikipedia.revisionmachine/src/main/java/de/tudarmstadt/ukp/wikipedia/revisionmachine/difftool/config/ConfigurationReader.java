@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -128,18 +128,6 @@ public class ConfigurationReader
 
 	/** Key identifier - Cache >> SQLProducer MAXALLOWEDPACKET */
 	private final String KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET = "LIMIT_SQLSERVER_MAX_ALLOWED_PACKET";
-
-	/** Key identifier - Cache >> Number of Revision Tasks */
-	private final String KEY_LIMIT_NUMBER_TASK_REVISIONS = "LIMIT_NUMBER_TASK_REVISIONS";
-
-	/** Key identifier - Cache >> Size of Revision Task Cache */
-	private final String KEY_LIMIT_CACHE_TASK_REVISIONS = "LIMIT_CACHE_TASK_REVISIONS";
-
-	/** Key identifier - Cache >> Number of Diff Tasks */
-	private final String KEY_LIMIT_NUMBER_TASK_DIFFS = "LIMIT_NUMBER_TASK_DIFFS";
-
-	/** Key identifier - Cache >> Size of Diff Task Cache */
-	private final String KEY_LIMIT_CACHE_TASK_DIFFS = "LIMIT_CACHE_TASK_DIFFS";
 
 	/** Section identifier - Logging */
 	private final String SECTION_LOGGING = "LOGGING";
@@ -561,7 +549,6 @@ public class ConfigurationReader
 
 		String name;
 		Long lValue;
-		Integer iValue;
 		Node nnode;
 		NodeList list = node.getChildNodes();
 

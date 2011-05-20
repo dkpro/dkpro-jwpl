@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.write
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -46,11 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This class writes the output to a file.
- *
- * TODO: FileWriter should be replaced with an OutputStreamWriter
- *
- *
- *
  */
 public class SQLFileWriter
 	implements SQLWriterInterface
@@ -88,7 +82,7 @@ public class SQLFileWriter
 
 	/** Reference to the file writer */
 	private Writer writer;
-	
+
 	private final String WIKIPEDIA_ENCODING;
 
 	/**
@@ -112,7 +106,7 @@ public class SQLFileWriter
 
 		MODE_STATISTICAL_OUTPUT = (Boolean) config
 				.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
-		
+
 		WIKIPEDIA_ENCODING = (String) config
 		.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
@@ -182,6 +176,7 @@ public class SQLFileWriter
 	 *             if problems occurred while closing the connection to the
 	 *             database.
 	 */
+	@Override
 	public void close()
 		throws IOException
 	{
@@ -221,6 +216,7 @@ public class SQLFileWriter
 	 *             if problems occurred while writing the output (to the sql
 	 *             producer database)
 	 */
+	@Override
 	public void process(final Task<Diff> task)
 		throws ConfigurationException, IOException, SQLConsumerException
 	{
@@ -289,10 +285,10 @@ public class SQLFileWriter
 
 		this.writer = new BufferedWriter(new OutputStreamWriter(
 		        new FileOutputStream(filePath), WIKIPEDIA_ENCODING));
-		
+
 ;
-		
-		
+
+
 
 		String[] revTable = this.sqlEncoder.getTable();
 
