@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -165,35 +166,80 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
      */
     public Page getDiscussionPage(Page articlePage) throws WikiApiException{
-        //Retrieve discussion page with article title
-    	//TODO not the prettiest solution, but currently discussions are only marked in the title
-
     	String articleTitle = articlePage.getTitle().toString();
-    	return new Page(this, articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)?articleTitle:WikiConstants.DISCUSSION_PREFIX+articleTitle);
+    	if(articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+    		return articlePage;
+    	}else{
+        	return new Page(this, WikiConstants.DISCUSSION_PREFIX+articleTitle);
+    	}
     }
 
-    /*
-     * Under construction (OF, 25.5.2011)
-     */
 
-//    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
-//    	String articleTitle = articlePage.getTitle().toString();
-//    	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
-//    		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
-//    	}
-//
-//    	Session session = this.__getHibernateSession();
-//        session.beginTransaction();
-//
-//        Iterator results = session.createQuery("SELECT * FROM Page INNER JOIN PageMapLine ON (Page.pageID = PageMapLine.pageID) where PageMapLine.name like '"+articleTitle+"/%'").list().iterator();
-//
-//        while (results.hasNext()) {
-//            Object[] row = (Object[]) results.next();
-//            //int pageID = (Integer) row[0];
-//        }
-//
-//        return null;
-//    }
+    /**
+	 * Returns an iterable containing all archived discussion pages for
+     * the page with the given title String. <br/>
+     * The page retrieval works as defined in {@link #getPage(int)}. <br/>
+     * The most recent discussion page is NOT included here!
+     * It can be obtained with {@link #getDiscussionPage(Page)}.
+     *
+     * @param articlePageId The id of the page for which to the the discussion archives
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(int articlePageId) throws WikiApiException {
+        //Retrieve discussion archive pages with page id
+    	return getDiscussionArchives(getPage(articlePageId));
+    }
+
+    /**
+	 * Returns an iterable containing all archived discussion pages for
+     * the page with the given title String. <br/>
+     * The page retrieval works as defined in {@link #getPage(String title)}.<br/>
+     * The most recent discussion page is NOT included here!
+     * It can be obtained with {@link #getDiscussionPage(Page)}.
+     *
+     * @param title The title of the page for which the discussions should be retrieved.
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(String title) throws WikiApiException  {
+        //Retrieve discussion archive pages with page title
+    	return getDiscussionArchives(getPage(title));
+    }
+
+    /**
+     * Return an iterable containing all archived discussion pages for
+     * the given article page. The most recent discussion page is not included.
+     * The most recent discussion page can be obtained with {@link #getDiscussionPage(Page)}.
+     * <br/>
+     * The provided page Object must not be a discussion page itself! If it is
+     * a discussion page, is returned unchanged.
+     *
+     * @param articlePage the article page for which a discussion archives should be retrieved
+     * @return An iterable with the discussion archive page objects for the given article page object
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
+    	String articleTitle = articlePage.getTitle().toString();
+    	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+    		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
+    	}
+
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+
+        List<Page> discussionArchives = new LinkedList<Page>();
+
+        Iterator results = session.createQuery("SELECT pageID FROM PageMapLine where name like '"+articleTitle+"/%'").list().iterator();
+
+        while (results.hasNext()) {
+            int pageID = (Integer) results.next();
+            discussionArchives.add(getPage(pageID));
+        }
+        session.getTransaction().commit();
+
+        return discussionArchives;
+    }
 
 //// I do not want to make this public at the moment (TZ, March, 2007)
     /**
