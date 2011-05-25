@@ -172,6 +172,29 @@ public class Wikipedia implements WikiConstants {
     	return new Page(this, articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)?articleTitle:WikiConstants.DISCUSSION_PREFIX+articleTitle);
     }
 
+    /*
+     * Under construction (OF, 25.5.2011)
+     */
+
+//    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
+//    	String articleTitle = articlePage.getTitle().toString();
+//    	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+//    		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
+//    	}
+//
+//    	Session session = this.__getHibernateSession();
+//        session.beginTransaction();
+//
+//        Iterator results = session.createQuery("SELECT * FROM Page INNER JOIN PageMapLine ON (Page.pageID = PageMapLine.pageID) where PageMapLine.name like '"+articleTitle+"/%'").list().iterator();
+//
+//        while (results.hasNext()) {
+//            Object[] row = (Object[]) results.next();
+//            //int pageID = (Integer) row[0];
+//        }
+//
+//        return null;
+//    }
+
 //// I do not want to make this public at the moment (TZ, March, 2007)
     /**
      * Gets the pages or redirects with a name similar to the pattern.
@@ -857,7 +880,8 @@ public class Wikipedia implements WikiConstants {
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {
 
-    public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
+    @Override
+	public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
 
         double c1 = e1.getValue();
         double c2 = e2.getValue();
