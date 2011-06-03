@@ -361,7 +361,6 @@ public class Revision
 		this.isMinor = isMinor;
 	}
 
-	//FIXME: Currently always returns true. See Issue 20: http://code.google.com/p/jwpl/issues/detail?id=20
 	@Override
 	public boolean isMinor()
 	{
