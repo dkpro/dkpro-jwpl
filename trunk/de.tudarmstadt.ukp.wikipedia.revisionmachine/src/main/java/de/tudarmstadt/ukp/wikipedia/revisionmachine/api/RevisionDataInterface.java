@@ -65,7 +65,6 @@ public interface RevisionDataInterface
 
 	/**
 	 * Returns true if revision is a minor revision.
-	 * FIXME: Currently always returns true. See Issue 20: http://code.google.com/p/jwpl/issues/detail?id=20
 	 *
 	 * @return true if revision is a minor revision, false else
 	 */
