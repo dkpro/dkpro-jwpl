@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -96,7 +96,7 @@ public class DiffCalculator
 	public void closeTransmitter() throws IOException, SQLException {
 		this.taskTransmitter.close();
 	}
-	
+
 	/**
 	 * (Constructor) Creates a new DiffCalculator object.
 	 *
@@ -451,7 +451,7 @@ public class DiffCalculator
 				diff.setComment(revision.getComment());
 				diff.setContributorID(revision.getContributorID());
 				diff.setContributorIsRegistered(revision.contributorIsRegistered());
-				diff.setMinor(true);
+				diff.setMinor(revision.isMinor());
 
 				result.add(diff);
 
