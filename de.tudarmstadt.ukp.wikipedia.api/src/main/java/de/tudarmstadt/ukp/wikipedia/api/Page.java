@@ -509,7 +509,16 @@ public class Page
 		return isRedirect;
 	}
 
-	/**
+    /**
+     * @return True, if the page is a discussion page.
+     * @throws WikiTitleParsingException 
+     */
+    public boolean isDiscussion() throws WikiTitleParsingException
+    {
+        return getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX);
+    }
+
+    /**
 	 * Returns the Wikipedia article as plain text. Page.getText() returns the Wikipedia article
 	 * with all Wiki markup.
 	 *
