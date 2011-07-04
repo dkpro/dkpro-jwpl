@@ -28,6 +28,7 @@ import org.hibernate.Session;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
@@ -474,18 +475,18 @@ public class Wikipedia implements WikiConstants {
      */
     public boolean existsPage(String title) {
 
-        // TODO carefully, this is a hack to provide a much quicker way to test whether a page exists.
-        // Encoding the title in this way surpasses the normal way of creating a title first.
-        // This should get a unit test to make sure the encoding function is in line with the title object.
-        // Anyway, I do not like this hack :-|
-
         if (title == null || title.length() == 0) {
             return false;
         }
 
-        String encodedTitle = title.replace(' ', '_');
-        encodedTitle = encodedTitle.substring(0,1).toUpperCase() + encodedTitle.substring(1,encodedTitle.length());
-
+        Title t;
+        try {
+			t = new Title(title);
+		} catch (WikiTitleParsingException e) {
+			return false;
+		}
+		String encodedTitle = t.getWikiStyleTitle();
+		
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
