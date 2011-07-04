@@ -22,11 +22,12 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
  */
 public class Title {
 
-    private String encodedTitle;
-    private String decodedTitle;
-    private String mEntity;
-    private String mDisambiguationText;
+    private String wikiStyleTitle;
+    private String plainTitle;
+    private String entity;
+    private String disambiguationText;
     private String rawTitleText;
+    private String sectionText;
     
     /**
      * Create a title object using a title string.
@@ -47,25 +48,37 @@ public class Title {
             this.rawTitleText = titleText;
         }
         
-        this.encodedTitle = this.encodeTitleWikistyle(rawTitleText);
-        this.decodedTitle = this.decodeTitleWikistyle(rawTitleText);
-        
-        String regexFindParts = "(.*?).\\((.+?)\\)";
+        // "Car_(automobile)#Introduction"
+        // should be split into:
+        // - "Car"
+        // - "automobile"
+        // - "Introduction"
+        String regexFindParts = "(.*?).\\((.+?)\\)#?(.*)";
 
         Pattern patternNamespace = Pattern.compile(regexFindParts); 
-        Matcher matcherNamespace = patternNamespace.matcher(decodedTitle); 
+        Matcher matcherNamespace = patternNamespace.matcher(
+        		this.decodeTitleWikistyle(rawTitleText)
+        ); 
 
-        String entity = null;
-        String disambiguationText = null;
         // group 0 is the whole match
         if (matcherNamespace.find()) { 
-             entity = matcherNamespace.group(1);
-             disambiguationText = matcherNamespace.group(2);
-             setEntity(entity);
-             setDisambiguationText(disambiguationText);
+            this.entity = matcherNamespace.group(1);
+            this.disambiguationText = matcherNamespace.group(2);
+            this.sectionText = matcherNamespace.group(3);
+            if (this.sectionText.length() == 0) {
+            	this.sectionText = null;
+            }
+            
+            String relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
+            this.plainTitle = decodeTitleWikistyle(relevantTitleParts);
+            this.wikiStyleTitle = encodeTitleWikistyle(relevantTitleParts);
         }
         else {
-            setEntity(decodedTitle);
+        	this.plainTitle = decodeTitleWikistyle(rawTitleText);
+        	this.wikiStyleTitle = encodeTitleWikistyle(rawTitleText);
+            this.entity = this.plainTitle;
+            this.disambiguationText = null;
+            this.sectionText = null;
         }
         if (getEntity() == null) {
             throw new WikiTitleParsingException("Title was not properly initialized.");
@@ -105,20 +118,15 @@ public class Title {
      * @return The disambigutation text of a page title (i.e., the part in parentheses following the page's name).
      */
     public String getDisambiguationText() {
-        return mDisambiguationText;
+        return disambiguationText;
     }
-    private void setDisambiguationText(String disambiguationText) {
-        this.mDisambiguationText = disambiguationText;
-    }
+
     /**
      * Returns the name of the entity (i.e. the page's title *without* disambiguation string).
      * @return The name of the entity (i.e. the page's title *without* disambiguation string). 
      */
     public String getEntity() {
-        return mEntity;
-    }
-    private void setEntity(String entity) {
-        this.mEntity = entity;
+        return entity;
     }
 
     /**
@@ -126,7 +134,14 @@ public class Title {
      * @return The plain title, without wikistyle underscores replacing spaces. 
      */
     public String getPlainTitle() {
-        return decodedTitle;
+        return plainTitle;
+    }
+
+    /**
+     * @return Returns the section part of a link "Article (Disambiguation)#Section". 
+     */
+    public String getSectionText() {
+        return sectionText;
     }
 
     /**
@@ -134,7 +149,7 @@ public class Title {
      * @return The wikistyle title, with spaces replaced by underscores.
      */
     public String getWikiStyleTitle() {
-        return encodedTitle;
+        return wikiStyleTitle;
     }
     
     protected String getRawTitleText() {
@@ -144,5 +159,4 @@ public class Title {
     public String toString() {
         return getPlainTitle();
     }
-
 }
