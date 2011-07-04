@@ -547,6 +547,8 @@ public class Page
 
 	/**
 	 * Note that this method only returns the anchors that are not equal to the page's title.
+	 * Anchors might contain references to sections in an article in the form of "Page#Section".
+	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
 	 *
 	 * @return A set of strings used as anchor texts in links pointing to that page.
 	 * @throws WikiTitleParsingException
@@ -574,6 +576,8 @@ public class Page
 	/**
 	 * Note that this method only returns the anchors that are not equal to the title of the page
 	 * they are pointing to.
+	 * Anchors might contain references to sections in an article in the form of "Page#Section".
+	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
 	 *
 	 * @return A mapping from the page titles of links in that page to the anchor texts used in the
 	 *         links.
