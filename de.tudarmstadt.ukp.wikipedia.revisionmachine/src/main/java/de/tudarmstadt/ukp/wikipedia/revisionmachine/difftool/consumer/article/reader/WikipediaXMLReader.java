@@ -167,6 +167,9 @@ public class WikipediaXMLReader
 				WikipediaXMLKeys.KEY_START_USERNAME);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword(),
 				WikipediaXMLKeys.KEY_END_USERNAME);
+
+		//TODO automatically read <namespaces> * </namespaces>
+		//TODO load namespace-mappings into article name checker
 	}
 
 	/**
