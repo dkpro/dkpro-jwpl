@@ -10,16 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -123,14 +115,25 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException
      */
     public Page getPage(int pageId) throws WikiApiException {
-//        long hibernateId = __getPageHibernateId(pageId);
-//
-//        if (hibernateId == -1) {
-//            throw new WikiPageNotFoundException("Could not find hibernateId for page " + pageId);
-//        }
-
         Page page = new Page(this, pageId);
         return page;
+    }
+
+    /**
+     * Gets the title for a given pageId.
+     *
+     * @param pageId The id of the page.
+     * @return The title for the given pageId.
+     * @throws WikiApiException
+     */
+    public Title getTitle(int pageId) throws WikiApiException {
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Object returnValue = session.createSQLQuery(
+            "select p.name from PageMapLine as p where p.id = ?").setInteger(0, pageId).uniqueResult();
+        session.getTransaction().commit();
+
+        return new Title((String)returnValue);
     }
 
     /**
@@ -412,6 +415,11 @@ public class Wikipedia implements WikiConstants {
      * Protected method that is much faster than the public version, but exposes too much implementation details.
      * Get a set with all pageIDs. Returning all page objects is much too expensive.
      * Does not include redirects, as they are only pointers to real pages.
+     *
+     * As ids can be useful for several application (e.g. in combination with
+     * the RevisionMachine, they have been made publically available via
+     * {@link getPageIds()}.
+     *
      * @return A set with all pageIDs. Returning all pages is much to expensive.
      */
     protected Set<Integer> __getPages() {
@@ -426,6 +434,12 @@ public class Wikipedia implements WikiConstants {
         return pageSet;
     }
 
+    /**
+     * @return an iterable over all pageids (without redirects)
+     */
+    public Iterable<Integer> getPageIds(){
+    	return this.__getPages();
+    }
 
     /**
      * Get the pages that match the given query.
