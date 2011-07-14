@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -355,6 +355,81 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
+
+
+	/**
+	 * Returns a map of user ids mapped to the timestamps of their contributions
+	 *
+	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
+	 * ArticleID in the revisions-table.
+	 *
+	 * @param articleID
+	 *            ID of the article
+	 * @return map of Timestamp-DiffPart-Collection pairs
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public Map<String, Timestamp> getUserContributionMap(final int articleID)
+		throws WikiApiException
+	{
+
+		Map<String, Timestamp> authorTSMap = new HashMap<String, Timestamp>();
+
+		try {
+			if (articleID < 1) {
+				throw new IllegalArgumentException();
+			}
+
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+
+				// Check if necessary index exists
+				if (!indexExists("revisions")) {
+					throw new WikiInitializationException(
+							"Please create an index on revisions(ArticleID) in order to make this query feasible.");
+				}
+
+				statement = connection
+						.prepareStatement("SELECT ContributorID, Timestamp "
+								+ "FROM revisions WHERE ArticleID=?");
+				;
+				statement.setInt(1, articleID);
+				result = statement.executeQuery();
+
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"The article with the ID " + articleID
+									+ " was not found.");
+				}
+				while (result.next()) {
+					// Write data from current revision to Map
+					authorTSMap.put(result.getString(1), new Timestamp(result.getLong(2)));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return authorTSMap;
+
+		}
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
 
 	/**
 	 * Returns a map of timestamps mapped on the corresponding
