@@ -77,8 +77,8 @@ public class WikiHibernateUtil implements WikiConstants {
         // Echo all executed SQL to stdout
         p.setProperty("hibernate.show_sql","false");
 
-        // Do only update schema on changes
-        p.setProperty("hibernate.hbm2ddl.auto","update");
+        // Only validate schema (read only)
+        p.setProperty("hibernate.hbm2ddl.auto","validate");
 
         return p;
     }
