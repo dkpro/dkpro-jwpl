@@ -163,6 +163,10 @@ public class WikipediaXMLReader
 				WikipediaXMLKeys.KEY_START_IP);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_END_IP.getKeyword(),
 				WikipediaXMLKeys.KEY_END_IP);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_START_USERID.getKeyword(),
+				WikipediaXMLKeys.KEY_START_USERID);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_END_USERID.getKeyword(),
+				WikipediaXMLKeys.KEY_END_USERID);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_START_USERNAME.getKeyword(),
 				WikipediaXMLKeys.KEY_START_USERNAME);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword(),
@@ -374,6 +378,8 @@ public class WikipediaXMLReader
 
 				case KEY_START_IP:
 
+				case KEY_START_USERID:
+
 				case KEY_START_USERNAME:
 					buffer = new StringBuilder();
 					break;
@@ -435,7 +441,7 @@ public class WikipediaXMLReader
 							- WikipediaXMLKeys.KEY_END_IP.getKeyword()
 									.length(), size);
 					//escape id string
-					revision.setContributorID(SQLEscape.escape(buffer.toString()));
+					revision.setContributorName(SQLEscape.escape(buffer.toString()));
 					revision.setContributorIsRegistered(false);
 					buffer = null;
 					break;
@@ -446,8 +452,18 @@ public class WikipediaXMLReader
 							- WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
 									.length(), size);
 					//escape id string
-					revision.setContributorID(SQLEscape.escape(buffer.toString()));
+					revision.setContributorName(SQLEscape.escape(buffer.toString()));
 					revision.setContributorIsRegistered(true);
+					buffer = null;
+					break;
+
+				case KEY_END_USERID:
+					size = buffer.length();
+					buffer.delete(size
+							- WikipediaXMLKeys.KEY_END_USERID.getKeyword()
+									.length(), size);
+					//escape id string
+					revision.setContributorId(SQLEscape.escape(buffer.toString()));
 					buffer = null;
 					break;
 

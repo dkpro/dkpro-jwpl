@@ -315,7 +315,7 @@ public class RevisionApi
 				}
 
 				StringBuffer sqlString= new StringBuffer();
-				sqlString.append("SELECT COUNT(DISTINCT ContributorID) FROM revisions WHERE ArticleID=?");
+				sqlString.append("SELECT COUNT(DISTINCT ContributorId) FROM revisions WHERE ArticleID=?");
 				if(onlyRegistered){
 					sqlString.append(" AND ContributorIsRegistered=1");
 				}
@@ -358,7 +358,7 @@ public class RevisionApi
 
 
 	/**
-	 * Returns a map of user ids mapped to the timestamps of their contributions
+	 * Returns a map of usernames mapped to the timestamps of their contributions
 	 *
 	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
 	 * ArticleID in the revisions-table.
@@ -394,7 +394,7 @@ public class RevisionApi
 				}
 
 				statement = connection
-						.prepareStatement("SELECT ContributorID, Timestamp "
+						.prepareStatement("SELECT ContributorName, Timestamp "
 								+ "FROM revisions WHERE ArticleID=?");
 				;
 				statement.setInt(1, articleID);
@@ -1140,7 +1140,7 @@ public class RevisionApi
 		// + limit);
 		try {
 			statement = this.connection
-					.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorID, ContributorIsRegistered "
+					.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
 							+ "FROM revisions "
 							+ "WHERE PrimaryKey >= ? LIMIT " + limit);
 			statement.setInt(1, fullRevPK);
@@ -1178,8 +1178,9 @@ public class RevisionApi
 				revision.setTimeStamp(new Timestamp(result.getLong(6)));
 				revision.setComment(result.getString(7));
 				revision.setMinor(result.getBoolean(8));
-				revision.setContributorID(result.getString(9));
-				revision.setContributorIsRegistered(result.getBoolean(10));
+				revision.setContributorName(result.getString(9));
+				revision.setContributorId(result.getString(10));
+				revision.setContributorIsRegistered(result.getBoolean(11));
 				Collection<DiffPart> parts = new LinkedList<DiffPart>();
 				Iterator<DiffPart> it = diff.iterator();
 				while (it.hasNext()) {

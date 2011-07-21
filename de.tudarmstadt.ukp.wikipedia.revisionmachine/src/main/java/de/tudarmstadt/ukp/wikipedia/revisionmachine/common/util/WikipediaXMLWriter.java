@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -326,17 +326,24 @@ public class WikipediaXMLWriter
 			if(rev.contributorIsRegistered()){
 				this.writer.write("\t\t"
 						+ WikipediaXMLKeys.KEY_START_USERNAME.getKeyword());
-				this.writer.write(rev.getContributorID());
+				this.writer.write(rev.getContributorName());
 				this.writer.write(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
 						+ "\r\n");
 			}
 			else{
 				this.writer.write("\t\t"
 						+ WikipediaXMLKeys.KEY_START_IP.getKeyword());
-				this.writer.write(rev.getContributorID());
+				this.writer.write(rev.getContributorName());
 				this.writer.write(WikipediaXMLKeys.KEY_END_IP.getKeyword()
 						+ "\r\n");
 			}
+
+			this.writer.write("\t\t"
+					+ WikipediaXMLKeys.KEY_START_USERID.getKeyword());
+			this.writer.write(rev.getContributorId());
+			this.writer.write(WikipediaXMLKeys.KEY_END_USERID.getKeyword()
+					+ "\r\n");
+
 			this.writer.write(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword()
 					+ "\r\n");
 

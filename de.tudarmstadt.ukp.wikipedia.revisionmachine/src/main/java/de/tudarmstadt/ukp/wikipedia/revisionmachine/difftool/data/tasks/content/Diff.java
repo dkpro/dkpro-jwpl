@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -50,12 +50,15 @@ public class Diff
 	/** Timestamp */
 	private Timestamp timeStamp;
 
-	/** IP of the contributor who created this revision */
-	private String contributorID;
+	/** Username/IP of the contributor who created this revision */
+	private String contributorName;
+
+	/** ID of the contributor who created this revision */
+	private String contributorId;
 
 	/** Determine whether the contributor was registered.
-	 * True: contributorID= username
-	 * False: contributorID= IP
+	 * True: contributorName= username
+	 * False: contributorName= IP
 	 */
 	private boolean contributorIsRegistered;
 
@@ -343,14 +346,14 @@ public class Diff
 		return isMinor;
 	}
 
-	public void setContributorID(String contributorID)
+	public void setContributorName(String contributorName)
 	{
-		this.contributorID = contributorID;
+		this.contributorName = contributorName;
 	}
 
-	public String getContributorID()
+	public String getContributorName()
 	{
-		return contributorID;
+		return contributorName;
 	}
 
 	public void setContributorIsRegistered(boolean contributorIsRegistered)
@@ -361,5 +364,15 @@ public class Diff
 	public boolean getContributorIsRegistered()
 	{
 		return contributorIsRegistered;
+	}
+
+	public void setContributorId(String contributorId)
+	{
+		this.contributorId = contributorId;
+	}
+
+	public String getContributorId()
+	{
+		return contributorId;
 	}
 }

@@ -53,7 +53,10 @@ public class Revision
 	private Timestamp timeStamp;
 
 	/** Username of the contributor who created this revision */
-	private String contributorID;
+	private String contributorName;
+
+	/** Username of the contributor who created this revision */
+	private String contributorId;
 
 	/** The user comment for this revision*/
 	private String comment;
@@ -62,8 +65,8 @@ public class Revision
 	private boolean isMinor = false;
 
 	/** Determine whether the contributor was registered.
-	 * True: contributorID= username
-	 * False: contributorID= IP
+	 * True: contributorName= username
+	 * False: contributorName= IP
 	 */
 	private boolean contributorIsRegistered;
 
@@ -367,15 +370,15 @@ public class Revision
 		return isMinor;
 	}
 
-	public void setContributorID(String contributorID)
+	public void setContributorName(String contributorName)
 	{
-		this.contributorID = contributorID;
+		this.contributorName = contributorName;
 	}
 
 	@Override
-	public String getContributorID()
+	public String getContributorName()
 	{
-		return contributorID;
+		return contributorName;
 	}
 
 	public void setContributorIsRegistered(boolean contributorIsRegistered)
@@ -387,5 +390,16 @@ public class Revision
 	public boolean contributorIsRegistered()
 	{
 		return contributorIsRegistered;
+	}
+
+	public void setContributorId(String contributorId)
+	{
+		this.contributorId = contributorId;
+	}
+
+	@Override
+	public String getContributorId()
+	{
+		return contributorId;
 	}
 }

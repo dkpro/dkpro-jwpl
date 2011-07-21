@@ -449,7 +449,8 @@ public class DiffCalculator
 				diff.setRevisionID(revision.getRevisionID());
 				diff.setTimeStamp(revision.getTimeStamp());
 				diff.setComment(revision.getComment());
-				diff.setContributorID(revision.getContributorID());
+				diff.setContributorName(revision.getContributorName());
+				diff.setContributorId(revision.getContributorId());
 				diff.setContributorIsRegistered(revision.contributorIsRegistered());
 				diff.setMinor(revision.isMinor());
 

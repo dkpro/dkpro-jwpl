@@ -146,7 +146,8 @@ public class SQLEncoder
 				+ "Revision MEDIUMTEXT NOT NULL, "
 				+ "Comment MEDIUMTEXT, "
 				+ "Minor TINYINT NOT NULL,"
-				+ "ContributorID TEXT NOT NULL,"
+				+ "ContributorName TEXT NOT NULL,"
+				+ "ContributorId TEXT,"
 				+ "ContributorIsRegistered TINYINT NOT NULL,"
 				+ "PRIMARY KEY(PrimaryKey)"
 				+ ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
@@ -161,7 +162,8 @@ public class SQLEncoder
 				+ "Revision MEDIUMBLOB NOT NULL,"
 				+ "Comment MEDIUMTEXT,"
 				+ "Minor TINYINT NOT NULL,"
-				+ "ContributorID TEXT NOT NULL,"
+				+ "ContributorName TEXT NOT NULL,"
+				+ "ContributorId TEXT,"
 				+ "ContributorIsRegistered TINYINT NOT NULL,"
 				+ "PRIMARY KEY(PrimaryKey)"
 				+ ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
@@ -241,7 +243,7 @@ public class SQLEncoder
 			tempData = "(null, " + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",?,'"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorID() + "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
+					+ ",?,'"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +",'"+diff.getContributorId() + "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
 			tempBinaryData = binaryDiff(task, diff);
 
 			// if the limit would be reached start a new encoding
@@ -354,7 +356,7 @@ public class SQLEncoder
 			tempData = "(null," + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",'" + encodeDiff(task, diff) + "','"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorID() + "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
+					+ ",'" + encodeDiff(task, diff) + "','"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +",'"+diff.getContributorId()+ "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
 
 			// if the limit would be reached start a new encoding
 			if (revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) {
