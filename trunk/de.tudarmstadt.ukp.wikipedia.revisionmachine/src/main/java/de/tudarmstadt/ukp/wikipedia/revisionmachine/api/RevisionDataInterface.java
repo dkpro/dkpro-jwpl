@@ -75,7 +75,14 @@ public interface RevisionDataInterface
 	 *
 	 * @return the contributorID of the revision contributor
 	 */
-	public String getContributorID();
+	public String getContributorId();
+
+	/**
+	 * Returns the contributorName of the revision contributor
+	 *
+	 * @return the contributorName of the revision contributor
+	 */
+	public String getContributorName();
 
 	/**
 	 * Returns true, if the contributor is a registered user
