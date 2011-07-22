@@ -475,6 +475,15 @@ public class WikipediaXMLReader
 				.createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
 	}
 
+	/**
+	 * Parses the content within the contributor tags and adds the
+	 * parsed info to the provided revision object.
+	 *
+	 * @param rev the revision object to store the parsed info in
+	 * @param str the contributor data to be parsed
+	 * @throws IOException
+	 * @throws ArticleReaderException
+	 */
 	protected void readContributor(Revision rev, String str) throws IOException, ArticleReaderException
 	{
 		char[] contrChars = str.toCharArray();
