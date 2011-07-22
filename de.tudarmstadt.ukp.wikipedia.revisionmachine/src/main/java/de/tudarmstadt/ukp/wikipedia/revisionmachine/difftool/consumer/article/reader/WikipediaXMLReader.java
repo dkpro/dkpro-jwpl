@@ -167,6 +167,10 @@ public class WikipediaXMLReader
 				WikipediaXMLKeys.KEY_START_USERNAME);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword(),
 				WikipediaXMLKeys.KEY_END_USERNAME);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_START_CONTRIBUTOR.getKeyword(),
+				WikipediaXMLKeys.KEY_START_CONTRIBUTOR);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword(),
+				WikipediaXMLKeys.KEY_END_CONTRIBUTOR);
 
 		//TODO automatically read <namespaces> * </namespaces>
 		//TODO load namespace-mappings into article name checker
@@ -444,9 +448,10 @@ public class WikipediaXMLReader
 
 				case KEY_END_REVISION:
 					this.keywords.reset();
+					buffer = null;
 					return revision;
 
-				//the following cases are handled in readContributor()
+				//the following cases are handeled in readContributor()
 				//they can be skipped here
 				case KEY_START_IP:
 				case KEY_END_IP:
@@ -472,18 +477,19 @@ public class WikipediaXMLReader
 
 	protected void readContributor(Revision rev, String str) throws IOException, ArticleReaderException
 	{
-		byte[] contrBytes = str.getBytes();
-		int size = contrBytes.length;
+		char[] contrChars = str.toCharArray();
+		int size;
+
 		StringBuilder buffer = null;
 		this.keywords.reset();
 
-		for(byte curByte:contrBytes){
+		for(char curChar:contrChars){
 
-			if (this.keywords.check((char) curByte)) {
+			if (buffer != null) {
+				buffer.append(curChar);
+			}
 
-				if (buffer != null) {
-					buffer.append((char) curByte);
-				}
+			if (this.keywords.check(curChar)) {
 
 				switch (this.keywords.getValue()) {
 
