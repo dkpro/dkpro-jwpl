@@ -27,7 +27,8 @@ import java.util.Map;
  * filter to determine whether an article is part of an unwanted namespace or
  * not. <br/>
  *
- * If the ArticleFilter is not initialized, nothing is filtered at all.
+ * If the ArticleFilter is not initialized or given an empty list of namespaces,
+ * nothing is filtered at all.
  *
  *
  */
@@ -35,6 +36,26 @@ public class ArticleFilter
 {
 	Map<Integer, String> namespaceMap=null;
 	Collection<String> allowedPrefixes=null;
+	Collection<Integer> allowedNamespaces=null;
+
+	/**
+	 * Creates an uninitialized ArticleFilter that won't filter anything.
+	 *
+	 * @param namespaceWhitelist list of namespaces that should NOT be filtered
+	 */
+	public ArticleFilter(){
+	}
+
+	/**
+	 * Creates a new filter that filters all pages except the namespaces
+	 * provided in the namespaceWhitelist
+	 *
+	 * @param namespaceWhitelist list of namespaces that should NOT be filtered
+	 */
+	public ArticleFilter(Collection<Integer> namespaceWhitelist){
+		this.allowedNamespaces=namespaceWhitelist;
+	}
+
 
 	/**
 	 * Initialized the Namespace-Prefix mapping for the current language version
@@ -48,24 +69,18 @@ public class ArticleFilter
 		this.namespaceMap=namespaceMap;
 	}
 
-	/**
-	 * Sets the list of namespaces that should NOT be filtered.
-	 * Can only be used if the ArticleFilter has been initialized with
-	 * the correct Namespace-Prefix mapping.
-	 *
-	 * @param namespaces
-	 */
-	public void initializeWhitespaceList(Collection<Integer> namespaces){
+	public void initializeAllowedPrefixes(){
 		if(namespaceMap==null){
 			//TODO user logger
 			System.err.println("Cannot use whitespace filter without initializing the namespace-prefix map for the current Wikipedia language version. DISABLING FILTER.");
 		}else{
 			allowedPrefixes=new LinkedList<String>();
-			for(Integer allowedNS:namespaces){
+			for(Integer allowedNS:allowedNamespaces){
 				allowedPrefixes.add(namespaceMap.get(allowedNS));
 			}
 		}
 	}
+
 
 	/**
 	 * Filter any pages with prefixes that are not whitelisted
@@ -76,11 +91,17 @@ public class ArticleFilter
 	 */
 	public boolean checkArticle(String title)
 	{
-		if(namespaceMap==null){
-			//disabling filter if map was not initialized
+		//if filter isn't initialized, do not filter at all
+		if(namespaceMap==null||allowedNamespaces==null||allowedNamespaces.size()==0){
 			return true;
 		}
+		//else, do filter
 		else{
+			if(allowedPrefixes==null){
+				//if called for the first time, init prefixes
+				initializeAllowedPrefixes();
+			}
+			//perform filtering
 			for (String str : allowedPrefixes) {
 				if (title.startsWith(str)) {
 					return true;
