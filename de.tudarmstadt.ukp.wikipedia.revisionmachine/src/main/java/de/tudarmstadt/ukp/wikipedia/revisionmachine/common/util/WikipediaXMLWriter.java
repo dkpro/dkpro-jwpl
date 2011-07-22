@@ -329,6 +329,12 @@ public class WikipediaXMLWriter
 				this.writer.write(rev.getContributorName());
 				this.writer.write(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
 						+ "\r\n");
+
+				this.writer.write("\t\t"
+						+ WikipediaXMLKeys.KEY_START_ID.getKeyword());
+				this.writer.write(rev.getContributorId());
+				this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword()
+						+ "\r\n");
 			}
 			else{
 				this.writer.write("\t\t"
@@ -337,12 +343,6 @@ public class WikipediaXMLWriter
 				this.writer.write(WikipediaXMLKeys.KEY_END_IP.getKeyword()
 						+ "\r\n");
 			}
-
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_USERID.getKeyword());
-			this.writer.write(rev.getContributorId());
-			this.writer.write(WikipediaXMLKeys.KEY_END_USERID.getKeyword()
-					+ "\r\n");
 
 			this.writer.write(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword()
 					+ "\r\n");

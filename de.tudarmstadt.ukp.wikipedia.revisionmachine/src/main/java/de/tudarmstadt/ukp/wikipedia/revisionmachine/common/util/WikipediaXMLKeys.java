@@ -67,12 +67,6 @@ public enum WikipediaXMLKeys
 	/** Indicates the end of the contributor username */
 	KEY_END_USERNAME("</username>"),
 
-	/** Indicates the start of the the contributor userid */
-	KEY_START_USERID("<id>"),
-
-	/** Indicates the end of the contributor userid */
-	KEY_END_USERID("</id>"),
-
 	/** Indicates the start of a timestamp */
 	KEY_START_TIMESTAMP("<timestamp>"),
 
