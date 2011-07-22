@@ -18,6 +18,19 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.r
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ArticleReaderException;
@@ -57,7 +70,7 @@ public class WikipediaXMLReader
 	private final long LIMIT_TASK_SIZE_REVISIONS;
 
 	/** Reference to the article filter */
-	private ArticleFilter articleNameChecker;
+	private ArticleFilter articleFilter;
 
 	/**
 	 * (Constructor) Creates a new WikipediaXMLReader.
@@ -79,7 +92,7 @@ public class WikipediaXMLReader
 		LIMIT_TASK_SIZE_REVISIONS = (Long) config
 				.getConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS);
 
-		initialize();
+		initXMLKeys();
 
 	}
 
@@ -97,8 +110,9 @@ public class WikipediaXMLReader
 	{
 
 		this();
-		this.articleNameChecker = null;
+		this.articleFilter = null;
 		this.input = input;
+		initNamespaces();
 	}
 
 	/**
@@ -106,7 +120,7 @@ public class WikipediaXMLReader
 	 *
 	 * @param input
 	 *            Reference to the reader
-	 * @param articleNameChecker
+	 * @param articleFilter
 	 *            Reference to a name checker
 	 *
 	 * @throws ConfigurationException
@@ -118,14 +132,16 @@ public class WikipediaXMLReader
 	{
 
 		this();
-		this.articleNameChecker = articleNameChecker;
+		this.articleFilter = articleNameChecker;
 		this.input = input;
+		initNamespaces();
+
 	}
 
 	/**
 	 * Creates and initializes the xml keyword tree.
 	 */
-	private void initialize()
+	private void initXMLKeys()
 	{
 		this.keywords = new SingleKeywordTree<WikipediaXMLKeys>();
 
@@ -171,9 +187,76 @@ public class WikipediaXMLReader
 				WikipediaXMLKeys.KEY_START_CONTRIBUTOR);
 		keywords.addKeyword(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword(),
 				WikipediaXMLKeys.KEY_END_CONTRIBUTOR);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword(),
+				WikipediaXMLKeys.KEY_START_NAMESPACES);
+		keywords.addKeyword(WikipediaXMLKeys.KEY_END_NAMESPACES.getKeyword(),
+				WikipediaXMLKeys.KEY_END_NAMESPACES);
+	}
 
-		//TODO automatically read <namespaces> * </namespaces>
-		//TODO load namespace-mappings into article name checker
+	/**
+	 * Reads the namespaces from the siteinfo section and processes them
+	 * in order to initialize the ArticleFilter
+	 */
+	private void initNamespaces(){
+		Map<Integer, String> namespaceMap = new HashMap<Integer,String>();
+		try{
+			int b = read();
+
+			this.keywords.reset();
+			StringBuilder buffer = null;
+
+			while (b != -1) {
+//				System.out.print((char)b);
+
+				if (buffer != null) {
+					buffer.append((char) b);
+				}
+
+				if (this.keywords.check((char) b)) {
+					switch (this.keywords.getValue()) {
+
+						case KEY_START_NAMESPACES:
+							buffer = new StringBuilder(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword());
+							break;
+
+						case KEY_END_NAMESPACES:
+							DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+							factory.setIgnoringElementContentWhitespace(true);
+							Document namespaces = factory.newDocumentBuilder().parse(new InputSource(new StringReader(buffer.toString())));
+
+
+							NodeList nsList = namespaces.getChildNodes().item(0).getChildNodes();
+
+							for (int i = 0; i < nsList.getLength(); i++) {
+								Node curNamespace = nsList.item(i);
+
+								//get the prefix for the current namespace
+								String prefix = curNamespace.getTextContent().trim();
+								if(!prefix.isEmpty()){
+									NamedNodeMap nsAttributes = curNamespace.getAttributes();
+									String namespace = nsAttributes.getNamedItem("key").getTextContent();
+									namespaceMap.put(Integer.parseInt(namespace), prefix);
+								}
+							}
+
+					    buffer = null;
+						articleFilter.initializeNamespaces(namespaceMap);
+						return; //init done
+
+					}
+
+					this.keywords.reset();
+				}
+
+				b=read();
+			}
+		}catch(IOException e){
+			System.err.println("Error reading namespaces from xml dump.");
+		}catch(ParserConfigurationException e){
+			System.err.println("Error parsing namespace data.");
+		}catch(SAXException e){
+			System.err.println("Error parsing namespace data.");
+		}
 	}
 
 	/**
@@ -258,8 +341,8 @@ public class WikipediaXMLReader
 	/**
 	 * Reads the header of an article.
 	 *
-	 * @return FALSE if the article was not accepted by the articleNameChecker
-	 *         TRUE if no name checker was used, or if the articleNameChecker
+	 * @return FALSE if the article was not accepted by the articleFilter
+	 *         TRUE if no name checker was used, or if the articleFilter
 	 *         accepted the ArticleName
 	 *
 	 * @throws IOException
@@ -297,8 +380,8 @@ public class WikipediaXMLReader
 									.length(), size);
 
 					this.taskHeader.setArticleName(buffer.toString());
-					if (this.articleNameChecker != null) {
-						if (!this.articleNameChecker
+					if (this.articleFilter != null) {
+						if (!this.articleFilter
 								.checkArticle(this.taskHeader.getArticleName())) {
 							return false;
 						}

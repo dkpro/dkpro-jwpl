@@ -19,6 +19,7 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.r
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Filter articles from unwanted namespaces.<br/>
@@ -35,7 +36,7 @@ import java.util.Map;
 public class ArticleFilter
 {
 	Map<Integer, String> namespaceMap=null;
-	Collection<String> allowedPrefixes=null;
+	Collection<String> prefixesToReject=null;
 	Collection<Integer> allowedNamespaces=null;
 
 	/**
@@ -69,14 +70,17 @@ public class ArticleFilter
 		this.namespaceMap=namespaceMap;
 	}
 
-	public void initializeAllowedPrefixes(){
+	public void initializePrefixesToReject(){
 		if(namespaceMap==null){
 			//TODO user logger
 			System.err.println("Cannot use whitespace filter without initializing the namespace-prefix map for the current Wikipedia language version. DISABLING FILTER.");
 		}else{
-			allowedPrefixes=new LinkedList<String>();
+			prefixesToReject=new LinkedList<String>();
 			for(Integer allowedNS:allowedNamespaces){
-				allowedPrefixes.add(namespaceMap.get(allowedNS));
+				namespaceMap.remove(allowedNS);
+			}
+			for(Entry<Integer,String> reject:namespaceMap.entrySet()){
+				prefixesToReject.add(reject.getValue()+":");
 			}
 		}
 	}
@@ -92,22 +96,22 @@ public class ArticleFilter
 	public boolean checkArticle(String title)
 	{
 		//if filter isn't initialized, do not filter at all
-		if(namespaceMap==null||allowedNamespaces==null||allowedNamespaces.size()==0){
+		if(namespaceMap==null||namespaceMap.size()==0||allowedNamespaces==null||allowedNamespaces.size()==0){
 			return true;
 		}
 		//else, do filter
 		else{
-			if(allowedPrefixes==null){
+			if(prefixesToReject==null){
 				//if called for the first time, init prefixes
-				initializeAllowedPrefixes();
+				initializePrefixesToReject();
 			}
 			//perform filtering
-			for (String str : allowedPrefixes) {
+			for (String str : prefixesToReject) {
 				if (title.startsWith(str)) {
-					return true;
+					return false;
 				}
 			}
-			return false;
+			return true;
 		}
 	}
 

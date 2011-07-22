@@ -79,6 +79,12 @@ public enum WikipediaXMLKeys
 	/** Indicates the end of the contributor info */
 	KEY_END_CONTRIBUTOR("</contributor>"),
 
+	/** Indicates the start of the namespace block */
+	KEY_START_NAMESPACES("<namespaces>"),
+
+	/** Indicates the end of the namespace block */
+	KEY_END_NAMESPACES("</namespaces>"),
+
 	/** Indicates the start of a text segment */
 	KEY_START_TEXT("<text xml:space=\"preserve\">"),
 
