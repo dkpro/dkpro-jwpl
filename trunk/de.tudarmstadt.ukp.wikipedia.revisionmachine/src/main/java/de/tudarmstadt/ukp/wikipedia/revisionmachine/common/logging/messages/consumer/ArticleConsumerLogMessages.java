@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -27,22 +27,21 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.Ar
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.producer.data.CapacityValue;
 
 /**
  * This class contains the english localized log messages for ArticleConsumers.
- * 
+ *
  * TODO: This file should be replaced with resource files.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public final class ArticleConsumerLogMessages
 {
 
 	/**
 	 * Logs the retiraval of an archive desriptor.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param archive
@@ -58,7 +57,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the reading of an revision task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param article
@@ -76,7 +75,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the reading of an revision task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param article
@@ -96,7 +95,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an error while retrieving the input file.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param archive
@@ -114,7 +113,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an exception while retrieving the input file.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param archive
@@ -132,7 +131,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an invalid task type.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param type
@@ -147,7 +146,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs that no more archives are available.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -160,7 +159,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs that no more articles are available.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param archive
@@ -176,7 +175,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs an occurance of an exception while reading a task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param task
@@ -200,7 +199,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs an occurance of an OutOfMemoryError while reading a task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param task
@@ -224,7 +223,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the failed retrieval of an archive descriptor.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -235,24 +234,8 @@ public final class ArticleConsumerLogMessages
 	}
 
 	/**
-	 * Logs the OutOfCapacity state of the task producer.
-	 * 
-	 * @param logger
-	 *            Reference to the producer
-	 * @param capacity
-	 *            capacity state
-	 */
-	public static void logProducerHasNoCapacities(final Logger logger,
-			final CapacityValue capacity)
-	{
-
-		logger.logMessage(Level.WARNING,
-				"TaskProducer has no capacities free: " + capacity);
-	}
-
-	/**
 	 * Logs the status of the article consumer.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param articleReader
@@ -286,7 +269,7 @@ public final class ArticleConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an ArticleReaderException.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e

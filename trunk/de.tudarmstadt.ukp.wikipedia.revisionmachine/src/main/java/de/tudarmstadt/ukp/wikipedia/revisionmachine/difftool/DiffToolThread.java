@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -40,8 +40,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.control.ConfigSettings;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.ArticleReaderInterface;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.reader.AbstractNameChecker;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.reader.EnglishArticleNameChecker;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.reader.ArticleFilter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.reader.InputFactory;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.DiffCalculatorInterface;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.TaskTransmitterInterface;
@@ -56,9 +55,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.TimedSQLFileWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.OutputType;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveManager;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.producer.archives.ArchiveManager;
 
 /**
  * This class represents the main method for the DiffTool application using the
@@ -277,8 +276,8 @@ public class DiffToolThread
 				try {
 					description = archives.getArchive();
 
-					//TODO implementation of name checker depends on wikipedia language - make configurable!
-					AbstractNameChecker nameFilter = new EnglishArticleNameChecker();
+					//TODO initialize filter settings here
+					ArticleFilter nameFilter = new ArticleFilter();
 
 					articleReader = InputFactory.getTaskReader(description,
 							nameFilter);

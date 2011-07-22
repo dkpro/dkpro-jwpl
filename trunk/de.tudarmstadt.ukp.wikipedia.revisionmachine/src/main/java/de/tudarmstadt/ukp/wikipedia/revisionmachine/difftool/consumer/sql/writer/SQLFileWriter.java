@@ -34,7 +34,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages.consumer.SQLConsumerLogMessages;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.SQLConsumer;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.SQLWriterInterface;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.codec.SQLEncoder;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.codec.SQLEncoderInterface;
@@ -114,31 +113,6 @@ public class SQLFileWriter
 		fileCounter = 0;
 	}
 
-	/**
-	 * (Constructor) Creates a new SQLFileWriter object.
-	 *
-	 * @param sqlConsumer
-	 *            Reference to the sql consumer
-	 *
-	 * @throws IOException
-	 *             if an error occurred while writing a file
-	 * @throws ConfigurationException
-	 *             if an error occurred while accessing the configuration
-	 * @throws LoggingException
-	 *             if an error occurred while accessing the logger
-	 */
-	public SQLFileWriter(final SQLConsumer sqlConsumer)
-		throws IOException, ConfigurationException, LoggingException
-	{
-
-		this();
-
-		this.outputName = sqlConsumer.getName();
-		this.logger = sqlConsumer.getLogger();
-
-		init();
-		writeHeader();
-	}
 
 	/**
 	 * (Constructor) Creates a new SQLFileWriter object.

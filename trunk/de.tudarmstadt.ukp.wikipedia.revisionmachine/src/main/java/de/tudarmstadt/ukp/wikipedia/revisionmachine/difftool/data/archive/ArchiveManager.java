@@ -14,13 +14,12 @@
  * 	Simon Kulessa
  * 	Oliver Ferschke
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.producer.archives;
+package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive;
 
 import java.util.List;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ConfigurationException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
 
 /**
  * DiffManager Manages the data contained by the ArchiveProducer
