@@ -239,11 +239,23 @@ public class SQLEncoder
 				this.lastFullRevID = diff.getRevisionID();
 			}
 
+			//prepare values that might be null
+			//because we don't want quotes if they are null
+			String comment = diff.getComment();
+			if(comment!=null){
+				comment="'"+comment+"'";
+			}
+			String contributorId = diff.getContributorId();
+			if(contributorId!=null){
+				contributorId="'"+contributorId+"'";
+			}
+
+
 			// save the query and binary data temporary
 			tempData = "(null, " + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",?,'"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"','"+diff.getContributorId() + "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
+					+ ",?,"+comment+","+(diff.isMinor()?"1":"0")+","+contributorId+ ","+(diff.getContributorIsRegistered()?"1":"0")+")";
 			tempBinaryData = binaryDiff(task, diff);
 
 			// if the limit would be reached start a new encoding
@@ -352,11 +364,21 @@ public class SQLEncoder
 				this.lastFullRevID = diff.getRevisionID();
 			}
 
+			//prepare values that might be null
+			//because we don't want quotes if they are null
+			String comment = diff.getComment();
+			if(comment!=null){
+				comment="'"+comment+"'";
+			}
+			String contributorId = diff.getContributorId();
+			if(contributorId!=null){
+				contributorId="'"+contributorId+"'";
+			}
 			// save the query temporary
 			tempData = "(null," + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",'" + encodeDiff(task, diff) + "','"+diff.getComment()+"',"+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"','"+diff.getContributorId()+ "',"+(diff.getContributorIsRegistered()?"1":"0")+")";
+					+ ",'" + encodeDiff(task, diff) + "',"+comment+","+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"',"+contributorId+ ","+(diff.getContributorIsRegistered()?"1":"0")+")";
 
 			// if the limit would be reached start a new encoding
 			if (revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) {
