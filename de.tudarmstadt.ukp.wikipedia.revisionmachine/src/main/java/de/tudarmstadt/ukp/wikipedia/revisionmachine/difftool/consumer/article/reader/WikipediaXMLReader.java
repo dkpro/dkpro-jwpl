@@ -56,8 +56,8 @@ public class WikipediaXMLReader
 	/** Configuration parameter - Maximum size of a revision task */
 	private final long LIMIT_TASK_SIZE_REVISIONS;
 
-	/** Reference to the name checker */
-	private AbstractNameChecker articleNameChecker;
+	/** Reference to the article filter */
+	private ArticleFilter articleNameChecker;
 
 	/**
 	 * (Constructor) Creates a new WikipediaXMLReader.
@@ -113,7 +113,7 @@ public class WikipediaXMLReader
 	 *             if an error occurred while accessing the configuration
 	 */
 	public WikipediaXMLReader(final Reader input,
-			final AbstractNameChecker articleNameChecker)
+			final ArticleFilter articleNameChecker)
 		throws ConfigurationException
 	{
 

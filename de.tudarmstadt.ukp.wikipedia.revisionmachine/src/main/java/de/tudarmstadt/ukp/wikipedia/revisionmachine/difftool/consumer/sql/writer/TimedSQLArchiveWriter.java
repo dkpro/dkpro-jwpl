@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -24,7 +24,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingExc
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.SQLConsumerException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.LoggingFactory;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.SQLConsumer;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.codec.TimedSQLEncoder;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
@@ -34,16 +33,16 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.Art
 /**
  * This class writes the output to an archive while collecting statistical
  * information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TimedSQLArchiveWriter
 	extends SQLArchiveWriter
 {
 
 	/** Reference to the logger */
-	private Logger outputLogger;
+	private final Logger outputLogger;
 
 	/**
 	 * Temporary variable - used for storing the time needed to encode a task
@@ -53,36 +52,15 @@ public class TimedSQLArchiveWriter
 	/** Reference to the sql encoder */
 	private TimedSQLEncoder sqlEncoder;
 
-	/**
-	 * (Constructor) Creates a new TimedSQLFileWriter object.
-	 * 
-	 * @param sqlConsumer
-	 *            Reference to the sql consumer
-	 * 
-	 * @throws IOException
-	 *             if an error occurred while writing a file
-	 * @throws ConfigurationException
-	 *             if an error occurred while accessing the configuration
-	 * @throws LoggingException
-	 *             if an error occurred while accessing the logger
-	 */
-	public TimedSQLArchiveWriter(final SQLConsumer sqlConsumer)
-		throws IOException, ConfigurationException, LoggingException
-	{
-
-		super(sqlConsumer);
-		this.outputLogger = LoggingFactory
-				.getLogger(LoggingFactory.NAME_ARTICLE_OUTPUT_LOGGER);
-	}
 
 	/**
 	 * (Constructor) Creates a new TimedSQLFileWriter object.
-	 * 
+	 *
 	 * @param outputName
 	 *            Name of the sql consumer
 	 * @param logger
 	 *            Reference to a logger
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 * @throws LoggingException
@@ -101,12 +79,13 @@ public class TimedSQLArchiveWriter
 
 	/**
 	 * Creates the sql encoder.
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 * @throws LoggingException
 	 *             if an error occurred while accessing the logger
 	 */
+	@Override
 	protected void init()
 		throws ConfigurationException, LoggingException
 	{
@@ -120,21 +99,22 @@ public class TimedSQLArchiveWriter
 	/**
 	 * This method will process the given DiffTask and send him to the specified
 	 * output.
-	 * 
+	 *
 	 * @param task
 	 *            DiffTask
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if problems occurred while initializing the components
-	 * 
+	 *
 	 * @throws IOException
 	 *             if problems occurred while writing the output (to file or
 	 *             archive)
-	 * 
+	 *
 	 * @throws SQLConsumerException
 	 *             if problems occurred while writing the output (to the sql
 	 *             producer database)
 	 */
+	@Override
 	public void process(final Task<Diff> task)
 		throws ConfigurationException, IOException, SQLConsumerException
 	{
@@ -169,14 +149,15 @@ public class TimedSQLArchiveWriter
 
 	/**
 	 * This method will close the connection to the output.
-	 * 
+	 *
 	 * @throws IOException
 	 *             if problems occurred while closing the file or process.
-	 * 
+	 *
 	 * @throws SQLConsumerException
 	 *             if problems occurred while closing the connection to the
 	 *             database.
 	 */
+	@Override
 	public void close()
 		throws IOException
 	{

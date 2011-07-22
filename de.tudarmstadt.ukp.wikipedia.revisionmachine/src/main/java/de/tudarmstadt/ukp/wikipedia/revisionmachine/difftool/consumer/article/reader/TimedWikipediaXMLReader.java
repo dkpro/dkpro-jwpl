@@ -85,7 +85,7 @@ public class TimedWikipediaXMLReader
 	 *             if an error occurred while accessing the configuration
 	 */
 	public TimedWikipediaXMLReader(final Reader input,
-			final AbstractNameChecker articleNameChecker)
+			final ArticleFilter articleNameChecker)
 		throws ConfigurationException
 	{
 

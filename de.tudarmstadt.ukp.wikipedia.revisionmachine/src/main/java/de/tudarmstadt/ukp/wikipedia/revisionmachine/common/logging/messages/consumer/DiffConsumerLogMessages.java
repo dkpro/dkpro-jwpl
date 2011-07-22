@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -24,22 +24,21 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.producer.data.CapacityValue;
 
 /**
  * This class contains the english localized log messages for DiffConsumers.
- * 
+ *
  * TODO: This file should be replaced with resource files.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class DiffConsumerLogMessages
 {
 
 	/**
 	 * Logs the processing of a revision task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param article
@@ -57,7 +56,7 @@ public class DiffConsumerLogMessages
 
 	/**
 	 * Logs the processing of a revision task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param article
@@ -80,7 +79,7 @@ public class DiffConsumerLogMessages
 
 	/**
 	 * Logs the occurance of a DiffException.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e
@@ -95,7 +94,7 @@ public class DiffConsumerLogMessages
 
 	/**
 	 * Logs the receival of an end task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -108,7 +107,7 @@ public class DiffConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an invalid task type.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param type
@@ -124,7 +123,7 @@ public class DiffConsumerLogMessages
 	/**
 	 * Logs the occurance of an TaskOutOfMemoryError while reading a revision
 	 * task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param task
@@ -147,24 +146,8 @@ public class DiffConsumerLogMessages
 	}
 
 	/**
-	 * Logs the OutOfCapacity state of the diff producer.
-	 * 
-	 * @param logger
-	 *            reference to the logger
-	 * @param capacity
-	 *            capacity state
-	 */
-	public static void logProducerHasNoCapacities(final Logger logger,
-			final CapacityValue capacity)
-	{
-
-		logger.logMessage(Level.WARNING,
-				"DiffProducer has no capacities free: " + capacity);
-	}
-
-	/**
 	 * Logs the start of the processing of an revision task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param article

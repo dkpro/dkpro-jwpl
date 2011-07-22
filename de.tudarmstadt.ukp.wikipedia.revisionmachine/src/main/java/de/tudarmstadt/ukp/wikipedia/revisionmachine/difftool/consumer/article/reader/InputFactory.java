@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -204,7 +204,7 @@ public class InputFactory
 	 * @param archive
 	 *            input file
 	 * @param checker
-	 *            AbstractNameChecker
+	 *            the article filter
 	 * @return ArticleReaderInterface
 	 *
 	 * @throws ConfigurationException
@@ -213,7 +213,7 @@ public class InputFactory
 	 *             if an error occurred while parsing the file
 	 */
 	public static ArticleReaderInterface getTaskReader(
-			final ArchiveDescription archive, final AbstractNameChecker checker)
+			final ArchiveDescription archive, final ArticleFilter checker)
 		throws ConfigurationException, ArticleReaderException
 	{
 		Reader reader = null;
