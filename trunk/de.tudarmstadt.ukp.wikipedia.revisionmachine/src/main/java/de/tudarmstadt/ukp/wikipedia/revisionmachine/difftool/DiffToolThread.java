@@ -276,9 +276,9 @@ public class DiffToolThread
 				// Retrieve Archive
 				try {
 					description = archives.getArchive();
-
-					//TODO initialize filter settings here
-					ArticleFilter nameFilter = new ArticleFilter(Arrays.asList(new Integer[]{0,1}));
+					
+					// initialize filter
+					ArticleFilter nameFilter = new ArticleFilter();
 
 					articleReader = InputFactory.getTaskReader(description,
 							nameFilter);

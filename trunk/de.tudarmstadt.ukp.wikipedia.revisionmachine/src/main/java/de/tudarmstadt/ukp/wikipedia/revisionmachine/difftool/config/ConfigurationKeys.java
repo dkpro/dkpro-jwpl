@@ -280,5 +280,13 @@ public enum ConfigurationKeys
 	 * Note that the corresponding output directory for the logger has to exist
 	 * when the LogLevel is not Level.OFF
 	 */
-	LOGGING_LOGLEVEL_DIFFTOOL
+	LOGGING_LOGLEVEL_DIFFTOOL,
+	
+	/**
+	 * Type: java.util.Set Used by: ArticleFilter
+	 *
+	 * Description: The Set of namespaces to keep in output
+	 *
+	 */
+	NAMESPACES_TO_KEEP
 }
