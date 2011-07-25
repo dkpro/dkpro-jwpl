@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -77,8 +77,8 @@ public class WikiHibernateUtil implements WikiConstants {
         // Echo all executed SQL to stdout
         p.setProperty("hibernate.show_sql","false");
 
-        // Only validate schema (read only)
-        p.setProperty("hibernate.hbm2ddl.auto","validate");
+        // Update schema
+        p.setProperty("hibernate.hbm2ddl.auto","update");
 
         return p;
     }
