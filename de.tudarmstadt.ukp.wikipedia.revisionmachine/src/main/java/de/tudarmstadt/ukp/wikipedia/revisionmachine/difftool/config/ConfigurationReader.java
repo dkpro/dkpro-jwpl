@@ -17,6 +17,8 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -164,6 +166,15 @@ public class ConfigurationReader
 
 	/** Key identifier - Debug -> Output >> Path */
 	private final String KEY_DEBUG_PATH = "PATH";
+	
+	/** Section identifier - filter */
+	private final String SECTION_FILTER = "FILTER";
+	
+	/** Subsection identifier - filter -> namespaces */
+	private final String SUBSECTION_FILTER_NAMESPACES = "NAMESPACES";
+	
+	/** Key identifier - filter -> namespaces >> ns */
+	private final String NAMESPACE_TO_KEEP = "NS";
 
 	/**
 	 * (Constructor) Creates a new ConfigurationReader object.
@@ -232,11 +243,80 @@ public class ConfigurationReader
 			else if (name.equals(SECTION_DEBUG)) {
 				parseDebugConfig(node, config);
 			}
+			else if (name.equals(SECTION_FILTER)) {
+				parseFilterConfig(node, config);
+			}
 		}
 
 		return config;
 	}
 
+	
+	/**
+	 * Parses the filter parameter section.
+	 *
+	 * @param node
+	 *            Reference to the current used xml node
+	 * @param config
+	 *            Reference to the ConfigSettings
+	 */
+	private void parseFilterConfig(final Node node, final ConfigSettings config)
+	{
+
+		String name;
+		Node nnode;
+		final NodeList list = node.getChildNodes();
+		final int length = list.getLength();
+		
+		for (int i = 0; i < length; i++) {
+			nnode = list.item(i);
+
+			name = nnode.getNodeName().toUpperCase();
+			
+			if (name.equals(SUBSECTION_FILTER_NAMESPACES)) {
+				parseNamespaceFilterConfig(nnode, config);
+			}
+			
+		}
+	}
+	
+	/**
+	 * Parses the namespaces parameter section. This is the subsection of filter.
+	 *
+	 * @param node
+	 *            Reference to the current used xml node
+	 * @param config
+	 *            Reference to the ConfigSettings
+	 */
+	private void parseNamespaceFilterConfig(final Node node, final ConfigSettings config) {
+		String name;
+		Integer value;
+		Node nnode;
+		final NodeList list = node.getChildNodes();
+		final int length = list.getLength();
+		final Set<Integer> namespaces = new HashSet<Integer>();
+		
+		for (int i = 0; i < length; i++) {
+			nnode = list.item(i);
+
+			name = nnode.getNodeName().toUpperCase();
+			if (name.equals(NAMESPACE_TO_KEEP)) {
+
+				value = Integer.parseInt(nnode.getChildNodes().item(0)
+						.getNodeValue());
+				namespaces.add(value);
+
+
+			}
+	
+		}
+		
+		config.setConfigParameter(
+				ConfigurationKeys.NAMESPACES_TO_KEEP,
+				namespaces);
+		
+	}
+	
 
 	/**
 	 * Parses the mode parameter section.

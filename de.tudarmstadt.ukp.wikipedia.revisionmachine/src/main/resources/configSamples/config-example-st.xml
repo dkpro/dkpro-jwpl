@@ -57,4 +57,11 @@
 			<path>""</path>
 		</debug_output>
 	</debug>
+	<filter>
+		<namespaces>
+			<!-- White list of namespaces; if nothing here then all namespaces are allowed -->
+			<ns>0</ns> 
+			<ns>1</ns> 
+		</namespaces>
+	</filter>
 </config>
