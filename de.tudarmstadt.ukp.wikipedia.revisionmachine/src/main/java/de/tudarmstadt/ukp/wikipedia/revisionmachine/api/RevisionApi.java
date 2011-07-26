@@ -1247,6 +1247,7 @@ public class RevisionApi
 				revision.setMinor(result.getBoolean(8));
 				revision.setContributorName(result.getString(9));
 
+				//we should not use getInt(), because result may be null
 				String contribIdString = result.getString(10);
 				Integer contributorId=contribIdString==null?null:Integer.parseInt(contribIdString);
 				revision.setContributorId(contributorId);
