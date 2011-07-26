@@ -48,7 +48,7 @@ public class FilterPanel
 
 		// init label
 		JLabel hint = new JLabel();
-		hint.setText("<html>Hint: if nothing is choosed<br> then all namespaces are allowed</html>");
+		hint.setText("<html>If nothing is selected<br> then all namespaces are allowed.</html>");
 		hint.setBounds(385, 70, 180, 60);
 		this.add(hint);
 	}
