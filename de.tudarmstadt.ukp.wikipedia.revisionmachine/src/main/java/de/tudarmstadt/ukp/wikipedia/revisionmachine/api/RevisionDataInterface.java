@@ -72,8 +72,9 @@ public interface RevisionDataInterface
 
 	/**
 	 * Returns the contributorID of the revision contributor
+	 * Unregistered users do not have an id, so the return value might be null.
 	 *
-	 * @return the contributorID of the revision contributor
+	 * @return the contributorID of the revision contributor or null, if user does not have an id (= is not registered)
 	 */
 	public Integer getContributorId();
 
