@@ -54,7 +54,7 @@ public class Diff
 	private String contributorName;
 
 	/** ID of the contributor who created this revision */
-	private String contributorId;
+	private Integer contributorId;
 
 	/** Determine whether the contributor was registered.
 	 * True: contributorName= username
@@ -366,12 +366,12 @@ public class Diff
 		return contributorIsRegistered;
 	}
 
-	public void setContributorId(String contributorId)
+	public void setContributorId(Integer contributorId)
 	{
 		this.contributorId = contributorId;
 	}
 
-	public String getContributorId()
+	public Integer getContributorId()
 	{
 		return contributorId;
 	}

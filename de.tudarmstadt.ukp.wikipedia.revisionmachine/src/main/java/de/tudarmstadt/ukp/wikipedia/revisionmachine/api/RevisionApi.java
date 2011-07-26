@@ -430,6 +430,73 @@ public class RevisionApi
 		}
 	}
 
+	/**
+	 * Returns the group assignments of the specified user
+	 *
+	 * @param userID
+	 *            ID of the user (NOT THE USERNAME)
+	 * @return collection of user groups
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public List<String> getUserGroups(final int userID)
+		throws WikiApiException
+	{
+
+		List<String> groups = new LinkedList<String>();
+
+		try {
+			if (userID < 1) {
+				throw new IllegalArgumentException();
+			}
+
+			if(!tableExists("user_groups")){
+				throw new WikiInitializationException(
+				"User group assignment data is missing. Please download user_groups.sql for this Wikipedia from http://dumps.wikimedia.org and import the data into this database.");
+			}
+
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				statement = connection.prepareStatement("SELECT ug_group "
+						+ "FROM user_groups WHERE ug_user=?");
+				statement.setInt(1, userID);
+				result = statement.executeQuery();
+
+				// Make the query
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"The user  with the ID " + userID
+									+ " was not found.");
+				}
+				while (result.next()) {
+
+					groups.add(result.getString(1));
+
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return groups;
+
+		}
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
 
 	/**
 	 * Returns a map of timestamps mapped on the corresponding
@@ -630,7 +697,7 @@ public class RevisionApi
 		}
 	}
 
-	/**
+	/**(
 	 * Returns the by the id specified revision.
 	 *
 	 * @param revisionID
@@ -1179,7 +1246,11 @@ public class RevisionApi
 				revision.setComment(result.getString(7));
 				revision.setMinor(result.getBoolean(8));
 				revision.setContributorName(result.getString(9));
-				revision.setContributorId(result.getString(10));
+
+				String contribIdString = result.getString(10);
+				Integer contributorId=contribIdString==null?null:Integer.parseInt(contribIdString);
+				revision.setContributorId(contributorId);
+
 				revision.setContributorIsRegistered(result.getBoolean(11));
 				Collection<DiffPart> parts = new LinkedList<DiffPart>();
 				Iterator<DiffPart> it = diff.iterator();
@@ -1324,6 +1395,54 @@ public class RevisionApi
 		}
 
 	}
+
+	/**
+	 * Checks if a specific table exists
+	 *
+	 * @param table
+	 *            the table to check
+
+	 * @return true, if table exists, false else
+	 * @throws SQLException
+	 *             if an error occurs connecting to or querying the db
+	 * @author Oliver Ferschke
+	 */
+	private boolean tableExists(String table)
+		throws SQLException
+	{
+
+		PreparedStatement statement = null;
+		ResultSet result = null;
+		try {
+			statement = this.connection.prepareStatement("SHOW TABLES;");
+			result = statement.executeQuery();
+
+			// Check if an index exists (because otherwise the query would
+			// be awfully slow. Note that the existence of ANY index will
+			// suffice - we might want to check for a specific index.
+			if (result == null) {
+				return false;
+			}
+			boolean found = false;
+			while(result.next()){
+					if(table.equalsIgnoreCase(result.getString(1))){
+						found = true;
+					}
+			}
+			return found;
+
+		}
+		finally {
+			if (statement != null) {
+				statement.close();
+			}
+			if (result != null) {
+				result.close();
+			}
+		}
+
+	}
+
 
 	public static void main(String[] args)
 		throws Exception

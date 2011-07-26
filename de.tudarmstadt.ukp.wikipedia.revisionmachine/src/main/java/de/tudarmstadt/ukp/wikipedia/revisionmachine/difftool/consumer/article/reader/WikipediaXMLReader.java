@@ -618,8 +618,10 @@ public class WikipediaXMLReader
 						buffer.delete(size
 								- WikipediaXMLKeys.KEY_END_ID.getKeyword()
 										.length(), size);
-						// escape id string
-						rev.setContributorId(SQLEscape.escape(buffer.toString()));
+						String id = buffer.toString();
+						if(!id.isEmpty()){
+							rev.setContributorId(Integer.parseInt(buffer.toString()));
+						}
 						buffer = null;
 						break;
 				}

@@ -245,7 +245,7 @@ public class SQLEncoder
 			if(comment!=null){
 				comment="'"+comment+"'";
 			}
-			String contributorId = diff.getContributorId();
+			String contributorId = diff.getContributorId().toString();
 			if(contributorId!=null){
 				contributorId="'"+contributorId+"'";
 			}
@@ -370,7 +370,7 @@ public class SQLEncoder
 			if(comment!=null){
 				comment="'"+comment+"'";
 			}
-			String contributorId = diff.getContributorId();
+			String contributorId = diff.getContributorId().toString();
 			if(contributorId!=null){
 				contributorId="'"+contributorId+"'";
 			}
