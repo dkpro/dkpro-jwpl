@@ -19,7 +19,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.Pan
 
 /**
  * Panel class of the ConfigurationTool
- * 
+ *
  * This panel contains all components for setting configuration parameters
  * related to the filtering.
  */
@@ -32,7 +32,7 @@ public class FilterPanel
 
 	/**
 	 * (Constructor) Creates a new SurrogatePanel
-	 * 
+	 *
 	 * @param controller
 	 *            Reference to the controller
 	 */
@@ -48,7 +48,7 @@ public class FilterPanel
 
 		// init label
 		JLabel hint = new JLabel();
-		hint.setText("<html>If nothing is selected<br> then all namespaces are allowed.</html>");
+		hint.setText("<html>If nothing is selected,<br> all namespaces are allowed.</html>");
 		hint.setBounds(385, 70, 180, 60);
 		this.add(hint);
 	}
@@ -174,14 +174,14 @@ public class FilterPanel
 
 	/**
 	 * Custom model for JTable that contains a list of namespaces to filter
-	 * 
+	 *
 	 */
 	class FilterTableModel
 		extends AbstractTableModel
 	{
-		private String[] columnNames = { "Namespace", "Allow", "#" };
+		private final String[] columnNames = { "Namespace", "Allow", "#" };
 
-		private Object[][] data = { { "main(0)", new Boolean(false), 0 },
+		private final Object[][] data = { { "main(0)", new Boolean(false), 0 },
 				{ "talk(1)", new Boolean(false), 1 },
 				{ "user(2)", new Boolean(false), 2 },
 				{ "user talk(3)", new Boolean(false), 3 },
