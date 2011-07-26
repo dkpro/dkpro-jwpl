@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -16,12 +16,17 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.index;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
+import java.util.Properties;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.OutputTypes;
 
 /**
  * Generates the indices for the database.
@@ -96,30 +101,117 @@ public class IndexGenerator
 		}
 	}
 
+	/**
+	 * Starts index generation using the database credentials in the
+	 * properties file specified in args[0].<br/>
+	 * The properties file should have the following structure:
+	 * <ul><li>host=dbhost</li>
+	 * <li>db=revisiondb</li>
+	 * <li>user=username</li>
+	 * <li>password=pwd</li>
+	 * <li>output=outputFile</li>
+	 * <li>writeDirectlyToDB=true|false (optional)</li>
+	 * <li>charset=UTF8 (or others) (optional)</li>
+	 * <li>buffer=15000 (optional)</li>
+	 * <li>maxAllowedPackets=16760832  (optional)</li></ul>
+	 * <br/>
+	 *
+	 * @param args allows only one entry that contains the path to the config file
+	 */
 	public static void main(String[] args)
 	{
 
-		RevisionAPIConfiguration config = new RevisionAPIConfiguration();
+		if(args==null||args.length!=1){
+			System.out.println(("You need to specify the database configuration file. \n" +
+					"It should contain the access credentials to you revision database in the following format: \n" +
+					"  host=dbhost \n" +
+					"  db=revisiondb \n" +
+					"  user=username \n" +
+					"  password=pwd \n" +
+					"  output=outputFile \n"+
+					"  writeDirectlyToDB=true|false (optional)\n" +
+					"  charset=UTF8 (optional)\n" +
+					"  buffer=15000 (optional)\n"+
+					"  maxAllowedPackets=16760832 (optional)"));
+			throw new IllegalArgumentException();
+		}else{
+			Properties props = load(args[0]);
 
-		config.setHost("bender.tk.informatik.tu-darmstadt.de");
-		config.setDatabase("wiki_simple_20110406_rev");
-		config.setUser("student");
-		config.setPassword("student");
+			RevisionAPIConfiguration config = new RevisionAPIConfiguration();
 
-		config.setCharacterSet("UTF-8");
-		config.setBufferSize(15000);
-		config.setMaxAllowedPacket(16 * 1024 * 1023);
+			config.setHost(props.getProperty("host"));
+			config.setDatabase(props.getProperty("db"));
+			config.setUser(props.getProperty("user"));
+			config.setPassword(props.getProperty("password"));
 
-		config.setOutputPath("/home/oferschke/NLP/Resources/wiki_data/simplewiki-20110406/revisions/revisionIndex.sql");
-//		config.setOutputType(OutputTypes.DATABASE);
+			String charset=props.getProperty("charset");
+			String buffer=props.getProperty("buffer");
+			String maxAllowedPackets=props.getProperty("maxAllowedPackets");
 
+			if(charset!=null){
+				config.setCharacterSet(charset);
+			}else{
+				config.setCharacterSet("UTF-8");
+			}
+
+			if(buffer!=null){
+				config.setBufferSize(Integer.parseInt(buffer));
+			}else{
+				config.setBufferSize(15000);
+			}
+
+			if(maxAllowedPackets!=null){
+				config.setMaxAllowedPacket(Long.parseLong(maxAllowedPackets));
+			}else{
+				config.setMaxAllowedPacket(16 * 1024 * 1023);
+			}
+
+			if(props.getProperty("writeDirectlyToDB")!=null&&Boolean.parseBoolean(props.getProperty("writeDirectlyToDB"))){
+				config.setOutputType(OutputTypes.DATABASE);
+			}else{
+				String output = props.getProperty("output");
+				File outfile = new File(output);
+				if(outfile.isDirectory()){
+					try{
+						config.setOutputPath(outfile.getCanonicalPath()+File.separatorChar+"revisionIndex.sql");
+					}catch(IOException e){
+						config.setOutputPath(outfile.getPath()+File.separatorChar+"revisionIndex.sql");
+					}
+				}else{
+					config.setOutputPath(output);
+				}
+			}
+
+			try {
+				new IndexGenerator(config).generate();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			System.out.println("TERMINATED");
+		}
+	}
+
+	/**
+	 * Load a properties file from the classpath
+	 *
+	 * @param propsName
+	 * @return Properties
+	 * @throws Exception
+	 */
+	private static Properties load(String configFile)
+	{
+		Properties props = new Properties();
+		URL url = ClassLoader.getSystemResource(configFile);
 		try {
-			new IndexGenerator(config).generate();
+			props.load(url.openStream());
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			System.err.println("Could not load configuration from file or config file invalid"
+					+ configFile);
 		}
-
-		System.out.println("TERMINATED");
+		return props;
 	}
+
 }
