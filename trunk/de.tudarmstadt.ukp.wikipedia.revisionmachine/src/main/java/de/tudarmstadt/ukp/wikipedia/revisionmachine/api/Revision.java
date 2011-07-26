@@ -56,7 +56,7 @@ public class Revision
 	private String contributorName;
 
 	/** Username of the contributor who created this revision */
-	private String contributorId;
+	private Integer contributorId;
 
 	/** The user comment for this revision*/
 	private String comment;
@@ -392,13 +392,13 @@ public class Revision
 		return contributorIsRegistered;
 	}
 
-	public void setContributorId(String contributorId)
+	public void setContributorId(Integer contributorId)
 	{
 		this.contributorId = contributorId;
 	}
 
 	@Override
-	public String getContributorId()
+	public Integer getContributorId()
 	{
 		return contributorId;
 	}
