@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -19,9 +19,11 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.control
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationKeys;
@@ -215,6 +217,13 @@ public class ConfigSettings
 		setConfigParameter(ConfigurationKeys.MODE_DEBUG_OUTPUT, false);
 
 		setConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT, false);
+
+		Set<Integer> defaultNamespaces = new HashSet<Integer>();
+		defaultNamespaces.add(0);
+		defaultNamespaces.add(1);
+		setConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP, defaultNamespaces);
+
+
 
 		this.type = ConfigEnum.DEFAULT;
 	}
