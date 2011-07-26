@@ -279,7 +279,7 @@ public class RevisionApi
 	/**
 	 * Returns the number of unique contributors to an article based on the
 	 * people who revised the article (revision contributors).<br/>
-	 * It is possible to only count the registerd users or to count all contributors, including bots, and unregistered users.
+	 * It is possible to only count the registerd users, if onlyRegistered is set to true
 	 *
 	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
 	 * ArticleID in the revisions-table.
@@ -315,7 +315,7 @@ public class RevisionApi
 				}
 
 				StringBuffer sqlString= new StringBuffer();
-				sqlString.append("SELECT COUNT(DISTINCT ContributorId) FROM revisions WHERE ArticleID=?");
+				sqlString.append("SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=?");
 				if(onlyRegistered){
 					sqlString.append(" AND ContributorIsRegistered=1");
 				}
