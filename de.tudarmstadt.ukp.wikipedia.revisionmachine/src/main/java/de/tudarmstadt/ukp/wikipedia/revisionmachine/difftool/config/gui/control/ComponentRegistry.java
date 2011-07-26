@@ -92,6 +92,7 @@ public class ComponentRegistry
 		map.get(PanelKeys.PANEL_CACHE).toXML(builder, errors);
 		map.get(PanelKeys.PANEL_LOGGING).toXML(builder, errors);
 		map.get(PanelKeys.PANEL_DEBUG).toXML(builder, errors);
+		map.get(PanelKeys.PANEL_FILTER).toXML(builder, errors);
 	}
 
 	/**
@@ -112,6 +113,7 @@ public class ComponentRegistry
 		map.get(PanelKeys.PANEL_CACHE).applyConfig(config);
 		map.get(PanelKeys.PANEL_LOGGING).applyConfig(config);
 		map.get(PanelKeys.PANEL_DEBUG).applyConfig(config);
+		map.get(PanelKeys.PANEL_FILTER).applyConfig(config);
 	}
 
 	/**
