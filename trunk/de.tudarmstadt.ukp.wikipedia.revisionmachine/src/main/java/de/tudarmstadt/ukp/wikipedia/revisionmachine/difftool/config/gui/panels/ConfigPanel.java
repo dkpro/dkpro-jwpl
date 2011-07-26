@@ -80,6 +80,7 @@ public class ConfigPanel
 		tabs.add("Cache", new CachePanel(controller));
 		tabs.add("Logging", new LoggingPanel(controller));
 		tabs.add("Debug", new DebugPanel(controller));
+		tabs.add("Filter", new FilterPanel(controller));
 
 		this.add(tabs);
 

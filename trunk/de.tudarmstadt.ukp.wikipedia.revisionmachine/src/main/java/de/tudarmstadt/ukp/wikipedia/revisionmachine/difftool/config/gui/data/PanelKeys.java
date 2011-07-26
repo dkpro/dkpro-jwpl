@@ -47,5 +47,9 @@ public enum PanelKeys
 	PANEL_LOGGING,
 
 	/** Key for the debug panel */
-	PANEL_DEBUG
+	PANEL_DEBUG,
+	
+	/** Key for the filter panel */
+	PANEL_FILTER
+	
 }
