@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -20,26 +20,27 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.sql.SQLException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.AbstractIndex;
 
 /**
  * This class writes the output of the index generator to an sql file.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class SQLFileWriter
 	implements IndexWriterInterface
 {
 
 	/** Reference to the Writer object */
-	private Writer writer;
+	private final Writer writer;
 
 	/**
 	 * (Constructor) Creates a new SQLFileWriter.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration paramters
 	 * @throws IOException
@@ -70,13 +71,19 @@ public class SQLFileWriter
 				+ "Mapping MEDIUMTEXT NOT NULL, "
 				+ "ReverseMapping MEDIUMTEXT NOT NULL, "
 				+ "PRIMARY KEY(ArticleID));");
+		writer.write("\r\n");
+
+		//disable keys now - reenable at the end of the sql file
+		writer.write("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;\r\n");
+		writer.write("ALTER TABLE index_revisionID DISABLE KEYS;\r\n");
+		writer.write("ALTER TABLE index_chronological DISABLE KEYS;\r\n");
 
 		writer.flush();
 	}
 
 	/**
 	 * Writes the buffered finalzed queries to the output.
-	 * 
+	 *
 	 * @param index
 	 *            Reference to an index
 	 * @throws IOException
@@ -104,7 +111,7 @@ public class SQLFileWriter
 
 	/**
 	 * Closes the file or the database connection.
-	 * 
+	 *
 	 * @throws IOException
 	 *             if an error occured while closing the file
 	 */
@@ -112,5 +119,22 @@ public class SQLFileWriter
 		throws IOException
 	{
 		this.writer.close();
+	}
+
+	/**
+	 * Wraps up the index generation process and writes all remaining statements
+	 * e.g. concerning SQL-Indexes on the created tables.
+	 *
+	 * @throws SQLException
+	 *             if an error occured while writing to the file
+	 */
+	public void finish() throws IOException{
+
+		writer.write("ALTER TABLE revisions CREATE INDEX articleIdx ON revisions(ArticleID);\r\n");
+		writer.write("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;\r\n");
+		writer.write("ALTER TABLE index_revisionID ENABLE KEYS;\r\n");
+		writer.write("ALTER TABLE index_chronological ENABLE KEYS;\r\n");
+		writer.flush();
+
 	}
 }
