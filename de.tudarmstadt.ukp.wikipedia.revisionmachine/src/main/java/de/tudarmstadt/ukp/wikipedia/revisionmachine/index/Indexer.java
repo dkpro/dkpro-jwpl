@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -36,9 +36,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.SQLFileWriter;
 /**
  * Forwards the necessary information to the AbstractIndex classes and controls
  * the writing to the output if one of the index has reached the maximum size.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class Indexer
 {
@@ -59,32 +59,32 @@ public class Indexer
 	private Revision lastRev;
 
 	/** Reference to the revision index */
-	private RevisionIndex revisionIndex;
+	private final RevisionIndex revisionIndex;
 
 	/** Reference to the currently used article index information */
 	private ArticleIndexData info;
 
 	/** List of article index information related to the currently used article */
-	private List<ArticleIndexData> infoList;
+	private final List<ArticleIndexData> infoList;
 
 	/** Reference to the article index */
-	private ArticleIndex articleIndex;
+	private final ArticleIndex articleIndex;
 
 	/** Reference to the chronological order index */
-	private ChronologicOrderMapping chronoIndex;
+	private final ChronologicOrderMapping chronoIndex;
 
 	/** Reference to the output writer */
 	private IndexWriterInterface indexWriter;
 
 	/** Reference to the database connection */
-	private Connection connection = null;
+	private final Connection connection = null;
 
 	/**
 	 * (Constructor) Creates a Index object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration
-	 * 
+	 *
 	 * @throws ClassNotFoundException
 	 *             if the jdbc classes could not be located
 	 * @throws SQLException
@@ -118,7 +118,7 @@ public class Indexer
 	/**
 	 * Checks whether the AbstractIndex classes have output available and
 	 * forward them to the output writer.
-	 * 
+	 *
 	 * @throws IOException
 	 *             if an error occured while writing the output
 	 * @throws SQLException
@@ -135,10 +135,10 @@ public class Indexer
 
 	/**
 	 * Processes the given revision.
-	 * 
+	 *
 	 * @param rev
 	 *            Reference to a revision
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -228,7 +228,7 @@ public class Indexer
 	/**
 	 * Finalizes the indices and sends the rest of the data to the output.
 	 * Afterwards the database connection will be closed.
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -248,6 +248,9 @@ public class Indexer
 			this.articleIndex.finalizeIndex();
 
 			send();
+
+			this.indexWriter.finish();
+
 			if (connection != null) {
 				this.connection.close();
 			}

@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -26,26 +26,26 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.AbstractIndex;
 
 /**
  * This class writes the output of the index generator to a database.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class DatabaseWriter
 	implements IndexWriterInterface
 {
 
 	/** Reference to the database connection */
-	private Connection connection;
+	private final Connection connection;
 
 	/**
 	 * (Constructor) Creates a new DatabaseWriter.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration paramters
-	 * 
+	 *
 	 * @throws ClassNotFoundException
 	 *             if the JDBC Driver could not be located
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if an error occured while creating the index tables
 	 */
@@ -86,11 +86,24 @@ public class DatabaseWriter
 				+ "ReverseMapping MEDIUMTEXT NOT NULL, "
 				+ "PRIMARY KEY(ArticleID));");
 		statement.close();
+
+		//disable keys now - reenable after inserts
+
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;");
+		statement.close();
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_revisionID DISABLE KEYS;");
+		statement.close();
+
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_chronological DISABLE KEYS;");
+		statement.close();
 	}
 
 	/**
 	 * Writes the buffered finalzed queries to the output.
-	 * 
+	 *
 	 * @param index
 	 *            Reference to an index
 	 * @throws SQLException
@@ -117,8 +130,30 @@ public class DatabaseWriter
 	}
 
 	/**
+	 * Wraps up the index generation process and writes all remaining statements
+	 * e.g. concerning SQL-Indexes on the created tables.
+	 *
+	 * @throws SQLException
+	 *             if an error occured while accessing the database
+	 */
+	public void finish() throws SQLException{
+		Statement statement = connection.createStatement();
+		statement.execute("ALTER TABLE revisions create index articleIdx on revisions(ArticleID);");
+		statement.close();
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;");
+		statement.close();
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_revisionID ENABLE KEYS;");
+		statement.close();
+		statement = connection.createStatement();
+		statement.execute("ALTER TABLE index_chronological ENABLE KEYS;");
+		statement.close();
+	}
+
+	/**
 	 * Closes the file or the database connection.
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if an error occured while closing the database connection
 	 */
