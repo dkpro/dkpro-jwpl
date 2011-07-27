@@ -399,7 +399,7 @@ public class RevisionApi
 	 *             if an error occurs
 	 * @author Oliver Ferschke
 	 */
-	public Map<String, Timestamp> getUserContributionMap(final int articleID, List<String> groupfilter)
+	public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter)
 		throws WikiApiException
 	{
 		return getUserContributionMap(articleID, groupfilter, false);
@@ -427,7 +427,7 @@ public class RevisionApi
 	 *             if an error occurs
 	 * @author Oliver Ferschke
 	 */
-	public Map<String, Timestamp> getUserContributionMap(final int articleID, List<String> groupfilter, boolean onlyRegistered)
+	public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter, boolean onlyRegistered)
 		throws WikiApiException
 	{
 
@@ -451,7 +451,7 @@ public class RevisionApi
 
 				StringBuilder statementStr = new StringBuilder();
 
-				if(groupfilter==null||groupfilter.isEmpty()||!tableExists("user_groups")){
+				if(groupfilter==null||groupfilter.length<1||!tableExists("user_groups")){
 					//create statement WITHOUT filter
 					statementStr.append("SELECT ContributorName, Timestamp FROM revisions WHERE ArticleID=?");
 					statement = connection.prepareStatement(statementStr.toString());
@@ -460,12 +460,11 @@ public class RevisionApi
 					//create statement WITH filter
 					statementStr.append("SELECT ContributorName, Timestamp FROM revisions AS rev, user_groups AS ug  WHERE ArticleID=?");
 					statementStr.append(" AND rev.ContributorId=ug.ug_user");
-
-					for(int i = 0;i<groupfilter.size();i++){
+					for (String element : groupfilter) {
 						statementStr.append(" AND NOT ug.ug_group=?");
 					}
+					//and combine with results from unregistered users
 					if(!onlyRegistered){
-						//and combine with results from unregistered users
 						statementStr.append(" UNION ( SELECT ContributorName, Timestamp FROM revisions AS rev WHERE ArticleID=? AND rev.ContributorId IS NULL)");
 					}
 
