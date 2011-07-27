@@ -45,7 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  *
  * @author Simon Kulessa
  * @author Oliver Ferschke
- * @version 0.5.0
  */
 public class RevisionApi
 {
@@ -279,8 +278,8 @@ public class RevisionApi
 	/**
 	 * Returns the number of unique contributors to an article based on the
 	 * people who revised the article (revision contributors).<br/>
-	 * It is possible to only count the registerd users, if onlyRegistered is set to true
-	 *
+	 * It is possible to only count the registerd users, if onlyRegistered is set to true.<br/>
+	 * <br/>
 	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
 	 * ArticleID in the revisions-table.
 	 *
@@ -356,7 +355,6 @@ public class RevisionApi
 		}
 	}
 
-
 	/**
 	 * Returns a map of usernames mapped to the timestamps of their contributions
 	 *
@@ -372,6 +370,64 @@ public class RevisionApi
 	 * @author Oliver Ferschke
 	 */
 	public Map<String, Timestamp> getUserContributionMap(final int articleID)
+		throws WikiApiException
+	{
+		return getUserContributionMap(articleID, null);
+	}
+	/**
+	 * Returns a map of usernames mapped to the timestamps of their contributions
+	 *
+	 * Users of certain user groups (e.g. bots) can be filtered by providing
+	 * the unwanted groups in the {@code groupFilter}. Nothing is filtered if
+	 * the {@code groupFilter} is null or empty.<br/>
+	 * <br/>
+	 * Filtered results also include unregistered users (because they cannot
+	 * be filtered using user groups) In order to get results containing only registered
+	 * users, use getUserContributionMap(final int articleID, List<String> groupfilter, boolean onlyRegistered) and
+	 * set {@code onlyRegistered=true}.<br/>
+	 * <br/>
+	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
+	 * ArticleID in the revisions-table.
+	 *
+	 * @param articleID
+	 *            ID of the article
+	 * @param groupfilter
+	 *            a list of unwanted user groups
+	 * @return map of Timestamp-DiffPart-Collection pairs
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public Map<String, Timestamp> getUserContributionMap(final int articleID, List<String> groupfilter)
+		throws WikiApiException
+	{
+		return getUserContributionMap(articleID, groupfilter, false);
+	}
+
+	/**
+	 * Returns a map of usernames mapped to the timestamps of their contributions.<br/>
+	 * <br/>
+	 * Users of certain user groups (e.g. bots) can be filtered by providing
+	 * the unwanted groups in the {@code groupFilter}. Nothing is filtered if
+	 * the {@code groupFilter} is null or empty.<br/>
+	 * <br/>
+	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
+	 * ArticleID in the revisions-table.
+	 *
+	 * @param articleID
+	 *            ID of the article
+	 * @param groupfilter
+	 *            a list of unwanted user groups
+	 * @param onlyRegistered
+	 *            true, if result should only contain registered users. false, else
+	 * @return map of Timestamp-DiffPart-Collection pairs
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public Map<String, Timestamp> getUserContributionMap(final int articleID, List<String> groupfilter, boolean onlyRegistered)
 		throws WikiApiException
 	{
 
@@ -393,11 +449,42 @@ public class RevisionApi
 							"Please create an index on revisions(ArticleID) in order to make this query feasible.");
 				}
 
-				statement = connection
-						.prepareStatement("SELECT ContributorName, Timestamp "
-								+ "FROM revisions WHERE ArticleID=?");
-				;
-				statement.setInt(1, articleID);
+				StringBuilder statementStr = new StringBuilder();
+
+				if(groupfilter==null||groupfilter.isEmpty()||!tableExists("user_groups")){
+					//create statement WITHOUT filter
+					statementStr.append("SELECT ContributorName, Timestamp FROM revisions WHERE ArticleID=?");
+					statement = connection.prepareStatement(statementStr.toString());
+					statement.setInt(1, articleID);
+				}else{
+					//create statement WITH filter
+					statementStr.append("SELECT ContributorName, Timestamp FROM revisions AS rev, user_groups AS ug  WHERE ArticleID=?");
+					statementStr.append(" AND rev.ContributorId=ug.ug_user");
+
+					for(int i = 0;i<groupfilter.size();i++){
+						statementStr.append(" AND NOT ug.ug_group=?");
+					}
+					if(!onlyRegistered){
+						//and combine with results from unregistered users
+						statementStr.append(" UNION ( SELECT ContributorName, Timestamp FROM revisions AS rev WHERE ArticleID=? AND rev.ContributorId IS NULL)");
+					}
+
+					statement = connection.prepareStatement(statementStr.toString());
+					//insert article id in prepared statement
+					statement.setInt(1, articleID);
+
+					//insert filtered groups in prepared statement
+					int curPrepStatValueIdx = 2;
+					for(String group:groupfilter){
+						statement.setString(curPrepStatValueIdx++, group);
+					}
+					if(!onlyRegistered){
+						//insert article id for second select in prepared statement
+						statement.setInt(curPrepStatValueIdx, articleID);
+					}
+
+				}
+
 				result = statement.executeQuery();
 
 				if (result == null) {
