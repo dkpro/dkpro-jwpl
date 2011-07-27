@@ -145,10 +145,10 @@ public class SQLEncoder
 				+ "Timestamp BIGINT NOT NULL, "
 				+ "Revision MEDIUMTEXT NOT NULL, "
 				+ "Comment MEDIUMTEXT, "
-				+ "Minor TINYINT NOT NULL,"
-				+ "ContributorName TEXT NOT NULL,"
-				+ "ContributorId TEXT,"
-				+ "ContributorIsRegistered TINYINT NOT NULL,"
+				+ "Minor TINYINT NOT NULL, "
+				+ "ContributorName TEXT NOT NULL, "
+				+ "ContributorId INTEGER UNSIGNED, "
+				+ "ContributorIsRegistered TINYINT NOT NULL, "
 				+ "PRIMARY KEY(PrimaryKey)"
 				+ ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
@@ -160,11 +160,11 @@ public class SQLEncoder
 				+ "ArticleID INTEGER UNSIGNED NOT NULL, "
 				+ "Timestamp BIGINT NOT NULL, "
 				+ "Revision MEDIUMBLOB NOT NULL,"
-				+ "Comment MEDIUMTEXT,"
-				+ "Minor TINYINT NOT NULL,"
-				+ "ContributorName TEXT NOT NULL,"
-				+ "ContributorId TEXT,"
-				+ "ContributorIsRegistered TINYINT NOT NULL,"
+				+ "Comment MEDIUMTEXT, "
+				+ "Minor TINYINT NOT NULL, "
+				+ "ContributorName TEXT NOT NULL, "
+				+ "ContributorId INTEGER UNSIGNED, "
+				+ "ContributorIsRegistered TINYINT NOT NULL, "
 				+ "PRIMARY KEY(PrimaryKey)"
 				+ ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
