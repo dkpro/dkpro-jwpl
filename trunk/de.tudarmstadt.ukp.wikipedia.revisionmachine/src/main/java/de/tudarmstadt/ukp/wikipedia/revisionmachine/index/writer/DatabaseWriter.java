@@ -138,7 +138,7 @@ public class DatabaseWriter
 	 */
 	public void finish() throws SQLException{
 		Statement statement = connection.createStatement();
-		statement.execute("ALTER TABLE revisions create index articleIdx on revisions(ArticleID);");
+		statement.execute("CREATE INDEX articleIdx on revisions(ArticleID);");
 		statement.close();
 		statement = connection.createStatement();
 		statement.execute("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;");
