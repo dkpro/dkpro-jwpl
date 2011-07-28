@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -26,7 +26,7 @@ public class PageWriter implements DumpWriter {
 
 	private Page currentPage;
 	private Revision lastRevision;
-	private UTFDataOutputStream stream;
+	private final UTFDataOutputStream stream;
 
 	public PageWriter(OutputStream output) throws IOException {
 		this.stream = new UTFDataOutputStream(output);
@@ -78,7 +78,7 @@ public class PageWriter implements DumpWriter {
 		stream.writeInt(page.Id);
 		stream.writeInt(page.Title.Namespace);
 		String wellformedTitle = SQLEscape.titleFormat(page.Title.Text);
-		stream.writeUTFAsArray(SQLEscape.removeEscapes(wellformedTitle));
+		stream.writeUTFAsArray(SQLEscape.escape(wellformedTitle));
 		// stream.writeBoolean(revision.isRedirect());
 		stream.writeBoolean(Redirects.isRedirect(revision.Text));
 	}

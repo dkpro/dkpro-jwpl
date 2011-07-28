@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -23,7 +23,7 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.UTFDataOutputStream;
 
 public class TextWriter implements DumpWriter {
 
-	private UTFDataOutputStream stream;
+	private final UTFDataOutputStream stream;
 
 	public TextWriter(OutputStream output) throws IOException {
 		this.stream = new UTFDataOutputStream(output);
@@ -46,7 +46,7 @@ public class TextWriter implements DumpWriter {
 	@Override
 	public void writeRevision(Revision revision) throws IOException {
 		stream.writeInt(revision.Id);
-		stream.writeUTFAsArray(SQLEscape.removeEscapes(revision.Text));
+		stream.writeUTFAsArray(SQLEscape.escape(revision.Text));
 	}
 
 	@Override
