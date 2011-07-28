@@ -370,15 +370,18 @@ public class SQLEncoder
 			if(comment!=null){
 				comment="'"+comment+"'";
 			}
-			String contributorId = diff.getContributorId().toString();
+
+			Integer contributorId = diff.getContributorId();
+			String contributorIdString = null;
 			if(contributorId!=null){
-				contributorId="'"+contributorId+"'";
+				contributorIdString="'"+contributorId.toString()+"'";
 			}
+
 			// save the query temporary
 			tempData = "(null," + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",'" + encodeDiff(task, diff) + "',"+comment+","+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"',"+contributorId+ ","+(diff.getContributorIsRegistered()?"1":"0")+")";
+					+ ",'" + encodeDiff(task, diff) + "',"+comment+","+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"',"+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0")+")";
 
 			// if the limit would be reached start a new encoding
 			if (revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) {
