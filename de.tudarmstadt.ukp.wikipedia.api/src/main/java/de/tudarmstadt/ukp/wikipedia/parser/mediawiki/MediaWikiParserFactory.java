@@ -4,9 +4,10 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
+ *     Samy Ateia - provided a patch via the JWPL mailing list
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 
@@ -15,6 +16,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
@@ -50,13 +52,16 @@ public class MediaWikiParserFactory {
 	 * Creates a fully configurated parser factory for the specified language.<br/>
 	 * Next step is .createParser()...
 	 */
-	protected MediaWikiParserFactory(Language language){
+	public MediaWikiParserFactory(Language language){
         initVariables();
         if (language.equals(Language.german)) {
             initGermanVariables();
         }
-        else {
-            logger.warn("Language not Implemented. Using default values.");
+        else if(language.equals(Language.english)){
+        	initEnglishVariables();
+        }else
+        {
+        	logger.warn("Language not Implemented. Using default values.");
         }
 	}
 
@@ -197,14 +202,26 @@ public class MediaWikiParserFactory {
 	}
 
 	private void initGermanVariables(){
-		templateParserClass = GermanTemplateParser.class;
-		deleteTemplates.add( "Prettytable" );
-		parseTemplates.add( "Dieser Artikel" );
-		parseTemplates.add( "Audio" );
-		parseTemplates.add( "Video" );
+		templateParserClass = FlushTemplates.class;
+		//deleteTemplates.add( "Prettytable" );
+		//parseTemplates.add( "Dieser Artikel" );
+		//parseTemplates.add( "Audio" );
+		//parseTemplates.add( "Video" );
 		imageIdentifers.add("Bild");
+		imageIdentifers.add("Image");
+		imageIdentifers.add("Datei");
 		categoryIdentifers.add( "Kategorie" );
 		languageIdentifers.remove("de");
+	}
+
+	private void initEnglishVariables(){
+		templateParserClass = FlushTemplates.class;
+
+		imageIdentifers.add("Image");
+		imageIdentifers.add("File");
+		imageIdentifers.add("media");
+		categoryIdentifers.add( "Category" );
+		languageIdentifers.remove("en");
 	}
 
 	private String resolveLineSeparator(){

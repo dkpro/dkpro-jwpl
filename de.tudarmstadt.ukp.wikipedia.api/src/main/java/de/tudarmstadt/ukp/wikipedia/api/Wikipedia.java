@@ -7,11 +7,21 @@
  *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
+ *     Oliver Ferschke - several bugfixes and extensions
+ *     Samy Ateia - provided a patch via the JWPL mailing list
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,7 +85,7 @@ public class Wikipedia implements WikiConstants {
 
         this.metaData = new MetaData(this);
 
-        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        MediaWikiParserFactory pf = new MediaWikiParserFactory(this.language);
         this.parser = pf.createParser();
 
 
@@ -500,7 +510,7 @@ public class Wikipedia implements WikiConstants {
 			return false;
 		}
 		String encodedTitle = t.getWikiStyleTitle();
-		
+
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
