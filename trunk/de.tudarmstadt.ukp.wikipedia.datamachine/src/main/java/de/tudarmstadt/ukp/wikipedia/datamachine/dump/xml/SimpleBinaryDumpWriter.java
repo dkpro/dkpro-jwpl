@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -20,7 +20,6 @@ import org.mediawiki.importer.Revision;
 import org.mediawiki.importer.Siteinfo;
 
 import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
-
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.SQLEscape;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.UTFDataOutputStream;
@@ -30,7 +29,7 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 	private UTFDataOutputStream pageFile;
 	private UTFDataOutputStream revisionFile;
 	private UTFDataOutputStream textFile;
-	private DataMachineFiles files;
+	private final DataMachineFiles files;
 
 	private Page currentPage;
 	private Revision lastRevision;
@@ -95,7 +94,7 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 		revisionFile.writeInt(revision.Id);
 
 		textFile.writeInt(revision.Id);
-		textFile.writeUTFAsArray(SQLEscape.removeEscapes(revision.Text));
+		textFile.writeUTFAsArray(SQLEscape.escape(revision.Text));
 	}
 
 	@Override
@@ -115,7 +114,7 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 	private void updatePage(Page page, Revision revision) throws IOException {
 		pageFile.writeInt(page.Id);
 		pageFile.writeInt(page.Title.Namespace);
-		pageFile.writeUTFAsArray(SQLEscape.removeEscapes(SQLEscape
+		pageFile.writeUTFAsArray(SQLEscape.escape(SQLEscape
 				.titleFormat(page.Title.Text)));
 		// pageFile.writeBoolean(revision.isRedirect());
 		pageFile.writeBoolean(Redirects.isRedirect(revision.Text));

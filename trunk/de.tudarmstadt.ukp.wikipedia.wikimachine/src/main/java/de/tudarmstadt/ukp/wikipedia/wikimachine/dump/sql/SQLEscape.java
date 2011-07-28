@@ -4,17 +4,19 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql;
 
+
 /**
  * The single method {@link SQLEscape#removeEscapes} removes all unwished escape
  * characters from a string to make is SQL conform. Maybe not thread-save.
- * 
+ *
  * @author ivan.galkin
+ * @author Oliver Ferschke
  */
 public class SQLEscape {
 	private SQLEscape() {
@@ -23,11 +25,10 @@ public class SQLEscape {
 
 	/**
 	 * @see SQLEscape
-	 * @param str
-	 *            String with with escape characters
+	 * @param str unescaped String
 	 * @return String with with escape characters
 	 */
-	public static String removeEscapes(String str) {
+	public static String escape(String str) {
 		final int len = str.length();
 
 		// maybe the StringBuffer would be safer?
@@ -51,6 +52,24 @@ public class SQLEscape {
 			case '\u001a':
 				sql.append('\\').append('Z');
 				break;
+			case '\'':
+				sql.append('\\').append('\'');
+				break;
+			case '\"':
+				sql.append('\\').append('"');
+				break;
+			case '\b':
+				sql.append('\\').append('b');
+				break;
+			case '\\':
+				sql.append('\\').append('\\');
+				break;
+//			case '%':
+//				sql.append('[').append('%').append(']');
+//				break;
+//			case '_':
+//				sql.append('[').append('_').append(']');
+//				break;
 			default:
 				sql.append(c);
 				break;
