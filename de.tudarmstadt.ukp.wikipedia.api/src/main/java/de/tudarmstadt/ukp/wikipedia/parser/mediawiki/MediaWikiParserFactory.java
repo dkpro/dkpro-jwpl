@@ -61,7 +61,7 @@ public class MediaWikiParserFactory {
         	initEnglishVariables();
         }else
         {
-        	logger.warn("Language not Implemented. Using default values.");
+        	logger.warn("No language specific parser for "+language.toString()+" available. Using default values.");
         }
 	}
 
