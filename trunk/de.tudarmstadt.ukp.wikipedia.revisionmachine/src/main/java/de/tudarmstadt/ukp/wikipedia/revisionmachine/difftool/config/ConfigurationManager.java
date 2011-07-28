@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -16,6 +16,7 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config;
 
+import java.util.HashSet;
 import java.util.List;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ConfigurationException;
@@ -125,6 +126,9 @@ public class ConfigurationManager
 		}
 		else if (configParameter==ConfigurationKeys.LOGGING_PATH_DEBUG){
 			return "";
+		}
+		else if (configParameter==ConfigurationKeys.NAMESPACES_TO_KEEP){
+			return new HashSet<Integer>();
 		}
 		else{
 			throw ErrorFactory
