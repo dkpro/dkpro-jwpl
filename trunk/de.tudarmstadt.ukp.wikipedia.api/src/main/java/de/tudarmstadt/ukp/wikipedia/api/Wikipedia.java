@@ -12,16 +12,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -245,14 +237,15 @@ public class Wikipedia implements WikiConstants {
         List<Page> discussionArchives = new LinkedList<Page>();
 
         Iterator results = session.createQuery("SELECT pageID FROM PageMapLine where name like '"+articleTitle+"/%'").list().iterator();
+        session.getTransaction().commit();
 
         while (results.hasNext()) {
             int pageID = (Integer) results.next();
             discussionArchives.add(getPage(pageID));
         }
-        session.getTransaction().commit();
 
         return discussionArchives;
+
     }
 
 //// I do not want to make this public at the moment (TZ, March, 2007)
