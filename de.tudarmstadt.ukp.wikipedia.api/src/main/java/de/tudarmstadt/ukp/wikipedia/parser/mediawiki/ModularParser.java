@@ -889,10 +889,10 @@ public class ModularParser implements MediaWikiParser,
 				if (e == null)
 				{
 					/*
-					 * OF: Setting e to sm.length() results in ArrayIndexOutOfBoundsExeption if calculateSrcSpans=true
+					 * OF: Setting e to sm.length()results in ArrayIndexOutOfBoundsExeption if calculateSrcSpans=true
 					 */
 					//e = new Span(sm.length(), sm.length());
-					e = new Span(sm.length()-1, sm.length()-1);
+					e = new Span(Math.max(0,sm.length()-1), Math.max(0,sm.length()-1));
 				}
 
 				strings.add(sm.substring(s.getEnd(), e.getStart()));
