@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -236,7 +237,10 @@ public class Wikipedia implements WikiConstants {
 
         List<Page> discussionArchives = new LinkedList<Page>();
 
-        Iterator results = session.createQuery("SELECT pageID FROM PageMapLine where name like '"+articleTitle+"/%'").list().iterator();
+        Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like ?");
+        query.setString(0, articleTitle+"/%");
+        Iterator results = query.list().iterator();
+
         session.getTransaction().commit();
 
         while (results.hasNext()) {
