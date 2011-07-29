@@ -19,23 +19,8 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.tudarmstadt.ukp.wikipedia.parser.Content;
+import de.tudarmstadt.ukp.wikipedia.parser.*;
 import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
-import de.tudarmstadt.ukp.wikipedia.parser.ContentElement;
-import de.tudarmstadt.ukp.wikipedia.parser.DefinitionList;
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
-import de.tudarmstadt.ukp.wikipedia.parser.NestedListContainer;
-import de.tudarmstadt.ukp.wikipedia.parser.NestedListElement;
-import de.tudarmstadt.ukp.wikipedia.parser.Paragraph;
-import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
-import de.tudarmstadt.ukp.wikipedia.parser.Section;
-import de.tudarmstadt.ukp.wikipedia.parser.SectionContainer;
-import de.tudarmstadt.ukp.wikipedia.parser.SectionContent;
-import de.tudarmstadt.ukp.wikipedia.parser.Span;
-import de.tudarmstadt.ukp.wikipedia.parser.SrcSpan;
-import de.tudarmstadt.ukp.wikipedia.parser.Table;
-import de.tudarmstadt.ukp.wikipedia.parser.TableElement;
-import de.tudarmstadt.ukp.wikipedia.parser.Template;
 
 
 /**
@@ -903,7 +888,11 @@ public class ModularParser implements MediaWikiParser,
 
 				if (e == null)
 				{
-					e = new Span(sm.length(), sm.length());
+					/*
+					 * OF: Setting e to sm.length() results in ArrayIndexOutOfBoundsExeption if calculateSrcSpans=true
+					 */
+					//e = new Span(sm.length(), sm.length());
+					e = new Span(sm.length()-1, sm.length()-1);
 				}
 
 				strings.add(sm.substring(s.getEnd(), e.getStart()));
