@@ -18,6 +18,8 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 /**
  * Represents a Wikipedia page title.
  * @author zesch
+ * 
+ * Title parsing regexp fixed with the help of many UKP colleagues.
  *
  */
 public class Title {
@@ -53,23 +55,30 @@ public class Title {
         // - "Car"
         // - "automobile"
         // - "Introduction"
-        String regexFindParts = "(.*?).\\((.+?)\\)#?(.*)";
-
+//        String regexFindParts = "(.*?).\\((.+?)\\)#?(.*)";
+//        String regexFindParts = "(.+)[_| ]?(\\((.+)\\))?(#(.+))?";
+//        String regexFindParts = "([^#(]*)\\(?([^#)]*)?\\)?#?(.*)?";
+//        String regexFindParts = "([\\w&&[^_]]+)([\\s_]*?\\(([\\w]+)\\))*(#([\\w]+))*";
+        
+        String regexFindParts = "(\\w+)([_ ]\\((\\w+)\\))?(#(\\w+))?";
         Pattern patternNamespace = Pattern.compile(regexFindParts); 
         Matcher matcherNamespace = patternNamespace.matcher(
-        		this.decodeTitleWikistyle(rawTitleText)
+                this.decodeTitleWikistyle(rawTitleText)
         ); 
 
         // group 0 is the whole match
         if (matcherNamespace.find()) { 
             this.entity = matcherNamespace.group(1);
-            this.disambiguationText = matcherNamespace.group(2);
-            this.sectionText = matcherNamespace.group(3);
-            if (this.sectionText.length() == 0) {
-            	this.sectionText = null;
-            }
+            this.disambiguationText = matcherNamespace.group(3);
+            this.sectionText = matcherNamespace.group(5);
             
-            String relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
+            String relevantTitleParts;
+            if (this.disambiguationText == null) {
+                relevantTitleParts = this.entity;
+            }
+            else {
+                relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
+            }
             this.plainTitle = decodeTitleWikistyle(relevantTitleParts);
             this.wikiStyleTitle = encodeTitleWikistyle(relevantTitleParts);
         }
@@ -156,6 +165,7 @@ public class Title {
         return rawTitleText;
     }
     
+    @Override
     public String toString() {
         return getPlainTitle();
     }
