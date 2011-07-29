@@ -67,4 +67,16 @@ public class TitleTest {
 		assertEquals("Introduction",  t.getSectionText());
 		assertEquals("Car_(automobile)", t.getWikiStyleTitle());
 	}
+	
+    @Test
+    public void titleTest6() throws WikiTitleParsingException {
+        
+        Title t = new Title("Car#Introduction");
+        assertEquals("Car", t.getEntity());
+        assertEquals("Car", t.getPlainTitle());
+        assertEquals("Car#Introduction", t.getRawTitleText());
+        assertEquals(null, t.getDisambiguationText());
+        assertEquals("Introduction",  t.getSectionText());
+        assertEquals("Car", t.getWikiStyleTitle());
+    }
 }
