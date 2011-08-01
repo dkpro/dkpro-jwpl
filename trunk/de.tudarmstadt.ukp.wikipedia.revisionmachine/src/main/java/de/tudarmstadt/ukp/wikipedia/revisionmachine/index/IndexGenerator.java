@@ -17,8 +17,8 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.index;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.Properties;
 
@@ -197,21 +197,35 @@ public class IndexGenerator
 	 * Load a properties file from the classpath
 	 *
 	 * @param propsName
-	 * @return Properties
-	 * @throws Exception
+	 *            path to the configuration file
+	 * @return Properties the properties object containing the configuration
+	 *         data
+	 * @throws IOException
+	 *             if an error occurs while accessing the configuration file
 	 */
-	private static Properties load(String configFile)
+	private static Properties load(String configFilePath)
 	{
 		Properties props = new Properties();
-		URL url = ClassLoader.getSystemResource(configFile);
+		FileInputStream fis = null;
 		try {
-			props.load(url.openStream());
-		}
-		catch (Exception e) {
-			System.err.println("Could not load configuration from file or config file invalid"
-					+ configFile);
-		}
-		return props;
+			File configFile = new File(configFilePath);
+	        fis = new FileInputStream(configFile);
+	        props.load(fis);
+        }
+        catch(IOException e){
+        	System.err.println("Could not load configuration file "+configFilePath);
+        }
+        finally{
+			if(fis!=null){
+			    try {
+					fis.close();
+				}
+				catch (IOException e) {
+		        	System.err.println("Error closing file stream of configuration file "+configFilePath);
+				}
+			}
+        }
+        return props;
 	}
 
 }
