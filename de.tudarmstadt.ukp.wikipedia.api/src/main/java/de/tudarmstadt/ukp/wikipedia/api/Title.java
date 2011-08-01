@@ -19,7 +19,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
  * Represents a Wikipedia page title.
  * @author zesch
  * 
- * Title parsing regexp fixed with the help of many UKP colleagues.
+ * Title parsing regexp fixed with the help of many UKP colleagues and Samy Ateia.
  *
  */
 public class Title {
@@ -55,40 +55,42 @@ public class Title {
         // - "Car"
         // - "automobile"
         // - "Introduction"
-//        String regexFindParts = "(.*?).\\((.+?)\\)#?(.*)";
-//        String regexFindParts = "(.+)[_| ]?(\\((.+)\\))?(#(.+))?";
-//        String regexFindParts = "([^#(]*)\\(?([^#)]*)?\\)?#?(.*)?";
-//        String regexFindParts = "([\\w&&[^_]]+)([\\s_]*?\\(([\\w]+)\\))*(#([\\w]+))*";
+
+        String titlePart = null;
+        String sectionPart = null;
+        if (rawTitleText.contains("#")) {
+            titlePart = rawTitleText.substring(0, rawTitleText.lastIndexOf("#"));
+            sectionPart = rawTitleText.substring(rawTitleText.lastIndexOf("#")+1,rawTitleText.length());
+        }
+        else {
+            titlePart = rawTitleText;
+        }
         
-        String regexFindParts = "(\\w+)([_ ]\\((\\w+)\\))?(#(\\w+))?";
+        this.sectionText = sectionPart;
+        
+        String regexFindParts = "(.*?).\\((.+?)\\)";
+
         Pattern patternNamespace = Pattern.compile(regexFindParts); 
         Matcher matcherNamespace = patternNamespace.matcher(
-                this.decodeTitleWikistyle(rawTitleText)
+        		this.decodeTitleWikistyle(titlePart)
         ); 
 
         // group 0 is the whole match
         if (matcherNamespace.find()) { 
             this.entity = matcherNamespace.group(1);
-            this.disambiguationText = matcherNamespace.group(3);
-            this.sectionText = matcherNamespace.group(5);
+            this.disambiguationText = matcherNamespace.group(2);
             
-            String relevantTitleParts;
-            if (this.disambiguationText == null) {
-                relevantTitleParts = this.entity;
-            }
-            else {
-                relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
-            }
+            String relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
             this.plainTitle = decodeTitleWikistyle(relevantTitleParts);
             this.wikiStyleTitle = encodeTitleWikistyle(relevantTitleParts);
         }
         else {
-        	this.plainTitle = decodeTitleWikistyle(rawTitleText);
-        	this.wikiStyleTitle = encodeTitleWikistyle(rawTitleText);
+        	this.plainTitle = decodeTitleWikistyle(titlePart);
+        	this.wikiStyleTitle = encodeTitleWikistyle(titlePart);
             this.entity = this.plainTitle;
             this.disambiguationText = null;
-            this.sectionText = null;
         }
+        
         if (getEntity() == null) {
             throw new WikiTitleParsingException("Title was not properly initialized.");
         }
