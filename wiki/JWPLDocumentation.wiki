@@ -15,3 +15,8 @@ JWPL is not for you:
 
 == Support ==
 If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
+
+== Preprocessed Dumps ==
+A preprocessed JWPL dump (articles and talk pages) including revisions can be made available upon request. The current package was created from the wiki_en_20110405 dump.
+The total size of all sql and data files is about 66GB (bz2).
+The size of the resulting database is about 158GB (126GB for the data and 32GB for the indexes).
