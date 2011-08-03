@@ -21,9 +21,9 @@ public class ResolvedTemplate{
 	private String postParseReplacement;
 
 	/**
-	 * is the Object wich the Template Parser has been parsed, and will be integrated
-	 * by the ContentElementParseing process. It parsedObject == null, the template will
-	 * be thrown away...
+	 * is the Object which the Template Parser has been parsed, and will be
+	 * integrated by the ContentElementParseing process. <br/>
+	 * If parsedObject == null, the template will be discarded...
 	 */
 	private Object parsedObject;
 
@@ -44,9 +44,9 @@ public class ResolvedTemplate{
 	}
 
 	/**
-	 * Will be called by the parser after the parseing process and will replace the TEXT which
-	 * is in the bounds of the original template src. <br/>
-	 * If NULL is returned, the parser wouldn�t do anything.
+	 * Will be called by the parser after the parsing process and will replace
+	 * the TEXT which is within the bounds of the original template src. <br/>
+	 * If NULL is returned, the parser won't do anything.
 	 */
 	public String getPostParseReplacement() {
 		return postParseReplacement;
@@ -85,7 +85,7 @@ public class ResolvedTemplate{
 	}
 
 	/**
-	 * Retruns the Object which is representativ for the Template Code.
+	 * Returns the Object which is representative for the Template Code.
 	 * It can be a Template or any object the parser knows.<br/>
 	 * If the Template is e.g. a Link the Link will be returned here.
 	 */
