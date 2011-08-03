@@ -3,7 +3,7 @@
 The supported languages are defined in <br/>
 {{{de.tudarmstadt.ukp.wikipedia.api.WikiConstants}}} <br/>
 This list reflects the languages supported in August 2011.
-As the API is largely language independent, adding additional language should not be a problem.
+As the API is largely language independent, adding additional languages should not be a problem.
 
 = Languages =
 {{{
