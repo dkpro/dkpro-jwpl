@@ -158,13 +158,13 @@ public class WikipediaTemplateInfoGenerator
 	    	writer=new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputPath), charset));
 
 	    	writer.write("CREATE TABLE IF NOT EXISTS "+TABLE_TPLID_PAGEID+" ("
-					+ "TemplateId INTEGER UNSIGNED NOT NULL,"
-					+ "PageId INTEGER UNSIGNED NOT NULL);");
+					+ "templateId INTEGER UNSIGNED NOT NULL,"
+					+ "pageId INTEGER UNSIGNED NOT NULL);");
 			writer.write("\r\n");
 	    	writer.write("CREATE TABLE IF NOT EXISTS "+TABLE_TPLID_TPLNAME+" ("
-					+ "TemplateId INTEGER UNSIGNED NOT NULL,"
-					+ "TemplateName MEDIUMTEXT NOT NULL, "
-					+ "PRIMARY KEY(TemplateId));");
+					+ "templateId INTEGER UNSIGNED NOT NULL,"
+					+ "templateName MEDIUMTEXT NOT NULL, "
+					+ "PRIMARY KEY(templateId));");
 			writer.write("\r\n");
 			writer.write("ALTER TABLE "+TABLE_TPLID_PAGEID+" DISABLE KEYS;");
 			writer.write("\r\n");
@@ -268,8 +268,8 @@ public class WikipediaTemplateInfoGenerator
 			writer.write("\r\n");
 			writer.write("ALTER TABLE "+TABLE_TPLID_TPLNAME+" ENABLE KEYS;");
 			writer.write("\r\n");
-	    	writer.write("CREATE INDEX pageIdx ON "+TABLE_TPLID_PAGEID+"(PageId);");
-	    	writer.write("CREATE INDEX tplIdx ON "+TABLE_TPLID_PAGEID+"(TemplateID);");
+	    	writer.write("CREATE INDEX pageIdx ON "+TABLE_TPLID_PAGEID+"(pageId);");
+	    	writer.write("CREATE INDEX tplIdx ON "+TABLE_TPLID_PAGEID+"(templateID);");
 	    	writer.write("\r\n");
 
     	}catch(IOException e){
