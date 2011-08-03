@@ -65,7 +65,7 @@ public class GermanTemplateParser implements MediaWikiTemplateParser {
 
 		//Show Name and Parameters as Standart treatment.
 		ResolvedTemplate result = new ResolvedTemplate( t );
-		result.setPreParseReplacement( ResolvedTemplate.templateSpacer );
+		result.setPreParseReplacement( ResolvedTemplate.TEMPLATESPACER );
 		StringBuilder sb = new StringBuilder();
 		sb.append(templatePrefix);
 		sb.append( t.getName() + parameterDivisor );

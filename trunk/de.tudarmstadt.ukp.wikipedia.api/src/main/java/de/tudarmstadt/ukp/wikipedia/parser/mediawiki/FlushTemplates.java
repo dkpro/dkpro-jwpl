@@ -22,7 +22,7 @@ public final class FlushTemplates implements MediaWikiTemplateParser {
 
 	public ResolvedTemplate parseTemplate(Template t, ParsedPage pp) {
 		ResolvedTemplate result = new ResolvedTemplate( t );
-		result.setPreParseReplacement( ResolvedTemplate.templateSpacer );
+		result.setPreParseReplacement( ResolvedTemplate.TEMPLATESPACER );
 		result.setPostParseReplacement( "" );
 		result.setParsedObject( null );
 		return result;
