@@ -32,7 +32,7 @@
   <comment>This a configuration for the JWPL TimeMachine</comment>
   <entry key="language">english</entry>
   <entry key="mainCategory">Contents</entry>
-  <entry key="disambiguationCategory">Disambiguation</entry>
+  <entry key="disambiguationCategory">Disambiguation_pages</entry>
   <entry key="fromTimestamp">20060101000000</entry>
   <entry key="toTimestamp">20060102000000</entry>
   <entry key="each">1</entry>
@@ -48,7 +48,7 @@
 || *Parameter* || *Description* || *Comment / Example* ||
 || language || The used language. || The language string must correspond to one of the values enumerated in !WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic. ||
 || mainCategory || The title of the main category of the Wikipedia language version used. || For example, "Contents" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia. ||
-|| disambiguationCategory || The title of the disambiguation category of the Wikipedia language version used. || For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. ||
+|| disambiguationCategory || The title of the disambiguation category of the Wikipedia language version used. || For example, "Disambiguation_pages" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. ||
 || fromTimestamp || yyyymmddhhmmss || The timestamp of the first version to be extracted. ||
 || toTimestamp || yyyymmddhhmmss || The timestamp of the last version to be extracted. ||
 || each || The number of days to be used as regular interval for extracting versions.|| ||
