@@ -1,13 +1,13 @@
 #summary A list of languages supported in JWPL.
 
 The supported languages are defined in <br/>
-*de.tudarmstadt.ukp.wikipedia.api.WikiConstants*
+{{{de.tudarmstadt.ukp.wikipedia.api.WikiConstants}}}
 This list reflects the languages supported in August 2011.<br/>
 As the API is largely language independent, adding additional language should not be a problem.
 
 = Languages =
-
-   abkhazian,
+{{{
+        abkhazian,
         afar,
         afrikaans,
         akan,
@@ -264,3 +264,4 @@ As the API is largely language independent, adding additional language should no
         zhuang,
         zulu,
         _test
+}}}
