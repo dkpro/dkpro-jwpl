@@ -30,15 +30,15 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
   <comment>This a configuration for the JWPL TimeMachine</comment>
-  <entry key="language">greek</entry>
-  <entry key="mainCategory"></entry>
-  <entry key="disambiguationCategory"></entry>
+  <entry key="language">english</entry>
+  <entry key="mainCategory">Contents</entry>
+  <entry key="disambiguationCategory">Disambiguation</entry>
   <entry key="fromTimestamp">20060101000000</entry>
   <entry key="toTimestamp">20060102000000</entry>
   <entry key="each">1</entry>
-  <entry key="metaHistoryFile">/PATH/elwiki-20080205-pages-meta-history.xml.bz2</entry>
-  <entry key="categoryLinksFile">/PATH/elwiki-20080205-categorylinks.sql.gz</entry>
-  <entry key="pageLinksFile">/PATH/elwiki-20080205-pagelinks.sql.gz</entry>
+  <entry key="metaHistoryFile">/PATH/enwiki-2110405-pages-meta-history.xml.bz2</entry>
+  <entry key="categoryLinksFile">/PATH/enwiki-20110405-categorylinks.sql.gz</entry>
+  <entry key="pageLinksFile">/PATH/enwiki-20110405-pagelinks.sql.gz</entry>
   <entry key="outputDirectory">/PATH/output</entry>
   <entry key="removeInputFilesAfterProcessing">false</entry>
 </properties>
@@ -47,8 +47,8 @@
 === Parameters ===
 || *Parameter* || *Description* || *Comment / Example* ||
 || language || The used language. || The language string must correspond to one of the values enumerated in !WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic. ||
-|| mainCategory || The title of the main category of the Wikipedia language version used. || For example, "Categories" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia. ||
-|| isambiguationCategory || The title of the disambiguation category of the Wikipedia language version used. || For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. ||
+|| mainCategory || The title of the main category of the Wikipedia language version used. || For example, "Contents" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia. ||
+|| disambiguationCategory || The title of the disambiguation category of the Wikipedia language version used. || For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. ||
 || fromTimestamp || yyyymmddhhmmss || The timestamp of the first version to be extracted. ||
 || toTimestamp || yyyymmddhhmmss || The timestamp of the last version to be extracted. ||
 || each || The number of days to be used as regular interval for extracting versions.|| ||
