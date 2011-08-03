@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,20 +12,21 @@ package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
 
-class ResolvedTemplate{
-	protected final static String templateSpacer = "(TEMPLATE)";
-	
-	private Template template;
+public class ResolvedTemplate{
+
+	public final static String TEMPLATESPACER = "(TEMPLATE)";
+
+	private final Template template;
 	private String preParseReplacement;
 	private String postParseReplacement;
-	
+
 	/**
 	 * is the Object wich the Template Parser has been parsed, and will be integrated
-	 * by the ContentElementParseing process. It parsedObject == null, the template will 
+	 * by the ContentElementParseing process. It parsedObject == null, the template will
 	 * be thrown away...
 	 */
 	private Object parsedObject;
-	
+
 	/**
 	 * Creates a new ResolvedTemplate linked to the original template.
 	 * @param template the original template
@@ -33,13 +34,15 @@ class ResolvedTemplate{
 	public ResolvedTemplate(Template template){
 		this.template = template;
 		this.postParseReplacement = "";
-		checkPreParseReplacement();		
+		checkPreParseReplacement();
 	}
 
 	private void checkPreParseReplacement(){
-		if( preParseReplacement==null || preParseReplacement.length()==0 ) preParseReplacement = templateSpacer;
+		if( preParseReplacement==null || preParseReplacement.length()==0 ) {
+			preParseReplacement = TEMPLATESPACER;
+		}
 	}
-	
+
 	/**
 	 * Will be called by the parser after the parseing process and will replace the TEXT which
 	 * is in the bounds of the original template src. <br/>
@@ -57,7 +60,7 @@ class ResolvedTemplate{
 	}
 
 	/**
-	 * will be called by the parser before the Parsing process and replaces the original 
+	 * will be called by the parser before the Parsing process and replaces the original
 	 * template code. MediaWiki code which is returned here, will be parsed.<br/>
 	 * length()>0 ! empty stings would not be accepted.
 	 */
@@ -96,5 +99,6 @@ class ResolvedTemplate{
 	 */
 	public void setParsedObject(Object parsedObject) {
 		this.parsedObject = parsedObject;
-	}	
+	}
+
 }

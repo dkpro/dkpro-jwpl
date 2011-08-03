@@ -27,7 +27,7 @@ public class ShowTemplateNamesAndParameters implements MediaWikiTemplateParser {
 	
 	public ResolvedTemplate parseTemplate(Template t, ParsedPage pp) {
 		ResolvedTemplate result = new ResolvedTemplate( t );
-		result.setPreParseReplacement( ResolvedTemplate.templateSpacer );
+		result.setPreParseReplacement( ResolvedTemplate.TEMPLATESPACER );
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append(templatePrefix);
