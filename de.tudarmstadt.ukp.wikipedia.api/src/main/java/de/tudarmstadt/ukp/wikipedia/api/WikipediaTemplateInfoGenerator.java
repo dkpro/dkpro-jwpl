@@ -61,7 +61,7 @@ public class WikipediaTemplateInfoGenerator
 	private final String outputPath;
 
     private final String TABLE_TPLID_PAGEID="templateId_pageId";
-    private final String TABLE_TPLID_TPLNAME="templateId_templateName";
+    private final String TABLE_TPLID_TPLNAME="templates";
     private final int VERBOSITY = 500;
 
 
