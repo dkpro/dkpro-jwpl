@@ -19,9 +19,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
@@ -36,8 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
  * @author Oliver Ferschke
  */
 public class WikipediaTemplateInfo {
-
-	private final Log logger = LogFactory.getLog(getClass());
 
     private final Wikipedia wiki;
     private Connection connection=null;
@@ -97,7 +92,7 @@ public class WikipediaTemplateInfo {
 				StringBuffer subconditions = new StringBuffer();
 				sqlString.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
-				for(String fragment:templateFragments){
+				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
 					}
@@ -185,7 +180,7 @@ public class WikipediaTemplateInfo {
 					.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
 							+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
 
-			for(String name:templateNames){
+			for(@SuppressWarnings("unused") String name:templateNames){
 				if(subconditions.length()!=0){
 					subconditions.append("OR ");
 				}
@@ -266,10 +261,12 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString
-						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
-				for(String fragment:templateFragments){
+				sqlString.append("SELECT p.pageId FROM "+
+						WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID
+						+ " AS p WHERE tpl.templateId = p.templateId AND (");
+
+				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
 					}
@@ -350,10 +347,10 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
 
-				for(String name:templateNames){
+				for(@SuppressWarnings("unused") String name:templateNames){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
 					}
@@ -436,9 +433,9 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
 				sqlString
-						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
-				for(String fragment:templateFragments){
+				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
 					}
@@ -518,10 +515,10 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
 
-				for(String name:templateNames){
+				for(@SuppressWarnings("unused") String name:templateNames){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
 					}
@@ -618,8 +615,7 @@ public class WikipediaTemplateInfo {
 	        List<String> templateNames = new LinkedList<String>();
 
 			try {
-				StringBuffer sqlString = new StringBuffer();
-				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
 						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
 				statement.setInt(1, pageId);
 
