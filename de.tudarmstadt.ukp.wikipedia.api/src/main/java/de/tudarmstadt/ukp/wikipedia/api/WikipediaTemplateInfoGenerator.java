@@ -60,8 +60,8 @@ public class WikipediaTemplateInfoGenerator
     private final long maxAllowedPacket;
 	private final String outputPath;
 
-    private final String TABLE_TPLID_PAGEID="templateId_pageId";
-    private final String TABLE_TPLID_TPLNAME="templates";
+    protected final static String TABLE_TPLID_PAGEID="templateId_pageId";
+    protected final static String TABLE_TPLID_TPLNAME="templates";
     private final int VERBOSITY = 500;
 
 
