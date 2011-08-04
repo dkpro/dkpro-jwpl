@@ -90,17 +90,16 @@ public class WikipediaTemplateInfo {
 
 			try {
 				StringBuffer sqlString = new StringBuffer();
-				StringBuffer subcondition = new StringBuffer();
-				sqlString
-						.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+				StringBuffer subconditions = new StringBuffer();
+				sqlString.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
 				for(String fragment:templateFragments){
-					if(subcondition.length()!=0){
-						subcondition.append("OR ");
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
 					}
-					subcondition.append("tpl.templateName LIKE ?");
+					subconditions.append("tpl.templateName LIKE ?");
 				}
-				sqlString.append(subcondition);
+				sqlString.append(subconditions);
 				sqlString.append(")");
 
 				statement = connection.prepareStatement(sqlString.toString());
@@ -262,17 +261,17 @@ public class WikipediaTemplateInfo {
 
 			try {
 				StringBuffer sqlString = new StringBuffer();
-				StringBuffer subcondition = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
 				sqlString
 						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
 								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
 				for(String fragment:templateFragments){
-					if(subcondition.length()!=0){
-						subcondition.append("OR ");
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
 					}
-					subcondition.append("tpl.templateName LIKE ?");
+					subconditions.append("tpl.templateName LIKE ?");
 				}
-				sqlString.append(subcondition);
+				sqlString.append(subconditions);
 				sqlString.append(")");
 
 				statement = connection.prepareStatement(sqlString.toString());
@@ -416,9 +415,6 @@ public class WikipediaTemplateInfo {
 			statement = this.connection.prepareStatement("SHOW TABLES;");
 			result = statement.executeQuery();
 
-			// Check if an index exists (because otherwise the query would
-			// be awfully slow. Note that the existence of ANY index will
-			// suffice - we might want to check for a specific index.
 			if (result == null) {
 				return false;
 			}
@@ -441,7 +437,6 @@ public class WikipediaTemplateInfo {
 		}
 
 	}
-
 
 	private Connection getConnection(Wikipedia wiki)
 		throws WikiApiException
