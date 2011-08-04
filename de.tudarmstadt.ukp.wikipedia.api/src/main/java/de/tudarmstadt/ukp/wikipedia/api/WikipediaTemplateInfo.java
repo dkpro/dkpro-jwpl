@@ -394,6 +394,92 @@ public class WikipediaTemplateInfo {
 	}
 
 
+
+	/**
+	 * Returns the names of all templates contained in the specified page.
+	 *
+	 * @param pageId
+	 *            the page object for which the templates should be retrieved
+	 * @return A List with the names of the templates contained in the specified
+	 *         page
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<String> getTemplateNamesFromPage(Page p) throws WikiApiException{
+    	return getTemplateNamesFromPage(p.getPageId());
+    }
+
+	/**
+	 * Returns the names of all templates contained in the specified page.
+	 *
+	 * @param pageId
+	 *            the title of the page for which the templates should be
+	 *            retrieved
+	 * @return A List with the names of the templates contained in the specified
+	 *         page
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<String> getTemplateNamesFromPage(String pageTitle) throws WikiApiException{
+    	return getTemplateNamesFromPage(wiki.getPage(pageTitle));
+    }
+
+
+	/**
+	 * Returns the names of all templates contained in the specified page.
+	 *
+	 * @param pageId
+	 *            the id of the Wiki page
+	 * @return A List with the names of the templates contained in the specified
+	 *         page
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<String> getTemplateNamesFromPage(int pageId) throws WikiApiException{
+    	if(pageId<1){
+    		throw new WikiApiException("Page ID must be > 0");
+    	}
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<String> templateNames = new LinkedList<String>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
+				statement.setInt(1, pageId);
+
+				result = statement.executeQuery();
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found for page "+pageId);
+				}
+
+				while (result.next()) {
+					templateNames.add(result.getString(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return templateNames;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+
 	/**
 	 * Checks if a specific table exists
 	 *
