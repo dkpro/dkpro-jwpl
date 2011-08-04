@@ -393,6 +393,201 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
+    /*
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     */
+
+
+	/**
+	 * Returns a list with the ids of all pages that contain a template the name
+	 * of which starts with the given String.
+	 *
+	 * @param templateFragment
+	 *            the beginning of the template has to match this String
+	 * @return An list with the ids of the pages that contain templates
+	 *         beginning with templateFragment
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getPageIdsContainingTemplateFragment(String templateFragment) throws WikiApiException{
+    	return getPageIdsContainingTemplateFragment(Arrays.asList(new String[]{templateFragment}));
+    }
+
+	/**
+	 * Returns a list containing the ids of all pages that contain a
+	 * template the name of which starts with any of the given Strings.
+	 *
+	 * @param templateFragments
+	 *            the beginning of the templates that have to be matched
+	 * @return An list with the ids of the pages that contain templates
+	 *         beginning with any String in templateFragments
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getPageIdsContainingTemplateFragment(List<String> templateFragments) throws WikiApiException{
+
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
+				sqlString
+						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
+				for(String fragment:templateFragments){
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
+					}
+					subconditions.append("tpl.templateName LIKE ?");
+				}
+				sqlString.append(subconditions);
+				sqlString.append(")");
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				int curIdx=1;
+				for(String fragment:templateFragments){
+					fragment=fragment.toLowerCase();
+					statement.setString(curIdx++, fragment + "%");
+				}
+
+				result = statement.executeQuery();
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+		            matchedPages.add(result.getInt(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+	/**
+	 * Returns a list containing the ids of all pages that contain a
+	 * template the name of which starts with the given String.
+	 *
+	 * @param templateName
+	 *            the name of the template that we want to match
+	 * @return A list with the ids of all pages that contain the specified
+	 *         template
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getPageIdsContainingTemplateName(String templateName) throws WikiApiException{
+    	return getPageIdsContainingTemplateName(Arrays.asList(new String[]{templateName}));
+    }
+
+	/**
+	 * Returns a list containing the ids of all pages that contain a template
+	 * the name of which starts with any of the given Strings.
+	 *
+	 * @param templateNames
+	 *            the names of the template that we want to match
+	 * @return A list with the ids of all pages that contain any of the the
+	 *         specified templates
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getPageIdsContainingTemplateName(List<String> templateNames) throws WikiApiException{
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
+				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
+								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND (");
+
+				for(String name:templateNames){
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
+					}
+					subconditions.append("tpl.templateName = ?");
+				}
+				sqlString.append(subconditions);
+				sqlString.append(")");
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				int curIdx=1;
+				for(String name:templateNames){
+					name=name.toLowerCase();
+					statement.setString(curIdx++, name);
+				}
+
+				result = statement.executeQuery();
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+		            matchedPages.add(result.getInt(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+
+    /*
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     *
+     */
 
 
 	/**
