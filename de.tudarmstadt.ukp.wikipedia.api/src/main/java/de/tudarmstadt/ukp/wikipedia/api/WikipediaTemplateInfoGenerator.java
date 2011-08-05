@@ -135,7 +135,12 @@ public class WikipediaTemplateInfoGenerator
      * @return true, if the template should be included in the db
      */
     private boolean acceptTemplate(String tpl){
-    	//TODO not yet implemented
+    	//TODO not yet fully implemented
+    	// THIS IS LANGUAGE SPECIFIC!!
+
+    	if(tpl.startsWith("defaultsort")||tpl.startsWith("sortierung")){
+    		return false;
+    	}
     	return true;
     }
 
