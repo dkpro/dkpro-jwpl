@@ -137,6 +137,14 @@ public class WikipediaTemplateInfoGenerator
     private boolean acceptTemplate(String tpl){
     	//TODO not yet fully implemented
     	// THIS IS LANGUAGE SPECIFIC!!
+    	/*
+    	 * Load whitelist and/or blacklist from config file here
+    	 * 4 cases should be supported:
+    	 * - Whitelist template begins with x
+    	 * - Blacklist template begins with x
+    	 * - Whitelist template equals x
+    	 * - Blacklist template equals x
+    	 */
 
     	if(tpl.startsWith("defaultsort")||tpl.startsWith("sortierung")){
     		return false;
