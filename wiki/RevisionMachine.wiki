@@ -2,7 +2,7 @@
 
 [WikipediaRevisionToolkit Back to overview page.]
 
-We will soon be releasing RevisionMachine 0.7.0., which greatly simplifies the database generation process. Documentation will be made available for the new release.
+We will soon be releasing !RevisionMachine 0.7.0., which greatly simplifies the database generation process. Documentation will be made available for the new release.
 
 For now, please refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper], which describes the Wikipedia Revision Toolkit
 
