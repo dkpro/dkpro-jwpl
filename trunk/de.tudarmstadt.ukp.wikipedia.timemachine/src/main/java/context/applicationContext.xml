@@ -106,7 +106,7 @@
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.original.XMLDumpTableInputStream [default]
 	-->
 
-	<bean id="dumpTableInputStream" class="de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.original.XMLDumpTableInputStream" scope="prototype">
+	<bean id="dumpTableInputStream" class="de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.XMLDumpTableInputStream" scope="prototype">
 	</bean>
 
 	<!-- variants 
