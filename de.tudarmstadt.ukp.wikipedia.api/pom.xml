@@ -36,9 +36,9 @@
 						</goals>
 						<configuration>
 							<descriptorRefs>
-								<descriptorRef>
-									jar-with-deps-and-src
-								</descriptorRef>
+								<descriptor>
+									jar-with-dependencies
+								</descriptor>
 							</descriptorRefs>
 						</configuration>
 					</execution>
