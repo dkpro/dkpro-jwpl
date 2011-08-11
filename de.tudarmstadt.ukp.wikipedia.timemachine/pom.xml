@@ -20,4 +20,33 @@
   		<artifactId>trove</artifactId>
   	</dependency>
   </dependencies>
+    	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-executable-jar</id>
+						<phase>package</phase>
+						<goals>
+						<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>
+									jar-with-deps-and-src
+								</descriptorRef>
+							</descriptorRefs>
+							<archive>
+								<manifest>
+									<mainClass>de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine</mainClass>
+								</manifest>
+							</archive>
+						</configuration>
+					</execution>
+			</executions>
+			</plugin>
+		</plugins>
+	</build>	
+  
 </project>
