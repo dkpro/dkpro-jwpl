@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -46,12 +46,6 @@ public class ConfigController
 
 	/** Reference to the configuration */
 	private final ConfigSettings config;
-
-	/**
-	 * Configuration settings - Flag that indicates whether binary output is
-	 * disabled
-	 */
-	private boolean disableBinaryOutput;
 
 	/**
 	 * Configuration settings - Flag that indicates whether the 7Zip support is
@@ -277,16 +271,6 @@ public class ConfigController
 	}
 
 	/**
-	 * Returns whether the binary output mode is disabled.
-	 *
-	 * @return binary output flag
-	 */
-	public boolean isBinaryOutputDisabled()
-	{
-		return this.disableBinaryOutput;
-	}
-
-	/**
 	 * Returns whether the debug output is enabled.
 	 *
 	 * @return debug output flag
@@ -503,17 +487,6 @@ public class ConfigController
 				outputCompression = OutputCompressionEnum.None;
 			}
 		}
-	}
-
-	/**
-	 * Sets the binary output mode.
-	 *
-	 * @param disableBinaryOutput
-	 *            binary output flag
-	 */
-	public void setEnableBinaryOutput(final boolean disableBinaryOutput)
-	{
-		this.disableBinaryOutput = disableBinaryOutput;
 	}
 
 	/**

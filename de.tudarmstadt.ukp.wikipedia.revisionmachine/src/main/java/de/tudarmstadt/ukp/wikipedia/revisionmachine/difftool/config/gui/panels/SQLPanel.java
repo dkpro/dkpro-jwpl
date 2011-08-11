@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -36,12 +36,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.OutputType;
 
 /**
  * Panel class of the ConfigurationTool
- * 
+ *
  * This panel contains all components for setting configuration parameters
  * related to the database output.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class SQLPanel
@@ -50,7 +50,7 @@ public class SQLPanel
 
 	/**
 	 * (Constructor) Create the SQLPanel object.
-	 * 
+	 *
 	 * @param controller
 	 *            Reference to the controller
 	 */
@@ -79,7 +79,6 @@ public class SQLPanel
 	private JTextField sqlPasswordField;
 
 	private JCheckBox enableZipEncodingCheckBox;
-	private JCheckBox enableBase64EncodingCheckBox;
 
 	private void createSQLFields()
 	{
@@ -159,24 +158,6 @@ public class SQLPanel
 		});
 
 		this.add(enableZipEncodingCheckBox);
-
-		enableBase64EncodingCheckBox = new JCheckBox("Activate Base64 Encoding");
-		enableBase64EncodingCheckBox.setBounds(10, 190, 200, 25);
-
-		enableBase64EncodingCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-
-				boolean flag = !controller.isBinaryOutputDisabled();
-				controller.setEnableBinaryOutput(flag);
-
-				validateSettings();
-			}
-		});
-
-		this.add(enableBase64EncodingCheckBox);
 	}
 
 	// --------------------------------------------------------------------------//
@@ -223,7 +204,6 @@ public class SQLPanel
 		sqlPasswordField.setEnabled(flag);
 
 		enableZipEncodingCheckBox.setEnabled(flag);
-		enableBase64EncodingCheckBox.setEnabled(flag);
 	}
 
 	/**
@@ -249,7 +229,6 @@ public class SQLPanel
 		sqlPasswordLabel.setLocation(x, y + 130);
 		sqlPasswordField.setLocation(x + 110, y + 130);
 		enableZipEncodingCheckBox.setLocation(x, y + 180);
-		enableBase64EncodingCheckBox.setLocation(x, y + 210);
 	}
 
 	// --------------------------------------------------------------------------//
@@ -259,7 +238,7 @@ public class SQLPanel
 	/**
 	 * Reads the configuration parameters described in the panel from the
 	 * ConfigSettings and and sets the contained values.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the ConfigSettings object
 	 */
@@ -312,22 +291,13 @@ public class SQLPanel
 		else {
 			controller.setEnableZipCompression(false);
 		}
-
-		o = config
-				.getConfigParameter(ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED);
-		if (o != null) {
-			controller.setEnableBinaryOutput((Boolean) o);
-		}
-		else {
-			controller.setEnableBinaryOutput(false);
-		}
 	}
 
 	/**
 	 * Adds the xml description of the panels content to the StringBuilder.
 	 * Errors which occur during the xml transformation will be added to the
 	 * ConfigVerification.
-	 * 
+	 *
 	 * @param builder
 	 *            Reference to a StringBuilder object
 	 * @param errors
@@ -342,7 +312,7 @@ public class SQLPanel
 
 			String database = new String(), user = new String(), password = new String(), host = new String();
 
-			host = sqlDatabaseField.getText();
+			host = sqlHostField.getText();
 			if (host.length() == 0) {
 				errors.add(new ConfigItem(ConfigItemTypes.ERROR,
 						ConfigErrorKeys.MISSING_VALUE,
@@ -371,7 +341,6 @@ public class SQLPanel
 			}
 
 			boolean zipComp = controller.isZipCompressionEnabled();
-			boolean binaryOutput = !controller.isBinaryOutputDisabled();
 
 			builder.append("\t<output>\r\n");
 			builder.append("\t\t<OUTPUT_MODE>" + OutputType.DATABASE
@@ -384,8 +353,6 @@ public class SQLPanel
 			builder.append("\t\t\t</sql>\r\n");
 			builder.append("\t\t<MODE_ZIP_COMPRESSION_ENABLED>" + zipComp
 					+ "</MODE_ZIP_COMPRESSION_ENABLED>\r\n");
-			builder.append("\t\t<MODE_BINARY_OUTPUT_ENABLED>" + binaryOutput
-					+ "</MODE_BINARY_OUTPUT_ENABLED>\r\n");
 			builder.append("\t</output>\r\n");
 		}
 	}

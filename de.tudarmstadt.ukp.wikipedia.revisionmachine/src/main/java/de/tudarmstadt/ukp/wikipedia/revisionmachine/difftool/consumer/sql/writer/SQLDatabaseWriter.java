@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -16,12 +16,9 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -58,12 +55,6 @@ public class SQLDatabaseWriter
 	/** Reference to the logger */
 	protected Logger logger;
 
-	/**
-	 * Configuration parameter - Flag that indicates whether the output is
-	 * binary or base 64 encoded.
-	 */
-	private final boolean MODE_BINARY_OUTPUT_ENABLED;
-
 	/** Reference to the sql encoder */
 	protected SQLEncoderInterface sqlEncoder;
 
@@ -95,9 +86,6 @@ public class SQLDatabaseWriter
 		String sTable = (String) config
 				.getConfigParameter(ConfigurationKeys.SQL_DATABASE);
 
-		MODE_BINARY_OUTPUT_ENABLED = (Boolean) config
-				.getConfigParameter(ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED);
-
 		try {
 			String driverDB = "com.mysql.jdbc.Driver";
 			Class.forName(driverDB);
@@ -127,6 +115,7 @@ public class SQLDatabaseWriter
 	 *             if problems occurred while closing the connection to the
 	 *             database.
 	 */
+	@Override
 	public void close()
 		throws SQLException
 	{
@@ -167,6 +156,7 @@ public class SQLDatabaseWriter
 	 *             if problems occurred while writing the output (to the sql
 	 *             producer database)
 	 */
+	@Override
 	public void process(final Task<Diff> task)
 		throws ConfigurationException, IOException, SQLConsumerException
 	{
@@ -175,47 +165,6 @@ public class SQLDatabaseWriter
 		SQLEncoding[] queries = null;
 
 		try {
-			if (MODE_BINARY_OUTPUT_ENABLED) {
-
-				queries = sqlEncoder.binaryTask(task);
-
-				Statement stat;
-				PreparedStatement preStat;
-				InputStream input;
-
-				byte[] bData;
-				int length, size = queries.length;
-
-				for (i = 0; i < size; i++) {
-
-					// System.out.println(queries[i]);
-
-					length = queries[i].size();
-
-					if (length != 0) {
-						preStat = connection.prepareStatement(queries[i]
-								.getQuery());
-
-						for (int j = 0; j < length; j++) {
-							bData = queries[i].getBinaryData(j);
-							input = new ByteArrayInputStream(bData);
-
-							preStat.setBinaryStream(j + 1, input, bData.length);
-						}
-
-						preStat.executeUpdate();
-						preStat.close();
-
-					}
-					else {
-
-						stat = connection.createStatement();
-						stat.executeUpdate(queries[i].getQuery());
-						stat.close();
-					}
-				}
-			}
-			else {
 				queries = sqlEncoder.encodeTask(task);
 
 				Statement query;
@@ -226,8 +175,6 @@ public class SQLDatabaseWriter
 					query.executeUpdate(queries[i].getQuery());
 					query.close();
 				}
-			}
-
 			// System.out.println(task.toString());
 
 		}
@@ -272,12 +219,7 @@ public class SQLDatabaseWriter
 		Statement query;
 		String[] revTableHeaderQueries;
 
-		if (MODE_BINARY_OUTPUT_ENABLED) {
-			revTableHeaderQueries = sqlEncoder.getBinaryTable();
-		}
-		else {
-			revTableHeaderQueries = sqlEncoder.getTable();
-		}
+		revTableHeaderQueries = sqlEncoder.getTable();
 
 		//commit revision table header
 		for (String revTableHeaderQuery : revTableHeaderQueries) {
