@@ -1,5 +1,5 @@
 <assembly>
-	<id>jar-with-deps-and-src</id>
+	<id>dist</id>
 	<formats>
 		<format>dir</format>
 	</formats>
