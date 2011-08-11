@@ -34,7 +34,7 @@
 						<configuration>
 							<descriptorRefs>
 								<descriptorRef>
-									jar-with-deps-and-src
+									jar-with-dependencies
 								</descriptorRef>
 							</descriptorRefs>
 							<archive>
