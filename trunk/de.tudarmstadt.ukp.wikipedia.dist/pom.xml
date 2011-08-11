@@ -12,7 +12,7 @@
   			<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
     				<descriptors>
-       					<descriptor>src/main/resources/jar-with-deps-and-src.xml</descriptor>
+       					<descriptor>src/main/resources/assemblies/jar-with-deps-and-src.xml</descriptor>
     				</descriptors>
 	   			</configuration>  			
   		</plugin>
