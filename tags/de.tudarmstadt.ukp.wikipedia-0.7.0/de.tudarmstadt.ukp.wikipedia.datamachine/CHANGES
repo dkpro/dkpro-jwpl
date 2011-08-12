@@ -1,4 +1,0 @@
-Changes in DataMachine 0.7.0
-   * Fixed mwdumper-imports -> using local fork of mwdumper now
-   * Added new assembly executions to each module
-
