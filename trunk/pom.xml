@@ -130,7 +130,7 @@
 			<dependency>
 				<groupId>org.wikimedia</groupId>
 				<artifactId>mwdumper</artifactId>
-				<version>1.16-ukp-1</version>
+				<version>1.16-ukp-2</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-codec</groupId>
