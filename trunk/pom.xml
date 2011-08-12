@@ -14,6 +14,34 @@
 		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/trunk</developerConnection>
 		<url>http://code.google.com/p/jwpl/source/browse/</url>
 	</scm>
+	<licenses>
+      <license>
+        <name>GNU Lesser General Public License (LGPL), Version 3.0</name>
+        <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+        <distribution>repo</distribution>
+      </license>
+    </licenses>
+    <organization>
+    	<name>Ubiquitous Knowledge Processing (UKP) Lab</name>
+    	<url>http://www.ukp.tu-darmstadt.de/</url>
+    </organization>
+    <developers>
+      <developer>
+        <id>oliver.ferschke</id>
+        <name>Oliver Ferschke</name>
+        <email>oliver.ferschke@googlemail.com</email>
+      </developer>
+      <developer>
+        <id>torsten.zesch</id>
+        <name>Torsten Zesch</name>
+        <email>torsten.zesch@googlemail.com</email>
+      </developer>
+      <developer>
+        <id>richard.eckart</id>
+        <name>Richard Eckart de Castilho</name>
+        <email>richard.eckart@googlemail.com</email>
+      </developer>
+    </developers>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
