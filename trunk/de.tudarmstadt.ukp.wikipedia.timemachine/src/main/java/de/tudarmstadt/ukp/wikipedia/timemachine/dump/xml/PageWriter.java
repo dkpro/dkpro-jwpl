@@ -13,11 +13,10 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.mediawiki.importer.DumpWriter;
-import org.mediawiki.importer.Page;
-import org.mediawiki.importer.Revision;
-import org.mediawiki.importer.Siteinfo;
-
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.SQLEscape;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.UTFDataOutputStream;

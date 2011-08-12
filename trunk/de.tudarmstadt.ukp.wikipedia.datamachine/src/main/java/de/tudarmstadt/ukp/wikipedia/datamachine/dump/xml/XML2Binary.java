@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -13,22 +13,21 @@ package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.mediawiki.importer.NamespaceFilter;
-import org.mediawiki.importer.XmlDumpReader;
-
 import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader;
 
 /**
- * 
+ *
  * Use org.mediawiki.importer engine to parse the XML-Dump (only useful fields)
  * and store it to binary file. Compression of the output files is possible.
- * 
+ *
  * @see de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.Files
  * @see de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.Files#setCompressGeneratedFiles(boolean)
  * @see org.mediawiki.importer.NamespaceFilter
- * 
+ *
  * @author ivan.galkin
- * 
+ *
  */
 public class XML2Binary {
 	/**

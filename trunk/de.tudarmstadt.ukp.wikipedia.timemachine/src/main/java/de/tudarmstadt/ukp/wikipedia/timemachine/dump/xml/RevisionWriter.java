@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -13,15 +13,16 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import org.mediawiki.importer.DumpWriter;
-import org.mediawiki.importer.Page;
-import org.mediawiki.importer.Revision;
-import org.mediawiki.importer.Siteinfo;
+
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo;
 
 public class RevisionWriter implements DumpWriter {
 
 	private Page currentPage;
-	private DataOutputStream stream;
+	private final DataOutputStream stream;
 
 	public RevisionWriter(OutputStream output) throws IOException {
 		this.stream = new DataOutputStream(output);

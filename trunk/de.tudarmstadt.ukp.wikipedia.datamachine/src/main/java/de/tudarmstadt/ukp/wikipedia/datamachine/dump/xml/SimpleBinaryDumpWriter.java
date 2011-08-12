@@ -14,12 +14,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
 
-import org.mediawiki.importer.DumpWriter;
-import org.mediawiki.importer.Page;
-import org.mediawiki.importer.Revision;
-import org.mediawiki.importer.Siteinfo;
-
 import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.SQLEscape;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.UTFDataOutputStream;
