@@ -2,18 +2,18 @@
 	<parent>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  <version>0.7.0-SNAPSHOT</version>
+  <version>0.7.0</version>
   <name>TimeMachine</name>
   <dependencies>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-  		<version>0.7.0-SNAPSHOT</version>
+  		<version>0.7.0</version>
   	</dependency>
   	<dependency>
   		<groupId>trove</groupId>
