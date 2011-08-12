@@ -1,0 +1,4 @@
+Changes made in TimeMachine 0.7.0
+   * Fixed mwdumper-imports -> switched to new local fork of the mwdumper
+   * Added new assembly executions to each module
+   * Fixed wrong path in applicationContext.xml
