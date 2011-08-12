@@ -34,9 +34,5 @@
   		<groupId>org.springframework</groupId>
   		<artifactId>spring-beans</artifactId>
   	</dependency>
-  	<dependency>
-  		<groupId>org.wikimedia</groupId>
-  		<artifactId>mwdumper</artifactId>
-  	</dependency>
   </dependencies>
 </project>

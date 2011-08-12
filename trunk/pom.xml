@@ -142,6 +142,21 @@
 				<artifactId>commons-logging</artifactId>
 				<version>1.1.1</version>
 			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>2.9.1-lucene</version>
+			</dependency>
+			<dependency>
+				<groupId>postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>9.0-801.jdbc4</version>
+			</dependency>
+			<dependency>
+				<groupId>net.java.dev.swing-layout</groupId>
+				<artifactId>swing-layout</artifactId>
+				<version>1.0.2</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<modules>
@@ -151,6 +166,7 @@
 		<module>de.tudarmstadt.ukp.wikipedia.wikimachine</module>
 		<module>de.tudarmstadt.ukp.wikipedia.revisionmachine</module>
 		<module>de.tudarmstadt.ukp.wikipedia.dist</module>
+		<module>de.tudarmstadt.ukp.wikipedia.mwdumper</module>
 	</modules>
 	<build>
 		<pluginManagement>
