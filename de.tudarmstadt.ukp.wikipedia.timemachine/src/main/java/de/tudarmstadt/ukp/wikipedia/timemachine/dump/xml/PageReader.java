@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,17 +12,16 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 
 import java.io.InputStream;
 
-import org.mediawiki.importer.DumpWriter;
-
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
 
 /**
  * This class is a specified variant of
  * {@link org.mediawiki.importer.XmlDumpReader}. Please see its source for more
  * information about a functionality and a license.<br>
- * 
+ *
  * @author ivan.galkin
- * 
+ *
  */
 public class PageReader extends AbstractXmlDumpReader {
 

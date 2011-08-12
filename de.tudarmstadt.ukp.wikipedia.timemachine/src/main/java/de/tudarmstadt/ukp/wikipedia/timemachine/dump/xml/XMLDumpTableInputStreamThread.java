@@ -15,8 +15,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.log4j.Logger;
-import org.mediawiki.importer.NamespaceFilter;
 
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceFilter;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
 

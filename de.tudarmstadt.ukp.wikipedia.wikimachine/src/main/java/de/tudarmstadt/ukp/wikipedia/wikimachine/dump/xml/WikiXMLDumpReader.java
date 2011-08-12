@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,14 +12,14 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
 
 import java.io.InputStream;
 
-import org.mediawiki.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
 
 /**
  * Universal XML Dump Parser. Set of start and end xml tags comply with
  * {@link org.mediawiki.importer.XmlDumpReader}
- * 
+ *
  * @author ivan.galkin
- * 
+ *
  */
 public class WikiXMLDumpReader extends AbstractXmlDumpReader {
 

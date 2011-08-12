@@ -38,16 +38,17 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.log4j.Logger;
-import org.mediawiki.importer.Contributor;
-import org.mediawiki.importer.DumpWriter;
-import org.mediawiki.importer.NamespaceSet;
-import org.mediawiki.importer.Page;
-import org.mediawiki.importer.Revision;
-import org.mediawiki.importer.Siteinfo;
-import org.mediawiki.importer.Title;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Contributor;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceSet;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title;
 
 /**
  * Parser of WikiMedia XML dumps. Modification of
