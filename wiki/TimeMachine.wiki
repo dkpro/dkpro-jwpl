@@ -19,10 +19,10 @@
       * `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine CONFIG_FILE`
       * Allocate enough heap size to speed up the execution (use the `-Xmx` JVM parameter to increase heap space; e.g. `-Xmx512m` gives you 512MB heap space).
    # If everything went well (it will take a while), the extracted data files are now available in the output directory (each in a directory with the corresponding timestamp as name).
-   # Create a database with the necessary tables  using [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql jwpl_tables.sql]
-   # Import the data files into the database.
+   # For each directory. create a database with the necessary tables  using [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql jwpl_tables.sql]
+   # Import the data files into the databases.
       * `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} ```pwd```/*.txt`
-   # When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
+   # Now you are ready to use the databases using the JWPL Core API. (also see JWPLCore_GettingStarted) When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 
 == Example configuration file ==
 {{{
