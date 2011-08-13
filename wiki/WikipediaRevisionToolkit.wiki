@@ -3,8 +3,11 @@
 [JWPLDocumentation Back to the main page]
 
 == Wikipedia Revision Toolkit ==
-  * [RevisionMachine Documentation of the RevisionMachine] (Add access to the whole revision history to any JWPL database)
-  * [TimeMachine Documentation of the TimeMachine] (recover a (series of) single JWPL dump(s) of Wikipedia from a current XML-revision dump)
+  * [RevisionMachine Documentation of the RevisionMachine]
+    * Add access to the whole revision history to any JWPL database
+  * [TimeMachine Documentation of the TimeMachine]
+    * Create a (series of) JWPL databases containing earlier states of Wikipedia from a single current XML-revision dump. Each JWPL can be used with the standard [http://code.google.com/p/jwpl/wiki/JWPLCore_GettingStarted JWPL Core API].
+
   * [JWPL_MySQL4 How to use JWPL with MySQL4]
 
 You may also refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper], which describes the Wikipedia Revision Toolkit.
