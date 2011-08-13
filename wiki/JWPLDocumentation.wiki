@@ -1,5 +1,7 @@
 #summary Starting page for the JWPL Documentation.
-
+<table>
+<tr>
+<td>
 == Description == 
 
 Lately, Wikipedia has been recognized as a promising lexical semantic resource. If Wikipedia is to be used for large-scale NLP tasks, efficient programmatic access to the knowledge therein is required.
@@ -16,6 +18,12 @@ JWPL is for you:
 
 JWPL is not for you:
  * If you need to query live data. JWPL works on an optimized database, i.e. you are querying a static Wikipedia dump. This gives much better performance and lightens the load on the Wikipedia servers.
+</td>
+<td>
+http://jwpl.googlecode.com/svn/wiki/images/jwpl_overview.jpg
+</td>
+</tr>
+</table>
 
 == Documentation ==
   * Documentation for [JWPL_Core JWPL Core]
