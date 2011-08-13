@@ -7,7 +7,7 @@
     * Add access to the whole revision history to any JWPL database
 
   * [TimeMachine Documentation of the TimeMachine]
-    * Create a (series of) JWPL database(s) containing earlier states of Wikipedia from a single current XML-revision dump. Each of the generated JWPL databases can be used with the standard [http://code.google.com/p/jwpl/wiki/JWPLCore_GettingStarted JWPL Core API].
+    * Create a (series of) JWPL database(s) containing earlier states of Wikipedia from a single current XML-revision dump. Each of the generated JWPL databases can be used with the standard [http://code.google.com/p/jwpl/wiki/JWPL_Core JWPL Core API].
 
   * [JWPL_MySQL4 How to use JWPL with MySQL4]
 
