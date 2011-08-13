@@ -10,28 +10,28 @@ As of version 0.7.0, all JWPL components are available on [http://repo1.maven.or
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>api</artifactId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
   <version>0.7.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>datamachine</artifactId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
   <version>0.7.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>revisionmachine</artifactId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
   <version>0.7.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>timemachine</artifactId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
   <version>0.7.0</version>
 </dependency>
 }}}
