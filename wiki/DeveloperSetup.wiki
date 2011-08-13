@@ -85,5 +85,3 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
       * Select the working set `JWPL` from the working set drop-down box
       * *Note:* when you are completely through with these and the following steps, remember to go to the Package Explorer view. There is a small triangular icon in its top right corner. Click on that and select Top Level Elements -> Working Sets.
    * Click *Finish*.
-
-However, Eclipse displays them as projects at the same node level as uimafit-parent in the _Package Explorer_ view.
