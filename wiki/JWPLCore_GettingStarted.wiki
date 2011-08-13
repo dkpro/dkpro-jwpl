@@ -10,4 +10,4 @@
    # Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives.
    # If you encounter any problems, please check the [JWPL_FAQ FAQ] and the [http://groups.google.com/group/jwpl JWPL Mailing List].
 
-Note: If you need access to the revision history of the pages in you JWPL Database, you might want to check out the RevisionMachine, which adds the revision data to your existing database and provides an additional API (RevisionAPI) to access the data.
+*Note:* If you need access to the revision history of the pages in you JWPL Database, you might want to check out the RevisionMachine, which adds the revision data to your existing database and provides an additional API (RevisionAPI) to access the data.
