@@ -7,7 +7,8 @@
       * Use the DataMachine, if you just need a single database from a certain date.
       * Use the TimeMachine (part of the Revision Toolkit) to create multiple Wikipedia databases corresponding to past states of Wikipedia 
    # You can now access the JWPL databases with the JWPL API. 
-      * Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives.
+      * Either check out the API from SVN and build it using Maven, add it as a dependency to your existing Maven project as described in the DeveloperSetup, or use one of the prebuilt jars in the [http://code.google.com/p/jwpl/downloads/list download section].
+      * Follow the examples in the [JwplTutorial tutorial]. The tutorials are also included in the source code and the archives. 
    # If you encounter any problems, please check the [JWPL_FAQ FAQ] and the [http://groups.google.com/group/jwpl JWPL Mailing List].
 
 *Note:* If you need access to the revision history of the pages in you JWPL Database, you might want to check out the RevisionMachine, which adds the revision data to your existing database and provides an additional API (RevisionAPI) to access the data.
