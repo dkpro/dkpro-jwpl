@@ -1,5 +1,14 @@
 #summary Starting page for the JWPL Documentation.
 
+== Description == 
+
+Lately, Wikipedia has been recognized as a promising lexical semantic resource. If Wikipedia is to be used for large-scale NLP tasks, efficient programmatic access to the knowledge therein is required.
+The high-performance Wikipedia API provides structured access to information nuggets like redirects, categories, articles and link structure.
+JWPL contains a Mediawiki Markup parser that can be used to further analyze the contents of a Wikipedia page. The parser can also be used stand-alone with other texts using !MediaWiki markup.
+Further, JWPL contains the tool JWPLDataMachine that can be used to create JWPL dumps from the publicly available dumps at http://download.wikimedia.org.
+
+In addition to that, JWPL now contains the _Wikipedia Revision Toolkit_, which consists of two tools, the _!TimeMachine_ and the _!RevisionMachine_. The !TimeMachine can be used to reconstruct a snapshot of Wikipedia from a specific date, or to create multiple snapshots from a time span. The !RevisionMachine offers efficient access to the edit history of Wikipedia articles while storing the revisions in a dedicated storage format which decreases the demand of storage space by 98%.
+
 == Is JWPL for you? ==
 
 JWPL is for you:
