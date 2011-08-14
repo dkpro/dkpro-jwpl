@@ -1,4 +1,5 @@
 #summary Setting up Maven and Eclipse for JWPL development
+#labels Phase-Implementation
 #sidebar TableOfContents
 
 [JWPLDocumentation Back to the main page]
