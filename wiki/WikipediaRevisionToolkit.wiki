@@ -1,5 +1,4 @@
 #summary Main page for the Wikipedia Revision Toolkit
-#labels Featured
 
 [JWPLDocumentation Back to the main page]
 
