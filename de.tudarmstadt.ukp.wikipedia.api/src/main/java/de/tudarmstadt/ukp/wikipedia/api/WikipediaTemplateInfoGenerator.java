@@ -83,7 +83,10 @@ public class WikipediaTemplateInfoGenerator
 
 
     public void process(){
-		logger.info("Processing pages, extracting template information ...");
+		//TODO Check if template tables (tpl-page and tpl-revision) already
+    	//exist and display a warning in that case - however, go on processing
+
+    	logger.info("Processing pages, extracting template information ...");
     	while(pageIter.hasNext()){
     		pageCounter++;
 
