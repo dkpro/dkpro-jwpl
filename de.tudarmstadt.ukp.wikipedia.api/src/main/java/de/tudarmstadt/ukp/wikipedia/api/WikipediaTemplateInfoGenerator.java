@@ -60,6 +60,7 @@ public class WikipediaTemplateInfoGenerator
     private final long maxAllowedPacket;
 	private final String outputPath;
 
+    protected final static String TABLE_TPLID_REVISIONID="templateId_revisionId";
     protected final static String TABLE_TPLID_PAGEID="templateId_pageId";
     protected final static String TABLE_TPLID_TPLNAME="templates";
     private final int VERBOSITY = 500;
@@ -158,6 +159,10 @@ public class WikipediaTemplateInfoGenerator
      * which is later on used as a key in the db.
      */
     private void generateTemplateIndices(){
+		// TODO if we want to extract revision template when already having
+		// extracted page templates, we have to read in the existing indices
+		// first and use them for the news processed templates
+
     	int curTplId=1;
     	for(String name:TPLNAME_TO_PAGEIDS.keySet()){
     		TPLNAME_TO_TPLID.put(name, curTplId);
