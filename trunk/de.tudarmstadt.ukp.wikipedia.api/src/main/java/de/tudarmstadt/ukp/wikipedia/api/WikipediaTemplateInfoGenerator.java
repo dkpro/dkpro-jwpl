@@ -90,10 +90,11 @@ public class WikipediaTemplateInfoGenerator
     			logger.info(pageCounter+" pages processed ...");
     		}
 
+    		//TODO Add alternative for processing Revisions instead of Pages
     		Page curPage = pageIter.next();
     		int curPageId = curPage.getPageId();
 
-    		Set<String> names = getTemplateNames(curPage);
+    		Set<String> names = getTemplateNames(curPage.getText());
 
     		//Update the map with template values for current page
     		for(String name:names){
@@ -308,9 +309,8 @@ public class WikipediaTemplateInfoGenerator
 	 *            the page to get the templates from
 	 * @return a set of template names (without duplicates)
 	 */
-    private Set<String> getTemplateNames(Page p){
+    private Set<String> getTemplateNames(String pageText){
         Set<String> names = new HashSet<String>();
-    	String pageText = p.getText();
     	if(!pageText.isEmpty()){
             try{
     	    	ParsedPage pp = parser.parse(pageText);
@@ -321,7 +321,7 @@ public class WikipediaTemplateInfoGenerator
             }catch(Exception e){
             	//Most likely parsing problems
             	e.printStackTrace();
-            	logger.warn("Problems parsing page "+p.getPageId());
+            	logger.warn("Problems parsing page");
             }
     	}
         return names;
