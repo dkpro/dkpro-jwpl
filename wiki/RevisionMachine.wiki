@@ -15,4 +15,4 @@ This tutorial is based on the !RevisionMachine 0.7.0
  # Now everything is done and the revisions can be accessed with the RevisionAPI.
 
 =More Information=
-For a description of the concept behind the !RevisionMachine, refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper].
+For a description of the concept behind the !RevisionMachine, refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper] or have a look at [http://jwpl.googlecode.com/svn/wiki/doc/ACL_2011_Poster.pdf this poster].
