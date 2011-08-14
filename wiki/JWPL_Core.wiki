@@ -1,5 +1,4 @@
 #summary Main page for JWPL Core.
-#labels Featured
 
 [JWPLDocumentation Back to the main page]
 
