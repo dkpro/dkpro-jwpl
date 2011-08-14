@@ -1,5 +1,4 @@
 #summary Starting page for the JWPL Documentation.
-#labels Featured,Phase-Requirements,Phase-Design
 <table cellspacing="25">
 <tr>
 <td>
