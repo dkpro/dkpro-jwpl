@@ -1,4 +1,5 @@
 #summary Starting page for the JWPL Documentation.
+#labels Featured
 <table cellspacing="25">
 <tr>
 <td>
