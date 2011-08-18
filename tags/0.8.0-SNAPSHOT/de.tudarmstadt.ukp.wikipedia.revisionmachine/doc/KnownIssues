@@ -1,0 +1,17 @@
+Known Issues
+
+Please also see the issues on Google Code 
+http://code.google.com/p/jwpl/issues/list
+
+
+I) 
+Handling of surrogate characters
+
+There are 4 possible modes of handling UTF8 surrogate characters.
+Currently, the only reliable mode is "Discard Revision", in which any revision that contains surrogate characters is discarded.
+The other three modes in "de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.SurrogateModes" have been disabled for now.
+The corresponding config-section in the config tool has also been made invisible (de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels.InputPanel)
+The disabled parts are marked with TODO-markers
+
+In order to use the other three surrogate modes, which try to handle surrogate characters differently,
+the corresponding code has to be checked. Afterwards, the modes can be reenables in the config tool (InputPanel.java) and the SurrogateModes-class
