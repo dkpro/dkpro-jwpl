@@ -5,7 +5,7 @@
 	<description>A free, Java-based application programming interface that allows to access all information contained in Wikipedia.</description>
 	<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 	<artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-	<version>0.7.1</version>
+	<version>0.8.0-SNAPSHOT</version>
 	<parent>
     	<groupId>org.sonatype.oss</groupId>
     	<artifactId>oss-parent</artifactId>
@@ -16,9 +16,9 @@
 		<java.target>1.6</java.target>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://jwpl.googlecode.com/svn/tags/0.8.0-SNAPSHOT</connection>
-		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/tags/0.8.0-SNAPSHOT</developerConnection>
-		<url>http://code.google.com/p/jwpl/source/browse/tags/0.8.0-SNAPSHOT</url>
+		<connection>scm:svn:http://jwpl.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/trunk</developerConnection>
+		<url>http://code.google.com/p/jwpl/source/browse/</url>
 	</scm>
 	<licenses>
       <license>
