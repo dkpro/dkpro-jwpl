@@ -2,12 +2,12 @@
 	<parent>
 		<artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
 		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-		<version>0.8.0-SNAPSHOT</version>
+		<version>0.7.1</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.dist</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
+  <version>0.7.1</version>
   <name>JWPL Distribution Package</name>
   <description>Contains the assembly descriptors</description>
   <build>
@@ -34,28 +34,28 @@
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
+  		<version>0.7.1</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
+  		<version>0.7.1</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
+  		<version>0.7.1</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
+  		<version>0.7.1</version>
   		<type>jar</type>
   		<scope>compile</scope>
   	</dependency>
