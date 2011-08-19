@@ -1,0 +1,4 @@
+Changes in WikiMachine 0.7.0
+   * Switched to local fork of the mwdumper -> updated dependencies
+   * Switched from String concatenation to StringBuffer append in UTFDataInputStream.readFragmentedUTF()
+
