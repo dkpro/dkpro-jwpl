@@ -3,11 +3,11 @@
   <parent>
     <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
     <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-    <version>0.7.2</version>
+    <version>0.8.0-SNAPSHOT</version>
   </parent>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
-  <version>0.7.2</version>
+  <version>0.8.0-SNAPSHOT</version>
   <name>MediaWiki Dumper</name>
   <description>A fork of the http://www.mediawiki.org/wiki/Mwdumper</description>
    <licenses>
