@@ -31,7 +31,7 @@ If you have any technical questions, please write to the [http://groups.google.c
 <table cellspacing="10">
 <tr>
 <td>http://jwpl.googlecode.com/svn/wiki/images/UIMA.png</td>
-<td>Are you using UIMA?<br/>Then you might be interested in the JWPL UIMA integration provided by [http://dkpro-core-asl.googlecode.com DKPro]</td>
+<td>Are you using UIMA?<br/>Then you might be interested in the UIMA JWPL integration provided by [http://dkpro-core-asl.googlecode.com DKPro]</td>
 </tr>
 </table>
 
