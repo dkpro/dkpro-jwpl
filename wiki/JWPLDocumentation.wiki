@@ -27,6 +27,14 @@ JWPL is not for you:
 == Support ==
 If you have any technical questions, please write to the [http://groups.google.com/group/jwpl JWPL Mailing List].
 
+== JWPL and UIMA ==
+<table>
+<tr>
+<td>http://jwpl.googlecode.com/svn/wiki/images/UIMA.png</td>
+<td>Are you using UIMA? Then you might be interested in the JWPL UIMA integration provided by [http://dkpro-core-asl.googlecode.com DKPro]</td>
+</tr>
+</table>
+
 == Preprocessed Dumps ==
 A preprocessed JWPL dump of the English Wikipedia (articles and talk pages) including revisions can be made available upon request. The current package was created from the wiki_en_20110405 wikipedia dump.
 
