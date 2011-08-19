@@ -58,7 +58,7 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.connection.driver_class", "com.mysql.jdbc.Driver");
         p.setProperty("hibernate.connection.url", "jdbc:mysql://" + host + "/" + db);
         p.setProperty("hibernate.connection.characterEncoding", "UTF-8");
-        p.setProperty("hibernate.connection.hibernate.connection.useUnicode","true");
+        p.setProperty("hibernate.connection.useUnicode","true");
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);
 
