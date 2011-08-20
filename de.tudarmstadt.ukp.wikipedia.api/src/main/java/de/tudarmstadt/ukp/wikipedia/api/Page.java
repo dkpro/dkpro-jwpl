@@ -155,7 +155,7 @@ public class Page
 		session.beginTransaction();
 		Integer pageId = (Integer) session
 				.createSQLQuery(
-						"select pml.pageID from PageMapLine as pml where pml.name = ? COLLATE utf8_bin")
+						"select pml.pageID from PageMapLine as pml where pml.name = ? LIMIT 1")
 				.setString(0, searchString).uniqueResult();
 
 		if (pageId == null) {
