@@ -140,6 +140,12 @@ public class Page
         }
 	}
 
+	/**
+	 * CAUTION: Only returns 1 result, even if several results are possible.
+	 *
+	 * @param pTitle
+	 * @throws WikiApiException
+	 */
 	private void fetchByTitle(Title pTitle)
 		throws WikiApiException
 	{
@@ -149,7 +155,7 @@ public class Page
 		session.beginTransaction();
 		Integer pageId = (Integer) session
 				.createSQLQuery(
-						"select pml.pageID from PageMapLine as pml where pml.name = ?")
+						"select pml.pageID from PageMapLine as pml where pml.name = ? LIMIT 1")
 				.setString(0, searchString).uniqueResult();
 
 		if (pageId == null) {
