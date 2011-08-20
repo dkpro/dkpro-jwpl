@@ -149,7 +149,7 @@ public class Page
 		session.beginTransaction();
 		Integer pageId = (Integer) session
 				.createSQLQuery(
-						"select pml.pageID from PageMapLine as pml where pml.name = ? COLLATE utf8_bin")
+						"select pml.pageID from PageMapLine as pml where pml.name = ?")
 				.setString(0, searchString).uniqueResult();
 
 		if (pageId == null) {
@@ -511,7 +511,7 @@ public class Page
 
     /**
      * @return True, if the page is a discussion page.
-     * @throws WikiTitleParsingException 
+     * @throws WikiTitleParsingException
      */
     public boolean isDiscussion() throws WikiTitleParsingException
     {
