@@ -110,6 +110,26 @@ public class Page
 	}
 
 	/**
+	 * Creates a Page object from an already retrieved hibernate Page
+	 *
+	 * @param wiki
+	 *            The wikipedia object.
+	 * @param id
+	 *            The hibernate id of the page.
+	 * @param hibernatePage
+	 * 			  The {@code api.hibernatePage} that has already been retrieved
+	 * @throws WikiApiException
+	 */
+	protected Page(Wikipedia wiki, long id,
+			de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage)
+		throws WikiApiException
+	{
+		this.wiki = wiki;
+		this.pageDAO = new PageDAO(wiki);
+		this.hibernatePage = hibernatePage;
+	}
+
+	/**
 	 * @throws WikiApiException
 	 * @see de.tudarmstadt.ukp.wikipedia.api.Page#Page(long)
 	 */

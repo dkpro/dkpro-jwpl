@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -30,20 +30,23 @@ public class PageIterator implements Iterator<Page> {
 
 	private final Log logger = LogFactory.getLog(getClass());
 
-    private PageBuffer buffer;
+    private final PageBuffer buffer;
 
 	public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize) {
 		buffer = new PageBuffer(bufferSize, wiki, onlyArticles);
 	}
 
+	@Override
 	public boolean hasNext(){
 		return buffer.hasNext();
 	}
 
+	@Override
 	public Page next(){
 		return buffer.next();
 	}
 
+	@Override
 	public void remove() {
 	    throw new UnsupportedOperationException();
 	}
@@ -56,11 +59,11 @@ public class PageIterator implements Iterator<Page> {
 	 */
 	class PageBuffer{
 
-		private Wikipedia wiki;
-		private boolean onlyArticles;
+		private final Wikipedia wiki;
+		private final boolean onlyArticles;
 
-		private List<Page> buffer;
-		private int maxBufferSize;	// the number of pages to be buffered after a query to the database.
+		private final List<Page> buffer;
+		private final int maxBufferSize;	// the number of pages to be buffered after a query to the database.
 		private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
 		private int bufferOffset; 	// the offset in the buffer
 		private int dataOffset;		// the overall offset in the data
@@ -159,7 +162,7 @@ public class PageIterator implements Iterator<Page> {
 	        		de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) o;
 	        		long id = hibernatePage.getId();
 	        		try {
-		                apiPage = new Page(this.wiki, id);
+	        			apiPage = new Page(this.wiki, id, hibernatePage);
 		                if (this.onlyArticles) {
 		                    if (!apiPage.isRedirect()) {
 		                        buffer.add(apiPage);
