@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -246,10 +245,10 @@ public class Page
 	public Set<Category> getCategories()
 	{
 		Session session = this.wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		Set<Integer> tmp = new UnmodifiableArraySet<Integer>(hibernatePage.getCategories());
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 
 		Set<Category> categories = new HashSet<Category>();
 		for (int pageID : tmp) {
@@ -294,11 +293,11 @@ public class Page
 	public Set<Page> getInlinks()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> pageIDs = new UnmodifiableArraySet<Integer>(hibernatePage.getInLinks());
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 
 		Set<Page> pages = new HashSet<Page>();
 		for (int pageID : pageIDs) {
@@ -348,13 +347,13 @@ public class Page
 	public Set<Integer> getInlinkIDs()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 
 		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getInLinks());
 
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		return tmpSet;
 	}
 
@@ -370,11 +369,11 @@ public class Page
 	public Set<Page> getOutlinks()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> tmpSet = new UnmodifiableArraySet<Integer>(hibernatePage.getOutLinks());
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 
 		Set<Page> pages = new HashSet<Page>();
 		for (int pageID : tmpSet) {
@@ -422,13 +421,13 @@ public class Page
 	public Set<Integer> getOutlinkIDs()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 
 		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getOutLinks());
 
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		return tmpSet;
 	}
 
@@ -442,10 +441,10 @@ public class Page
 		throws WikiTitleParsingException
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		String name = hibernatePage.getName();
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		Title title = new Title(name);
 		return title;
 	}
@@ -458,10 +457,10 @@ public class Page
 	public Set<String> getRedirects()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		Set<String> tmpSet = new HashSet<String>(hibernatePage.getRedirects());
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		return tmpSet;
 	}
 
@@ -473,10 +472,10 @@ public class Page
 	public String getText()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		String text = hibernatePage.getText();
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 
 		// Normalize strings read from the DB to use "\n" for all line breaks.
 		StringBuilder sb = new StringBuilder(text);
@@ -520,10 +519,10 @@ public class Page
 	public boolean isDisambiguation()
 	{
 		Session session = wiki.__getHibernateSession();
-		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.beginTransaction();
+//		session.lock(hibernatePage, LockMode.NONE);
 		boolean isDisambiguation = hibernatePage.getIsDisambiguation();
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		return isDisambiguation;
 	}
 
@@ -629,6 +628,7 @@ public class Page
 					&& !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
 					&& !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
 													// are categories or other meta data
+													//FIXME: Comment OF - this is NOT true!!!!
 			{
 				String anchorText = l.getText();
 				if (!anchorText.equals(targetTitle)) {
