@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
+ *     Samy Ateia
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
