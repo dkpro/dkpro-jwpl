@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -246,7 +247,7 @@ public class Page
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.lock(hibernatePage, LockMode.NONE);
 		Set<Integer> tmp = new UnmodifiableArraySet<Integer>(hibernatePage.getCategories());
 		session.getTransaction().commit();
 
@@ -294,7 +295,7 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.lock(hibernatePage, LockMode.NONE);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> pageIDs = new UnmodifiableArraySet<Integer>(hibernatePage.getInLinks());
 		session.getTransaction().commit();
@@ -370,7 +371,7 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.lock(hibernatePage, LockMode.NONE);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> tmpSet = new UnmodifiableArraySet<Integer>(hibernatePage.getOutLinks());
 		session.getTransaction().commit();
@@ -458,7 +459,7 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.lock(hibernatePage, LockMode.NONE);
 		Set<String> tmpSet = new HashSet<String>(hibernatePage.getRedirects());
 		session.getTransaction().commit();
 		return tmpSet;
