@@ -633,7 +633,7 @@ public class WikipediaTemplateInfo {
 				}
 
 				while (result.next()) {
-					templateNames.add(result.getString(1));
+					templateNames.add(result.getString(1).toLowerCase());
 				}
 			}
 			finally {
