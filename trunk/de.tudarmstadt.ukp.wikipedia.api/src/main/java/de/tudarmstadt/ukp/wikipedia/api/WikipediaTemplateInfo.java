@@ -481,7 +481,7 @@ public class WikipediaTemplateInfo {
 
 	/**
 	 * Returns a list containing the ids of all pages that contain a
-	 * template the name of which starts with the given String.
+	 * template the name of which equals any of the given Strings.
 	 *
 	 * @param templateName
 	 *            the name of the template that we want to match
@@ -497,7 +497,7 @@ public class WikipediaTemplateInfo {
 
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
-	 * the name of which starts with any of the given Strings.
+	 * the name of which equals any of the given Strings.
 	 *
 	 * @param templateNames
 	 *            the names of the template that we want to match
