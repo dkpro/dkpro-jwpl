@@ -15,6 +15,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -112,7 +113,7 @@ public class WikipediaTemplateInfo {
 				result = statement.executeQuery();
 
 				if (result == null) {
-					throw new WikiPageNotFoundException("Nothing was found");
+					return 0;
 				}
 
 				if (result.next()) {
@@ -200,7 +201,7 @@ public class WikipediaTemplateInfo {
 			result = statement.executeQuery();
 
 			if (result == null) {
-				throw new WikiPageNotFoundException("Nothing was found");
+				return 0;
 			}
 
 			if (result.next()) {
@@ -590,7 +591,13 @@ public class WikipediaTemplateInfo {
 	 *             likely if the template templates are corrupted)
 	 */
     public List<String> getTemplateNamesFromPage(String pageTitle) throws WikiApiException{
-    	return getTemplateNamesFromPage(wiki.getPage(pageTitle));
+    	Page p=null;
+    	try{
+    		p = wiki.getPage(pageTitle);
+    	}catch (WikiApiException e) {
+    		return new ArrayList<String>();
+		}
+    	return getTemplateNamesFromPage(p);
     }
 
 
@@ -622,7 +629,7 @@ public class WikipediaTemplateInfo {
 				result = statement.executeQuery();
 
 				if (result == null) {
-					throw new WikiPageNotFoundException("Nothing was found for page "+pageId);
+					return templateNames;
 				}
 
 				while (result.next()) {
