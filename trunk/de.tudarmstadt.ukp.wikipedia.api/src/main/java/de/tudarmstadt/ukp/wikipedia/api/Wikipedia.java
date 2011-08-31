@@ -139,6 +139,33 @@ public class Wikipedia implements WikiConstants {
         return new Title((String)returnValue);
     }
 
+	/**
+	 * Returns the article page for a given discussion page.
+	 *
+	 * @param discussionPage
+	 *            the discussion page object
+	 * @return The page object of the article associated with the discussion. If
+	 *         the parameter already was an article, it is returned directly.
+	 * @throws WikiApiException
+	 */
+    public Page getArticleForDiscussionPage(Page discussionPage) throws WikiApiException {
+    	if(discussionPage.isDiscussion()){
+    		String title = discussionPage.getTitle().getPlainTitle().replaceAll(WikiConstants.DISCUSSION_PREFIX, "");
+
+    		if(title.contains("/")){
+        		//If we have a discussion archive
+        		//TODO This does not support articles that contain slashes-
+        		//However, the rest of the API cannot cope with that as well, so this should not be any extra trouble
+    			title = title.split("/")[0];
+    		}
+    		return getPage(title);
+    	}else{
+    		return discussionPage;
+    	}
+
+    }
+
+
     /**
      * Gets the discussion page for an article page with the given pageId.
      *
