@@ -22,6 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.Properties;
 import java.util.Set;
 
@@ -64,9 +66,65 @@ public class WikipediaTemplateInfoGenerator
     protected final static String TABLE_TPLID_PAGEID="templateId_pageId";
     protected final static String TABLE_TPLID_TPLNAME="templates";
     private final int VERBOSITY = 500;
+    
+    private HashSet<String> whiteList = new HashSet<String>();
+    private HashSet<String> whitePrefixList = new HashSet<String>();
+    private HashSet<String> blackList = new HashSet<String>();
+    private HashSet<String> blackPrefixList = new HashSet<String>();
+    
+
+    
+    
+
+    public HashSet<String> getWhiteList()
+	{
+		return whiteList;
+	}
 
 
-    public WikipediaTemplateInfoGenerator(Wikipedia pWiki, int pageBuffer, String charset, String outputPath, long maxAllowedPacket) throws WikiApiException{
+	public void setWhiteList(HashSet<String> whiteList)
+	{
+		this.whiteList = whiteList;
+	}
+
+
+	public HashSet<String> getWhitePrefixList()
+	{
+		return whitePrefixList;
+	}
+
+
+	public void setWhitePrefixList(HashSet<String> whitePrefixList)
+	{
+		this.whitePrefixList = whitePrefixList;
+	}
+
+
+	public HashSet<String> getBlackList()
+	{
+		return blackList;
+	}
+
+
+	public void setBlackList(HashSet<String> blackList)
+	{
+		this.blackList = blackList;
+	}
+
+
+	public HashSet<String> getBlackPrefixList()
+	{
+		return blackPrefixList;
+	}
+
+
+	public void setBlackPrefixList(HashSet<String> blackPrefixList)
+	{
+		this.blackPrefixList = blackPrefixList;
+	}
+
+
+	public WikipediaTemplateInfoGenerator(Wikipedia pWiki, int pageBuffer, String charset, String outputPath, long maxAllowedPacket) throws WikiApiException{
         this.wiki = pWiki;
         this.pageIter = new PageIterator(wiki, true, pageBuffer);
 
@@ -140,22 +198,73 @@ public class WikipediaTemplateInfoGenerator
      * @return true, if the template should be included in the db
      */
     private boolean acceptTemplate(String tpl){
-    	//TODO not yet fully implemented
-    	// THIS IS LANGUAGE SPECIFIC!!
-    	/*
-    	 * Load whitelist and/or blacklist from config file here
-    	 * 4 cases should be supported:
-    	 * - Whitelist template begins with x
-    	 * - Blacklist template begins with x
-    	 * - Whitelist template equals x
-    	 * - Blacklist template equals x
-    	 */
-
-    	if(tpl.startsWith("defaultsort")||tpl.startsWith("sortierung")){
+ 
+    	if(isInWhiteList(tpl) && !isInBlackList(tpl)) {
+    		if(containsAllowedPrefix(tpl) && !containsRestrictedPrefix(tpl)) {
+    			return true;
+    		}else {
+    			return false;
+    		}
+    	}else {
     		return false;
     	}
-    	return true;
+
     }
+    
+    /**
+     * Checks if the input string is in white list
+     * @param tpl string to check
+     * @return
+     */
+    private boolean isInWhiteList(String tpl) {
+    	if ((!whiteList.isEmpty() && whiteList.contains(tpl)) || (whiteList.isEmpty())) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Checks if the input string is in black list
+     * @param tpl string to check
+     * @return
+     */
+    private boolean isInBlackList(String tpl) {
+    	if (blackList.contains(tpl)) {
+    		return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Checks if the input string contains prefixes from white list
+     * @param tpl string to check
+     * @return
+     */
+    private boolean containsAllowedPrefix(String tpl) {
+    	if(whitePrefixList.isEmpty())
+    		return true;
+    	
+    	for(String i :whitePrefixList) {
+    		if(tpl.startsWith(i))
+    			return true;
+    	}
+    	return false;
+    }
+    
+    /**
+     * Checks if the input string contains prefixes from black list
+     * @param tpl string to check
+     * @return
+     */
+    private boolean containsRestrictedPrefix(String tpl) {
+    	for(String i :blackPrefixList) {
+    		if(tpl.startsWith(i))
+    			return true;
+    	}
+    	return false;
+    }
+    
+    
 
     /**
      * Fills a map with the template names and gives them a unique int-key,
@@ -344,6 +453,7 @@ public class WikipediaTemplateInfoGenerator
 	 * <li>db=revisiondb</li>
 	 * <li>user=username</li>
 	 * <li>password=pwd</li>
+	 * <li>language=english</li>
 	 * <li>output=outputFile</li>
 	 * <li>charset=UTF8 (or others) (optional)</li>
 	 * <li>pagebuffer=5000 (optional)</li>
@@ -377,7 +487,7 @@ public class WikipediaTemplateInfoGenerator
 			Properties props = load(args[0]);
 
 			DatabaseConfiguration config = new DatabaseConfiguration();
-
+			
 			config.setHost(props.getProperty("host"));
 			config.setDatabase(props.getProperty("db"));
 			config.setUser(props.getProperty("user"));
@@ -391,7 +501,7 @@ public class WikipediaTemplateInfoGenerator
 
 			String maxAllowedPacketsString = props.getProperty("maxAllowedPackets");
 			long maxAllowedPackets;
-
+			
 			try {
 				if (charset == null) {
 					charset="UTF-8";
@@ -433,6 +543,10 @@ public class WikipediaTemplateInfoGenerator
 						output,
 						maxAllowedPackets);
 
+				generator.setWhiteList(generator.createSetFromProperty(props.getProperty("white_list")));
+				generator.setBlackList(generator.createSetFromProperty(props.getProperty("black_list")));
+				generator.setWhitePrefixList(generator.createSetFromProperty(props.getProperty("white_prefix_list")));
+				generator.setBlackPrefixList(generator.createSetFromProperty(props.getProperty("black_prefix_list")));
 				//Start processing now
 				generator.process();
 			}
@@ -440,6 +554,28 @@ public class WikipediaTemplateInfoGenerator
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Parses property string into HashSet
+	 * @param property string to parse
+	 * @return
+	 */
+	public HashSet<String> createSetFromProperty(String property)
+	{
+		HashSet<String> properties = new HashSet<String>();
+		
+		if (property != null && !property.equals("null")) {
+			// "([\\w]*)=([\\w]*);"
+			Pattern params = Pattern.compile("([\\w]+)[;]*");
+			Matcher matcher = params.matcher(property.trim());
+			while (matcher.find()) {
+				properties.add(matcher.group(1));
+			}
+			
+		}
+		
+		return properties;
 	}
 
 	/**
