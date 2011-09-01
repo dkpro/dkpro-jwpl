@@ -133,7 +133,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
-            "select p.name from PageMapLine as p where p.id = ?").setInteger(0, pageId).uniqueResult();
+            "select p.name from Page as p where p.pageId = ?").setInteger(0, pageId).uniqueResult();
         session.getTransaction().commit();
 
         String title = (String)returnValue;
@@ -144,24 +144,28 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Gets the title for a given pageId.
+     * Gets the page ids for a given title.<br/>
+     *
      *
      * @param title The title of the page.
      * @return The id for the page with the given title.
      * @throws WikiApiException
      */
-    public int getPageId(String title) throws WikiApiException {
+    public List<Integer> getPageIds(String title) throws WikiApiException {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery(
-            "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title).uniqueResult();
+
+        List results = session.createQuery(
+        "select p.pageId from PageMapLine as p where p.name = ?").setString(0, title)
+        .list();
+
         session.getTransaction().commit();
 
-        Integer pageId = (Integer)returnValue;
-        if(pageId==null){
+        if(!results.isEmpty()){
         	throw new WikiPageNotFoundException();
         }
-        return pageId;
+
+        return results;
     }
 
 	/**
