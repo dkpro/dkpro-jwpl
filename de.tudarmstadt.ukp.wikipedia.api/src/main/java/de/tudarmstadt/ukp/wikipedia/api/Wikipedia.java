@@ -156,7 +156,7 @@ public class Wikipedia implements WikiConstants {
         session.beginTransaction();
 
         List results = session.createQuery(
-        "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title)
+        "select p.id from PageMapLine as p where p.name = ?").setString(0, title)
         .list();
 
         session.getTransaction().commit();
