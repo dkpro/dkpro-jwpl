@@ -139,6 +139,23 @@ public class Wikipedia implements WikiConstants {
         return new Title((String)returnValue);
     }
 
+    /**
+     * Gets the title for a given pageId.
+     *
+     * @param title The title of the page.
+     * @return The id for the page with the given title.
+     * @throws WikiApiException
+     */
+    public int getPageId(String title) throws WikiApiException {
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Object returnValue = session.createSQLQuery(
+            "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title).uniqueResult();
+        session.getTransaction().commit();
+
+        return (Integer)returnValue;
+    }
+
 	/**
 	 * Returns the article page for a given discussion page.
 	 *
