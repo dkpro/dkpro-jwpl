@@ -136,7 +136,11 @@ public class Wikipedia implements WikiConstants {
             "select p.name from PageMapLine as p where p.id = ?").setInteger(0, pageId).uniqueResult();
         session.getTransaction().commit();
 
-        return new Title((String)returnValue);
+        String title = (String)returnValue;
+        if(title==null){
+        	throw new WikiPageNotFoundException();
+        }
+        return new Title(title);
     }
 
     /**
@@ -153,7 +157,11 @@ public class Wikipedia implements WikiConstants {
             "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title).uniqueResult();
         session.getTransaction().commit();
 
-        return (Integer)returnValue;
+        Integer pageId = (Integer)returnValue;
+        if(pageId==null){
+        	throw new WikiPageNotFoundException();
+        }
+        return pageId;
     }
 
 	/**
