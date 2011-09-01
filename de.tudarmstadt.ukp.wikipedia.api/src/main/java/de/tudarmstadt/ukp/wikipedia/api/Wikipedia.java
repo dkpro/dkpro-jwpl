@@ -154,7 +154,6 @@ public class Wikipedia implements WikiConstants {
     public List<Integer> getPageIds(String title) throws WikiApiException {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        System.out.println(title);
         Iterator results = session.createQuery(
         "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title).list().iterator();
 
