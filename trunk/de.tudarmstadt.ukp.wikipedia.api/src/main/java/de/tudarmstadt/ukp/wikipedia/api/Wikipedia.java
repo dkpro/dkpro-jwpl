@@ -133,7 +133,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
-            "select p.name from Page as p where p.pageId = ?").setInteger(0, pageId).uniqueResult();
+            "select p.name from PageMapLine as p where p.id = ?").setInteger(0, pageId).uniqueResult();
         session.getTransaction().commit();
 
         String title = (String)returnValue;
