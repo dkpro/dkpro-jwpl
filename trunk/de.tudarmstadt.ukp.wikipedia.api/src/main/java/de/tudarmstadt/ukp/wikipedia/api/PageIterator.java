@@ -1,4 +1,4 @@
-/*******************************************************************************
+ /*******************************************************************************
  * Copyright (c) 2010 Torsten Zesch.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
@@ -7,7 +7,8 @@
  *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
- *     Samy Ateia
+ *     Samy Ateia - Improved performance
+ *     	see http://groups.google.com/group/jwpl/browse_thread/thread/79393bdd9fb84de9
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
@@ -67,7 +68,7 @@ public class PageIterator implements Iterator<Page> {
 		private final int maxBufferSize;	// the number of pages to be buffered after a query to the database.
 		private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
 		private int bufferOffset; 	// the offset in the buffer
-		private int dataOffset;		// the overall offset in the data
+		private long lastPage;// the overall offset in the data
 
 		public PageBuffer(int bufferSize, Wikipedia wiki, boolean onlyArticles){
 			this.maxBufferSize = bufferSize;
@@ -76,7 +77,7 @@ public class PageIterator implements Iterator<Page> {
 			this.buffer = new ArrayList<Page>();
 			this.bufferFillSize = 0;
 			this.bufferOffset = 0;
-			this.dataOffset = 0;
+			this.lastPage = 0;
 //TODO test whether this works when zero pages are retrieved
 		}
 
@@ -116,7 +117,6 @@ public class PageIterator implements Iterator<Page> {
 		private Page getBufferElement() {
 			Page page = buffer.get(bufferOffset);
 			bufferOffset++;
-			dataOffset++;
 			return page;
 		}
 
@@ -138,13 +138,13 @@ public class PageIterator implements Iterator<Page> {
 	        if (onlyArticles) {
 	            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
 	            .add(Restrictions.eq("isDisambiguation", false))
-	            .setFirstResult(dataOffset)
+	            .add(Restrictions.gt("id", lastPage))
 	            .setMaxResults(maxBufferSize)
 	            .list();
 	        }
 	        else {
 	            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-	            .setFirstResult(dataOffset)
+	            .add(Restrictions.gt("id", lastPage))
 	            .setMaxResults(maxBufferSize)
 	            .list();
 	        }
@@ -176,6 +176,7 @@ public class PageIterator implements Iterator<Page> {
 		                logger.error("Page with hibernateID " + id + " not found.");
 		                e.printStackTrace();
 		            }
+		            lastPage = id;
 	        	}
 	        }
 	        if (buffer.size() > 0) {
