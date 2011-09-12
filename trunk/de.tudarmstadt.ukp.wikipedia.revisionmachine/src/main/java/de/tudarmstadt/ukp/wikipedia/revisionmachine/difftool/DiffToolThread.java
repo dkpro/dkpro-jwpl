@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ArticleReaderException;
@@ -276,7 +275,7 @@ public class DiffToolThread
 				// Retrieve Archive
 				try {
 					description = archives.getArchive();
-					
+
 					// initialize filter
 					ArticleFilter nameFilter = new ArticleFilter();
 
