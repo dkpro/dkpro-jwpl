@@ -162,6 +162,46 @@
 				<artifactId>swing-layout</artifactId>
 				<version>1.0.2</version>
 			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.dist</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
+				<version>0.8.0-SNAPSHOT</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<modules>
