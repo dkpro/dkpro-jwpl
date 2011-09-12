@@ -172,6 +172,7 @@
 		<module>de.tudarmstadt.ukp.wikipedia.revisionmachine</module>
 		<module>de.tudarmstadt.ukp.wikipedia.dist</module>
 		<module>de.tudarmstadt.ukp.wikipedia.mwdumper</module>
+		<module>de.tudarmstadt.ukp.wikipedia.util</module>
 	</modules>
 	<build>
 		<pluginManagement>
