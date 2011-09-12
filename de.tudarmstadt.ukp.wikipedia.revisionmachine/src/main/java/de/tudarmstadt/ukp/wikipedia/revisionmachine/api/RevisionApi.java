@@ -427,6 +427,7 @@ public class RevisionApi
 	 *             if an error occurs
 	 * @author Oliver Ferschke
 	 */
+	@SuppressWarnings("unused")
 	public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter, boolean onlyRegistered)
 		throws WikiApiException
 	{
