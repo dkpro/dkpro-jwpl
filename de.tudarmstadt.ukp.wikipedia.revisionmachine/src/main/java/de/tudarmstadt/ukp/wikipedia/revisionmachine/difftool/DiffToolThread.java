@@ -60,8 +60,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * This class represents the main method for the DiffTool application using the
- * SingleThread mode.
+ * This class represents the main method for the DiffTool application
  */
 public class DiffToolThread
 	extends Thread
@@ -246,7 +245,7 @@ public class DiffToolThread
 	}
 
 	/**
-	 * Starts the DiffTool SingleThread Application.
+	 * Runs the diff creation process
 	 */
 	@Override
 	public void run()
