@@ -42,6 +42,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 
+
 /**
  * This class determines which page in a JWPL database contains which templates.
  * It produces an SQL file that will add this data to the extisting database.
@@ -69,15 +70,15 @@ public class WikipediaTemplateInfoGenerator
     protected final static String TABLE_TPLID_PAGEID="templateId_pageId";
     protected final static String TABLE_TPLID_TPLNAME="templates";
     private final int VERBOSITY = 500;
-
+    
     private HashSet<String> whiteList = new HashSet<String>();
     private HashSet<String> whitePrefixList = new HashSet<String>();
     private HashSet<String> blackList = new HashSet<String>();
     private HashSet<String> blackPrefixList = new HashSet<String>();
+    
 
-
-
-
+    
+    
 
     public HashSet<String> getWhiteList()
 	{
@@ -201,7 +202,7 @@ public class WikipediaTemplateInfoGenerator
      * @return true, if the template should be included in the db
      */
     private boolean acceptTemplate(String tpl){
-
+ 
     	if(isInWhiteList(tpl) && !isInBlackList(tpl)) {
     		if(containsAllowedPrefix(tpl) && !containsRestrictedPrefix(tpl)) {
     			return true;
@@ -213,7 +214,7 @@ public class WikipediaTemplateInfoGenerator
     	}
 
     }
-
+    
     /**
      * Checks if the input string is in white list
      * @param tpl string to check
@@ -225,7 +226,7 @@ public class WikipediaTemplateInfoGenerator
     	}
     	return false;
     }
-
+    
     /**
      * Checks if the input string is in black list
      * @param tpl string to check
@@ -237,25 +238,23 @@ public class WikipediaTemplateInfoGenerator
     	}
     	return false;
     }
-
+    
     /**
      * Checks if the input string contains prefixes from white list
      * @param tpl string to check
      * @return
      */
     private boolean containsAllowedPrefix(String tpl) {
-    	if(whitePrefixList.isEmpty()) {
-			return true;
-		}
-
+    	if(whitePrefixList.isEmpty())
+    		return true;
+    	
     	for(String i :whitePrefixList) {
-    		if(tpl.startsWith(i)) {
-				return true;
-			}
+    		if(tpl.startsWith(i))
+    			return true;
     	}
     	return false;
     }
-
+    
     /**
      * Checks if the input string contains prefixes from black list
      * @param tpl string to check
@@ -263,32 +262,35 @@ public class WikipediaTemplateInfoGenerator
      */
     private boolean containsRestrictedPrefix(String tpl) {
     	for(String i :blackPrefixList) {
-    		if(tpl.startsWith(i)) {
-				return true;
-			}
+    		if(tpl.startsWith(i))
+    			return true;
     	}
     	return false;
     }
-
-
+    
+    private boolean tableExists;
 
     /**
      * Fills a map with the template names and gives them a unique int-key,
      * which is later on used as a key in the db.
      */
     private void generateTemplateIndices(){
-		// TODO if we want to extract revision template when already having
-		// extracted page templates, we have to read in the existing indices
-		// first and use them for the news processed templates
+    	try {
+			WikipediaTemplateInfo info = new WikipediaTemplateInfo(this.wiki);
+			tableExists = true;
+			for(String name:TPLNAME_TO_PAGEIDS.keySet()){
+				int id = info.checkTemplateId(name);
+				if (id != -1) {
+					TPLNAME_TO_TPLID.put(name, id);
+				}
+			}
+			
+		}
+		catch (WikiApiException e) {
 
-    	int curTplId=1;
-    	for(String name:TPLNAME_TO_PAGEIDS.keySet()){
-    		TPLNAME_TO_TPLID.put(name, curTplId);
-    		curTplId++;
-    	}
+		}
     }
-
-
+    
     private void writeSQL() throws Exception{
     	Writer writer = null;
     	try{
@@ -296,118 +298,55 @@ public class WikipediaTemplateInfoGenerator
 
 	    	writer.write("CREATE TABLE IF NOT EXISTS "+TABLE_TPLID_PAGEID+" ("
 					+ "templateId INTEGER UNSIGNED NOT NULL,"
-					+ "pageId INTEGER UNSIGNED NOT NULL);");
+					+ "pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId));");
 			writer.write("\r\n");
 	    	writer.write("CREATE TABLE IF NOT EXISTS "+TABLE_TPLID_TPLNAME+" ("
-					+ "templateId INTEGER UNSIGNED NOT NULL,"
+					+ "templateId INTEGER NOT NULL AUTO_INCREMENT,"
 					+ "templateName MEDIUMTEXT NOT NULL, "
 					+ "PRIMARY KEY(templateId));");
-			writer.write("\r\n");
-			writer.write("ALTER TABLE "+TABLE_TPLID_PAGEID+" DISABLE KEYS;");
-			writer.write("\r\n");
-			writer.write("ALTER TABLE "+TABLE_TPLID_TPLNAME+" DISABLE KEYS;");
 			writer.write("\r\n");
 
 			/*
 			 * Generate insert statements and values
 			 */
 
-			/*
-			 * TABLE_TPLID_PAGEID
-			 */
-			String insertStatement = "INSERT INTO "+TABLE_TPLID_PAGEID+" VALUES ";
-			StringBuilder curStatement = new StringBuilder(insertStatement);
 
 			for(Entry<String,Set<Integer>> e:TPLNAME_TO_PAGEIDS.entrySet()){
 
 				String curTemplateName = e.getKey();
-    			//get the template id for the current template name
-				Integer tplId = TPLNAME_TO_TPLID.get(curTemplateName);
-    			if(tplId==null){
-    				throw new Exception("Error while writing table "+TABLE_TPLID_PAGEID+". Missing template id for template "+curTemplateName);
-    			}
+					
 	    		Set<Integer> curPageIds = e.getValue();
-
+	    		
 	    		if(!curTemplateName.isEmpty()&&!curPageIds.isEmpty()){
-		    		StringBuilder curValues = new StringBuilder();
+	    			String id = "LAST_INSERT_ID()";
+	    			if(!TPLNAME_TO_TPLID.containsKey(curTemplateName)) {
+	    				writer.write("INSERT INTO "+TABLE_TPLID_TPLNAME+" (templateName) VALUES ('"+curTemplateName+"');");
+		    			writer.write("\r\n");
+	    			}else {
+	    				id = TPLNAME_TO_TPLID.get(curTemplateName).toString();
+	    			}
+	    				
+	    			StringBuilder curValues = new StringBuilder();
 		    		for(Integer pId:curPageIds){
 		    			if(curValues.length()>0){
 		    				curValues.append(",");
 		    			}
-		    			curValues.append("(");
-		    			curValues.append(tplId);
-		    			curValues.append(",");
+		    			curValues.append("("+id+", ");
 		    			curValues.append(pId);
 		    			curValues.append(")");
 		    		}
-
-		    		//if packet size gets to large, begin a new one
-					if(curStatement.length()+curValues.length()>=maxAllowedPacket){
-						curStatement.append(";");
-						writer.write(curStatement.toString());
-						writer.write("\r\n");
-						curStatement = new StringBuilder(insertStatement);
-					}
-					if(curStatement.length()>insertStatement.length()){
-						curStatement.append(',');
-					}
-					curStatement.append(curValues);
+		    		writer.write("REPLACE INTO " + TABLE_TPLID_PAGEID + " VALUES "+ curValues+";");
+		    		writer.write("\r\n");
+		    		
 	    		}
 	    	}
-			//write remaining values to file
-			if(curStatement.length()>insertStatement.length()){
-				curStatement.append(";");
-				writer.write(curStatement.toString());
-				writer.write("\r\n");
+			if(!tableExists) {
+				writer.write("CREATE INDEX pageIdx ON "+TABLE_TPLID_PAGEID+"(pageId);");
+		    	writer.write("\r\n");
+		    	writer.write("CREATE INDEX tplIdx ON "+TABLE_TPLID_PAGEID+"(templateID);");
+		    	writer.write("\r\n");
 			}
-
-
-			/*
-			 * TABLE_TPLID_TPLNAME
-			 */
-			insertStatement = "INSERT INTO " + TABLE_TPLID_TPLNAME + " VALUES ";
-			curStatement = new StringBuilder(insertStatement);
-
-			for(Entry<String,Integer> e:TPLNAME_TO_TPLID.entrySet()){
-				String curTemplateName = e.getKey();
-	    		Integer curTemplateId = e.getValue();
-
-		    		StringBuilder curValues = new StringBuilder();
-		    			curValues.append("(");
-		    			curValues.append(curTemplateId);
-		    			curValues.append(",");
-		    			curValues.append("'");
-		    			curValues.append(curTemplateName);
-		    			curValues.append("'");
-		    			curValues.append(")");
-
-		    		//if packet size gets to large, begin a new one
-					if(curStatement.length()+curValues.length()>=maxAllowedPacket){
-						curStatement.append(";");
-						writer.write(curStatement.toString());
-						writer.write("\r\n");
-						curStatement = new StringBuilder(insertStatement);
-					}
-					if(curStatement.length()>insertStatement.length()){
-						curStatement.append(',');
-					}
-					curStatement.append(curValues);
-	    	}
-			//write remaining values to file
-			if(curStatement.length()>insertStatement.length()){
-				curStatement.append(";");
-				writer.write(curStatement.toString());
-				writer.write("\r\n");
-			}
-
-			//Create index and re-enable keys
-			writer.write("ALTER TABLE "+TABLE_TPLID_PAGEID+" ENABLE KEYS;");
-			writer.write("\r\n");
-			writer.write("ALTER TABLE "+TABLE_TPLID_TPLNAME+" ENABLE KEYS;");
-			writer.write("\r\n");
-	    	writer.write("CREATE INDEX pageIdx ON "+TABLE_TPLID_PAGEID+"(pageId);");
-	    	writer.write("CREATE INDEX tplIdx ON "+TABLE_TPLID_PAGEID+"(templateID);");
-	    	writer.write("\r\n");
+	    	
 
     	}catch(IOException e){
     		logger.error("Error writing SQL file: "+e.getMessage());
@@ -493,7 +432,7 @@ public class WikipediaTemplateInfoGenerator
 			Properties props = load(args[0]);
 
 			DatabaseConfiguration config = new DatabaseConfiguration();
-
+			
 			config.setHost(props.getProperty("host"));
 			config.setDatabase(props.getProperty("db"));
 			config.setUser(props.getProperty("user"));
@@ -507,7 +446,7 @@ public class WikipediaTemplateInfoGenerator
 
 			String maxAllowedPacketsString = props.getProperty("maxAllowedPackets");
 			long maxAllowedPackets;
-
+			
 			try {
 				if (charset == null) {
 					charset="UTF-8";
@@ -561,7 +500,7 @@ public class WikipediaTemplateInfoGenerator
 			}
 		}
 	}
-
+	
 	/**
 	 * Parses property string into HashSet
 	 * @param property string to parse
@@ -570,7 +509,7 @@ public class WikipediaTemplateInfoGenerator
 	public HashSet<String> createSetFromProperty(String property)
 	{
 		HashSet<String> properties = new HashSet<String>();
-
+		
 		if (property != null && !property.equals("null")) {
 			// "([\\w]*)=([\\w]*);"
 			Pattern params = Pattern.compile("([\\w]+)[;]*");
@@ -578,9 +517,9 @@ public class WikipediaTemplateInfoGenerator
 			while (matcher.find()) {
 				properties.add(matcher.group(1));
 			}
-
+			
 		}
-
+		
 		return properties;
 	}
 
