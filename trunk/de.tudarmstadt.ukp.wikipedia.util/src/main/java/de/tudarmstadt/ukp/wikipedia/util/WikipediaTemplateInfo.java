@@ -331,6 +331,48 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
+    
+    public int checkTemplateId(String templateName) throws WikiApiException{
+    	try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				
+				
+				sqlString.append("SELECT tpl.templateId FROM "+WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName+"'");
+
+				statement = connection.prepareStatement(sqlString.toString());
+			
+				result = statement.executeQuery();
+
+				if (result == null) {
+					return -1;
+				}
+
+				while (result.next()) {
+					int templateID = result.getInt(1);
+		            return templateID;
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+				
+			}
+
+			return -1;	
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+    }
+    
 
 	/**
 	 * Return an iterable containing all pages that contain a template the name
