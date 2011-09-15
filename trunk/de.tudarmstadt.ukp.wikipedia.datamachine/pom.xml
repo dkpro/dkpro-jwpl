@@ -5,17 +5,12 @@
   <version>0.8.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
   <name>DataMachine</name>
   <dependencies>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
   	</dependency>
   	<dependency>
   		<groupId>net.sf.trove4j</groupId>

@@ -5,16 +5,13 @@
   <version>0.8.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  <version>0.8.0-SNAPSHOT</version>
   <name>TimeMachine</name>
   <dependencies>
   	<dependency>
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-  		<version>0.8.0-SNAPSHOT</version>
-  	</dependency>
+  		</dependency>
   	<dependency>
   		<groupId>net.sf.trove4j</groupId>
   		<artifactId>trove4j</artifactId>
