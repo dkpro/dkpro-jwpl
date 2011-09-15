@@ -475,7 +475,7 @@
 				                    </goals>
 				                  </pluginExecutionFilter>
 				                  <action>
-				                    <ignore></ignore>
+				                    <ignore>true</ignore>
 				                  </action>
 				                </pluginExecution>
 				              </pluginExecutions>
