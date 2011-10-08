@@ -256,7 +256,7 @@ public class SQLEncoder
 			tempBinaryData = binaryDiff(task, diff);
 
 			// if the limit would be reached start a new encoding
-			if (revisionsEncoding.byteSize() + tempBinaryData.length + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) {
+			if ((revisionsEncoding.byteSize() + tempBinaryData.length + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) && (i!=0)) {
 				revisionsEncoding.append(";");
 				list.add(revisionsEncoding);
 
@@ -381,7 +381,7 @@ public class SQLEncoder
 					+ ",'" + encodeDiff(task, diff) + "',"+comment+","+(diff.isMinor()?"1":"0")+",'"+diff.getContributorName() +"',"+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0")+")";
 
 			// if the limit would be reached start a new encoding
-			if (revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) {
+			if ((revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) && (i!=0)) {
 				revisionEncoding.append(";");
 				list.add(revisionEncoding);
 
