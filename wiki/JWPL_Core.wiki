@@ -4,6 +4,7 @@
 
 == JWPL Core ==
   * [JWPLCore_GettingStarted Getting Started with JWPL Core]
+  * [HowToGetWikipediaDumps How to get Wikipedia dumps]
   * [JwplTutorial Tutorials showing how to use JWPL Core]
   * [DataMachine How to use the DataMachine]
   * [JWPLParser Description of the Parser for the MediaWiki syntax]
