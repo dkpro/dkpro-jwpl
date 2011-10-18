@@ -1,0 +1,22 @@
+#summary Information about how to get the Wikipedia data dumps.
+
+= Wikipedia Dump Repository =
+You can find the Wikipedia data dumps on http://dumps.wikimedia.org/
+
+= Download Tool =
+You can find a download tool for Wikipedia database dumps at http://github.com/babilen/wp-download/
+
+It can be used for bulk downloads of the latest dump files of all wanted languages and supports resume of aborted downloads.
+
+{{{
+$ wp-download -v --resume /path/to/wikipedia/dumps
+Read configuration from: '/home/foobar/.wpdownloadrc'
+Set timeout to 30s
+Processing language: sw
+Creating directory: /path/to/wikipedia/dumps/sw/20090821
+Latest dump for (sw) is from Friday 21 August 2009
+Skip: swwiki-20090821-redirect.sql.gz
+Skip: swwiki-20090821-category.sql.gz
+Resume: swwiki-20090821-pages-articles.xml.bz2
+swwiki-20090821-pages-articles.xml.bz2 [****] 100% Time: 00:00:00   3.19 M/s
+}}}
