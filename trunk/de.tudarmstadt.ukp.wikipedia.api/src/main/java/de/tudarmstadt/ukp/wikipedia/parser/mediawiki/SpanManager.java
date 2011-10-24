@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.Span;
  */
 public class SpanManager implements CharSequence {
 
-	private StringBuilder sb;
-	private List< List<Span> > managedLists;
+	private final StringBuilder sb;
+	private final List< List<Span> > managedLists;
 	
 	private List<Integer> ib;
 	private boolean calculateSrcPositions;
@@ -151,8 +151,23 @@ public class SpanManager implements CharSequence {
 		return result;
 	}
 	
-	public String substring(int start){ return this.sb.substring(start); }
-	public String substring(int start, int end){ return sb.substring(start, end); }
+	public String substring(int start){
+	    if (start < 0) {
+	        start = 0;
+	    }
+	    return this.sb.substring(start);
+	}
+	
+	public String substring(int start, int end){
+	    if (start < 0) {
+	        start = 0;
+	    }
+	    if (start > end) {
+	        return "";
+	    }
+	    
+	    return sb.substring(start, end);
+	}
 	
 	public String substring( Span s ) {
 	    if (s.getStart() < s.getEnd()) {
@@ -187,7 +202,8 @@ public class SpanManager implements CharSequence {
 		return sb.charAt(index); 
 	}
 	
-	public String toString(){ 
+	@Override
+    public String toString(){ 
 		return sb.toString(); 
 	}
 	
