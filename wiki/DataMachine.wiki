@@ -24,6 +24,7 @@
       * Make sure the database encoding is set to UTF8.
       * Create a database
          * `mysqladmin -uUSER -p create DB_NAME`
+         * or when on the mysql shell: `CREATE DATABASE mydb   DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;`
       * Create all necessary tables using [http://code.google.com/p/jwpl/source/browse/trunk/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql jwpl_tables.sql]
    # Import the data files into the database.
       * `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} ```pwd```/*.txt`
