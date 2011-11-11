@@ -29,7 +29,7 @@ public class Title {
     private String entity;
     private String disambiguationText;
     private String rawTitleText;
-    private String sectionText;
+    private final String sectionText;
     
     /**
      * Create a title object using a title string.
@@ -68,7 +68,7 @@ public class Title {
         
         this.sectionText = sectionPart;
         
-        String regexFindParts = "(.*?).\\((.+?)\\)";
+        String regexFindParts = "(.*?).\\((.+?)\\)$";
 
         Pattern patternNamespace = Pattern.compile(regexFindParts); 
         Matcher matcherNamespace = patternNamespace.matcher(
