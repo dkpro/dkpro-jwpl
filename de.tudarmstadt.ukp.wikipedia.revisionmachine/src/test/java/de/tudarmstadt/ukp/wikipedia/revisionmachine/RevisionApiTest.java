@@ -17,9 +17,11 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNoException;
 
+import java.lang.reflect.Field;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -212,4 +214,61 @@ public class RevisionApiTest
 			fail(e.getMessage());
 		}
 	}
+	
+	
+	@Test
+	public void lazyLoadingTest()
+	{
+		Calendar calendar = Calendar.getInstance();
+		calendar.set(2008, 10, 10, 10, 10, 10);
+
+		try {
+			RevisionApi revisionApi = new RevisionApi(
+					wiki.getDatabaseConfiguration());
+			int pageId = wiki.getPage("Car").getPageId();
+
+			Timestamp lastRevisionTimestamp = revisionApi
+					.getLastDateOfAppearance(pageId);
+			Revision revision = revisionApi.getRevision(pageId,
+					lastRevisionTimestamp);
+			
+			Field privateStringField = Revision.class
+					.getDeclaredField("revisionText");
+
+			privateStringField.setAccessible(true);
+
+			String fieldValue = (String) privateStringField.get(revision);
+			if (fieldValue != null)
+				fail("Not lazy loaded!");
+			
+			revision.getRevisionText();
+			fieldValue = (String) privateStringField.get(revision);
+			if (fieldValue == null)
+				fail("Not lazy loaded!");
+
+		}
+		catch (WikiApiException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+			
+		}
+		catch (SecurityException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		catch (NoSuchFieldException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+			fail(e.getMessage());
+		}
+
+	}
+	
 }
