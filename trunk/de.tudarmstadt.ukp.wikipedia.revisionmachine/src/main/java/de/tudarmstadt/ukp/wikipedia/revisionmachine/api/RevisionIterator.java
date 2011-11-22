@@ -35,11 +35,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * Part of the JWPL Revision API
- *
+ * 
  * This class represents the interface to iterate through multiple revisions.
- *
- *
- *
+ * 
+ * 
+ * 
  */
 public class RevisionIterator
 	implements RevisionIteratorInterface
@@ -78,9 +78,22 @@ public class RevisionIterator
 	/** Configuration parameter - indicates the maximum size of a querry. */
 	private final int MAX_NUMBER_RESULTS;
 
+	/** Should load revision text? */
+	private boolean shouldLoadRevisionText;
+
+	public boolean shouldLoadRevisionText()
+	{
+		return shouldLoadRevisionText;
+	}
+
+	public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
+	{
+		this.shouldLoadRevisionText = shouldLoadRevisionText;
+	}
+
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 *
+	 * 
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
@@ -89,7 +102,7 @@ public class RevisionIterator
 	 *            End index
 	 * @param connection
 	 *            Reference to the connection
-	 *
+	 * 
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -116,12 +129,12 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 *
+	 * 
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
 	 *            Start index
-	 *
+	 * 
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -141,14 +154,14 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 *
+	 * 
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
 	 *            Start index
 	 * @param endPK
 	 *            End index
-	 *
+	 * 
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -168,10 +181,10 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 *
+	 * 
 	 * @param config
 	 *            Reference to the configuration object
-	 *
+	 * 
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -205,12 +218,29 @@ public class RevisionIterator
 		}
 	}
 
+	/**
+	 * (Constructor) Creates a new RevisionIterator object.
+	 * 
+	 * @param config
+	 *            Reference to the configuration object
+	 * @param shouldLoadRevisionText
+	 *            should load revision text
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 */
+	public RevisionIterator(final RevisionAPIConfiguration config,
+			boolean shouldLoadRevisionText)
+		throws WikiApiException
+	{
+		this(config);
+		this.shouldLoadRevisionText = shouldLoadRevisionText;
+	}
+
 	public RevisionIterator(final DatabaseConfiguration db)
 		throws WikiApiException
 	{
 		this(getRevisionAPIConfig(db));
 	}
-
 
 	private static RevisionAPIConfiguration getRevisionAPIConfig(
 			final DatabaseConfiguration db)
@@ -229,9 +259,9 @@ public class RevisionIterator
 	/**
 	 * Sends the query to the database and stores the result. The statement and
 	 * resultset connection will not be closed.
-	 *
+	 * 
 	 * @return TRUE, if the result set has another element FALSE, otherwise
-	 *
+	 * 
 	 * @throws SQLException
 	 *             if an error occurs while accessing the database.
 	 */
@@ -276,26 +306,15 @@ public class RevisionIterator
 
 	/**
 	 * Returns the next revision.
-	 *
+	 * 
 	 * @return next revision
 	 */
 	@Override
 	public Revision next()
 	{
 		try {
-			String currentRevision;
 
-			Diff diff;
 			int revCount, articleID;
-			RevisionDecoder decoder = new RevisionDecoder(
-					config.getCharacterSet());
-
-			if (binaryData) {
-				decoder.setInput(result.getBinaryStream(2), true);
-			}
-			else {
-				decoder.setInput(result.getString(2));
-			}
 
 			revCount = result.getInt(3);
 			articleID = result.getInt(5);
@@ -319,25 +338,46 @@ public class RevisionIterator
 			}
 
 			this.currentRevCounter = revCount;
-			diff = decoder.decode();
 
-			try {
-				currentRevision = diff.buildRevision(previousRevision);
-			}
-			catch (Exception e) {
-				this.previousRevision = null;
-				System.err.println("Reconstruction failed -" + " [ArticleId "
-						+ result.getInt(5) + ", RevisionId " + result.getInt(4)
-						+ ", RevisionCounter " + result.getInt(3) + "]");
-				return null;
-			}
 
-			previousRevision = currentRevision;
+
 			this.primaryKey = result.getInt(1);
 
 			Revision revision = new Revision(revCount);
 			revision.setPrimaryKey(this.primaryKey);
-			revision.setRevisionText(currentRevision);
+			if (!shouldLoadRevisionText) {
+				String currentRevision;
+
+				Diff diff;
+				RevisionDecoder decoder = new RevisionDecoder(
+						config.getCharacterSet());
+
+				if (binaryData) {
+					decoder.setInput(result.getBinaryStream(2), true);
+				}
+				else {
+					decoder.setInput(result.getString(2));
+				}
+				diff = decoder.decode();
+
+				try {
+					currentRevision = diff.buildRevision(previousRevision);
+				}
+				catch (Exception e) {
+					this.previousRevision = null;
+					System.err.println("Reconstruction failed -"
+							+ " [ArticleId " + result.getInt(5)
+							+ ", RevisionId " + result.getInt(4)
+							+ ", RevisionCounter " + result.getInt(3) + "]");
+					return null;
+				}
+
+				previousRevision = currentRevision;
+				revision.setRevisionText(currentRevision);
+			} else {
+				revision.setRevisionApi(new RevisionApi(config));
+			}
+			
 			revision.setRevisionID(result.getInt(4));
 			revision.setArticleID(articleID);
 			revision.setTimeStamp(new Timestamp(result.getLong(6)));
@@ -355,11 +395,14 @@ public class RevisionIterator
 		catch (IOException e) {
 			throw new RuntimeException(e);
 		}
+		catch (WikiApiException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * Returns whether another revision is available or not.
-	 *
+	 * 
 	 * @return TRUE or FALSE
 	 */
 	@Override
@@ -392,7 +435,7 @@ public class RevisionIterator
 
 	/**
 	 * This method is unsupported.
-	 *
+	 * 
 	 * @deprecated
 	 * @throws UnsupportedOperationException
 	 */
@@ -405,7 +448,7 @@ public class RevisionIterator
 
 	/**
 	 * This method closes the connection to the input component.
-	 *
+	 * 
 	 * @throws SQLException
 	 *             if an error occurs while closing the connection to the
 	 *             database.

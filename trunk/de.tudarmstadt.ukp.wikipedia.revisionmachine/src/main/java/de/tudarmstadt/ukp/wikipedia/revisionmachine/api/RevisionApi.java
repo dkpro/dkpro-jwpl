@@ -838,7 +838,7 @@ public class RevisionApi
 				}
 			}
 
-			return buildRevision(fullRevPK, limit);
+			return buildRevisionMetaData(fullRevPK, limit);
 
 		}
 		catch (WikiPageNotFoundException e) {
@@ -1253,7 +1253,7 @@ public class RevisionApi
 			limit = (revisionIndex - revA) + 1;
 
 			// Build the revision
-			return buildRevision(fullRevPK, limit);
+			return buildRevisionMetaData(fullRevPK, limit);
 
 		}
 		catch (WikiPageNotFoundException e) {
@@ -1263,6 +1263,121 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
+	
+	
+	/**
+	 * This method queries and builds the specified revision.
+	 *
+	 * @param fullRevPK
+	 *            PK of the full revision
+	 * @param limit
+	 *            number of revision to query
+	 * @return Revision
+	 *
+	 * @throws SQLException
+	 *             if an error occurs while retrieving data from the sql
+	 *             database.
+	 * @throws IOException
+	 *             if an error occurs while reading the content stream
+	 * @throws DecodingException
+	 *             if an error occurs while decoding the content of the revision
+	 * @throws WikiPageNotFoundException
+	 *             if the revision was not found
+	 */
+	public void setRevisionTextAndParts(Revision revision)
+	{
+
+		//TODO: referenced
+		PreparedStatement statement = null;
+		ResultSet result = null;
+
+		try {
+
+			int fullRevPK = -1;
+			int limit = 1;
+			try {
+				statement = this.connection
+						.prepareStatement("SELECT FullRevisionPK, RevisionPK "
+								+ "FROM index_revisionID "
+								+ "WHERE revisionID=? LIMIT 1");
+				statement.setInt(1, revision.getRevisionID());
+				result = statement.executeQuery();
+
+				if (result.next()) {
+					fullRevPK = result.getInt(1);
+					limit = (result.getInt(2) - fullRevPK) + 1;
+
+				}
+				else {
+					throw new WikiPageNotFoundException(
+							"The revision with the ID "
+									+ revision.getRevisionID()
+									+ " was not found.");
+				}
+
+				statement = this.connection
+						.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+								+ "FROM revisions "
+								+ "WHERE PrimaryKey >= ? LIMIT " + limit);
+				statement.setInt(1, fullRevPK);
+				result = statement.executeQuery();
+
+				String previousRevision = null, currentRevision = null;
+
+				Diff diff = null;
+				RevisionDecoder decoder;
+
+				boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+
+				while (result.next()) {
+
+					decoder = new RevisionDecoder(config.getCharacterSet());
+
+					if (binaryData) {
+						decoder.setInput(result.getBinaryStream(1), true);
+					}
+					else {
+						decoder.setInput(result.getString(1));
+					}
+
+					diff = decoder.decode();
+					currentRevision = diff.buildRevision(previousRevision);
+
+					previousRevision = currentRevision;
+					
+					
+				}
+				
+				Collection<DiffPart> parts = new LinkedList<DiffPart>();
+				Iterator<DiffPart> it = diff.iterator();
+				while (it.hasNext()) {
+					parts.add(it.next());
+				}
+				revision.setParts(parts);
+	
+				revision.setRevisionText(currentRevision);
+
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+		}
+		catch (WikiPageNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+	
+	
 
 	/**
 	 * This method queries and builds the specified revision.
@@ -1283,15 +1398,109 @@ public class RevisionApi
 	 * @throws WikiPageNotFoundException
 	 *             if the revision was not found
 	 */
-	private Revision buildRevision(final int fullRevPK, final int limit)
-		throws SQLException, IOException, DecodingException,
-		WikiPageNotFoundException
-	{
-
+//	private Revision buildRevision(final int fullRevPK, final int limit)
+//		throws SQLException, IOException, DecodingException,
+//		WikiPageNotFoundException
+//	{
+//
+//		PreparedStatement statement = null;
+//		ResultSet result = null;
+//		// System.out.println("buildRevision -- PK: " + fullRevPK + "\tLimit: "
+//		// + limit);
+//		try {
+//			statement = this.connection
+//					.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+//							+ "FROM revisions "
+//							+ "WHERE PrimaryKey >= ? LIMIT " + limit);
+//			statement.setInt(1, fullRevPK);
+//			result = statement.executeQuery();
+//
+//			String previousRevision = null, currentRevision = null;
+//
+//			Diff diff;
+//			RevisionDecoder decoder;
+//			Revision revision = null;
+//
+//			boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+//
+//			while (result.next()) {
+//
+//				decoder = new RevisionDecoder(config.getCharacterSet());
+//
+//				if (binaryData) {
+//					decoder.setInput(result.getBinaryStream(1), true);
+//				}
+//				else {
+//					decoder.setInput(result.getString(1));
+//				}
+//
+//				diff = decoder.decode();
+//				currentRevision = diff.buildRevision(previousRevision);
+//
+//				previousRevision = currentRevision;
+//
+//				revision = new Revision(result.getInt(3), this);
+//				revision.setRevisionText(currentRevision);
+//				revision.setPrimaryKey(result.getInt(2));
+//				revision.setRevisionID(result.getInt(4));
+//				revision.setArticleID(result.getInt(5));
+//				revision.setTimeStamp(new Timestamp(result.getLong(6)));
+//				revision.setComment(result.getString(7));
+//				revision.setMinor(result.getBoolean(8));
+//				revision.setContributorName(result.getString(9));
+//
+//				//we should not use getInt(), because result may be null
+//				String contribIdString = result.getString(10);
+//				Integer contributorId=contribIdString==null?null:Integer.parseInt(contribIdString);
+//				revision.setContributorId(contributorId);
+//
+//				revision.setContributorIsRegistered(result.getBoolean(11));
+//				Collection<DiffPart> parts = new LinkedList<DiffPart>();
+//				Iterator<DiffPart> it = diff.iterator();
+//				while (it.hasNext()) {
+//					parts.add(it.next());
+//				}
+//				revision.setParts(parts);
+//			}
+//
+//			return revision;
+//
+//		}
+//		finally {
+//			if (statement != null) {
+//				statement.close();
+//			}
+//			if (result != null) {
+//				result.close();
+//			}
+//		}
+//	}
+	
+	
+	/**
+	 * This method queries and builds the specified revision.
+	 *
+	 * @param fullRevPK
+	 *            PK of the full revision
+	 * @param limit
+	 *            number of revision to query
+	 * @return Revision
+	 *
+	 * @throws SQLException
+	 *             if an error occurs while retrieving data from the sql
+	 *             database.
+	 * @throws IOException
+	 *             if an error occurs while reading the content stream
+	 * @throws DecodingException
+	 *             if an error occurs while decoding the content of the revision
+	 * @throws WikiPageNotFoundException
+	 *             if the revision was not found
+	 */
+	private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException{
+		
 		PreparedStatement statement = null;
 		ResultSet result = null;
-		// System.out.println("buildRevision -- PK: " + fullRevPK + "\tLimit: "
-		// + limit);
+
 		try {
 			statement = this.connection
 					.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
@@ -1300,32 +1509,10 @@ public class RevisionApi
 			statement.setInt(1, fullRevPK);
 			result = statement.executeQuery();
 
-			String previousRevision = null, currentRevision = null;
-
-			Diff diff;
-			RevisionDecoder decoder;
 			Revision revision = null;
-
-			boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
-
-			while (result.next()) {
-
-				decoder = new RevisionDecoder(config.getCharacterSet());
-
-				if (binaryData) {
-					decoder.setInput(result.getBinaryStream(1), true);
-				}
-				else {
-					decoder.setInput(result.getString(1));
-				}
-
-				diff = decoder.decode();
-				currentRevision = diff.buildRevision(previousRevision);
-
-				previousRevision = currentRevision;
-
-				revision = new Revision(result.getInt(3));
-				revision.setRevisionText(currentRevision);
+			if(result.last()) {		
+				revision = new Revision(result.getInt(3), this);
+				
 				revision.setPrimaryKey(result.getInt(2));
 				revision.setRevisionID(result.getInt(4));
 				revision.setArticleID(result.getInt(5));
@@ -1340,14 +1527,7 @@ public class RevisionApi
 				revision.setContributorId(contributorId);
 
 				revision.setContributorIsRegistered(result.getBoolean(11));
-				Collection<DiffPart> parts = new LinkedList<DiffPart>();
-				Iterator<DiffPart> it = diff.iterator();
-				while (it.hasNext()) {
-					parts.add(it.next());
-				}
-				revision.setParts(parts);
 			}
-
 			return revision;
 
 		}
@@ -1359,6 +1539,7 @@ public class RevisionApi
 				result.close();
 			}
 		}
+		
 	}
 
 	private Connection getConnection(RevisionAPIConfiguration config)
