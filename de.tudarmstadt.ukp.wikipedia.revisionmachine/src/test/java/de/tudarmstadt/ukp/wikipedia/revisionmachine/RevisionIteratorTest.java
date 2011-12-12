@@ -40,6 +40,7 @@ public class RevisionIteratorTest
 
 	private static Wikipedia wiki = null;
 	private static RevisionIterator revisionIterator = null;
+	private static RevisionIterator revisionIteratorLazy = null;
 	private static RevisionAPIConfiguration config = null;
 
 	/**
@@ -74,6 +75,7 @@ public class RevisionIteratorTest
 
 		try {
 			revisionIterator = new RevisionIterator(config);
+			revisionIteratorLazy = new RevisionIterator(config, true);
 		}
 		catch (Exception e) {
 			Assume.assumeNoException(e);
@@ -86,7 +88,7 @@ public class RevisionIteratorTest
 	{
 
 		int i = 0;
-		while (revisionIterator.hasNext() && i < 1000) {
+		while (revisionIterator.hasNext() && i < 500) {
 			Revision revision = revisionIterator.next();
 			revision.getArticleID();
 			revision.getFullRevisionID();
@@ -95,28 +97,30 @@ public class RevisionIteratorTest
 			revision.getTimeStamp();
 			i++;
 		}
-		assertEquals(1000, i);
+		assertEquals(500, i);
+
+		//close iterator
 		try {
 			revisionIterator.close();
 		}
 		catch (SQLException e) {
-			assertFalse(true);
+			assertFalse("Error closing iterator", true);
 		}
 	}
 
 
 	@Test
 	public void lazyLoadingTest() {
-		try {
-			revisionIterator = new RevisionIterator(config);
-		}
-		catch (WikiApiException e) {
-			Assume.assumeNoException(e);
-		}
-
 		ArrayList<String> texts = new ArrayList<String>();
 		int i = 0;
-		while (revisionIterator.hasNext() && i < 1000) {
+		//create new iterator without lazy loading
+		try{
+			revisionIterator = new RevisionIterator(config);
+		}catch (WikiApiException e) {
+			assertFalse("Error creating iterator", true);
+		}
+
+		while (revisionIterator.hasNext() && i < 500) {
 			Revision revision = revisionIterator.next();
 			texts.add(revision.getRevisionText());
 			i++;
@@ -124,15 +128,10 @@ public class RevisionIteratorTest
 
 		ArrayList<String> lazyLoadedTexts = new ArrayList<String>();
 
-		try {
-			revisionIterator = new RevisionIterator(config, true);
-		}
-		catch (WikiApiException e) {
-			Assume.assumeNoException(e);
-		}
 		i = 0;
-		while (revisionIterator.hasNext() && i < 1000) {
-			Revision revision = revisionIterator.next();
+		//create new iterator with lazy loading
+		while (revisionIteratorLazy.hasNext() && i < 1000) {
+			Revision revision = revisionIteratorLazy.next();
 			lazyLoadedTexts.add(revision.getRevisionText());
 			i++;
 		}
@@ -143,8 +142,15 @@ public class RevisionIteratorTest
 			}
 		}
 
+		//close all iterators
+		try {
+			revisionIterator.close();
+			revisionIteratorLazy.close();
+		}
+		catch (SQLException e) {
+			assertFalse("Error closing iterator", true);
+		}
 
 	}
-
 
 }
