@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -17,7 +17,6 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeNoException;
 
@@ -214,8 +213,8 @@ public class RevisionApiTest
 			fail(e.getMessage());
 		}
 	}
-	
-	
+
+
 	@Test
 	public void lazyLoadingTest()
 	{
@@ -231,26 +230,28 @@ public class RevisionApiTest
 					.getLastDateOfAppearance(pageId);
 			Revision revision = revisionApi.getRevision(pageId,
 					lastRevisionTimestamp);
-			
+
 			Field privateStringField = Revision.class
 					.getDeclaredField("revisionText");
 
 			privateStringField.setAccessible(true);
 
 			String fieldValue = (String) privateStringField.get(revision);
-			if (fieldValue != null)
+			if (fieldValue != null) {
 				fail("Not lazy loaded!");
-			
+			}
+
 			revision.getRevisionText();
 			fieldValue = (String) privateStringField.get(revision);
-			if (fieldValue == null)
+			if (fieldValue == null) {
 				fail("Not lazy loaded!");
+			}
 
 		}
 		catch (WikiApiException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
-			
+
 		}
 		catch (SecurityException e) {
 			e.printStackTrace();
@@ -270,5 +271,5 @@ public class RevisionApiTest
 		}
 
 	}
-	
+
 }

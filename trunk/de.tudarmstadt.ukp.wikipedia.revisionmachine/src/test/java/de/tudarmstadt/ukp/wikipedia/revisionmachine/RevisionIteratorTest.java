@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -17,8 +17,8 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assume.assumeNoException;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assume.assumeNoException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -33,7 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
 
 public class RevisionIteratorTest
@@ -104,8 +103,8 @@ public class RevisionIteratorTest
 			assertFalse(true);
 		}
 	}
-	
-	
+
+
 	@Test
 	public void lazyLoadingTest() {
 		try {
@@ -114,7 +113,7 @@ public class RevisionIteratorTest
 		catch (WikiApiException e) {
 			Assume.assumeNoException(e);
 		}
-		
+
 		ArrayList<String> texts = new ArrayList<String>();
 		int i = 0;
 		while (revisionIterator.hasNext() && i < 1000) {
@@ -122,9 +121,9 @@ public class RevisionIteratorTest
 			texts.add(revision.getRevisionText());
 			i++;
 		}
-		
+
 		ArrayList<String> lazyLoadedTexts = new ArrayList<String>();
-		
+
 		try {
 			revisionIterator = new RevisionIterator(config, true);
 		}
@@ -137,15 +136,15 @@ public class RevisionIteratorTest
 			lazyLoadedTexts.add(revision.getRevisionText());
 			i++;
 		}
-		
+
 		for (int j = 0; j < texts.size(); j++) {
 			if(!texts.get(j).equals(lazyLoadedTexts.get(j))){
 				assertFalse(true);
 			}
 		}
-	
-		
+
+
 	}
-	
-	
+
+
 }
