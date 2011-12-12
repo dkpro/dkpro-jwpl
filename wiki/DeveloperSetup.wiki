@@ -8,32 +8,41 @@
 
 As of version 0.7.0, all JWPL components are available on [http://search.maven.org/#search|ga|1|tudarmstadt.ukp Maven Central]. If you use Maven as your build tool, then you can add any JWPL component as a dependency to your _pom.xml_ without having to perform any additional configuration:
 
+For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your _pom.xml_
+
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  <version>0.7.0</version>
+  <version>0.8.0</version>
+</dependency>
+}}}
+{{{
+<dependency>
+  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
+  <version>0.8.0</version>
 </dependency>
 }}}
 
