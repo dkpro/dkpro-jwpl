@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -35,11 +35,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * Part of the JWPL Revision API
- * 
+ *
  * This class represents the interface to iterate through multiple revisions.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class RevisionIterator
 	implements RevisionIteratorInterface
@@ -81,6 +81,12 @@ public class RevisionIterator
 	/** Should load revision text? */
 	private boolean shouldLoadRevisionText;
 
+	/**
+	 * The revisionapi for this iterator - used by the Revision object
+	 * in case of lazy loading
+	 */
+	private RevisionApi revApi= null;
+
 	public boolean shouldLoadRevisionText()
 	{
 		return shouldLoadRevisionText;
@@ -93,7 +99,7 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
@@ -102,7 +108,7 @@ public class RevisionIterator
 	 *            End index
 	 * @param connection
 	 *            Reference to the connection
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -129,12 +135,12 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
 	 *            Start index
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -154,14 +160,14 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param startPK
 	 *            Start index
 	 * @param endPK
 	 *            End index
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -181,10 +187,10 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration object
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -220,7 +226,7 @@ public class RevisionIterator
 
 	/**
 	 * (Constructor) Creates a new RevisionIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration object
 	 * @param shouldLoadRevisionText
@@ -259,9 +265,9 @@ public class RevisionIterator
 	/**
 	 * Sends the query to the database and stores the result. The statement and
 	 * resultset connection will not be closed.
-	 * 
+	 *
 	 * @return TRUE, if the result set has another element FALSE, otherwise
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if an error occurs while accessing the database.
 	 */
@@ -306,7 +312,7 @@ public class RevisionIterator
 
 	/**
 	 * Returns the next revision.
-	 * 
+	 *
 	 * @return next revision
 	 */
 	@Override
@@ -375,9 +381,12 @@ public class RevisionIterator
 				previousRevision = currentRevision;
 				revision.setRevisionText(currentRevision);
 			} else {
-				revision.setRevisionApi(new RevisionApi(config));
+				if(revApi==null){
+					revApi = new RevisionApi(config);
+				}
+				revision.setRevisionApi(revApi);
 			}
-			
+
 			revision.setRevisionID(result.getInt(4));
 			revision.setArticleID(articleID);
 			revision.setTimeStamp(new Timestamp(result.getLong(6)));
@@ -402,7 +411,7 @@ public class RevisionIterator
 
 	/**
 	 * Returns whether another revision is available or not.
-	 * 
+	 *
 	 * @return TRUE or FALSE
 	 */
 	@Override
@@ -435,7 +444,7 @@ public class RevisionIterator
 
 	/**
 	 * This method is unsupported.
-	 * 
+	 *
 	 * @deprecated
 	 * @throws UnsupportedOperationException
 	 */
@@ -448,7 +457,7 @@ public class RevisionIterator
 
 	/**
 	 * This method closes the connection to the input component.
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if an error occurs while closing the connection to the
 	 *             database.
