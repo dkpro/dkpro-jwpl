@@ -50,10 +50,10 @@ For adding JWPL components in the most recent version to your Maven project, add
 
 We use the following tools for development:
 
-    * [http://eclipse.org/ Eclipse] 3.7. We recommend the _Eclipse Classic_ distribution.
+    * [http://eclipse.org/ Eclipse] 3.6 or higher. We recommend the _Eclipse Classic_ distribution.
     * [http://subclipse.tigris.org/ Subclipse] 1.6.x
         * update site: `http://subclipse.tigris.org/update_1.6.x`
-    * [http://eclipse.org/m2e/ m2e] 0.10.0 or higher.
+    * [http://eclipse.org/m2e/ m2e] 1.0 or higher.
 
 === For Windows Users ===
 
