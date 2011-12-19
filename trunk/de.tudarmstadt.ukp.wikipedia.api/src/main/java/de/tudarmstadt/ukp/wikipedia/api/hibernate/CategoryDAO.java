@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -12,12 +12,10 @@ package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.SessionFactory;
 
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.Category;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 
 /**
  * Data access object for class Page
@@ -73,7 +71,8 @@ public class CategoryDAO {
     public void attachClean(Category instance) {
         logger.debug("attaching clean Category instance");
         try {
-            sessionFactory.getCurrentSession().lock(instance, LockMode.NONE);
+//            sessionFactory.getCurrentSession().lock(instance, LockMode.NONE);
+            sessionFactory.getCurrentSession().buildLockRequest(LockOptions.NONE).lock(instance);
             logger.debug("attach successful");
         } catch (RuntimeException re) {
             logger.error("attach failed", re);
