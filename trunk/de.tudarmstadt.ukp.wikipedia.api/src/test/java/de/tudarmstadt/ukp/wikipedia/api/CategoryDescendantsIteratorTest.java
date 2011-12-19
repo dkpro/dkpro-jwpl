@@ -36,7 +36,7 @@ public class CategoryDescendantsIteratorTest {
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_test");
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
+		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
 		db.setUser("student");
 		db.setPassword("student");
 		db.setLanguage(Language._test);

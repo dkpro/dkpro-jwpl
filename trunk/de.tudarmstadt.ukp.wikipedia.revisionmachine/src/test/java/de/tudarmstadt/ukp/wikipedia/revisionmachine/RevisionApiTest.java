@@ -51,7 +51,7 @@ public class RevisionApiTest
 	{
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_simple_20090119");
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
+		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
 		db.setUser("student");
 		db.setPassword("student");
 		db.setLanguage(Language.simple_english);

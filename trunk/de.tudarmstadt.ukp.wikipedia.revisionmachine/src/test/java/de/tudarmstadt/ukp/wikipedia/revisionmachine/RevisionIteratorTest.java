@@ -52,7 +52,7 @@ public class RevisionIteratorTest
 	public static void setupWikipedia()
 	{
 		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
+		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
 		db.setDatabase("wikiapi_simple_20090119");
 		db.setUser("student");
 		db.setPassword("student");

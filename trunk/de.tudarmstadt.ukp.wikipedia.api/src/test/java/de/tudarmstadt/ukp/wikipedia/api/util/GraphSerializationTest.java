@@ -58,7 +58,7 @@ public class GraphSerializationTest {
     public static void initializeWikipedia(){
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setDatabase("wikiapi_test");
-        dbConfig.setHost("bender.tk.informatik.tu-darmstadt.de");
+        dbConfig.setHost("bender.ukp.informatik.tu-darmstadt.de");
         dbConfig.setLanguage(Language._test);
         dbConfig.setPassword("student");
         dbConfig.setUser("student");
