@@ -180,10 +180,11 @@ public class Page
 						"select pml.pageID from PageMapLine as pml where pml.name = ? LIMIT 1")
 				.setString(0, searchString).uniqueResult();
 
-		if (pageId == null) {
+        session.getTransaction().commit();
+
+        if (pageId == null) {
 			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
 		}
-        session.getTransaction().commit();
 		fetchByPageId(pageId);
 
 //		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session.createSQLQuery(
