@@ -14,7 +14,9 @@ package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,7 +27,9 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * An iterator over page objects.
+ *
  * @author zesch
+ * @author Oliver Ferschke
  *
  */
 public class PageIterator implements Iterator<Page> {
@@ -34,7 +38,11 @@ public class PageIterator implements Iterator<Page> {
 
     private final PageBuffer buffer;
 
-	public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize) {
+	public PageIterator(Wikipedia wiki, Set<String> ids, Set<String> titles, int bufferSize) {
+		buffer = new PageBuffer(bufferSize, wiki, ids, titles);
+	}
+
+    public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize) {
 		buffer = new PageBuffer(bufferSize, wiki, onlyArticles);
 	}
 
@@ -57,6 +65,7 @@ public class PageIterator implements Iterator<Page> {
 	 * Buffers pages in a list.
 	 *
 	 * @author zesch
+	 * @author Oliver Ferschke
 	 *
 	 */
 	class PageBuffer{
@@ -70,6 +79,10 @@ public class PageIterator implements Iterator<Page> {
 		private int bufferOffset; 	// the offset in the buffer
 		private long lastPage;// the overall offset in the data
 
+		private List<String> pageIds = new LinkedList<String>(); // a set of ids, if a specific list of articles is supposed to be read
+		private List<String> pageTitles = new LinkedList<String>(); // a set of titles, if a specific list of articles is supposed to be read
+		boolean loadFromList;
+
 		public PageBuffer(int bufferSize, Wikipedia wiki, boolean onlyArticles){
 			this.maxBufferSize = bufferSize;
 			this.wiki = wiki;
@@ -78,7 +91,21 @@ public class PageIterator implements Iterator<Page> {
 			this.bufferFillSize = 0;
 			this.bufferOffset = 0;
 			this.lastPage = 0;
-//TODO test whether this works when zero pages are retrieved
+			this.loadFromList=false;
+			//TODO test whether this works when zero pages are retrieved
+		}
+
+		public PageBuffer(int bufferSize, Wikipedia wiki, Set<String> ids, Set<String> titles){
+			this.maxBufferSize = bufferSize;
+			this.wiki = wiki;
+			this.buffer = new ArrayList<Page>();
+			this.onlyArticles = false;
+			this.bufferFillSize = 0;
+			this.bufferOffset = 0;
+			this.lastPage = 0;
+			this.pageIds=new LinkedList<String>(ids);
+			this.pageTitles=new LinkedList<String>(titles);
+			this.loadFromList=true;
 		}
 
 		/**
@@ -132,150 +159,105 @@ public class PageIterator implements Iterator<Page> {
 
 		private boolean fillBuffer() {
 
-			Session session = this.wiki.__getHibernateSession();
-	        session.beginTransaction();
-	        List returnValues = null;
-	        if (onlyArticles) {
-	            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-	            .add(Restrictions.eq("isDisambiguation", false))
-	            .add(Restrictions.gt("id", lastPage))
-	            .setMaxResults(maxBufferSize)
-	            .list();
-	        }
-	        else {
-	            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-	            .add(Restrictions.gt("id", lastPage))
-	            .setMaxResults(maxBufferSize)
-	            .list();
-	        }
-	        session.getTransaction().commit();
+			//decide whether to load from list or retrieve all available articles
+			if(loadFromList){
+		        // clear the old buffer and all variables regarding the state of the buffer
+		        buffer.clear();
+		        bufferOffset = 0;
+		        bufferFillSize = 0;
 
-	        // clear the old buffer and all variables regarding the state of the buffer
-	        buffer.clear();
-	        bufferOffset = 0;
-	        bufferFillSize = 0;
+				//load pages
+		        if(pageIds.isEmpty()&&pageTitles.isEmpty()){
+		        	return false;
+		        }
 
-	        Page apiPage;
-	        for(Object o : returnValues){
-	        	if(o==null) {
-	        		return false;
-	        	} else {
-	        		de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) o;
-	        		long id = hibernatePage.getId();
-	        		try {
-	        			apiPage = new Page(this.wiki, id, hibernatePage);
-		                if (this.onlyArticles) {
-		                    if (!apiPage.isRedirect()) {
-		                        buffer.add(apiPage);
-		                    }
-		                }
-		                else {
-		                	buffer.add(apiPage);
-		                }
-		            } catch (WikiApiException e) {
-		                logger.error("Page with hibernateID " + id + " not found.");
-		                e.printStackTrace();
-		            }
-		            lastPage = id;
-	        	}
-	        }
-	        if (buffer.size() > 0) {
-	        	bufferFillSize = buffer.size();
-	        	return true;
-	        }
-	        else {
-	        	return false;
-	        }
+		        while(bufferFillSize<=maxBufferSize&&!pageIds.isEmpty()){
+					String id = pageIds.remove(0);
+		        	if(id!=null&&!id.isEmpty()){
+						try{
+							buffer.add(wiki.getPage(Integer.parseInt(id)));
+				        	bufferFillSize++;
+						}catch(WikiApiException e){
+							logger.warn("Missing article with id "+id);
+						}
+					}
+				}
+		        while(bufferFillSize<=maxBufferSize&&!pageTitles.isEmpty()){
+		        	String title = pageTitles.remove(0);
+					if(title!=null&&!title.isEmpty()){
+						try{
+							buffer.add(wiki.getPage(title));
+				        	bufferFillSize++;
+						}catch(WikiApiException e){
+							logger.warn("Missing article with title \""+title+"\"");
+						}
+					}
+				}
+
+				if (buffer.size() > 0) {
+		        	bufferFillSize = buffer.size();
+		        	return true;
+		        }
+		        else {
+		        	return false;
+		        }
+			}else{
+				Session session = this.wiki.__getHibernateSession();
+		        session.beginTransaction();
+		        List returnValues = null;
+		        if (onlyArticles) {
+		            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
+		            .add(Restrictions.eq("isDisambiguation", false))
+		            .add(Restrictions.gt("id", lastPage))
+		            .setMaxResults(maxBufferSize)
+		            .list();
+		        }
+		        else {
+		            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
+		            .add(Restrictions.gt("id", lastPage))
+		            .setMaxResults(maxBufferSize)
+		            .list();
+		        }
+		        session.getTransaction().commit();
+
+		        // clear the old buffer and all variables regarding the state of the buffer
+		        buffer.clear();
+		        bufferOffset = 0;
+		        bufferFillSize = 0;
+
+		        Page apiPage;
+		        for(Object o : returnValues){
+		        	if(o==null) {
+		        		return false;
+		        	} else {
+		        		de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) o;
+		        		long id = hibernatePage.getId();
+		        		try {
+		        			apiPage = new Page(this.wiki, id, hibernatePage);
+			                if (this.onlyArticles) {
+			                    if (!apiPage.isRedirect()) {
+			                        buffer.add(apiPage);
+			                    }
+			                }
+			                else {
+			                	buffer.add(apiPage);
+			                }
+			            } catch (WikiApiException e) {
+			                logger.error("Page with hibernateID " + id + " not found.");
+			                e.printStackTrace();
+			            }
+			            lastPage = id;
+		        	}
+		        }
+		        if (buffer.size() > 0) {
+		        	bufferFillSize = buffer.size();
+		        	return true;
+		        }
+		        else {
+		        	return false;
+		        }
+			}
 		} // fillBuffer
 
 	}
 }
-
-
-//    public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize) {
-//        this.wiki = wiki;
-//        this.iterPosition = 0;
-//        this.onlyArticles = onlyArticles;
-//        this.bufferSize = bufferSize;
-//    }
-//
-//    public boolean hasNext() {
-//        Session session = this.wiki.__getHibernateSession();
-//        session.beginTransaction();
-//        Object returnValue = null;
-//        if (onlyArticles) {
-//            returnValue = session.createCriteria(org.tud.ukp.wikipedia.api.hibernate.Page.class)
-//            .add(Restrictions.eq("isDisambiguation", false))
-//            .setFirstResult(iterPosition)
-//            .setMaxResults(1)
-//            .uniqueResult();
-//        }
-//        else {
-//            returnValue = session.createCriteria(org.tud.ukp.wikipedia.api.hibernate.Page.class)
-//            .setFirstResult(iterPosition)
-//            .setMaxResults(1)
-//            .uniqueResult();
-//        }
-//        session.getTransaction().commit();
-//
-//        if (returnValue == null) {
-//            return false;
-//        }
-//        else {
-//            return true;
-//        }
-//
-//    }
-//
-//    public Page next() {
-//        Session session = this.wiki.__getHibernateSession();
-//        session.beginTransaction();
-//        Object returnValue = null;
-//        if (onlyArticles) {
-//            returnValue = session.createCriteria(org.tud.ukp.wikipedia.api.hibernate.Page.class)
-//            .add(Restrictions.eq("isDisambiguation", false))
-//            .setFirstResult(iterPosition)
-//            .setMaxResults(1)
-//            .uniqueResult();
-//        }
-//        else {
-//            returnValue = session.createCriteria(org.tud.ukp.wikipedia.api.hibernate.Page.class)
-//            .setFirstResult(iterPosition)
-//            .setMaxResults(1)
-//            .uniqueResult();
-//        }
-//        session.getTransaction().commit();
-//
-//        Page apiPage;
-//
-//        if (returnValue == null) {
-//            return null;
-//        }
-//        else {
-//            org.tud.ukp.wikipedia.api.hibernate.Page hibernatePage = (org.tud.ukp.wikipedia.api.hibernate.Page) returnValue;
-//            long id = hibernatePage.getId();
-//            try {
-//                apiPage = new Page(this.wiki, id);
-//                if (this.onlyArticles) {
-//                    if (!apiPage.isRedirect()) {
-//                        iterPosition++;
-//                        return apiPage;
-//                    }
-//                }
-//                else {
-//                    iterPosition++;
-//                    return apiPage;
-//                }
-//            } catch (WikiApiException e) {
-//                logger.error("Page with hibernateID " + id + " not found.");
-//                e.printStackTrace();
-//            }
-//        }
-//        return null;
-//
-//    }
-//
-//    public void remove() {
-//        throw new UnsupportedOperationException();
-//    }
-//}
