@@ -51,7 +51,7 @@ public class SQLEncoder
 	implements SQLEncoderInterface
 {
 
-	/** SQL Statement for tables containing binary encoded diff information */
+	/** UNCOMPRESSED Statement for tables containing binary encoded diff information */
 	private final String binaryTableRevision;
 
 	/** Reference to the RevisionApi */
@@ -81,7 +81,7 @@ public class SQLEncoder
 	/** Configuration parameter - Surrogate Mode */
 	private final SurrogateModes MODE_SURROGATES;
 
-	/** SQL Statement for tables containing base 64 encoded diff information */
+	/** UNCOMPRESSED Statement for tables containing base 64 encoded diff information */
 	private final String tableRevision;
 
 	/**

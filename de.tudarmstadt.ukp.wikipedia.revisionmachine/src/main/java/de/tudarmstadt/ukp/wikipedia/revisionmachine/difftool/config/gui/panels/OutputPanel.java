@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -55,6 +55,7 @@ public class OutputPanel
 	private JTextField outputPathField;
 
 	private JCheckBox enableZipEncodingCompression;
+	private JCheckBox activateDataFileOutput;
 	private JLabel outputCompression;
 	private JRadioButton disableOutputCompression;
 	private JRadioButton enable7ZipOutputCompression;
@@ -182,6 +183,24 @@ public class OutputPanel
 			}
 		});
 
+
+		activateDataFileOutput = new JCheckBox("DataFile Output");
+		activateDataFileOutput.setBounds(120, 50, 170, 25);
+		activateDataFileOutput.setVisible(true);
+		activateDataFileOutput.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(final ActionEvent e)
+			{
+
+				boolean flag = !controller.isEnableDataFileOutput();
+				controller.setEnableDataFileOutput(flag);
+
+				validate();
+			}
+		});
+		this.add(activateDataFileOutput);
+
 	}
 
 	private void createOutputSizeSettings()
@@ -241,6 +260,8 @@ public class OutputPanel
 		enableBZip2OutputCompression
 				.setSelected(oce == OutputCompressionEnum.BZip2);
 
+		activateDataFileOutput.setSelected(controller.isEnableDataFileOutput());
+
 		outputLabel.setEnabled(flagA);
 		outputPathField.setEnabled(flagA);
 
@@ -267,6 +288,8 @@ public class OutputPanel
 
 		outputSizeLimitLabel.setEnabled(flagA && flagB&&(oce == OutputCompressionEnum.None));
 		outputSizeLimitField.setEnabled(flagA && flagB&&(oce == OutputCompressionEnum.None));
+
+
 	}
 
 	/**
@@ -290,6 +313,7 @@ public class OutputPanel
 		disableOutputCompression.setLocation(x + 110, y + 100);
 		enableBZip2OutputCompression.setLocation(x + 110, y + 120);
 		enable7ZipOutputCompression.setLocation(x + 110, y + 140);
+		activateDataFileOutput.setLocation(x + 110, y + 160);
 
 		enableMultipleOutputFiles.setLocation(x, y + 190);
 		outputSizeLimitLabel.setLocation(x, y + 220);
@@ -330,10 +354,19 @@ public class OutputPanel
 			controller.setEnableZipCompression(false);
 		}
 
+		o = config
+				.getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT);
+		if (o != null) {
+			controller.setEnableDataFileOutput((Boolean) o);
+		}
+		else {
+			controller.setEnableDataFileOutput(false);
+		}
+
 		o = config.getConfigParameter(ConfigurationKeys.MODE_OUTPUT);
 		if (o != null) {
 			switch ((OutputType) o) {
-			case SQL:
+			case UNCOMPRESSED:
 				controller.setEnableSQLDatabaseOutput(false);
 				controller.setOutputCompression(OutputCompressionEnum.None);
 
@@ -399,7 +432,7 @@ public class OutputPanel
 			OutputCompressionEnum comp = controller.getOutputCompression();
 			switch (comp) {
 			case None:
-				builder.append(OutputType.SQL);
+				builder.append(OutputType.UNCOMPRESSED);
 				break;
 			case BZip2:
 				builder.append(OutputType.BZIP2);
@@ -469,6 +502,13 @@ public class OutputPanel
 
 			builder.append("\t\t<MODE_ZIP_COMPRESSION_ENABLED>" + zipComp
 					+ "</MODE_ZIP_COMPRESSION_ENABLED>\r\n");
+
+			if (controller.isEnableDataFileOutput()) {
+				builder.append("\t\t<MODE_DATAFILE_OUTPUT>true</MODE_DATAFILE_OUTPUT>\r\n");
+			}else{
+				builder.append("\t\t<MODE_DATAFILE_OUTPUT>false</MODE_DATAFILE_OUTPUT>\r\n");
+			}
+
 			builder.append("\t</output>\r\n");
 		}
 	}

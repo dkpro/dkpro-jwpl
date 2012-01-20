@@ -92,10 +92,13 @@ public class ConfigurationReader
 	/** Key identifier - Output >> MODE */
 	private final String KEY_OUTPUT_MODE = "OUTPUT_MODE";
 
-	/** Key identifier - Output >> MODE >> SQL File Size */
+	/** Key identifier - Output >> MODE >> UNCOMPRESSED File Size */
 	private final String KEY_LIMIT_SQL_FILE_SIZE = "LIMIT_SQL_FILE_SIZE";
 
-	/** Key identifier - Output >> MODE >> SQL Archive Size */
+	/** Key identifier - Output >> Enable Datafile */
+	private final String KEY_OUTPUT_DATAFILE = "MODE_DATAFILE_OUTPUT";
+
+	/** Key identifier - Output >> MODE >> UNCOMPRESSED Archive Size */
 	private final String KEY_LIMIT_SQL_ARCHIVE_SIZE = "LIMIT_SQL_ARCHIVE_SIZE";
 
 	/** Key identifier - Output >> MODE >> Zip-Compression enabled */
@@ -104,19 +107,19 @@ public class ConfigurationReader
 	/** Key identifier - Output >> MODE >> Binary output enabled */
 	private final String KEY_MODE_BINARY_OUTPUT_ENABLED = "MODE_BINARY_OUTPUT_ENABLED";
 
-	/** Subsection identifier - Output -> SQL */
-	private final String SUBSECTION_SQL = "SQL";
+	/** Subsection identifier - Output -> UNCOMPRESSED */
+	private final String SUBSECTION_SQL = "UNCOMPRESSED";
 
-	/** Key identifier - Output -> SQL >> Host */
+	/** Key identifier - Output -> UNCOMPRESSED >> Host */
 	private final String KEY_HOST = "HOST";
 
-	/** Key identifier - Output -> SQL >> Database */
+	/** Key identifier - Output -> UNCOMPRESSED >> Database */
 	private final String KEY_DATABASE = "DATABASE";
 
-	/** Key identifier - Output -> SQL >> User */
+	/** Key identifier - Output -> UNCOMPRESSED >> User */
 	private final String KEY_USER = "USER";
 
-	/** Key identifier - Output -> SQL >> Password */
+	/** Key identifier - Output -> UNCOMPRESSED >> Password */
 	private final String KEY_PASSWORD = "PASSWORD";
 
 	/** Section identifier - Cache */
@@ -166,13 +169,13 @@ public class ConfigurationReader
 
 	/** Key identifier - Debug -> Output >> Path */
 	private final String KEY_DEBUG_PATH = "PATH";
-	
+
 	/** Section identifier - filter */
 	private final String SECTION_FILTER = "FILTER";
-	
+
 	/** Subsection identifier - filter -> namespaces */
 	private final String SUBSECTION_FILTER_NAMESPACES = "NAMESPACES";
-	
+
 	/** Key identifier - filter -> namespaces >> ns */
 	private final String NAMESPACE_TO_KEEP = "NS";
 
@@ -251,7 +254,7 @@ public class ConfigurationReader
 		return config;
 	}
 
-	
+
 	/**
 	 * Parses the filter parameter section.
 	 *
@@ -267,19 +270,19 @@ public class ConfigurationReader
 		Node nnode;
 		final NodeList list = node.getChildNodes();
 		final int length = list.getLength();
-		
+
 		for (int i = 0; i < length; i++) {
 			nnode = list.item(i);
 
 			name = nnode.getNodeName().toUpperCase();
-			
+
 			if (name.equals(SUBSECTION_FILTER_NAMESPACES)) {
 				parseNamespaceFilterConfig(nnode, config);
 			}
-			
+
 		}
 	}
-	
+
 	/**
 	 * Parses the namespaces parameter section. This is the subsection of filter.
 	 *
@@ -295,7 +298,7 @@ public class ConfigurationReader
 		final NodeList list = node.getChildNodes();
 		final int length = list.getLength();
 		final Set<Integer> namespaces = new HashSet<Integer>();
-		
+
 		for (int i = 0; i < length; i++) {
 			nnode = list.item(i);
 
@@ -308,15 +311,15 @@ public class ConfigurationReader
 
 
 			}
-	
+
 		}
-		
+
 		config.setConfigParameter(
 				ConfigurationKeys.NAMESPACES_TO_KEEP,
 				namespaces);
-		
+
 	}
-	
+
 
 	/**
 	 * Parses the mode parameter section.
@@ -529,6 +532,12 @@ public class ConfigurationReader
 				config.setConfigParameter(
 						ConfigurationKeys.PATH_OUTPUT_SQL_FILES, path);
 
+			}
+			else if (name.equals(KEY_OUTPUT_DATAFILE)) {
+				bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0)
+						.getNodeValue());
+				config.setConfigParameter(
+						ConfigurationKeys.MODE_DATAFILE_OUTPUT, bValue);
 			}
 			else if (name.equals(KEY_LIMIT_SQL_FILE_SIZE)) {
 

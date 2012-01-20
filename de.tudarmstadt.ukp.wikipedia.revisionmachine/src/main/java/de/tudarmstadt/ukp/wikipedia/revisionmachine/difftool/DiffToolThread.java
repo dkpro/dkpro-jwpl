@@ -47,6 +47,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.TaskT
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.calculation.DiffCalculator;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.calculation.TimedDiffCalculator;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.WriterInterface;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.DataFileArchiveWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.DataFileWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLArchiveWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLDatabaseWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLFileWriter;
@@ -114,14 +116,17 @@ public class DiffToolThread
 		implements TaskTransmitterInterface
 	{
 
-		/** Reference to the sql output writer */
-		private WriterInterface sqlWriter;
+		/** Reference to the (dump) output writer */
+		private WriterInterface dumpWriter;
 
 		/** Configuration Parameter - Output mode */
 		private final OutputType MODE_OUTPUT;
 
 		/** Configuration Parameter - Statistical output flag */
 		private final boolean MODE_STATISTICAL_OUTPUT;
+
+		/** Configuration Parameter - Datafile output flasg */
+		private final boolean MODE_DATAFILE_OUTPUT;
 
 		/**
 		 * (Constructor) Creates a TaskTransmitter object.
@@ -145,36 +150,50 @@ public class DiffToolThread
 			MODE_STATISTICAL_OUTPUT = (Boolean) cconfig
 					.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
 
+			MODE_DATAFILE_OUTPUT = (Boolean) cconfig
+					.getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT);
+
 			switch (MODE_OUTPUT) {
 
-			case SQL:
-
-				if (MODE_STATISTICAL_OUTPUT) {
-					this.sqlWriter = new TimedSQLFileWriter("output", logger);
-				}
-				else {
-					this.sqlWriter = new SQLFileWriter("output", logger);
+			case UNCOMPRESSED:
+				if(MODE_DATAFILE_OUTPUT){
+					this.dumpWriter = new DataFileWriter("output");
+				}else{
+					if (MODE_STATISTICAL_OUTPUT) {
+						this.dumpWriter = new TimedSQLFileWriter("output", logger);
+					}
+					else {
+						this.dumpWriter = new SQLFileWriter("output", logger);
+					}
 				}
 				break;
 
 			case SEVENZIP:
 			case BZIP2:
 			case ALTERNATE:
-				if (MODE_STATISTICAL_OUTPUT) {
-					this.sqlWriter = new TimedSQLArchiveWriter("output", logger);
-				}
-				else {
-					this.sqlWriter = new SQLArchiveWriter("output", logger);
+				if(MODE_DATAFILE_OUTPUT){
+					this.dumpWriter = new DataFileArchiveWriter("output");
+				}else{
+					if (MODE_STATISTICAL_OUTPUT) {
+						this.dumpWriter = new TimedSQLArchiveWriter("output", logger);
+					}
+					else {
+						this.dumpWriter = new SQLArchiveWriter("output", logger);
+					}
 				}
 				break;
 
 			case DATABASE:
-
-				if (MODE_STATISTICAL_OUTPUT) {
-					this.sqlWriter = new TimedSQLDatabaseWriter(logger);
-				}
-				else {
-					this.sqlWriter = new SQLDatabaseWriter(logger);
+				if(MODE_DATAFILE_OUTPUT){
+					throw ErrorFactory
+						.createConfigurationException(ErrorKeys.DELTA_CONSUMERS_SQL_WRITER_OUTPUTFACTORY_ILLEGAL_OUTPUTMODE_VALUE);
+				}else{
+					if (MODE_STATISTICAL_OUTPUT) {
+						this.dumpWriter = new TimedSQLDatabaseWriter(logger);
+					}
+					else {
+						this.dumpWriter = new SQLDatabaseWriter(logger);
+					}
 				}
 				break;
 
@@ -204,7 +223,7 @@ public class DiffToolThread
 
 		@Override
 		public void close() throws IOException, SQLException {
-			sqlWriter.close();
+			dumpWriter.close();
 		}
 
 		/**
@@ -218,7 +237,7 @@ public class DiffToolThread
 
 			try {
 				long time, start = System.currentTimeMillis();
-				sqlWriter.process(result);
+				dumpWriter.process(result);
 
 				time = System.currentTimeMillis() - start;
 

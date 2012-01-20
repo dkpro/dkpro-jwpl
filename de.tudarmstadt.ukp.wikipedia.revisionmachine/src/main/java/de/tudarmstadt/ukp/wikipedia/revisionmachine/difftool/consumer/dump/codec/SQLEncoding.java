@@ -28,7 +28,7 @@ import java.util.List;
 public class SQLEncoding
 {
 
-	/** SQL Query */
+	/** UNCOMPRESSED Query */
 	private StringBuilder query;
 
 	/** List of binary data */

@@ -123,7 +123,7 @@ public class SQLFileWriter
 
 	/**
 	 * Wraps up the index generation process and writes all remaining statements
-	 * e.g. concerning SQL-Indexes on the created tables.
+	 * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
 	 *
 	 * @throws SQLException
 	 *             if an error occured while writing to the file

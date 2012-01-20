@@ -84,7 +84,7 @@ public class SQLPanel
 	{
 
 		enableSQLDatabaseConnection = new JCheckBox(
-				"Activate SQL Database Output");
+				"Activate Database Output");
 		enableSQLDatabaseConnection.setBounds(10, 10, 200, 25);
 
 		enableSQLDatabaseConnection.addActionListener(new ActionListener()
@@ -185,7 +185,7 @@ public class SQLPanel
 	}
 
 	/**
-	 * Validates the SQL Settings.
+	 * Validates the UNCOMPRESSED Settings.
 	 */
 	private void validateSQLFields()
 	{

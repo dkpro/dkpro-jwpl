@@ -1263,8 +1263,8 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
-	
-	
+
+
 	/**
 	 * This method queries and builds the specified revision.
 	 *
@@ -1344,17 +1344,17 @@ public class RevisionApi
 					currentRevision = diff.buildRevision(previousRevision);
 
 					previousRevision = currentRevision;
-					
-					
+
+
 				}
-				
+
 				Collection<DiffPart> parts = new LinkedList<DiffPart>();
 				Iterator<DiffPart> it = diff.iterator();
 				while (it.hasNext()) {
 					parts.add(it.next());
 				}
 				revision.setParts(parts);
-	
+
 				revision.setRevisionText(currentRevision);
 
 			}
@@ -1376,8 +1376,8 @@ public class RevisionApi
 		}
 
 	}
-	
-	
+
+
 
 	/**
 	 * This method queries and builds the specified revision.
@@ -1475,8 +1475,8 @@ public class RevisionApi
 //			}
 //		}
 //	}
-	
-	
+
+
 	/**
 	 * This method queries and builds the specified revision.
 	 *
@@ -1497,7 +1497,7 @@ public class RevisionApi
 	 *             if the revision was not found
 	 */
 	private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException{
-		
+
 		PreparedStatement statement = null;
 		ResultSet result = null;
 
@@ -1510,9 +1510,9 @@ public class RevisionApi
 			result = statement.executeQuery();
 
 			Revision revision = null;
-			if(result.last()) {		
+			if(result.last()) {
 				revision = new Revision(result.getInt(3), this);
-				
+
 				revision.setPrimaryKey(result.getInt(2));
 				revision.setRevisionID(result.getInt(4));
 				revision.setArticleID(result.getInt(5));
@@ -1539,7 +1539,7 @@ public class RevisionApi
 				result.close();
 			}
 		}
-		
+
 	}
 
 	private Connection getConnection(RevisionAPIConfiguration config)

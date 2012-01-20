@@ -299,7 +299,7 @@ public final class ErrorFactory
 	}
 
 	/*
-	 * +SQL+CONSUMER+EXCEPTION++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 * +UNCOMPRESSED+CONSUMER+EXCEPTION++++++++++++++++++++++++++++++++++++++++++++++++++++
 	 * +
 	 */
 

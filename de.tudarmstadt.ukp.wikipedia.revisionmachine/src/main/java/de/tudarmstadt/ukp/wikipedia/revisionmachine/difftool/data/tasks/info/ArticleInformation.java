@@ -43,7 +43,7 @@ public class ArticleInformation
 	/** Encoded size of the article */
 	private long encodedSize;
 
-	/** SQL encoded size of the article */
+	/** UNCOMPRESSED encoded size of the article */
 	private long encodedSQLSize;
 
 	/** Time the task entered the system */
@@ -458,7 +458,7 @@ public class ArticleInformation
 		b.append(MathUtilities.percentFrom(this.encodedSize, this.originalSize));
 		b.append("]\t");
 		b.append(this.encodedSize);
-		b.append("\r\n\tENCODED SQL SIZE:    \t[");
+		b.append("\r\n\tENCODED UNCOMPRESSED SIZE:    \t[");
 		b.append(MathUtilities.percentFrom(this.encodedSQLSize,
 				this.originalSize));
 		b.append("]\t");
