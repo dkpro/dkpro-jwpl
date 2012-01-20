@@ -42,7 +42,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.WikipediaXMLKeys
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.ArticleReaderInterface;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.SQLEscape;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.SQLEscape;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.ArticleInformation;

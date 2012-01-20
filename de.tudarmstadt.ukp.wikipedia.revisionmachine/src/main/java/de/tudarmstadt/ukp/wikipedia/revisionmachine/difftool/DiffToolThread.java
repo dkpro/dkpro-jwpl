@@ -46,13 +46,13 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.DiffC
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.TaskTransmitterInterface;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.calculation.DiffCalculator;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.calculation.TimedDiffCalculator;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.SQLWriterInterface;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.SQLArchiveWriter;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.SQLDatabaseWriter;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.SQLFileWriter;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.TimedSQLArchiveWriter;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.TimedSQLDatabaseWriter;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.sql.writer.TimedSQLFileWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.WriterInterface;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLArchiveWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLDatabaseWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.SQLFileWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.TimedSQLArchiveWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.TimedSQLDatabaseWriter;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer.TimedSQLFileWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.OutputType;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveManager;
@@ -115,7 +115,7 @@ public class DiffToolThread
 	{
 
 		/** Reference to the sql output writer */
-		private SQLWriterInterface sqlWriter;
+		private WriterInterface sqlWriter;
 
 		/** Configuration Parameter - Output mode */
 		private final OutputType MODE_OUTPUT;
