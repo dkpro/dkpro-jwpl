@@ -189,7 +189,7 @@ public class DataFileArchiveWriter
 			List<String> data = dataFileEncoder.encodeTask(task);
 
 			for (String d : data) {
-				this.output.write((d + ";\r\n").getBytes());
+				this.output.write((d + ";").getBytes());
 				this.output.flush();
 			}
 
