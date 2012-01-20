@@ -148,26 +148,43 @@ public class DataFileEncoder
 			 */
 			String comment = diff.getComment();
 			if(comment!=null){
-				comment="\""+comment.replaceAll("\"", "\\\\\"")+"\"";
+				comment="\""+escape(comment)+"\"";
 			}
 
 			Integer contributorId = diff.getContributorId();
 			String contributorIdString = null;
 			if(contributorId!=null){
-				contributorIdString="\""+contributorId.toString().replaceAll("\"", "\\\\\"")+"\"";
+				contributorIdString="\""+escape(contributorId.toString())+"\"";
+			}
+			
+			String contributorNameString = diff.getContributorName();
+			if(contributorNameString!=null){
+				contributorNameString="\""+escape(contributorNameString)+"\"";
 			}
 
 			//Prepare the actual data item
-			tempData = "\\N," + this.lastFullRevID + ","
-					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
-					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",\"" + encodeDiff(task, diff) + "\","+comment+","+(diff.isMinor()?"1":"0")+",\""+diff.getContributorName().replaceAll("\"", "\\\\\"") +"\","+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0");
+			tempData = "\\N," 
+					+ this.lastFullRevID + ","
+					+ diff.getRevisionCounter() + "," 
+					+ diff.getRevisionID()+ "," 
+					+ articleId + "," 
+					+ diff.getTimeStamp().getTime()+ ",\"" 
+					+ encodeDiff(task, diff) + "\","
+					+ comment+","
+					+ (diff.isMinor()?"1":"0")+","
+					+ contributorNameString+","
+					+ contributorIdString+ ","
+					+ (diff.getContributorIsRegistered()?"1":"0");
 
 			//add item to the list
 			list.add(tempData);
 		}
 
 		return list;
+	}
+	
+	private String escape(String str){
+		return str.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
 	}
 
 }
