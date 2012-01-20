@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -88,9 +88,17 @@ public class OutputFactory
 
 		switch (MODE_OUTPUT) {
 		case SEVENZIP:
-			return compressWith7Zip(archivePath+ ".sql.7z");
+			if((Boolean)config.getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT)){
+				return compressWith7Zip(archivePath+ ".csv.7z");
+			}else{
+				return compressWith7Zip(archivePath+ ".sql.7z");
+			}
 		case BZIP2:
-			return compressWithBZip2(archivePath+ ".sql.bz2");
+			if((Boolean)config.getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT)){
+				return compressWithBZip2(archivePath+ ".csv.bz2");
+			}else{
+				return compressWithBZip2(archivePath+ ".sql.bz2");
+			}
 		default:
 			throw ErrorFactory
 					.createConfigurationException(ErrorKeys.DELTA_CONSUMERS_SQL_WRITER_OUTPUTFACTORY_ILLEGAL_OUTPUTMODE_VALUE);
