@@ -192,7 +192,7 @@ public class DataFileWriter
 			List<String> data = dataFileEncoder.encodeTask(task);
 
 			for (String d : data) {
-				this.writer.write(d + ";\r\n");
+				this.writer.write(d + ";");
 				this.writer.flush();
 			}
 
