@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -32,9 +32,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * The RevisionApi class contains methods to encode the diff information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class RevisionEncoder
 	implements RevisionEncoderInterface
@@ -54,7 +54,7 @@ public class RevisionEncoder
 
 	/**
 	 * (Constructor) Creates a new RevisionEnocder object.
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurs while accessing the configuration
 	 *             parameters
@@ -74,7 +74,7 @@ public class RevisionEncoder
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.tud.ukp.kulessa.delta.data.codec.RevisionEncoderInterface#binaryDiff
 	 * (de.tud.ukp.kulessa.delta.data.codec.RevisionCodecData,
@@ -122,13 +122,13 @@ public class RevisionEncoder
 	/**
 	 * Creates the binary encoding of the diff while using the codec
 	 * information.
-	 * 
+	 *
 	 * @param codecData
 	 *            codec
 	 * @param diff
 	 *            diff
 	 * @return binary data
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws EncodingException
@@ -180,10 +180,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes the codecData.
-	 * 
+	 *
 	 * @param codecData
 	 *            Reference to the codec
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding failed
 	 */
@@ -210,10 +210,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes a Cut operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the Cut operation
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding failed
 	 */
@@ -242,10 +242,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes a Delete operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the Delete operation
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding failed
 	 */
@@ -269,7 +269,7 @@ public class RevisionEncoder
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.tud.ukp.kulessa.delta.data.codec.RevisionEncoderInterface#encodeDiff
 	 * (de.tud.ukp.kulessa.delta.data.codec.RevisionCodecData,
@@ -316,10 +316,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes a FullRevision operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the FullRevision operation
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws EncodingException
@@ -345,10 +345,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes an Insert operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the Insert operation
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws EncodingException
@@ -376,10 +376,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes a Paste operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the Paste operation
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding failed
 	 */
@@ -404,10 +404,10 @@ public class RevisionEncoder
 
 	/**
 	 * Encodes a Replace operation.
-	 * 
+	 *
 	 * @param part
 	 *            Reference to the replace operation
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws EncodingException

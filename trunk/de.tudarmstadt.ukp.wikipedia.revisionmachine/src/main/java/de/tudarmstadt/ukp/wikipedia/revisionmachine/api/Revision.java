@@ -17,17 +17,15 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 
 import java.sql.Timestamp;
-
 import java.util.Collection;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.ISizeable;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.DiffPart;
 
 /**
- * 
+ *
  * This class contains all revision data.
- * 
+ *
  */
 public class Revision
 	implements ISizeable, Comparable<Revision>, RevisionDataInterface
@@ -86,7 +84,7 @@ public class Revision
 
 	/**
 	 * (Constructor) Creates a new Revision object.
-	 * 
+	 *
 	 * @param revisionCounter
 	 *            revision counter
 	 */
@@ -97,7 +95,7 @@ public class Revision
 
 	/**
 	 * (Constructor) Creates a new Revision object.
-	 * 
+	 *
 	 * @param revisionCounter
 	 *            revision counter
 	 * @param revisionApi
@@ -112,7 +110,7 @@ public class Revision
 	/**
 	 * Returns the estimated number of bytes used to encode the contained
 	 * information.
-	 * 
+	 *
 	 * @return estimated size in bytes
 	 */
 	@Override
@@ -126,7 +124,7 @@ public class Revision
 
 	/**
 	 * Returns the ID of the article.
-	 * 
+	 *
 	 * @return article ID
 	 */
 	@Override
@@ -137,7 +135,7 @@ public class Revision
 
 	/**
 	 * Returns the full revision ID.
-	 * 
+	 *
 	 * @return full revision ID
 	 */
 	public int getFullRevisionID()
@@ -147,7 +145,7 @@ public class Revision
 
 	/**
 	 * Returns the primary key.
-	 * 
+	 *
 	 * @return primary key
 	 */
 	public int getPrimaryKey()
@@ -157,7 +155,7 @@ public class Revision
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	@Override
@@ -178,10 +176,10 @@ public class Revision
 
 	/**
 	 * Sets the revision api
-	 * 
+	 *
 	 * @param revisionApi
 	 *            api to set
-	 * 
+	 *
 	 */
 	public void setRevisionApi(RevisionApi revisionApi)
 	{
@@ -190,7 +188,7 @@ public class Revision
 
 	/**
 	 * Returns the revision counter.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	@Override
@@ -201,7 +199,7 @@ public class Revision
 
 	/**
 	 * Returns the ID of the revision.
-	 * 
+	 *
 	 * @return revision ID
 	 */
 	@Override
@@ -212,19 +210,20 @@ public class Revision
 
 	/**
 	 * Returns the textual content of this revision.
-	 * 
+	 *
 	 * @return content
 	 */
 	public String getRevisionText()
 	{
-		if (this.revisionText == null)
+		if (this.revisionText == null) {
 			revisionApi.setRevisionTextAndParts(this);
+		}
 		return this.revisionText;
 	}
 
 	/**
 	 * Returns the timestamp.
-	 * 
+	 *
 	 * @return timestamp
 	 */
 	@Override
@@ -235,19 +234,20 @@ public class Revision
 
 	/**
 	 * Returns a collection of DiffPart objects that make up this revision
-	 * 
+	 *
 	 * @return a collection of DiffPart object that make up this revision
 	 */
 	public Collection<DiffPart> getParts()
 	{
-		if (this.parts == null)
+		if (this.parts == null) {
 			revisionApi.setRevisionTextAndParts(this);
+		}
 		return this.parts;
 	}
 
 	/**
 	 * Sets the ID of the article.
-	 * 
+	 *
 	 * @param articleID
 	 *            article ID
 	 */
@@ -258,7 +258,7 @@ public class Revision
 
 	/**
 	 * Set the ID of the full revision.
-	 * 
+	 *
 	 * @param fullRevisionID
 	 *            full revision ID
 	 */
@@ -269,7 +269,7 @@ public class Revision
 
 	/**
 	 * Sets the primary key.
-	 * 
+	 *
 	 * @param primaryKey
 	 *            primary key
 	 */
@@ -280,7 +280,7 @@ public class Revision
 
 	/**
 	 * Sets the ID of the revision.
-	 * 
+	 *
 	 * @param revisionId
 	 *            revision ID
 	 */
@@ -291,7 +291,7 @@ public class Revision
 
 	/**
 	 * Sets the revision text.
-	 * 
+	 *
 	 * @param revisionText
 	 *            content
 	 */
@@ -302,10 +302,10 @@ public class Revision
 
 	/**
 	 * Sets the timestamp information.
-	 * 
+	 *
 	 * The input is expected to be the wikipedia version of the timestamp as
 	 * String (YYYY-MM-DDThh-mm-ssZ). T and Z will be replaced with spaces.
-	 * 
+	 *
 	 * @param timeStamp
 	 *            timestamp (wikipedia version)
 	 */
@@ -320,7 +320,7 @@ public class Revision
 
 	/**
 	 * Sets the timestamp information.
-	 * 
+	 *
 	 * @param timeStamp
 	 *            timestamp
 	 */
@@ -332,7 +332,7 @@ public class Revision
 
 	/**
 	 * Sets the collection of DiffPart objects that make up this revision
-	 * 
+	 *
 	 * @param parts
 	 *            a collection of DiffPart object that make up this revision
 	 */
@@ -343,7 +343,7 @@ public class Revision
 
 	/**
 	 * Returns the string representation of this object.
-	 * 
+	 *
 	 * @return (ArticleID, RevisionCounter, Timestamp, RevisionID, TextLength)
 	 */
 	@Override
@@ -371,7 +371,7 @@ public class Revision
 
 	/**
 	 * Sets the user comment for this revision
-	 * 
+	 *
 	 * @param comment
 	 *            the user comment for this revision
 	 */
@@ -382,8 +382,8 @@ public class Revision
 
 	/**
 	 * Returns the user comment for this revision
-	 * 
-	 * 
+	 *
+	 *
 	 * @return the user comment for this revision
 	 */
 	@Override

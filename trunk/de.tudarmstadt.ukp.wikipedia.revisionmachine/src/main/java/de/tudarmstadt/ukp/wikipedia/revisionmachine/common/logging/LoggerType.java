@@ -34,7 +34,7 @@ public enum LoggerType
 	/** Article Output Logger */
 	ARTICLE_OUTPUT,
 
-	/** SQL Consumer Logger */
+	/** UNCOMPRESSED Consumer Logger */
 	CONSUMER_SQL,
 
 	/** Diff Consumer Logger */

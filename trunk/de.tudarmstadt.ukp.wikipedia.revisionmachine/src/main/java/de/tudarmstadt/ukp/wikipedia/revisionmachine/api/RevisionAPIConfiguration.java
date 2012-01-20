@@ -52,7 +52,7 @@ public class RevisionAPIConfiguration
 
 	/**
 	 * <p>(Constructor) Creates the default configuration.</p>
-	 * OutputType: SQL (revisionIndex.sql)<br/>
+	 * OutputType: UNCOMPRESSED (revisionIndex.sql)<br/>
 	 *
 	 */
 	public RevisionAPIConfiguration()

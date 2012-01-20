@@ -18,7 +18,7 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump;
 
 /**
  * The single method {@link SQLEscape#removeEscapes} removes all unwished escape
- * characters from a string to make is SQL conform. Maybe not thread-save.
+ * characters from a string to make is UNCOMPRESSED conform. Maybe not thread-save.
  *
  * @author ivan.galkin
  * @author Oliver Ferschke

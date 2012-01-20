@@ -349,8 +349,11 @@ public class DiffCalculator
 		// TO REMOVE FAULTY REVISIONS FROM FURTHER PROCESSING //
 		// ----------------------------------------------------//
 
-		// Ignore revisions without text
-		if (revision.getRevisionText() == null) {
+		try{
+			if(revision.getRevisionText()==null){
+				return null;
+			}
+		}catch(NullPointerException e){
 			return null;
 		}
 

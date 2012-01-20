@@ -26,7 +26,7 @@ public enum OutputType
 {
 
 	/** The output will consist of a single or multiple sql files */
-	SQL,
+	UNCOMPRESSED,
 
 	/** The output will consist of a single or multiple 7z archives */
 	SEVENZIP,
@@ -52,8 +52,8 @@ public enum OutputType
 
 		String t = s.toUpperCase();
 
-		if (t.equals("SQL")) {
-			return OutputType.SQL;
+		if (t.equals("UNCOMPRESSED")) {
+			return OutputType.UNCOMPRESSED;
 		}
 		else if (t.equals("SEVENZIP")) {
 			return OutputType.SEVENZIP;

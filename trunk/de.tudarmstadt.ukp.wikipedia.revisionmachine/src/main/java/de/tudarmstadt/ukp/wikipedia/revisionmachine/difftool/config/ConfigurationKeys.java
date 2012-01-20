@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -71,6 +71,13 @@ public enum ConfigurationKeys
 	 * Description: Enables the statistical output
 	 */
 	MODE_STATISTICAL_OUTPUT,
+
+	/**
+	 * Type: boolean
+	 *
+	 * Description: Write datafiles instead of SQL dumps
+	 */
+	MODE_DATAFILE_OUTPUT,
 
 	/**
 	 * Type: boolean Used by: All Consumers and the processing components
@@ -216,7 +223,7 @@ public enum ConfigurationKeys
 
 
 	/*
-	 * +SQL+SERVER+SETTINGS++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 * +UNCOMPRESSED+SERVER+SETTINGS++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	 */
 
 	SQL_HOST,
@@ -281,7 +288,7 @@ public enum ConfigurationKeys
 	 * when the LogLevel is not Level.OFF
 	 */
 	LOGGING_LOGLEVEL_DIFFTOOL,
-	
+
 	/**
 	 * Type: java.util.Set Used by: ArticleFilter
 	 *

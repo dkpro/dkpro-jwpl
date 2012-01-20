@@ -51,7 +51,7 @@ public class SQLConsumerLogMessages
 
 		logger.logMessage(
 				Level.INFO,
-				"Generated SQL Entry\t" + Time.toClock(time) + "\t"
+				"Generated UNCOMPRESSED Entry\t" + Time.toClock(time) + "\t"
 						+ diff.toString());
 	}
 
@@ -66,7 +66,7 @@ public class SQLConsumerLogMessages
 	public static void logFileCreation(final Logger logger, final String path)
 	{
 
-		logger.logMessage(Level.INFO, "New SQL File created:\t" + path);
+		logger.logMessage(Level.INFO, "New UNCOMPRESSED File created:\t" + path);
 	}
 
 	/**

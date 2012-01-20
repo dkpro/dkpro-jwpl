@@ -48,7 +48,7 @@ public class RevisionIterator
 	/** Reference to the configuration parameter variable */
 	private final RevisionAPIConfiguration config;
 
-	/** Reference to the SQL database connection */
+	/** Reference to the UNCOMPRESSED database connection */
 	private Connection connection;
 
 	/** Reference to the ResultSet */

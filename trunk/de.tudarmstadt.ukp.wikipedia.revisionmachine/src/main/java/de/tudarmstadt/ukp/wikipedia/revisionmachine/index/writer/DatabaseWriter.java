@@ -131,7 +131,7 @@ public class DatabaseWriter
 
 	/**
 	 * Wraps up the index generation process and writes all remaining statements
-	 * e.g. concerning SQL-Indexes on the created tables.
+	 * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
 	 *
 	 * @throws SQLException
 	 *             if an error occured while accessing the database

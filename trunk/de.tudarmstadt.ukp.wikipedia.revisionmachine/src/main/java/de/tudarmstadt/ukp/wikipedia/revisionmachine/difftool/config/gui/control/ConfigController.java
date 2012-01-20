@@ -78,6 +78,12 @@ public class ConfigController
 	private boolean enableSQLDatabaseOutput;
 
 	/**
+	 * Configuration settings - Flag that indicates whether output should
+	 * be a datafile instead of an sql dump
+	 */
+	private boolean enableDataFileOutput;
+
+	/**
 	 * Configuration settings - Flag that indicates whether statistical output
 	 * is enabled
 	 */
@@ -610,6 +616,16 @@ public class ConfigController
 	public void setSurrogates(final SurrogateModes surrogates)
 	{
 		this.surrogates = surrogates;
+	}
+
+	public boolean isEnableDataFileOutput()
+	{
+		return enableDataFileOutput;
+	}
+
+	public void setEnableDataFileOutput(boolean enableDataFileOutput)
+	{
+		this.enableDataFileOutput = enableDataFileOutput;
 	}
 
 }

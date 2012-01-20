@@ -130,6 +130,9 @@ public class ConfigurationManager
 		else if (configParameter==ConfigurationKeys.NAMESPACES_TO_KEEP){
 			return new HashSet<Integer>();
 		}
+		else if (configParameter==ConfigurationKeys.MODE_DATAFILE_OUTPUT){
+			return false;
+		}
 		else{
 			throw ErrorFactory
 					.createConfigurationException(

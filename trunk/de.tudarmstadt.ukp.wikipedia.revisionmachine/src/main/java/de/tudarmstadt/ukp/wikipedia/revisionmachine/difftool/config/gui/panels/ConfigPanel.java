@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -76,7 +76,7 @@ public class ConfigPanel
 		tabs.add("Externals", new ExternalProgramsPanel(controller));
 		tabs.add("Input", new InputPanel(controller));
 		tabs.add("Output", new OutputPanel(controller));
-		tabs.add("SQL", new SQLPanel(controller));
+		tabs.add("Database", new SQLPanel(controller));
 		tabs.add("Cache", new CachePanel(controller));
 		tabs.add("Logging", new LoggingPanel(controller));
 		tabs.add("Debug", new DebugPanel(controller));
