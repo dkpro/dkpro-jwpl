@@ -143,13 +143,13 @@ public class DataFileEncoder
 			//because we don't want quotes if they are null
 			String comment = diff.getComment();
 			if(comment!=null){
-				comment="\""+comment+"\"";
+				comment="\""+comment.replaceAll("\"", "\\\\\"")+"\"";
 			}
 
 			Integer contributorId = diff.getContributorId();
 			String contributorIdString = null;
 			if(contributorId!=null){
-				contributorIdString="\""+contributorId.toString()+"\"";
+				contributorIdString="\""+contributorId.toString().replaceAll("\"", "\\\\\"")+"\"";
 			}
 			// save the row
 			tempData = "\\N," + this.lastFullRevID + ","
