@@ -139,8 +139,13 @@ public class DataFileEncoder
 				this.lastFullRevID = diff.getRevisionID();
 			}
 
-			//prepare values that might be null
-			//because we don't want quotes if they are null
+			/*
+			 * prepare values that might be null
+			 * because we don't want quotes if they are null
+			 * 
+			 * Furthermore, escape quote-characters. Quotes are used as the "ENCLOSED BY" character
+			 * in MySQL to mark begin and end of Strings
+			 */
 			String comment = diff.getComment();
 			if(comment!=null){
 				comment="\""+comment.replaceAll("\"", "\\\\\"")+"\"";
@@ -151,12 +156,14 @@ public class DataFileEncoder
 			if(contributorId!=null){
 				contributorIdString="\""+contributorId.toString().replaceAll("\"", "\\\\\"")+"\"";
 			}
-			// save the row
+
+			//Prepare the actual data item
 			tempData = "\\N," + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
 					+ ",\"" + encodeDiff(task, diff) + "\","+comment+","+(diff.isMinor()?"1":"0")+",\""+diff.getContributorName() +"\","+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0");
 
+			//add item to the list
 			list.add(tempData);
 		}
 
