@@ -270,15 +270,11 @@ public class OutputPanel
 		outputCompression.setEnabled(flagA);
 		disableOutputCompression.setEnabled(flagA);
 
-		//TODO currently, 7zip OUTPUT does not work -> disable for now
-		//remove the following two lines and uncomment the lines after that to enable 7zip output again
-		enable7ZipOutputCompression.setEnabled(false);
-		enable7ZipOutputCompression.setVisible(false);
-//		enable7ZipOutputCompression.setEnabled(flagA
-//				&& controller.is7ZipEnabled());
+		enable7ZipOutputCompression.setEnabled(flagA
+				&& controller.is7ZipEnabled());
 
-//      enable7ZipOutputCompression
-//			.setSelected(oce == OutputCompressionEnum.SevenZip);
+		enable7ZipOutputCompression
+			.setSelected(oce == OutputCompressionEnum.SevenZip);
 
 		enableBZip2OutputCompression.setEnabled(flagA);
 
