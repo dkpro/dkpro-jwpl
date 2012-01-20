@@ -161,7 +161,7 @@ public class DataFileEncoder
 			tempData = "\\N," + this.lastFullRevID + ","
 					+ diff.getRevisionCounter() + "," + diff.getRevisionID()
 					+ "," + articleId + "," + diff.getTimeStamp().getTime()
-					+ ",\"" + encodeDiff(task, diff) + "\","+comment+","+(diff.isMinor()?"1":"0")+",\""+diff.getContributorName() +"\","+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0");
+					+ ",\"" + encodeDiff(task, diff) + "\","+comment+","+(diff.isMinor()?"1":"0")+",\""+diff.getContributorName().replaceAll("\"", "\\\\\"") +"\","+contributorIdString+ ","+(diff.getContributorIsRegistered()?"1":"0");
 
 			//add item to the list
 			list.add(tempData);
