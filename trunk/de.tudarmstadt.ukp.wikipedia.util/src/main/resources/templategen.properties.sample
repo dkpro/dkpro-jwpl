@@ -10,7 +10,7 @@ maxAllowedPackets=16760832 (optional)
 
 
 
-!host=bender.tk.informatik.tu-darmstadt.de
+!host=bender.ukp.informatik.tu-darmstadt.de
 !db=revisiond
 !user=student
 !password=student

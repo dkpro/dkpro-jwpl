@@ -71,7 +71,7 @@ public class Statistics2 {
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setDatabase("wikiapi_de");
-        dbConfig.setHost("bender.tk.informatik.tu-darmstadt.de");
+        dbConfig.setHost("bender.ukp.informatik.tu-darmstadt.de");
         dbConfig.setUser("student");
         dbConfig.setPassword("student");
         dbConfig.setLanguage(Language.german);

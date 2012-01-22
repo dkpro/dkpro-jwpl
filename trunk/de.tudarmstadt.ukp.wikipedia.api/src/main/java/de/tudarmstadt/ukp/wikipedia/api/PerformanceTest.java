@@ -45,7 +45,7 @@ public class PerformanceTest implements WikiConstants {
 
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setDatabase("wikiapi_en");
-        dbConfig.setHost("bender.tk.informatik.tu-darmstadt.de");
+        dbConfig.setHost("bender.ukp.informatik.tu-darmstadt.de");
         dbConfig.setUser("wikiapi");
         dbConfig.setPassword("wikiapitk");
         dbConfig.setLanguage(Language.english);

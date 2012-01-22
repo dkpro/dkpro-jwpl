@@ -46,7 +46,7 @@ public class PerformanceTestPageIterator {
 	public static void main(String[] args) throws Exception {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_uk");
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
+		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
 		db.setUser("student");
 		db.setPassword("student");
 		db.setLanguage(Language.ukrainian);
