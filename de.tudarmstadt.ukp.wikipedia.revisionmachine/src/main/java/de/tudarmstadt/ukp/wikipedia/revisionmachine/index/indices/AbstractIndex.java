@@ -54,7 +54,8 @@ public abstract class AbstractIndex
 		this.bufferList = new ArrayList<StringBuilder>();
 		this.buffer = null;
 
-		this.MAX_ALLOWED_PACKET = 0;
+		//does not really matter here- should be big to speed up data file creation
+		this.MAX_ALLOWED_PACKET = 16760832;
 
 		this.insertStatement = "";
 
@@ -130,7 +131,10 @@ public abstract class AbstractIndex
 	{
 
 		if (buffer != null && buffer.length() > insertStatement.length()) {
-			this.buffer.append(";");
+			if(!insertStatement.isEmpty()) {
+				//only do this in SQL/DATABASE MODE
+				this.buffer.append(";");
+			}
 			bufferList.add(buffer);
 		}
 

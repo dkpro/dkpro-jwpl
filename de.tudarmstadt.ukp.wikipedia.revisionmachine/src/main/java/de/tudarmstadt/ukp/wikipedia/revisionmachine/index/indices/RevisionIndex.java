@@ -63,12 +63,16 @@ public class RevisionIndex
 	{
 
 		boolean sql = !insertStatement.isEmpty();
-		if (buffer.length() != insertStatement.length()) {
+		if (sql&&buffer.length() != insertStatement.length()) {
 			this.buffer.append(",");
 		}
 
 		this.buffer.append((sql?"(":"") + revisionID + "," + revisionPrimaryKey + ","
 				+ fullRevisionPrimaryKey + (sql?")":""));
+
+		if(!sql){
+			buffer.append(";\r\n");
+		}
 
 		if (buffer.length() + 100 >= MAX_ALLOWED_PACKET) {
 			storeBuffer();

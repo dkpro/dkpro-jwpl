@@ -109,10 +109,6 @@ public class DataFileWriter
 			System.out.println("Transmit Index [" + index + "]");
 
 			cmd = index.remove();
-			// System.out.println(cmd.toString());
-			cmd.append("\r\n");
-
-			//FIXME parse command - convert to csv data
 
 			if(index instanceof ArticleIndex){
 				articleIdxWriter.write(cmd.toString());

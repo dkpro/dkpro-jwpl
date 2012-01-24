@@ -158,11 +158,15 @@ public class ChronoIndex
 					storeBuffer();
 				}
 
-				if (buffer.length() > insertStatement.length()) {
+				if (sql&&buffer.length() > insertStatement.length()) {
 					buffer.append(",");
 				}
 
 				buffer.append(val);
+
+				if(!sql){
+					buffer.append(";\r\n");
+				}
 			}
 		}
 	}
