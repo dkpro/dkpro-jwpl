@@ -27,7 +27,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ArticleIndex;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ArticleIndexData;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ChronologicOrderMapping;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ChronoIndex;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.RevisionIndex;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.DatabaseWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.IndexWriterInterface;
@@ -71,7 +71,7 @@ public class Indexer
 	private final ArticleIndex articleIndex;
 
 	/** Reference to the chronological order index */
-	private final ChronologicOrderMapping chronoIndex;
+	private final ChronoIndex chronoIndex;
 
 	/** Reference to the output writer */
 	private IndexWriterInterface indexWriter;
@@ -100,7 +100,7 @@ public class Indexer
 
 		this.revisionIndex = new RevisionIndex(config.getMaxAllowedPacket());
 		this.articleIndex = new ArticleIndex(config.getMaxAllowedPacket());
-		this.chronoIndex = new ChronologicOrderMapping(
+		this.chronoIndex = new ChronoIndex(
 				config.getMaxAllowedPacket());
 
 		this.infoList = new ArrayList<ArticleIndexData>();
