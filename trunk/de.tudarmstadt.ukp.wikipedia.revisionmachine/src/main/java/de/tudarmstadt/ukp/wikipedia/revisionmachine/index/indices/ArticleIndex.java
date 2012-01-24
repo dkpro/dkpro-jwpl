@@ -96,11 +96,11 @@ public class ArticleIndex
 				storeBuffer();
 			}
 
-			if (buffer.length() > insertStatement.length()) {
-				buffer.append(",");
-			}
 
 			if(sql) {
+				if (buffer.length() > insertStatement.length()) {
+					buffer.append(",");
+				}
 				buffer.append("(");
 			}
 			buffer.append(currentArticleID);
@@ -118,6 +118,8 @@ public class ArticleIndex
 			buffer.append(endTime);
 			if(sql) {
 				buffer.append(")");
+			}else{
+				buffer.append(";\r\n");
 			}
 		}
 	}
