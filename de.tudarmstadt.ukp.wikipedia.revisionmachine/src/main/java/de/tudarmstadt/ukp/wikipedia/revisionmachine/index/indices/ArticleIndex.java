@@ -119,7 +119,7 @@ public class ArticleIndex
 			if(sql) {
 				buffer.append(")");
 			}else{
-				buffer.append(";\r\n");
+				buffer.append("\n");
 			}
 		}
 	}
