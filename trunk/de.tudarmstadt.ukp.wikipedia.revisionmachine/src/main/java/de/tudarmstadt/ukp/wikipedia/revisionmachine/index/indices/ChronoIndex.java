@@ -165,7 +165,7 @@ public class ChronoIndex
 				buffer.append(val);
 
 				if(!sql){
-					buffer.append(";\r\n");
+					buffer.append("\n");
 				}
 			}
 		}

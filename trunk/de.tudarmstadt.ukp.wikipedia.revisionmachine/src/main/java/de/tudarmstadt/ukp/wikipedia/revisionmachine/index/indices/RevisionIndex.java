@@ -71,7 +71,7 @@ public class RevisionIndex
 				+ fullRevisionPrimaryKey + (sql?")":""));
 
 		if(!sql){
-			buffer.append(";\r\n");
+			buffer.append("\n");
 		}
 
 		if (buffer.length() + 100 >= MAX_ALLOWED_PACKET) {
