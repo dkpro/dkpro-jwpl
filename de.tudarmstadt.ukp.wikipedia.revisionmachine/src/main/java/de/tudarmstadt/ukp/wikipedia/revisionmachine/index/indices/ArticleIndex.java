@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -20,17 +20,25 @@ import java.util.List;
 
 /**
  * Index for article information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ArticleIndex
 	extends AbstractIndex
 {
+	/**
+	 * (Constructor) Creates a new ArticleIndex object.
+	 */
+	public ArticleIndex()
+	{
+
+		super();
+	}
 
 	/**
 	 * (Constructor) Creates a new ArticleIndex object.
-	 * 
+	 *
 	 * @param MAX_ALLOWED_PACKET
 	 *            MAX_ALLOWED_PACKET
 	 */
@@ -42,7 +50,7 @@ public class ArticleIndex
 
 	/**
 	 * Adds the information for an new entry in the article index.
-	 * 
+	 *
 	 * @param currentArticleID
 	 *            ID of the currently used article
 	 * @param startTime
@@ -82,9 +90,9 @@ public class ArticleIndex
 				first = false;
 			}
 
+			boolean sql = !insertStatement.isEmpty();
 			if (buffer.length() + fullRevBuffer.length()
 					+ revCountBuffer.length() + 20 >= MAX_ALLOWED_PACKET) {
-
 				storeBuffer();
 			}
 
@@ -92,17 +100,25 @@ public class ArticleIndex
 				buffer.append(",");
 			}
 
-			buffer.append("(");
+			if(sql) {
+				buffer.append("(");
+			}
 			buffer.append(currentArticleID);
-			buffer.append(",'");
+			buffer.append(",");
+			buffer.append(sql?"\'":"\"");
 			buffer.append(fullRevBuffer);
-			buffer.append("','");
+			buffer.append(sql?"\'":"\"");
+			buffer.append(",");
+			buffer.append(sql?"\'":"\"");
 			buffer.append(revCountBuffer);
-			buffer.append("','");
+			buffer.append(sql?"\'":"\"");
+			buffer.append(",");
 			buffer.append(startTime);
-			buffer.append("','");
+			buffer.append(",");
 			buffer.append(endTime);
-			buffer.append("')");
+			if(sql) {
+				buffer.append(")");
+			}
 		}
 	}
 }
