@@ -29,6 +29,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ArticleIndex;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ArticleIndexData;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.ChronoIndex;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.RevisionIndex;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.DataFileWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.DatabaseWriter;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.IndexWriterInterface;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer.SQLFileWriter;
@@ -59,19 +60,19 @@ public class Indexer
 	private Revision lastRev;
 
 	/** Reference to the revision index */
-	private final RevisionIndex revisionIndex;
+	private RevisionIndex revisionIndex=null;
 
 	/** Reference to the currently used article index information */
 	private ArticleIndexData info;
 
 	/** List of article index information related to the currently used article */
-	private final List<ArticleIndexData> infoList;
+	private List<ArticleIndexData> infoList;
 
 	/** Reference to the article index */
-	private final ArticleIndex articleIndex;
+	private ArticleIndex articleIndex=null;
 
 	/** Reference to the chronological order index */
-	private final ChronoIndex chronoIndex;
+	private ChronoIndex chronoIndex=null;
 
 	/** Reference to the output writer */
 	private IndexWriterInterface indexWriter;
@@ -98,10 +99,21 @@ public class Indexer
 
 		this.currentArticleID = -1;
 
-		this.revisionIndex = new RevisionIndex(config.getMaxAllowedPacket());
-		this.articleIndex = new ArticleIndex(config.getMaxAllowedPacket());
-		this.chronoIndex = new ChronoIndex(
-				config.getMaxAllowedPacket());
+		switch (config.getOutputType()) {
+			case DATABASE:
+			case SQL:
+				//Indices with SQL statements
+				this.revisionIndex = new RevisionIndex(config.getMaxAllowedPacket());
+				this.articleIndex = new ArticleIndex(config.getMaxAllowedPacket());
+				this.chronoIndex = new ChronoIndex(config.getMaxAllowedPacket());
+			break;
+			case DATAFILE:
+				//Indices without SQL statements
+				this.revisionIndex = new RevisionIndex();
+				this.articleIndex = new ArticleIndex();
+				this.chronoIndex = new ChronoIndex();
+			break;
+		}
 
 		this.infoList = new ArrayList<ArticleIndexData>();
 
@@ -111,6 +123,9 @@ public class Indexer
 			break;
 		case SQL:
 			this.indexWriter = new SQLFileWriter(config);
+			break;
+		case DATAFILE:
+			this.indexWriter = new DataFileWriter(config);
 			break;
 		}
 	}

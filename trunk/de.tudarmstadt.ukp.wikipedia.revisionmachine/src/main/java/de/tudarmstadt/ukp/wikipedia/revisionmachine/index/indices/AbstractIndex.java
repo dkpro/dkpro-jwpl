@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -21,9 +21,9 @@ import java.util.List;
 
 /**
  * This class represents an abstact index.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public abstract class AbstractIndex
 {
@@ -42,7 +42,28 @@ public abstract class AbstractIndex
 
 	/**
 	 * (Constructor) Creates an index object.
-	 * 
+	 *
+	 * @param insertStatement
+	 *            Insert Statement
+	 * @param MAX_ALLOWED_PACKET
+	 *            MAX_ALLOWED_PACKET
+	 */
+	public AbstractIndex()
+	{
+
+		this.bufferList = new ArrayList<StringBuilder>();
+		this.buffer = null;
+
+		this.MAX_ALLOWED_PACKET = 0;
+
+		this.insertStatement = "";
+
+		storeBuffer();
+	}
+
+	/**
+	 * (Constructor) Creates an index object.
+	 *
 	 * @param insertStatement
 	 *            Insert Statement
 	 * @param MAX_ALLOWED_PACKET
@@ -64,7 +85,7 @@ public abstract class AbstractIndex
 
 	/**
 	 * Returns the size of the currently used buffer.
-	 * 
+	 *
 	 * @return size of current query
 	 */
 	public int byteSize()
@@ -83,7 +104,7 @@ public abstract class AbstractIndex
 
 	/**
 	 * Removes a query from the list of queries.
-	 * 
+	 *
 	 * @return Buffer containing a finalized query
 	 */
 	public StringBuilder remove()
@@ -93,7 +114,7 @@ public abstract class AbstractIndex
 
 	/**
 	 * Returns the current number of buffered queries.
-	 * 
+	 *
 	 * @return size of the list of queries
 	 */
 	public int size()

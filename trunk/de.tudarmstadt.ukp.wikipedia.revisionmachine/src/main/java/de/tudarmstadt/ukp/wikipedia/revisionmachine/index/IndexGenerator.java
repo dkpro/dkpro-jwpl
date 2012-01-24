@@ -129,10 +129,12 @@ public class IndexGenerator
 					"  user=username \n" +
 					"  password=pwd \n" +
 					"  output=outputFile \n"+
-					"  writeDirectlyToDB=true|false (optional)\n" +
+					"  outputDatabase=true|false (optional)\n" +
+					"  outputDatafile=true|false (optional)\n" +
 					"  charset=UTF8 (optional)\n" +
 					"  buffer=15000 (optional)\n"+
-					"  maxAllowedPackets=16760832 (optional)"));
+					"  maxAllowedPackets=16760832 (optional)\n\n" +
+					"  The default output mode is SQL Dump"));
 			throw new IllegalArgumentException();
 		}else{
 			Properties props = load(args[0]);
@@ -166,21 +168,24 @@ public class IndexGenerator
 				config.setMaxAllowedPacket(16 * 1024 * 1023);
 			}
 
-			if(props.getProperty("writeDirectlyToDB")!=null&&Boolean.parseBoolean(props.getProperty("writeDirectlyToDB"))){
+			if(props.getProperty("outputDatabase")!=null&&Boolean.parseBoolean(props.getProperty("outputDatabase"))){
 				config.setOutputType(OutputTypes.DATABASE);
-			}else{
-				String output = props.getProperty("output");
-				File outfile = new File(output);
-				if(outfile.isDirectory()){
-					try{
-						config.setOutputPath(outfile.getCanonicalPath()+File.separatorChar+"revisionIndex.sql");
-					}catch(IOException e){
-						config.setOutputPath(outfile.getPath()+File.separatorChar+"revisionIndex.sql");
-					}
-				}else{
-					config.setOutputPath(output);
-				}
+			}else if(props.getProperty("outputDatafile")!=null&&Boolean.parseBoolean(props.getProperty("outputDatafile"))){
+				config.setOutputType(OutputTypes.DATAFILE);
 			}
+			else{
+				config.setOutputType(OutputTypes.SQL);
+			}
+
+			String output = props.getProperty("output");
+			File outfile = new File(output);
+			if(outfile.isDirectory()){
+				config.setOutputPath(output);
+			}else{
+				config.setOutputPath(outfile.getParentFile().getPath());
+			}
+
+
 
 			try {
 				new IndexGenerator(config).generate();

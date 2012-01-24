@@ -17,6 +17,7 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.index.writer;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
@@ -50,7 +51,7 @@ public class SQLFileWriter
 		throws IOException
 	{
 
-		writer = new BufferedWriter(new FileWriter(config.getOutputPath()));
+		writer = new BufferedWriter(new FileWriter(new File(config.getOutputPath(),"revisionIndex.sql")));
 
 		writer.write("CREATE TABLE index_articleID_rc_ts ("
 				+ "ArticleID INTEGER UNSIGNED NOT NULL, "

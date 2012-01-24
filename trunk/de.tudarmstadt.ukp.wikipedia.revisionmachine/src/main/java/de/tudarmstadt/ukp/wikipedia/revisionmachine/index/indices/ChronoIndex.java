@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -22,9 +22,9 @@ import java.util.List;
 
 /**
  * Index for the correct chonological order of revisions.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ChronoIndex
 	extends AbstractIndex
@@ -36,9 +36,24 @@ public class ChronoIndex
 	/** List of ChonoInfo's */
 	private List<ChronoIndexData> list;
 
+
 	/**
 	 * (Constructor) Creates a new ChronoIndex object.
-	 * 
+	 *
+	 * @param MAX_ALLOWED_PACKET
+	 *            MAX_ALLOWED_PACKET
+	 */
+	public ChronoIndex()
+	{
+
+		super();
+
+		this.list = null;
+	}
+
+	/**
+	 * (Constructor) Creates a new ChronoIndex object.
+	 *
 	 * @param MAX_ALLOWED_PACKET
 	 *            MAX_ALLOWED_PACKET
 	 */
@@ -52,7 +67,7 @@ public class ChronoIndex
 
 	/**
 	 * Adds the information for an new entry in the chrono index.
-	 * 
+	 *
 	 * @param articleID
 	 *            ID of the article
 	 * @param revisionCounter
@@ -135,8 +150,9 @@ public class ChronoIndex
 
 			if (mapping.length() > 0) {
 
-				String val = "(" + articleID + ",'" + mapping.toString()
-						+ "','" + reverseMapping.toString() + "')";
+				boolean sql = !insertStatement.isEmpty();
+				String val = (sql?"(":"") + articleID + (sql?",'":",\"") + mapping.toString()
+						+ (sql?"','":"\",\"") + reverseMapping.toString() +(sql?"')":"\"");
 
 				if (buffer.length() + val.length() >= MAX_ALLOWED_PACKET) {
 					storeBuffer();
@@ -155,6 +171,7 @@ public class ChronoIndex
 	 * Finalizes the query in the currently used buffer and creates a new one.
 	 * The finalized query will be added to the list of queries.
 	 */
+	@Override
 	public void finalizeIndex()
 	{
 		addToBuffer();
