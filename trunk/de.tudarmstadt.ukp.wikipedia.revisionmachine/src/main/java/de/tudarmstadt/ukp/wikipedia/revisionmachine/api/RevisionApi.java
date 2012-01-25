@@ -1686,9 +1686,6 @@ public class RevisionApi
 			statement = this.connection.prepareStatement("SHOW TABLES;");
 			result = statement.executeQuery();
 
-			// Check if an index exists (because otherwise the query would
-			// be awfully slow. Note that the existence of ANY index will
-			// suffice - we might want to check for a specific index.
 			if (result == null) {
 				return false;
 			}
