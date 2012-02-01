@@ -1,8 +1,12 @@
-CHANGES made in RevisionMachine 0.8.0
+MAJOR CHANGES in RevisionMachine 0.9.0
+   	* FIXED Issue 71: DiffTool causes NullPointer Exception since Merging the two "Revision" classes. 	 
+   	* FIXED Issue 72: DiffTool can now create data files for import via "load data infile" or "mysqlimport". SQL output is still possible.
+   	* FIXED Issue 74: IndexGenerator can now create data files for import via "load data infile" or "mysqlimport". SQL output is still possible.
+MAJOR CHANGES in RevisionMachine 0.8.0
    	* FIXED Issue 61: Enable lazy loading for the Revision Object 	 
    	* FIXED Issue 27: DiffTool produces "INSERT INTO revisions VALUES;" without values 
 	* Module now in dependency management of paren POM  
-CHANGES made in RevisionMachine 0.7.0
+MAJOR CHANGES in RevisionMachine 0.7.0
    * Fixed Issue 46. Removed problematic BINARY_MODE in SQLDatabaseWriter.
    * Fixed problem in ConfigGUI: Configuration in SQL mode was wrong - host property contained db name
    * Added new assembly exectutions to each module
