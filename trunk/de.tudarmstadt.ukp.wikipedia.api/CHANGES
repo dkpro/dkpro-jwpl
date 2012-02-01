@@ -1,4 +1,8 @@
-Changes made in JWPL API v0.8.0	
+MAJOR CHANGES in JWPL API v0.9.0
+	* FIXED Issue 66: Upgraded to Hibernate 4.0.0-Final
+	* FIXED Issue 69: PageIterator can now iterate over a predefined list of articles
+	* REOPENED ISSUE 23: CharacterSet - SEVERE: COLLATION 'utf8_bin' is not valid for CHARACTER SET 'utf8mb4'
+MAJOR CHANGES in JWPL API v0.8.0	
    	* FIXED Issue 23: CharacterSet - SEVERE: COLLATION 'utf8_bin' is not valid for CHARACTER SET 'utf8mb4'
    	* FIXED Issue 52: PageIterator make unnecessary queries 
    	* FIXED Issue 53: Remove locks and transaction management where possible to improve performance
@@ -6,7 +10,7 @@ Changes made in JWPL API v0.8.0
    	* FIXED Issue 63: StringIndexOutOfBoundsException when parsing a specific Wikipedia Page
    	* Module now in dependency management of paren POM      	
    	* Fixes in parent pom (compatibility with m2e)
-Changes made in JWPL API v0.7.0
+MAJOR CHANGES in JWPL API v0.7.0
    	* Added new assembly exectutions to each module
    	* Added default setting to reject sorting templates (language specific - only works for EN and DE so far - should be made configurable)
    	* Added code to retrieve pageIds instead of whole page objects
