@@ -1,0 +1,9 @@
+de.tudarmstadt.ukp.wikipedia.wikimachine.debug
+de.tudarmstadt.ukp.wikipedia.wikimachine.decompression
+de.tudarmstadt.ukp.wikipedia.wikimachine.domain
+de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql
+de.tudarmstadt.ukp.wikipedia.wikimachine.dump.version
+de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml
+de.tudarmstadt.ukp.wikipedia.wikimachine.factory
+de.tudarmstadt.ukp.wikipedia.wikimachine.hashing
+de.tudarmstadt.ukp.wikipedia.wikimachine.util
