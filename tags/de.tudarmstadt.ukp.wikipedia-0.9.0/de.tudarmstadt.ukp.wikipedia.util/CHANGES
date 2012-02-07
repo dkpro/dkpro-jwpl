@@ -1,0 +1,4 @@
+Changes made in JWPL UTIL v0.8.0	
+   	* FIXED Issue 43: Make template filter in WikipediaTemplateInfoGenerator configurable
+   	* Module now in dependency management of paren POM  
+   	* Initial import

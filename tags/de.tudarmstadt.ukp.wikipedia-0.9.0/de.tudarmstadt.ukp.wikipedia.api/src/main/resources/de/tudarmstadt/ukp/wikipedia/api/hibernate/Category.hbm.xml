@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="de.tudarmstadt.ukp.wikipedia.api.hibernate.Category" table="Category">
+        <id name="id" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="pageId" unique="true" />
+        <property name="name" index="nameIndex" />
+        <set name="inLinks" table="category_inlinks">
+            <key column="id"/>
+            <element type="integer" column="inLinks" />
+        </set>
+        <set name="outLinks" table="category_outlinks">
+            <key column="id"/>
+            <element type="integer" column="outLinks" />
+        </set>
+		<!-- this could also be an mapping to real page objects
+		     but the DB is created incrementally, so the page objects will not exist when the category objects are created.
+		     Therefore, there are two IDs. The hibernate id and the wikipedia pageID that is used to manually reference between objects.
+		-->
+        <set name="pages" table="category_pages">
+            <key column="id"/>
+            <element type="integer" column="pages" />
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,181 @@
+A quick little tool for extracting sets of pages from a MediaWiki dump file.
+
+Can read MediaWiki XML export dumps (version 0.3, minus uploads), perform
+optional filtering, and output back to XML or to SQL statements to add things
+directly to a database in 1.4 or 1.5 schema.
+
+Still very much under construction.
+
+MIT-style license like our other Java/C# tools; boilerplate to be added.
+
+Contains code from the Apache Commons Compress project for cross-platform
+bzip2 input/output support (Apache License 2.0).
+
+If strange XML errors are encountered under Java 1.4, try 1.5:
+* http://java.sun.com/j2se/1.5.0/download.jsp
+* http://www.apple.com/downloads/macosx/apple/java2se50release1.html
+
+
+USAGE:
+
+Sample command line for a direct database import:
+  java -jar mwdumper.jar --format=mysql:1.5 pages_full.xml.bz2 |
+    mysql -u <username> -p <databasename>
+
+You can also do complex filtering to produce multiple output files:
+  java -jar mwdumper.jar \
+    --output=bzip2:pages_public.xml.bz2 \
+      --format=xml \
+      --filter=notalk \
+      --filter=namespace:\!NS_USER \
+      --filter=latest \
+    --output=bzip2:pages_current.xml.bz2 \
+      --format=xml \
+      --filter=latest \
+    --output=gzip:pages_full_1.5.sql.gz \
+      --format=mysql:1.5 \
+    --output=gzip:pages_full_1.4.sql.gz \
+      --format=mysql:1.4 \
+    pages_full.xml.gz
+
+A bare parameter will be interpreted as a file to read XML input from;
+if none is given or "-" input will be read from stdin. Input files with
+".gz" or ".bz2" extensions will be decompressed as gzip and bzip2 streams,
+respectively.
+
+Internal decompression of 7-zip .7z files is not yet supported; you can
+pipe such files through p7zip's 7za:
+
+  7za e -so pages_full.xml.7z |
+    java -jar mwdumper --format=mysql:1.5 |
+    mysql -u <username> -p <databasename>
+
+Defaults if no parameters are given:
+* read uncompressed XML from stdin
+* write uncompressed XML to stdout
+* no filtering
+
+Output sinks:
+  --output=stdout
+      Send uncompressed XML or SQL output to stdout for piping.
+      (May have charset issues.) This is the default if no output
+      is specified.
+  --output=file:<filename.xml>
+      Write uncompressed output to a file.
+  --output=gzip:<filename.xml.gz>
+      Write compressed output to a file.
+  --output=bzip2:<filename.xml.bz2>
+      Write compressed output to a file.
+  --output=mysql:<jdbc url>
+      Valid only for SQL format output; opens a connection to the
+      MySQL server and sends commands to it directly.
+      This will look something like:
+      mysql://localhost/databasename?user=<username>&password=<password>
+
+Output formats:
+  --format=xml
+      Output back to MediaWiki's XML export format; use this for
+      filtering dumps for limited import. Output should be idempotent.
+  --format=mysql:1.4
+      SQL statements formatted for bulk import in MediaWiki 1.4's schema.
+      (MySQL output format.)
+  --format=mysql:1.5
+      SQL statements formatted for bulk import in MediaWiki 1.5's schema.
+      Both SQL schema versions currently require that the table structure
+      be already set up in an empty database; use maintenance/tables.sql
+      from the MediaWiki distribution.
+      (MySQL output format.)
+  --format=pgsql:1.4
+      SQL statements formatted for bulk import in MediaWiki 1.4's schema.
+      (PostgreSQL output format.)
+  --format=pgsql:1.5
+      SQL statements formatted for bulk import in MediaWiki 1.5's schema.
+      (PostgreSQL output format.)
+
+For backwards compatibility, "sql" is an alias for "mysql".  PostgreSQL output
+requires superuser access to temporary disable foreign key checsk during the
+import.
+
+Filter actions:
+  --filter=latest
+      Skips all but the last revision listed for each page.
+      FIXME: currently this pays no attention to the timestamp or
+      revision number, but simply the order of items in the dump.
+      This may or may not be strictly correct.
+  --filter=before:<timestamp>
+      Skips all revisions after the specified timestamp.
+      Timestamp must be compatible with the one used in a XML Dump
+      (e.g. 2005-12-31T23:59:59Z).
+  --filter=after:<timestamp>
+      Skips all revisions before the specified timestamp.
+  --filter=list:<list-filename>
+      Excludes all pages whose titles do not appear in the given file.
+      Use one title per line; blanks and lines starting with # are
+      ignored. Talk and subject pages of given titles are both matched.
+  --filter=exactlist:<list-filename>
+      As above, but does not try to match associated talk/subject pages.
+  --filter=revlist:<list-filename>
+      Includes only the revisions specified by ID in the given file. 
+  --filter=namespace:[!]<NS_KEY,NS_OTHERKEY,100,...>
+      Includes only pages in (or not in, with "!") the given namespaces.
+      You can use the NS_* constant names or the raw numeric keys.
+  --filter=notalk
+      Excludes all talk pages from output (including custom namespaces)
+  --filter=titlematch:<regex>
+      Excludes all pages whose titles do not match the regex.
+
+Misc options:
+  --progress=<n>
+      Change progress reporting interval from the default 1000 revisions.
+  --quiet
+      Don't send any progress output to stderr.
+
+
+PERFORMANCE TIPS:
+
+To speed up importing into a database, you might try:
+
+* Java's -server option may significantly increase performance on some
+  versions of Sun's JVM for large files. (Not all installations will
+  have this available.)
+
+* Increase MySQL's innodb_log_file_size. The default is as little as 5mb, but
+  you can improve performance dramatically by increasing this to reduce
+  the number of disk writes. (See the my-huge.cnf sample config.)
+
+* If you don't need it, disable the binary log (log-bin option) during the
+  import. On a standalone machine this is just wasteful, writing a second
+  copy of every query that you'll never use.
+
+* Various other wacky tips in the MySQL reference manual at
+  http://dev.mysql.com/mysql/en/innodb-tuning.html
+
+
+TODO:
+* Add some more junit tests
+
+* Include table initialization in SQL output
+* Allow use of table prefixes in SQL output
+
+* Ensure that titles and other bits are validated correctly.
+* Test XML input for robustness
+
+* Provide filter to strip ID numbers
+* <siteinfo> is technically optional; live without it and use default namespaces
+
+* GUI frontend(s)
+* Port to Python? ;)
+
+
+Change history (abbreviated):
+2007-07-06: Fixed namespace filter inversion (brion)
+2007-03-09: Added PostgreSQL support (river)
+2006-10-25: Added before and after filters by Aurimas Fischer
+2005-10-25: Switched SqlWriter.sqlEscape back to less memory-hungry StringBuffer
+2005-10-24: Fixed SQL output in non-UTF-8 locales
+2005-10-21: Applied more speedup patches from Folke
+2005-10-11: SQL direct connection, GUI work begins
+2005-10-10: Applied speedup patches from Folke Behrens
+2005-10-05: Use bulk inserts in SQL mode
+2005-09-29: Converted from C# to Java
+2005-08-27: Initial extraction code
