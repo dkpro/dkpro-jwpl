@@ -350,14 +350,16 @@ public class Page
 	 */
 	public Set<Integer> getInlinkIDs()
 	{
+		Set<Integer> tmpSet = new HashSet<Integer>();
+
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getInLinks());
 
 		session.getTransaction().commit();
+
 		return tmpSet;
 	}
 
@@ -425,11 +427,12 @@ public class Page
 	 */
 	public Set<Integer> getOutlinkIDs()
 	{
+		Set<Integer> tmpSet = new HashSet<Integer>();
+
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getOutLinks());
 
 		session.getTransaction().commit();
