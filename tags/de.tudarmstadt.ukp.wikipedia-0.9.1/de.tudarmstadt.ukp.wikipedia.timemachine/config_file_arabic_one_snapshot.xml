@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>This a configuration formular for the JWPL TimeMachine</comment>
+  <entry key="language">arabic</entry>
+  <entry key="mainCategory">التصنيف الرئيسي</entry>
+  <entry key="disambiguationCategory">صفحات توضيح</entry>
+  <entry key="fromTimestamp">20080223000000</entry>
+  <entry key="toTimestamp">20080224000000</entry>
+  <entry key="each">1</entry>
+  <entry key="metaHistoryFile">/home/zesch/wiki_data/ar_historic/arwiki-20080224-pages-meta-history.xml</entry>
+  <entry key="categoryLinksFile">/home/zesch/wiki_data/ar_historic/arwiki-20080224-categorylinks.sql</entry>
+  <entry key="pageLinksFile">/home/zesch/wiki_data/ar_historic/arwiki-20080224-pagelinks.sql</entry>
+  <entry key="outputDirectory">/home/zesch/wiki_data/ar_historic/arwiki_test</entry>
+  <entry key="removeInputFilesAfterProcessing">false</entry>
+</properties>

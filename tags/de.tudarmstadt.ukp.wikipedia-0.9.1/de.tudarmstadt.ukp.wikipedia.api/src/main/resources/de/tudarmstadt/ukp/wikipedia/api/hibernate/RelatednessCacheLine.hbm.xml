@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="de.tudarmstadt.ukp.wikipedia.api.hibernate.RelatednessCacheLine" table="RelatednessCacheLine">
+        <id name="id" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="page1" index="pagePairIndex" />
+        <property name="page2" index="pagePairIndex" />
+
+		<property name="PathLengthAverage" />
+		<property name="PathLengthBest" />
+		<property name="PathLengthSelectivity" />
+		<property name="LeacockChodorowAverage" />
+		<property name="LeacockChodorowBest" />
+		<property name="LeacockChodorowSelectivity" />
+		<property name="ResnikAverage" />
+		<property name="ResnikBest" />
+		<property name="ResnikSelectivityLinear" />
+		<property name="ResnikSelectivityLog" />
+		<property name="LinAverage" />
+		<property name="LinBest" />
+		<property name="JiangConrathAverage" />
+		<property name="JiangConrathBest" />
+		<property name="WuPalmerAverage" />
+		<property name="WuPalmerBest" />
+		<property name="LeskFirst" />
+		<property name="LeskFull" />
+
+    </class>
+</hibernate-mapping>

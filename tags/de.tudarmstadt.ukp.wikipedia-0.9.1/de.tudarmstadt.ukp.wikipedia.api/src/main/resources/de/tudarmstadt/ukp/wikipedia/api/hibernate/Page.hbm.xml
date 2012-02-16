@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="de.tudarmstadt.ukp.wikipedia.api.hibernate.Page" table="Page">
+        <id name="id" column="id">
+            <generator class="native"/>
+        </id>
+        <property name="pageId" unique="true" />
+        <property name="name" index="nameIndex" />
+        <property name="text" type="text" length="200000000" />
+        <property name="isDisambiguation" type="boolean" />
+        <set name="inLinks" table="page_inlinks">
+            <key column="id"/>
+            <element type="integer" column="inLinks" />
+        </set>
+        <set name="outLinks" table="page_outlinks">
+            <key column="id"/>
+            <element type="integer" column="outLinks" />
+        </set>
+        <set name="categories" table="page_categories">
+            <key column="id"/>
+            <element type="integer" column="pages" />
+        </set>
+        <set name="redirects" table="page_redirects">
+            <key column="id"/>
+            <element type="string" column="redirects" />
+        </set>
+    </class>
+</hibernate-mapping>
