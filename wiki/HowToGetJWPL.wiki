@@ -3,10 +3,11 @@
 
 = How to get and use JWPL =
 
-Using JWPL in your own Java project can be achieved in two ways. 
-
+Depending on your requirements and your system setup, there are several ways to get and use JWPL.
 
 == Use JWPL in your Java project ==
+
+Using JWPL in your own Java project can be achieved in two ways. 
 
 If you use Maven as a build tool, the preferred way to integrate JWPL in you project is using the Maven dependencies. You don't have to download anything manually. See the [DeveloperSetup Developer Setup] page for further information.
 
