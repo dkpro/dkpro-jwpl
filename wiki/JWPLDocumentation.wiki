@@ -22,6 +22,7 @@ JWPL is not for you:
 == Documentation ==
   * Documentation for [JWPL_Core JWPL Core]
   * Documentation for the [WikipediaRevisionToolkit Wikipedia Revision Toolkit]
+  * How to get JWPL: [Learn about the different ways to use JWPL]
   * Developer Setup: [DeveloperSetup Setting up Maven and Eclipse for JWPL development]
 
 == Support ==
