@@ -1,0 +1,14 @@
+#summary There are different ways to obtain and use JWPL
+#labels Featured
+
+= Use JWPL in your Java project =
+
+Using JWPL in your own Java project can be achieved in two ways. 
+
+If you use Maven as a build tool, the preferred way to integrate JWPL in you project is using the Maven dependencies. You don't have to download anything manually. See the [DeveloperSetup Developer Setup] page for further information.
+
+If you cannot or do not want to use Maven, you can use the jar-package provided in the download section. It contains jars for each JWPL component and a folder with all third party libraries. You can add these jars to you Java build path in your favorite IDE.
+
+= Run JWPL components from the command line =
+
+If you want to run JWPL components directly from the command line (e.g. the DataMachine), you should use the fatjars that come with all third-party libraries built-in. These jars can be downloaded from [http://search.maven.org/#search|ga|1|tudarmstadt.ukp Maven Central]. Choose the JWPL component you want to use and download the "jar-with-dependencies.jar"
