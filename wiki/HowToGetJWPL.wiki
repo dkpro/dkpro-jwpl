@@ -11,7 +11,7 @@ Using JWPL in your own Java project can be achieved in two ways.
 
 If you use Maven as a build tool, the preferred way to integrate JWPL in you project is using the Maven dependencies. You don't have to download anything manually. See the [DeveloperSetup Developer Setup] page for further information.
 
-If you cannot or do not want to use Maven, you can use the jar-package provided in the download section. It contains jars for each JWPL component and a folder with all third party libraries. You can add these jars to you Java build path in your favorite IDE.
+If you cannot or do not want to use Maven, you can use the jar-package provided in the download section. It contains jars for each JWPL component and a folder with all third party libraries. You can add these jars to your Java build path in your favorite IDE.
 
 == Run JWPL components from the command line ==
 
