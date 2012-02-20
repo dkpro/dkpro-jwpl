@@ -599,7 +599,8 @@ public class Page
 				return inAnchors;
 			}
 			for (Link l : pp.getLinks()) {
-				String pageTitle = p.getTitle().getPlainTitle();
+				String pageTitle = hibernatePage.getName();
+
 				String anchorText = l.getText();
 				if (l.getTarget().equals(pageTitle) && !anchorText.equals(pageTitle)) {
 					inAnchors.add(anchorText);
