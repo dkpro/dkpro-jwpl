@@ -20,4 +20,27 @@
   		<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
   	</dependency>
   </dependencies>
+  	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-executable-jar</id>
+						<phase>package</phase>
+						<goals>
+						<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptor>
+									jar-with-dependencies
+								</descriptor>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+			</executions>
+			</plugin>
+		</plugins>
+	</build>	
 </project>
