@@ -4,7 +4,7 @@
 
 =Creating the Revision Database=
 
-*This description is still under construction - it only contains the absolutely necessary basics for getting started. It is based on RevisionMachine 0.9.0*
+*This description is still under construction - it only contains the absolutely necessary basics for getting started. It is based on !RevisionMachine 0.9.0*
 
  # Learn about the different ways to [HowToGetJWPL get JWPL] and choose the one that is right for you! (You might want to get fatjars with built-in dependencies instead of the download package on Google Code)
    # [HowToGetWikipediaDumps Download the Revision Dump] from the Wikimedia Download Site.
