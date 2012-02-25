@@ -7,7 +7,7 @@ Instead of creating and import SQL files, the RevisionMachine is able to produce
 
 = Revision Data =
 
-To import the csv-output of the DiffTool, you have to create a table from the following schema and then import the csv file into the same database:
+To import the csv-output of the !DiffTool, you have to create a table from the following schema and then import the csv file into the same database:
 
 {{{
 CREATE TABLE IF NOT EXISTS revisions (
@@ -47,7 +47,7 @@ CREATE INDEX articleIdx ON revisions(ArticleID);
 }}}
 
 = Revision Index =
-Similar to the DiffTool, the IndexGenerator can also produce CSV files.
+Similar to the !DiffTool, the !IndexGenerator can also produce CSV files.
 
 Create tables:
 
