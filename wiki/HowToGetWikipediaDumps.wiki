@@ -13,7 +13,7 @@ You can find a download tool for Wikipedia these dumps at http://github.com/babi
 It can be used for bulk downloads all dump files for any language.
 It also supports resuming aborted downloads.
 
-(You don't need the tool to download the three dump files for JWPL Core)
+(You don't need the tool to download the three dump files for JWPL Core. It only makes sense for the revision dumps.)
 
 {{{
 $ wp-download -v --resume /path/to/wikipedia/dumps
