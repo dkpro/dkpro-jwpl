@@ -6,7 +6,7 @@
 
    # *Attention:* Only use the !TimeMachine, if you really need to reconstruct one (or multiple) version(s) of Wikipedia corresponding to past states. The data files used for this purpose are very large. If you just want a single version of the recent Wikipedia, use the DataMachine instead. If you need access to the whole revision history of all Wikipedia articles (e.g. add revision history access to an existing JWPL database), you probably want to use the RevisionMachine instead. It provides access to the whole revision history for a given JWPL database.
    # Learn about the different ways to [HowToGetJWPL get JWPL] and choose the one that is right for you! (You might want to get fatjars with built-in dependencies instead of the download package on Google Code)
-   # Download the Wikipedia Data from the [http://download.wikimedia.org/backup-index.html Wikipedia Download Site].
+   # [HowToGetWikipediaDumps Download the Wikipedia data] from the Wikimedia Download Site
       * You need 3 files:
          * `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.bz2`
          * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
