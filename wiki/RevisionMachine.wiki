@@ -4,8 +4,6 @@
 
 =Creating the Revision Database=
 
-This tutorial is based on the !RevisionMachine 0.7.0.
-
 *This description is still under construction - it only contains the absolutely necessary basics for getting started.*
 
  # Learn about the different ways to [HowToGetJWPL get JWPL] and choose the one that is right for you! (You might want to get fatjars with built-in dependencies instead of the download package on Google Code)
