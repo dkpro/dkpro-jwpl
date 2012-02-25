@@ -2,11 +2,14 @@
 
 = Wikipedia Dump Repository =
 You can find the Wikipedia data dumps on http://dumps.wikimedia.org/
+Each language version has it's own subdirectory, e.g. for English this is http://dumps.wikimedia.org/enwiki
 
 = Download Tool =
-You can find a download tool for Wikipedia database dumps at http://github.com/babilen/wp-download/
+The Wikipedia revision is split into many files. Downloading them manually can be cumbersome.
+You can find a download tool for Wikipedia these dumps at http://github.com/babilen/wp-download/
 
-It can be used for bulk downloads of the latest dump files of all wanted languages and supports resume of aborted downloads.
+It can be used for bulk downloads all dump files for any language.
+It also supports resuming aborted downloads.
 
 {{{
 $ wp-download -v --resume /path/to/wikipedia/dumps
@@ -20,3 +23,5 @@ Skip: swwiki-20090821-category.sql.gz
 Resume: swwiki-20090821-pages-articles.xml.bz2
 swwiki-20090821-pages-articles.xml.bz2 [****] 100% Time: 00:00:00   3.19 M/s
 }}}
+
+For further instructions/support, please refer to the website of the tool.
