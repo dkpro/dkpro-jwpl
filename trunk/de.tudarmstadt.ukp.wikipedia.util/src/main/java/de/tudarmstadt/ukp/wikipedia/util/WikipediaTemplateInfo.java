@@ -48,8 +48,7 @@ public class WikipediaTemplateInfo {
         this.connection=getConnection(wiki);
 
         try{
-    		if (!tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID)
-    				|| !tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME)) {
+    		if (!tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME)) {
     			throw new WikiApiException(
     					"Missing tables. Please use the WikipediaTemplateInfoGenerator to generate the template data.");
     		}
@@ -819,7 +818,7 @@ public class WikipediaTemplateInfo {
 	 *             if an error occurs connecting to or querying the db
 	 * @author Oliver Ferschke
 	 */
-	private boolean tableExists(String table)
+	public boolean tableExists(String table)
 		throws SQLException
 	{
 
