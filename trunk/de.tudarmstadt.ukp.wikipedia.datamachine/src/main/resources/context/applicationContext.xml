@@ -92,7 +92,7 @@
 	
 	-->
 
-	<bean id="dumpVersionFactory" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.version.SingleDumpVersionJDKIntKeyFactory" scope="singleton" />
+	<bean id="dumpVersionFactory" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.version.SingleDumpVersionJDKStringKeyFactory" scope="singleton" />
 	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
 		<property name="logger">
 			<ref bean="logger" />
