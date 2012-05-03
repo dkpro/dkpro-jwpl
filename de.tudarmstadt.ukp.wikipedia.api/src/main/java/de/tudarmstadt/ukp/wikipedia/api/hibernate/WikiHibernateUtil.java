@@ -64,9 +64,6 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);
 
-        // JDBC connection pool (use the built-in) -->
-        p.setProperty("hibernate.connection.pool_size","1");
-
         // SQL dialect
         p.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
 
@@ -81,6 +78,14 @@ public class WikiHibernateUtil implements WikiConstants {
 
         // Update schema
         p.setProperty("hibernate.hbm2ddl.auto","update");
+
+        //Configure Connection Pool
+        p.setProperty("hibernate.c3p0.acquire_increment","3");
+        p.setProperty("hibernate.c3p0.idle_test_period","300");
+        p.setProperty("hibernate.c3p0.min_size","3");
+        p.setProperty("hibernate.c3p0.max_size","15");
+        p.setProperty("hibernate.c3p0.max_statements","10");
+        p.setProperty("hibernate.c3p0.timeout","1000");
 
         return p;
     }
