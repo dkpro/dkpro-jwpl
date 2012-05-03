@@ -13,6 +13,10 @@
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		<dependency>
+  			<groupId>org.hibernate</groupId>
+  			<artifactId>hibernate-c3p0</artifactId>
+ 	  	</dependency>		
+		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-jdk1.5</artifactId>
 		</dependency>

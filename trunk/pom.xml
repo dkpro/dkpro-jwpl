@@ -88,6 +88,11 @@
 				<version>4.0.0.Final</version>
 			</dependency>
 			<dependency>
+        		<groupId>org.hibernate</groupId>
+        		<artifactId>hibernate-c3p0</artifactId>
+        		<version>4.0.0.Final</version>
+        	</dependency>
+			<dependency>
 				<groupId>org.jgrapht</groupId>
 				<artifactId>jgrapht-jdk1.5</artifactId>
 				<version>0.7.3</version>
