@@ -33,12 +33,13 @@
    # Now you are ready to use the database with the JWPL Core API. (also see [http://code.google.com/p/jwpl/wiki/JWPLCore_GettingStarted JWPLCore:GettingStarted]) When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 
 == Example Transformation Commands ==
+(Note: increase heap space for large Wikipedia versions with the -Xmx flag)
 
-   * `java -jar JWPLDataMachine.jar english Contents Disambiguation_pages ~/enwiki/20081013`
+   * `java -Xmx4g -jar JWPLDataMachine.jar english Contents Disambiguation_pages ~/enwiki/20081013`
    * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
    * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
    * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
-   * `java -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
+   * `java -Xmx2g -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
    * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina ~/nlwiki/200810408`
 
 Mind that the names of the main category or the category marking disambiguation pages may change over time. E.g. the English category for disambiguation pages was called "Disambiguation" for a long time, while now it is "Disambiguation_pages".
