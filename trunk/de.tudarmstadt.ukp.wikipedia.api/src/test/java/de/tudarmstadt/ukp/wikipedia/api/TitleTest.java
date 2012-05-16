@@ -91,4 +91,17 @@ public class TitleTest {
 		assertEquals(null,  t.getSectionText());
 		assertEquals("401(k)", t.getWikiStyleTitle());
 	}
+
+	@Test
+	public void titleTest8() throws WikiTitleParsingException {
+
+		Title t = new Title("Ytterbium(III)_chloride_(data_page)");
+		assertEquals("Ytterbium(III) chloride", t.getEntity());
+		assertEquals("Ytterbium(III) chloride (data page)", t.getPlainTitle());
+		assertEquals("Ytterbium(III)_chloride_(data_page)", t.getRawTitleText());
+		assertEquals("data page", t.getDisambiguationText());
+		assertEquals(null,  t.getSectionText());
+		assertEquals("Ytterbium(III)_chloride_(data_page)", t.getWikiStyleTitle());
+	}
+
 }
