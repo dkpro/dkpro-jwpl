@@ -4,14 +4,14 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.dump.version;
 
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -33,14 +33,14 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
 /**
  * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} returns the
  * same type as KeyType</i>
- * 
+ *
  * @author ivan.galkin
- * 
+ *
  * @param <KeyType>
  *            the type of the HashMap's key
  * @param <HashAlgorithm>
  *            hashing algorithm, returning KeyType <br>
- * 
+ *
  */
 public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCode>
 		extends AbstractDumpVersion {

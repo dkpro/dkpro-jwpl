@@ -10,8 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.datamachine.dump.version;
 
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 import java.io.IOException;
 import java.sql.Timestamp;

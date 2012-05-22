@@ -85,12 +85,12 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>4.0.0.Final</version>
+				<version>4.1.3.Final</version>
 			</dependency>
 			<dependency>
         		<groupId>org.hibernate</groupId>
         		<artifactId>hibernate-c3p0</artifactId>
-        		<version>4.0.0.Final</version>
+        		<version>4.1.3.Final</version>
         	</dependency>
 			<dependency>
 				<groupId>org.jgrapht</groupId>
@@ -100,17 +100,17 @@
 			<dependency>
 				<groupId>net.sf.trove4j</groupId>
 				<artifactId>trove4j</artifactId>
-				<version>2.0.2</version>
+				<version>3.0.2</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.8.2</version>
+				<version>4.10</version>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.14</version>
+				<version>5.1.20</version>
 			</dependency>
 			<dependency>
 				<groupId>jfree</groupId>
@@ -120,7 +120,7 @@
 			<dependency>
 				<groupId>org.apache.ant</groupId>
 				<artifactId>ant</artifactId>
-				<version>1.8.2</version>
+				<version>1.8.3</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.mail</groupId>
@@ -130,12 +130,12 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>3.0.3.RELEASE</version>
+				<version>3.1.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
-				<version>3.0.3.RELEASE</version>
+				<version>3.1.1.RELEASE</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wikimedia</groupId>
@@ -145,7 +145,7 @@
 			<dependency>
 				<groupId>commons-codec</groupId>
 				<artifactId>commons-codec</artifactId>
-				<version>1.4</version>
+				<version>1.6</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-logging</groupId>
@@ -208,9 +208,9 @@
 				<version>0.10.0-SNAPSHOT</version>
 			</dependency>
 			<dependency>
-				<groupId>javassist</groupId>
+				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.9.0.GA</version>
+				<version>3.16.1-GA</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

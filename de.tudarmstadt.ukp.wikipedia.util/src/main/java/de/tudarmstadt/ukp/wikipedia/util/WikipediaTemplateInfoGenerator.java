@@ -11,32 +11,18 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
 import de.tudarmstadt.ukp.wikipedia.api.PageIterator;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
@@ -51,9 +37,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
  * This class determines which page in a JWPL database contains which templates.
  * It produces an SQL file that will add this data to the extisting database. It
  * can then be accessed by the WikipediaTemplateInfo class.
- * 
+ *
  * @author Oliver Ferschke
- * 
+ *
  */
 public class WikipediaTemplateInfoGenerator
 {
@@ -122,7 +108,7 @@ public class WikipediaTemplateInfoGenerator
 
 	/**
 	 * Fill map(mapToFill) with template data
-	 * 
+	 *
 	 * @param textForTemplateExtraction
 	 *            text for template extraction
 	 * @param filterToApply
@@ -270,7 +256,7 @@ public class WikipediaTemplateInfoGenerator
 	/**
 	 * Fills a map with the template names and gives them a unique int-key,
 	 * which is later on used as a key in the db.
-	 * 
+	 *
 	 * @param info
 	 * @param templateNames
 	 *            template names to use
@@ -292,11 +278,11 @@ public class WikipediaTemplateInfoGenerator
 	}
 
 	/**
-	 * 
+	 *
 	 * Returns the set of names of all templates that are contained in the given
 	 * article (without duplicates).<br/>
 	 * The names are SQL escaped using StringUtils.sqlEscape
-	 * 
+	 *
 	 * @param pageText
 	 *            the page to get the templates from
 	 * @return a set of template names (without duplicates)
