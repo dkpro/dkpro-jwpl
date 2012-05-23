@@ -10,7 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the Simple implementation of the Content Inteface, and is used 

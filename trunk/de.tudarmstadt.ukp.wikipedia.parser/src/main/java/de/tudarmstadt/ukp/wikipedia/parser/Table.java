@@ -10,7 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Table has a Title and contains TableElements.<br/>

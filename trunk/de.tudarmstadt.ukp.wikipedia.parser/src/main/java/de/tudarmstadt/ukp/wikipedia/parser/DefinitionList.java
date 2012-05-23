@@ -10,7 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * In a definition List exist a Defined Term with Zero or more Definitions.

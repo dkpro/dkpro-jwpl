@@ -10,7 +10,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is a Implementation of the Content of a Section.<br/>
