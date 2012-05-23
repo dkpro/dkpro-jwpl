@@ -212,6 +212,16 @@
 				<artifactId>javassist</artifactId>
 				<version>3.16.1-GA</version>
 			</dependency>
+			<dependency>
+				<groupId>org.sweble.wikitext</groupId>
+				<artifactId>swc-parser-lazy</artifactId>
+				<version>1.0.0.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.sweble.wikitext</groupId>
+				<artifactId>swc-engine</artifactId>
+				<version>1.0.0.1</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<modules>

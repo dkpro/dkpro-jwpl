@@ -36,6 +36,14 @@
 			<groupId>org.javassist</groupId>
 			<artifactId>javassist</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.sweble.wikitext</groupId>
+			<artifactId>swc-parser-lazy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sweble.wikitext</groupId>
+			<artifactId>swc-engine</artifactId>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
