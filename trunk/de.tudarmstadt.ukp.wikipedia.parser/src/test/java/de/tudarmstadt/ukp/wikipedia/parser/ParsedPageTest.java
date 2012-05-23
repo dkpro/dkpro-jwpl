@@ -65,13 +65,12 @@ public class ParsedPageTest {
 
         String LF = "\n";
         String text = "Wikipedia API ist die wichtigste Software überhaupt." + LF +
-        	"Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de";
+        	"Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de en:Wikipedia API";
 
 
         MediaWikiParserFactory pf = new MediaWikiParserFactory(Language.english);
         MediaWikiParser parser = pf.createParser();
 
-		//get the page 'House_(disambiguation)'
 		ParsedPage pp = parser.parse(p.getText());
 
 
@@ -86,6 +85,7 @@ public class ParsedPageTest {
             }
             i++;
         }
+        System.out.println(pp.getText());
         assertEquals(text, pp.getText());
 	}
 }
