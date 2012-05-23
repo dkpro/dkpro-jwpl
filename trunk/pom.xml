@@ -233,6 +233,7 @@
 		<module>de.tudarmstadt.ukp.wikipedia.dist</module>
 		<module>de.tudarmstadt.ukp.wikipedia.mwdumper</module>
 		<module>de.tudarmstadt.ukp.wikipedia.util</module>
+		<module>de.tudarmstadt.ukp.wikipedia.parser</module>
 	</modules>
 	<build>
 		<pluginManagement>
