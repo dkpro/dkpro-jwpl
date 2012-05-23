@@ -13,18 +13,21 @@
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
+import org.sweble.wikitext.engine.CompiledPage;
+import org.sweble.wikitext.engine.PageId;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
+import de.tudarmstadt.ukp.wikipedia.api.sweble.PlainTextConverter;
 import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
 
 /**
@@ -562,87 +565,123 @@ public class Page
 	public String getPlainText()
 		throws WikiApiException
 	{
-		ParsedPage pp = getParsedPage();
-		if (pp == null) {
-			return "";
+		CompiledPage cp;
+		String plainText;
+		try{
+			SimpleWikiConfiguration config = new SimpleWikiConfiguration("classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml");
+			org.sweble.wikitext.engine.Compiler compiler = new org.sweble.wikitext.engine.Compiler(config);
+
+			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
+			PageId pageId = new PageId(pageTitle, -1);
+			// Compile the retrieved page
+			cp = compiler.postprocess(pageId, this.getText(), null);
+
+			// Render the compiled page as text
+			PlainTextConverter textConverter = new PlainTextConverter(config, Integer.MAX_VALUE);
+			plainText = (String) textConverter.go(cp.getPage());
+		}catch(Exception e){
+			throw new WikiApiException(e.getMessage());
 		}
-		return getTitle().getPlainTitle() + " " + pp.getText();
+		return plainText;
 	}
 
-	/**
-	 * Note that this method only returns the anchors that are not equal to the page's title.
-	 * Anchors might contain references to sections in an article in the form of "Page#Section".
-	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
-	 *
-	 * @return A set of strings used as anchor texts in links pointing to that page.
-	 * @throws WikiTitleParsingException
-	 */
-	public Set<String> getInlinkAnchors()
-		throws WikiTitleParsingException
+	public CompiledPage getCompiledPage() throws WikiApiException
 	{
-		Set<String> inAnchors = new HashSet<String>();
-		for (Page p : getInlinks()) {
-			ParsedPage pp = p.getParsedPage();
-			if (pp == null) {
-				return inAnchors;
-			}
-			for (Link l : pp.getLinks()) {
-				String pageTitle = hibernatePage.getName();
+		CompiledPage cp;
+		try{
+			SimpleWikiConfiguration config = new SimpleWikiConfiguration("classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml");
+			org.sweble.wikitext.engine.Compiler compiler = new org.sweble.wikitext.engine.Compiler(config);
 
-				String anchorText = l.getText();
-				if (l.getTarget().equals(pageTitle) && !anchorText.equals(pageTitle)) {
-					inAnchors.add(anchorText);
-				}
-			}
+			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
+			PageId pageId = new PageId(pageTitle, -1);
+			// Compile the retrieved page
+			cp = compiler.postprocess(pageId, this.getText(), null);
+		}catch(Exception e){
+			throw new WikiApiException(e.getMessage());
 		}
-		return inAnchors;
+		return cp;
 	}
 
-	/**
-	 * Note that this method only returns the anchors that are not equal to the title of the page
-	 * they are pointing to.
-	 * Anchors might contain references to sections in an article in the form of "Page#Section".
-	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
-	 *
-	 * @return A mapping from the page titles of links in that page to the anchor texts used in the
-	 *         links.
-	 * @throws WikiTitleParsingException
+	/*
+	 * The methods getInlinkAnchors() and getOutLinkAnchors() have to be migrated to the SWEBLE parser or the code has to be
+	 * moved to the parser.
 	 */
-	public Map<String, Set<String>> getOutlinkAnchors()
-		throws WikiTitleParsingException
-	{
-		Map<String, Set<String>> outAnchors = new HashMap<String, Set<String>>();
-		ParsedPage pp = getParsedPage();
-		if (pp == null) {
-			return outAnchors;
-		}
-		for (Link l : pp.getLinks()) {
-			if (l.getTarget().length() == 0) {
-				continue;
-			}
 
-			String targetTitle = new Title(l.getTarget()).getPlainTitle();
-			if (!l.getType().equals(Link.type.EXTERNAL) && !l.getType().equals(Link.type.IMAGE)
-					&& !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
-					&& !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
-													// are categories or other meta data
-			{
-				String anchorText = l.getText();
-				if (!anchorText.equals(targetTitle)) {
-					Set<String> anchors;
-					if (outAnchors.containsKey(targetTitle)) {
-						anchors = outAnchors.get(targetTitle);
-					}
-					else {
-						anchors = new HashSet<String>();
-					}
-					anchors.add(anchorText);
-					outAnchors.put(targetTitle, anchors);
-				}
-			}
-		}
-		return outAnchors;
-	}
+
+//	/**
+//	 * Note that this method only returns the anchors that are not equal to the page's title.
+//	 * Anchors might contain references to sections in an article in the form of "Page#Section".
+//	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
+//	 *
+//	 * @return A set of strings used as anchor texts in links pointing to that page.
+//	 * @throws WikiTitleParsingException
+//	 */
+//	public Set<String> getInlinkAnchors()
+//		throws WikiTitleParsingException
+//	{
+//		Set<String> inAnchors = new HashSet<String>();
+//		for (Page p : getInlinks()) {
+//			ParsedPage pp = p.getParsedPage();
+//			if (pp == null) {
+//				return inAnchors;
+//			}
+//			for (Link l : pp.getLinks()) {
+//				String pageTitle = hibernatePage.getName();
+//
+//				String anchorText = l.getText();
+//				if (l.getTarget().equals(pageTitle) && !anchorText.equals(pageTitle)) {
+//					inAnchors.add(anchorText);
+//				}
+//			}
+//		}
+//		return inAnchors;
+//	}
+//
+//	/**
+//	 * Note that this method only returns the anchors that are not equal to the title of the page
+//	 * they are pointing to.
+//	 * Anchors might contain references to sections in an article in the form of "Page#Section".
+//	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
+//	 *
+//	 * @return A mapping from the page titles of links in that page to the anchor texts used in the
+//	 *         links.
+//	 * @throws WikiTitleParsingException
+//	 */
+//	public Map<String, Set<String>> getOutlinkAnchors()
+//		throws WikiTitleParsingException
+//	{
+//		Map<String, Set<String>> outAnchors = new HashMap<String, Set<String>>();
+//		ParsedPage pp = getParsedPage();
+//		if (pp == null) {
+//			return outAnchors;
+//		}
+//		for (Link l : pp.getLinks()) {
+//			if (l.getTarget().length() == 0) {
+//				continue;
+//			}
+//
+//			String targetTitle = new Title(l.getTarget()).getPlainTitle();
+//			if (!l.getType().equals(Link.type.EXTERNAL) && !l.getType().equals(Link.type.IMAGE)
+//					&& !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
+//					&& !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
+//													// are categories or other meta data
+//			{
+//				String anchorText = l.getText();
+//				if (!anchorText.equals(targetTitle)) {
+//					Set<String> anchors;
+//					if (outAnchors.containsKey(targetTitle)) {
+//						anchors = outAnchors.get(targetTitle);
+//					}
+//					else {
+//						anchors = new HashSet<String>();
+//					}
+//					anchors.add(anchorText);
+//					outAnchors.put(targetTitle, anchors);
+//				}
+//			}
+//		}
+//		return outAnchors;
+//	}
 
 
 	/**

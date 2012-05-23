@@ -25,8 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
-import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
-import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
 
 
@@ -41,8 +39,6 @@ public class Wikipedia implements WikiConstants {
 	private final Log logger = LogFactory.getLog(getClass());
     private final Language language;
     private final DatabaseConfiguration dbConfig;
-
-    private final MediaWikiParser parser;
 
     /**
      * A mapping from page pageIDs to hibernateIDs.
@@ -77,9 +73,6 @@ public class Wikipedia implements WikiConstants {
 //        }
 
         this.metaData = new MetaData(this);
-
-        MediaWikiParserFactory pf = new MediaWikiParserFactory(this.language);
-        this.parser = pf.createParser();
 
 	}
 
@@ -699,10 +692,6 @@ public class Wikipedia implements WikiConstants {
      */
     protected Session __getHibernateSession() {
         return WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
-    }
-
-    protected MediaWikiParser getParser() {
-        return parser;
     }
 
     /**
