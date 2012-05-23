@@ -19,6 +19,10 @@
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
+  	</dependency>
   </dependencies>
   	<build>
 		<plugins>
