@@ -10,7 +10,7 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.List;
 
 public class Template extends ParsedPageObject{
 	

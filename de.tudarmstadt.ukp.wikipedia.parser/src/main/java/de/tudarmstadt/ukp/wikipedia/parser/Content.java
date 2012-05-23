@@ -10,7 +10,7 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * This is a main Interface used by nearly all classes of this package.<br/>
