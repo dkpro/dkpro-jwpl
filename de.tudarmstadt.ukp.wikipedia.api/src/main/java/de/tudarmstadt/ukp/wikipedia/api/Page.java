@@ -25,8 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
-import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
 
 /**
@@ -569,16 +567,6 @@ public class Page
 			return "";
 		}
 		return getTitle().getPlainTitle() + " " + pp.getText();
-	}
-
-	/**
-	 * Returns a ParsedPage object as would have been returned by the JWPL Parser.
-	 *
-	 * @return A ParsedPage object as would have been returned by the JWPL Parser.
-	 */
-	public ParsedPage getParsedPage()
-	{
-		return wiki.getParser().parse(getText());
 	}
 
 	/**
