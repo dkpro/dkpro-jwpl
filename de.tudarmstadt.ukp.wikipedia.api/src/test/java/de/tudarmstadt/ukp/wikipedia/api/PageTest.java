@@ -20,8 +20,6 @@ import org.junit.Test;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
-import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 
 public class PageTest {
 
@@ -83,32 +81,4 @@ public class PageTest {
 		assertEquals("testing the pageId", 1014, p.getPageId());
 	}
 
-	@Test
-	public void testParsedPage(){
-        String title = "Wikipedia API";
-        Page p = null;
-        try {
-            p = wiki.getPage(title);
-        } catch (WikiApiException e) {
-            e.printStackTrace();
-            fail("A WikiApiException occured while getting the page " + title);
-        }
-
-        String LF = "\n";
-        String text = "Wikipedia API ist die wichtigste Software überhaupt." + LF +
-        	"Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de";
-        ParsedPage pp = p.getParsedPage();
-        int i=0;
-        for (Link link : pp.getSection(0).getLinks()) {
-            if (i==0) {
-                assertEquals("Software", link.getText());
-            }
-            else if (i==1) {
-                assertEquals("Wikipedia API", link.getText());
-                assertEquals("JWPL", link.getTarget());
-            }
-            i++;
-        }
-        assertEquals(text, pp.getText());
-	}
 }
