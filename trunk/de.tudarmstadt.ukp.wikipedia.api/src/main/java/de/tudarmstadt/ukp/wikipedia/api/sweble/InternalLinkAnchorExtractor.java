@@ -105,6 +105,7 @@ public class InternalLinkAnchorExtractor extends Visitor
 	}
 
 
+	//FIXME does not work yet
 	public void visit(InternalLink link)
 	{
 		try
