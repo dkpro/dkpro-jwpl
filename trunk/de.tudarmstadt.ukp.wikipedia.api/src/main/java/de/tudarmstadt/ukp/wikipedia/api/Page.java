@@ -576,8 +576,8 @@ public class Page
 			// Compile the retrieved page
 			cp = compiler.postprocess(pageId, this.getText(), null);
 
-			// Render the compiled page as text
-			PlainTextConverter textConverter = new PlainTextConverter(config);
+			// Render the compiled page as text (don't enumerate sections)
+			PlainTextConverter textConverter = new PlainTextConverter(config,false);
 			plainText = (String) textConverter.go(cp.getPage());
 		}catch(Exception e){
 			throw new WikiApiException(e.getMessage());
