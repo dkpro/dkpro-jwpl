@@ -1,20 +1,11 @@
 package de.tudarmstadt.ukp.wikipedia.api.sweble;
 
 /**
- * Copyright 2011 The Open Source Research Group,
- *                University of Erlangen-Nürnberg
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Derived from the TextConverter class which was published in the
+ * Sweble example project provided on
+ * http://http://sweble.org by the Open Source Research Group,
+ * University of Erlangen-Nürnberg under the Apache License, Version 2.0
+ * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
 import java.util.LinkedList;
@@ -42,7 +33,7 @@ import de.fau.cs.osr.ptk.common.ast.Text;
 import de.fau.cs.osr.utils.StringUtils;
 
 /**
- * A visitor to convert an article AST into a pure text representation. To
+ * A visitor to convert an article AST into a plain text representation. To
  * better understand the visitor pattern as implemented by the Visitor class,
  * please take a look at the following resources:
  * <ul>
@@ -63,6 +54,9 @@ import de.fau.cs.osr.utils.StringUtils;
  * <code>n</code> and replace each child node <code>c</code> with the return
  * value of the call to <code>visit(c)</code>.</li>
  * </ul>
+ *
+ * @author Open Source Research Group, University of Erlangen-Nürnberg
+ * @author Oliver Ferschke
  */
 public class PlainTextConverter
         extends
@@ -77,8 +71,6 @@ public class PlainTextConverter
 	private StringBuilder sb;
 
 	private StringBuilder line;
-
-	private int extLinkNum;
 
 	private boolean pastBod;
 
@@ -132,7 +124,6 @@ public class PlainTextConverter
 		// This method is called by go() before visitation starts
 		sb = new StringBuilder();
 		line = new StringBuilder();
-		extLinkNum = 1;
 		pastBod = false;
 		needNewlines = 0;
 		needSpace = false;
