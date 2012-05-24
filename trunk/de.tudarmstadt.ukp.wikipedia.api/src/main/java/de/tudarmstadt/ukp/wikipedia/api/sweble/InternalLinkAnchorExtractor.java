@@ -35,7 +35,7 @@ import de.fau.cs.osr.ptk.common.ast.NodeList;
 import de.fau.cs.osr.utils.StringUtils;
 
 /**
- * A visitor that extracts link anchors from an article AST.
+ * A visitor that extracts anchors of Wikipedia-internal links from an article AST.
  * To better understand the visitor pattern as implemented by the Visitor class,
  * please take a look at the following resources:
  * <ul>
@@ -57,7 +57,7 @@ import de.fau.cs.osr.utils.StringUtils;
  * value of the call to <code>visit(c)</code>.</li>
  * </ul>
  */
-public class LinkAnchorExtractor extends Visitor
+public class InternalLinkAnchorExtractor extends Visitor
 {
 	private static final Pattern ws = Pattern.compile("\\s+");
 
@@ -76,7 +76,7 @@ public class LinkAnchorExtractor extends Visitor
 
 	// =========================================================================
 
-	public LinkAnchorExtractor(SimpleWikiConfiguration config)
+	public InternalLinkAnchorExtractor(SimpleWikiConfiguration config)
 	{
 		this.config = config;
 	}
@@ -122,8 +122,9 @@ public class LinkAnchorExtractor extends Visitor
 
 	public void visit(ExternalLink link)
 	{
-		write(link.getTitle().toString());
-		newline(1);
+//	Only internal links
+// 		write(link.getTitle().toString());
+//		newline(1);
 	}
 
 	public void visit(InternalLink link)
@@ -139,17 +140,18 @@ public class LinkAnchorExtractor extends Visitor
 		{
 		}
 
-		write(link.getPrefix());
 		if (link.getTitle().getContent() == null
 		        || link.getTitle().getContent().isEmpty())
 		{
-			write(link.getTarget());
+			String anchor = link.getTarget();
+			if(!anchor.contains(":")){
+				write(link.getTarget());
+			}
 		}
 		else
 		{
 			iterate(link.getTitle());
 		}
-		write(link.getPostfix());
 		newline(1);
 	}
 
