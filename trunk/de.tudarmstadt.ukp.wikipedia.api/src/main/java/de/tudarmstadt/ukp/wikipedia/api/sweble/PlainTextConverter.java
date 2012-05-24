@@ -87,15 +87,43 @@ public class PlainTextConverter
 	private boolean needSpace;
 
 	private boolean noWrap;
+	private boolean enumerateSections;
 
 	private LinkedList<Integer> sections;
 
 	// =========================================================================
 
-	public PlainTextConverter(SimpleWikiConfiguration config, int wrapCol)
+	/**
+	 * @param config
+	 * @param enumerateSections true, if sections should be enumerated in the output
+	 */
+	public PlainTextConverter(SimpleWikiConfiguration config, boolean enumerateSections)
+	{
+		this.config = config;
+		this.wrapCol = Integer.MAX_VALUE;
+		this.enumerateSections=enumerateSections;
+	}
+
+	/**
+	 * @param config
+	 */
+	public PlainTextConverter(SimpleWikiConfiguration config)
+	{
+		this.config = config;
+		this.wrapCol = Integer.MAX_VALUE;
+		this.enumerateSections=true;
+	}
+
+	/**
+	 * @param config
+	 * @param enumerateSections true, if sections should be enumerated in the output
+	 * @param wrapCol defines max length of a line. longer lines will be broken.
+	 */
+	public PlainTextConverter(SimpleWikiConfiguration config, boolean enumerateSections, int wrapCol)
 	{
 		this.config = config;
 		this.wrapCol = wrapCol;
+		this.enumerateSections=enumerateSections;
 	}
 
 	@Override
@@ -128,9 +156,9 @@ public class PlainTextConverter
 	public void visit(AstNode n)
 	{
 		// Fallback for all nodes that are not explicitly handled below
-		//write("<");
-		//write(n.getNodeName());
-		//write(" />");
+//		write("<");
+//		write(n.getNodeName());
+//		write(" />");
 	}
 
 	public void visit(NodeList n)
@@ -198,7 +226,7 @@ public class PlainTextConverter
 	{
 		//TODO How should we represent external links in the plain text output?
 		write('[');
-		write(extLinkNum++);
+		iterate(link.getTitle());
 		write(']');
 	}
 
@@ -252,30 +280,31 @@ public class PlainTextConverter
 				sections.add(1);
 			}
 
-			StringBuilder sb2 = new StringBuilder();
-			for (int i = 0; i < sections.size(); ++i)
-			{
-				if (i < 1) {
-					continue;
+			if(enumerateSections){
+				StringBuilder sb2 = new StringBuilder();
+				for (int i = 0; i < sections.size(); ++i)
+				{
+					if (i < 1) {
+						continue;
+					}
+
+					sb2.append(sections.get(i));
+					sb2.append('.');
 				}
 
-				sb2.append(sections.get(i));
-				sb2.append('.');
+				if (sb2.length() > 0) {
+					sb2.append(' ');
+				}
+				sb2.append(title);
+				title = sb2.toString();
 			}
-
-			if (sb2.length() > 0) {
-				sb2.append(' ');
-			}
-			sb2.append(title);
-			title = sb2.toString();
 		}
 
-//		write("<!-- paragraph -->");
 		newline(1);
 		write(title);
 		newline(1);
-		write(StringUtils.strrep('-', title.length()));
-		newline(1);
+//		write(StringUtils.strrep('-', title.length()));
+//		newline(1);
 
 		noWrap = saveNoWrap;
 
@@ -296,8 +325,8 @@ public class PlainTextConverter
 	public void visit(HorizontalRule hr)
 	{
 		newline(1);
-		//write(StringUtils.strrep('-', wrapCol));
-		//newline(2);
+//		write(StringUtils.strrep('-', wrapCol));
+//		newline(1);
 	}
 
 	public void visit(XmlElement e)
@@ -311,6 +340,18 @@ public class PlainTextConverter
 			iterate(e.getBody());
 		}
 	}
+
+	public void visit(Itemization n)
+	{
+		iterate(n.getContent());
+	}
+
+	public void visit(ItemizationItem n)
+	{
+		iterate(n.getContent());
+		newline(1);
+	}
+
 
 	// =========================================================================
 	// Stuff we want to hide
