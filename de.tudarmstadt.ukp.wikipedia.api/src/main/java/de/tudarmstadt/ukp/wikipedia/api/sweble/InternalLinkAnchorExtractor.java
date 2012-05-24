@@ -17,7 +17,8 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * limitations under the License.
  */
 
-import java.util.regex.Pattern;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.engine.PageTitle;
@@ -32,7 +33,6 @@ import org.sweble.wikitext.lazy.parser.Section;
 import de.fau.cs.osr.ptk.common.Visitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
 import de.fau.cs.osr.ptk.common.ast.NodeList;
-import de.fau.cs.osr.utils.StringUtils;
 
 /**
  * A visitor that extracts anchors of Wikipedia-internal links from an article AST.
@@ -59,20 +59,9 @@ import de.fau.cs.osr.utils.StringUtils;
  */
 public class InternalLinkAnchorExtractor extends Visitor
 {
-	private static final Pattern ws = Pattern.compile("\\s+");
-
 	private final SimpleWikiConfiguration config;
 
-	private StringBuilder sb;
-
-	private StringBuilder line;
-
-	private boolean pastBod;
-
-	private int needNewlines;
-
-	private boolean needSpace;
-
+	private List<String> anchors;
 
 	// =========================================================================
 
@@ -85,29 +74,21 @@ public class InternalLinkAnchorExtractor extends Visitor
 	protected boolean before(AstNode node)
 	{
 		// This method is called by go() before visitation starts
-		sb = new StringBuilder();
-		line = new StringBuilder();
-		pastBod = false;
-		needNewlines = 0;
-		needSpace = false;
+		anchors = new LinkedList<String>();
 		return super.before(node);
 	}
 
 	@Override
 	protected Object after(AstNode node, Object result)
 	{
-		finishLine();
-
-		// This method is called by go() after visitation has finished
-		// The return value will be passed to go() which passes it to the caller
-		return sb.toString();
+		return anchors;
 	}
 
 	// =========================================================================
 
 	public void visit(AstNode n)
 	{
-		// Fallback for all nodes that are not explicitly handled below
+		iterate(n);
 	}
 
 	public void visit(NodeList n)
@@ -122,10 +103,14 @@ public class InternalLinkAnchorExtractor extends Visitor
 
 	public void visit(ExternalLink link)
 	{
-//	Only internal links
-// 		write(link.getTitle().toString());
-//		newline(1);
+		//	We want only internal links
 	}
+
+	public void visit(ImageLink n)
+	{
+		//	We want only internal links
+	}
+
 
 	public void visit(InternalLink link)
 	{
@@ -145,14 +130,13 @@ public class InternalLinkAnchorExtractor extends Visitor
 		{
 			String anchor = link.getTarget();
 			if(!anchor.contains(":")){
-				write(link.getTarget());
+				add(link.getTarget());
 			}
 		}
 		else
 		{
 			iterate(link.getTitle());
 		}
-		newline(1);
 	}
 
 	public void visit(Section s)
@@ -165,85 +149,13 @@ public class InternalLinkAnchorExtractor extends Visitor
 		iterate(p.getContent());
 	}
 
-	public void visit(ImageLink n)
-	{
-	}
 
-	// =========================================================================
-
-	private void newline(int num)
-	{
-		if (pastBod)
-		{
-			if (num > needNewlines) {
-				needNewlines = num;
-			}
-		}
-	}
-
-	private void wantSpace()
-	{
-		if (pastBod) {
-			needSpace = true;
-		}
-	}
-
-	private void finishLine()
-	{
-		sb.append(line.toString());
-		line.setLength(0);
-	}
-
-	private void writeNewlines(int num)
-	{
-		finishLine();
-		sb.append(StringUtils.strrep('\n', num));
-		needNewlines = 0;
-		needSpace = false;
-	}
-
-	private void writeWord(String s)
-	{
-		int length = s.length();
-		if (length == 0) {
-			return;
-		}
-
-		if (needSpace && needNewlines <= 0) {
-			line.append(' ');
-		}
-
-		if (needNewlines > 0) {
-			writeNewlines(needNewlines);
-		}
-
-		needSpace = false;
-		pastBod = true;
-		line.append(s);
-	}
-
-	private void write(String s)
+	private void add(String s)
 	{
 		if (s.isEmpty()) {
 			return;
 		}
-
-		if (Character.isSpaceChar(s.charAt(0))) {
-			wantSpace();
-		}
-
-		String[] words = ws.split(s);
-		for (int i = 0; i < words.length;)
-		{
-			writeWord(words[i]);
-			if (++i < words.length) {
-				wantSpace();
-			}
-		}
-
-		if (Character.isSpaceChar(s.charAt(s.length() - 1))) {
-			wantSpace();
-		}
+		anchors.add(s);
 	}
 
 }
