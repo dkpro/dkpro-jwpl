@@ -196,9 +196,10 @@ public class PlainTextConverter
 
 	public void visit(ExternalLink link)
 	{
-		//write('[');
+		//TODO How should we represent external links in the plain text output?
+		write('[');
 		write(extLinkNum++);
-		//write(']');
+		write(']');
 	}
 
 	public void visit(InternalLink link)
