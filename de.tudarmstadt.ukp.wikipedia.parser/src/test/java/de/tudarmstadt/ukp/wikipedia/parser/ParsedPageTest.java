@@ -85,7 +85,6 @@ public class ParsedPageTest {
             }
             i++;
         }
-        System.out.println(pp.getText());
         assertEquals(text, pp.getText());
 	}
 }
