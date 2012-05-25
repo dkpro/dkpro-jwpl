@@ -20,6 +20,7 @@ import java.util.Set;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.sweble.wikitext.engine.CompiledPage;
+import org.sweble.wikitext.engine.Compiler;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
@@ -45,6 +46,8 @@ public class Page
 	private final Wikipedia wiki;
 
 	private final PageDAO pageDAO;
+
+	private final String SIMPLE_WIKI_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
 	// The hibernatePage that is represented by this WikiAPI page.
 	// The indirection is necessary to shield the user from Hibernate sessions.
@@ -581,8 +584,7 @@ public class Page
 		try{
 			//Configure the PlainTextConverter for plain text parsing
 			plain = new PlainTextConverter(
-					new SimpleWikiConfiguration(
-							"classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"),
+					new SimpleWikiConfiguration(SIMPLE_WIKI_CONFIG),
 					false);
 		}catch(IOException e){
 			throw new WikiApiException(e);
@@ -620,12 +622,13 @@ public class Page
 	{
 		CompiledPage cp;
 		try{
-			SimpleWikiConfiguration config = new SimpleWikiConfiguration("classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml");
-			org.sweble.wikitext.engine.Compiler compiler = new org.sweble.wikitext.engine.Compiler(config);
+			SimpleWikiConfiguration config = new SimpleWikiConfiguration(SIMPLE_WIKI_CONFIG);
 
 			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
 			PageId pageId = new PageId(pageTitle, -1);
+
 			// Compile the retrieved page
+			Compiler compiler = new Compiler(config);
 			cp = compiler.postprocess(pageId, this.getText(), null);
 		}catch(Exception e){
 			throw new WikiApiException(e.getMessage());
