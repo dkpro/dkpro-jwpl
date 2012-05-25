@@ -577,17 +577,17 @@ public class Page
 	public String getPlainText()
 		throws WikiApiException
 	{
-		PlainTextConverter textConverter;
+		PlainTextConverter plain;
 		try{
-			//Configure the PlaingTextConverter visitor for plain text parsing
-			textConverter = new PlainTextConverter(
+			//Configure the PlainTextConverter for plain text parsing
+			plain = new PlainTextConverter(
 					new SimpleWikiConfiguration(
 							"classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"),
 					false);
 		}catch(IOException e){
 			throw new WikiApiException(e);
 		}
-		return (String) textConverter.go(getCompiledPage().getPage());
+		return (String) getParsedPage(plain);
 	}
 
 	/**
