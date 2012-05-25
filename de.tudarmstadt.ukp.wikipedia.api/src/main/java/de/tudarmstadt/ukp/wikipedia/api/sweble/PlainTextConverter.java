@@ -8,6 +8,7 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
@@ -31,6 +32,7 @@ import de.fau.cs.osr.ptk.common.ast.AstNode;
 import de.fau.cs.osr.ptk.common.ast.NodeList;
 import de.fau.cs.osr.ptk.common.ast.Text;
 import de.fau.cs.osr.utils.StringUtils;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 /**
  * A visitor to convert an article AST into a plain text representation. To
@@ -85,28 +87,48 @@ public class PlainTextConverter
 
 	// =========================================================================
 
+
 	/**
-	 * @param config
+	 * Creates a new visitor that produces a plain text Strin representation
+	 * of a parsed Wikipedia article
+s	 */
+	public PlainTextConverter()
+	{
+		SimpleWikiConfiguration config=null;
+		try{
+			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
+		}catch(IOException e){
+			//TODO logger
+			e.printStackTrace();
+		}
+		this.config=config;
+		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
+		this.enumerateSections=false;
+	}
+
+	/**
+	 * Creates a new visitor that produces a plain text String representation
+	 * of a parsed Wikipedia article
+	 *
 	 * @param enumerateSections true, if sections should be enumerated in the output
 	 */
-	public PlainTextConverter(SimpleWikiConfiguration config, boolean enumerateSections)
+	public PlainTextConverter(boolean enumerateSection)
 	{
-		this.config = config;
-		this.wrapCol = Integer.MAX_VALUE;
-		this.enumerateSections=enumerateSections;
+		SimpleWikiConfiguration config=null;
+		try{
+			new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
+		}catch(IOException e){
+
+		}
+		this.config=config;
+		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
+		this.enumerateSections=enumerateSection;
 	}
 
 	/**
-	 * @param config
-	 */
-	public PlainTextConverter(SimpleWikiConfiguration config)
-	{
-		this.config = config;
-		this.wrapCol = Integer.MAX_VALUE;
-		this.enumerateSections=true;
-	}
-
-	/**
+	 * Creates a new visitor that produces a plain text String representation
+	 * of a parsed Wikipedia article
+	 *
 	 * @param config
 	 * @param enumerateSections true, if sections should be enumerated in the output
 	 * @param wrapCol defines max length of a line. longer lines will be broken.

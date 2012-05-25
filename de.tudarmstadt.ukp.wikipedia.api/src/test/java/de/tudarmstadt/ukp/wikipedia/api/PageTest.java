@@ -10,7 +10,9 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import static de.tudarmstadt.ukp.wikipedia.api.WikiConstants.LF;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Assume;
@@ -79,6 +81,28 @@ public class PageTest {
 		}
 		//test the pageId
 		assertEquals("testing the pageId", 1014, p.getPageId());
+	}
+
+	@Test
+	public void testPlainText(){
+        String title = "Wikipedia API";
+        Page p = null;
+        try {
+            p = wiki.getPage(title);
+        } catch (WikiApiException e) {
+            e.printStackTrace();
+            fail("A WikiApiException occured while getting the page " + title);
+        }
+
+        String text = "Wikipedia API ist die wichtigste Software überhaupt. Wikipedia API."+LF+
+        		"Nicht zu übertreffen."+LF+"Unglaublich"+LF+"http://www.ukp.tu-darmstadt.de"+LF+"en:Wikipedia API fi:WikipediaAPI";
+
+        try{
+            assertEquals(text, p.getPlainText());
+        }catch(Exception e){
+        	e.printStackTrace();
+        	assertNull(e);
+        }
 	}
 
 }

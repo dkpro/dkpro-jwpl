@@ -8,6 +8,7 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +25,7 @@ import org.sweble.wikitext.lazy.parser.Section;
 import de.fau.cs.osr.ptk.common.Visitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
 import de.fau.cs.osr.ptk.common.ast.NodeList;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 /**
  * A visitor that extracts anchors of Wikipedia-internal links from an article AST.
@@ -58,6 +60,29 @@ public class InternalLinkAnchorExtractor extends Visitor
 
 	// =========================================================================
 
+
+	/**
+	 * Creates a new visitor that extracts anchors of internal links from a
+	 * parsed Wikipedia article using the default Sweble config as defined
+	 * in WikiConstants.SWEBLE_CONFIG.
+	 */
+	public InternalLinkAnchorExtractor()
+	{
+		SimpleWikiConfiguration config=null;
+		try{
+			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
+		}catch(IOException e){
+
+		}
+		this.config=config;
+	}
+
+	/**
+	 * Creates a new visitor that extracts anchors of internal links from a
+	 * parsed Wikipedia article.
+	 *
+	 * @param config the Sweble configuration
+	 */
 	public InternalLinkAnchorExtractor(SimpleWikiConfiguration config)
 	{
 		this.config = config;

@@ -11,6 +11,21 @@
 package de.tudarmstadt.ukp.wikipedia.api;
 
 public interface WikiConstants {
+    /**
+     * Shortcut for System.getProperty("line.separator").
+     */
+    public static final String LF = System.getProperty("line.separator");
+
+    /**
+     * The prefix that is added to page titles of discussion pages
+     * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
+     */
+    public static final String DISCUSSION_PREFIX = "Discussion:";
+
+    /**
+     * Configuration file for the Sweble parser
+     */
+    public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
     /**
      * Enumerates the languages for which Wikipedia APIs are available.
@@ -276,17 +291,4 @@ public interface WikiConstants {
         zulu,
         _test
     }
-
-    /**
-     * Shortcut for System.getProperty("line.separator").
-     */
-    public static final String LF = System.getProperty("line.separator");
-
-    /**
-     * The prefix that is added to page titles of discussion pages
-     * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
-     */
-    public static final String DISCUSSION_PREFIX = "Discussion:";
-
-    public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 }
