@@ -37,6 +37,7 @@ import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
  * Represents a Wikipedia article page.
  *
  * @author zesch
+ * @author Oliver Ferschke
  *
  */
 // Adapter class for hidding hibernate session management from the user.
