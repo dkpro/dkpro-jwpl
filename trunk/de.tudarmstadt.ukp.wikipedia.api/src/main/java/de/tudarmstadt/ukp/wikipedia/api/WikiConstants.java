@@ -287,4 +287,6 @@ public interface WikiConstants {
      * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
      */
     public static final String DISCUSSION_PREFIX = "Discussion:";
+
+    public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 }
