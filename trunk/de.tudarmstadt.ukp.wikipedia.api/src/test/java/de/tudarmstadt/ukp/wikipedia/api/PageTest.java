@@ -12,7 +12,6 @@ package de.tudarmstadt.ukp.wikipedia.api;
 
 import static de.tudarmstadt.ukp.wikipedia.api.WikiConstants.LF;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Assume;
@@ -100,8 +99,7 @@ public class PageTest {
         try{
             assertEquals(text, p.getPlainText());
         }catch(Exception e){
-        	e.printStackTrace();
-        	assertNull(e);
+			Assume.assumeNoException(e);
         }
 	}
 
