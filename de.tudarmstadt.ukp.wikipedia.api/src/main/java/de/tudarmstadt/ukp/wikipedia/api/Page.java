@@ -12,6 +12,7 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,6 +24,7 @@ import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
+import de.fau.cs.osr.ptk.common.Visitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
@@ -556,35 +558,64 @@ public class Page
     }
 
     /**
-	 * Returns the Wikipedia article as plain text. Page.getText() returns the Wikipedia article
-	 * with all Wiki markup.
+	 * <p>Returns the Wikipedia article as plain text using the SwebleParser with
+	 * a SimpleWikiConfiguration and the PlainTextConverter. <br/>
+	 * If you have different needs regarding the plain text, you can use
+	 * getParsedPage(Visitor v) and provide your own Sweble-Visitor. Examples
+	 * are in the <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package
+	 * or on http://www.sweble.org </p>
 	 *
-	 * @return The plain text of a Wikipedia article without all markup.
+	 * <p>Alternatively, use Page.getText() to return the Wikipedia article
+	 * with all Wiki markup. You can then use the old JWPL MediaWiki parser for
+	 * creating a plain text version. The JWPL parser is now located in a
+	 * separate project <code>de.tudarmstad.ukp.wikipedia.parser</code>.
+	 * Please refer to the JWPL Google Code project page for further reference.</p>
+	 *
+	 * @return The plain text of a Wikipedia article
 	 * @throws WikiApiException
 	 */
 	public String getPlainText()
 		throws WikiApiException
 	{
-		CompiledPage cp;
-		String plainText;
+		PlainTextConverter textConverter;
 		try{
-			SimpleWikiConfiguration config = new SimpleWikiConfiguration("classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml");
-			org.sweble.wikitext.engine.Compiler compiler = new org.sweble.wikitext.engine.Compiler(config);
-
-			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
-			PageId pageId = new PageId(pageTitle, -1);
-			// Compile the retrieved page
-			cp = compiler.postprocess(pageId, this.getText(), null);
-
-			// Render the compiled page as text (don't enumerate sections)
-			PlainTextConverter textConverter = new PlainTextConverter(config,false);
-			plainText = (String) textConverter.go(cp.getPage());
-		}catch(Exception e){
-			throw new WikiApiException(e.getMessage());
+			//Configure the PlaingTextConverter visitor for plain text parsing
+			textConverter = new PlainTextConverter(
+					new SimpleWikiConfiguration(
+							"classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml"),
+					false);
+		}catch(IOException e){
+			throw new WikiApiException(e);
 		}
-		return plainText;
+		return (String) textConverter.go(getCompiledPage().getPage());
 	}
 
+	/**
+	 * Parses the page with the Sweble parser using a SimpleWikiConfiguration
+	 * and the provided visitor. For further information about the visitor
+	 * concept, look at the examples in the
+	 * <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package, on
+	 * <code>http://www.sweble.org</code> or on the JWPL Google Code project
+	 * page.
+	 *
+	 * @return the parsed page. The actual return type depends on the provided
+	 *         visitor. You have to cast the return type according to the return
+	 *         type of the go() method of your visitor.
+	 * @throws WikiApiException
+	 */
+	public Object getParsedPage(Visitor v) throws WikiApiException
+	{
+		// Use the provided visitor to parse the page
+		return v.go(getCompiledPage().getPage());
+	}
+
+	/**
+	 * Returns CompiledPage produced by the SWEBLE parser using the
+	 * SimpleWikiConfiguration.
+	 *
+	 * @return the parsed page
+	 * @throws WikiApiException
+	 */
 	public CompiledPage getCompiledPage() throws WikiApiException
 	{
 		CompiledPage cp;
