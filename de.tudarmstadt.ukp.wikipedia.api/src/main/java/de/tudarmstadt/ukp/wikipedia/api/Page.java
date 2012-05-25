@@ -586,7 +586,7 @@ public class Page
 	 * Parses the page with the Sweble parser using a SimpleWikiConfiguration
 	 * and the provided visitor. For further information about the visitor
 	 * concept, look at the examples in the
-	 * <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package, on
+	 * <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package, or on
 	 * <code>http://www.sweble.org</code> or on the JWPL Google Code project
 	 * page.
 	 *
