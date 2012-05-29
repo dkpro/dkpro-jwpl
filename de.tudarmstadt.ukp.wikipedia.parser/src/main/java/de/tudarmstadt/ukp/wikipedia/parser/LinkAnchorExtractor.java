@@ -22,6 +22,11 @@ public class LinkAnchorExtractor
         parser = pf.createParser();
 	}
 
+	public LinkAnchorExtractor(Language lang){
+        MediaWikiParserFactory pf = new MediaWikiParserFactory(lang);
+        parser = pf.createParser();
+	}
+
 	public LinkAnchorExtractor(MediaWikiParser parser){
 		this.parser=parser;
 	}
