@@ -626,87 +626,15 @@ public class Page
 		return cp;
 	}
 
+
+	///////////////////////////////////////////////////////////////////
 	/*
-	 * The methods getInlinkAnchors() and getOutLinkAnchors() have to be migrated to the SWEBLE parser or the code has to be
-	 * moved to the parser.
+	 * The methods getInlinkAnchors() and getOutLinkAnchors() not yet been
+	 * migrated to the SWEBLE parser. The original versions based on the
+	 * JWPL MediaWikiParser can be found in
+	 * de.tudarmstadt.ukp.wikipedia.parser.LinkAnchorExtractor
 	 */
-
-
-//	/**
-//	 * Note that this method only returns the anchors that are not equal to the page's title.
-//	 * Anchors might contain references to sections in an article in the form of "Page#Section".
-//	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
-//	 *
-//	 * @return A set of strings used as anchor texts in links pointing to that page.
-//	 * @throws WikiTitleParsingException
-//	 */
-//	public Set<String> getInlinkAnchors()
-//		throws WikiTitleParsingException
-//	{
-//		Set<String> inAnchors = new HashSet<String>();
-//		for (Page p : getInlinks()) {
-//			ParsedPage pp = p.getParsedPage();
-//			if (pp == null) {
-//				return inAnchors;
-//			}
-//			for (Link l : pp.getLinks()) {
-//				String pageTitle = hibernatePage.getName();
-//
-//				String anchorText = l.getText();
-//				if (l.getTarget().equals(pageTitle) && !anchorText.equals(pageTitle)) {
-//					inAnchors.add(anchorText);
-//				}
-//			}
-//		}
-//		return inAnchors;
-//	}
-//
-//	/**
-//	 * Note that this method only returns the anchors that are not equal to the title of the page
-//	 * they are pointing to.
-//	 * Anchors might contain references to sections in an article in the form of "Page#Section".
-//	 * If you need the plain title, e.g. for checking whether the page exists in Wikipedia, the Title object can be used.
-//	 *
-//	 * @return A mapping from the page titles of links in that page to the anchor texts used in the
-//	 *         links.
-//	 * @throws WikiTitleParsingException
-//	 */
-//	public Map<String, Set<String>> getOutlinkAnchors()
-//		throws WikiTitleParsingException
-//	{
-//		Map<String, Set<String>> outAnchors = new HashMap<String, Set<String>>();
-//		ParsedPage pp = getParsedPage();
-//		if (pp == null) {
-//			return outAnchors;
-//		}
-//		for (Link l : pp.getLinks()) {
-//			if (l.getTarget().length() == 0) {
-//				continue;
-//			}
-//
-//			String targetTitle = new Title(l.getTarget()).getPlainTitle();
-//			if (!l.getType().equals(Link.type.EXTERNAL) && !l.getType().equals(Link.type.IMAGE)
-//					&& !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
-//					&& !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
-//													// are categories or other meta data
-//			{
-//				String anchorText = l.getText();
-//				if (!anchorText.equals(targetTitle)) {
-//					Set<String> anchors;
-//					if (outAnchors.containsKey(targetTitle)) {
-//						anchors = outAnchors.get(targetTitle);
-//					}
-//					else {
-//						anchors = new HashSet<String>();
-//					}
-//					anchors.add(anchorText);
-//					outAnchors.put(targetTitle, anchors);
-//				}
-//			}
-//		}
-//		return outAnchors;
-//	}
-
+	///////////////////////////////////////////////////////////////////
 
 	/**
 	 * Returns a string with infos about this page object.
