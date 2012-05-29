@@ -629,7 +629,7 @@ public class Page
 
 	///////////////////////////////////////////////////////////////////
 	/*
-	 * The methods getInlinkAnchors() and getOutLinkAnchors() not yet been
+	 * The methods getInlinkAnchors() and getOutLinkAnchors() have not yet been
 	 * migrated to the SWEBLE parser. The original versions based on the
 	 * JWPL MediaWikiParser can be found in
 	 * de.tudarmstadt.ukp.wikipedia.parser.LinkAnchorExtractor
