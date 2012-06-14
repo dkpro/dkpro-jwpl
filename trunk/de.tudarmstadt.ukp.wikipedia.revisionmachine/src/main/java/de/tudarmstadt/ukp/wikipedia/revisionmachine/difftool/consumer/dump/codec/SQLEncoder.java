@@ -241,10 +241,9 @@ public class SQLEncoder
 
 			//prepare values that might be null
 			//because we don't want quotes if they are null
-			String comment = diff.getComment();
-			if(comment!=null){
-				comment="'"+comment+"'";
-			}
+			String comm = diff.getComment();
+			String comment = comm==null?null:"'"+comm+"'";
+
 			Integer cId = diff.getContributorId();
 			String contributorId = cId==null?null:"'"+cId.toString()+"'";
 
@@ -363,10 +362,8 @@ public class SQLEncoder
 
 			//prepare values that might be null
 			//because we don't want quotes if they are null
-			String comment = diff.getComment();
-			if(comment!=null){
-				comment="'"+comment+"'";
-			}
+			String comm = diff.getComment();
+			String comment = comm==null?null:"'"+comm+"'";
 
 			Integer cId = diff.getContributorId();
 			String contributorId = cId==null?null:"'"+cId.toString()+"'";
