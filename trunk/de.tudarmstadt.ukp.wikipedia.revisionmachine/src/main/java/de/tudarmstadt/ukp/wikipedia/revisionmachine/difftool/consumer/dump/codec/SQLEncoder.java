@@ -245,7 +245,7 @@ public class SQLEncoder
 			String comment = comm==null?null:"'"+comm+"'";
 
 			Integer cId = diff.getContributorId();
-			String contributorId = cId==null?null:"'"+cId.toString()+"'";
+			String contributorId = cId==null?null:cId.toString();
 
 			// save the query and binary data temporary
 			tempData = "(null, " + this.lastFullRevID + ","
