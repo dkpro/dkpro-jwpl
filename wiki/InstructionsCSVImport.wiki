@@ -21,7 +21,7 @@ Revision MEDIUMTEXT NOT NULL,
 Comment MEDIUMTEXT, 
 Minor TINYINT NOT NULL, 
 ContributorName TEXT NOT NULL, 
-ContributorId MEDIUMTEXT, 
+ContributorId INTEGER UNSIGNED, 
 ContributorIsRegistered TINYINT NOT NULL, 
 PRIMARY KEY(PrimaryKey)
 ) TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
