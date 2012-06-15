@@ -142,38 +142,34 @@ public class DataFileEncoder
 			/*
 			 * prepare values that might be null
 			 * because we don't want quotes if they are null
-			 * 
+			 *
 			 * Furthermore, escape quote-characters. Quotes are used as the "ENCLOSED BY" character
 			 * in MySQL to mark begin and end of Strings
 			 */
-			String comment = diff.getComment();
-			if(comment!=null){
-				comment="\""+escape(comment)+"\"";
-			}
 
-			Integer contributorId = diff.getContributorId();
-			String contributorIdString = null;
-			if(contributorId!=null){
-				contributorIdString="\""+escape(contributorId.toString())+"\"";
-			}
-			
-			String contributorNameString = diff.getContributorName();
-			if(contributorNameString!=null){
-				contributorNameString="\""+escape(contributorNameString)+"\"";
-			}
+			//prepare values that might be null
+			//because we don't want quotes if they are null
+			String comm = diff.getComment();
+			String comment = comm==null?null:"\""+escape(comm)+"\"";
+
+			Integer cId = diff.getContributorId();
+			String contributorId = cId==null?null:"'"+cId.toString()+"'";
+
+			String cName = diff.getContributorName();
+			String contributorName = cName==null?null:"\""+escape(cName)+"\"";
 
 			//Prepare the actual data item
-			tempData = "\\N," 
+			tempData = "\\N,"
 					+ this.lastFullRevID + ","
-					+ diff.getRevisionCounter() + "," 
-					+ diff.getRevisionID()+ "," 
-					+ articleId + "," 
-					+ diff.getTimeStamp().getTime()+ ",\"" 
+					+ diff.getRevisionCounter() + ","
+					+ diff.getRevisionID()+ ","
+					+ articleId + ","
+					+ diff.getTimeStamp().getTime()+ ",\""
 					+ encodeDiff(task, diff) + "\","
 					+ comment+","
 					+ (diff.isMinor()?"1":"0")+","
-					+ contributorNameString+","
-					+ contributorIdString+ ","
+					+ contributorName+","
+					+ contributorId+ ","
 					+ (diff.getContributorIsRegistered()?"1":"0");
 
 			//add item to the list
@@ -182,7 +178,7 @@ public class DataFileEncoder
 
 		return list;
 	}
-	
+
 	private String escape(String str){
 		return str.replaceAll("\\\\", "\\\\\\\\").replaceAll("\"", "\\\\\"");
 	}
