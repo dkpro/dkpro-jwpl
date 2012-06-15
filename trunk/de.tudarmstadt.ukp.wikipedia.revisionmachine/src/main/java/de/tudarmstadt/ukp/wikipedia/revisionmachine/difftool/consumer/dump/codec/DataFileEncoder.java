@@ -150,13 +150,13 @@ public class DataFileEncoder
 			//prepare values that might be null
 			//because we don't want quotes if they are null
 			String comm = diff.getComment();
-			String comment = comm==null?null:"\""+escape(comm)+"\"";
+			String comment = comm==null?"\\N":"\""+escape(comm)+"\"";
 
 			Integer cId = diff.getContributorId();
-			String contributorId = cId==null?null:"'"+cId.toString()+"'";
+			String contributorId = cId==null?"\\N":"'"+cId.toString()+"'";
 
 			String cName = diff.getContributorName();
-			String contributorName = cName==null?null:"\""+escape(cName)+"\"";
+			String contributorName = cName==null?"\\N":"\""+escape(cName)+"\"";
 
 			//Prepare the actual data item
 			tempData = "\\N,"
