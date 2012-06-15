@@ -153,7 +153,7 @@ public class DataFileEncoder
 			String comment = comm==null?"\\N":"\""+escape(comm)+"\"";
 
 			Integer cId = diff.getContributorId();
-			String contributorId = cId==null?"\\N":"'"+cId.toString()+"'";
+			String contributorId = cId==null?"\\N":cId.toString();
 
 			String cName = diff.getContributorName();
 			String contributorName = cName==null?"\\N":"\""+escape(cName)+"\"";
