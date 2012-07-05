@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,9 +17,9 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This class generates data to write into sql dump file
- * 
+ *
  * @author Artem Vovk
- * 
+ *
  */
 public class WikipediaTemplateInfoDumpWriter
 {
@@ -43,7 +43,7 @@ public class WikipediaTemplateInfoDumpWriter
 	/**
 	 * Generate sql statement for data defined in dataSourceToUse and for table
 	 * in tableToWrite
-	 * 
+	 *
 	 * @param dataSourceToUse
 	 *            source to use for string generation
 	 * @param tableToWrite
@@ -94,7 +94,7 @@ public class WikipediaTemplateInfoDumpWriter
 
 	/**
 	 * Generate sql statement for table template id -> page id
-	 * 
+	 *
 	 * @param tableExists
 	 *            if table does not exists create index for this table
 	 * @param dataSourceToUse
@@ -131,7 +131,7 @@ public class WikipediaTemplateInfoDumpWriter
 
 	/**
 	 * Generate sql statement for table template id -> template name
-	 * 
+	 *
 	 * @param tableExists
 	 *            if this table does not exists create index
 	 * @return sql statement
@@ -147,11 +147,10 @@ public class WikipediaTemplateInfoDumpWriter
 				+ "templateName MEDIUMTEXT NOT NULL, "
 				+ "PRIMARY KEY(templateId)); \r\n");
 
-		// FIXME: not en error? TABLE_TPLID_PAGEID?
 		if (!tableExists) {
 			output.append("CREATE INDEX tplIdx ON "
-					+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID
-					+ "(templateID);");
+					+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME
+					+ "(templateId);");
 			output.append("\r\n");
 		}
 		return output.toString();
@@ -160,7 +159,7 @@ public class WikipediaTemplateInfoDumpWriter
 
 	/**
 	 * Generate sql statement for table template id -> revision id
-	 * 
+	 *
 	 * @param tableExists
 	 *            if table does not exists create index for this table
 	 * @param dataSourceToUse
@@ -196,7 +195,7 @@ public class WikipediaTemplateInfoDumpWriter
 
 	/**
 	 * Generate and write sql statements to output file
-	 * 
+	 *
 	 * @param revTableExists
 	 *            if revision table does not exists ->create index
 	 * @param pageTableExists
@@ -221,7 +220,7 @@ public class WikipediaTemplateInfoDumpWriter
 				dataToDump.append(generatePageSQLStatement(pageTableExists,
 						mode.templateNameToPageId));
 			}
-			
+
 			if (mode.active_for_revisions) {
 				dataToDump.append(generateRevisionSQLStatement(revTableExists,
 						mode.templateNameToRevId));
