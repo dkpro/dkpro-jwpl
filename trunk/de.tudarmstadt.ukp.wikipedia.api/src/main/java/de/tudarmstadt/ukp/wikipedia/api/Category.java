@@ -4,19 +4,19 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
@@ -100,8 +100,8 @@ public class Category implements WikiConstants {
 
         Object returnValue;
         returnValue = session.createSQLQuery(
-                "select cat.pageId from Category as cat where cat.name = ? COLLATE utf8_bin")
-                .setString(0, name)
+                "select cat.pageId from Category as cat where cat.name = :name COLLATE utf8_bin")
+                .setString("name", name)
                 .uniqueResult();
         session.getTransaction().commit();
 
@@ -171,8 +171,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(inLinks) from category_inlinks where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createSQLQuery("select count(inLinks) from category_inlinks where id = :id")
+            .setLong("id", id)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -222,8 +222,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(outLinks) from category_outlinks where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createSQLQuery("select count(outLinks) from category_outlinks where id = :id")
+            .setLong("id", id)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -326,8 +326,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(pages) from category_pages where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createSQLQuery("select count(pages) from category_pages where id = :id")
+            .setLong("id", id)
             .uniqueResult();
         session.getTransaction().commit();
 

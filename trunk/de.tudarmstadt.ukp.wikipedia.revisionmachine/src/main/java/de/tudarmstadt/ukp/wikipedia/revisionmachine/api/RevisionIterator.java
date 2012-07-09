@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Iterator;
@@ -48,14 +48,14 @@ public class RevisionIterator
 	/** Reference to the configuration parameter variable */
 	private final RevisionAPIConfiguration config;
 
-	/** Reference to the UNCOMPRESSED database connection */
+	/** Reference to the database connection */
 	private Connection connection;
 
 	/** Reference to the ResultSet */
 	private ResultSet result;
 
 	/** Reference to the Statement */
-	private Statement statement;
+	private PreparedStatement statement;
 
 	/** Binary Data Flag */
 	private boolean binaryData;
@@ -207,19 +207,11 @@ public class RevisionIterator
 			this.result = null;
 			this.previousRevision = null;
 
-			String driverDB = "com.mysql.jdbc.Driver";
-			Class.forName(driverDB);
-
 			MAX_NUMBER_RESULTS = config.getBufferSize();
 
-			this.connection = DriverManager.getConnection("jdbc:mysql://"
-					+ config.getHost() + "/" + config.getDatabase(),
-					config.getUser(), config.getPassword());
+			connect();
 		}
 		catch (SQLException e) {
-			throw new WikiApiException(e);
-		}
-		catch (ClassNotFoundException e) {
 			throw new WikiApiException(e);
 		}
 	}
@@ -274,8 +266,6 @@ public class RevisionIterator
 	private boolean query()
 		throws SQLException
 	{
-		statement = this.connection.createStatement();
-
 		String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
 				+ " RevisionID, ArticleID, Timestamp, FullRevisionID "
 				+ "FROM revisions";
@@ -296,11 +286,20 @@ public class RevisionIterator
 
 		}
 		else if (endPK != Integer.MAX_VALUE) {
-
 			query += " LIMIT " + (endPK - primaryKey + 1);
 		}
 
-		result = statement.executeQuery(query);
+		try{
+			statement=this.connection.prepareStatement(query);
+			result = statement.executeQuery(query);
+		}catch(Exception e){
+			System.err.println("Conncection Closed: "+connection.isClosed());
+			System.err.println("Connection Valid: "+connection.isValid(5));
+			connect();
+			statement=this.connection.prepareStatement(query);
+			result = statement.executeQuery(query);
+		}
+
 
 		if (result.next()) {
 			binaryData = result.getMetaData().getColumnType(2) == Types.LONGVARBINARY;
@@ -506,5 +505,29 @@ public class RevisionIterator
 
 		// w.close();
 		System.out.println(Time.toClock(System.currentTimeMillis() - start));
+	}
+
+	public void connect()
+		throws SQLException
+	{
+		if (this.connection != null) {
+			this.connection.close();
+			System.out.println("Reconnect to Database");
+		}
+		else {
+			System.out.println("Connect to Database");
+		}
+
+		try{
+			String driverDB = "com.mysql.jdbc.Driver";
+			Class.forName(driverDB);
+		}catch(ClassNotFoundException e){
+			System.err.println("JDBC Driver is missing");
+		}
+
+		this.connection = DriverManager.getConnection(
+						"jdbc:mysql://" + this.config.getHost()
+								+ "/" + this.config.getDatabase(),
+						this.config.getUser(), this.config.getPassword());
 	}
 }

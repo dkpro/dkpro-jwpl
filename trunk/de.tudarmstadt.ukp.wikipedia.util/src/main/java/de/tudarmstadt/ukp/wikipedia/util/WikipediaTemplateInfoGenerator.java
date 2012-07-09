@@ -21,10 +21,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
 import de.tudarmstadt.ukp.wikipedia.api.PageIterator;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
@@ -45,10 +47,10 @@ public class WikipediaTemplateInfoGenerator
 {
 	private MediaWikiParser parser = null;
 	private final Log logger = LogFactory.getLog(getClass());
-	private final Wikipedia wiki;
-	private final PageIterator pageIter;
+	private Wikipedia wiki;
+	private final DatabaseConfiguration dbConf;
 
-	private final RevisionIterator revisionIter;
+	private final int pageBuffer;
 
 	private final Map<String, Set<Integer>> TPLNAME_TO_REVISIONIDS = new HashMap<String, Set<Integer>>();
 	private final Map<String, Set<Integer>> TPLNAME_TO_PAGEIDS = new HashMap<String, Set<Integer>>();
@@ -73,23 +75,18 @@ public class WikipediaTemplateInfoGenerator
 
 	private GeneratorMode mode;
 
-	public WikipediaTemplateInfoGenerator(Wikipedia pWiki, int pageBuffer,
+	public WikipediaTemplateInfoGenerator(DatabaseConfiguration dbc, int pageBuffer,
 			String charset, String outputPath, long maxAllowedPacket,
 			TemplateFilter pageFilter, TemplateFilter revisionFilter,
 			GeneratorMode mode)
 		throws WikiApiException
 	{
-		logger.debug("TEst");
-		this.wiki = pWiki;
+		this.dbConf = dbc;
 
-		// Init iterators
-		this.pageIter = new PageIterator(this.wiki, true, pageBuffer);
-		this.revisionIter = new RevisionIterator(
-				this.wiki.getDatabaseConfiguration());
-		//
+		this.pageBuffer=pageBuffer;
 
 		MediaWikiParserFactory pf = new MediaWikiParserFactory(
-				wiki.getLanguage());
+				dbc.getLanguage());
 		pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
 		parser = pf.createParser();
 
@@ -153,6 +150,8 @@ public class WikipediaTemplateInfoGenerator
 	{
 		logger.info("Processing pages, extracting template information ...");
 
+		PageIterator pageIter = new PageIterator(getWiki(), true, pageBuffer);
+
 		int pageCounter = 0;
 		while (pageIter.hasNext()) {
 			pageCounter++;
@@ -166,7 +165,6 @@ public class WikipediaTemplateInfoGenerator
 			fillMapWithTemplateData(curPage.getText(), pageFilter, curPageId,
 					TPLNAME_TO_PAGEIDS);
 		}
-
 	}
 
 	/**
@@ -175,21 +173,38 @@ public class WikipediaTemplateInfoGenerator
 	private void processRevisions()
 	{
 		logger.info("Processing revisions, extracting template information ...");
+		RevisionIterator revisionIter=null;
+		try{
+			revisionIter = new RevisionIterator(dbConf);
 
-		int revCounter = 0;
-		while (revisionIter.hasNext()) {
-			revCounter++;
+			int revCounter = 0;
+			while (revisionIter.hasNext()) {
+				revCounter++;
 
-			if (revCounter % VERBOSITY == 0) {
-				logger.info(revCounter + " revisions processed ...");
+				if (revCounter % VERBOSITY == 0) {
+					logger.info(revCounter + " revisions processed ...");
+				}
+
+				Revision curRevision = revisionIter.next();
+				int curRevisionId = curRevision.getRevisionID();
+
+				fillMapWithTemplateData(curRevision.getRevisionText(),
+						revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
 			}
-
-			Revision curRevision = revisionIter.next();
-			int curRevisionId = curRevision.getRevisionID();
-
-			fillMapWithTemplateData(curRevision.getRevisionText(),
-					revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
+		}catch(WikiApiException e){
+			System.err.println("Error initializing Revision Iterator");
+			e.printStackTrace();
+		}finally{
+			if(revisionIter!=null){
+				try{
+					revisionIter.close();
+				}catch(SQLException e){
+					System.err.println("Error closing RevisionIterator");
+					e.printStackTrace();
+				}
+			}
 		}
+
 
 	}
 
@@ -214,7 +229,7 @@ public class WikipediaTemplateInfoGenerator
 		boolean tableWithTemplatesExists = false;
 		try {
 
-			WikipediaTemplateInfo info = new WikipediaTemplateInfo(this.wiki);
+			WikipediaTemplateInfo info = new WikipediaTemplateInfo(getWiki());
 			tableWithTemplatesExists = true;
 
 			pageTableExists = info.tableExists(TABLE_TPLID_PAGEID);
@@ -305,6 +320,23 @@ public class WikipediaTemplateInfoGenerator
 			}
 		}
 		return names;
+	}
+
+	private Wikipedia getWiki()
+	{
+		if (this.wiki == null) {
+			Wikipedia nWiki = null;
+			try {
+				nWiki = new Wikipedia(dbConf);
+			}
+			catch (WikiInitializationException e) {
+				System.err.println("Error initializing Wiki connection");
+			}
+			return nWiki;
+		}
+		else {
+			return this.wiki;
+		}
 	}
 
 }

@@ -1554,7 +1554,6 @@ public class RevisionApi
 			c = DriverManager.getConnection("jdbc:mysql://" + config.getHost()
 					+ "/" + config.getDatabase(), config.getUser(),
 					config.getPassword());
-
 			if (!c.isValid(5)) {
 				throw new WikiApiException(
 						"Connection could not be established.");

@@ -9,16 +9,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
-import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
  * Starter, which parsed configuration properties file and starts
  * WikipediaTemplateInfoGenerator
- * 
+ *
  * @author Artem Vovk
  * @author Oliver Ferschke
- * 
+ *
  */
 public class TemplateInfoGeneratorStarter
 {
@@ -36,14 +35,10 @@ public class TemplateInfoGeneratorStarter
 	private final static String REVISIONS_WHITE_PREFIX_LIST = "revisions_white_prefix_list";
 	private final static String REVISIONS_BLACK_PREFIX_LIST = "revisions_black_prefix_list";
 
-	
-	
-	
-	
 	protected final static String TABLE_TPLID_REVISIONID = "templateId_revisionId";
 	protected final static String TABLE_TPLID_PAGEID = "templateId_pageId";
-	
-	
+
+
 	/**
 	 * Starts index generation using the database credentials in the properties
 	 * file specified in args[0].<br/>
@@ -60,7 +55,7 @@ public class TemplateInfoGeneratorStarter
 	 * <li>maxAllowedPackets=16760832 (optional)</li>
 	 * </ul>
 	 * <br/>
-	 * 
+	 *
 	 * @param args
 	 *            allows only one entry that contains the path to the config
 	 *            file
@@ -99,8 +94,7 @@ public class TemplateInfoGeneratorStarter
 			String pagebufferString = props.getProperty("pagebuffer");
 			int pageBuffer;
 
-			String maxAllowedPacketsString = props
-					.getProperty("maxAllowedPackets");
+			String maxAllowedPacketsString = props.getProperty("maxAllowedPackets");
 			long maxAllowedPackets;
 
 			try {
@@ -171,7 +165,7 @@ public class TemplateInfoGeneratorStarter
 								.getProperty(REVISIONS_BLACK_PREFIX_LIST)));
 
 				WikipediaTemplateInfoGenerator generator = new WikipediaTemplateInfoGenerator(
-						new Wikipedia(config), pageBuffer, charset, output,
+						config, pageBuffer, charset, output,
 						maxAllowedPackets, pageFilter, revisionFilter, mode);
 
 				// Start processing now
@@ -185,7 +179,7 @@ public class TemplateInfoGeneratorStarter
 
 	/**
 	 * Loads a properties file from disk
-	 * 
+	 *
 	 * @param propsName
 	 *            path to the configuration file
 	 * @return Properties the properties object containing the configuration
@@ -223,7 +217,7 @@ public class TemplateInfoGeneratorStarter
 
 	/**
 	 * Parses property string into HashSet
-	 * 
+	 *
 	 * @param property
 	 *            string to parse
 	 * @return
