@@ -43,12 +43,15 @@ public class Title {
             throw new WikiTitleParsingException("Title is empty.");
         }
 
-        if (titleText.substring(0, 1).toLowerCase().equals(titleText.substring(0, 1))) {
-            this.rawTitleText = titleText.substring(0,1).toUpperCase() + titleText.substring(1,titleText.length());
-        }
-        else {
+/*
+ * Do not convert first character to upper case. We perform case insensitive querying
+ */
+//        if (titleText.substring(0, 1).toLowerCase().equals(titleText.substring(0, 1))) {
+//            this.rawTitleText = titleText.substring(0,1).toUpperCase() + titleText.substring(1,titleText.length());
+//        }
+//        else {
             this.rawTitleText = titleText;
-        }
+//        }
 
         // "Car_(automobile)#Introduction"
         // should be split into:

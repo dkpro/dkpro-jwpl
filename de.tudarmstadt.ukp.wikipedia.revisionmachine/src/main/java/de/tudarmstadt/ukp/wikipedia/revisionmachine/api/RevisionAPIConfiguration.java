@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -185,7 +185,7 @@ public class RevisionAPIConfiguration
 	 * Set the memory size used for the purpose of storing revisions.
 	 *
 	 * @param chronoStorageSpace
-	 *            memory size
+	 *            memory sizeresult
 	 */
 	public void setChronoStorageSpace(final long chronoStorageSpace)
 	{

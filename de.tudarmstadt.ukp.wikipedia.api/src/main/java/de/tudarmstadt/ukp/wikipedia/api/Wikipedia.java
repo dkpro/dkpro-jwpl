@@ -121,7 +121,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
-            "select p.name from PageMapLine as p where p.id = ?").setInteger(0, pageId).uniqueResult();
+            "select p.name from PageMapLine as p where p.id = :pId").setInteger("pId", pageId).uniqueResult();
         session.getTransaction().commit();
 
         String title = (String)returnValue;
@@ -143,7 +143,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Iterator results = session.createQuery(
-        "select p.pageID from PageMapLine as p where p.name = ?").setString(0, title).list().iterator();
+        "select p.pageID from PageMapLine as p where p.name = :pName").setString("pName", title).list().iterator();
 
         session.getTransaction().commit();
 
@@ -282,8 +282,8 @@ public class Wikipedia implements WikiConstants {
 
         List<Page> discussionArchives = new LinkedList<Page>();
 
-        Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like ?");
-        query.setString(0, articleTitle+"/%");
+        Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like :name");
+        query.setString("name", articleTitle+"/%");
         Iterator results = query.list().iterator();
 
         session.getTransaction().commit();
@@ -556,8 +556,8 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createSQLQuery(
-            "select p.id from PageMapLine as p where p.name = ? COLLATE utf8_bin")
-            .setString(0, encodedTitle)
+            "select p.id from PageMapLine as p where p.name = :pName COLLATE utf8_bin")
+            .setString("pName", encodedTitle)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -590,8 +590,8 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         List returnList = session.createSQLQuery(
-            "select p.id from PageMapLine as p where p.pageID = ?")
-            .setInteger(0, pageID)
+            "select p.id from PageMapLine as p where p.pageID = :pageId")
+            .setInteger("pageId", pageID)
             .list();
         session.getTransaction().commit();
 
@@ -623,8 +623,8 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
-                "select page.id from Page as page where page.pageId = ?")
-                .setInteger(0, pageID)
+                "select page.id from Page as page where page.pageId = :pageId")
+                .setInteger("pageId", pageID)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
@@ -657,8 +657,8 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
-                "select cat.id from Category as cat where cat.pageId = ?")
-                .setInteger(0, pageID)
+                "select cat.id from Category as cat where cat.pageId = :pageId")
+                .setInteger("pageId", pageID)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
