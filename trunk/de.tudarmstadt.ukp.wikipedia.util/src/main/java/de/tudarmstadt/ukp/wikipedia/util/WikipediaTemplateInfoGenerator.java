@@ -35,6 +35,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
 
 /**
  * This class determines which page in a JWPL database contains which templates.
@@ -64,6 +65,7 @@ public class WikipediaTemplateInfoGenerator
 	protected final static String TABLE_TPLID_REVISIONID = "templateId_revisionId";
 	protected final static String TABLE_TPLID_PAGEID = "templateId_pageId";
 	protected final static String TABLE_TPLID_TPLNAME = "templates";
+
 	private final int VERBOSITY = 500;
 
 	private TemplateFilter pageFilter;
@@ -189,60 +191,93 @@ public class WikipediaTemplateInfoGenerator
 							revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
 				}
 			}
-
-
 		}
 	}
 
-//	/**
-//	 * Process revision templates
-//	 */
-//	private void processRevisions()
-//	{
-//		logger.info("Processing revisions, extracting template information ...");
-//		RevisionIterator revisionIter=null;
-//		try{
-//			revisionIter = new RevisionIterator(dbConf);
-//
-//			int revCounter = 0;
-//			while (revisionIter.hasNext()) {
-//				revCounter++;
-//
-//				if (revCounter % VERBOSITY == 0) {
-//					logger.info(revCounter + " revisions processed ...");
-//				}
-//
-//				Revision curRevision = revisionIter.next();
-//				int curRevisionId = curRevision.getRevisionID();
-//
-//				fillMapWithTemplateData(curRevision.getRevisionText(),
-//						revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
-//			}
-//		}catch(WikiApiException e){
-//			System.err.println("Error initializing Revision Iterator");
-//			e.printStackTrace();
-//		}finally{
-//			if(revisionIter!=null){
-//				try{
-//					revisionIter.close();
-//				}catch(SQLException e){
-//					System.err.println("Error closing RevisionIterator");
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//	}
+
+	/**
+	 * Extracts templates from pages only
+	 */
+	private void processPages()
+	{
+		PageIterator pageIter = new PageIterator(getWiki(), true, pageBuffer);
+
+		int pageCounter = 0;
+
+		while (pageIter.hasNext()) {
+			pageCounter++;
+
+			if (pageCounter % VERBOSITY == 0) {
+				logger.info(pageCounter + " pages processed ...");
+			}
+
+			Page curPage = pageIter.next();
+			int curPageId = curPage.getPageId();
+
+			fillMapWithTemplateData(curPage.getText(), pageFilter, curPageId,
+					TPLNAME_TO_PAGEIDS);
+		}
+	}
+
+
+	/**
+	 * Processes only revision templates using the Revision Iterator
+	 */
+	private void processRevisions()
+	{
+		logger.info("Processing revisions, extracting template information ...");
+		RevisionIterator revisionIter=null;
+		try{
+			revisionIter = new RevisionIterator(dbConf);
+
+			int revCounter = 0;
+			while (revisionIter.hasNext()) {
+				revCounter++;
+
+				if (revCounter % VERBOSITY == 0) {
+					logger.info(revCounter + " revisions processed ...");
+				}
+
+				Revision curRevision = revisionIter.next();
+				int curRevisionId = curRevision.getRevisionID();
+
+				fillMapWithTemplateData(curRevision.getRevisionText(),
+						revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
+			}
+		}catch(WikiApiException e){
+			System.err.println("Error initializing Revision Iterator");
+			e.printStackTrace();
+		}finally{
+			if(revisionIter!=null){
+				try{
+					revisionIter.close();
+				}catch(SQLException e){
+					System.err.println("Error closing RevisionIterator");
+					e.printStackTrace();
+				}
+			}
+		}
+	}
 
 	/**
 	 * Start generator
 	 */
 	public void process()
 	{
-		try{
-			extractTemplates();
-		}catch(WikiApiException e){
-			System.err.println("Error extracting templates.");
-			e.printStackTrace();
+		if(mode.useRevisionIterator){
+			if (mode.active_for_revisions) {
+				processRevisions();
+			}
+			if (mode.active_for_pages) {
+				processPages();
+			}
+		}else{
+			try{
+				extractTemplates();
+			}catch(WikiApiException e){
+				System.err.println("Error extracting templates.");
+				e.printStackTrace();
+			}
 		}
 
 		logger.info("Generating template indices ...");

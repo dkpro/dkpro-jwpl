@@ -24,6 +24,7 @@ public class TemplateInfoGeneratorStarter
 
 	private final static String FILTERING_ACTIVE_FOR_PAGES = "create_templates_for_pages";
 	private final static String FILTERING_ACTIVE_FOR_REVISIONS = "create_templates_for_revisions";
+	private final static String USE_REVISION_ITERATOR = "use_revision_iterator";
 
 	private final static String PAGES_WHITE_LIST = "pages_white_list";
 	private final static String PAGES_BLACK_LIST = "pages_black_list";
@@ -133,6 +134,8 @@ public class TemplateInfoGeneratorStarter
 						.getProperty(FILTERING_ACTIVE_FOR_PAGES);
 				String active_for_revisions = props
 						.getProperty(FILTERING_ACTIVE_FOR_REVISIONS);
+				String useRevisionIterator = props
+						.getProperty(USE_REVISION_ITERATOR);
 
 				GeneratorMode mode = new GeneratorMode();
 
@@ -143,6 +146,11 @@ public class TemplateInfoGeneratorStarter
 				if (active_for_revisions.equals("true")) {
 					mode.active_for_revisions = true;
 				}
+
+				if(useRevisionIterator.equals("true")||useRevisionIterator==null||useRevisionIterator.equals("")){
+					mode.useRevisionIterator=true;
+				}
+
 
 				TemplateFilter pageFilter = new TemplateFilter(
 						createSetFromProperty(props
