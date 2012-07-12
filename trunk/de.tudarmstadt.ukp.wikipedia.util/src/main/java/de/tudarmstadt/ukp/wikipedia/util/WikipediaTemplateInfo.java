@@ -15,7 +15,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +28,13 @@ import de.tudarmstadt.ukp.wikipedia.api.Page;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
+import de.tudarmstadt.ukp.wikipedia.parser.Template;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 
 /**
  * This class gives access to the additional information created by
@@ -38,6 +49,9 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 public class WikipediaTemplateInfo {
 
     private final Wikipedia wiki;
+    private RevisionApi revApi=null;
+    private MediaWikiParser parser=null;
+
     private Connection connection=null;
 
     /**
@@ -68,7 +82,7 @@ public class WikipediaTemplateInfo {
      * @return the number of pages that contain any template starting with templateFragment
      * @throws WikiApiException If there was any error retrieving the page object (most likely if the template templates are corrupted)
      */
-    private Integer countPagesContainingOrNotContainingTemplateFragments(List<String> templateFragments, boolean whitelist)
+    private Integer countFragmentFilteredPages(List<String> templateFragments, boolean whitelist)
 		throws WikiApiException
 	{
 		try {
@@ -135,7 +149,7 @@ public class WikipediaTemplateInfo {
      * @throws WikiApiException If there was any error retrieving the page object (most likely if the template templates are corrupted)
      */
     public Integer countPagesContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-		return countPagesContainingOrNotContainingTemplateFragments(templateFragments, true);
+		return countFragmentFilteredPages(templateFragments, true);
 	}
 
     /**
@@ -149,7 +163,7 @@ public class WikipediaTemplateInfo {
      * @throws WikiApiException If there was any error retrieving the page object (most likely if the template templates are corrupted)
      */
     public Integer countPagesNotContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-		return countPagesContainingOrNotContainingTemplateFragments(templateFragments, false);
+		return countFragmentFilteredPages(templateFragments, false);
 	}
 
 
@@ -165,9 +179,9 @@ public class WikipediaTemplateInfo {
 	 *         any templateFragment
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
-	private Integer countPagesContainingOrNotContainingTemplateNames(List<String> templateNames, boolean whitelist)
+	private Integer countFilteredPages(List<String> templateNames, boolean whitelist)
 		throws WikiApiException{
 
 	try {
@@ -235,10 +249,10 @@ public class WikipediaTemplateInfo {
 	 *         any templateFragment
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
 	public Integer countPagesContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-		return countPagesContainingOrNotContainingTemplateNames(templateNames, true);
+		return countFilteredPages(templateNames, true);
 	}
 
 	/**
@@ -251,10 +265,10 @@ public class WikipediaTemplateInfo {
 	 *         any templateFragment
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
 	public Integer countPagesNotContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-		return countPagesContainingOrNotContainingTemplateNames(templateNames, false);
+		return countFilteredPages(templateNames, false);
 	}
 
 	/**
@@ -269,9 +283,9 @@ public class WikipediaTemplateInfo {
 	 *         beginning with any String in templateFragments
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
-    private Iterable<Page> getPagesContainingOrNotContainingTemplateFragments(List<String> templateFragments, boolean whitelist) throws WikiApiException{
+    private Iterable<Page> getFragmentFilteredPages(List<String> templateFragments, boolean whitelist) throws WikiApiException{
 
 		try {
 	    	PreparedStatement statement = null;
@@ -330,20 +344,20 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
-    
+
     public int checkTemplateId(String templateName) throws WikiApiException{
     	try {
 	    	PreparedStatement statement = null;
 			ResultSet result = null;
-	        
+
 			try {
 				StringBuffer sqlString = new StringBuffer();
-				
-				
+
+
 				sqlString.append("SELECT tpl.templateId FROM "+WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName+"'");
 
 				statement = connection.prepareStatement(sqlString.toString());
-			
+
 				result = statement.executeQuery();
 
 				if (result == null) {
@@ -362,16 +376,16 @@ public class WikipediaTemplateInfo {
 				if (result != null) {
 					result.close();
 				}
-				
+
 			}
 
-			return -1;	
+			return -1;
 		}
 		catch (Exception e) {
 			throw new WikiApiException(e);
 		}
     }
-    
+
 
 	/**
 	 * Return an iterable containing all pages that contain a template the name
@@ -383,10 +397,10 @@ public class WikipediaTemplateInfo {
 	 *         beginning with any String in templateFragments
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public Iterable<Page> getPagesContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-    	return getPagesContainingOrNotContainingTemplateFragments(templateFragments, true);
+    	return getFragmentFilteredPages(templateFragments, true);
     }
 
 	/**
@@ -399,10 +413,10 @@ public class WikipediaTemplateInfo {
 	 *         beginning with any String in templateFragments
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public Iterable<Page> getPagesNotContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-    	return getPagesContainingOrNotContainingTemplateFragments(templateFragments, false);
+    	return getFragmentFilteredPages(templateFragments, false);
     }
 
 
@@ -418,9 +432,9 @@ public class WikipediaTemplateInfo {
 	 *         specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
-    private Iterable<Page> getPagesContainingOrNotContainingTemplateNames(List<String> templateNames, boolean whitelist) throws WikiApiException{
+    private Iterable<Page> getFilteredPages(List<String> templateNames, boolean whitelist) throws WikiApiException{
 		try {
 	    	PreparedStatement statement = null;
 			ResultSet result = null;
@@ -486,10 +500,10 @@ public class WikipediaTemplateInfo {
 	 *         specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public Iterable<Page> getPagesContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-    	return getPagesContainingOrNotContainingTemplateNames(templateNames, true);
+    	return getFilteredPages(templateNames, true);
     }
 
 	/**
@@ -502,10 +516,10 @@ public class WikipediaTemplateInfo {
 	 * 			the specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public Iterable<Page> getPagesNotContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-    	return getPagesContainingOrNotContainingTemplateNames(templateNames, false);
+    	return getFilteredPages(templateNames, false);
     }
 
 
@@ -521,9 +535,9 @@ public class WikipediaTemplateInfo {
 	 *         beginning with any String in templateFragments
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
-    private List<Integer> getPageIdsContainingOrNotContainingTemplateFragments(List<String> templateFragments, boolean whitelist) throws WikiApiException{
+    private List<Integer> getFragmentFilteredPageIds(List<String> templateFragments, boolean whitelist) throws WikiApiException{
 
 		try {
 	    	PreparedStatement statement = null;
@@ -579,6 +593,94 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
+
+    /**
+	 * This method first creates a list of pages containing templates that equal
+	 * any of the provided Strings {@see getFilteredPageIds()}.
+	 * It then returns a list of revision ids of the revisions in which the
+	 * respective templates first appeared.
+	 *
+	 * @param templateNames
+	 *            the template names that have to be matched
+	 * @return An list with the revision ids of the first appearance of the template
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    public List<Integer> getFilteredRevisionIdList(String templateName) throws WikiApiException{
+    	/*
+    	 * Note: This method does not use any revision-template-index. Each revision has to be parsed until the first revision is found that does not contain a certain template.
+    	 */
+    	System.err.println("Note: This function call demands parsing several revision for each page.");
+
+    	List<Integer> revisionIds = new LinkedList<Integer>();
+    	List<Integer> pageIds = getPageIdsContainingTemplateNames(Arrays.asList(new String[]{templateName}));
+    	if(pageIds.size()==0){
+    		return revisionIds;
+    	}
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	if(parser==null){
+    		//TODO switch to SWEBLE
+    		MediaWikiParserFactory pf = new MediaWikiParserFactory(
+    				wiki.getDatabaseConfiguration().getLanguage());
+    		pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
+    		parser = pf.createParser();
+    	}
+
+    	System.out.println(pageIds.size() +" pages found containing template \""+templateName+"\"");
+    	for(int id:pageIds){
+    		System.out.println("Processing page "+ id);
+    		//get timestamps of all revisions
+    		List<Timestamp> tsList = revApi.getRevisionTimestamps(id);
+
+			// sort in reverse order - newest first
+			Collections.sort(tsList, new Comparator<Timestamp>()
+			{
+				public int compare(Timestamp ts1, Timestamp ts2)
+				{
+					return ts2.compareTo(ts1);
+				}
+			});
+
+			int numts=0;
+			Revision prevRev=null;
+			tsloop:for(Timestamp ts:tsList){
+				numts++;
+
+				Revision rev = revApi.getRevision(id, ts);
+
+				//initialize previous revision
+				if(prevRev==null){
+					prevRev=rev;
+				}
+
+				//Parse templates and check if the revision contains the template
+				ParsedPage pp = parser.parse(rev.getRevisionText());
+				boolean containsTpl = false;
+				tplLoop:for(Template tpl:pp.getTemplates()){
+					if(tpl.getName().equalsIgnoreCase(templateName)){
+						containsTpl=true;
+						break tplLoop;
+					}
+				}
+
+				//if the revision does not contain the template, we have found
+				//what we were looking for. add id of previous revision
+				if(!containsTpl){
+					revisionIds.add(prevRev.getRevisionID());
+					break tsloop;
+				}
+				prevRev=rev;
+			}
+			System.out.println("Template disappeared at rev "+ numts+ " of "+tsList.size());
+    	}
+
+    	return revisionIds;
+    }
+
+
 	/**
 	 * Returns a list containing the ids of all pages that contain a
 	 * template the name of which starts with any of the given Strings.
@@ -592,7 +694,7 @@ public class WikipediaTemplateInfo {
 	 *             likely if the template templates are corrupted)
 	 */
     public List<Integer> getPageIdsContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-    	return getPageIdsContainingOrNotContainingTemplateFragments(templateFragments,true);
+    	return getFragmentFilteredPageIds(templateFragments,true);
     }
 
     /**
@@ -608,7 +710,7 @@ public class WikipediaTemplateInfo {
 	 *             likely if the template templates are corrupted)
 	 */
     public List<Integer> getPageIdsNotContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
-    	return getPageIdsContainingOrNotContainingTemplateFragments(templateFragments,false);
+    	return getFragmentFilteredPageIds(templateFragments,false);
     }
 
 	/**
@@ -623,9 +725,9 @@ public class WikipediaTemplateInfo {
 	 *         specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
-    private List<Integer> getPageIdsContainingOrNotContainingTemplateNames(List<String> templateNames, boolean whitelist) throws WikiApiException{
+    private List<Integer> getFilteredPageIds(List<String> templateNames, boolean whitelist) throws WikiApiException{
 		try {
 	    	PreparedStatement statement = null;
 			ResultSet result = null;
@@ -681,6 +783,8 @@ public class WikipediaTemplateInfo {
 	}
 
 
+
+
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
 	 * the name of which equals any of the given Strings.
@@ -693,10 +797,10 @@ public class WikipediaTemplateInfo {
 	 *         specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public List<Integer> getPageIdsContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-    	return getPageIdsContainingOrNotContainingTemplateNames(templateNames, true);
+    	return getFilteredPageIds(templateNames, true);
     }
 	/**
 	 * Returns a list containing the ids of all pages that do not contain a template
@@ -710,10 +814,10 @@ public class WikipediaTemplateInfo {
 	 *         specified templates
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public List<Integer> getPageIdsNotContainingTemplateNames(List<String> templateNames) throws WikiApiException{
-    	return getPageIdsContainingOrNotContainingTemplateNames(templateNames, false);
+    	return getFilteredPageIds(templateNames, false);
     }
 
 
@@ -726,7 +830,7 @@ public class WikipediaTemplateInfo {
 	 *         page
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public List<String> getTemplateNamesFromPage(Page p) throws WikiApiException{
     	return getTemplateNamesFromPage(p.getPageId());
@@ -742,7 +846,7 @@ public class WikipediaTemplateInfo {
 	 *         page
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public List<String> getTemplateNamesFromPage(String pageTitle) throws WikiApiException{
     	Page p=null;
@@ -764,7 +868,7 @@ public class WikipediaTemplateInfo {
 	 *         page
 	 * @throws WikiApiException
 	 *             If there was any error retrieving the page object (most
-	 *             likely if the template templates are corrupted)
+	 *             likely if the templates are corrupted)
 	 */
     public List<String> getTemplateNamesFromPage(int pageId) throws WikiApiException{
     	if(pageId<1){
