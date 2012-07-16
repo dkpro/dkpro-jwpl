@@ -109,6 +109,7 @@ public class WikipediaTemplateInfo {
 				int curIdx=1;
 				for(String fragment:templateFragments){
 					fragment=fragment.toLowerCase();
+					fragment=fragment.trim();
 					fragment=fragment.replaceAll(" ", "_");
 					statement.setString(curIdx++, fragment + "%");
 				}
@@ -210,7 +211,7 @@ public class WikipediaTemplateInfo {
 
 			int curIdx=1;
 			for(String name:templateNames){
-				name=name.toLowerCase();
+				name=name.toLowerCase().trim();
 				name=name.replaceAll(" ", "_");
 				statement.setString(curIdx++, name);
 			}
@@ -315,7 +316,7 @@ public class WikipediaTemplateInfo {
 
 				int curIdx=1;
 				for(String fragment:templateFragments){
-					fragment=fragment.toLowerCase();
+					fragment=fragment.toLowerCase().trim();
 					fragment=fragment.replaceAll(" ", "_");
 					statement.setString(curIdx++, fragment + "%");
 				}
@@ -357,7 +358,7 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 
 
-				sqlString.append("SELECT tpl.templateId FROM "+WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName.replaceAll(" ","_")+"'");
+				sqlString.append("SELECT tpl.templateId FROM "+WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName.trim().replaceAll(" ","_")+"'");
 
 				statement = connection.prepareStatement(sqlString.toString());
 
@@ -462,7 +463,7 @@ public class WikipediaTemplateInfo {
 
 				int curIdx=1;
 				for(String name:templateNames){
-					name=name.toLowerCase();
+					name=name.toLowerCase().trim();
 					name=name.replaceAll(" ","_");
 					statement.setString(curIdx++, name);
 				}
@@ -567,7 +568,7 @@ public class WikipediaTemplateInfo {
 
 				int curIdx=1;
 				for(String fragment:templateFragments){
-					fragment=fragment.toLowerCase();
+					fragment=fragment.toLowerCase().trim();
 					fragment=fragment.replaceAll(" ","_");
 					statement.setString(curIdx++, fragment + "%");
 				}
@@ -618,7 +619,7 @@ public class WikipediaTemplateInfo {
     	 */
     	System.err.println("Note: This function call demands parsing several revision for each page.");
 
-    	templateName=templateName.replaceAll(" ", "_");
+    	templateName=templateName.trim().replaceAll(" ", "_");
 
     	List<Integer> revisionIds = new LinkedList<Integer>();
     	List<Integer> pageIds = getPageIdsContainingTemplateNames(Arrays.asList(new String[]{templateName}));
@@ -756,7 +757,7 @@ public class WikipediaTemplateInfo {
 
 				int curIdx=1;
 				for(String name:templateNames){
-					name=name.toLowerCase();
+					name=name.toLowerCase().trim();
 					name=name.replaceAll(" ", "_");
 					statement.setString(curIdx++, name);
 				}
