@@ -112,7 +112,7 @@ public class WikipediaTemplateInfo {
 					statement.setString(curIdx++, fragment + "%");
 				}
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					return 0;
@@ -213,7 +213,7 @@ public class WikipediaTemplateInfo {
 				statement.setString(curIdx++, name);
 			}
 
-			result = statement.executeQuery();
+			result = execute(statement);
 
 			if (result == null) {
 				return 0;
@@ -317,7 +317,7 @@ public class WikipediaTemplateInfo {
 					statement.setString(curIdx++, fragment + "%");
 				}
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					throw new WikiPageNotFoundException("Nothing was found");
@@ -358,7 +358,7 @@ public class WikipediaTemplateInfo {
 
 				statement = connection.prepareStatement(sqlString.toString());
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					return -1;
@@ -463,7 +463,7 @@ public class WikipediaTemplateInfo {
 					statement.setString(curIdx++, name);
 				}
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					throw new WikiPageNotFoundException("Nothing was found");
@@ -567,7 +567,7 @@ public class WikipediaTemplateInfo {
 					statement.setString(curIdx++, fragment + "%");
 				}
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					throw new WikiPageNotFoundException("Nothing was found");
@@ -629,9 +629,7 @@ public class WikipediaTemplateInfo {
     		parser = pf.createParser();
     	}
 
-    	System.out.println(pageIds.size() +" pages found containing template \""+templateName+"\"");
     	for(int id:pageIds){
-    		System.out.println("Processing page "+ id);
     		//get timestamps of all revisions
     		List<Timestamp> tsList = revApi.getRevisionTimestamps(id);
 
@@ -674,7 +672,6 @@ public class WikipediaTemplateInfo {
 				}
 				prevRev=rev;
 			}
-			System.out.println("Template disappeared at rev "+ numts+ " of "+tsList.size());
     	}
 
     	return revisionIds;
@@ -756,7 +753,7 @@ public class WikipediaTemplateInfo {
 					statement.setString(curIdx++, name);
 				}
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					throw new WikiPageNotFoundException("Nothing was found");
@@ -884,7 +881,7 @@ public class WikipediaTemplateInfo {
 						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
 				statement.setInt(1, pageId);
 
-				result = statement.executeQuery();
+				result = execute(statement);
 
 				if (result == null) {
 					return templateNames;
@@ -930,7 +927,7 @@ public class WikipediaTemplateInfo {
 		ResultSet result = null;
 		try {
 			statement = this.connection.prepareStatement("SHOW TABLES;");
-			result = statement.executeQuery();
+			result = execute(statement);
 
 			if (result == null) {
 				return false;
@@ -967,7 +964,7 @@ public class WikipediaTemplateInfo {
 			Class.forName(driverDB);
 
 			c = DriverManager.getConnection("jdbc:mysql://" + config.getHost()
-					+ "/" + config.getDatabase(), config.getUser(),
+					+ "/" + config.getDatabase()+"?autoReconnect=true", config.getUser(),
 					config.getPassword());
 
 			if (!c.isValid(5)) {
@@ -985,5 +982,32 @@ public class WikipediaTemplateInfo {
 		return c;
 	}
 
+	public void close() throws SQLException{
+		if(this.connection!=null){
+			this.connection.close();
+		}
+	}
+
+	public void reconnect() throws SQLException{
+		close();
+		try{
+			this.connection=getConnection(wiki);
+		}catch(WikiApiException e){
+			close();
+			System.err.println("Could not reconnect. Closing connection...");
+		}
+	}
+
+	private ResultSet execute(PreparedStatement state) throws SQLException{
+		ResultSet res=null;
+		try {
+			res = state.executeQuery();
+		}
+		catch (Exception e) {
+			reconnect();
+			res = state.executeQuery();
+		}
+		return res;
+	}
 
 }
