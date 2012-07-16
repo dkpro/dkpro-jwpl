@@ -614,7 +614,7 @@ public class WikipediaTemplateInfo {
     	System.err.println("Note: This function call demands parsing several revision for each page.");
 
     	List<Integer> revisionIds = new LinkedList<Integer>();
-    	List<Integer> pageIds = getPageIdsContainingTemplateNames(Arrays.asList(new String[]{templateName}));
+    	List<Integer> pageIds = getPageIdsContainingTemplateNames(Arrays.asList(new String[]{templateName.replaceAll(" ", "_")}));
     	if(pageIds.size()==0){
     		return revisionIds;
     	}
