@@ -336,7 +336,7 @@ public class Page
 		session.beginTransaction();
 		Object returnValue = session
 				.createSQLQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
-				.setLong(":piid", id).uniqueResult();
+				.setLong("piid", id).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
