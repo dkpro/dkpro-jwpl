@@ -36,6 +36,7 @@
 (Note: increase heap space for large Wikipedia versions with the -Xmx flag)
 
    * `java -Xmx4g -jar JWPLDataMachine.jar english Contents Disambiguation_pages ~/enwiki/20081013`
+   * `java -jar JWPLDataMachine.jar simple_english Contents Disambiguation ./`
    * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
    * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
    * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
