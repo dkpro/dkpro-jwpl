@@ -848,6 +848,70 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
+	
+
+	/**(
+	 * Returns the pageId (ArticleId) for the given revision
+	 *
+	 * @param revisionID
+	 *            ID of the revison
+	 * @return the page if for the given revision
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs or the revision does not exists.
+	 */
+	public int getPageIdForRevisionId(final int revisionID)
+		throws WikiApiException
+	{
+
+		try {
+			if (revisionID < 1) {
+				throw new IllegalArgumentException();
+			}
+
+			int pageId=-1;
+
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				statement = this.connection
+						.prepareStatement("SELECT ArticleID "
+								+ "FROM revisions "
+								+ "WHERE RevisionID=? LIMIT 1");
+				statement.setInt(1, revisionID);
+				result = statement.executeQuery();
+
+				if (result.next()) {
+					pageId = result.getInt(1);
+				}
+				else {
+					throw new WikiPageNotFoundException(
+							"The revision with the ID " + revisionID
+									+ " was not found.");
+				}
+
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return pageId;
+
+		}
+		catch (WikiPageNotFoundException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+	
 
 	/**
 	 * Returns the by the article ID and revisionCounter specified revision.
