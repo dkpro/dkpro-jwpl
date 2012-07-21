@@ -1,4 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.util;
+package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;

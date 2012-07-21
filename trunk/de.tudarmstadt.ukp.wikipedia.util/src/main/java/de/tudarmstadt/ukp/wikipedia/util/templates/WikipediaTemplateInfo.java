@@ -8,7 +8,7 @@
  * Contributors:
  *     Oliver Ferschke
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.util;
+package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -887,6 +887,58 @@ public class WikipediaTemplateInfo {
 				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
 						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
 				statement.setInt(1, pageId);
+
+				result = execute(statement);
+
+				if (result == null) {
+					return templateNames;
+				}
+
+				while (result.next()) {
+					templateNames.add(result.getString(1).toLowerCase());
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return templateNames;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+    
+	/**
+	 * Returns the names of all templates contained in the specified revision.
+	 *
+	 * @param revid
+	 *            the revision id
+	 * @return A List with the names of the templates contained in the specified
+	 *         revision
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    public List<String> getTemplateNamesFromRevision(int revid) throws WikiApiException{
+    	if(revid<1){
+    		throw new WikiApiException("Revision ID must be > 0");
+    	}
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<String> templateNames = new LinkedList<String>();
+
+			try {
+				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?");
+				statement.setInt(1, revid);
 
 				result = execute(statement);
 

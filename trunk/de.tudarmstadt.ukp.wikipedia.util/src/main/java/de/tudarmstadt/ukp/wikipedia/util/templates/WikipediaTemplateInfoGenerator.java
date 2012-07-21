@@ -9,7 +9,7 @@
  *     Oliver Ferschke
  *     Artem Vovk
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.util;
+package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -36,6 +36,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParamet
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
+import de.tudarmstadt.ukp.wikipedia.util.StringUtils;
 
 /**
  * This class determines which page in a JWPL database contains which templates.
