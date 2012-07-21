@@ -18,6 +18,8 @@ charset=UTF8
 pagebuffer=5000
 maxAllowedPackets=16760832
 
+use_revision_iterator=true
+
 !white_list=fr;nummere;de
 
 create_templates_for_pages=true

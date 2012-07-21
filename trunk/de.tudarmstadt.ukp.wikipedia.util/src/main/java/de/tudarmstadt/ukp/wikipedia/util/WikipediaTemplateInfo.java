@@ -650,10 +650,8 @@ public class WikipediaTemplateInfo {
 				}
 			});
 
-			int numts=0;
 			Revision prevRev=null;
 			tsloop:for(Timestamp ts:tsList){
-				numts++;
 
 				Revision rev = revApi.getRevision(id, ts);
 
