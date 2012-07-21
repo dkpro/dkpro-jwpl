@@ -1014,6 +1014,10 @@ public class WikipediaTemplateInfo {
      * @return list of revision pairs containing the desired template changes
      */
     public List<RevisionPair> getRevisionPairs(int pageId, String template, RevisionPair.RevisionPairType type) throws WikiApiException{
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+
     	List<RevisionPair> resultList = new LinkedList<RevisionPair>();    	    	
     	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
 
