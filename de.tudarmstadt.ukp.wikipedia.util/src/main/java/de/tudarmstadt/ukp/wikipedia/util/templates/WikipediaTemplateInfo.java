@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -524,79 +525,7 @@ public class WikipediaTemplateInfo {
     	return getFilteredPages(templateNames, false);
     }
 
-
-    /**
-	 * Returns a list containing the ids of all pages that contain a
-	 * template the name of which starts with any of the given Strings.
-	 *
-	 * @param templateFragments
-	 *            the beginning of the templates that have to be matched
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
-	 * @return An list with the ids of the pages that contain templates
-	 *         beginning with any String in templateFragments
-	 * @throws WikiApiException
-	 *             If there was any error retrieving the page object (most
-	 *             likely if the templates are corrupted)
-	 */
-    private List<Integer> getFragmentFilteredPageIds(List<String> templateFragments, boolean whitelist) throws WikiApiException{
-
-		try {
-	    	PreparedStatement statement = null;
-			ResultSet result = null;
-	        List<Integer> matchedPages = new LinkedList<Integer>();
-
-			try {
-				StringBuffer sqlString = new StringBuffer();
-				StringBuffer subconditions = new StringBuffer();
-				sqlString
-						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
-				for(@SuppressWarnings("unused") String fragment:templateFragments){
-					if(subconditions.length()!=0){
-						subconditions.append("OR ");
-					}
-					subconditions.append("tpl.templateName LIKE ?");
-				}
-				sqlString.append(subconditions);
-				sqlString.append(")");
-
-				statement = connection.prepareStatement(sqlString.toString());
-
-				int curIdx=1;
-				for(String fragment:templateFragments){
-					fragment=fragment.toLowerCase().trim();
-					fragment=fragment.replaceAll(" ","_");
-					statement.setString(curIdx++, fragment + "%");
-				}
-
-				result = execute(statement);
-
-				if (result == null) {
-					throw new WikiPageNotFoundException("Nothing was found");
-				}
-
-				while (result.next()) {
-		            matchedPages.add(result.getInt(1));
-				}
-			}
-			finally {
-				if (statement != null) {
-					statement.close();
-				}
-				if (result != null) {
-					result.close();
-				}
-			}
-
-			return matchedPages;
-		}
-		catch (Exception e) {
-			throw new WikiApiException(e);
-		}
-	}
-
-
+    
     /**
 	 * This method first creates a list of pages containing templates that equal
 	 * any of the provided Strings {@see getFilteredPageIds()}.
@@ -681,6 +610,82 @@ public class WikipediaTemplateInfo {
     	return revisionIds;
     }
 
+    
+    //////////
+    
+
+    /**
+	 * Returns a list containing the ids of all pages that contain a
+	 * template the name of which starts with any of the given Strings.
+	 *
+	 * @param templateFragments
+	 *            the beginning of the templates that have to be matched
+	 * @param whitelist
+	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
+	 * @return An list with the ids of the pages that contain templates
+	 *         beginning with any String in templateFragments
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    private List<Integer> getFragmentFilteredPageIds(List<String> templateFragments, boolean whitelist) throws WikiApiException{
+
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
+				sqlString
+						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				for(@SuppressWarnings("unused") String fragment:templateFragments){
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
+					}
+					subconditions.append("tpl.templateName LIKE ?");
+				}
+				sqlString.append(subconditions);
+				sqlString.append(")");
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				int curIdx=1;
+				for(String fragment:templateFragments){
+					fragment=fragment.toLowerCase().trim();
+					fragment=fragment.replaceAll(" ","_");
+					statement.setString(curIdx++, fragment + "%");
+				}
+
+				result = execute(statement);
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+		            matchedPages.add(result.getInt(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+
 
 	/**
 	 * Returns a list containing the ids of all pages that contain a
@@ -714,6 +719,172 @@ public class WikipediaTemplateInfo {
     	return getFragmentFilteredPageIds(templateFragments,false);
     }
 
+    ///////////////////
+    
+    /**
+	 * Returns a list containing the ids of all revisions that contain a
+	 * template the name of which starts with any of the given Strings.
+	 *
+	 * @param templateFragments
+	 *            the beginning of the templates that have to be matched
+	 * @param whitelist
+	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
+	 * @return An list with the ids of the revisions that contain templates
+	 *         beginning with any String in templateFragments
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    private List<Integer> getFragmentFilteredRevisionIds(List<String> templateFragments, boolean whitelist) throws WikiApiException{
+
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
+				sqlString
+						.append("SELECT r.revisionId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				for(@SuppressWarnings("unused") String fragment:templateFragments){
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
+					}
+					subconditions.append("tpl.templateName LIKE ?");
+				}
+				sqlString.append(subconditions);
+				sqlString.append(")");
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				int curIdx=1;
+				for(String fragment:templateFragments){
+					fragment=fragment.toLowerCase().trim();
+					fragment=fragment.replaceAll(" ","_");
+					statement.setString(curIdx++, fragment + "%");
+				}
+
+				result = execute(statement);
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+		            matchedPages.add(result.getInt(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+
+
+	/**
+	 * Returns a list containing the ids of all revisions that contain a
+	 * template the name of which starts with any of the given Strings.
+	 *
+	 * @param templateFragments
+	 *            the beginning of the templates that have to be matched
+	 * @return An list with the ids of the revisions that contain templates
+	 *         beginning with any String in templateFragments
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getRevisionIdsContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
+    	return getFragmentFilteredRevisionIds(templateFragments,true);
+    }
+
+    /**
+	 * Returns a list containing the ids of all revisions that contain a
+	 * template the name of which starts with any of the given Strings.
+	 *
+	 * @param templateFragments
+	 *            the beginning of the templates that have to be matched
+	 * @return An list with the ids of the revisions that do not contain templates
+	 *         beginning with any String in templateFragments
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+	 */
+    public List<Integer> getRevisionIdsNotContainingTemplateFragments(List<String> templateFragments) throws WikiApiException{
+    	return getFragmentFilteredRevisionIds(templateFragments,false);
+    }
+
+    
+    ///////////////////
+
+    
+    /**
+     * Returns the ids of all pages that ever contained any of the given template names in the history of their existence.
+     * 
+     * @param templateNames template names to look for
+     * @return list of page ids of the pages that once contained any of the given template names
+     * @throws WikiApiException If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+     */
+    public List<Integer> getIdsOfPagesThatEverContainedTemplateNames(List<String> templateNames) throws WikiApiException{
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	Set<Integer> pageIdSet = new HashSet<Integer>();
+
+    	//TODO instead of getting rev ids and then getting page ids, do one query and make the join in the db directly
+    	List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateNames(templateNames);
+    	for(int revId:revsWithTemplate){
+    		pageIdSet.add(revApi.getPageIdForRevisionId(revId));
+    	}
+    	
+    	List<Integer> pageIds = new LinkedList<Integer>();
+    	pageIds.addAll(pageIdSet);
+    	
+    	return pageIds;  	
+    }
+
+    /**
+     * Returns the ids of all pages that ever contained any template that started with any of the given template fragments 
+     * 
+     * @param template template-fragments to look for 
+     * @return list of page ids of the pages that once contained any template that started with any of the given template fragments
+     * @throws WikiApiException If there was any error retrieving the page object (most
+	 *             likely if the template templates are corrupted)
+     */
+    public List<Integer> getIdsOfPagesThatEverContainedTemplateFragments(List<String> templateFraments) throws WikiApiException{
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	Set<Integer> pageIdSet = new HashSet<Integer>();
+    	
+    	//TODO instead of getting rev ids and then getting page ids, do one query and make the join in the db directly
+    	List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateFragments(templateFraments);
+    	for(int revId:revsWithTemplate){
+    		pageIdSet.add(revApi.getPageIdForRevisionId(revId));
+    	}
+    	
+    	List<Integer> pageIds = new LinkedList<Integer>();
+    	pageIds.addAll(pageIdSet);
+    	
+    	return pageIds;  	
+    }
+
+    ///////////////////
+    
+    
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
 	 * the name of which equals any of the given Strings.
@@ -785,8 +956,7 @@ public class WikipediaTemplateInfo {
 	}
 
 
-
-
+    
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
 	 * the name of which equals any of the given Strings.
@@ -822,7 +992,119 @@ public class WikipediaTemplateInfo {
     	return getFilteredPageIds(templateNames, false);
     }
 
+    
+    
+    
+	/**
+	 * Returns a list containing the ids of all revisions that contain a template
+	 * the name of which equals any of the given Strings.
+	 *
+	 * @param templateNames
+	 *            the names of the template that we want to match
+	 * @param whitelist
+	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
+	 * @return A list with the ids of all revisions that contain any of the the
+	 *         specified templates
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    private List<Integer> getFilteredRevisionIds(List<String> templateNames, boolean whitelist) throws WikiApiException{
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
 
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				StringBuffer subconditions = new StringBuffer();
+				sqlString.append("SELECT r.revisionId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
+
+				for(@SuppressWarnings("unused") String name:templateNames){
+					if(subconditions.length()!=0){
+						subconditions.append("OR ");
+					}
+					subconditions.append("tpl.templateName = ?");
+				}
+				sqlString.append(subconditions);
+				sqlString.append(")");
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				int curIdx=1;
+				for(String name:templateNames){
+					name=name.toLowerCase().trim();
+					name=name.replaceAll(" ", "_");
+					statement.setString(curIdx++, name);
+				}
+
+				result = execute(statement);
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+		            matchedPages.add(result.getInt(1));
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+    
+    
+	/**
+	 * Returns a list containing the ids of all revisions that contain a template
+	 * the name of which equals any of the given Strings.
+	 *
+	 * @param templateNames
+	 *            the names of the template that we want to match
+	 * @param whitelist
+	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
+	 * @return A list with the ids of all revisions that contain any of the the
+	 *         specified templates
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    public List<Integer> getRevisionIdsContainingTemplateNames(List<String> templateNames) throws WikiApiException{
+    	return getFilteredRevisionIds(templateNames, true);
+    }
+
+    /**
+	 * Returns a list containing the ids of all revisions that do not contain a template
+	 * the name of which equals any of the given Strings.
+	 *
+	 * @param templateNames
+	 *            the names of the template that we want to match
+	 * @param whitelist
+	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
+	 * @return A list with the ids of all revisions that do not contain any of the the
+	 *         specified templates
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most
+	 *             likely if the templates are corrupted)
+	 */
+    public List<Integer> getRevisionIdsNotContainingTemplateNames(List<String> templateNames) throws WikiApiException{
+    	return getFilteredRevisionIds(templateNames, false);
+    }
+    
+
+    
+    
 	/**
 	 * Returns the names of all templates contained in the specified page.
 	 *
