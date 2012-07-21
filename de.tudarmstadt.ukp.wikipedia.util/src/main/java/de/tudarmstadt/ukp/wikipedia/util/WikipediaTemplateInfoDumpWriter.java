@@ -60,7 +60,9 @@ public class WikipediaTemplateInfoDumpWriter
 
 			Set<Integer> curPageIds = e.getValue();
 
+			//FIXME Problem - we do reuse existing ids here, but we treat template names from the pages and from revisions separately - resulting in 
 			if (!curTemplateName.isEmpty() && !curPageIds.isEmpty()) {
+				//if template name does not have an id in the tplname-id map
 				String id = "LAST_INSERT_ID()";
 				if (!tplNameToTplId.containsKey(curTemplateName)) {
 					output.append("INSERT INTO "
@@ -70,6 +72,7 @@ public class WikipediaTemplateInfoDumpWriter
 					output.append("\r\n");
 				}
 				else {
+					//if template name has an id in the tplname-id map
 					id = tplNameToTplId.get(curTemplateName).toString();
 				}
 

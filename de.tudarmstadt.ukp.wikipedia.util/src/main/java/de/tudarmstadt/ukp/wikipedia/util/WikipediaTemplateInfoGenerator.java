@@ -129,7 +129,7 @@ public class WikipediaTemplateInfoGenerator
 			// filter templates - only use templates from a provided
 			// whitelist
 			if (filterToApply.acceptTemplate(name)) {
-				// Create records for TEMPLATE->PAGES map
+				// Create records for TEMPLATE->PAGES/REVISION map
 				if (mapToFill.containsKey(name)) {
 					// add the page id to the set for the current template
 					Set<Integer> pIdList = mapToFill.remove(name);
@@ -262,8 +262,17 @@ public class WikipediaTemplateInfoGenerator
 	/**
 	 * Start generator
 	 */
-	public void process()
+	public void process() throws Exception
 	{
+		WikipediaTemplateInfo info = new WikipediaTemplateInfo(getWiki());
+		pageTableExists = info.tableExists(TABLE_TPLID_PAGEID);
+		revisionTableExists = info.tableExists(TABLE_TPLID_REVISIONID);
+		
+		if(!pageTableExists&&!revisionTableExists&&mode.active_for_pages&&mode.active_for_revisions){
+			//TODO see fix-me comment in WikipediaTemplateInfoDumpWriter
+			throw new IllegalStateException("Currently, you cannot create revision-tpl index and page-tpl index at the same time. The code is there, but it currently assigns separate tpl-name-ids for page-tpls and revisions-tpls. Please create a revision-tpl index, import the data into the db, create the page-tpl index and import this data."); 
+		}
+
 		if(mode.useRevisionIterator){
 			if (mode.active_for_revisions) {
 				processRevisions();
@@ -280,53 +289,39 @@ public class WikipediaTemplateInfoGenerator
 			}
 		}
 
+		////////////////////
+		
 		logger.info("Generating template indices ...");
-
 		boolean tableWithTemplatesExists = false;
-		try {
 
-			WikipediaTemplateInfo info = new WikipediaTemplateInfo(getWiki());
-			tableWithTemplatesExists = true;
-
-			pageTableExists = info.tableExists(TABLE_TPLID_PAGEID);
-			if (mode.active_for_pages && pageTableExists) {
-				generateTemplateIndices(info, TPLNAME_TO_PAGEIDS.keySet());
-			}
-
-			revisionTableExists = info.tableExists(TABLE_TPLID_REVISIONID);
-			if (mode.active_for_revisions) {
-				generateTemplateIndices(info, TPLNAME_TO_REVISIONIDS.keySet());
-			}
-
-		}
-		catch (WikiApiException e1) {
-
-		}
-		catch (SQLException e) {
-			logger.warn("SQL exception");
+		tableWithTemplatesExists = true;
+	
+		if (mode.active_for_pages && pageTableExists) {
+			generateTemplateIndices(info, TPLNAME_TO_PAGEIDS.keySet());
 		}
 
+		if (mode.active_for_revisions && revisionTableExists) {
+			generateTemplateIndices(info, TPLNAME_TO_REVISIONIDS.keySet());
+		}
+
+		////////////////////
+
+		
 		logger.info("Writing SQL dump ...");
 
-		try {
+		WikipediaTemplateInfoDumpWriter writer = new WikipediaTemplateInfoDumpWriter(
+				this.outputPath, this.charset, this.tplNameToTplId,
+				tableWithTemplatesExists);
+		mode.templateNameToPageId = TPLNAME_TO_PAGEIDS;
+		mode.templateNameToRevId = TPLNAME_TO_REVISIONIDS;
+		writer.writeSQL(revisionTableExists, pageTableExists, mode);
 
-			WikipediaTemplateInfoDumpWriter writer = new WikipediaTemplateInfoDumpWriter(
-					this.outputPath, this.charset, this.tplNameToTplId,
-					tableWithTemplatesExists);
-			mode.templateNameToPageId = TPLNAME_TO_PAGEIDS;
-			mode.templateNameToRevId = TPLNAME_TO_REVISIONIDS;
-			writer.writeSQL(revisionTableExists, pageTableExists, mode);
-		}
-		catch (Exception e) {
-			logger.error("Error while writing SQL dump.");
-			logger.error(e);
-		}
-
+		////////////////////
 	}
 
 	/**
-	 * Fills a map with the template names and gives them a unique int-key,
-	 * which is later on used as a key in the db.
+	 * Loads existing ids into the map. If no id exists, a template will
+	 * get a new one in the dump writer
 	 *
 	 * @param info
 	 * @param templateNames
