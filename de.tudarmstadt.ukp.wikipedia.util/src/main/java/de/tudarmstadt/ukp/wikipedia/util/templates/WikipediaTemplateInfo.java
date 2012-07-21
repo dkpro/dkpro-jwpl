@@ -25,6 +25,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
@@ -1076,27 +1079,34 @@ public class WikipediaTemplateInfo {
     	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
 
     	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
-    	Collections.sort(revTsList);
-    	for(Timestamp ts:revTsList){    		
+    	for(Timestamp ts:revTsList){
     		tplIndexMap.put(ts, revisionContainsTemplateName(revApi.getRevision(pageId, ts).getRevisionID(), template));
     	}
     	
-    	Entry<Timestamp,Boolean> last=null;
+		SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<Entry<Timestamp, Boolean>>(
+				new Comparator<Entry<Timestamp, Boolean>>() {
+					public int compare(Entry<Timestamp, Boolean> e1, Entry<Timestamp, Boolean> e2) {
+						return e1.getKey().compareTo(e2.getKey());
+					}
+				});
+		entries.addAll(tplIndexMap.entrySet());    	
+    	
+    	Entry<Timestamp,Boolean> prev=null;
     	Entry<Timestamp,Boolean> current=null;
-    	for(Entry<Timestamp,Boolean> e:tplIndexMap.entrySet()){
+    	for(Entry<Timestamp,Boolean> e:entries){
     		current=e;
     		//check pair
-    		if(last!=null&&last.getValue()!=current.getValue()){
+    		if(prev!=null&&prev.getValue()!=current.getValue()){
     			//case: template has been deleted since last revision
-    			if(last.getValue()&&!current.getValue()){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
+    			if(prev.getValue()&&!current.getValue()&&type==RevisionPairType.deleteTemplate){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
     			}
     			//case: template has been added since last revision
-    			if(!last.getValue()&&current.getValue()){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    			if(!prev.getValue()&&current.getValue()&&type==RevisionPairType.addTemplate){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
     			}
     		}
-    		last=current;
+    		prev=current;
     	}    	    	
     	return resultList;
     }
@@ -1119,30 +1129,36 @@ public class WikipediaTemplateInfo {
     	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
 
     	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
-    	Collections.sort(revTsList);
-    	for(Timestamp ts:revTsList){    		
+    	for(Timestamp ts:revTsList){
     		tplIndexMap.put(ts, revisionContainsTemplateNameWithoutIndex(revApi.getRevision(pageId, ts).getRevisionID(), template));
     	}
     	
-    	Entry<Timestamp,Boolean> last=null;
+		SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<Entry<Timestamp, Boolean>>(
+				new Comparator<Entry<Timestamp, Boolean>>() {
+					public int compare(Entry<Timestamp, Boolean> e1, Entry<Timestamp, Boolean> e2) {
+						return e1.getKey().compareTo(e2.getKey());
+					}
+				});
+		entries.addAll(tplIndexMap.entrySet());    	
+    	
+    	Entry<Timestamp,Boolean> prev=null;
     	Entry<Timestamp,Boolean> current=null;
-    	for(Entry<Timestamp,Boolean> e:tplIndexMap.entrySet()){
+    	for(Entry<Timestamp,Boolean> e:entries){
     		current=e;
     		//check pair
-    		if(last!=null&&last.getValue()!=current.getValue()){
+    		if(prev!=null&&prev.getValue()!=current.getValue()){
     			//case: template has been deleted since last revision
-    			if(last.getValue()&&!current.getValue()){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
+    			if(prev.getValue()&&!current.getValue()&&type==RevisionPairType.deleteTemplate){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
     			}
     			//case: template has been added since last revision
-    			if(!last.getValue()&&current.getValue()){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    			if(!prev.getValue()&&current.getValue()&&type==RevisionPairType.addTemplate){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
     			}
     		}
-    		last=current;
+    		prev=current;
     	}    	    	
     	return resultList;
-   	
     }
 
     
