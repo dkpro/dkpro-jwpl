@@ -20,8 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
@@ -35,14 +38,11 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
+import de.tudarmstadt.ukp.wikipedia.util.templates.RevisionPair.RevisionPairType;
 
 /**
  * This class gives access to the additional information created by
  * the TemplateInfoGenerator.
- *
- * TODO There is quite some redundancy in the code. The parts responsible for
- * creating the queries might be pulled out of the methods an be reused several
- * times.
  *
  * @author Oliver Ferschke
  */
@@ -613,7 +613,7 @@ public class WikipediaTemplateInfo {
 	 *             If there was any error retrieving the page object (most
 	 *             likely if the templates are corrupted)
 	 */
-    public List<Integer> getFilteredRevisionIdList(String templateName) throws WikiApiException{
+    public List<Integer> getRevisionsWithFirstTemplateAppearance(String templateName) throws WikiApiException{
     	/*
     	 * Note: This method does not use any revision-template-index. Each revision has to be parsed until the first revision is found that does not contain a certain template.
     	 */
@@ -966,6 +966,82 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
+    
+    /**
+     * Determines whether a given revision contains a given template name
+     * 
+     * @param revId
+     * @param templateName
+     * @return
+     * @throws WikiApiException
+     */
+    public boolean revisionContainsTemplateName(int revId, String templateName) throws WikiApiException{
+    	List<String> tplList = getTemplateNamesFromRevision(revId);
+    	for(String tpl:tplList){
+    		if(tpl.equalsIgnoreCase(templateName)){
+    			return true;
+    		}
+    	}
+    	return false;  	
+    }
+
+    /**
+     * Determines whether a given revision contains a template starting witht the given fragment
+     * 
+     * @param revId
+     * @param templateFragment
+     * @return
+     * @throws WikiApiException
+     */
+    public boolean revisionContainsTemplateFragment(int revId, String templateFragment) throws WikiApiException{
+    	List<String> tplList = getTemplateNamesFromRevision(revId);
+    	for(String tpl:tplList){
+    		if(tpl.toLowerCase().startsWith(templateFragment.toLowerCase())){
+    			return true;
+    		}
+    	}
+    	return false;  	
+    }
+
+    
+    /**
+     * For a given page (pageId), this method returns all adjacent revision pairs in which a given template 
+     * has been removed or added (depending on the RevisionPairType) in the second pair part.
+     * 
+     * @param pageId id of the page whose revision history should be inspected
+     * @param template the template to look for
+     * @param type the type of template change (add or remove) that should be extracted
+     * @return list of revision pairs containing the desired template changes
+     */
+    public List<RevisionPair> getRevisionPairs(int pageId, String template, RevisionPair.RevisionPairType type) throws WikiApiException{
+    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();    	    	
+    	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
+
+    	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
+    	Collections.sort(revTsList);
+    	for(Timestamp ts:revTsList){    		
+    		tplIndexMap.put(ts, revisionContainsTemplateName(revApi.getRevision(pageId, ts).getRevisionID(), template));
+    	}
+    	
+    	Entry<Timestamp,Boolean> last=null;
+    	Entry<Timestamp,Boolean> current=null;
+    	for(Entry<Timestamp,Boolean> e:tplIndexMap.entrySet()){
+    		current=e;
+    		//check pair
+    		if(last!=null&&last.getValue()!=current.getValue()){
+    			//case: template has been deleted since last revision
+    			if(last.getValue()&&!current.getValue()){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
+    			}
+    			//case: template has been added since last revision
+    			if(!last.getValue()&&current.getValue()){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    			}
+    		}
+    		last=current;
+    	}    	    	
+    	return resultList;
+    }
 
 	/**
 	 * Checks if a specific table exists
