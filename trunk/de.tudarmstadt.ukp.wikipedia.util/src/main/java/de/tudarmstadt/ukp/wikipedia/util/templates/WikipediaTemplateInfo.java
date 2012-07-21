@@ -56,20 +56,14 @@ public class WikipediaTemplateInfo {
 
     /**
      */
-    public WikipediaTemplateInfo(Wikipedia pWiki) throws WikiApiException {
+    public WikipediaTemplateInfo(Wikipedia pWiki) throws SQLException, WikiApiException{
 
     	this.wiki = pWiki;
         this.connection=getConnection(wiki);
 
-        try{
-    		if (!tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME)) {
-    			throw new WikiApiException(
-    					"Missing tables. Please use the WikipediaTemplateInfoGenerator to generate the template data.");
-    		}
-        }catch(SQLException e){
-			throw new WikiApiException(
-					"Could not access database.");
-        }
+    	if (!tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME)) {
+    		System.err.println("No Template Database could be found. You can only use methods that work without a template index");
+    	}
     }
 
     /**
@@ -1003,6 +997,65 @@ public class WikipediaTemplateInfo {
     	return false;  	
     }
 
+    /**
+     * Does the same as revisionContainsTemplateName() without using a template index
+     * 
+     * @param revId
+     * @param templateName
+     * @return
+     * @throws WikiApiException
+     */
+    public boolean revisionContainsTemplateNameWithoutIndex(int revId, String templateName) throws WikiApiException{    	
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	if(parser==null){
+    		//TODO switch to SWEBLE
+    		MediaWikiParserFactory pf = new MediaWikiParserFactory(
+    				wiki.getDatabaseConfiguration().getLanguage());
+    		pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
+    		parser = pf.createParser();
+    	}
+    	    	
+    	List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText()).getTemplates();
+    	for(Template tpl:tplList){
+    		if(tpl.getName().equalsIgnoreCase(templateName)){
+    			return true;
+    		}
+    	}
+    	return false;  	
+    }
+
+    /**
+     * Does the same as revisionContainsTemplateFragment() without using a template index
+     * 
+     * @param revId
+     * @param templateFragment
+     * @return
+     * @throws WikiApiException
+     */
+    public boolean revisionContainsTemplateFragmentWithoutIndex(int revId, String templateFragment) throws WikiApiException{
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	if(parser==null){
+    		//TODO switch to SWEBLE
+    		MediaWikiParserFactory pf = new MediaWikiParserFactory(
+    				wiki.getDatabaseConfiguration().getLanguage());
+    		pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
+    		parser = pf.createParser();
+    	}
+
+    	List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText()).getTemplates();
+    	for(Template tpl:tplList){
+    		if(tpl.getName().toLowerCase().startsWith(templateFragment.toLowerCase())){
+    			return true;
+    		}
+    	}
+    	return false;  	
+    }
+    
+    
     
     /**
      * For a given page (pageId), this method returns all adjacent revision pairs in which a given template 
@@ -1047,6 +1100,51 @@ public class WikipediaTemplateInfo {
     	return resultList;
     }
 
+    /**
+     * Does the same as getRevisionPairs(), but does not use a template index
+     * 
+     * @param pageId id of the page whose revision history should be inspected
+     * @param template the template to look for
+     * @param type the type of template change (add or remove) that should be extracted
+     * @return list of revision pairs containing the desired template changes
+     */
+    public List<RevisionPair> getRevisionPairsWithoutIndex(int pageId, String template, RevisionPair.RevisionPairType type) throws WikiApiException{
+    	System.err.println("This methods has to parse each revision of the given page. If you have a revision-template index, please use getRevisionPairs().");
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+
+    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();    	    	
+    	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
+
+    	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
+    	Collections.sort(revTsList);
+    	for(Timestamp ts:revTsList){    		
+    		tplIndexMap.put(ts, revisionContainsTemplateNameWithoutIndex(revApi.getRevision(pageId, ts).getRevisionID(), template));
+    	}
+    	
+    	Entry<Timestamp,Boolean> last=null;
+    	Entry<Timestamp,Boolean> current=null;
+    	for(Entry<Timestamp,Boolean> e:tplIndexMap.entrySet()){
+    		current=e;
+    		//check pair
+    		if(last!=null&&last.getValue()!=current.getValue()){
+    			//case: template has been deleted since last revision
+    			if(last.getValue()&&!current.getValue()){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.deleteTemplate));
+    			}
+    			//case: template has been added since last revision
+    			if(!last.getValue()&&current.getValue()){
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, last.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    			}
+    		}
+    		last=current;
+    	}    	    	
+    	return resultList;
+   	
+    }
+
+    
 	/**
 	 * Checks if a specific table exists
 	 *
