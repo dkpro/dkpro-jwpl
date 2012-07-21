@@ -610,8 +610,9 @@ public class WikipediaTemplateInfo {
     public List<Integer> getRevisionsWithFirstTemplateAppearance(String templateName) throws WikiApiException{
     	/*
     	 * Note: This method does not use any revision-template-index. Each revision has to be parsed until the first revision is found that does not contain a certain template.
+    	 * TODO also create version using revision-template index 
     	 */
-    	System.err.println("Note: This function call demands parsing several revision for each page.");
+    	System.err.println("Note: This function call demands parsing several revision for each page. A method using the revision-template index is currently under construction.");
 
     	templateName=templateName.trim().replaceAll(" ", "_");
 
