@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -114,7 +115,7 @@ public class RevisionApi
 	}
 
 	/**
-	 * Returns the number of revisions contained by the specified article.
+	 * Returns the number of revisions for the specified article.
 	 *
 	 * @param articleID
 	 *            ID of the article
@@ -181,6 +182,41 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
+
+	/**
+	 * Returns the timestamps of all revisions that have been made before
+	 * the given revision.
+	 *
+	 * @param articleID
+	 *            ID of the article
+	 * @return number of revisions
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 */
+	public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId)
+		throws WikiApiException
+	{
+		//TODO check if this is fast or slow. it could be done with a dedicated SQL query
+		Timestamp current = getRevision(revisionId).getTimeStamp();
+
+		List<Timestamp> alltimestamps = this.getRevisionTimestamps(this
+				.getPageIdForRevisionId(revisionId));
+		Collections.sort(alltimestamps);
+		List<Timestamp> filteredTimestamps = new LinkedList<Timestamp>();
+
+		for(Timestamp ts:alltimestamps) {
+			if(ts==current){
+				return filteredTimestamps;
+			}else{
+				//ts before current
+				filteredTimestamps.add(ts);
+			}
+		}
+		throw new WikiApiException(
+				"Error: given revision x is not contained in the revision history of the parent-page of revision x");
+	}
+
 
 	/**
 	 * Returns the timestamps of all revisions connected to the specified
@@ -354,6 +390,112 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
+
+	/**
+	 * Returns the number of unique contributors to an article that have contributed
+	 * before the given revision.<br/>
+	 *
+	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
+	 * ArticleID in the revisions-table.
+	 *
+	 * @param revisionID
+	 *            revision before which to count the contributors
+	 * @return the number of unique contributors to the article
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID)
+	throws WikiApiException{
+		return getNumberOfUniqueContributorsBeforeRevision(revisionID, false);
+	}
+
+
+	/**
+	 * Returns the number of unique contributors to an article that have contributed
+	 * before the given revision.<br/>
+	 *
+	 * In order to make this query fast, create a MySQL-Index (BTREE) on the
+	 * ArticleID in the revisions-table.
+	 *
+	 * @param revisionID
+	 *            revision before which to count the contributors
+	 * @return the number of unique contributors to the article
+	 * @param onlyRegistered
+	 *            defines whether to count only registered users (true), or all users (false)
+	 * @return the number of unique contributors to the article
+	 *
+	 * @throws WikiApiException
+	 *             if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID, boolean onlyRegistered)
+		throws WikiApiException
+	{
+
+		try {
+			if (revisionID < 1) {
+				throw new IllegalArgumentException();
+			}
+
+			int articleID = getPageIdForRevisionId(revisionID);
+			Timestamp ts = getRevision(revisionID).getTimeStamp();
+
+			int contrCount=0;
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				// Check if necessary index exists
+				if (!indexExists("revisions")) {
+					throw new WikiInitializationException(
+							"Please create an index on revisions(ArticleID) in order to make this query feasible.");
+				}
+
+				StringBuffer sqlString= new StringBuffer();
+				sqlString.append("SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=? AND Timestamp<?");
+				if(onlyRegistered){
+					sqlString.append(" AND ContributorIsRegistered=1");
+				}
+
+				statement = connection.prepareStatement(sqlString.toString());
+
+				statement.setInt(1, articleID);
+				statement.setTimestamp(2, ts);
+				result = statement.executeQuery();
+
+				// Make the query
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"The article with the ID " + articleID
+									+ " was not found.");
+				}
+
+				if (result.next()) {
+					contrCount=result.getInt(1);
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return contrCount;
+
+		}
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
 
 	/**
 	 * Returns a map of usernames mapped to the timestamps of their contributions
@@ -848,7 +990,7 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
-	
+
 
 	/**(
 	 * Returns the pageId (ArticleId) for the given revision
@@ -911,7 +1053,7 @@ public class RevisionApi
 			throw new WikiApiException(e);
 		}
 	}
-	
+
 
 	/**
 	 * Returns the by the article ID and revisionCounter specified revision.
