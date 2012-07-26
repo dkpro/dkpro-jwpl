@@ -462,7 +462,7 @@ public class RevisionApi
 				statement = connection.prepareStatement(sqlString.toString());
 
 				statement.setInt(1, articleID);
-				statement.setTimestamp(2, ts);
+				statement.setLong(2, ts.getTime());
 				result = statement.executeQuery();
 
 				// Make the query
