@@ -19,7 +19,8 @@ public class RevisionUtils {
 	Wikipedia wiki;
 	
 	public RevisionUtils(DatabaseConfiguration conf) throws WikiApiException{
-		wiki = new Wikipedia(conf);			
+		wiki = new Wikipedia(conf);
+		revApi = new RevisionApi(conf);	
 	}
 
 	public RevisionUtils(Wikipedia wiki, RevisionApi revApi) throws WikiApiException{
