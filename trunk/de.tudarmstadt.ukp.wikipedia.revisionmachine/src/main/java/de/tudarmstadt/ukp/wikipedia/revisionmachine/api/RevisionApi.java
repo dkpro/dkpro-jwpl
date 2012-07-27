@@ -1018,9 +1018,9 @@ public class RevisionApi
 
 			try {
 				statement = this.connection
-						.prepareStatement("SELECT ArticleID "
-								+ "FROM revisions "
-								+ "WHERE RevisionID=? LIMIT 1");
+						.prepareStatement("SELECT r.ArticleID "
+								+ "FROM revisions as r, index_revisionID as idx"
+								+ "WHERE idx.RevisionID=? AND idx.RevisionPK=r.PrimaryKey LIMIT 1");
 				statement.setInt(1, revisionID);
 				result = statement.executeQuery();
 
