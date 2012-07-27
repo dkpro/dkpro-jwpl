@@ -25,7 +25,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -197,24 +196,54 @@ public class RevisionApi
 	public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId)
 		throws WikiApiException
 	{
-		//TODO check if this is fast or slow. it could be done with a dedicated SQL query
-		Timestamp current = getRevision(revisionId).getTimeStamp();
+		List<Timestamp> timestamps = new LinkedList<Timestamp>();
 
-		List<Timestamp> alltimestamps = this.getRevisionTimestamps(this
-				.getPageIdForRevisionId(revisionId));
-		Collections.sort(alltimestamps);
-		List<Timestamp> filteredTimestamps = new LinkedList<Timestamp>();
+		int articleID = getPageIdForRevisionId(revisionId); //TODO do this in the SQL query
+		Timestamp ts = getRevision(revisionId).getTimeStamp(); //TODO do this in the SQL query
 
-		for(Timestamp ts:alltimestamps) {
-			if(ts==current){
-				return filteredTimestamps;
-			}else{
-				//ts before current
-				filteredTimestamps.add(ts);
+		try {
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				// Check if necessary index exists
+				if (!indexExists("revisions")) {
+					throw new WikiInitializationException(
+							"Please create an index on revisions(ArticleID) in order to make this query feasible.");
+				}
+
+				statement = connection.prepareStatement("SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp < "+ts.getTime());
+				statement.setInt(1, articleID);
+				result = statement.executeQuery();
+
+				// Make the query
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"The article with the ID " + articleID
+									+ " was not found.");
+				}
+				while (result.next()) {
+					timestamps.add(new Timestamp(result.getLong(1)));
+				}
 			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return timestamps;
+
 		}
-		throw new WikiApiException(
-				"Error: given revision x is not contained in the revision history of the parent-page of revision x");
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
 	}
 
 
@@ -1019,7 +1048,7 @@ public class RevisionApi
 			try {
 				statement = this.connection
 						.prepareStatement("SELECT r.ArticleID "
-								+ "FROM revisions as r, index_revisionID as idx"
+								+ "FROM revisions as r, index_revisionID as idx "
 								+ "WHERE idx.RevisionID=? AND idx.RevisionPK=r.PrimaryKey LIMIT 1");
 				statement.setInt(1, revisionID);
 				result = statement.executeQuery();
