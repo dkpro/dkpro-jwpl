@@ -50,7 +50,7 @@ public class RevisionApi
 {
 
 	/** Reference to database connection */
-	private final Connection connection;
+	private Connection connection;
 
 	/** Reference to the configuration parameters */
 	private final RevisionAPIConfiguration config;
@@ -1818,6 +1818,16 @@ public class RevisionApi
 		}
 	}
 
+	public void reconnect() throws SQLException{
+		close();
+		try{
+			this.connection=getConnection(config);
+		}catch(WikiApiException e){
+			close();
+			System.err.println("Could not reconnect. Closing connection...");
+		}
+	}
+	
 	/**
 	 * Checks if some index (besides the PRIMARY-Index) exists in a given table.
 	 *
