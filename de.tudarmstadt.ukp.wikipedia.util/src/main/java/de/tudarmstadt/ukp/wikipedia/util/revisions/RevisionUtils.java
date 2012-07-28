@@ -84,7 +84,6 @@ public class RevisionUtils {
 	 * 
 	 * @param revisionId revision of the article for which the talk page archive revisions should be retrieved
 	 * @return the revisions of the talk page archives that were available at the time of the article revision
-	 * @throws WikiApiException if any error occured accessing the Wiki db
 	 */
 	public List<Revision> getDiscussionArchiveRevisionsForArticleRevision(int revisionId) throws WikiApiException, WikiPageNotFoundException{
 		List<Revision> result = new LinkedList<Revision>();
