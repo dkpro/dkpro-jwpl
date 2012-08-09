@@ -42,7 +42,7 @@ SHOW WARNINGS;
 After the data has been imported, you need to create all necessary indexes. This might take a couple of hours.
 
 {{{
-CREATE UNIQUE INDEX articleIdx ON revisions(RevisionID);
+CREATE UNIQUE INDEX revicionIdx ON revisions(RevisionID);
 CREATE INDEX articleIdx ON revisions(ArticleID);
 }}}
 
