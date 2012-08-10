@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.JAXBException;
+
 import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
@@ -72,7 +74,11 @@ public class InternalLinkAnchorExtractor extends Visitor
 		try{
 			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
 		}catch(IOException e){
-
+			//TODO logger
+			e.printStackTrace();
+		}catch(JAXBException e){
+			//TODO logger
+			e.printStackTrace();
 		}
 		this.config=config;
 	}
