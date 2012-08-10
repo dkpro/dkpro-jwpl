@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
+import javax.xml.bind.JAXBException;
+
 import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.EntityReferences;
@@ -89,7 +91,7 @@ public class PlainTextConverter
 
 
 	/**
-	 * Creates a new visitor that produces a plain text Strin representation
+	 * Creates a new visitor that produces a plain text String representation
 	 * of a parsed Wikipedia article
 s	 */
 	public PlainTextConverter()
@@ -98,6 +100,9 @@ s	 */
 		try{
 			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
 		}catch(IOException e){
+			//TODO logger
+			e.printStackTrace();
+		}catch(JAXBException e){
 			//TODO logger
 			e.printStackTrace();
 		}
@@ -118,7 +123,11 @@ s	 */
 		try{
 			new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
 		}catch(IOException e){
-
+			//TODO logger
+			e.printStackTrace();
+		}catch(JAXBException e){
+			//TODO logger
+			e.printStackTrace();
 		}
 		this.config=config;
 		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
