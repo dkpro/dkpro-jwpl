@@ -1,0 +1,20 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
+    <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+    <version>0.9.2</version>
+  </parent>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+  	</dependency>
+  </dependencies>
+  <name>MediaWiki Parser</name>
+  <description>A modular parser for MediaWiki markup.
+
+As of June 2012, the parser module is no longer maintained. 
+Please use the SWEBLE parser (http://sweble.org/) for parsing MediaWiki markup. See the JWPL Google Code project page for further information.</description>
+</project>

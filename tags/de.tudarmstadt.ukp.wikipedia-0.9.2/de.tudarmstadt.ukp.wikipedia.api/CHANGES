@@ -1,0 +1,44 @@
+MAJOR CHANGES in JWPL API v0.9.2
+	* Issue 97: Moved JWPL parser to own package and removed JWPL Parser integration
+	* Started  integrating SWEBLE parser (ongoing)
+	* FIXED Issue 84: Hibernate and MySql short timeout
+	* FIXED Issue 81: Title constructor mangles pages titles with parentheses
+	* FIXED Issue 68: Page.getInlinkAnchors() won't return correct anchors.
+	* FIXED issue 23: CharacterSet - SEVERE: COLLATION 'utf8_bin' is not valid for CHARACTER SET 'utf8mb4'  
+MAJOR CHANGES in JWPL API v0.9.1
+	* FIXED Issue 80: getInlinkIDs not working
+MAJOR CHANGES in JWPL API v0.9.0
+	* FIXED Issue 66: Upgraded to Hibernate 4.0.0-Final
+	* FIXED Issue 69: PageIterator can now iterate over a predefined list of articles
+	* REOPENED ISSUE 23: CharacterSet - SEVERE: COLLATION 'utf8_bin' is not valid for CHARACTER SET 'utf8mb4'
+MAJOR CHANGES in JWPL API v0.8.0	
+   	* FIXED Issue 23: CharacterSet - SEVERE: COLLATION 'utf8_bin' is not valid for CHARACTER SET 'utf8mb4'
+   	* FIXED Issue 52: PageIterator make unnecessary queries 
+   	* FIXED Issue 53: Remove locks and transaction management where possible to improve performance
+   	* FIXED Issue 57: PageIterator uses slow limit a,b statements in queries
+   	* FIXED Issue 63: StringIndexOutOfBoundsException when parsing a specific Wikipedia Page
+   	* Module now in dependency management of paren POM      	
+   	* Fixes in parent pom (compatibility with m2e)
+MAJOR CHANGES in JWPL API v0.7.0
+   	* Added new assembly exectutions to each module
+   	* Added default setting to reject sorting templates (language specific - only works for EN and DE so far - should be made configurable)
+   	* Added code to retrieve pageIds instead of whole page objects
+   	* Added new tool "WikipediaTemplateInfoGenerator" which gathers information about template usage and creates a SQL dump to be imported in the existing JWPL db.
+   	* Made ResolvedTemplate class public.
+   	* Solved title parsing bug with the help of the UKP group. Many thanks.
+   	* Added workaround to a problem with calculateSrcSpans:
+	   	* If no specific end token was found, the end of the span was set to the text.length() - which results in an ArrayOutOfBoundsException. It's now set to text.length()-1
+	   	* Span cannot be smaller than 0 now. This could have happened for empty pages before.
+   	* Fixed problem with LIKE query in hibernate.
+	   	* Fixed error in getDiscussionArchives.
+		* Hibernate session was commited to late.
+   	* Implemented a parser patch as suggested by Samy Ateia on the JWPL mailing list http://groups.google.com/group/jwpl/browse_thread/thread/e8438491de61b1c5
+   	* Created a public method to retrieve an Iterable over all page ids.
+   	* Created a method to retrieve the page title for a given page id.
+   	* Updated documentation on the handling of section parts in links. 
+   	* Adapted existPage() to handle titles with section parts.
+   	* Now also handles titles with section parts.
+   	* Added a method isDiscussion() to Page class.
+   	* Added methods for obtaining article archives.
+   	* Solved Issue 12: http://code.google.com/p/jwpl/issues/detail?id=12
+

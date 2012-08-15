@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>This a configuration formular for the JWPL TimeMachine</comment>
+  <entry key="language">greek</entry>
+  <entry key="mainCategory">Κατηγορίες</entry>
+  <entry key="disambiguationCategory">Αποσαφήνιση</entry>
+  <entry key="fromTimestamp">20060101000000</entry>
+  <entry key="toTimestamp">20060102000000</entry>
+  <entry key="each">1</entry>
+  <entry key="metaHistoryFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pages-meta-history.xml.bz2</entry>
+  <entry key="categoryLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-categorylinks.sql.gz</entry>
+  <entry key="pageLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pagelinks.sql.gz</entry>
+  <entry key="outputDirectory">/home/zesch/wiki_data/elwiki_test</entry>
+  <entry key="removeInputFilesAfterProcessing">false</entry>
+</properties>

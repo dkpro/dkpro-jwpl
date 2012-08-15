@@ -1,0 +1,86 @@
+// Autor: CJacobi
+
+body
+{
+	font-size: 10pt;
+	font-family: Arial;
+}
+
+table
+{
+	border-collapse: collapse;
+	border-spacing: 10px;
+	margin: 10px;
+	vertical-align: top;
+}
+
+th{
+	text-align: left;
+	border-width: 1px;
+	border-color: #000000;
+	border-style: solid;
+	
+	font-size: 10pt;
+	font-family: Arial;
+	font-weight: normal;
+	
+	padding: 10px;
+}
+
+td{
+	border-width: 1px;
+	border-color: #000000;
+	border-style: solid;
+	
+	font-size: 10pt;
+	font-family: monospace;
+	vertical-align: top;
+	
+	padding: 10px;
+}
+
+table.ParsedPage{}
+th.ParsedPage{ background-color: #FF8900; }
+td.ParsedPage{ background-color: #FFD29E; }
+
+table.Section{ width: 100%; }
+th.Section{ margin: 0px; padding: 0px; background-color: #FFFF00; }
+	table.SectionTh{ margin: 0px;}
+	th.SectionTh{ border-width: 0px; border-style:none; background-color: #FFFF00; vertical-align: middle; }
+td.Section{ background-color: #EEEEEE; }
+
+table.Template{ margin: 2px; }
+th.Template{ font-size: 7pt; padding: 1px; background-color: #99CCCC; }
+td.Template{ padding: 5px; }
+
+table.Table{ margin: 2px; background-color: #EEEEEE; }
+th.Table{ font-size: 7pt; padding: 1px; background-color: #FF0000; }
+td.Table{ padding: 5px; background-color: #FFCCCC;}
+
+
+b.Link{ color: #0000FF; }
+div.Link{
+	padding-left: 5px;
+	padding-right: 5px;
+	margin: 1px;
+	border-width: 1px;
+	border-color: #999999;
+	border-style: solid; 
+	background-color: #EEEEEE;
+}
+
+table.ContentElement{ margin: 2px; }
+th.ContentElement{ font-size: 7pt; padding: 1px; background-color: #6699CC; }
+td.ContentElement{ padding: 5px; background-color: #FFFFFF;}
+
+table.Paragraph{ margin: 2px; }
+th.Paragraph{ font-size: 7pt; padding: 1px; background-color: #66CC00; }
+td.Paragraph{ padding: 5px; background-color: #FFFFFF; }
+
+table.NestedList{ margin: 2px; }
+th.NestedList{ font-size: 7pt; padding: 1px; background-color: #66CC00; }
+td.NestedList{ padding: 5px; background-color: #CCFFCC; }
+
+table.DefinitionList{ margin: 2px; }
+th.DefinitionList{ font-size: 7pt; padding: 1px; background-color: #66CC00; }
+td.DefinitionList{ padding: 5px; background-color: #CCFFCC; }
