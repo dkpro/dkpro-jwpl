@@ -1,3 +1,5 @@
+Changes in DataMachine 0.9.2
+   * FIXED Issue 91Problems with title hashing in the DataMachine 
 Changes in DataMachine 0.7.0
    * Fixed mwdumper-imports -> using local fork of mwdumper now
    * Added new assembly executions to each module
