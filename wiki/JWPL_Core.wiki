@@ -8,6 +8,6 @@
   * [JwplTutorial Tutorials showing how to use JWPL Core]
   * [DataMachine How to use the DataMachine]
   * [HowToGetJWPL How to get JWPL]
-  * [JWPLParser Description of the Parser for the MediaWiki syntax]
+  * [JWPLParser Description of the JWPL Parser for the MediaWiki syntax (deprecated)]
   * [JWPL_MySQL4 How to use JWPL with MySQL4]
   * [JWPL_FAQ Frequently Asked Questions about JWPL (mainly about the installation process)]
