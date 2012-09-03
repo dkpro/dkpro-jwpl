@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -16,9 +16,12 @@ import java.io.StreamTokenizer;
 
 /**
  * A Parser for the sql file that defines the table pagelinks.
- * 
+ *
+ * A fix for Issue 102 has been provided by Google Code user astronautguo
+ *
  * @author Anouar
- * 
+ *
+ *
  */
 public class PagelinksParser extends SQLFileParser {
 
@@ -32,7 +35,7 @@ public class PagelinksParser extends SQLFileParser {
 
 	/**
 	 * Create a parser from an input stream
-	 * 
+	 *
 	 * @param inputStream
 	 * @throws IOException
 	 * @author ivan.galkin
@@ -41,9 +44,11 @@ public class PagelinksParser extends SQLFileParser {
 		init(inputStream);
 	}
 
+	@Override
 	public boolean next() throws IOException {
-		if (EOF_reached)
+		if (EOF_reached) {
 			return false;
+		}
 		// read '('
 		st.nextToken();
 		if (st.ttype == StreamTokenizer.TT_EOF) {
@@ -63,13 +68,14 @@ public class PagelinksParser extends SQLFileParser {
 		st.nextToken();
 		// read pl_to
 		st.nextToken();
-		plTo = st.sval;
+		plTo = SQLEscape.escape(st.sval);
 		// read ')'
 		st.nextToken();
 		// read ',' or ';'. If ';' is found then skip statement or espect eof.
 		st.nextToken();
-		if (st.toString().substring(7, 8).equals(";"))
+		if (st.toString().substring(7, 8).equals(";")) {
 			skipStatements();
+		}
 		return true;
 	}
 

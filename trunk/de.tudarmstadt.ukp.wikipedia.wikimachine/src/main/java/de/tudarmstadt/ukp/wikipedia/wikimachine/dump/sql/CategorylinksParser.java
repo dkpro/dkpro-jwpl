@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -15,9 +15,11 @@ import java.io.InputStream;
 
 /**
  * A Parser for the sql file that defines the table categorylinks.
- * 
+ *
+ * A fix for Issue 102 has been provided by Google Code user astronautguo
+ *
  * @author Anouar
- * 
+ *
  */
 public class CategorylinksParser extends SQLFileParser {
 
@@ -30,10 +32,10 @@ public class CategorylinksParser extends SQLFileParser {
 
 	/**
 	 * Create a parser from an input stream
-	 * 
+	 *
 	 * @param inputStream
 	 * @throws IOException
-	 * 
+	 *
 	 * @author ivan.galkin
 	 */
 	public CategorylinksParser(InputStream inputStream) throws IOException {
@@ -68,7 +70,7 @@ public class CategorylinksParser extends SQLFileParser {
 		st.nextToken();
 		// read cl_to
 		st.nextToken();
-		clTo = st.sval;
+		clTo = SQLEscape.escape(st.sval);
 		// read ','
 		st.nextToken();
 		// read cl_sortkey
@@ -86,10 +88,10 @@ public class CategorylinksParser extends SQLFileParser {
 	            EOE = true;
 	        }
 		}
-		
+
 		// read ',' or ';'. If ';' is found then skip statement or expect eof.
 		st.nextToken();
-		
+
 		if (st.toString().substring(7, 8).equals(";")) {
             skipStatements();
 		}
