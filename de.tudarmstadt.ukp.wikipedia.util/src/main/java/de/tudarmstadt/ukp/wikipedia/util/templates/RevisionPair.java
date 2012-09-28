@@ -1,4 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
+package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 
