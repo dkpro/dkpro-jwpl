@@ -16,19 +16,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
@@ -42,7 +31,9 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
-import de.tudarmstadt.ukp.wikipedia.util.templates.RevisionPair.RevisionPairType;
+import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
+import de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple.RevisionPair;
+import de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple.RevisionPair.RevisionPairType;
 
 /**
  * This class gives access to the additional information created by
@@ -65,7 +56,7 @@ public class WikipediaTemplateInfo {
     	this.wiki = pWiki;
         this.connection=getConnection(wiki);
 
-    	if (!tableExists(WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME)) {
+    	if (!tableExists(GeneratorConstants.TABLE_TPLID_TPLNAME)) {
     		System.err.println("No Template Database could be found. You can only use methods that work without a template index");
     	}
     }
@@ -91,8 +82,8 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				sqlString.append("SELECT distinct(count(*)) FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " as tpl, "
+								+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
@@ -193,8 +184,8 @@ public class WikipediaTemplateInfo {
 			StringBuffer sqlString = new StringBuffer();
 			StringBuffer subconditions = new StringBuffer();
 			sqlString
-					.append("SELECT distinct(count(*)) FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " as tpl, "
-							+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+					.append("SELECT distinct(count(*)) FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " as tpl, "
+							+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 
 			for(@SuppressWarnings("unused") String name:templateNames){
 				if(subconditions.length()!=0){
@@ -297,8 +288,8 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
 				sqlString.append("SELECT p.pageId FROM "+
-						WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID
+						GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ GeneratorConstants.TABLE_TPLID_PAGEID
 						+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 
 				for(@SuppressWarnings("unused") String fragment:templateFragments){
@@ -356,7 +347,7 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 
 
-				sqlString.append("SELECT tpl.templateId FROM "+WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName.trim().replaceAll(" ","_")+"'");
+				sqlString.append("SELECT tpl.templateId FROM "+GeneratorConstants.TABLE_TPLID_TPLNAME+" AS tpl WHERE tpl.templateName='"+templateName.trim().replaceAll(" ","_")+"'");
 
 				statement = connection.prepareStatement(sqlString.toString());
 
@@ -445,8 +436,8 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				sqlString.append("SELECT p.pageId FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 
 				for(@SuppressWarnings("unused") String name:templateNames){
 					if(subconditions.length()!=0){
@@ -525,7 +516,7 @@ public class WikipediaTemplateInfo {
     	return getFilteredPages(templateNames, false);
     }
 
-    
+
     /**
 	 * This method first creates a list of pages containing templates that equal
 	 * any of the provided Strings {@see getFilteredPageIds()}.
@@ -542,7 +533,7 @@ public class WikipediaTemplateInfo {
     public List<Integer> getRevisionsWithFirstTemplateAppearance(String templateName) throws WikiApiException{
     	/*
     	 * Note: This method does not use any revision-template-index. Each revision has to be parsed until the first revision is found that does not contain a certain template.
-    	 * TODO also create version using revision-template index 
+    	 * TODO also create version using revision-template index
     	 */
     	System.err.println("Note: This function call demands parsing several revision for each page. A method using the revision-template index is currently under construction.");
 
@@ -610,9 +601,9 @@ public class WikipediaTemplateInfo {
     	return revisionIds;
     }
 
-    
+
     //////////
-    
+
 
     /**
 	 * Returns a list containing the ids of all pages that contain a
@@ -639,8 +630,8 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
 				sqlString
-						.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+						.append("SELECT p.pageId FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
@@ -720,7 +711,7 @@ public class WikipediaTemplateInfo {
     }
 
     ///////////////////
-    
+
     /**
 	 * Returns a list containing the ids of all revisions that contain a
 	 * template the name of which starts with any of the given Strings.
@@ -746,8 +737,8 @@ public class WikipediaTemplateInfo {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
 				sqlString
-						.append("SELECT r.revisionId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
+						.append("SELECT r.revisionId FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ GeneratorConstants.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
 				for(@SuppressWarnings("unused") String fragment:templateFragments){
 					if(subconditions.length()!=0){
 						subconditions.append("OR ");
@@ -826,13 +817,13 @@ public class WikipediaTemplateInfo {
     	return getFragmentFilteredRevisionIds(templateFragments,false);
     }
 
-    
+
     ///////////////////
 
-    
+
     /**
      * Returns the ids of all pages that ever contained any of the given template names in the history of their existence.
-     * 
+     *
      * @param templateNames template names to look for
      * @return list of page ids of the pages that once contained any of the given template names
      * @throws WikiApiException If there was any error retrieving the page object (most
@@ -849,17 +840,17 @@ public class WikipediaTemplateInfo {
     	for(int revId:revsWithTemplate){
     		pageIdSet.add(revApi.getPageIdForRevisionId(revId));
     	}
-    	
+
     	List<Integer> pageIds = new LinkedList<Integer>();
     	pageIds.addAll(pageIdSet);
-    	
-    	return pageIds;  	
+
+    	return pageIds;
     }
 
     /**
-     * Returns the ids of all pages that ever contained any template that started with any of the given template fragments 
-     * 
-     * @param template template-fragments to look for 
+     * Returns the ids of all pages that ever contained any template that started with any of the given template fragments
+     *
+     * @param template template-fragments to look for
      * @return list of page ids of the pages that once contained any template that started with any of the given template fragments
      * @throws WikiApiException If there was any error retrieving the page object (most
 	 *             likely if the template templates are corrupted)
@@ -869,22 +860,22 @@ public class WikipediaTemplateInfo {
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
     	Set<Integer> pageIdSet = new HashSet<Integer>();
-    	
+
     	//TODO instead of getting rev ids and then getting page ids, do one query and make the join in the db directly
     	List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateFragments(templateFraments);
     	for(int revId:revsWithTemplate){
     		pageIdSet.add(revApi.getPageIdForRevisionId(revId));
     	}
-    	
+
     	List<Integer> pageIds = new LinkedList<Integer>();
     	pageIds.addAll(pageIdSet);
-    	
-    	return pageIds;  	
+
+    	return pageIds;
     }
 
     ///////////////////
-    
-    
+
+
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
 	 * the name of which equals any of the given Strings.
@@ -908,8 +899,8 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT p.pageId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				sqlString.append("SELECT p.pageId FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId "+(whitelist?"AND":"AND NOT")+" (");
 
 				for(@SuppressWarnings("unused") String name:templateNames){
 					if(subconditions.length()!=0){
@@ -956,7 +947,7 @@ public class WikipediaTemplateInfo {
 	}
 
 
-    
+
 	/**
 	 * Returns a list containing the ids of all pages that contain a template
 	 * the name of which equals any of the given Strings.
@@ -992,9 +983,9 @@ public class WikipediaTemplateInfo {
     	return getFilteredPageIds(templateNames, false);
     }
 
-    
-    
-    
+
+
+
 	/**
 	 * Returns a list containing the ids of all revisions that contain a template
 	 * the name of which equals any of the given Strings.
@@ -1018,8 +1009,8 @@ public class WikipediaTemplateInfo {
 			try {
 				StringBuffer sqlString = new StringBuffer();
 				StringBuffer subconditions = new StringBuffer();
-				sqlString.append("SELECT r.revisionId FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-								+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
+				sqlString.append("SELECT r.revisionId FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+								+ GeneratorConstants.TABLE_TPLID_REVISIONID+ " AS r WHERE tpl.templateId = r.templateId "+(whitelist?"AND":"AND NOT")+" (");
 
 				for(@SuppressWarnings("unused") String name:templateNames){
 					if(subconditions.length()!=0){
@@ -1064,8 +1055,8 @@ public class WikipediaTemplateInfo {
 			throw new WikiApiException(e);
 		}
 	}
-    
-    
+
+
 	/**
 	 * Returns a list containing the ids of all revisions that contain a template
 	 * the name of which equals any of the given Strings.
@@ -1101,10 +1092,10 @@ public class WikipediaTemplateInfo {
     public List<Integer> getRevisionIdsNotContainingTemplateNames(List<String> templateNames) throws WikiApiException{
     	return getFilteredRevisionIds(templateNames, false);
     }
-    
 
-    
-    
+
+
+
 	/**
 	 * Returns the names of all templates contained in the specified page.
 	 *
@@ -1164,8 +1155,8 @@ public class WikipediaTemplateInfo {
 	        List<String> templateNames = new LinkedList<String>();
 
 			try {
-				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
+				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ GeneratorConstants.TABLE_TPLID_PAGEID+ " AS p WHERE tpl.templateId = p.templateId AND p.pageId = ?");
 				statement.setInt(1, pageId);
 
 				result = execute(statement);
@@ -1194,7 +1185,7 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
-    
+
 	/**
 	 * Returns the names of all templates contained in the specified revision.
 	 *
@@ -1216,8 +1207,8 @@ public class WikipediaTemplateInfo {
 	        List<String> templateNames = new LinkedList<String>();
 
 			try {
-				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME+ " AS tpl, "
-						+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID+ " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?");
+				statement = connection.prepareStatement("SELECT tpl.templateName FROM "+ GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ GeneratorConstants.TABLE_TPLID_REVISIONID+ " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?");
 				statement.setInt(1, revid);
 
 				result = execute(statement);
@@ -1246,10 +1237,10 @@ public class WikipediaTemplateInfo {
 		}
 	}
 
-    
+
     /**
      * Determines whether a given revision contains a given template name
-     * 
+     *
      * @param revId
      * @param templateName
      * @return
@@ -1262,12 +1253,12 @@ public class WikipediaTemplateInfo {
     			return true;
     		}
     	}
-    	return false;  	
+    	return false;
     }
 
     /**
      * Determines whether a given revision contains a template starting witht the given fragment
-     * 
+     *
      * @param revId
      * @param templateFragment
      * @return
@@ -1280,18 +1271,18 @@ public class WikipediaTemplateInfo {
     			return true;
     		}
     	}
-    	return false;  	
+    	return false;
     }
 
     /**
      * Does the same as revisionContainsTemplateName() without using a template index
-     * 
+     *
      * @param revId
      * @param templateName
      * @return
      * @throws WikiApiException
      */
-    public boolean revisionContainsTemplateNameWithoutIndex(int revId, String templateName) throws WikiApiException{    	
+    public boolean revisionContainsTemplateNameWithoutIndex(int revId, String templateName) throws WikiApiException{
     	if(revApi==null){
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
@@ -1302,19 +1293,19 @@ public class WikipediaTemplateInfo {
     		pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
     		parser = pf.createParser();
     	}
-    	    	
+
     	List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText()).getTemplates();
     	for(Template tpl:tplList){
     		if(tpl.getName().equalsIgnoreCase(templateName)){
     			return true;
     		}
     	}
-    	return false;  	
+    	return false;
     }
 
     /**
      * Does the same as revisionContainsTemplateFragment() without using a template index
-     * 
+     *
      * @param revId
      * @param templateFragment
      * @return
@@ -1338,15 +1329,15 @@ public class WikipediaTemplateInfo {
     			return true;
     		}
     	}
-    	return false;  	
+    	return false;
     }
-    
-    
-    
+
+
+
     /**
-     * For a given page (pageId), this method returns all adjacent revision pairs in which a given template 
+     * For a given page (pageId), this method returns all adjacent revision pairs in which a given template
      * has been removed or added (depending on the RevisionPairType) in the second pair part.
-     * 
+     *
      * @param pageId id of the page whose revision history should be inspected
      * @param template the template to look for
      * @param type the type of template change (add or remove) that should be extracted
@@ -1357,22 +1348,22 @@ public class WikipediaTemplateInfo {
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
 
-    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();    	    	
+    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
     	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
 
     	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
     	for(Timestamp ts:revTsList){
     		tplIndexMap.put(ts, revisionContainsTemplateName(revApi.getRevision(pageId, ts).getRevisionID(), template));
     	}
-    	
+
 		SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<Entry<Timestamp, Boolean>>(
 				new Comparator<Entry<Timestamp, Boolean>>() {
 					public int compare(Entry<Timestamp, Boolean> e1, Entry<Timestamp, Boolean> e2) {
 						return e1.getKey().compareTo(e2.getKey());
 					}
 				});
-		entries.addAll(tplIndexMap.entrySet());    	
-    	
+		entries.addAll(tplIndexMap.entrySet());
+
     	Entry<Timestamp,Boolean> prev=null;
     	Entry<Timestamp,Boolean> current=null;
     	for(Entry<Timestamp,Boolean> e:entries){
@@ -1385,17 +1376,17 @@ public class WikipediaTemplateInfo {
     			}
     			//case: template has been added since last revision
     			if(!prev.getValue()&&current.getValue()&&type==RevisionPairType.addTemplate){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));
     			}
     		}
     		prev=current;
-    	}    	    	
+    	}
     	return resultList;
     }
 
     /**
      * Does the same as getRevisionPairs(), but does not use a template index
-     * 
+     *
      * @param pageId id of the page whose revision history should be inspected
      * @param template the template to look for
      * @param type the type of template change (add or remove) that should be extracted
@@ -1407,22 +1398,22 @@ public class WikipediaTemplateInfo {
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
 
-    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();    	    	
+    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
     	Map<Timestamp, Boolean> tplIndexMap = new HashMap<Timestamp, Boolean>();
 
     	List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
     	for(Timestamp ts:revTsList){
     		tplIndexMap.put(ts, revisionContainsTemplateNameWithoutIndex(revApi.getRevision(pageId, ts).getRevisionID(), template));
     	}
-    	
+
 		SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<Entry<Timestamp, Boolean>>(
 				new Comparator<Entry<Timestamp, Boolean>>() {
 					public int compare(Entry<Timestamp, Boolean> e1, Entry<Timestamp, Boolean> e2) {
 						return e1.getKey().compareTo(e2.getKey());
 					}
 				});
-		entries.addAll(tplIndexMap.entrySet());    	
-    	
+		entries.addAll(tplIndexMap.entrySet());
+
     	Entry<Timestamp,Boolean> prev=null;
     	Entry<Timestamp,Boolean> current=null;
     	for(Entry<Timestamp,Boolean> e:entries){
@@ -1435,15 +1426,15 @@ public class WikipediaTemplateInfo {
     			}
     			//case: template has been added since last revision
     			if(!prev.getValue()&&current.getValue()&&type==RevisionPairType.addTemplate){
-    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));    				
+    				resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),revApi.getRevision(pageId, current.getKey()),template,RevisionPairType.addTemplate));
     			}
     		}
     		prev=current;
-    	}    	    	
+    	}
     	return resultList;
     }
 
-    
+
 	/**
 	 * Checks if a specific table exists
 	 *

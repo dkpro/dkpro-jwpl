@@ -9,7 +9,7 @@
  *     Oliver Ferschke
  *     Artem Vovk
  ******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.util.templates;
+package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -37,6 +37,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
 import de.tudarmstadt.ukp.wikipedia.util.StringUtils;
+import de.tudarmstadt.ukp.wikipedia.util.templates.WikipediaTemplateInfo;
+import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
 
 /**
  * This class determines which page in a JWPL database contains which templates.
@@ -62,10 +64,6 @@ public class WikipediaTemplateInfoGenerator
 	private final String charset;
 	// private final long maxAllowedPacket;
 	private final String outputPath;
-
-	protected final static String TABLE_TPLID_REVISIONID = "templateId_revisionId";
-	protected final static String TABLE_TPLID_PAGEID = "templateId_pageId";
-	protected final static String TABLE_TPLID_TPLNAME = "templates";
 
 	private final int VERBOSITY = 500;
 
@@ -266,12 +264,12 @@ public class WikipediaTemplateInfoGenerator
 	public void process() throws Exception
 	{
 		WikipediaTemplateInfo info = new WikipediaTemplateInfo(getWiki());
-		pageTableExists = info.tableExists(TABLE_TPLID_PAGEID);
-		revisionTableExists = info.tableExists(TABLE_TPLID_REVISIONID);
-		
+		pageTableExists = info.tableExists(GeneratorConstants.TABLE_TPLID_PAGEID);
+		revisionTableExists = info.tableExists(GeneratorConstants.TABLE_TPLID_REVISIONID);
+
 		if(!pageTableExists&&!revisionTableExists&&mode.active_for_pages&&mode.active_for_revisions){
 			//TODO see fix-me comment in WikipediaTemplateInfoDumpWriter
-			throw new IllegalStateException("Currently, you cannot create revision-tpl index and page-tpl index at the same time. The code is there, but it currently assigns separate tpl-name-ids for page-tpls and revisions-tpls. Please create a revision-tpl index, import the data into the db, create the page-tpl index and import this data."); 
+			throw new IllegalStateException("Currently, you cannot create revision-tpl index and page-tpl index at the same time. The code is there, but it currently assigns separate tpl-name-ids for page-tpls and revisions-tpls. Please create a revision-tpl index, import the data into the db, create the page-tpl index and import this data.");
 		}
 
 		if(mode.useRevisionIterator){
@@ -291,12 +289,12 @@ public class WikipediaTemplateInfoGenerator
 		}
 
 		////////////////////
-		
+
 		logger.info("Generating template indices ...");
 		boolean tableWithTemplatesExists = false;
 
 		tableWithTemplatesExists = true;
-	
+
 		if (mode.active_for_pages && pageTableExists) {
 			generateTemplateIndices(info, TPLNAME_TO_PAGEIDS.keySet());
 		}
@@ -307,7 +305,7 @@ public class WikipediaTemplateInfoGenerator
 
 		////////////////////
 
-		
+
 		logger.info("Writing SQL dump ...");
 
 		WikipediaTemplateInfoDumpWriter writer = new WikipediaTemplateInfoDumpWriter(

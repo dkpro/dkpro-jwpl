@@ -1,4 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.util.templates;
+package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
 import java.io.File;
 import java.io.FileInputStream;
