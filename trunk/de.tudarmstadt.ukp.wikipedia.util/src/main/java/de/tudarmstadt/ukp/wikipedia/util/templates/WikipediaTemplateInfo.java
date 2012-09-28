@@ -31,9 +31,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
+import de.tudarmstadt.ukp.wikipedia.util.templates.RevisionPair.RevisionPairType;
 import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
-import de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple.RevisionPair;
-import de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple.RevisionPair.RevisionPairType;
 
 /**
  * This class gives access to the additional information created by
