@@ -1,4 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.util.templates;
+package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
 import java.util.Map;
 import java.util.Set;

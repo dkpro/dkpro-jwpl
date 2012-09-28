@@ -1,4 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.util.templates;
+package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -11,6 +11,8 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
 
 //import org.apache.commons.logging.Log;
 //import org.apache.commons.logging.LogFactory;
@@ -60,13 +62,13 @@ public class WikipediaTemplateInfoDumpWriter
 
 			Set<Integer> curPageIds = e.getValue();
 
-			//FIXME Problem - we do reuse existing ids here, but we treat template names from the pages and from revisions separately - resulting in 
+			//FIXME Problem - we do reuse existing ids here, but we treat template names from the pages and from revisions separately - resulting in
 			if (!curTemplateName.isEmpty() && !curPageIds.isEmpty()) {
 				//if template name does not have an id in the tplname-id map
 				String id = "LAST_INSERT_ID()";
 				if (!tplNameToTplId.containsKey(curTemplateName)) {
 					output.append("INSERT INTO "
-							+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME
+							+ GeneratorConstants.TABLE_TPLID_TPLNAME
 							+ " (templateName) VALUES ('" + curTemplateName
 							+ "');");
 					output.append("\r\n");
@@ -111,19 +113,19 @@ public class WikipediaTemplateInfoDumpWriter
 
 		// Statement creates table for Template Id -> Page Id
 		output.append("CREATE TABLE IF NOT EXISTS "
-				+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID
+				+ GeneratorConstants.TABLE_TPLID_PAGEID
 				+ " ("
 				+ "templateId INTEGER UNSIGNED NOT NULL,"
 				+ "pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId));\r\n");
 
 		// Statement for data into templateId -> pageId
 		output.append(this.generateSQLStatementForDataInTable(dataSourceToUse,
-				WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID));
+				GeneratorConstants.TABLE_TPLID_PAGEID));
 
 		if (!tableExists) {
 			// Create index statement if table does not exists
 			output.append("CREATE INDEX pageIdx ON "
-					+ WikipediaTemplateInfoGenerator.TABLE_TPLID_PAGEID
+					+ GeneratorConstants.TABLE_TPLID_PAGEID
 					+ "(pageId);");
 			output.append("\r\n");
 		}
@@ -145,14 +147,14 @@ public class WikipediaTemplateInfoDumpWriter
 
 		// Statement creates table for Template Id -> Template Name
 		output.append("CREATE TABLE IF NOT EXISTS "
-				+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME + " ("
+				+ GeneratorConstants.TABLE_TPLID_TPLNAME + " ("
 				+ "templateId INTEGER NOT NULL AUTO_INCREMENT,"
 				+ "templateName MEDIUMTEXT NOT NULL, "
 				+ "PRIMARY KEY(templateId)); \r\n");
 
 		if (!tableExists) {
 			output.append("CREATE INDEX tplIdx ON "
-					+ WikipediaTemplateInfoGenerator.TABLE_TPLID_TPLNAME
+					+ GeneratorConstants.TABLE_TPLID_TPLNAME
 					+ "(templateId);");
 			output.append("\r\n");
 		}
@@ -176,19 +178,19 @@ public class WikipediaTemplateInfoDumpWriter
 
 		// Statement creates table for Template Id -> Revision Id
 		output.append("CREATE TABLE IF NOT EXISTS "
-				+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID
+				+ GeneratorConstants.TABLE_TPLID_REVISIONID
 				+ " ("
 				+ "templateId INTEGER UNSIGNED NOT NULL,"
 				+ "revisionId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, revisionId));\r\n");
 
 		// Statement for data into templateId -> revisionId
 		output.append(this.generateSQLStatementForDataInTable(dataSourceToUse,
-				WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID));
+				GeneratorConstants.TABLE_TPLID_REVISIONID));
 
 		if (!tableExists) {
 			// Create index statement if table does not exists
 			output.append("CREATE INDEX revisionIdx ON "
-					+ WikipediaTemplateInfoGenerator.TABLE_TPLID_REVISIONID
+					+ GeneratorConstants.TABLE_TPLID_REVISIONID
 					+ "(revisionID);");
 			output.append("\r\n");
 		}
