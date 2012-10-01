@@ -24,7 +24,7 @@ import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
-import de.fau.cs.osr.ptk.common.Visitor;
+import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
@@ -594,7 +594,7 @@ public class Page
 	 *         type of the go() method of your visitor.
 	 * @throws WikiApiException
 	 */
-	public Object parsePage(Visitor v) throws WikiApiException
+	public Object parsePage(AstVisitor v) throws WikiApiException
 	{
 		// Use the provided visitor to parse the page
 		return v.go(getCompiledPage().getPage());

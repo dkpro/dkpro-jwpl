@@ -29,7 +29,7 @@ import org.sweble.wikitext.lazy.preprocessor.XmlComment;
 import org.sweble.wikitext.lazy.utils.XmlCharRef;
 import org.sweble.wikitext.lazy.utils.XmlEntityRef;
 
-import de.fau.cs.osr.ptk.common.Visitor;
+import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
 import de.fau.cs.osr.ptk.common.ast.NodeList;
 import de.fau.cs.osr.ptk.common.ast.Text;
@@ -62,9 +62,7 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
  * @author Open Source Research Group, University of Erlangen-Nürnberg
  * @author Oliver Ferschke
  */
-public class PlainTextConverter
-        extends
-            Visitor
+public class PlainTextConverter extends AstVisitor
 {
 	private static final Pattern ws = Pattern.compile("\\s+");
 
