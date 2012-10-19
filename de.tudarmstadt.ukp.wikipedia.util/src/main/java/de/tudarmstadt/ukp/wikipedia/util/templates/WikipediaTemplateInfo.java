@@ -1368,14 +1368,14 @@ public class WikipediaTemplateInfo {
 
     		if(type==RevisionPairType.deleteTemplate){
    	    		//We want revs in which a template has just been removed.
-   	    		//Check succeding revision. If template is not present there,
-   	    		//it has been deleted. if so, add the SUCCEDING rev to list
+   	    		//Check succeeding revision. If template is not present there,
+   	    		//it has been deleted. if so, add the SUCCEEDING rev to list
     			try{
-        			Revision succeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
-        			//check status of succeding rev in tplIndex
+        			Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
+        			//check status of succeeding rev in tplIndex
         			for(String template: templates){
-            			if(!revisionContainsTemplateName(succeding.getRevisionID(),template)){
-            				resultList.add(new RevisionPair(current, succeding, template, type));
+            			if(!revisionContainsTemplateName(succeeding.getRevisionID(),template)){
+            				resultList.add(new RevisionPair(current, succeeding, template, type));
             			}
         			}
     			}catch(WikiPageNotFoundException e){
