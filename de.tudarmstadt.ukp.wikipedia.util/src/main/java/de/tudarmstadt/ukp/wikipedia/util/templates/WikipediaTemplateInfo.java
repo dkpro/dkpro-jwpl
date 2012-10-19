@@ -1237,19 +1237,33 @@ public class WikipediaTemplateInfo {
 	}
 
 
-    /**
+        /**
      * Determines whether a given revision contains a given template name
      *
      * @param revId
-     * @param templateName
+     * @param templateName a template name
      * @return
      * @throws WikiApiException
      */
     public boolean revisionContainsTemplateName(int revId, String templateName) throws WikiApiException{
+    	return revisionContainsTemplateNames(revId, Arrays.asList(new String[]{templateName}));
+    }
+
+    /**
+     * Determines whether a given revision contains a given template name
+     *
+     * @param revId
+     * @param templateNames a list of template names
+     * @return
+     * @throws WikiApiException
+     */
+    public boolean revisionContainsTemplateNames(int revId, List<String> templateNames) throws WikiApiException{
     	List<String> tplList = getTemplateNamesFromRevision(revId);
     	for(String tpl:tplList){
-    		if(tpl.equalsIgnoreCase(templateName)){
-    			return true;
+    		for(String templateName:templateNames){
+        		if(tpl.equalsIgnoreCase(templateName)){
+        			return true;
+        		}
     		}
     	}
     	return false;
@@ -1331,6 +1345,63 @@ public class WikipediaTemplateInfo {
     	return false;
     }
 
+    /**
+     * This method returns all adjacent revision pairs in which a given template
+     * has been removed or added (depending on the RevisionPairType) in the second pair part.
+     *
+     * @param templates a list of templates to look for
+     * @param type the type of template change (add or remove) that should be extracted
+     * @return list of revision pairs containing the desired template changes
+     */
+    public List<RevisionPair> getRevisionPairs(List<String> templates, RevisionPair.RevisionPairType type) throws WikiApiException{
+    	if(revApi==null){
+    		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
+    	}
+    	//get revisions via index (this COULD take a while)
+    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(templates);
+    	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
+
+    	//check all revisions. this WILL take a while
+   		for(int revId:revIds){
+    		Revision current = revApi.getRevision(revId);
+			int currentCounter = current.getRevisionCounter();
+
+    		if(type==RevisionPairType.deleteTemplate){
+   	    		//We want revs in which a template has just been removed.
+   	    		//Check succeding revision. If template is not present there,
+   	    		//it has been deleted. if so, add the SUCCEDING rev to list
+    			try{
+        			Revision succeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
+        			//check status of succeding rev in tplIndex
+        			for(String template: templates){
+            			if(!revisionContainsTemplateName(succeding.getRevisionID(),template)){
+            				resultList.add(new RevisionPair(current, succeding, template, type));
+            			}
+        			}
+    			}catch(WikiPageNotFoundException e){
+    				//there's probably no succeeding revision
+    			}
+   	    	}
+   	       	if(type==RevisionPairType.addTemplate){
+   	    		//We want revs in which a template has just been added
+   	    		//Check preceding revision. If template is not present there,
+   	    		//it has been added in this revision. If so, add the CURRENT rev to list
+    			try{
+        			Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
+        			//check status of preceding rev in tplIndex
+        			for(String template: templates){
+            			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
+            				resultList.add(new RevisionPair(preceding, current, template, type));
+            			}
+        			}
+    			}catch(WikiPageNotFoundException e){
+    				//there's probably no succeeding revision
+    			}
+   	       	}
+   		}
+
+    	return resultList;
+    }
 
 
     /**
