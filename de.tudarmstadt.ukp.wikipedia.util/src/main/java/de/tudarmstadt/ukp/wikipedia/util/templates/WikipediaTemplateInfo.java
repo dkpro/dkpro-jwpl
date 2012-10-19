@@ -1368,8 +1368,8 @@ public class WikipediaTemplateInfo {
 
     		if(type==RevisionPairType.deleteTemplate){
    	    		//We want revs in which a template has just been removed.
-   	    		//Check succeeding revision. If template is not present there,
-   	    		//it has been deleted. if so, add the SUCCEEDING rev to list
+   	    		//Check succeeding revision. If template is not present there any more,
+   	    		//it has been deleted. If so, add pair to list.
     			try{
         			Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
         			//check status of succeeding rev in tplIndex
@@ -1385,7 +1385,7 @@ public class WikipediaTemplateInfo {
    	       	if(type==RevisionPairType.addTemplate){
    	    		//We want revs in which a template has just been added
    	    		//Check preceding revision. If template is not present there,
-   	    		//it has been added in this revision. If so, add the CURRENT rev to list
+   	    		//it has been added in this revision. If so, add pair to list.
     			try{
         			Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
         			//check status of preceding rev in tplIndex
