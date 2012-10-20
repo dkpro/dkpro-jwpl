@@ -1373,6 +1373,7 @@ public class WikipediaTemplateInfo {
    			}
    			/////////////////
    			try{
+				//TODO check article/discussion status without creating Revision object
 	   			Revision current = revApi.getRevision(revId);
 	    		if(!wiki.getPage(current.getArticleID()).isDiscussion()){
 	    			int currentCounter = current.getRevisionCounter();
@@ -1382,6 +1383,7 @@ public class WikipediaTemplateInfo {
 	       	    		//Check succeeding revision. If template is not present there any more,
 	       	    		//it has been deleted. If so, add pair to list.
 	            			try{
+	            				//TODO retrieve succeeding revId without creating Revision object
 	            				Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
 	            			//check status of succeeding rev in tplIndex
 	            			for(String template: templates){
@@ -1399,6 +1401,7 @@ public class WikipediaTemplateInfo {
 	       	    		//Check preceding revision. If template is not present there,
 	       	    		//it has been added in this revision. If so, add pair to list.
 	       	       			try{
+	            				//TODO retrieve preceding revId without creating Revision object
 	       	       				Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
 		            			//check status of preceding rev in tplIndex
 		            			for(String template: templates){
