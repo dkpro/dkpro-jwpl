@@ -1353,16 +1353,25 @@ public class WikipediaTemplateInfo {
      * @param type the type of template change (add or remove) that should be extracted
      * @return list of revision pairs containing the desired template changes
      */
-    public List<RevisionPair> getRevisionPairs(List<String> templates, RevisionPair.RevisionPairType type) throws WikiApiException{
+    public List<RevisionPair> getArticleRevisionPairs(List<String> templates, RevisionPair.RevisionPairType type) throws WikiApiException{
     	if(revApi==null){
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
     	//get revisions via index (this COULD take a while)
-    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(templates);
+    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(templates);    	
+    	System.out.println(revIds.size()+" revisions with given templates found"); //TODO DEBUGCODE
     	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
 
     	//check all revisions. this WILL take a while
+    	int curRevNum = 0;
    		for(int revId:revIds){
+   			//////////////////
+   			//TODO DEBUGCODE
+   			curRevNum++;
+   			if(curRevNum%100==0){
+   				System.out.println("Processing revision "+curRevNum);
+   			}
+   			/////////////////
    			try{
 	   			Revision current = revApi.getRevision(revId);
 	    		if(!wiki.getPage(current.getArticleID()).isDiscussion()){
@@ -1372,31 +1381,41 @@ public class WikipediaTemplateInfo {
 	       	    		//We want revs in which a template has just been removed.
 	       	    		//Check succeeding revision. If template is not present there any more,
 	       	    		//it has been deleted. If so, add pair to list.
-	            			Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
+	            			try{
+	            				Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
 	            			//check status of succeeding rev in tplIndex
 	            			for(String template: templates){
 	                			if(!revisionContainsTemplateName(succeeding.getRevisionID(),template)){
 	                				resultList.add(new RevisionPair(current, succeeding, template, type));
 	                			}
 	            			}
+	            			}catch(WikiPageNotFoundException e){
+	            				//current was probably the last revision already
+	            				System.out.println("Succeeding revision not found.");
+	            			}
 	       	    	}
 	       	       	if(type==RevisionPairType.addTemplate){
 	       	    		//We want revs in which a template has just been added
 	       	    		//Check preceding revision. If template is not present there,
 	       	    		//it has been added in this revision. If so, add pair to list.
-	            			Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
-	            			//check status of preceding rev in tplIndex
-	            			for(String template: templates){
-	                			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
-	                				resultList.add(new RevisionPair(preceding, current, template, type));
-	                			}
-	            			}       	       			
+	       	       			try{
+	       	       				Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
+		            			//check status of preceding rev in tplIndex
+		            			for(String template: templates){
+		                			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
+		                				resultList.add(new RevisionPair(preceding, current, template, type));
+		                			}
+		            			}       	       			
+		        			}catch(WikiPageNotFoundException e){
+		        				//current was probably the first revision already
+		        				System.out.println("Preceding revision not found.");
+		        			}
 	        		}
 	    		}
 			}catch(WikiPageNotFoundException e){
-				//there's probably no succeeding revision
+				//The revision from the template db is missing in the revision db.
+				System.err.println("Current revision not found.");				
 			}
-
    		}
 
     	return resultList;
