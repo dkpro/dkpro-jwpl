@@ -1346,7 +1346,7 @@ public class WikipediaTemplateInfo {
     }
 
     /**
-     * This method returns all adjacent revision pairs in which a given template
+     * This method returns all adjacent revision pairs of namespace 0 pages (articles) in which a given template
      * has been removed or added (depending on the RevisionPairType) in the second pair part.
      *
      * @param templates a list of templates to look for
