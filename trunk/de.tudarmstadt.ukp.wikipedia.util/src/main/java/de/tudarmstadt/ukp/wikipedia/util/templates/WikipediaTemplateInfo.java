@@ -1385,7 +1385,7 @@ public class WikipediaTemplateInfo {
 	            				Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
 	            			//check status of succeeding rev in tplIndex
 	            			for(String template: templates){
-	                			if(!revisionContainsTemplateName(succeeding.getRevisionID(),template)){
+	                			if(!revIds.contains(succeeding.getRevisionID())){
 	                				resultList.add(new RevisionPair(current, succeeding, template, type));
 	                			}
 	            			}
@@ -1402,7 +1402,7 @@ public class WikipediaTemplateInfo {
 	       	       				Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
 		            			//check status of preceding rev in tplIndex
 		            			for(String template: templates){
-		                			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
+		                			if(!revIds.contains(preceding.getRevisionID())){
 		                				resultList.add(new RevisionPair(preceding, current, template, type));
 		                			}
 		            			}       	       			
