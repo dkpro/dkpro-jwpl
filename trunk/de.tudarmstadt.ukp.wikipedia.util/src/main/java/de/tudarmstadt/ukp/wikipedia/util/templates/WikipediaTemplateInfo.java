@@ -1363,41 +1363,40 @@ public class WikipediaTemplateInfo {
 
     	//check all revisions. this WILL take a while
    		for(int revId:revIds){
-    		Revision current = revApi.getRevision(revId);
-			int currentCounter = current.getRevisionCounter();
+   			try{
+	   			Revision current = revApi.getRevision(revId);
+	    		if(!wiki.getPage(current.getArticleID()).isDiscussion()){
+	    			int currentCounter = current.getRevisionCounter();
+	
+	        		if(type==RevisionPairType.deleteTemplate){
+	       	    		//We want revs in which a template has just been removed.
+	       	    		//Check succeeding revision. If template is not present there any more,
+	       	    		//it has been deleted. If so, add pair to list.
+	            			Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
+	            			//check status of succeeding rev in tplIndex
+	            			for(String template: templates){
+	                			if(!revisionContainsTemplateName(succeeding.getRevisionID(),template)){
+	                				resultList.add(new RevisionPair(current, succeeding, template, type));
+	                			}
+	            			}
+	       	    	}
+	       	       	if(type==RevisionPairType.addTemplate){
+	       	    		//We want revs in which a template has just been added
+	       	    		//Check preceding revision. If template is not present there,
+	       	    		//it has been added in this revision. If so, add pair to list.
+	            			Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
+	            			//check status of preceding rev in tplIndex
+	            			for(String template: templates){
+	                			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
+	                				resultList.add(new RevisionPair(preceding, current, template, type));
+	                			}
+	            			}       	       			
+	        		}
+	    		}
+			}catch(WikiPageNotFoundException e){
+				//there's probably no succeeding revision
+			}
 
-    		if(type==RevisionPairType.deleteTemplate){
-   	    		//We want revs in which a template has just been removed.
-   	    		//Check succeeding revision. If template is not present there any more,
-   	    		//it has been deleted. If so, add pair to list.
-    			try{
-        			Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
-        			//check status of succeeding rev in tplIndex
-        			for(String template: templates){
-            			if(!revisionContainsTemplateName(succeeding.getRevisionID(),template)){
-            				resultList.add(new RevisionPair(current, succeeding, template, type));
-            			}
-        			}
-    			}catch(WikiPageNotFoundException e){
-    				//there's probably no succeeding revision
-    			}
-   	    	}
-   	       	if(type==RevisionPairType.addTemplate){
-   	    		//We want revs in which a template has just been added
-   	    		//Check preceding revision. If template is not present there,
-   	    		//it has been added in this revision. If so, add pair to list.
-    			try{
-        			Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
-        			//check status of preceding rev in tplIndex
-        			for(String template: templates){
-            			if(!revisionContainsTemplateName(preceding.getRevisionID(),template)){
-            				resultList.add(new RevisionPair(preceding, current, template, type));
-            			}
-        			}
-    			}catch(WikiPageNotFoundException e){
-    				//there's probably no succeeding revision
-    			}
-   	       	}
    		}
 
     	return resultList;
