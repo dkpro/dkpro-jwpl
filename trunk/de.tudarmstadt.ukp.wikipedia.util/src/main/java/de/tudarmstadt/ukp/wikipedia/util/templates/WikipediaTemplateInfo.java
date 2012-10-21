@@ -1345,6 +1345,82 @@ public class WikipediaTemplateInfo {
     	return false;
     }
 
+    
+	/**
+	 * Return a list of revision ids of revisions in which the given template has just been deleted.
+	 * This does the same as getArticleRevisionPairs set to RevisionPairType.delete, but it returns only the ids
+	 * of the "after"-revisions. This should be much faster than getting the ReivisonPairs containing whole
+	 * Revision objects. 
+	 * 
+	 * Note: you should have proper indices on the tables to make the query feasible.
+	 * e.g. This query does not use index_revisionID, but relies on an index on the RevisionID field in the revisions table.
+	 *
+	 * @param template
+	 *            the template to look for
+	 * @return An list of revision ids of revisions that have just lost the provided template
+	 * @throws WikiApiException
+	 *             If there was any error retrieving the page object (most likely if the templates are corrupted)
+	 */
+    private List<Integer> getTemplateDeletedRevisionIds(String template) throws WikiApiException{
+
+		try {
+	    	PreparedStatement statement = null;
+			ResultSet result = null;
+	        List<Integer> matchedPages = new LinkedList<Integer>();
+
+			try {
+				StringBuffer sqlString = new StringBuffer();
+				//TODO check this query
+				//if it works, we want to get the counter+1 revision (without the template)e
+				sqlString.append("SELECT rtpl.revisionId FROM "+
+						GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+						+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl, revisions AS rev, Page AS p "
+						+"WHERE rtpl.templateId = tpl.templateId " +
+						"AND tpl.templateName = ? " +
+						"AND rtpl.revisionId = rev.RevisionID " +
+						"AND rev.ArticleID = p.pageId " +
+						"AND NOT p.name LIKE 'Discussion:%' " +
+						"AND NOT EXISTS (" +
+							"SELECT rtpl2.revisionId FROM " +
+							GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl2, "
+							+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl2, revisions AS rev2 "
+							+"WHERE rev.RevisionCounter+1 = rev2.RevisionCounter "+
+							"AND rtpl2.revisionId = rev2.RevisionID " +
+							"AND rtpl2.templateId = tpl2.templateId " +
+							"AND tpl2.templateName = ?" +						
+						");");
+
+				statement = connection.prepareStatement(sqlString.toString());
+				statement.setString(1, template);
+				result = execute(statement);
+
+				if (result == null) {
+					throw new WikiPageNotFoundException("Nothing was found");
+				}
+
+				while (result.next()) {
+					//TODO implement
+					int pageID = result.getInt(1);
+		            matchedPages.add(pageID);
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return matchedPages;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+    
     /**
      * This method returns all adjacent revision pairs of namespace 0 pages (articles) in which a given template
      * has been removed or added (depending on the RevisionPairType) in the second pair part.
