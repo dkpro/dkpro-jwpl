@@ -1349,17 +1349,17 @@ public class WikipediaTemplateInfo {
      * This method returns all adjacent revision pairs of namespace 0 pages (articles) in which a given template
      * has been removed or added (depending on the RevisionPairType) in the second pair part.
      *
-     * @param templates a list of templates to look for
+     * @param template a template to look for
      * @param type the type of template change (add or remove) that should be extracted
      * @return list of revision pairs containing the desired template changes
      */
-    public List<RevisionPair> getArticleRevisionPairs(List<String> templates, RevisionPair.RevisionPairType type) throws WikiApiException{
+    public List<RevisionPair> getArticleRevisionPairs(String template, RevisionPair.RevisionPairType type) throws WikiApiException{
     	if(revApi==null){
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
     	//get revisions via index (this COULD take a while)
-    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(templates);    	
-    	System.out.println(revIds.size()+" revisions with given templates found"); //TODO DEBUGCODE
+    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(Arrays.asList(new String[]{template}));    	
+    	System.out.println(revIds.size()+" revisions with given template found"); //TODO DEBUGCODE
     	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
 
     	//check all revisions. this WILL take a while
@@ -1385,16 +1385,14 @@ public class WikipediaTemplateInfo {
 	            			try{
 	            				//TODO retrieve succeeding revId without creating Revision object
 	            				Revision succeeding = revApi.getRevision(current.getArticleID(), currentCounter+1);
-	            			//check status of succeeding rev in tplIndex
-	            			for(String template: templates){
-	                			if(!revIds.contains(succeeding.getRevisionID())){
-	                				resultList.add(new RevisionPair(current, succeeding, template, type));
-	                			}
-	            			}
+	            				//check status of succeeding rev in tplIndex
+	            				if(!revIds.contains(succeeding.getRevisionID())){
+	            					resultList.add(new RevisionPair(current, succeeding, template, type));
+	            				}
 	            			}catch(WikiPageNotFoundException e){
 	            				//current was probably the last revision already
 	            				System.out.println("Succeeding revision not found.");
-	            			}
+	            			}	        		
 	       	    	}
 	       	       	if(type==RevisionPairType.addTemplate){
 	       	    		//We want revs in which a template has just been added
@@ -1404,11 +1402,9 @@ public class WikipediaTemplateInfo {
 	            				//TODO retrieve preceding revId without creating Revision object
 	       	       				Revision preceding = revApi.getRevision(current.getArticleID(), currentCounter-1);
 		            			//check status of preceding rev in tplIndex
-		            			for(String template: templates){
-		                			if(!revIds.contains(preceding.getRevisionID())){
-		                				resultList.add(new RevisionPair(preceding, current, template, type));
-		                			}
-		            			}       	       			
+	                			if(!revIds.contains(preceding.getRevisionID())){
+	                				resultList.add(new RevisionPair(preceding, current, template, type));
+	                			}
 		        			}catch(WikiPageNotFoundException e){
 		        				//current was probably the first revision already
 		        				System.out.println("Preceding revision not found.");
