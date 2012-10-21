@@ -1366,7 +1366,7 @@ public class WikipediaTemplateInfo {
 		try {
 	    	PreparedStatement statement = null;
 			ResultSet result = null;
-	        List<Integer> matchedPages = new LinkedList<Integer>();
+	        List<Integer> resultRevs = new LinkedList<Integer>();
 
 			try {
 				StringBuffer sqlString = new StringBuffer();
@@ -1399,9 +1399,7 @@ public class WikipediaTemplateInfo {
 				}
 
 				while (result.next()) {
-					//TODO implement
-					int pageID = result.getInt(1);
-		            matchedPages.add(pageID);
+		            resultRevs.add(result.getInt(1));
 				}
 			}
 			finally {
@@ -1413,7 +1411,7 @@ public class WikipediaTemplateInfo {
 				}
 			}
 
-			return matchedPages;
+			return resultRevs;
 		}
 		catch (Exception e) {
 			throw new WikiApiException(e);
