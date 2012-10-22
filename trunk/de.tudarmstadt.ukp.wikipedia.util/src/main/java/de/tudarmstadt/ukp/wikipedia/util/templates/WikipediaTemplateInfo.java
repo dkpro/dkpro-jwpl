@@ -1345,80 +1345,80 @@ public class WikipediaTemplateInfo {
     	return false;
     }
 
-    
-	/**
-	 * Return a list of revision ids of revisions in which the given template has just been deleted.
-	 * This does the same as getArticleRevisionPairs set to RevisionPairType.delete, but it returns only the ids
-	 * of the "after"-revisions. This should be much faster than getting the ReivisonPairs containing whole
-	 * Revision objects. 
-	 * 
-	 * Note: you should have proper indices on the tables to make the query feasible.
-	 * e.g. This query does not use index_revisionID, but relies on an index on the RevisionID field in the revisions table.
-	 *
-	 * @param template
-	 *            the template to look for
-	 * @return An list of revision ids of revisions that have just lost the provided template
-	 * @throws WikiApiException
-	 *             If there was any error retrieving the page object (most likely if the templates are corrupted)
-	 */
-    private List<Integer> getTemplateDeletedRevisionIds(String template) throws WikiApiException{
 
-		try {
-	    	PreparedStatement statement = null;
-			ResultSet result = null;
-	        List<Integer> resultRevs = new LinkedList<Integer>();
+//	/**
+//	 * Return a list of revision ids of revisions in which the given template has just been deleted.
+//	 * This does the same as getArticleRevisionPairs set to RevisionPairType.delete, but it returns only the ids
+//	 * of the "after"-revisions. This should be much faster than getting the ReivisonPairs containing whole
+//	 * Revision objects.
+//	 *
+//	 * Note: you should have proper indices on the tables to make the query feasible.
+//	 * e.g. This query does not use index_revisionID, but relies on an index on the RevisionID field in the revisions table.
+//	 *
+//	 * @param template
+//	 *            the template to look for
+//	 * @return An list of revision ids of revisions that have just lost the provided template
+//	 * @throws WikiApiException
+//	 *             If there was any error retrieving the page object (most likely if the templates are corrupted)
+//	 */
+//    private List<Integer> getTemplateDeletedRevisionIds(String template) throws WikiApiException{
+//
+//		try {
+//	    	PreparedStatement statement = null;
+//			ResultSet result = null;
+//	        List<Integer> resultRevs = new LinkedList<Integer>();
+//
+//			try {
+//				StringBuffer sqlString = new StringBuffer();
+//				//TODO check this query
+//				//if it works, we want to get the counter+1 revision (without the template)e
+//				sqlString.append("SELECT rtpl.revisionId FROM "+
+//						GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
+//						+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl, revisions AS rev, Page AS p "
+//						+"WHERE rtpl.templateId = tpl.templateId " +
+//						"AND tpl.templateName = ? " +
+//						"AND rtpl.revisionId = rev.RevisionID " +
+//						"AND rev.ArticleID = p.pageId " +
+//						"AND NOT p.name LIKE 'Discussion:%' " +
+//						"AND NOT EXISTS (" +
+//							"SELECT rtpl2.revisionId FROM " +
+//							GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl2, "
+//							+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl2, revisions AS rev2 "
+//							+"WHERE rev.RevisionCounter+1 = rev2.RevisionCounter "+
+//							"AND rtpl2.revisionId = rev2.RevisionID " +
+//							"AND rtpl2.templateId = tpl2.templateId " +
+//							"AND tpl2.templateName = ?" +
+//						");");
+//
+//				statement = connection.prepareStatement(sqlString.toString());
+//				statement.setString(1, template);
+//				result = execute(statement);
+//
+//				if (result == null) {
+//					throw new WikiPageNotFoundException("Nothing was found");
+//				}
+//
+//				while (result.next()) {
+//		            resultRevs.add(result.getInt(1));
+//				}
+//			}
+//			finally {
+//				if (statement != null) {
+//					statement.close();
+//				}
+//				if (result != null) {
+//					result.close();
+//				}
+//			}
+//
+//			return resultRevs;
+//		}
+//		catch (Exception e) {
+//			throw new WikiApiException(e);
+//		}
+//	}
 
-			try {
-				StringBuffer sqlString = new StringBuffer();
-				//TODO check this query
-				//if it works, we want to get the counter+1 revision (without the template)e
-				sqlString.append("SELECT rtpl.revisionId FROM "+
-						GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl, "
-						+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl, revisions AS rev, Page AS p "
-						+"WHERE rtpl.templateId = tpl.templateId " +
-						"AND tpl.templateName = ? " +
-						"AND rtpl.revisionId = rev.RevisionID " +
-						"AND rev.ArticleID = p.pageId " +
-						"AND NOT p.name LIKE 'Discussion:%' " +
-						"AND NOT EXISTS (" +
-							"SELECT rtpl2.revisionId FROM " +
-							GeneratorConstants.TABLE_TPLID_TPLNAME+ " AS tpl2, "
-							+ GeneratorConstants.TABLE_TPLID_REVISIONID + " AS rtpl2, revisions AS rev2 "
-							+"WHERE rev.RevisionCounter+1 = rev2.RevisionCounter "+
-							"AND rtpl2.revisionId = rev2.RevisionID " +
-							"AND rtpl2.templateId = tpl2.templateId " +
-							"AND tpl2.templateName = ?" +						
-						");");
 
-				statement = connection.prepareStatement(sqlString.toString());
-				statement.setString(1, template);
-				result = execute(statement);
-
-				if (result == null) {
-					throw new WikiPageNotFoundException("Nothing was found");
-				}
-
-				while (result.next()) {
-		            resultRevs.add(result.getInt(1));
-				}
-			}
-			finally {
-				if (statement != null) {
-					statement.close();
-				}
-				if (result != null) {
-					result.close();
-				}
-			}
-
-			return resultRevs;
-		}
-		catch (Exception e) {
-			throw new WikiApiException(e);
-		}
-	}
-
-    
     /**
      * This method returns all adjacent revision pairs of namespace 0 pages (articles) in which a given template
      * has been removed or added (depending on the RevisionPairType) in the second pair part.
@@ -1432,7 +1432,7 @@ public class WikipediaTemplateInfo {
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
     	//get revisions via index (this COULD take a while)
-    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(Arrays.asList(new String[]{template}));    	
+    	List<Integer> revIds = getRevisionIdsContainingTemplateNames(Arrays.asList(new String[]{template}));
     	System.out.println(revIds.size()+" revisions with given template found"); //TODO DEBUGCODE
     	List<RevisionPair> resultList = new LinkedList<RevisionPair>();
 
@@ -1451,7 +1451,7 @@ public class WikipediaTemplateInfo {
 	   			Revision current = revApi.getRevision(revId);
 	    		if(!wiki.getPage(current.getArticleID()).isDiscussion()){
 	    			int currentCounter = current.getRevisionCounter();
-	
+
 	        		if(type==RevisionPairType.deleteTemplate){
 	       	    		//We want revs in which a template has just been removed.
 	       	    		//Check succeeding revision. If template is not present there any more,
@@ -1466,7 +1466,7 @@ public class WikipediaTemplateInfo {
 	            			}catch(WikiPageNotFoundException e){
 	            				//current was probably the last revision already
 	            				System.out.println("Succeeding revision not found.");
-	            			}	        		
+	            			}
 	       	    	}
 	       	       	if(type==RevisionPairType.addTemplate){
 	       	    		//We want revs in which a template has just been added
@@ -1487,7 +1487,7 @@ public class WikipediaTemplateInfo {
 	    		}
 			}catch(WikiPageNotFoundException e){
 				//The revision from the template db is missing in the revision db.
-				System.err.println("Current revision not found.");				
+				System.err.println("Current revision not found.");
 			}
    		}
 
