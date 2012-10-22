@@ -1487,7 +1487,7 @@ public class WikipediaTemplateInfo {
 	    		}
 			}catch(WikiPageNotFoundException e){
 				//The revision from the template db is missing in the revision db.
-				System.err.println("Current revision not found.");
+				System.err.println("Current revision ("+revId+")not found.");
 			}
    		}
 
