@@ -389,30 +389,30 @@ public class CategoryGraph implements WikiConstants, Serializable {
         return getLCS(category1.getPageId(),category2.getPageId());
     }
 
-    
+
     /**
      * Gets the lowest common subsumer (LCS) of two nodes.
      * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
      * Nodes that are not in the same connected component as the root node are defined to have no LCS.
-     * @param category1 The first category node.
-     * @param category2 The second category node.
-     * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     * @param categoryPageId1 The pageid of the first category node.
+     * @param categoryPageId1 The pageid of the second category node.
+     * @return The pageId of the lowest common subsumer of the two nodes, or null if there is no LCS.
      */
-    public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException {
+    public int getLCSId(int categoryPageId1, int categoryPageId2) throws WikiApiException {
 
 //      TODO here might be a problem concerning multiple inheritence in the category graph, if there is more than one path of equal length to the root, the method will only find one, but the other (not found) LCS may have a higher information content
 // 		TODO is the lcs between the same node really defined or should this be handled in the measures (i.e. SR(n1,n1) = 1 per definitionem??)
         if (categoryPageId1 == categoryPageId2) {
-            return wiki.getCategory(categoryPageId1);
+            return categoryPageId1;
         }
 
         List<Integer> nodeList1 = getRootPathMap().get(categoryPageId1);
         List<Integer> nodeList2 = getRootPathMap().get(categoryPageId2);
 
-        // if one of the paths is null => return null
+        // if one of the paths is null => return -1
         if (nodeList1 == null || nodeList2 == null || nodeList1.size() == 0 || nodeList2.size() == 0) {
             logger.debug("One of the node lists is null or empty!");
-            return null;
+            return -1;
         }
 
         logger.debug(nodeList1);
@@ -421,28 +421,41 @@ public class CategoryGraph implements WikiConstants, Serializable {
         // node 1 subsumes node 2 ?
         for (int tmpNode2 : nodeList2) {
             if (tmpNode2 == categoryPageId1) {
-                return wiki.getCategory(categoryPageId1);
+                return categoryPageId1;
             }
         }
 
         // node 2 subsumes node 1 ?
         for (int tmpNode1 : nodeList1) {
             if (tmpNode1 == categoryPageId2) {
-                return wiki.getCategory(categoryPageId2);
+                return categoryPageId2;
             }
         }
         // they have a lcs ?
         for (int tmpNode1 : nodeList1) {
             for (int tmpNode2 : nodeList2) {
                 if (tmpNode1 == tmpNode2) {
-                    return wiki.getCategory(tmpNode1);
+                    return tmpNode1;
                 }
             }
         }
 
         logger.debug("No lcs found.");
 
-        return null;
+        return -1;
+    }
+    
+    /**
+     * Gets the lowest common subsumer (LCS) of two nodes.
+     * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
+     * Nodes that are not in the same connected component as the root node are defined to have no LCS.
+     * @param categoryPageId1 The pageid of the first category node.
+     * @param categoryPageId1 The pageid of the second category node.
+     * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     */
+    public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException {
+    	int lcsid = getLCSId(categoryPageId1, categoryPageId2);    	
+    	return lcsid>-1?wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)):null;
     }
 
 
