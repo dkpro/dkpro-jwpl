@@ -1611,7 +1611,12 @@ public class CategoryGraph implements WikiConstants, Serializable {
         return graph;
     }
 
-    public Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
+    public UndirectedGraph<Integer, DefaultEdge> getUndirectedGraph()
+	{
+		return undirectedGraph;
+	}
+
+	public Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
         if (hyponymCountMap == null) {
             createHyponymCountMap();
         }
