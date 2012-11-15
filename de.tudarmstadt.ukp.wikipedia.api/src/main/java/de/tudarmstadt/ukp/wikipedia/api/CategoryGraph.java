@@ -4,7 +4,7 @@
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
@@ -444,7 +444,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
         return -1;
     }
-    
+
     /**
      * Gets the lowest common subsumer (LCS) of two nodes.
      * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
@@ -454,7 +454,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
      */
     public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException {
-    	int lcsid = getLCSId(categoryPageId1, categoryPageId2);    	
+    	int lcsid = getLCSId(categoryPageId1, categoryPageId2);
     	return lcsid>-1?wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)):null;
     }
 
@@ -1611,14 +1611,14 @@ public class CategoryGraph implements WikiConstants, Serializable {
         return graph;
     }
 
-    protected Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
+    public Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
         if (hyponymCountMap == null) {
             createHyponymCountMap();
         }
         return this.hyponymCountMap;
     }
 
-    protected Map<Integer,List<Integer>> getRootPathMap() throws WikiApiException {
+    public Map<Integer,List<Integer>> getRootPathMap() throws WikiApiException {
         if (rootPathMap == null) {
             createRootPathMap();
         }
