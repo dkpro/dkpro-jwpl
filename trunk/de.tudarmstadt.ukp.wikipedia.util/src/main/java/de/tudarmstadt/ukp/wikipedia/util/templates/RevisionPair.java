@@ -66,7 +66,7 @@ public class RevisionPair {
 	 * Returns the text around the fiven template and returns the corresponding
 	 * text in the other pair part of the RevisionPair
 	 *
-	 * @return a pair of strings corresponding to the before-revion and after-revision
+	 * @return a pair of strings corresponding to the before-revision and after-revision
 	 */
 	public TextPair getInlineTextPair(){
 		//TODO not yet implemented
