@@ -14,11 +14,16 @@ import java.util.List;
 
 import javax.xml.bind.JAXBException;
 
+import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
+import org.sweble.wikitext.lazy.parser.Bold;
+import org.sweble.wikitext.lazy.parser.Paragraph;
 import org.sweble.wikitext.lazy.parser.Section;
+import org.sweble.wikitext.lazy.parser.Whitespace;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
+import de.fau.cs.osr.ptk.common.ast.NodeList;
 import de.fau.cs.osr.ptk.common.ast.Text;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
@@ -32,6 +37,8 @@ public class SectionExtractor extends AstVisitor
 	private final SimpleWikiConfiguration config;
 
 	private List<ExtractedSection> sections;
+
+	private StringBuilder bodyBuilder = new StringBuilder();
 
 	// =========================================================================
 
@@ -83,9 +90,38 @@ public class SectionExtractor extends AstVisitor
 
 	// =========================================================================
 
-	public void visit(AstNode n)
+	public void visit(Page n)
 	{
 		iterate(n);
+	}
+
+	public void visit(Whitespace n)
+	{
+		bodyBuilder.append(" ");
+	}
+
+	public void visit(Bold n)
+	{
+		iterate(n);
+	}
+
+	public void visit(AstNode n)
+	{
+	}
+
+	public void visit(NodeList n)
+	{
+		iterate(n);
+	}
+
+	public void visit(Paragraph n)
+	{
+		iterate(n);
+	}
+
+	public void visit(Text n)
+	{
+		bodyBuilder.append(n.getContent());
 	}
 
 	public void visit(Section sect) throws IOException
@@ -99,13 +135,10 @@ public class SectionExtractor extends AstVisitor
 				title = ((Text)n).getContent();
 			}
 		}
-		for(AstNode n:sect.getBody()){
-			if(n instanceof Text){
-				body = ((Text)n).getContent();
-			}
-		}
+		iterate(sect.getBody());
 
-		sections.add(new ExtractedSection(title,body));
+		sections.add(new ExtractedSection(title,bodyBuilder.toString()));
+		bodyBuilder=new StringBuilder();
 	}
 
 
