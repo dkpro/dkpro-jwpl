@@ -15,11 +15,10 @@ import java.util.List;
 import javax.xml.bind.JAXBException;
 
 import org.sweble.wikitext.engine.Page;
+import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.parser.Bold;
-import org.sweble.wikitext.lazy.parser.Paragraph;
-import org.sweble.wikitext.lazy.parser.Section;
-import org.sweble.wikitext.lazy.parser.Whitespace;
+import org.sweble.wikitext.lazy.LinkTargetException;
+import org.sweble.wikitext.lazy.parser.*;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
@@ -105,6 +104,65 @@ public class SectionExtractor extends AstVisitor
 		iterate(n);
 	}
 
+	public void visit(Italics n)
+	{
+		iterate(n);
+	}
+
+	public void visit(ExternalLink link)
+	{
+		iterate(link.getTitle());
+	}
+
+	public void visit(LinkTitle n)
+	{
+		iterate(n);
+	}
+
+	public void visit(LinkTarget n)
+	{
+		iterate(n);
+	}
+
+	public void visit(InternalLink link)
+	{
+		try
+		{
+			PageTitle page = PageTitle.make(config, link.getTarget());
+			if (page.getNamespace().equals(config.getNamespace("Category"))) {
+				return;
+			}else{
+				String curLinkTitle="";
+				for(AstNode n:link.getTitle().getContent()){
+					if(n instanceof Text){
+						curLinkTitle = ((Text)n).getContent().trim();
+					}
+				}
+				if(curLinkTitle.isEmpty()){
+					bodyBuilder.append(link.getTarget());
+				}else{
+					bodyBuilder.append(curLinkTitle);
+				}
+
+			}
+		}
+		catch (LinkTargetException e)
+		{
+		}
+
+	}
+	public void visit(DefinitionList n){
+		iterate(n);
+	}
+
+	public void visit(DefinitionTerm n){
+		iterate(n);
+	}
+
+	public void visit(DefinitionDefinition n){
+		iterate(n);
+	}
+
 	public void visit(AstNode n)
 	{
 	}
@@ -137,7 +195,7 @@ public class SectionExtractor extends AstVisitor
 		}
 		iterate(sect.getBody());
 
-		sections.add(new ExtractedSection(title,bodyBuilder.toString()));
+		sections.add(new ExtractedSection(title,bodyBuilder.toString().trim()));
 		bodyBuilder=new StringBuilder();
 	}
 
