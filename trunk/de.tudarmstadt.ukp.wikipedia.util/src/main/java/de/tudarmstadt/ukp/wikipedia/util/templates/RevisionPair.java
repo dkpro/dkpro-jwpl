@@ -71,7 +71,7 @@ public class RevisionPair
 	}
 
 	/**
-	 * Returns the text around the fiven template and returns the corresponding
+	 * Returns the text around the given template and returns the corresponding
 	 * text in the other pair part of the RevisionPair
 	 *
 	 * @return a pair of strings corresponding to the before-revision and
@@ -82,12 +82,17 @@ public class RevisionPair
 
 		String beforeString = null;
 		String afterString = null;
+
 		if (revPairType == RevisionPairType.deleteTemplate) {
-			//before revision contains the template
+			//"before" revision contains the template
+
+			//TODO sync before-after: using title? fuzzy matching? location in article?
 
 		}
 		else if (revPairType == RevisionPairType.addTemplate) {
-			//after revision contains the template
+			//"after" revision contains the template
+
+			//TODO sync before-after: using title? fuzzy matching? location in article?
 
 		}
 		return new TextPair(beforeString, afterString);
