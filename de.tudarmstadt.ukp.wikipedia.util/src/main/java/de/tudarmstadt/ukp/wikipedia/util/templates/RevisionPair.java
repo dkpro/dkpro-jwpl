@@ -66,18 +66,6 @@ public class RevisionPair
 	}
 
 	/**
-	 * If the base template of this RevisionPair is an inline template, this
-	 * method uses the text around the template to create the diff.
-	 *
-	 * @return the diff of getInlineTextPair();
-	 */
-	public String getInlineDiff()
-	{
-		// TODO not yet implemented
-		return "";
-	}
-
-	/**
 	 * Returns the text around the given template and returns the corresponding
 	 * text in the other pair part of the RevisionPair
 	 *
@@ -166,6 +154,11 @@ public class RevisionPair
 		public void setAfterText(String afterText)
 		{
 			this.afterText = afterText;
+		}
+		
+		public String diff(){
+			//TODO not yet implemented
+			return "";
 		}
 
 	}
