@@ -1,5 +1,9 @@
 package de.tudarmstadt.ukp.wikipedia.util.templates;
 
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 
 /**
@@ -79,12 +83,20 @@ public class RevisionPair
 	 */
 	public TextPair getInlineTextPair()
 	{
-		// TODO not yet implemented
+
+
+		//TODO assume English
+		MediaWikiParserFactory tplParserFactory = new MediaWikiParserFactory(WikiConstants.Language.english);
+		tplParserFactory.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
+		MediaWikiParser tplParser = tplParserFactory.createParser();
+
+
 
 		String beforeString = null;
 		String afterString = null;
 		if (revPairType == RevisionPairType.deleteTemplate) {
 			//before revision contains the template
+
 		}
 		else if (revPairType == RevisionPairType.addTemplate) {
 			//after revision contains the template
