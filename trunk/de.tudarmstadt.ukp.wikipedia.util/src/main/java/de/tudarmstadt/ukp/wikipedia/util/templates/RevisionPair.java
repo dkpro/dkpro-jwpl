@@ -1,6 +1,12 @@
 package de.tudarmstadt.ukp.wikipedia.util.templates;
 
+import java.util.List;
+
+import org.sweble.wikitext.engine.CompilerException;
+
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
+import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
+import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SwebleUtils;
 
 /**
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a
@@ -83,17 +89,30 @@ public class RevisionPair
 		String beforeString = null;
 		String afterString = null;
 
-		if (revPairType == RevisionPairType.deleteTemplate) {
-			//"before" revision contains the template
+		try{
+			if (revPairType == RevisionPairType.deleteTemplate) {
+				//"before" revision contains the template
+				List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID()+"", before.getRevisionID());
+				List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID()+"", after.getRevisionID());
 
-			//TODO sync before-after: using title? fuzzy matching? location in article?
+				for(ExtractedSection sect:beforeSections){
+					//TODO find sect with template
+					//TODO sync before-after: using title? fuzzy matching? location in article?
+				}
+			}
+			else if (revPairType == RevisionPairType.addTemplate) {
+				//"after" revision contains the template
+				List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID()+"", before.getRevisionID());
+				List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID()+"", after.getRevisionID());
 
-		}
-		else if (revPairType == RevisionPairType.addTemplate) {
-			//"after" revision contains the template
-
-			//TODO sync before-after: using title? fuzzy matching? location in article?
-
+				for(ExtractedSection sect:afterSections){
+					//TODO find sect with template
+					//TODO sync before-after: using title? fuzzy matching? location in article?
+				}
+			}
+		}catch(CompilerException cEx){
+			//TODO handle properly
+			cEx.printStackTrace();
 		}
 		return new TextPair(beforeString, afterString);
 	}
