@@ -10,6 +10,7 @@ import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
+import de.tudarmstadt.ukp.wikipedia.api.sweble.TemplateNameExtractor;
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
 
 public class SwebleUtils
@@ -29,6 +30,18 @@ public class SwebleUtils
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 
+	/**
+	 * Extracts template names from Wikitext by descending into every node and looking for templates.
+	 * Results may contain duplicates if template appears multiple times in the article.
+	 *
+	 * @param text article text with wiki markup
+	 * @param title article title
+	 * @return list of template names
+	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 */
+	public static List<String> getTemplateNames(String text, String title) throws CompilerException{
+		return (List<String>) parsePage(new TemplateNameExtractor(), text, title, -1);
+	}
 
 	/**
 	 * Parses the page with the Sweble parser using a SimpleWikiConfiguration

@@ -1,5 +1,6 @@
 package de.tudarmstadt.ukp.wikipedia.util.templates;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.sweble.wikitext.engine.CompilerException;
@@ -83,38 +84,47 @@ public class RevisionPair
 	 * @return a pair of strings corresponding to the before-revision and
 	 *         after-revision
 	 */
-	public TextPair getInlineTextPair()
+	public List<TextPair> getInlineTextPairs()
 	{
-
-		String beforeString = null;
-		String afterString = null;
+		List<TextPair> pairList = new ArrayList<TextPair>();
 
 		try{
-			if (revPairType == RevisionPairType.deleteTemplate) {
-				//"before" revision contains the template
-				List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID()+"", before.getRevisionID());
-				List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID()+"", after.getRevisionID());
-
-				for(ExtractedSection sect:beforeSections){
-					//TODO find sect with template
-					//TODO sync before-after: using title? fuzzy matching? location in article?
-				}
-			}
-			else if (revPairType == RevisionPairType.addTemplate) {
-				//"after" revision contains the template
-				List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID()+"", before.getRevisionID());
-				List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID()+"", after.getRevisionID());
-
-				for(ExtractedSection sect:afterSections){
-					//TODO find sect with template
-					//TODO sync before-after: using title? fuzzy matching? location in article?
+			List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID()+"", before.getRevisionID());
+			List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID()+"", after.getRevisionID());
+			for(ExtractedSection tplSect:revPairType == RevisionPairType.deleteTemplate?beforeSections:afterSections){
+				//in DELETE-mode, the "before" revision contain the templates
+				//in ADD-mode, the "after" revision contains the templates
+				List<String> templates = SwebleUtils.getTemplateNames(tplSect.getBody(), tplSect.getTitle());
+				if(containsIgnoreCase(templates, template)){
+					//the current sect contains the template we're looking for
+					//now find the corresponding tpl in the other revisions
+					for(ExtractedSection nonTplSect:revPairType == RevisionPairType.deleteTemplate?afterSections:beforeSections){
+						//TODO how do we match the sections?
+						//currently only by title - we could do fuzzy matching of the section body
+						if(tplSect.getTitle().equalsIgnoreCase(nonTplSect.getTitle())){
+							if(revPairType == RevisionPairType.deleteTemplate){
+								pairList.add(new TextPair(tplSect.getBody(),nonTplSect.getBody()));
+							}else{
+								pairList.add(new TextPair(nonTplSect.getBody(),tplSect.getBody()));
+							}
+						}
+					}
 				}
 			}
 		}catch(CompilerException cEx){
 			//TODO handle properly
 			cEx.printStackTrace();
 		}
-		return new TextPair(beforeString, afterString);
+		return pairList;
+	}
+
+	private boolean containsIgnoreCase(List<String> stringlist, String match){
+		for(String s:stringlist){
+			if(s.equalsIgnoreCase(match)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public enum RevisionPairType
