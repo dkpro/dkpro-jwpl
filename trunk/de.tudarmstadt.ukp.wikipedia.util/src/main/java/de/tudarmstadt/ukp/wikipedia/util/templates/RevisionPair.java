@@ -94,13 +94,16 @@ public class RevisionPair
 			for(ExtractedSection tplSect:revPairType == RevisionPairType.deleteTemplate?beforeSections:afterSections){
 				//in DELETE-mode, the "before" revision contain the templates
 				//in ADD-mode, the "after" revision contains the templates
-				List<String> templates = SwebleUtils.getTemplateNames(tplSect.getBody(), tplSect.getTitle()==null?"EMPTYTITLE":tplSect.getTitle());
-				if(containsIgnoreCase(templates, template)){
+				if(containsIgnoreCase(tplSect.getTemplates(), template)){
 					//the current sect contains the template we're looking for
 					//now find the corresponding tpl in the other revisions
 					for(ExtractedSection nonTplSect:revPairType == RevisionPairType.deleteTemplate?afterSections:beforeSections){
 						//TODO how do we match the sections?
 						//currently only by title - we could do fuzzy matching of the section body
+						System.out.println("Check pair");
+						System.out.println(tplSect.getTitle());
+						System.out.println(nonTplSect.getTitle());
+						System.out.println();
 						if(tplSect.getTitle().equalsIgnoreCase(nonTplSect.getTitle())){
 							if(revPairType == RevisionPairType.deleteTemplate){
 								pairList.add(new TextPair(tplSect.getBody(),nonTplSect.getBody()));

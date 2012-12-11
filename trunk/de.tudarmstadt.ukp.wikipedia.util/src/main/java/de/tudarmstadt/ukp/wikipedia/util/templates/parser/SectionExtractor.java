@@ -9,6 +9,7 @@ package de.tudarmstadt.ukp.wikipedia.util.templates.parser;
  */
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 import org.sweble.wikitext.lazy.LinkTargetException;
 import org.sweble.wikitext.lazy.parser.*;
+import org.sweble.wikitext.lazy.preprocessor.Template;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
@@ -38,6 +40,7 @@ public class SectionExtractor extends AstVisitor
 	private List<ExtractedSection> sections;
 
 	private StringBuilder bodyBuilder = new StringBuilder();
+	private List<String> curTpls = new ArrayList<String>();
 
 	// =========================================================================
 
@@ -177,6 +180,19 @@ public class SectionExtractor extends AstVisitor
 		iterate(n);
 	}
 
+	public void visit(Template tmpl) throws IOException
+	{
+		for(AstNode n:tmpl.getName()){
+			if(n instanceof Text){
+				String s = ((Text)n).getContent();
+				s=s.replace("\n", "").replace("\r", "");
+				if (!s.trim().isEmpty()) {
+					curTpls.add(s);
+				}
+			}
+		}
+	}
+
 	public void visit(Text n)
 	{
 		bodyBuilder.append(n.getContent());
@@ -195,8 +211,9 @@ public class SectionExtractor extends AstVisitor
 		}
 		iterate(sect.getBody());
 
-		sections.add(new ExtractedSection(title,bodyBuilder.toString().trim()));
+		sections.add(new ExtractedSection(title,bodyBuilder.toString().trim(),curTpls));
 		bodyBuilder=new StringBuilder();
+		curTpls.clear();
 	}
 
 
@@ -210,10 +227,13 @@ public class SectionExtractor extends AstVisitor
 	{
 		private String title;
 		private String body;
+		private List<String> templates = new ArrayList<String>();
 
-		public ExtractedSection(String title, String body){
+		public ExtractedSection(String title, String body, List<String> templates){
 			this.title=title;
 			this.body=body;
+			this.templates=templates;
+
 		}
 
 		public String getTitle()
@@ -231,6 +251,20 @@ public class SectionExtractor extends AstVisitor
 		public void setBody(String aBody)
 		{
 			body = aBody;
+		}
+
+		public List<String> getTemplates()
+		{
+			return templates;
+		}
+
+		public void setTemplates(List<String> templates)
+		{
+			this.templates = templates;
+		}
+
+		public void addTemplate(String tpl){
+			this.templates.add(tpl);
 		}
 	}
 }
