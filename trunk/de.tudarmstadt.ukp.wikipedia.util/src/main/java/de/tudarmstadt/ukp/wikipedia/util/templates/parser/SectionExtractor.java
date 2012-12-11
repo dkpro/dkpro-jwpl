@@ -10,7 +10,6 @@ package de.tudarmstadt.ukp.wikipedia.util.templates.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.JAXBException;
@@ -40,7 +39,7 @@ public class SectionExtractor extends AstVisitor
 	private List<ExtractedSection> sections;
 
 	private StringBuilder bodyBuilder = new StringBuilder();
-	private List<String> curTpls = new ArrayList<String>();
+	private List<String> curTpls;
 
 	// =========================================================================
 
@@ -80,7 +79,8 @@ public class SectionExtractor extends AstVisitor
 	protected boolean before(AstNode node)
 	{
 		// This method is called by go() before visitation starts
-		sections = new LinkedList<ExtractedSection>();
+		sections = new ArrayList<ExtractedSection>();
+		curTpls = new ArrayList<String>();
 		return super.before(node);
 	}
 
@@ -202,7 +202,6 @@ public class SectionExtractor extends AstVisitor
 	{
 
 		String title = null;
-		String body = null;
 
 		for(AstNode n:sect.getTitle()){
 			if(n instanceof Text){
@@ -213,7 +212,7 @@ public class SectionExtractor extends AstVisitor
 
 		sections.add(new ExtractedSection(title,bodyBuilder.toString().trim(),curTpls));
 		bodyBuilder=new StringBuilder();
-		curTpls.clear();
+		curTpls = new ArrayList<String>();
 	}
 
 
