@@ -10,6 +10,7 @@ import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
+import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
 
 public class SwebleUtils
 {
@@ -24,8 +25,8 @@ public class SwebleUtils
 	 * @return list of Strings with the sections text
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	public static List<String> getSections(String text, String title, long revision) throws CompilerException{
-		return (List<String>) parsePage(new SectionExtractor(), text, title, revision);
+	public static List<ExtractedSection> getSections(String text, String title, long revision) throws CompilerException{
+		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 
 

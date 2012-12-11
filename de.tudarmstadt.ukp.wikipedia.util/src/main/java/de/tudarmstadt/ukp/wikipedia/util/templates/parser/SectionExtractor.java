@@ -31,8 +31,7 @@ public class SectionExtractor extends AstVisitor
 {
 	private final SimpleWikiConfiguration config;
 
-
-	private List<String> sections;
+	private List<ExtractedSection> sections;
 
 	// =========================================================================
 
@@ -72,7 +71,7 @@ public class SectionExtractor extends AstVisitor
 	protected boolean before(AstNode node)
 	{
 		// This method is called by go() before visitation starts
-		sections = new LinkedList<String>();
+		sections = new LinkedList<ExtractedSection>();
 		return super.before(node);
 	}
 
@@ -91,20 +90,56 @@ public class SectionExtractor extends AstVisitor
 
 	public void visit(Section sect) throws IOException
 	{
-		for(AstNode n:sect.getBody()){
+
+		String title = null;
+		String body = null;
+
+		for(AstNode n:sect.getTitle()){
 			if(n instanceof Text){
-				add(((Text)n).getContent());
+				title = ((Text)n).getContent();
 			}
 		}
-	}
-
-	private void add(String s)
-	{
-		s=s.replace("\n", "").replace("\r", "");
-		if (s.trim().isEmpty()) {
-			return;
+		for(AstNode n:sect.getBody()){
+			if(n instanceof Text){
+				body = ((Text)n).getContent();
+			}
 		}
-		sections.add(s);
+
+		sections.add(new ExtractedSection(title,body));
 	}
 
+
+	/**
+	 * Wraps title and body text of an extraction section
+	 *
+	 * @author Oliver Ferschke
+	 *
+	 */
+	public class ExtractedSection
+	{
+		private String title;
+		private String body;
+
+		public ExtractedSection(String title, String body){
+			this.title=title;
+			this.body=body;
+		}
+
+		public String getTitle()
+		{
+			return title;
+		}
+		public void setTitle(String aTitle)
+		{
+			title = aTitle;
+		}
+		public String getBody()
+		{
+			return body;
+		}
+		public void setBody(String aBody)
+		{
+			body = aBody;
+		}
+	}
 }
