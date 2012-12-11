@@ -94,7 +94,7 @@ public class RevisionPair
 			for(ExtractedSection tplSect:revPairType == RevisionPairType.deleteTemplate?beforeSections:afterSections){
 				//in DELETE-mode, the "before" revision contain the templates
 				//in ADD-mode, the "after" revision contains the templates
-				List<String> templates = SwebleUtils.getTemplateNames(tplSect.getBody(), tplSect.getTitle());
+				List<String> templates = SwebleUtils.getTemplateNames(tplSect.getBody(), tplSect.getTitle()==null?"EMPTYTITLE":tplSect.getTitle());
 				if(containsIgnoreCase(templates, template)){
 					//the current sect contains the template we're looking for
 					//now find the corresponding tpl in the other revisions
