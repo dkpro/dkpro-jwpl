@@ -16,13 +16,12 @@ public class SwebleUtils
     public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
 	/**
-	 * Extracts template names from Wikitext and only descends into Page, Section and Paragraph nodes.
-	 * Results may contain duplicates if template appears multiple times in the article.
+	 * Extracts sections (without title) from Wikitext.
 	 *
 	 * @param text article text with wiki markup
 	 * @param title article title
 	 * @param revision the revision id
-	 * @return list of template names
+	 * @return list of Strings with the sections text
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
 	public static List<String> getSections(String text, String title, long revision) throws CompilerException{
