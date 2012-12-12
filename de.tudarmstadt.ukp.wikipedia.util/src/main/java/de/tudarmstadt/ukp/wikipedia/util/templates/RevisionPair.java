@@ -17,9 +17,9 @@ import difflib.Patch;
 /**
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a
  * template has been added or removed (depending on the mode).
- * 
+ *
  * @author Oliver Ferschke
- * 
+ *
  */
 public class RevisionPair {
 
@@ -67,7 +67,7 @@ public class RevisionPair {
 	/**
 	 * Returns the text around the given template and returns the corresponding
 	 * text in the other pair part of the RevisionPair
-	 * 
+	 *
 	 * @return a pair of strings corresponding to the before-revision and
 	 *         after-revision
 	 */
@@ -113,6 +113,13 @@ public class RevisionPair {
 		return pairList;
 	}
 
+	/**
+	 * Checks if a list of string contains a String while ignoring case
+	 *
+	 * @param stringlist a list of string
+	 * @param match the string to look for
+	 * @return true, if the list contains the string, false else
+	 */
 	private boolean containsIgnoreCase(List<String> stringlist, String match) {
 		for (String s : stringlist) {
 			if (s.equalsIgnoreCase(match)) {
@@ -128,9 +135,9 @@ public class RevisionPair {
 
 	/**
 	 * Represents a pair of Strings. Usually corresponding to a RevisionPair.
-	 * 
+	 *
 	 * @author Oliver Ferschke
-	 * 
+	 *
 	 */
 	public class TextPair {
 		private String beforeText;
@@ -160,7 +167,7 @@ public class RevisionPair {
 		/**
 		 * Returns the patch object that contains all diffs between
 		 * the beforeText and the afterText
-		 * 
+		 *
 		 * @return Patch object with all diffs
 		 */
 		public Patch getPatch() {
@@ -170,7 +177,7 @@ public class RevisionPair {
 		/**
 		 * Returns the deltas between beforeText and afterText as a line separated String.
 		 * For more detailed diffs, use getPatch()
-		 * 
+		 *
 		 * @return diffs as line-separated String
 		 */
 		public String getLineSeparatedDiffs() {
@@ -182,20 +189,33 @@ public class RevisionPair {
 			return deltas.toString();
 		}
 
-		
+
+		/**
+		 * Splits a String into sentences using the BreakIterator with
+		 * US locale
+		 *
+		 * @param str a String with (multiple) sentences
+		 * @return a list of Strings - one sentences per String
+		 */
 		private List<String> sentenceSplit(String str) {
 			BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 			iterator.setText(str);
 			int start = iterator.first();
 			List<String> sentences = new ArrayList<String>();
-			for (int end = iterator.next(); 
-				 end != BreakIterator.DONE; 
+			for (int end = iterator.next();
+				 end != BreakIterator.DONE;
 				 start = end, end = iterator.next()) {
 				sentences.add(str.substring(start, end).trim());
 			}
 			return sentences;
 		}
-		
+
+		/**
+		 * Concatenates a list of Strings to one line-separated String
+		 *
+		 * @param stringList a list of Strings
+		 * @return a single line-separated String containing all Strings from the list
+		 */
 		private String listToString(List<String> stringList){
 			StringBuilder concat = new StringBuilder();
 			for(String str:stringList){
