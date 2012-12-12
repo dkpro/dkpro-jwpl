@@ -142,8 +142,8 @@ public class RevisionPair {
 		private String afterText;
 
 		public TextPair(String before, String after) {
-			this.beforeText = StringUtils.normalizeSpace(before);
-			this.afterText = StringUtils.normalizeSpace(after);
+			this.beforeText = normalize(before);
+			this.afterText = normalize(after);
 		}
 
 		public String getBeforeText() {
@@ -151,7 +151,7 @@ public class RevisionPair {
 		}
 
 		public void setBeforeText(String beforeText) {
-			this.beforeText = StringUtils.normalizeSpace(beforeText);
+			this.beforeText = normalize(beforeText);
 		}
 
 		public String getAfterText() {
@@ -159,7 +159,7 @@ public class RevisionPair {
 		}
 
 		public void setAfterText(String afterText) {
-			this.afterText = StringUtils.normalizeSpace(afterText);
+			this.afterText = normalize(afterText);
 		}
 
 		/**
@@ -318,6 +318,25 @@ public class RevisionPair {
 				concat.append(System.getProperty("line.separator"));
 			}
 			return concat.toString();
+		}
+
+		/**
+		 * Normalizes the Strings in the TextPair.
+		 * This mainly deals with whitespace-issues.
+		 * Other normalizations can be included.
+		 *
+		 * @param str
+		 * @return
+		 */
+		private String normalize(String str){
+			str = StringUtils.trimToEmpty(str);
+			str = StringUtils.normalizeSpace(str);
+
+			// remove whitespace before punctuation. not using \p{Punct},
+			// because it includes to many special characters.
+			str = str.replaceAll("\\s+(?=[.!,\\?;:])", "");
+
+			return str;
 		}
 
 	}
