@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.sweble.wikitext.engine.CompilerException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
@@ -76,8 +75,8 @@ public class RevisionPair {
 		List<TextPair> pairList = new ArrayList<TextPair>();
 
 		try {
-			List<ExtractedSection> beforeSections = SwebleUtils.getSections(StringEscapeUtils.unescapeHtml(before.getRevisionText()), before.getRevisionID() + "",before.getRevisionID());
-			List<ExtractedSection> afterSections = SwebleUtils.getSections(StringEscapeUtils.unescapeHtml(after.getRevisionText()), after.getRevisionID() + "", after.getRevisionID());
+			List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID());
+			List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID());
 			for (ExtractedSection tplSect : revPairType == RevisionPairType.deleteTemplate ? beforeSections
 					: afterSections) {
 				// in DELETE-mode, the "before" revision contain the templates
