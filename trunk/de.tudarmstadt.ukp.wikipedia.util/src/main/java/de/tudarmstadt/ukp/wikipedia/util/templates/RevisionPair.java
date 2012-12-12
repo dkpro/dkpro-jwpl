@@ -69,8 +69,18 @@ public class RevisionPair {
 	}
 
 	/**
-	 * Returns the text around the given template and returns the corresponding
-	 * text in the other pair part of the RevisionPair
+	 * Returns the text "around the given template" and returns the corresponding
+	 * text in the other pair part of the RevisionPair.
+	 *
+	 * Currently, this is done section-based. On TextPairPart contains a section
+	 * with a template and the other contains the corresponding section
+	 * after the template has been deleted (in deleteTemplate mode) or before
+	 * it has been added (in addTemplate mode).
+	 *
+	 * Note that this only makes sense for inline- or section-templates.
+	 *
+	 * The section-matching is currently done simply by matching section titles.
+	 * If the title has changed, no match will be found.
 	 *
 	 * @return a pair of strings corresponding to the before-revision and
 	 *         after-revision
