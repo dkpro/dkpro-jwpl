@@ -189,6 +189,31 @@ public class RevisionPair {
 			return deltas.toString();
 		}
 
+		/**
+		 * Returns the unified diff between "Before" and "After"
+		 * containing one sentence per String.
+		 * <code>contextSize</code> defines a window of lines/sentences around each change
+		 * to display
+		 *
+		 * @param contextSize numer of lines/sentences around a change to display
+		 * @return diffs as line-separated String
+		 */
+		public List<String> getUnifiedDiffStrings(int contextSize) {
+			return DiffUtils.generateUnifiedDiff("Before", "After", sentenceSplit(beforeText), getPatch(), contextSize);
+		}
+
+		/**
+		 * Returns the unified diff between "Before" and "After" as a single
+		 * line-separated String
+		 * @see getUnifiedDiffStrings()
+		 *
+		 * @param contextSize numer of characters around a change to display
+		 * @return diffs as line-separated String
+		 */
+		public String getUnifiedDiffString(int contextSize) {
+			return listToString(getUnifiedDiffStrings(contextSize));
+		}
+
 
 		/**
 		 * Splits a String into sentences using the BreakIterator with
