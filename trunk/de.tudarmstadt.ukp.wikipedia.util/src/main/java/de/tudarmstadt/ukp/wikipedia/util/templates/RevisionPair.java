@@ -175,15 +175,42 @@ public class RevisionPair {
 		}
 
 		/**
-		 * Returns the deltas between beforeText and afterText as a line separated String.
-		 * For more detailed diffs, use getPatch()
+		 * Returns the deltas between beforeText and afterText as a line separated String
+		 * using delta.toString()
+		 * For more detailed diffs, use getPatch() or getUnifiedDiffStrings()
 		 *
-		 * @return diffs as line-separated String
+		 * @return diffs as line-separated String using delta.toString()
 		 */
-		public String getLineSeparatedDiffs() {
+		public String getSimpleDiffString() {
 			StringBuilder deltas = new StringBuilder();
 			for(Delta delta:getPatch().getDeltas()){
 				deltas.append(delta.toString());
+				deltas.append(System.getProperty("line.separator"));
+			}
+			return deltas.toString();
+		}
+
+		/**
+		 * Returns the deltas between beforeText and afterText as a line separated String.
+		 * For more detailed diffs, use getPatch() or getUnifiedDiffStrings()
+		 *
+		 * @return diffs as line-separated String
+		 */
+		public String getLongDiffString() {
+			StringBuilder deltas = new StringBuilder();
+			for(Delta delta:getPatch().getDeltas()){
+				deltas.append("DeltaType: "+delta.getType().toString());
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append("Original (Non-Neutral):");
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append(delta.getOriginal());
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append("Revised (Neutral):");
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append(delta.getRevised());
+				deltas.append(System.getProperty("line.separator"));
+				deltas.append("*********************************************");
 				deltas.append(System.getProperty("line.separator"));
 			}
 			return deltas.toString();
