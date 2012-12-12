@@ -226,8 +226,6 @@ public class RevisionPair {
 				deltas.append(System.getProperty("line.separator"));
 				deltas.append(delta.getRevised());
 				deltas.append(System.getProperty("line.separator"));
-				deltas.append("*********************************************");
-				deltas.append(System.getProperty("line.separator"));
 			}
 			return deltas.toString();
 		}
@@ -251,8 +249,6 @@ public class RevisionPair {
 					deltas.append("Revised (Neutral):");
 					deltas.append(System.getProperty("line.separator"));
 					deltas.append(delta.getRevised());
-					deltas.append(System.getProperty("line.separator"));
-					deltas.append("*********************************************");
 					deltas.append(System.getProperty("line.separator"));
 				}
 			}
