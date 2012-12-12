@@ -26,7 +26,7 @@ public class SectionExtractionTest
 		dbconf.setLanguage(WikiConstants.Language.english);
 		try {
 			Wikipedia wiki = new Wikipedia(dbconf);
-			Page p = wiki.getPage("Germany");
+			Page p = wiki.getPage("Ari Sitas");
 
 			List<ExtractedSection> sects = SwebleUtils.getSections(p.getText(),p.getTitle().toString(),  -1);
 			for(ExtractedSection sect:sects){
