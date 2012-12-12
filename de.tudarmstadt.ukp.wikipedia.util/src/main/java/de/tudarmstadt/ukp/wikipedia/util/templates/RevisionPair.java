@@ -13,6 +13,8 @@ import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.Extra
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SwebleUtils;
 import difflib.Delta;
 import difflib.Delta.TYPE;
+import difflib.DiffRow;
+import difflib.DiffRowGenerator;
 import difflib.DiffUtils;
 import difflib.Patch;
 
@@ -171,6 +173,25 @@ public class RevisionPair {
 		public Patch getPatch() {
 			return DiffUtils.diff(sentenceSplit(beforeText), sentenceSplit(afterText));
 		}
+
+		public List<DiffRow> getDiffRows(){
+			DiffRowGenerator generator = new DiffRowGenerator.Builder()
+            	.showInlineDiffs(true)
+            	.columnWidth(Integer.MAX_VALUE) // do not wrap
+            	.build();
+
+			return generator.generateDiffRows(sentenceSplit(beforeText),sentenceSplit(afterText));
+		}
+
+		public String getInlineDiffString() {
+			StringBuilder diffString = new StringBuilder();
+			for(DiffRow row:getDiffRows()){
+				diffString.append(row.toString());
+				diffString.append(System.getProperty("line.separator"));
+			}
+			return diffString.toString();
+		}
+
 
 		/**
 		 * Returns the deltas between beforeText and afterText as a line separated String
