@@ -19,6 +19,8 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 import java.sql.Timestamp;
 import java.util.Collection;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.ISizeable;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.DiffPart;
 
@@ -218,7 +220,7 @@ public class Revision
 		if (this.revisionText == null) {
 			revisionApi.setRevisionTextAndParts(this);
 		}
-		return this.revisionText;
+		return StringEscapeUtils.unescapeHtml(this.revisionText);
 	}
 
 	/**
