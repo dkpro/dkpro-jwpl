@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.sweble.wikitext.engine.CompilerException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
@@ -141,8 +142,8 @@ public class RevisionPair {
 		private String afterText;
 
 		public TextPair(String before, String after) {
-			this.beforeText = before;
-			this.afterText = after;
+			this.beforeText = StringUtils.normalizeSpace(before);
+			this.afterText = StringUtils.normalizeSpace(after);
 		}
 
 		public String getBeforeText() {
@@ -150,7 +151,7 @@ public class RevisionPair {
 		}
 
 		public void setBeforeText(String beforeText) {
-			this.beforeText = beforeText;
+			this.beforeText = StringUtils.normalizeSpace(beforeText);
 		}
 
 		public String getAfterText() {
@@ -158,7 +159,7 @@ public class RevisionPair {
 		}
 
 		public void setAfterText(String afterText) {
-			this.afterText = afterText;
+			this.afterText = StringUtils.normalizeSpace(afterText);
 		}
 
 		/**
