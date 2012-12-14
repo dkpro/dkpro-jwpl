@@ -98,13 +98,11 @@ public class RevisionPair {
 				if (containsIgnoreCase(tplSect.getTemplates(), template)) {
 					// the current sect contains the template we're looking for
 					// now find the corresponding tpl in the other revisions
-					for (ExtractedSection nonTplSect : revPairType == RevisionPairType.deleteTemplate ? afterSections
-							: beforeSections) {
+					for (ExtractedSection nonTplSect : revPairType == RevisionPairType.deleteTemplate ? afterSections: beforeSections) {
 						// TODO how do we match the sections?
 						// currently only by title - we could do fuzzy matching
 						// of the section body
-						if (tplSect.getTitle().equalsIgnoreCase(
-								nonTplSect.getTitle())) {
+						if (tplSect.getTitle()!=null&&nonTplSect.getTitle()!=null&&tplSect.getTitle().equalsIgnoreCase(nonTplSect.getTitle())) {
 							if (revPairType == RevisionPairType.deleteTemplate) {
 								pairList.add(new TextPair(tplSect.getBody(),
 										nonTplSect.getBody()));
