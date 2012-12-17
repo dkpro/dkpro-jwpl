@@ -120,6 +120,7 @@ public class RevisionPair {
 			//Therefore, we should catch all exceptions here and return the
 			//TextPairs identified so far (if any)
 			ex.printStackTrace();
+			//TODO use logger!!
 		}
 		return pairList;
 	}
