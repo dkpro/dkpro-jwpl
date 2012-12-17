@@ -186,9 +186,9 @@ public class RevisionPair {
 			return DiffUtils.diff(sentenceSplit(beforeText), sentenceSplit(afterText));
 		}
 
-		public List<DiffRow> getDiffRows(){
+		public List<DiffRow> getDiffRows(boolean markChangesInline){
 			DiffRowGenerator generator = new DiffRowGenerator.Builder()
-            	.showInlineDiffs(true)
+            	.showInlineDiffs(markChangesInline)
             	.columnWidth(Integer.MAX_VALUE) // do not wrap
             	.build();
 
@@ -197,7 +197,7 @@ public class RevisionPair {
 
 		public String getInlineDiffString() {
 			StringBuilder diffString = new StringBuilder();
-			for(DiffRow row:getDiffRows()){
+			for(DiffRow row:getDiffRows(true)){
 				diffString.append(row.toString());
 				diffString.append(System.getProperty("line.separator"));
 			}
