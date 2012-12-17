@@ -114,9 +114,9 @@ public class RevisionPair {
 				}
 			}
 		} catch (Exception ex) {
-			//if a (SWEBLE-)compiler exception occurs
-			//sometimes, malformed xml items seem to cause class cast exceptions
-			//in the parser, which is not wrapped in a Compiler exception
+			//This happends if a (SWEBLE-)compiler exception occurs.S
+			//Sometimes, malformed xml items seem to cause class cast exceptions
+			//in the parser, which is not wrapped in a Compiler exception.
 			//Therefore, we should catch all exceptions here and return the
 			//TextPairs identified so far (if any)
 			ex.printStackTrace();
