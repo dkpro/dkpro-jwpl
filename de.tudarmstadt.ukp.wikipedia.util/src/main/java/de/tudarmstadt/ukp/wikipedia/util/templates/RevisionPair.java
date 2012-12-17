@@ -119,7 +119,7 @@ public class RevisionPair {
 			//in the parser, which is not wrapped in a Compiler exception.
 			//Therefore, we should catch all exceptions here and return the
 			//TextPairs identified so far (if any)
-			ex.printStackTrace();
+			System.err.println(ex.getMessage());
 			//TODO use logger!!
 		}
 		return pairList;
