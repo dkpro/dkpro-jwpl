@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.sweble.wikitext.engine.CompilerException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
@@ -114,9 +113,13 @@ public class RevisionPair {
 					}
 				}
 			}
-		} catch (CompilerException cEx) {
-			// TODO handle properly
-			cEx.printStackTrace();
+		} catch (Exception ex) {
+			//if a (SWEBLE-)compiler exception occurs
+			//sometimes, malformed xml items seem to cause class cast exceptions
+			//in the parser, which is not wrapped in a Compiler exception
+			//Therefore, we should catch all exceptions here and return the
+			//TextPairs identified so far (if any)
+			ex.printStackTrace();
 		}
 		return pairList;
 	}
