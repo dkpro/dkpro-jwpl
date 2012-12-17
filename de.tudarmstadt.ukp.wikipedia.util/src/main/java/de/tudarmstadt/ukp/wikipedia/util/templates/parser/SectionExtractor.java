@@ -166,6 +166,16 @@ public class SectionExtractor extends AstVisitor
 		iterate(n);
 	}
 
+	public void visit(XmlElementOpen n){
+	}
+
+	public void visit(XmlElementClose n){
+	}
+
+	public void visit(XmlElementEmpty n){
+	}
+
+
 	public void visit(AstNode n)
 	{
 	}
