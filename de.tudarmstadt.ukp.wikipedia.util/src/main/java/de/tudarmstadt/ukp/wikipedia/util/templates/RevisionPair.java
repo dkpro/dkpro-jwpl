@@ -90,8 +90,7 @@ public class RevisionPair {
 		try {
 			List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID());
 			List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID());
-			for (ExtractedSection tplSect : revPairType == RevisionPairType.deleteTemplate ? beforeSections
-					: afterSections) {
+			for (ExtractedSection tplSect : revPairType == RevisionPairType.deleteTemplate ? beforeSections : afterSections) {
 				// in DELETE-mode, the "before" revision contain the templates
 				// in ADD-mode, the "after" revision contains the templates
 				if (containsIgnoreCase(tplSect.getTemplates(), template)) {
@@ -106,8 +105,7 @@ public class RevisionPair {
 								pairList.add(new TextPair(tplSect.getBody(),
 										nonTplSect.getBody()));
 							} else {
-								pairList.add(new TextPair(nonTplSect.getBody(),
-										tplSect.getBody()));
+								pairList.add(new TextPair(nonTplSect.getBody(), tplSect.getBody()));
 							}
 						}
 					}

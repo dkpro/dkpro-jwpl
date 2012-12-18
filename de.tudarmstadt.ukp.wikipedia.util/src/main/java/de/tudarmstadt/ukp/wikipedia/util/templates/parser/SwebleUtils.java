@@ -26,7 +26,7 @@ public class SwebleUtils
 	 * @return list of Strings with the sections text
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision) throws CompilerException{
+	public static List<ExtractedSection> getSections(String text, String title, long revision) throws Exception{
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 
@@ -39,7 +39,7 @@ public class SwebleUtils
 	 * @return list of template names
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	public static List<String> getTemplateNames(String text, String title) throws CompilerException{
+	public static List<String> getTemplateNames(String text, String title) throws Exception{
 		return (List<String>) parsePage(new TemplateNameExtractor(), text, title, -1);
 	}
 
@@ -52,7 +52,7 @@ public class SwebleUtils
 	 *         type of the go() method of your visitor.
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws CompilerException{
+	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws Exception{
 		// Use the provided visitor to parse the page
 		return v.go(getCompiledPage(text, title, revision).getPage());
 	}
@@ -64,17 +64,12 @@ public class SwebleUtils
 	 * @return the parsed page
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	private static CompiledPage getCompiledPage(String text, String title, long revision) throws CompilerException
+	private static CompiledPage getCompiledPage(String text, String title, long revision) throws Exception
 	{
-		SimpleWikiConfiguration config = null;
-		PageId pageId = null;
-		try{
-			config = new SimpleWikiConfiguration(SWEBLE_CONFIG);
-			PageTitle pageTitle = PageTitle.make(config, title);
-			pageId = new PageId(pageTitle, revision);
-		}catch(Exception e){
-			throw new CompilerException(e.getMessage(),e);
-		}
+		SimpleWikiConfiguration config = new SimpleWikiConfiguration(SWEBLE_CONFIG);
+
+		PageTitle pageTitle = PageTitle.make(config, title);
+		PageId pageId = new PageId(pageTitle, revision);
 		// Compile the retrieved page
 		Compiler compiler = new Compiler(config);
 		return compiler.postprocess(pageId, text, null);
