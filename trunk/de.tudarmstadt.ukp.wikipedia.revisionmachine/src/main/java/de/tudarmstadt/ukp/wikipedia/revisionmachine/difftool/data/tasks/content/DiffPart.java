@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -16,15 +16,19 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content;
 
+import java.io.Serializable;
+
 /**
  * The DiffPart class represents the operation used to create a new revision
  * from an older revision.
- * 
- * 
- * 
+ *
+ *
+ *
  */
-public class DiffPart
+public class DiffPart implements Serializable
 {
+
+	private static final long serialVersionUID = 6208903899064982679L;
 
 	/** Start position of the text block */
 	private int start;
@@ -40,7 +44,7 @@ public class DiffPart
 
 	/**
 	 * (Constructor) Creates a new DiffPart object.
-	 * 
+	 *
 	 * @param action
 	 *            DiffAction
 	 */
@@ -52,7 +56,7 @@ public class DiffPart
 
 	/**
 	 * Returns the length of the text block.
-	 * 
+	 *
 	 * @return length of the text block
 	 */
 	public int getLength()
@@ -62,7 +66,7 @@ public class DiffPart
 
 	/**
 	 * Sets the length of the text block.
-	 * 
+	 *
 	 * @param length
 	 *            length of the text block
 	 */
@@ -73,7 +77,7 @@ public class DiffPart
 
 	/**
 	 * Returns the start position of the text block.
-	 * 
+	 *
 	 * @return start position
 	 */
 	public int getStart()
@@ -83,7 +87,7 @@ public class DiffPart
 
 	/**
 	 * Returns the end position of the text block.
-	 * 
+	 *
 	 * @return end position
 	 */
 	public int getEnd()
@@ -93,7 +97,7 @@ public class DiffPart
 
 	/**
 	 * Sets the start position of the text block.
-	 * 
+	 *
 	 * @param start
 	 *            start position
 	 */
@@ -104,7 +108,7 @@ public class DiffPart
 
 	/**
 	 * Sets the textual information.
-	 * 
+	 *
 	 * @param text
 	 *            content
 	 */
@@ -115,7 +119,7 @@ public class DiffPart
 
 	/**
 	 * Returns the DiffAction value.
-	 * 
+	 *
 	 * @return DiffAction
 	 */
 	public DiffAction getAction()
@@ -125,7 +129,7 @@ public class DiffPart
 
 	/**
 	 * Returns the textual information.
-	 * 
+	 *
 	 * @return content
 	 */
 	public String getText()
@@ -135,9 +139,10 @@ public class DiffPart
 
 	/**
 	 * Returns a representation of the DiffAction content.
-	 * 
+	 *
 	 * @return [ DiffAction, start position, length, content ]
 	 */
+	@Override
 	public String toString()
 	{
 		return "[" + action + " " + start + " " + length + " " + text + "]\n";
@@ -146,7 +151,7 @@ public class DiffPart
 	/**
 	 * Returns the estimated number of bytes used to encode the contained
 	 * information.
-	 * 
+	 *
 	 * @return estimated size in bytes
 	 */
 	public int byteSize()
@@ -156,4 +161,28 @@ public class DiffPart
 		}
 		return 9 + text.length();
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     *
+     * DiffParts are equal if their text, actions and spans are equal
+     */
+    @Override
+	public boolean equals(Object anObject) {
+
+    	if(!(anObject instanceof DiffPart)){
+    		return false;
+    	}else{
+    		DiffPart otherRev = (DiffPart)anObject;
+			if (this.getText().equals(otherRev.getText())
+					&& this.getAction() == otherRev.getAction()
+					&& this.getStart() == otherRev.getStart()
+					&& this.getEnd() == otherRev.getEnd()) {
+    			return true;
+    		}else{
+    			return false;
+    		}
+    	}
+    }
+
 }
