@@ -1,5 +1,6 @@
 package de.tudarmstadt.ukp.wikipedia.util.templates;
 
+import java.io.Serializable;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,9 @@ import difflib.Patch;
  * @author Oliver Ferschke
  *
  */
-public class RevisionPair {
+public class RevisionPair implements Serializable{
+
+	private static final long serialVersionUID = -428550315195347191L;
 
 	private Revision before;
 	private Revision after;
@@ -142,6 +145,26 @@ public class RevisionPair {
 	public enum RevisionPairType {
 		deleteTemplate, addTemplate
 	}
+
+
+    @Override
+	public boolean equals(Object anObject) {
+    	if(!(anObject instanceof RevisionPair)){
+    		return false;
+    	}else{
+    		RevisionPair otherPair = (RevisionPair)anObject;
+			if (this.getBeforeRevision().getRevisionID() ==
+					otherPair.getBeforeRevision().getRevisionID()
+					&& this.getAfterRevision().getRevisionID() ==
+					otherPair.getAfterRevision().getRevisionID()
+					&& this.getTemplate().equals(otherPair.getTemplate())&&
+					this.getType()==otherPair.getType()) {
+    			return true;
+    		}else{
+    			return false;
+    		}
+    	}
+    }
 
 	/**
 	 * Represents a pair of Strings. Usually corresponding to a RevisionPair.
