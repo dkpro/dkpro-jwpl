@@ -1,14 +1,14 @@
 /*******************************************************************************
  * Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
- * 
+ *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser Public License v3
  * which accompanies this distribution, and is available at
  * http://www.gnu.org/licenses/lgpl.html
- * 
+ *
  * Project Website:
  * 	http://jwpl.googlecode.com
- * 
+ *
  * Contributors:
  * 	Torsten Zesch
  * 	Simon Kulessa
@@ -16,17 +16,19 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content;
 
+import java.io.Serializable;
+
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.DecodingException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorFactory;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorKeys;
 
 /**
  * This class contains the constants for the DiffActions.
- * 
- * 
- * 
+ *
+ *
+ *
  */
-public enum DiffAction
+public enum DiffAction implements Serializable
 {
 
 	/** Codec */
@@ -50,7 +52,7 @@ public enum DiffAction
 	/** Paste operation */
 	PASTE((byte) 6)/*
 					 * ,
-					 * 
+					 *
 					 * FULL_REVISION_COMPRESSED((byte)7)
 					 */;
 
@@ -59,7 +61,7 @@ public enum DiffAction
 
 	/**
 	 * Creates a DiffAction.
-	 * 
+	 *
 	 * @param code
 	 *            byte constant
 	 */
@@ -70,7 +72,7 @@ public enum DiffAction
 
 	/**
 	 * Returns the byte constant
-	 * 
+	 *
 	 * @return value of the constant
 	 */
 	public byte getValue()
@@ -80,11 +82,11 @@ public enum DiffAction
 
 	/**
 	 * Returns the appropriate DiffAction value.
-	 * 
+	 *
 	 * @param val
 	 *            byte value
 	 * @return DiffAction
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the value does not match one of the predefined byte
 	 *             constants
