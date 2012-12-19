@@ -16,6 +16,8 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -29,11 +31,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  *
  * This class contains all revision data.
  *
- * NOTE: This class performs lazy loading of the revision text. Text is reconstructed when it is first used.
- * For this reason, it carries a reference to the RevisionApi.
- * The RevisionApi is not serializable and is transient in the Revision class.
- * Therefore, make sure to load the revision text into the object before
- * serializing it!
+ * The revision text is loaded upon first access (lazy loading).
+ * When serializing a Revision, the revisionText will be loaded first.
  *
  */
 public class Revision
@@ -445,6 +444,15 @@ public class Revision
 	public Integer getContributorId()
 	{
 		return contributorId;
+	}
+
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		//load DiffParts before serializing
+		getParts();
+		//load revision text before serializing
+		getRevisionText();
+		//now we can serialize the object with the default write method
+		out.defaultWriteObject();
 	}
 
     /* (non-Javadoc)
