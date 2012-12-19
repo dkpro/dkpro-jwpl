@@ -34,6 +34,8 @@ public class Revision
 	implements ISizeable, Comparable<Revision>, RevisionDataInterface, Serializable
 {
 
+	private static final long serialVersionUID = 7955292965697731279L;
+
 	/** ID of the article */
 	private int articleID;
 
@@ -74,7 +76,7 @@ public class Revision
 	private boolean contributorIsRegistered;
 
 	/** Reference to RevisionApi */
-	private RevisionApi revisionApi;
+	private transient RevisionApi revisionApi;
 
 	// TODO add fields for the revision flags
 
