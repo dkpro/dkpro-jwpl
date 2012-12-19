@@ -29,6 +29,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  *
  * This class contains all revision data.
  *
+ * NOTE: This class performs lazy loading of the revision text. Text is reconstructed when it is first used.
+ * For this reason, it carries a reference to the RevisionApi.
+ * The RevisionApi is not serializable and is transient in the Revision class.
+ * Therefore, make sure to load the revision text into the object before
+ * serializing it!
+ *
  */
 public class Revision
 	implements ISizeable, Comparable<Revision>, RevisionDataInterface, Serializable
