@@ -16,6 +16,7 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
@@ -30,7 +31,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  *
  */
 public class Revision
-	implements ISizeable, Comparable<Revision>, RevisionDataInterface
+	implements ISizeable, Comparable<Revision>, RevisionDataInterface, Serializable
 {
 
 	/** ID of the article */
@@ -437,4 +438,25 @@ public class Revision
 	{
 		return contributorId;
 	}
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     *
+     * Revisions are equal if their ids are equal
+     */
+    @Override
+	public boolean equals(Object anObject) {
+
+    	if(!(anObject instanceof Revision)){
+    		return false;
+    	}else{
+    		Revision otherRev = (Revision)anObject;
+			if (this.getRevisionID()==otherRev.getRevisionID()) {
+    			return true;
+    		}else{
+    			return false;
+    		}
+    	}
+    }
+
 }
