@@ -4,7 +4,7 @@
 
 == Wikipedia Revision Toolkit ==
   * [RevisionMachine Documentation of the RevisionMachine]
-    * Add access to the whole revision history to any JWPL database
+    * Enable access to the whole revision history for any JWPL database
 
   * [TimeMachine Documentation of the TimeMachine]
     * Create a (series of) JWPL database(s) containing earlier states of Wikipedia from a single current XML-revision dump. Each of the generated JWPL databases can be used with the standard [http://code.google.com/p/jwpl/wiki/JWPL_Core JWPL Core API].
