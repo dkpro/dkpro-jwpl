@@ -8,11 +8,11 @@ import java.util.Locale;
 import org.apache.commons.lang.StringUtils;
 
 import difflib.Delta;
+import difflib.Delta.TYPE;
 import difflib.DiffRow;
 import difflib.DiffRowGenerator;
 import difflib.DiffUtils;
 import difflib.Patch;
-import difflib.Delta.TYPE;
 
 /**
  * Represents a pair of Strings. Usually corresponding to a RevisionPair.
@@ -240,5 +240,19 @@ public class TextPair {
 
 		return str;
 	}
+
+    @Override
+	public boolean equals(Object anObject) {
+    	if(!(anObject instanceof TextPair)){
+    		return false;
+    	}else{
+    		TextPair otherPair = (TextPair)anObject;
+			if (this.getBeforeText().equals(otherPair.getBeforeText())&&this.getAfterText().equals(otherPair.getAfterText())) {
+    			return true;
+    		}else{
+    			return false;
+    		}
+    	}
+    }
 
 }
