@@ -2,12 +2,12 @@ package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
-import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SwebleUtils;
+import de.tudarmstadt.ukp.wikipedia.util.templates.parser.ParseUtils;
 
 /**
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a
@@ -82,8 +82,9 @@ public class RevisionPair implements Serializable{
 		List<TextPair> pairList = new ArrayList<TextPair>();
 
 		try {
-			List<ExtractedSection> beforeSections = SwebleUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID());
-			List<ExtractedSection> afterSections = SwebleUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID());
+			//extract sections AND annotate template inline
+			List<ExtractedSection> beforeSections = ParseUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID(), Arrays.asList(new String[]{template}));
+			List<ExtractedSection> afterSections = ParseUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID(), Arrays.asList(new String[]{template}));
 			for (ExtractedSection tplSect : revPairType == RevisionPairType.deleteTemplate ? beforeSections : afterSections) {
 				// in DELETE-mode, the "before" revision contain the templates
 				// in ADD-mode, the "after" revision contains the templates
@@ -96,8 +97,7 @@ public class RevisionPair implements Serializable{
 						// of the section body
 						if (tplSect.getTitle()!=null&&nonTplSect.getTitle()!=null&&tplSect.getTitle().equalsIgnoreCase(nonTplSect.getTitle())) {
 							if (revPairType == RevisionPairType.deleteTemplate) {
-								pairList.add(new TextPair(tplSect.getBody(),
-										nonTplSect.getBody()));
+								pairList.add(new TextPair(tplSect.getBody(), nonTplSect.getBody()));
 							} else {
 								pairList.add(new TextPair(nonTplSect.getBody(), tplSect.getBody()));
 							}
