@@ -120,7 +120,7 @@ public class ParseUtils
 	 *
 	 *
 	 * @param str A string with template markers
-	 * @return the
+	 * @return the template marker
 	 */
 	private static String getTemplateMarker(String str) throws IllegalStateException{
 		Pattern p = Pattern.compile("\\{\\{(.*?)\\}\\}", Pattern.DOTALL);
