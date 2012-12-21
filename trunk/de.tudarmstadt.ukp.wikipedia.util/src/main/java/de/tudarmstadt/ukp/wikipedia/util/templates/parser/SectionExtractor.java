@@ -40,9 +40,24 @@ public class SectionExtractor extends AstVisitor
 
 	private StringBuilder bodyBuilder = new StringBuilder();
 	private List<String> curTpls;
+	private List<String> templatesToMark=null;
+	private final String TEMPLATE_MARKER_PREFIX = "{{";
+	private final String TEMPLATE_MARKER_SUFFIX = "}}";
 
 	// =========================================================================
 
+	/**
+	 * Creates a new visitor that extracts anchors of internal links from a
+	 * parsed Wikipedia article using the default Sweble config as defined
+	 * in WikiConstants.SWEBLE_CONFIG.
+	 *
+	 * @param templatesToMark a list with templates names that are marked with placeholders in the section body
+	 */
+	public SectionExtractor(List<String> templatesToMark)
+	{
+		this();
+		this.templatesToMark=templatesToMark;
+	}
 
 	/**
 	 * Creates a new visitor that extracts anchors of internal links from a
@@ -198,8 +213,16 @@ public class SectionExtractor extends AstVisitor
 				s=s.replace("\n", "").replace("\r", "");
 				if (!s.trim().isEmpty()) {
 					curTpls.add(s);
-				}
-			}
+					//if we set a list of templates we want to mark in the
+					//body, check the current one and mark it, if necessary
+					if(templatesToMark!=null&&templatesToMark.contains(s)){
+						bodyBuilder.append(TEMPLATE_MARKER_PREFIX);
+						bodyBuilder.append(s);
+						bodyBuilder.append(TEMPLATE_MARKER_SUFFIX);
+					}
+		}
+	}
+
 		}
 	}
 
