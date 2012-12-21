@@ -28,7 +28,7 @@ public class SectionExtractionTest
 			Wikipedia wiki = new Wikipedia(dbconf);
 			Page p = wiki.getPage("Ari Sitas");
 
-			List<ExtractedSection> sects = SwebleUtils.getSections(p.getText(),p.getTitle().toString(),  -1);
+			List<ExtractedSection> sects = ParseUtils.getSections(p.getText(),p.getTitle().toString(),  -1);
 			for(ExtractedSection sect:sects){
 				System.out.println(sect.getBody());
 			}

@@ -2,6 +2,8 @@ package de.tudarmstadt.ukp.wikipedia.util.templates.parser;
 
 import java.io.FileNotFoundException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
@@ -17,7 +19,7 @@ import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.sweble.TemplateNameExtractor;
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
 
-public class SwebleUtils
+public class ParseUtils
 {
     public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
@@ -95,5 +97,45 @@ public class SwebleUtils
 		Compiler compiler = new Compiler(config);
 		return compiler.postprocess(pageId, text, null);
 	}
+
+	/**
+	 * Removes template markers from a String
+	 * Assumes the standard prefix and suffix
+	 *
+	 * @param str A string with template markers
+	 * @return the same string without template markers
+	 */
+	private static String removeTemplateMarker(String str){
+		return str.replaceAll("\\{\\{(.*?)\\}\\}", "");
+	}
+
+	/**
+	 * Returns the template marker of the sentence.
+	 *
+	 * Assumes hat a sentence has only ONE marker.
+	 * If the sentence contains more than one template, an IllegalStateException
+	 * is thrown.
+	 *
+	 * If the String does not contain a marker, null is returned
+	 *
+	 *
+	 * @param str A string with template markers
+	 * @return the
+	 */
+	private static String getTemplateMarker(String str) throws IllegalStateException{
+		Pattern p = Pattern.compile("\\{\\{(.*?)\\}\\}", Pattern.DOTALL);
+		Matcher matcher = p.matcher(str);
+		String tpl = null;
+		while(matcher.find())
+		{
+		    if(tpl!=null){
+		    	throw new IllegalStateException("More than one template in the sentence.");
+		    }
+			tpl=matcher.group(1);
+		}
+		return tpl;
+
+	}
+
 }
 

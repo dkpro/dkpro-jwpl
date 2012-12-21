@@ -215,7 +215,7 @@ public class SectionExtractor extends AstVisitor
 					curTpls.add(s);
 					//if we set a list of templates we want to mark in the
 					//body, check the current one and mark it, if necessary
-					if(templatesToMark!=null&&templatesToMark.contains(s)){
+					if(templatesToMark!=null&&containsIgnoreCase(templatesToMark,s)){
 						bodyBuilder.append(TEMPLATE_MARKER_PREFIX);
 						bodyBuilder.append(s);
 						bodyBuilder.append(TEMPLATE_MARKER_SUFFIX);
@@ -248,6 +248,21 @@ public class SectionExtractor extends AstVisitor
 		curTpls = new ArrayList<String>();
 	}
 
+	/**
+	 * Checks if a list of string contains a String while ignoring case
+	 *
+	 * @param stringlist a list of string
+	 * @param match the string to look for
+	 * @return true, if the list contains the string, false else
+	 */
+	private boolean containsIgnoreCase(List<String> stringlist, String match) {
+		for (String s : stringlist) {
+			if (s.equalsIgnoreCase(match)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * Wraps title and body text of an extraction section
