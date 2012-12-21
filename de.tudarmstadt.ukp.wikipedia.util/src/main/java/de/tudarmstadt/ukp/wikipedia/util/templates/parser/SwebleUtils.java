@@ -27,11 +27,25 @@ public class SwebleUtils
 	 * @param text article text with wiki markup
 	 * @param title article title
 	 * @param revision the revision id
-	 * @return list of Strings with the sections text
+	 * @return list of ExtractedSections
 	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
 	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
+	}
+
+	/**
+	 * Extracts sections (without title) from Wikitext.
+	 *
+	 * @param text article text with wiki markup
+	 * @param title article title
+	 * @param revision the revision id
+	 * @param templatesToMark a list of template names that should be annotated in the text
+	 * @return list of ExtractedSections
+	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 */
+	public static List<ExtractedSection> getSections(String text, String title, long revision, List<String> templatesToMark) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
+		return (List<ExtractedSection>) parsePage(new SectionExtractor(templatesToMark), text, title, revision);
 	}
 
 	/**
