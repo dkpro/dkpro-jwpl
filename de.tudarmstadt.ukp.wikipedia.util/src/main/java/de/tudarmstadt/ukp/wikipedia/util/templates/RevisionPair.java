@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
-import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
 import de.tudarmstadt.ukp.wikipedia.util.templates.parser.ParseUtils;
+import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.ExtractedSection;
 
 /**
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a
@@ -75,16 +75,27 @@ public class RevisionPair implements Serializable{
 	 * The section-matching is currently done simply by matching section titles.
 	 * If the title has changed, no match will be found.
 	 *
+	 * @param markTemplate sets whether to add an inline marker for the template
+	 *
 	 * @return a pair of strings corresponding to the before-revision and
 	 *         after-revision
 	 */
-	public List<TextPair> getInlineTextPairs() {
+	public List<TextPair> getInlineTextPairs(boolean markTemplates) {
 		List<TextPair> pairList = new ArrayList<TextPair>();
 
 		try {
-			//extract sections AND annotate template inline
-			List<ExtractedSection> beforeSections = ParseUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID(), Arrays.asList(new String[]{template}));
-			List<ExtractedSection> afterSections = ParseUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID(), Arrays.asList(new String[]{template}));
+			//extract sections
+			List<ExtractedSection> beforeSections=null;
+			List<ExtractedSection> afterSections=null;
+			if(markTemplates){
+				//add inline marker for the template
+				beforeSections = ParseUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID(), Arrays.asList(new String[]{template}));
+				afterSections = ParseUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID(), Arrays.asList(new String[]{template}));
+			}else{
+				//no inline markers
+				beforeSections = ParseUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID());
+				afterSections = ParseUtils.getSections(after.getRevisionText(), after.getRevisionID() + "", after.getRevisionID());
+			}
 			for (ExtractedSection tplSect : revPairType == RevisionPairType.deleteTemplate ? beforeSections : afterSections) {
 				// in DELETE-mode, the "before" revision contain the templates
 				// in ADD-mode, the "after" revision contains the templates
