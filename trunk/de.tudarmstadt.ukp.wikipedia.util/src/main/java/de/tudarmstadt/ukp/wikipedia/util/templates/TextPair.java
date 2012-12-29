@@ -30,7 +30,11 @@ public class TextPair {
 	}
 
 	public String getBeforeText() {
-		return beforeText;
+		return beforeText;	
+	}
+	
+	public List<String> getBeforeLines() {
+		return sentenceSplit(beforeText);
 	}
 
 	public void setBeforeText(String beforeText) {
@@ -39,6 +43,10 @@ public class TextPair {
 
 	public String getAfterText() {
 		return afterText;
+	}
+	
+	public List<String> getAfterLines() {
+		return sentenceSplit(afterText);
 	}
 
 	public void setAfterText(String afterText) {
