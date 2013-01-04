@@ -2,8 +2,10 @@ package de.tudarmstadt.ukp.wikipedia.util.templates;
 
 import java.text.BreakIterator;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -23,16 +25,21 @@ import difflib.Patch;
 public class TextPair {
 	private String beforeText;
 	private String afterText;
+	/**
+	 * Holds arbitrary String-MetaData
+	 */
+	private Map<String, String> metaData;
 
 	public TextPair(String before, String after) {
 		this.beforeText = normalize(before);
 		this.afterText = normalize(after);
+		setMetaData(new HashMap<String, String>());
 	}
 
 	public String getBeforeText() {
-		return beforeText;	
+		return beforeText;
 	}
-	
+
 	public List<String> getBeforeLines() {
 		return sentenceSplit(beforeText);
 	}
@@ -44,7 +51,7 @@ public class TextPair {
 	public String getAfterText() {
 		return afterText;
 	}
-	
+
 	public List<String> getAfterLines() {
 		return sentenceSplit(afterText);
 	}
@@ -52,6 +59,29 @@ public class TextPair {
 	public void setAfterText(String afterText) {
 		this.afterText = normalize(afterText);
 	}
+
+	public Map<String, String> getMetaData()
+	{
+		return metaData;
+	}
+
+	public void setMetaData(Map<String, String> metaData)
+	{
+		this.metaData = metaData;
+	}
+
+	public void addMetaData(String key, String value)
+	{
+		metaData.put(key, value);
+	}
+
+	public String getMetaDataValue(String key)
+	{
+		return metaData.get(key);
+	}
+
+
+
 
 	/**
 	 * Returns the patch object that contains all diffs between
