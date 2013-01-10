@@ -11,4 +11,4 @@
 
   * [JWPL_MySQL4 How to use JWPL with MySQL4]
 
-You may also refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1,0,&pub_id=TUD-CS-2011-0110 the following paper], which describes the Wikipedia Revision Toolkit.
+You may also refer to [http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1&tx_bibtex_pi1%5Bpub_id%5D=TUD-CS-2011-0110], which describes the Wikipedia Revision Toolkit.
