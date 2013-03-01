@@ -114,6 +114,7 @@ CREATE TABLE `MetaData` (
   `nrofRedirects` bigint(20) default NULL,
   `nrofDisambiguationPages` bigint(20) default NULL,
   `nrofCategories` bigint(20) default NULL,
+  `version` varchar(255) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
