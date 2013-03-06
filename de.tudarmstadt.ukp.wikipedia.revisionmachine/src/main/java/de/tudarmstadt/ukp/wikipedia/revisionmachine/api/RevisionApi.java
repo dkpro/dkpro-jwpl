@@ -757,6 +757,72 @@ public class RevisionApi
 	}
 
 	/**
+	 * Returns the revisionids of all revisions created by given user
+	 *
+	 * @param username
+	 *            name of the user (NOT USER ID)
+	 * @return list of revision ids
+	 *
+	 * @throws WikiApiException
+	 * 			  if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public List<Integer> getUserRevisionIds(String username)
+		throws WikiApiException
+	{
+
+		List<Integer> revIds = new LinkedList<Integer>();
+
+		try {
+			if (username.isEmpty()||username==null) {
+				throw new IllegalArgumentException();
+			}
+
+			if(!indexExists("revisions", "usernames")){
+				System.err.println("You should create and index for the field ContributorName: create index usernames ON revisions(ContributorName(50));");
+			}
+
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				statement = connection.prepareStatement("SELECT RevisionID "
+						+ "FROM revisions WHERE ContributorName=?");
+				statement.setString(1, username);
+				result = statement.executeQuery();
+
+				// Make the query
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"No revisions for user " + username);
+				}
+				while (result.next()) {
+
+					revIds.add(result.getInt(1));
+
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return revIds;
+
+		}
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+	/**
 	 * Returns a map of timestamps mapped on the corresponding
 	 * DiffPart-Collections. Can be used to compile statistics over all changes
 	 * that have been made in one article.
@@ -1827,7 +1893,7 @@ public class RevisionApi
 			System.err.println("Could not reconnect. Closing connection...");
 		}
 	}
-	
+
 	/**
 	 * Checks if some index (besides the PRIMARY-Index) exists in a given table.
 	 *
