@@ -759,6 +759,72 @@ public class RevisionApi
 	/**
 	 * Returns the revisionids of all revisions created by given user
 	 *
+	 * @param userid
+	 *            id of the user (NOT USER NAME)
+	 * @return list of revision ids
+	 *
+	 * @throws WikiApiException
+	 * 			  if an error occurs
+	 * @author Oliver Ferschke
+	 */
+	public List<Integer> getUserRevisionIds(int userid)
+		throws WikiApiException
+	{
+
+		List<Integer> revIds = new LinkedList<Integer>();
+
+		try {
+			if (userid<1) {
+				throw new IllegalArgumentException();
+			}
+
+			if(!indexExists("revisions", "userids")){
+				System.err.println("You should create and index for the field ContributorID: create index userids ON revisions(ContributorId(15));");
+			}
+
+			PreparedStatement statement = null;
+			ResultSet result = null;
+
+			try {
+				statement = connection.prepareStatement("SELECT RevisionID "
+						+ "FROM revisions WHERE ContributorId=?");
+				statement.setInt(1, userid);
+				result = statement.executeQuery();
+
+				// Make the query
+				if (result == null) {
+					throw new WikiPageNotFoundException(
+							"No revisions for user " + userid);
+				}
+				while (result.next()) {
+
+					revIds.add(result.getInt(1));
+
+				}
+			}
+			finally {
+				if (statement != null) {
+					statement.close();
+				}
+				if (result != null) {
+					result.close();
+				}
+			}
+
+			return revIds;
+
+		}
+		catch (WikiApiException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new WikiApiException(e);
+		}
+	}
+
+	/**
+	 * Returns the revisionids of all revisions created by given user
+	 *
 	 * @param username
 	 *            name of the user (NOT USER ID)
 	 * @return list of revision ids
