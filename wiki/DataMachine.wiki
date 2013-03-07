@@ -37,9 +37,7 @@
 
    * `java -Xmx4g -jar JWPLDataMachine.jar english Contents Disambiguation_pages ~/enwiki/20081013`
    * `java -jar JWPLDataMachine.jar simple_english Contents Disambiguation ./`
-   * `java -jar JWPLDataMachine.jar russian Всё Многозначные термины ~/ruwiki/20080420`
-   * `java -jar JWPLDataMachine.jar spanish Índice de categorías Desambiguación ~/eswiki/20080416/`
-   * `java -jar JWPLDataMachine.jar japanese 主要カテゴリ 曖昧さ回避 ~/jawiki/20080408/`
+   * `java -jar JWPLDataMachine.jar spanish Índice_de_categorías Desambiguación ~/eswiki/20080416/`
    * `java -Xmx2g -jar JWPLDataMachine.jar german !Hauptkategorie Begriffsklärung ~/dewiki/20080422/`
    * `java -jar JWPLDataMachine.jar dutch Alles Doorverwijspagina ~/nlwiki/200810408`
 
