@@ -24,7 +24,7 @@ ContributorName TEXT NOT NULL,
 ContributorId INTEGER UNSIGNED, 
 ContributorIsRegistered TINYINT NOT NULL, 
 PRIMARY KEY(PrimaryKey)
-) TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+) ENGINE= MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 }}}
 
 The following command can be executed on the MySQL console. Alternatively, you can use the mysqlimport tool. Please refer to the manpage of the tool for instruction.
@@ -58,19 +58,19 @@ FullRevisionPKs MEDIUMTEXT NOT NULL,
 RevisionCounter MEDIUMTEXT NOT NULL, 
 FirstAppearance BIGINT NOT NULL, 
 LastAppearance BIGINT NOT NULL
-) TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+) ENGINE= MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE index_revisionID (
 RevisionID INTEGER UNSIGNED NOT NULL, 
 RevisionPK INTEGER UNSIGNED NOT NULL, 
 FullRevisionPK INTEGER UNSIGNED NOT NULL
-) TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+) ENGINE= MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 
 CREATE TABLE index_chronological (
 ArticleID INTEGER UNSIGNED NOT NULL, 
 Mapping MEDIUMTEXT NOT NULL, 
 ReverseMapping MEDIUMTEXT NOT NULL
-) TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
+) ENGINE= MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;
 }}}
 
 Load data:
