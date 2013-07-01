@@ -12,8 +12,16 @@
  ******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -91,10 +99,26 @@ public class Wikipedia implements WikiConstants {
      *
      * @param title The title of the page.
      * @return The page object for a given title.
-     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPage(String title) throws WikiApiException  {
-        Page page = new Page(this, title);
+        Page page = new Page(this, title, false);
+        return page;
+    }
+    
+    /**
+     * Gets the page with the exactly the given title.<br/>
+     * 
+     * Note that when using this method you are responsible for converting a normal search string into the right wiki-style.<br/>
+     * 
+     * If the title is a redirect, the corresponding page is returned.<br/>
+     *
+     * @param exactTitle The exact title of the page.
+     * @return The page object for a given title.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
+     */
+    public Page getPageByExactTitle(String exactTitle) throws WikiApiException  {
+        Page page = new Page(this, exactTitle, true);
         return page;
     }
 

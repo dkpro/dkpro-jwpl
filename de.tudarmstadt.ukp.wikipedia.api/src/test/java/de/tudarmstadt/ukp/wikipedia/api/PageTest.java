@@ -20,7 +20,6 @@ import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 public class PageTest {
 
@@ -49,24 +48,18 @@ public class PageTest {
 	}
 
 	@Test
-	public void testPageTitle(){
+	public void testPageTitle() throws Exception {
 		String title = "Wikipedia API";
-        Page p = null;
-		try {
-			p = wiki.getPage("Wikipedia API");
-		} catch (WikiApiException e) {
-			e.printStackTrace();
-			fail("A WikiApiException occured while getting the page " + title);
-		}
-		//test the title
-		try {
-			assertEquals("testing the title", title, p.getTitle().getPlainTitle().toString());
-		} catch (WikiTitleParsingException e) {
-			e.printStackTrace();
-			fail("A WikiTitleParsingException occured while testing the title of the page " + title);
-		}
-
+        Page p = wiki.getPage("Wikipedia API");
+		assertEquals("testing the title", title, p.getTitle().getPlainTitle().toString());
 	}
+	
+    @Test
+    public void testExactPageTitle() throws Exception {
+        String title = "Wikipedia_API";
+        Page p = wiki.getPage("Wikipedia_API");
+        assertEquals("testing the title", title, p.getTitle().getRawTitleText().toString());
+    }
 
 	@Test
 	public void testPageId(){
