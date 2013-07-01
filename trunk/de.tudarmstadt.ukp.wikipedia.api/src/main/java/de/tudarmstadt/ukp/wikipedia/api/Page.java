@@ -106,14 +106,31 @@ public class Page
 	public Page(Wikipedia wiki, String pName)
 		throws WikiApiException
 	{
-		if (pName == null || pName.length() == 0) {
-			throw new WikiPageNotFoundException();
-		}
-		this.wiki = wiki;
-		this.pageDAO = new PageDAO(wiki);
-		Title pageTitle = new Title(pName);
-		fetchByTitle(pageTitle);
+		this(wiki, pName, false);
 	}
+	
+	/**
+     * Creates a page object.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param pName
+     *            The name of the page.
+     * @param useExactTitle
+     *            Whether to use the exact title or try to guess the correct wiki-style title.
+     * @throws WikiApiException
+     */
+    public Page(Wikipedia wiki, String pName, boolean useExactTitle)
+        throws WikiApiException
+    {
+        if (pName == null || pName.length() == 0) {
+            throw new WikiPageNotFoundException();
+        }
+        this.wiki = wiki;
+        this.pageDAO = new PageDAO(wiki);
+        Title pageTitle = new Title(pName);
+        fetchByTitle(pageTitle, useExactTitle);
+    }
 
 	/**
 	 * Creates a Page object from an already retrieved hibernate Page
@@ -165,17 +182,21 @@ public class Page
             throw new WikiPageNotFoundException("No page with page id " + pageID + " was found.");
         }
 	}
-
+ 
 	/**
 	 * CAUTION: Only returns 1 result, even if several results are possible.
 	 *
 	 * @param pTitle
 	 * @throws WikiApiException
 	 */
-	private void fetchByTitle(Title pTitle)
+	private void fetchByTitle(Title pTitle, boolean useExactTitle)
 		throws WikiApiException
 	{
-		String searchString = pTitle.getWikiStyleTitle();
+		String searchString = pTitle.getPlainTitle();
+		if (!useExactTitle) {
+		    searchString = pTitle.getWikiStyleTitle();
+		}
+		
 		Session session;
 		session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
