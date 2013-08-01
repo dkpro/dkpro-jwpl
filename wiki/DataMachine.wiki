@@ -12,7 +12,7 @@
          * `[LANGCODE]wiki-[DATE]-categorylinks.sql.gz`
       * Note: If you want to add discussion pages to the database, use `[LANGCODE]wiki-[DATE]-pages-meta-current.xml.bz2`, otherwise `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2` suffices.
    # Run the transformation:
-      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]` or `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
+      * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]` or `de.tudarmstadt.ukp.wikipedia.datamachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
          * LANGUAGE - a language string matching one the [JWPL_Languages].
          * MAIN_CATEGORY_NAME - the name of the main (top) category of the Wikipedia category hierarchy
          * DISAMBIGUATION_CATEGORY_NAME - the name of the category that contains the disambiguation categories
