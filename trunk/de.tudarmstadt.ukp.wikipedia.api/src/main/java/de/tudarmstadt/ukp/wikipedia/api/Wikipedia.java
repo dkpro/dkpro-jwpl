@@ -123,6 +123,25 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
+     * Get all pages which match all lowercase/uppercase version of the given title.<br/>
+     * If the title is a redirect, the corresponding page is returned.<br/>
+     * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
+     *
+     * @param title The title of the page.
+     * @return A set of page objects matching this title.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
+     */
+    public Set<Page> getPages(String title) throws WikiApiException  {
+        Set<Integer> ids = new HashSet<Integer>(getPageIdsCaseInsensitive(title));
+
+        Set<Page> pages = new HashSet<Page>();
+        for (Integer id : ids) {
+            pages.add(new Page(this, id));
+        }
+        return pages;
+    }
+
+    /**
      * Gets the page for a given pageId.
      *
      * @param pageId The id of the page.
@@ -177,6 +196,35 @@ public class Wikipedia implements WikiConstants {
         List<Integer> resultList = new LinkedList<Integer>();
         while(results.hasNext()){
         	resultList.add((Integer)results.next());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Gets the page ids for a given title with case insensitive matching.<br/>
+     *
+     *
+     * @param title The title of the page.
+     * @return The ids of the pages with the given title.
+     * @throws WikiApiException
+     */
+    public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
+        title = title.toLowerCase();
+        title = title.replaceAll(" ", "_");
+        
+        Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Iterator results = session.createQuery(
+        "select p.pageID from PageMapLine as p where lower(p.name) = :pName").setString("pName", title).list().iterator();
+
+        session.getTransaction().commit();
+
+        if(!results.hasNext()){
+            throw new WikiPageNotFoundException();
+        }
+        List<Integer> resultList = new LinkedList<Integer>();
+        while(results.hasNext()){
+            resultList.add((Integer)results.next());
         }
         return resultList;
     }
