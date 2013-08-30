@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -767,11 +768,11 @@ public class RevisionApi
 	 * 			  if an error occurs
 	 * @author Oliver Ferschke
 	 */
-	public List<Integer> getUserRevisionIds(int userid)
+	public Map<Integer,List<Integer>> getUserRevisionIds(int userid)
 		throws WikiApiException
 	{
 
-		List<Integer> revIds = new LinkedList<Integer>();
+		Map<Integer,List<Integer>> revIds = new HashMap<Integer,List<Integer>>();
 
 		try {
 			if (userid<1) {
@@ -786,7 +787,7 @@ public class RevisionApi
 			ResultSet result = null;
 
 			try {
-				statement = connection.prepareStatement("SELECT RevisionID "
+				statement = connection.prepareStatement("SELECT ArticleID, RevisionID "
 						+ "FROM revisions WHERE ContributorId=?");
 				statement.setInt(1, userid);
 				result = statement.executeQuery();
@@ -798,8 +799,17 @@ public class RevisionApi
 				}
 				while (result.next()) {
 
-					revIds.add(result.getInt(1));
-
+				    int artId = result.getInt(1);
+				    int revId = result.getInt(2); 
+					
+				    if (revIds.containsKey(artId)) {
+				        revIds.get(artId).add(revId);
+				    }
+				    else {
+				        List<Integer> revList = new ArrayList<Integer>();
+				        revList.add(revId);
+				        revIds.put(artId, revList);
+				    }
 				}
 			}
 			finally {
@@ -833,11 +843,11 @@ public class RevisionApi
 	 * 			  if an error occurs
 	 * @author Oliver Ferschke
 	 */
-	public List<Integer> getUserRevisionIds(String username)
+	public Map<Integer,List<Integer>> getUserRevisionIds(String username, int limit)
 		throws WikiApiException
 	{
 
-		List<Integer> revIds = new LinkedList<Integer>();
+	    Map<Integer,List<Integer>>  revIds = new HashMap<Integer,List<Integer>>();
 
 		try {
 			if (username.isEmpty()||username==null) {
@@ -852,8 +862,8 @@ public class RevisionApi
 			ResultSet result = null;
 
 			try {
-				statement = connection.prepareStatement("SELECT RevisionID "
-						+ "FROM revisions WHERE ContributorName=?");
+				statement = connection.prepareStatement("SELECT ArticleID, RevisionID "
+						+ "FROM revisions WHERE ContributorName=? LIMIT " + limit);
 				statement.setString(1, username);
 				result = statement.executeQuery();
 
@@ -864,7 +874,17 @@ public class RevisionApi
 				}
 				while (result.next()) {
 
-					revIds.add(result.getInt(1));
+                    int artId = result.getInt(1);
+                    int revId = result.getInt(2); 
+                    
+                    if (revIds.containsKey(artId)) {
+                        revIds.get(artId).add(revId);
+                    }
+                    else {
+                        List<Integer> revList = new ArrayList<Integer>();
+                        revList.add(revId);
+                        revIds.put(artId, revList);
+                    }
 
 				}
 			}
@@ -1654,12 +1674,11 @@ public class RevisionApi
 	public void setRevisionTextAndParts(Revision revision)
 	{
 
-		//TODO: referenced
-		PreparedStatement statement = null;
-		ResultSet result = null;
-
 		try {
 
+		    PreparedStatement statement = null;
+		    ResultSet result = null;
+		    
 			int fullRevPK = -1;
 			int limit = 1;
 			try {
@@ -1681,7 +1700,17 @@ public class RevisionApi
 									+ revision.getRevisionID()
 									+ " was not found.");
 				}
-
+			}
+            finally {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+            }
+			
+			try {
 				statement = this.connection
 						.prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
 								+ "FROM revisions "
@@ -1711,8 +1740,6 @@ public class RevisionApi
 					currentRevision = diff.buildRevision(previousRevision);
 
 					previousRevision = currentRevision;
-
-
 				}
 
 				Collection<DiffPart> parts = new LinkedList<DiffPart>();
@@ -1720,8 +1747,8 @@ public class RevisionApi
 				while (it.hasNext()) {
 					parts.add(it.next());
 				}
+				
 				revision.setParts(parts);
-
 				revision.setRevisionText(currentRevision);
 
 			}
@@ -1733,7 +1760,6 @@ public class RevisionApi
 					result.close();
 				}
 			}
-
 		}
 		catch (WikiPageNotFoundException e) {
 			throw new RuntimeException(e);
