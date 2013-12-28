@@ -344,7 +344,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
      */
     public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
-    	String articleTitle = articlePage.getTitle().toString();
+        String articleTitle = articlePage.getTitle().getWikiStyleTitle();
     	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
     		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
     	}
