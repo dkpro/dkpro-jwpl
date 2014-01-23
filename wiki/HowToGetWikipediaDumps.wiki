@@ -8,7 +8,7 @@ Each language version has it's own subdirectory, e.g. for English this is http:/
 = Download Tool for Revision Dumps =
 The Wikipedia revision is split into many files. Downloading them manually can be cumbersome.
 
-You can find a download tool for Wikipedia these dumps at http://github.com/babilen/wp-download/
+You can find a download tool for Wikipedia dumps at http://github.com/babilen/wp-download/
 
 It can be used for bulk downloads all dump files for any language.
 It also supports resuming aborted downloads.
