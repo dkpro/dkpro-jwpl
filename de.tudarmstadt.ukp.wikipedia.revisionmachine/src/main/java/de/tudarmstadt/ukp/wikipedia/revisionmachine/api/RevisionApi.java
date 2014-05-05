@@ -27,10 +27,14 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -112,67 +116,91 @@ public class RevisionApi
         this.connection = getConnection(config);
     }
 
-    // /**
-    // * Retrieves all article ids for articles with a specified range of revisions (incl.
-    // redirects,
-    // * disambiguation pages).
-    // *
-    // * @param minNumberRevisions
-    // * the smallest number of revisions for an article to be selected
-    // * @param maxNumberRevisions
-    // * the largest number of revisions for an article to be selected (-1 for infinite)
-    // * @return the set of selected article ids
-    // * @throws WikiApiException
-    // */
-    // public Set<Integer> getArticleIDsWithNumberOfRevisions(final int minNumberRevisions,
-    // int maxNumberRevisions)
-    // throws WikiApiException
-    // {
-    //
-    // try {
-    // if (minNumberRevisions < 0) {
-    // throw new IllegalArgumentException();
-    // }
-    //
-    // PreparedStatement statement = null;
-    // ResultSet result = null;
-    // HashSet<Integer> articles = new HashSet<Integer>();
-    //
-    // try {
-    // // Retrieve the fullRevisionPK and calculate the limit
-    // if (maxNumberRevisions == -1) {
-    // statement = this.connection
-    // .prepareStatement("SELECT ArticleID from index_articleID_rc_ts "
-    // + "WHERE NumberRevisions >= ?");
-    // statement.setInt(1, minNumberRevisions);
-    // }
-    // else {
-    // statement = this.connection
-    // .prepareStatement("SELECT ArticleID from index_articleID_rc_ts "
-    // + "WHERE NumberRevisions BETWEEN ? AND ?");
-    // statement.setInt(1, minNumberRevisions);
-    // statement.setInt(2, maxNumberRevisions);
-    // }
-    // result = statement.executeQuery();
-    //
-    // while (result.next()) {
-    // articles.add(result.getInt(1));
-    // }
-    // }
-    // finally {
-    // if (statement != null) {
-    // statement.close();
-    // }
-    // if (result != null) {
-    // result.close();
-    // }
-    // }
-    // return articles;
-    // }
-    // catch (Exception e) {
-    // throw new WikiApiException(e);
-    // }
-    // }
+    /**
+     * Retrieves all article ids for articles with a specified range of revisions (incl. redirects,
+     * disambiguation pages). <br>
+     * <b>Attention</b>: When called for the first time, this query needs write-access (ALTER and
+     * UPDATE) to the database and might take a while to process.
+     * 
+     * @param minNumberRevisions
+     *            the smallest number of revisions for an article to be selected
+     * @param maxNumberRevisions
+     *            the highest number of revisions for an article to be selected (-1 for infinite)
+     * @return the set of selected article ids (includes redirects and disambiguation pages)
+     * @throws WikiApiException
+     */
+    public Set<Integer> getArticleIDsWithNumberOfRevisions(final int minNumberRevisions,
+            int maxNumberRevisions)
+        throws WikiApiException
+    {
+
+        try {
+            if (minNumberRevisions < 0) {
+                throw new IllegalArgumentException("minNumberRevisions needs to be >= 0");
+            }
+
+            PreparedStatement statement = null;
+
+            // check whether the field has already been added
+            statement = this.connection
+                    .prepareStatement("SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '"
+                            + config.getDatabase()
+                            + "' AND TABLE_NAME = 'index_articleID_rc_ts' AND COLUMN_NAME = 'NumberRevisions'");
+            if (!statement.executeQuery().next()) {
+                // create new column
+                statement = this.connection
+                        .prepareStatement("ALTER TABLE index_articleID_rc_ts ADD NumberRevisions INT(10) unsigned NOT NULL");
+                try {
+                    statement.execute();
+                }
+                catch (MySQLSyntaxErrorException e) {
+                    throw new WikiApiException(
+                            "To execute this query for the first time, you need to have write permissions for the database.");
+                }
+                // fill with information extracted from RevisionCounter field
+                statement = this.connection
+                        .prepareStatement("UPDATE index_articleID_rc_ts SET NumberRevisions = (SELECT SUBSTRING_INDEX(RevisionCounter,' ',-1))");
+                statement.execute();
+            }
+
+            ResultSet result = null;
+            HashSet<Integer> articles = new HashSet<Integer>();
+
+            // make query
+            try {
+                if (maxNumberRevisions == -1) {
+                    statement = this.connection
+                            .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
+                                    + "WHERE NumberRevisions >= ?");
+                    statement.setInt(1, minNumberRevisions);
+                }
+                else {
+                    statement = this.connection
+                            .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
+                                    + "WHERE NumberRevisions BETWEEN ? AND ?");
+                    statement.setInt(1, minNumberRevisions);
+                    statement.setInt(2, maxNumberRevisions);
+                }
+                result = statement.executeQuery();
+
+                while (result.next()) {
+                    articles.add(result.getInt(1));
+                }
+            }
+            finally {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+            }
+            return articles;
+        }
+        catch (Exception e) {
+            throw new WikiApiException(e);
+        }
+    }
 
     /**
      * Returns the number of revisions for the specified article.
