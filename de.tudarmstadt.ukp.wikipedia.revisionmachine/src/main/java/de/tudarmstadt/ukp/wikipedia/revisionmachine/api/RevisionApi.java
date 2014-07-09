@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mysql.jdbc.exceptions.jdbc4.MySQLSyntaxErrorException;
-
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
@@ -153,7 +151,7 @@ public class RevisionApi
                 try {
                     statement.execute();
                 }
-                catch (MySQLSyntaxErrorException e) {
+                catch (SQLException e) {
                     throw new WikiApiException(
                             "To execute this query for the first time, you need to have write permissions for the database.");
                 }
