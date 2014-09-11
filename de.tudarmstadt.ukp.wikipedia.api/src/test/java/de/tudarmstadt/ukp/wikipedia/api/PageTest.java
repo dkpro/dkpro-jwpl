@@ -86,9 +86,9 @@ public class PageTest {
             fail("A WikiApiException occured while getting the page " + title);
         }
 
-        String text = "Wikipedia API ist die wichtigste Software überhaupt. Wikipedia API."+LF+
-        		"Nicht zu übertreffen."+LF+"Unglaublich"+LF+"http://www.ukp.tu-darmstadt.de"+LF+"en:Wikipedia API fi:WikipediaAPI";
+        String text = "Wikipedia API ist die wichtigste Software überhaupt. Wikipedia API.\nNicht zu übertreffen.\nUnglaublich\nhttp://www.ukp.tu-darmstadt.de\nen:Wikipedia API fi:WikipediaAPI";
 
+        
         try{
             assertEquals(text, p.getPlainText());
         }catch(Exception e){
