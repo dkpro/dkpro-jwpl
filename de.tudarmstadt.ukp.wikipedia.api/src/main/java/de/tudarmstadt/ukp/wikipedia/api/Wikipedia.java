@@ -75,13 +75,7 @@ public class Wikipedia implements WikiConstants {
         this.idMapPages      = new HashMap<Integer,Long>();
         this.idMapCategories = new HashMap<Integer,Long>();
 
-//// TODO We have to find a way to check the encoding language independently.
-//        if (!checkEncoding()) {
-//            throw new WikiApiException("There is an encoding problem within the WikiAPI database.");
-//        }
-
         this.metaData = new MetaData(this);
-
 	}
 
     /**
@@ -101,8 +95,8 @@ public class Wikipedia implements WikiConstants {
      * @return The page object for a given title.
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
-    public Page getPage(String title) throws WikiApiException  {
-        Page page = new Page(this, title, false);
+    public Page getPage(String title) throws WikiApiException  {        
+    	Page page = new Page(this, title, false);
         return page;
     }
     

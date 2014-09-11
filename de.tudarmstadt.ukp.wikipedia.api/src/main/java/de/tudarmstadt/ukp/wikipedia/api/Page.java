@@ -51,10 +51,6 @@ public class Page
 	// The indirection is necessary to shield the user from Hibernate sessions.
 	private de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage;
 
-//	// The String that was used to search that page
-//	// If it differs from the page's name, we searched for a redirect.
-//	private String searchString;
-
 	// If we search for a redirect, the corresponding page is delivered transparently.
 	// In that case, isRedirect is set to true, to indicate that.
 	// Note: The page itself is _not_ a redirect, it is just a page.
@@ -196,7 +192,7 @@ public class Page
 		if (!useExactTitle) {
 		    searchString = pTitle.getWikiStyleTitle();
 		}
-		
+
 		Session session;
 		session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
@@ -210,30 +206,26 @@ public class Page
 			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
 		}
 		fetchByPageId(pageId);
-
-//		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session.createSQLQuery(
-//				"SELECT p.* " +
-//				"FROM Page AS p " +
-//				"JOIN PageMapLine AS pml ON p.pageId = pml.pageID " +
-//				"WHERE pml.name COLLATE utf8_bin = ? LIMIT 1")
-//				.addEntity(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-//				.setString(0, searchString)
-//				.uniqueResult();
-//
-//		session.getTransaction().commit();
-//
-//
-//		// if there is no page with this name, the hibernatePage is null
-//		if (hibernatePage == null) {
-//			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
-//		}
-
-        // If this page was created using a redirect searchString, then set the isRedirect flag.
-        // A redirect searchString differs from the page's name.
-        if (searchString != null) {
-            if (!searchString.equals(getTitle().getRawTitleText())) {
+		
+		System.out.println(searchString);
+		System.out.println(getTitle().getRawTitleText());
+		
+        if (searchString != null&&!searchString.equals(getTitle().getRawTitleText())) {
                 this.isRedirect = true;
-            }
+                /*
+                 * WORKAROUND
+                 * in our page is a redirect to a discussion page, we might not retrieve the target discussion page as expected but rather the article associated with the target discussion page
+                 * we check this here and re-retrieve the correct page.
+                 * this error should be avoided by keeping the namespace information in the database
+                 * This fix has been provided by Shiri Dori-Hacohen and is discussed in the Google Group under https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
+                 */
+                if (searchString.startsWith(DISCUSSION_PREFIX) && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
+                	try {
+                		fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()), useExactTitle);
+                	} catch (WikiPageNotFoundException e) {
+                		throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX + getTitle().getRawTitleText() + " was found.");
+                	}
+                }
         }
 	}
 
@@ -242,11 +234,7 @@ public class Page
 	 */
 	protected long __getId()
 	{
-//		Session session = this.wiki.__getHibernateSession();
-//		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		long id = hibernatePage.getId();
-//		session.getTransaction().commit();
 		return id;
 	}
 
@@ -255,11 +243,7 @@ public class Page
 	 */
 	public int getPageId()
 	{
-//		Session session = this.wiki.__getHibernateSession();
-//		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		int id = hibernatePage.getPageId();
-//		session.getTransaction().commit();
 		return id;
 	}
 
@@ -272,7 +256,6 @@ public class Page
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		Set<Integer> tmp = new UnmodifiableArraySet<Integer>(hibernatePage.getCategories());
 		session.getTransaction().commit();
@@ -321,7 +304,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> pageIDs = new UnmodifiableArraySet<Integer>(hibernatePage.getInLinks());
@@ -474,7 +456,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		String name = hibernatePage.getName();
 		session.getTransaction().commit();
 		Title title = new Title(name);
@@ -490,7 +471,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		Set<String> tmpSet = new HashSet<String>(hibernatePage.getRedirects());
 		session.getTransaction().commit();
@@ -506,7 +486,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		String text = hibernatePage.getText();
 		session.getTransaction().commit();
 
@@ -553,7 +532,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		boolean isDisambiguation = hibernatePage.getIsDisambiguation();
 		session.getTransaction().commit();
 		return isDisambiguation;
