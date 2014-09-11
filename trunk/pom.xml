@@ -5,7 +5,7 @@
 	<description>A free, Java-based application programming interface that allows to access all information contained in Wikipedia.</description>
 	<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 	<artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-	<version>0.10.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<parent>
     	<groupId>org.sonatype.oss</groupId>
     	<artifactId>oss-parent</artifactId>
@@ -16,9 +16,9 @@
 		<java.target>1.6</java.target>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://jwpl.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/jwpl/source/browse/</url>
+		<connection>scm:svn:http://jwpl.googlecode.com/svn/tags/de.tudarmstadt.ukp.wikipedia-1.0.0</connection>
+		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/tags/de.tudarmstadt.ukp.wikipedia-1.0.0</developerConnection>
+		<url>http://code.google.com/p/jwpl/source/browse/tags/de.tudarmstadt.ukp.wikipedia-1.0.0</url>
 	</scm>
 	<licenses>
       <license>
@@ -165,42 +165,42 @@
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.dist</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
@@ -222,7 +222,7 @@
 				<artifactId>
 					de.tudarmstadt.ukp.wikipedia.parser
 				</artifactId>
-				<version>0.10.0-SNAPSHOT</version>
+				<version>1.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
