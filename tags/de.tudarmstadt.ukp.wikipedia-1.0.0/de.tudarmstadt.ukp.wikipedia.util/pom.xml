@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
+    <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
+  <name>JWPL API and RevisionAPI Utilities</name>
+  <description>Utilities for the JWPL API and the RevisionAPI</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
+  	</dependency>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
+  	</dependency>
+  	<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-core</artifactId>
+			<version>0.20.2</version>
+		</dependency>
+		<dependency>
+    <groupId>com.googlecode.java-diff-utils</groupId>
+    <artifactId>diffutils</artifactId>
+    <version>1.2.1</version>
+</dependency>
+  </dependencies>
+  	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-executable-jar</id>
+						<phase>package</phase>
+						<goals>
+						<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptor>
+									jar-with-dependencies
+								</descriptor>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+			</executions>
+			</plugin>
+		</plugins>
+	</build>	
+</project>

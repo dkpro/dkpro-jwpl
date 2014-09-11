@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
+    <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
+  <name>MediaWiki Dumper</name>
+  <description>A fork of the http://www.mediawiki.org/wiki/Mwdumper</description>
+   <licenses>
+     <license>
+       <name>The MIT License (MIT)</name>
+       <url>http://www.opensource.org/licenses/mit-license.php</url>
+       <distribution>repo</distribution>
+       <comments>The MIT License (MIT)</comments>
+      </license>
+    </licenses>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.swing-layout</groupId>
+			<artifactId>swing-layout</artifactId>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<type>jar</type>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.ant</groupId>
+			<artifactId>ant</artifactId>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>  
+</project>

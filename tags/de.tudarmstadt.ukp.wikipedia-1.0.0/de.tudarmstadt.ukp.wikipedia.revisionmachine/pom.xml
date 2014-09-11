@@ -1,0 +1,75 @@
+<!--
+  Copyright (c) 2011 Ubiquitous Knowledge Processing Lab
+  
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the GNU Lesser Public License v3
+  which accompanies this distribution, and is available at
+  http://www.gnu.org/licenses/lgpl.html
+  
+  Project Website:
+  	http://jwpl.googlecode.com
+  
+  Contributors:
+  	Torsten Zesch
+  	Simon Kulessa
+  	Oliver Ferschke
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
+  <version>1.0.0</version>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+  <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
+  <name>RevisionMachine</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>commons-logging</groupId>
+  		<artifactId>commons-logging</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>commons-codec</groupId>
+  		<artifactId>commons-codec</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>org.apache.ant</groupId>
+  		<artifactId>ant</artifactId>
+  		<type>jar</type>
+  		<scope>compile</scope>
+  	</dependency>
+  </dependencies>
+    	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>create-executable-jar</id>
+						<phase>package</phase>
+						<goals>
+						<goal>single</goal>
+						</goals>
+						<configuration>
+							<descriptorRefs>
+								<descriptorRef>
+									jar-with-dependencies
+								</descriptorRef>
+							</descriptorRefs>
+						</configuration>
+					</execution>
+			</executions>
+			</plugin>
+		</plugins>
+	</build>	
+</project>

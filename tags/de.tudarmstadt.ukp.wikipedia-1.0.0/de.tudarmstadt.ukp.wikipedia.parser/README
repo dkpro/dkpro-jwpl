@@ -1,0 +1,4 @@
+This module contains the JWPL MediaWiki parser, which was part of the JWPL API module.
+The JWPL API now uses the SWEBLE parser (http://sweble.org/).
+The JWPL can still be used as a stand alone project, but it is no longer actively maintained.
+

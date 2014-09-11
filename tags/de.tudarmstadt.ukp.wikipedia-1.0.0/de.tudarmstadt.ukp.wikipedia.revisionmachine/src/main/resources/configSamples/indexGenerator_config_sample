@@ -1,0 +1,10 @@
+host=localhost
+db=wiki_en_20110405_rev
+user=student
+password=student
+output=target
+outputDatabase=false
+outputDatafile=false
+charset=UTF8
+buffer=15000
+maxAllowedPackets=16760832
