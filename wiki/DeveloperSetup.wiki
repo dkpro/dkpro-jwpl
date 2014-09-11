@@ -14,42 +14,42 @@ For adding JWPL components in the most recent version to your Maven project, add
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 {{{
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
-  <version>0.9.2</version>
+  <version>1.0.0</version>
 </dependency>
 }}}
 
