@@ -1,3 +1,21 @@
+A detailed overview can be found here: https://code.google.com/p/jwpl/issues/list?can=1
+
+MAJOR CHANGES in JWPL v1.0.0 (all modules)
+	* FIXED ISSUE 49	[DataMachine, TimeMachine, RevisionMachine?] Correctly initialize log4j
+	* FIXED ISSUE 99	[API] getPage performs case insensitive query on utf_general_ci
+	* FIXED ISSUE 102	escape is needed in sql parser
+	* FIXED ISSUE 106	Comments on http://code.google.com/p/jwpl/wiki/DataMachine
+	* FIXED ISSUE 107	[RevisionMachine] Revision.getRevisionText() contains escaped XML entities
+	* FIXED ISSUE 108	[RevisionMachine] Revisions should be Serializable
+	* FIXED ISSUE 110	Revision Text contains escaped XML entiites
+	* FIXED ISSUE 112	Minor typo in documentation of the JWPL DataMachine
+	* FIXED ISSUE 116	Add method to get a page using an exact title instead of trying to guess the right title.
+	* FIXED ISSUE 121	Resources not closed in setRevisionTextAndParts
+	* FIXED ISSUE 123	Bug in discussion page archive retrieval
+	* FIXED ISSUE 124	Add a method to quickly retrieve articles with a certain number of revisions
+	* FIXED ISSUE 127	xercesImpl-2.9.1-lucene missing on maven central
+	* FIXED ISSUE 128	New field in pagelinks table breaks pagelinkparser
+	* FIXED ISSUE 129	Title-based query of discussion page redirect retrieves article pages instead of discussion pages
 Changes made in TimeMachine 0.7.0
    * Fixed mwdumper-imports -> switched to new local fork of the mwdumper
    * Added new assembly executions to each module
