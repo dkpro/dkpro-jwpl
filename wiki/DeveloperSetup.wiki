@@ -6,7 +6,7 @@
 
 = Maven Setup = 
 
-As of version 0.7.0, all JWPL components are available on [http://search.maven.org/#search|ga|1|tudarmstadt.ukp Maven Central]. If you use Maven as your build tool, then you can add any JWPL component as a dependency to your _pom.xml_ without having to perform any additional configuration:
+As of version 0.7.0, all JWPL components are available on [http://search.maven.org/#search|ga|1|tudarmstadt.ukp.wikipedia Maven Central]. If you use Maven as your build tool, then you can add any JWPL component as a dependency to your _pom.xml_ without having to perform any additional configuration:
 
 For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your _pom.xml_
 
