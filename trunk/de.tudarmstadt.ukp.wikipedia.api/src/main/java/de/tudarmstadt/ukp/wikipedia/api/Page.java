@@ -206,10 +206,7 @@ public class Page
 			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
 		}
 		fetchByPageId(pageId);
-		
-		System.out.println(searchString);
-		System.out.println(getTitle().getRawTitleText());
-		
+			
         if (searchString != null&&!searchString.equals(getTitle().getRawTitleText())) {
                 this.isRedirect = true;
                 /*
