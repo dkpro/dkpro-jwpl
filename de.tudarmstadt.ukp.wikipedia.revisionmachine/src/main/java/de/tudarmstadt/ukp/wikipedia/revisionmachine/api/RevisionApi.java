@@ -1086,7 +1086,7 @@ public class RevisionApi
      * Returns the timestamp of the first revision connected to the specified article.
      * 
      * @param articleID
-     *            ID of the article
+     *            ID of the artsicle
      * @return first date of appearance or the article does not exist
      * 
      * @throws WikiApiException
