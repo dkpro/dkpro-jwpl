@@ -19,6 +19,7 @@
          * SOURCE_DIRECTORY - the path to the directory containing the source files
       * *Attention:* For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need at least 4GB.
       * *Attention:* If your system uses a different file encoding you might need to add the {{{-Dfile.encoding=utf8}}} flag.
+   # Patience :) This is going to take a while ...
    # This should create 11 txt files in an "output" subfolder
       * While the !DataMachine is running, it creates three temporary .bin files. These are only needed during processing time and can be deleted once all files in the output directory have been produced.
    # Create a database with the necessary tables
