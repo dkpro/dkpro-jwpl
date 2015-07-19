@@ -9,18 +9,11 @@
 - title: Downloads
   url: "/maven/"
   side: left
-  dropdown:
-  - title: Maven
-    url: "/maven/"
-  - title: "Binaries"
-    url: "/binaries/"
 
 - title: Documentation
-  url: "/wiki/"
+  url: "/documentation/"
   side: left
   dropdown:
-  - title: "Wiki"
-    url: "/wiki/"
   - title: "Components"
     url: "/components/"
   - title: "Models"
