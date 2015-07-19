@@ -9,41 +9,6 @@ title: "DKPro Core"
 #header:
 #	title: DKPro Core
 #   image_fullwidth: "header_unsplash_12.jpg"
-widget-1:
-    title: "Components"
-    url: 'http://phlow.github.io/feeling-responsive/blog/'
-    text: 'Find out more about our bundled components.'
-    image: IconComponents.png
-widget-2:
-    title: "Models"
-    url: 'http://phlow.github.io/feeling-responsive/info/'
-    text: 'We provide various models accompanying the components.'
-    image: IconModels.png
-widget-3:
-    title: "Formats"
-    url: 'https://github.com/Phlow/feeling-responsive'
-    text: 'Reading and writing various formats is just one line of code away.'
-    image: IconFormatBlank.png
-widget-4:
-    title: "Typesystem"
-    url: 'https://github.com/Phlow/feeling-responsive'
-    text: 'Our typesystem is comprehensive, yet simple.'
-    image: IconTypeSystem.png
-widget-5:
-    title: "DKPro with Java"
-    url: 'https://github.com/Phlow/feeling-responsive'
-    text: 'The original flavour. Use DKPro in your Java projects.'
-    image: LogoJava.png
-widget-6:
-    title: "DKPro with Groovy"
-    url: 'https://github.com/Phlow/feeling-responsive'
-    text: 'Create self-contained scripts using DKPro and Groovy!'
-    image: LogoGroovy.png
-widget-7:
-    title: "DKPro with Jython"
-    url: 'https://github.com/Phlow/feeling-responsive'
-    text: 'Easily integrate DKPro into your python projects!'
-    image: LogoPython.png
 header-1:
     title: A collection of software components for natural language processing (NLP) based on the Apache UIMA framework.
     text: Many NLP tools are already freely available in the NLP research community. DKPro Core provides Apache UIMA components wrapping these tools (and some original tools) so they can be used interchangeably in UIMA processing pipelines. DKPro Core builds heavily on uimaFIT which allows for rapid and easy development of NLP processing pipelines, for wrapping existing tools and for creating original UIMA components.
