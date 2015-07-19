@@ -1,5 +1,9 @@
 - title: DKPro
-  url: "/dkpro/"
+  url: "http://dkpro.github.io"
+  side: left
+
+- title: Core
+  url: "/"
   side: left
 
 - title: Downloads
