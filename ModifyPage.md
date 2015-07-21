@@ -17,6 +17,10 @@ You can easily modify:
 Configuring the _config.yml
 ---------------------------
 
+In the sites' root directory, edit `_config.yml` - the most important settings are under the first caption, `Site Settings`.
+
+In particular, the following settings must be made:
+
   * set the `url` without the protocol, e.g. `url: "//dkpro.github.io/dkpro-core"` to avoid mixed http/https content when the site is accessed through https.
   * leave the `baseurl` empty
 
@@ -82,8 +86,5 @@ find the line `<a href="{{ site.url }}/info/">{{ site.data.language.more }}</a>`
 You can remove and add social media buttons to the subfooter using the file `_data/socialmedia.yml`.
 
 
-Sitewide configuration
-----------------------
-In the sites' root directory, edit `_config.yml` - the most important settings are under the first caption, `Site Settings`.
 
 [1]: http://daringfireball.net/projects/markdown/syntax
