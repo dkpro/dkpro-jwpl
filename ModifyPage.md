@@ -14,6 +14,23 @@ You can easily modify:
  - the sidebar
  - the footer
 
+Configuring the _config.yml
+---------------------------
+
+  * set the `url` without the protocol, e.g. `url: "//dkpro.github.io/dkpro-core"` to avoid mixed http/https content when the site is accessed through https.
+  * leave the `baseurl` empty
+
+Running the page with a local Jekyll
+------------------------------------
+
+Edit the _config_dev.yml file:
+
+    url: "http://localhost:4000"
+    urlimg: "http://localhost:4000/images/"
+
+and run Jekyll from the directory containing the cloned website using
+
+    jekyll serve --config _config.yml,_config_dev.yml
 
 Adding content pages
 --------------------
