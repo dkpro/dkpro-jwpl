@@ -9,8 +9,10 @@
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 </div>
 
+{% unless site.openhub_id == null %}
 <div class="radius openhub">
-<script type="text/javascript" src="http://www.openhub.net/p/487652/widgets/project_factoids_stats.js"></script>
+<script type="text/javascript" src="http://www.openhub.net/p/{{ site.openhub_id }}/widgets/project_factoids_stats.js"></script>
 </div>
+{% endunless %}
 
 </aside>
