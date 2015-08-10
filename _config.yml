@@ -8,25 +8,25 @@
 #                                                 /____/        
 #
 # Title of your website
-title: "DKPro Core"
+title: "PROJECT_X"
 
 
 # The slogan describes your website and is used on homepage in <title> and other important places
-slogan: "Getting things done in NLP"
+slogan: "PROJECT_X is great!"
 
 
 # The description is used on homepage and in the footer to quickly describe your website. Use a maximum of 150 characters for SEO-purposes.
-description: "DKPro Core is a collection of software components for natural language processing (NLP) based on the Apache UIMA framework."
+description: "PROJECT_X helps you wash dishes and clean the living room."
 
 
 # This URL is the main adresse. Don't include a slash at the end.
 #
-url: "//dodinh.github.io/dkpro-core-page-draft"
+url: "//dkpro.github.io/PROJECT_X"
 baseurl: ""
 
 # This is for the editing function in _/includes/improve_content.html
 # Leave it empty if your site is not on GitHub/GitHub Pages
-improve_content: //github.com/dodinh/dkpro-core-page-draft/edit/gh-pages
+improve_content: //github.com/dkpro/PROJECT_X/edit/gh-pages
 
 # This URL points directly to the images directory making
 # things easier to link to images in posts and templates. It needs a slash.
@@ -34,7 +34,7 @@ improve_content: //github.com/dodinh/dkpro-core-page-draft/edit/gh-pages
 # Example: <img src="{{ site.urlimg }}/{{ post.image.title }}">
 # Markdown-Example for posts ![Image Text]({{ site.urlimg }}/image.jpg)
 #
-urlimg: "/dkpro-core-page-draft/images/"
+urlimg: "/PROJECT_X/images/"
 
 
 # Logo size is 600x80 pixels
