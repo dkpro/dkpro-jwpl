@@ -1,8 +1,5 @@
 ---
 layout: page
-title: "Howto"
-permalink: "/howto/"
-sidebar: right
 ---
 
 Besides adding content, you may want to alter different aspects of the page to fit to your project.
@@ -13,6 +10,31 @@ You can easily modify:
  - the default look of the frontpage
  - the sidebar
  - the footer
+
+The following settings should be updated for every project:
+
+| Setting | Description |
+| `humans.txt` | Actually I think there whould be a default pointer to CONTRIBUTORS.MD here? |
+| `assets/img/logo.png` | Logo for your project. Generate the other files using some favicon generator service. Then fix the favicon names in `_config.yml`
+| `_config.yml : title` | Project name | 
+| `_config.yml : slogan` | Short slogan |
+| `_config.yml : description` | Short project description |
+| `_config.yml : url` | URL to your project without protocol, e.g. `//dkpro.github.io/dkpro-core` - make sure to leave `baseurl` empty! |
+| `_config.yml : improve_content` | https URL for editing gh-pages branch |
+| `_config.yml : urlimg` | Image URL in the form `/dkpro-core/images/` |
+| `_data/socialmedia.yml | Social media links for your project (or comment out example links) |
+| `_data/networm.yml | Mailing list links for your project (or comment out example links) |
+| `_config.yml : google_analytics_tracking_id` | Enable Google Analytics |
+| `_data/releases.yml | Your project releases |
+
+The following files should be deleted
+
+ * all files in `_drafts`
+ * all files in `_posts`
+ * all files in `images`
+ * `README.md`
+ * `ModifyPage.md`
+
 
 Configuring the _config.yml
 ---------------------------
