@@ -1,7 +1,7 @@
 ---
 layout: page-fullwidth
 title: "Downloads"
-permalink: "/maven/"
+permalink: "/downloads/"
 ---
 
 ## Maven
