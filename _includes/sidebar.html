@@ -8,6 +8,12 @@ Latest release: {{ stable.version }} ({{ stable.date }})
 </div>
 {% endif %}
 
+{% if stable.groupId %}
+<div class="center radius b20">
+<a href="//maven-badges.herokuapp.com/maven-central/{{ stable.groupId }}/{{ stable.artifactId }}"><img src="//maven-badges.herokuapp.com/maven-central/{{ stable.groupId }}/{{ stable.artifactId }}/badge.svg"/></a>
+</div>
+{% endif %}
+
 <div class="radius b20">
 <iframe id="ytplayer" type="text/html" height="227" src="https://www.youtube.com/embed/?listType=playlist&list=PLENWjbYveblcRX-mAt2PwimyVDDSIORny&color=white&showinfo=1" frameborder="0" allowfullscreen></iframe>
 </div>
