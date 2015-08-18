@@ -200,28 +200,38 @@ public class Page
 				.createSQLQuery(
 						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1")
 				.setString("pagetitle", searchString).uniqueResult();
-        session.getTransaction().commit();
+		session.getTransaction().commit();
 
         if (pageId == null) {
 			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
 		}
 		fetchByPageId(pageId);
-			
-        if (searchString != null&&!searchString.equals(getTitle().getRawTitleText())) {
-                this.isRedirect = true;
-                /*
-                 * WORKAROUND
-                 * in our page is a redirect to a discussion page, we might not retrieve the target discussion page as expected but rather the article associated with the target discussion page
-                 * we check this here and re-retrieve the correct page.
-                 * this error should be avoided by keeping the namespace information in the database
-                 * This fix has been provided by Shiri Dori-Hacohen and is discussed in the Google Group under https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
-                 */
-                if (searchString.startsWith(DISCUSSION_PREFIX) && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
-                	try {
-                		fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()), useExactTitle);
-                	} catch (WikiPageNotFoundException e) {
-                		throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX + getTitle().getRawTitleText() + " was found.");
-                	}
+        if (!this.isRedirect&&searchString != null&&!searchString.equals(getTitle().getRawTitleText())) {
+                if(this.isRedirect){
+                	//in case we already tried to re-retrieve the discussion page unsuccessfully,
+                	//we have to give up here or we end up in an infinite loop.
+                	
+                	//reasons for this happening might be several entries in PageMapLine with the same name but different upper/lower case variants
+                	//if the database does not allow case sensitive queries, then the API will always retrieve only the first result and if this is a redirect to a different writing variant, we are stuck in a loop. 
+                	//To fix this, either a case sensitive collation should be used or the API should be able to deal with set valued results and pick the correct one from the set.
+                	//For now, we gracefully return without retrieving the Talk page for this article and throw an appropriate excption.
+        			throw new WikiPageNotFoundException("No discussion page with name " + searchString + " could be retrieved. This is most likely due to multiple writing variants of the same page in the database");                	
+                }else{
+            		this.isRedirect = true;
+                    /*
+                     * WORKAROUND
+                     * in our page is a redirect to a discussion page, we might not retrieve the target discussion page as expected but rather the article associated with the target discussion page
+                     * we check this here and re-retrieve the correct page.
+                     * this error should be avoided by keeping the namespace information in the database
+                     * This fix has been provided by Shiri Dori-Hacohen and is discussed in the Google Group under https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
+                     */
+                    if (searchString.startsWith(DISCUSSION_PREFIX) && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
+                    	try {
+                    		fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()), useExactTitle);
+                    	} catch (WikiPageNotFoundException e) {
+                    		throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX + getTitle().getRawTitleText() + " was found.");
+                    	}
+                    }                	
                 }
         }
 	}
