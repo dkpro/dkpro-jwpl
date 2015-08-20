@@ -11,23 +11,25 @@ title: "DKPro JWPL and the Wikipedia Revision Toolkit"
 JWPL (Java Wikipedia Library) is a free, Java-based application programming interface that allows to access all information in Wikipedia.
 
 Core features:
- * Fast and efficient access to Wikipedia
- * Parser for the !MediaWiki syntax
- * Language independent
+   * Fast and efficient access to Wikipedia
+   * Parser for the !MediaWiki syntax
+   * Language independent
 
 In addition to the core functionality, JWPL allows access to Wikipedia's edit history with the Wikipedia Revision Toolkit.
 
 Features of the Wikipedia Revision Toolkit:
- * Tools for reconstructing past states of Wikipedia (TimeMachine)
- * Efficient access to all article revisions (RevisionMachine)
- * Dedicated revision storage format
+   * Tools for reconstructing past states of Wikipedia (TimeMachine)
+   * Efficient access to all article revisions (RevisionMachine)
+   * Dedicated revision storage format
 
 ### How to cite?
 
 If you use the Wikipedia Revision Toolkit (RevisionMachine, TimeMachine) in scientific work, please cite the ACL 2011 demo paper:
+
 > Oliver Ferschke and Torsten Zsch and Iryna Gurevych (2011). Wikipedia Revision Toolkit: Efficiently Accessing Wikipedia’s Edit History. In: Proceedings of the ACL-HLT 2011 System Demonstrations. [(pdf)][ACL_2011] [(bib)][ACL_2011_BIB]
   
 If you only use JWPL Core (API, !DataMachine), please cite the LREC 2008 paper: 
+
 > Torsten Zesch and Christof Müller and Iryna Gurevych (2008). Extracting Lexical Semantic Knowledge from Wikipedia and Wiktionary. In: Proceedings of the 6th International Conference on Language Resources and Evaluation. [(pdf)][LREC_2008] [(bib)][LREC_2008_BIB]
 
 ### Code example
@@ -39,10 +41,10 @@ tbd.
 This project was initiated under the auspices of Prof. Dr. Iryna Gurevych, [Ubiquitous Knowledge Processing Lab (UKP)](http://www.ukp.tu-darmstadt.de/), Technische Universität Darmstadt.
 
 It is now maintained by 
- * [http://www.langtech.inf.uni-due.de/team/personal-profile-torsten-zesch/ Torsten Zesch], Language Technology Lab, University of Duisburg-Essen
- * [http://www.ferschke.com Oliver Ferschke], Language Technologies Institute, Carnegie Mellon University
- * [http://www.ukp.tu-darmstadt.de/people/richard-eckart-de-castilho Richard Eckart de Castilho], UKP Lab, Technische Universität Darmstadt
- * [http://www.ukp.tu-darmstadt.de/people/johannes-daxenberger Johannes Daxenberger], UKP Lab, Technische Universität Darmstadt
+   * [http://www.langtech.inf.uni-due.de/team/personal-profile-torsten-zesch/] (Torsten Zesch), Language Technology Lab, University of Duisburg-Essen
+   * [http://www.ferschke.com] (Oliver Ferschke), Language Technologies Institute, Carnegie Mellon University
+   * [http://www.ukp.tu-darmstadt.de/people] (Richard Eckart de Castilho), UKP Lab, Technische Universität Darmstadt
+   * [http://www.ukp.tu-darmstadt.de/people] (Johannes Daxenberger), UKP Lab, Technische Universität Darmstadt
 
 ### License
 

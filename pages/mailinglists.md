@@ -6,6 +6,6 @@ permalink: "/mailinglists/"
 
 Subscribe to our mailing lists below:
 
-* [Users mailing list](http://groups.google.com/group/dkpro-core-user)
-* [Developers mailing list](http://groups.google.com/group/dkpro-core-developers)
-* [Commits](http://groups.google.com/group/dkpro-core-source)
+* [Users mailing list](http://groups.google.com/group/jwpl)
+* [Developers mailing list](http://groups.google.com/group/jwpl-dev)
+* [Commits](http://groups.google.com/group/jwpl-commits)
