@@ -22,13 +22,6 @@ Features of the Wikipedia Revision Toolkit:
  * Efficient access to all article revisions (RevisionMachine)
  * Dedicated revision storage format
 
-More detailed information can be found in the [JWPLDocumentation documentation] .
-
-Learn about the [HowToGetJWPL different possibilities to get and use JWPL]
-
-Any questions should be posted to the [http://groups.google.com/group/jwpl JWPL Mailing List].
-
-
 ### How to cite?
 
 If you use the Wikipedia Revision Toolkit (RevisionMachine, TimeMachine) in scientific work, please cite the ACL 2011 demo paper:
@@ -39,42 +32,7 @@ If you only use JWPL Core (API, !DataMachine), please cite the LREC 2008 paper:
 
 ### Code example
 
-{{{
-// configure the database connection parameters
-DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-dbConfig.setHost("SERVER_URL");
-dbConfig.setDatabase("DATABASE");
-dbConfig.setUser("USER");
-dbConfig.setPassword("PASSWORD");
-dbConfig.setLanguage(Language.german);
-
-// Create the Wikipedia object
-Wikipedia wiki = new Wikipedia(dbConfig);
-        
-String title = "Hello world";
-Page page = wiki.getPage(title);
-        
-// the title of the page
-System.out.println("Queried string       : " + title);
-System.out.println("Title                : " + page.getTitle());
-
-// whether the page is a disambiguation page
-System.out.println("IsDisambiguationPage : " + page.isDisambiguation());
-        
-// whether the page is a redirect
-// If a page is a redirect, we can use it like a normal page.
-// The other infos in this example are transparently served by the page that the redirect points to. 
-System.out.println("redirect page query  : " + page.isRedirect());
-        
-// the number of links pointing to this page
-System.out.println("# of ingoing links   : " + page.getNumberOfInlinks());
-        
-// the number of links in this page pointing to other pages
-System.out.println("# of outgoing links  : " + page.getNumberOfOutlinks());
-
-// the number of categories that are assigned to this page
-System.out.println("# of categories      : " + page.getNumberOfCategories());
-}}}
+tbd.
 
 ### About
 
