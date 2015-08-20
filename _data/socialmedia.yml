@@ -3,10 +3,10 @@
 #  class: icon-youtube
 #  title: "Tutorials for PROJECT_X on YouTube"
 
-- name: Twitter
-  url: https://twitter.com/PROJECT_X
-  class: icon-twitter
-  title: "Twitter: @PROJECT_X"
+#- name: Twitter
+#  url: https://twitter.com/PROJECT_X
+#  class: icon-twitter
+#  title: "Twitter: @PROJECT_X"
 
 #- name: Facebook
 #  url: http://www.facebook.com/phlow.media
@@ -19,7 +19,7 @@
 #  title: "Sounds und Downloads und mehr"
 
 - name: GitHub
-  url: http://github.com/PROJECT_X
+  url: http://github.com/dkpro-jwpl
   class: icon-github
   title: "All our code"
 

@@ -8,25 +8,25 @@
 #                                                 /____/        
 #
 # Title of your website
-title: "PROJECT_X"
+title: "DKPro JWPL"
 
 
 # The slogan describes your website and is used on homepage in <title> and other important places
-slogan: "PROJECT_X is great!"
+slogan: "DKPro JWPL and the Wikipedia Revision Toolkit"
 
 
 # The description is used on homepage and in the footer to quickly describe your website. Use a maximum of 150 characters for SEO-purposes.
-description: "PROJECT_X helps you wash dishes and clean the living room."
+description: "JWPL (Java Wikipedia Library) is a free, Java-based application programming interface that allows to access all information in Wikipedia."
 
 
 # This URL is the main adresse. Don't include a slash at the end.
 #
-url: "//dkpro.github.io/PROJECT_X"
+url: "//dkpro.github.io/dkpro-jwpl"
 baseurl: ""
 
 # This is for the editing function in _/includes/improve_content.html
 # Leave it empty if your site is not on GitHub/GitHub Pages
-improve_content: //github.com/dkpro/PROJECT_X/edit/gh-pages
+improve_content: //github.com/dkpro/dkpro-jwpl/edit/gh-pages
 
 # This URL points directly to the images directory making
 # things easier to link to images in posts and templates. It needs a slash.
@@ -34,7 +34,7 @@ improve_content: //github.com/dkpro/PROJECT_X/edit/gh-pages
 # Example: <img src="{{ site.urlimg }}/{{ post.image.title }}">
 # Markdown-Example for posts ![Image Text]({{ site.urlimg }}/image.jpg)
 #
-urlimg: "/PROJECT_X/images/"
+urlimg: "/dkpro-jwpl/images/"
 
 
 # Logo size is 600x80 pixels
@@ -217,4 +217,4 @@ sass:
 #
 # used in _includes/sidebar.html
 
-#openhub_id: PROJECT_X
+#openhub_id: dkpro-jwpl
