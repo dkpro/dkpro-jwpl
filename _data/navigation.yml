@@ -2,7 +2,7 @@
   url: "https://dkpro.github.io"
   side: left
 
-- title: PROJECT_X
+- title: JWPL
   url: "/"
   side: left
 
@@ -24,19 +24,19 @@
 #    url: "/typesystem/"
 
 - title: "Issues"
-  url: "http://github.com/dkpro/PROJECT_X/issues"
+  url: "http://github.com/dkpro/dkpro-jwpl/issues"
   side: left
 
 - title: Source
-  url: "http://github.com/dkpro/PROJECT_X"
+  url: "http://github.com/dkpro/dkpro-jwpl"
   side: left
 
-#- title: "Contact"
-#  url: "/mailinglists/"
-#  side: left
-#  dropdown:
-#  - title: "Mailing lists"
-#    url: "/mailinglists/"
+- title: "Contact"
+  url: "/mailinglists/"
+  side: left
+  dropdown:
+  - title: "Mailing lists"
+    url: "/mailinglists/"
 #  - title: "Twitter"
 #    url: "http://twitter.com/PROJECT_X"
 #  - title: "Contributing"

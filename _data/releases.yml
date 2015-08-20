@@ -7,3 +7,18 @@
 #   status: stable
 #
 # Possible status: "stable", "unstable"
+- version: 1.0.0
+  date: 2014-09-11
+  status: stable
+  groupId: de.tudarmstadt.ukp.wikipedia
+  artifactId: de.tudarmstadt.ukp.wikipedia
+
+
+- version: 1.1.0-SNAPSHOT
+  date: unknown
+  status: unstable
+  groupId: de.tudarmstadt.ukp.wikipedia
+  artifactId: de.tudarmstadt.ukp.wikipedia
+#  user_guide_url: https://zoidberg.ukp.informatik.tu-darmstadt.de/jenkins/job/DKPro%20TC%20Documentation%20(GitHub)/de.tudarmstadt.ukp.dkpro.tc%24dkpro-tc-doc/doclinks/1/
+  developer_guide_url: 
+# https://zoidberg.ukp.informatik.tu-darmstadt.de/jenkins/job/DKPro%20TC%20Documentation%20(GitHub)/de.tudarmstadt.ukp.dkpro.tc%24dkpro-tc-doc/doclinks/2/
