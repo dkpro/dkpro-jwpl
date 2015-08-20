@@ -1,0 +1,32 @@
+<aside>
+
+{% assign stable = (site.data.releases | where:"status", "stable" | first) %}
+
+{% if stable.version %}
+<div class="radius b20" style="text-align: center;">
+Latest release: {{ stable.version }} ({{ stable.date }})
+</div>
+{% endif %}
+
+{% if stable.groupId %}
+<div class="center radius b20">
+<a href="//maven-badges.herokuapp.com/maven-central/{{ stable.groupId }}/{{ stable.artifactId }}"><img src="//maven-badges.herokuapp.com/maven-central/{{ stable.groupId }}/{{ stable.artifactId }}/badge.svg"/></a>
+</div>
+{% endif %}
+
+<div class="radius b20">
+<iframe id="ytplayer" type="text/html" height="227" src="https://www.youtube.com/embed/?listType=playlist&list=PLENWjbYveblcRX-mAt2PwimyVDDSIORny&color=white&showinfo=1" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<div class="radius b20">
+<a class="twitter-timeline" data-dnt="true" href="https://twitter.com/dkprocore" data-widget-id="492287689270386689" width="400" height="300">Tweets by @dkprocore</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div>
+
+{% unless site.openhub_id == null %}
+<div class="radius openhub">
+<script type="text/javascript" src="http://www.openhub.net/p/{{ site.openhub_id }}/widgets/project_factoids_stats.js"></script>
+</div>
+{% endunless %}
+
+</aside>

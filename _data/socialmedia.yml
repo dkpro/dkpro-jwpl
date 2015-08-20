@@ -1,0 +1,39 @@
+#- name: YouTube
+#  url: https://www.youtube.com/channel/UCZjW4CbnWVxh5f7FMLMToBQ/feed
+#  class: icon-youtube
+#  title: "Tutorials for PROJECT_X on YouTube"
+
+- name: Twitter
+  url: https://twitter.com/PROJECT_X
+  class: icon-twitter
+  title: "Twitter: @PROJECT_X"
+
+#- name: Facebook
+#  url: http://www.facebook.com/phlow.media
+#  class: icon-facebook
+#  title: "Lass uns Freunde sein!"
+
+#- name: Soundcloud
+#  url: http://soundcloud.com/phlow
+#  class: icon-soundcloud
+#  title: "Sounds und Downloads und mehr"
+
+- name: GitHub
+  url: http://github.com/PROJECT_X
+  class: icon-github
+  title: "All our code"
+
+#- name: Instagram
+#  url: http://instagram.com/phlowmedia
+#  class: icon-instagram
+#  title: "Bilder und Impressionen mit und ohne Filter..."
+
+#- name: Pinterest
+#  url: http://www.pinterest.com/phlowmedia/
+#  class: icon-pinterest
+#  title: "Bilder, Fotos, Illustrationen, Grafiken sammeln..."
+
+#- name: Mixcloud
+#  url: http://www.mixcloud.com/phlow/
+#  class: icon-cloud
+#  title: "Mixe, was sonst?"

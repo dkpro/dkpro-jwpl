@@ -1,0 +1,21 @@
+#- menu_name: "Mailing lists"
+
+#- name: "Users"
+#  url: "http://groups.google.com/group/PROJECT_X-user"
+#  class: "network-entypo"
+#  title: "Users"
+
+#- name: "Developers"
+#  url: "http://groups.google.com/group/PROJECT_X-developers"
+#  class: "services-newsletter"
+#  title: "Developers"
+
+#- name: "Announcements"
+#  url: "http://groups.google.com/group/PROJECT_X-announcements"
+#  class: "rss-link"
+#  title: "Announcements"
+
+#- name: "Commits"
+#  url: "http://groups.google.com/group/PROJECT_X-source"
+#  class: "sitemap-link"
+#  title: "Commits"

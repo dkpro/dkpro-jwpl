@@ -1,0 +1,49 @@
+- title: DKPro
+  url: "https://dkpro.github.io"
+  side: left
+
+- title: PROJECT_X
+  url: "/"
+  side: left
+
+- title: Downloads
+  url: "/downloads/"
+  side: left
+
+- title: Documentation
+  url: "/documentation/"
+  side: left
+#  dropdown:
+#  - title: "Components"
+#    url: "/components/"
+#  - title: "Models"
+#    url: "/models/"
+#  - title: "Formats"
+#    url: "/formats/"
+#  - title: "Typesystem"
+#    url: "/typesystem/"
+
+- title: "Issues"
+  url: "http://github.com/dkpro/PROJECT_X/issues"
+  side: left
+
+- title: Source
+  url: "http://github.com/dkpro/PROJECT_X"
+  side: left
+
+#- title: "Contact"
+#  url: "/mailinglists/"
+#  side: left
+#  dropdown:
+#  - title: "Mailing lists"
+#    url: "/mailinglists/"
+#  - title: "Twitter"
+#    url: "http://twitter.com/PROJECT_X"
+#  - title: "Contributing"
+#    url: "http://github.com/dkpro/PROJECT_X/blob/master/CONTRIBUTING.md"
+#  - title: "Contributors"
+#    url: "http://github.com/dkpro/PROJECT_X/blob/master/CONTRIBUTORS.txt"
+
+- title: "About"
+  side: left
+  url: "/info"
