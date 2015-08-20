@@ -11,6 +11,7 @@ title: "DKPro JWPL and the Wikipedia Revision Toolkit"
 JWPL (Java Wikipedia Library) is a free, Java-based application programming interface that allows to access all information in Wikipedia.
 
 Core features:
+ 
    * Fast and efficient access to Wikipedia
    * Parser for the !MediaWiki syntax
    * Language independent
@@ -18,6 +19,7 @@ Core features:
 In addition to the core functionality, JWPL allows access to Wikipedia's edit history with the Wikipedia Revision Toolkit.
 
 Features of the Wikipedia Revision Toolkit:
+ 
    * Tools for reconstructing past states of Wikipedia (TimeMachine)
    * Efficient access to all article revisions (RevisionMachine)
    * Dedicated revision storage format
@@ -41,10 +43,11 @@ tbd.
 This project was initiated under the auspices of Prof. Dr. Iryna Gurevych, [Ubiquitous Knowledge Processing Lab (UKP)](http://www.ukp.tu-darmstadt.de/), Technische Universität Darmstadt.
 
 It is now maintained by 
-   * [http://www.langtech.inf.uni-due.de/team/personal-profile-torsten-zesch/] (Torsten Zesch), Language Technology Lab, University of Duisburg-Essen
-   * [http://www.ferschke.com] (Oliver Ferschke), Language Technologies Institute, Carnegie Mellon University
-   * [http://www.ukp.tu-darmstadt.de/people] (Richard Eckart de Castilho), UKP Lab, Technische Universität Darmstadt
-   * [http://www.ukp.tu-darmstadt.de/people] (Johannes Daxenberger), UKP Lab, Technische Universität Darmstadt
+ 
+   * [Torsten Zesch] (http://www.langtech.inf.uni-due.de/team/personal-profile-torsten-zesch), Language Technology Lab, University of Duisburg-Essen
+   * [Oliver Ferschke] (http://www.ferschke.com), Language Technologies Institute, Carnegie Mellon University
+   * [Richard Eckart de Castilho] (http://www.ukp.tu-darmstadt.de/people), UKP Lab, Technische Universität Darmstadt
+   * [Johannes Daxenberger] (http://www.ukp.tu-darmstadt.de/people), UKP Lab, Technische Universität Darmstadt
 
 ### License
 
