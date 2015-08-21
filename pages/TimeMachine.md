@@ -4,13 +4,13 @@ title: "JWPL TimeMachine"
 permalink: "/TimeMachine/"
 ---
 
-[Back to overview page.](https://dkpro.github.io/dkpro-jwpl/WikipediaRevisionToolkit)
+[Back to overview page.](/WikipediaRevisionToolkit)
 
 # Usage
 
   1. **Attention:** Only use the TimeMachine, if you really need to reconstruct one (or multiple) version(s) of Wikipedia corresponding to past states. The data files used for this purpose are very large. If you just want a single version of the recent Wikipedia, use the DataMachine instead. If you need access to the whole revision history of all Wikipedia articles (e.g. add revision history access to an existing JWPL database), you probably want to use the RevisionMachine instead. It provides access to the whole revision history for a given JWPL database.
-  1. Learn about the different ways to [get JWPL](https://dkpro.github.io/dkpro-jwpl/HowToGetJWPL) and choose the one that is right for you! (You might want to get fatjars with built-in dependencies instead of the download package on Google Code)
-  1. [Download the Wikipedia data](https://dkpro.github.io/dkpro-jwpl/HowToGetWikipediaDumps) from the Wikimedia Download Site
+  1. Learn about the different ways to [get JWPL](/HowToGetJWPL) and choose the one that is right for you! (You might want to get fatjars with built-in dependencies instead of the download package on Google Code)
+  1. [Download the Wikipedia data](/HowToGetWikipediaDumps) from the Wikimedia Download Site
     * You need 3 files:
       * `[LANGCODE]wiki-[DATE]-pages-meta-history.xml.bz2`
       * `[LANGCODE]wiki-[DATE]-pagelinks.sql.gz`
@@ -27,7 +27,7 @@ permalink: "/TimeMachine/"
   1. For each directory. create a database with the necessary tables  using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql)
   1. Import the data files into the databases.
     * `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} ````pwd`````/*.txt``
-  1. Now you are ready to use the databases with the JWPL Core API. (also see [JWPLCore:GettingStarted](https://dkpro.github.io/dkpro-jwpl/JWPLCore_GettingStarted)) When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
+  1. Now you are ready to use the databases with the JWPL Core API. (also see [JWPLCore:GettingStarted](/JWPLCore_GettingStarted)) When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 
 ## Example configuration file
 ```

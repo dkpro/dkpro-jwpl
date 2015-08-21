@@ -4,7 +4,7 @@ title: "JWPL and MySQL 4"
 permalink: "/JWPL_MySQL4/"
 ---
 
-[Back to the JWPL Core overview page](https://dkpro.github.io/dkpro-jwpl/JWPL_Core)
+[Back to the JWPL Core overview page](/JWPL_Core)
 
 MySQL 4.x supports only 4GB MyISAM tables with the default settings.
 Unfortunately, the English Wikipedia is already much larger than this. Given the growth rates, many Wikipedias will reach that size sooner than later.

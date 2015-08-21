@@ -4,7 +4,7 @@ title: "JWPL Developer Setup"
 permalink: "/DeveloperSetup/"
 ---
 
-[Back to the main page](https://dkpro.github.io/dkpro-jwpl/documentation/)
+[Back to the main page](/documentation/)
 
 # Maven Setup
 
