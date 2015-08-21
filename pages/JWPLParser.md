@@ -4,7 +4,7 @@ title: "JWPL Parser"
 permalink: "/JWPLParser/"
 ---
 
-[Back to the JWPL Core overview page](/JWPL_Core)
+[Back to the JWPL Core overview page](/dkpro-jwpl/JWPL_Core)
 
 **NOTE: As of JWPL 0.9.2, the JWPL Parser will not be supported any more. It has been moved from the API module to a PARSER Module.**
 

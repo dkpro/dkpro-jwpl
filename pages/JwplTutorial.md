@@ -4,7 +4,7 @@ title: "JWPL Tutorial"
 permalink: "/JwplTutorial/"
 ---
 
-[Back to JWPL Core main page.](/JWPL_Core)
+[Back to JWPL Core main page.](/dkpro-jwpl/JWPL_Core)
 
 ## Getting Started
 
