@@ -1,3 +1,9 @@
+---
+layout: page-fullwidth
+title: "JWPL Languages"
+permalink: "/JWPL_Languages/"
+---
+
 The supported languages are defined in <br />
 `de.tudarmstadt.ukp.wikipedia.api.WikiConstants` <br />
 This list reflects the languages supported in August 2011.

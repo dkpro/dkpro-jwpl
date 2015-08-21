@@ -1,3 +1,9 @@
+---
+layout: page-fullwidth
+title: "How to get JWPL"
+permalink: "/HowToGetJWPL/"
+---
+
 # How to get and use JWPL
 
 Depending on your requirements and your system setup, there are several ways to get and use JWPL.
@@ -6,7 +12,7 @@ Depending on your requirements and your system setup, there are several ways to 
 
 Using JWPL in your own Java project can be achieved in two ways.
 
-If you use Maven as a build tool, the preferred way to integrate JWPL in you project is using the Maven dependencies. You don't have to download anything manually. See the [Developer Setup](DeveloperSetup.md) page for further information.
+If you use Maven as a build tool, the preferred way to integrate JWPL in you project is using the Maven dependencies. You don't have to download anything manually. See the [Developer Setup](https://dkpro.github.io/dkpro-jwpl/DeveloperSetup) page for further information.
 
 If you cannot or do not want to use Maven, can obtain "jars-with-dependencies" for each JWPL module from the Maven central website (see section below). These jars contain all necessary dependencies. In larger projects, you might run into incompatibility issues with external libraries. This can easier be avoided by using JWPL with Maven.
 

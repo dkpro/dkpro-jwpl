@@ -1,4 +1,10 @@
-[Back to the main page](JWPLDocumentation.md)
+---
+layout: page-fullwidth
+title: "JWPL Developer Setup"
+permalink: "/DeveloperSetup/"
+---
+
+[Back to the main page](https://dkpro.github.io/dkpro-jwpl/documentation/)
 
 # Maven Setup
 
@@ -78,6 +84,9 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
 
 # Checking out
 
+tbd.
+
+<!--
   * Open the **SVN Repositories** perspective in Eclipse (Menu -> Window -> Show View -> Other... -> SVN -> SVN Repositories)
   * **Add** a SVN repository with the URL `http://jwpl.googlecode.com/svn`
   * **Expand** the new repository node in the SVN Repositories view
@@ -94,4 +103,4 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
     * Click **OK**
     * Select the working set `JWPL` from the working set drop-down box
     * **Note:** when you are completely through with these and the following steps, remember to go to the Package Explorer view. There is a small triangular icon in its top right corner. Click on that and select Top Level Elements -> Working Sets.
-  * Click **Finish**.
+  * Click **Finish**. -->

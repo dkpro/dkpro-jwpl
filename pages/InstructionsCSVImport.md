@@ -1,3 +1,9 @@
+---
+layout: page-fullwidth
+title: "Instructions for CSV Import"
+permalink: "/InstructionsCSVImport/"
+---
+
 # Introduction
 
 Instead of creating and import SQL files, the RevisionMachine is able to produce CSV data files. The following instructions will show you how to import them

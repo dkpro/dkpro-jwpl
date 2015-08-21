@@ -1,4 +1,10 @@
-[Back to the JWPL Core overview page](JWPL_Core.md)
+---
+layout: page-fullwidth
+title: "JWPL FAQ"
+permalink: "/JWPL_FAQ/"
+---
+
+[Back to the JWPL Core overview page](https://dkpro.github.io/dkpro-jwpl/JWPL_Core)
 
 <b>Q: Is it possible to load the data into $DATABASE-SERVER$ ?</b>
 > Probably yes. It should always work with MySQL. However, the data is shipped as SQL insert statements that should be database vendor independent, but we have not tested it with all database servers out there. So, just try it and let us know whether it works with a certain system.

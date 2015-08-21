@@ -1,3 +1,9 @@
+---
+layout: page-fullwidth
+title: "How to get Wikipedia Dumps"
+permalink: "/HowToGetWikipediaDumps/"
+---
+
 # Wikipedia Dump Repository
 You can find the Wikipedia data dumps on http://dumps.wikimedia.org/
 
