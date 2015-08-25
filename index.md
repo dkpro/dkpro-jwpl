@@ -36,7 +36,7 @@ If you only use JWPL Core (API, DataMachine), please cite the LREC 2008 paper:
 
 ### About
 
-This project was initiated under the auspices of Prof. Dr. Iryna Gurevych, [Ubiquitous Knowledge Processing Lab (UKP)](http://www.ukp.tu-darmstadt.de/), Technische Universität Darmstadt.
+This project was initiated under the auspices of Prof. Iryna Gurevych, [Ubiquitous Knowledge Processing Lab (UKP)](http://www.ukp.tu-darmstadt.de/), Technische Universität Darmstadt.
 
 It is now maintained by 
  
