@@ -201,6 +201,67 @@ public class RevisionApi
     }
 
     /**
+     * Returns the PrimaryKey for the first revision of the given article
+     * 
+     * @param articleID
+     *            ID of the article
+     * @return PK of the first revision
+     * 
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public int getFirstRevisionPK(final int articleID)
+        throws WikiApiException
+    {
+
+        try {
+            if (articleID < 1) {
+                throw new IllegalArgumentException();
+            }
+
+            PreparedStatement statement = null;
+            ResultSet result = null;
+            String firstRevPK;
+
+            try {
+                // Retrieve the fullRevisionPK and calculate the limit
+                statement = this.connection.prepareStatement("SELECT PrimaryKey "
+                        + "FROM revisions " + "WHERE ArticleID=? AND RevisionCounter =1 LIMIT 1");
+                statement.setInt(1, articleID);
+                result = statement.executeQuery();
+
+                if (result.next()) {
+
+                    firstRevPK = result.getString(1);
+
+                }
+                else {
+                    throw new WikiPageNotFoundException("The article with the ID " + articleID
+                            + " was not found.");
+                }
+            }
+            finally {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+            }
+
+            return Integer.parseInt(firstRevPK);
+
+        }
+        catch (WikiApiException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    
+    /**
      * Returns the number of revisions for the specified article.
      * 
      * @param articleID
@@ -2150,6 +2211,10 @@ public class RevisionApi
             }
         }
 
+    }
+    
+    public RevisionAPIConfiguration getRevisionApiConfiguration(){
+    	return this.config;
     }
 
     public static void main(String[] args)
