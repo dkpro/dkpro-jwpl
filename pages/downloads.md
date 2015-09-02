@@ -18,7 +18,7 @@ permalink: "/downloads/"
 <dependencyManagement>
   <dependencies>
     <dependency>
-      <groupId>{{ stable.groupId }}<groupId>
+      <groupId>{{ stable.groupId }}</groupId>
       <artifactId>{{ stable.artifactId }}</artifactId>
       <version>${dkpro.jwpl.version}</version>
       <type>pom</type>
