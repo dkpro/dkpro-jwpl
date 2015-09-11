@@ -14,4 +14,4 @@ Features of the Wikipedia Revision Toolkit:
    * Efficient access to all article revisions (RevisionMachine)
    * Dedicated revision storage format
 
-More detailed information can be found in the [DKPro JWPL Wiki](https://code.google.com/p/jwpl/wiki/JWPLDocumentation?tm=6) (still on GoogleCode).
+More detailed information can be found [here](https://dkpro.github.io/dkpro-jwpl/).
