@@ -16,9 +16,9 @@
 		<java.target>1.6</java.target>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://jwpl.googlecode.com/svn/trunk</connection>
-		<developerConnection>scm:svn:https://jwpl.googlecode.com/svn/trunk</developerConnection>
-		<url>http://code.google.com/p/jwpl/source/browse/</url>
+		<connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
+		<developerConnection>scm:git:https://github.com/dkpro/dkpro-jwpl</developerConnection>
+		<url>https://github.com/dkpro/dkpro-jwpl</url>
 	</scm>
 	<licenses>
       <license>
@@ -28,10 +28,10 @@
       </license>
     </licenses>
     <organization>
-    	<name>Ubiquitous Knowledge Processing (UKP) Lab</name>
-    	<url>http://www.ukp.tu-darmstadt.de/</url>
+    	<name>Ubiquitous Knowledge Processing (UKP) Lab, Technische Universität Darmstadt</name>
+    	<url>https://www.ukp.tu-darmstadt.de/</url>
     </organization>
-    <url>http://jwpl.googlecode.com/</url>
+    <url>https://dkpro.github.io/dkpro-jwpl</url>
     <developers>
       <developer>
         <id>oliver.ferschke</id>
@@ -515,4 +515,8 @@
 			</build>
 		</profile>
 	</profiles>	
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/dkpro/dkpro-jwpl/issues</url>
+	</issueManagement>
 </project>
