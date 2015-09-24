@@ -8,74 +8,81 @@ permalink: "/DeveloperSetup/"
 
 # Maven Setup
 
-As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search|ga|1|tudarmstadt.ukp.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your _pom.xml_ without having to perform any additional configuration:
+As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search|ga|1|tudarmstadt.ukp.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
 
-For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your _pom.xml_
+For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your `pom.xml`:
 
-```
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
-```
+{% endhighlight xml %}
+
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
-```
+{% endhighlight xml %}
+
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
-```
+{% endhighlight xml %}
+
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
-```
+{% endhighlight xml %}
+
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
-```
+{% endhighlight xml %}
+
+{% highlight xml %}
 <dependency>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
   <version>1.0.0</version>
 </dependency>
-```
+{% endhighlight xml %}
 
 # Eclipse Setup
 
 We use the following tools for development:
 
-  * [Eclipse](http://eclipse.org/) 3.6 or higher. We recommend the _Eclipse Classic_ distribution.
-  * [Subclipse](http://subclipse.tigris.org/) 1.6.x
-    * update site: `http://subclipse.tigris.org/update_1.6.x`
-  * [m2e](http://eclipse.org/m2e/) 1.0 or higher.
+    * [Eclipse](http://eclipse.org/) 3.6 or higher. We recommend the _Eclipse Classic_ distribution.
+    * [m2e](http://eclipse.org/m2e/) 1.0 or higher.
 
 ### For Windows Users
 
 **Note:** On your machine the Java path may be different, e.g. because you are using a localized Windows version it may be `C:\Programme\...` -or- because you may have a Java version other than 1.6.0.01.
 
   1. Edit your `eclipse.ini` and add/change the following lines (the `-vmargs` line should be present already):
-```
+
+{% highlight bat %}
 -vm
 C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
 -vmargs
-```
+{% endhighlight bat %}
+
     * Make sure that the linebreaks are as shown above (the formatting is actually necessary)
+    
   1. Open Eclipse
+  
     * Open the **preferences**
     * Go to **Java -> Installed JREs**
     * Click **Search** and choose your Java directory

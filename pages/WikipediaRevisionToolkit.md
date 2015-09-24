@@ -4,7 +4,7 @@ title: "Wikipedia Revision Toolkit"
 permalink: "/WikipediaRevisionToolkit/"
 ---
 
-[Back to the main page](/documentation/)
+[Back to the main page](/dkpro-jwpl/documentation/)
 
 ## Wikipedia Revision Toolkit
   * [Documentation of the RevisionMachine](/dkpro-jwpl/RevisionMachine)

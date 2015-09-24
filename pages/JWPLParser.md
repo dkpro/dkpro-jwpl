@@ -12,7 +12,7 @@ The JWPL parser analyzes the structure of a text with MediaWiki markup and repre
 
 ## Code Example
 
-```
+{% highlight java %}
 // get a ParsedPage object
 MediaWikiParserFactory pf = new MediaWikiParserFactory();
 MediaWikiParser parser = pf.createParser();
@@ -26,21 +26,20 @@ for (Link language : pp.getLanguages()) {
 //get the internal links of each section
 for (Section section : pp.getSections()){
     System.out.println("Section: " + section.getTitle());
-
     for (Link link : section.getLinks(Link.type.INTERNAL)) {
         System.out.println("  " + link.getTarget());
     }
 }
-```
+{% endhighlight java %}
 
 ## Configuring the Parser
 
 This will configure the parser to drop any templates.
 
-```
+{% highlight java %}
 MediaWikiParserFactory pf = new MediaWikiParserFactory();
 pf.setTemplateParserClass( FlushTemplates.class );
 
 MediaWikiParser parser = pf.createParser();
 ParsedPage pp = parser.parse(SOME_WIKI_MARKUP);
-```
+{% endhighlight java %}
