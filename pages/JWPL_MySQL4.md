@@ -17,7 +17,7 @@ You may need to have root access, depending on you server's configuration.
 
 If you are using a MySQL version before 5.0.6 and at least 4.1.2, do prior to import on the mysql command line:
 
-{% endhighlight mysql %}
+{% highlight mysql %}
 SET GLOBAL max_allowed_packet=1000000000;
 SET GLOBAL myisam_data_pointer_size=5;
 {% endhighlight mysql %}
