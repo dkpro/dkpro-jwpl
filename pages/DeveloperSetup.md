@@ -8,7 +8,7 @@ permalink: "/DeveloperSetup/"
 
 # Maven Setup
 
-As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search|ga|1|tudarmstadt.ukp.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
+As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cde.tudarmstadt.ukp.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
 
 For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your `pom.xml`:
 
@@ -89,11 +89,11 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
   * **Close** the preferences and **re-open** them
   * **Select** _jdk1.6.0\_01_ as your JRE (this should match the entry you added in the eclipse.ini)
 
+<!--
 # Checking out
 
 tbd.
 
-<!--
   * Open the **SVN Repositories** perspective in Eclipse (Menu -> Window -> Show View -> Other... -> SVN -> SVN Repositories)
   * **Add** a SVN repository with the URL `http://jwpl.googlecode.com/svn`
   * **Expand** the new repository node in the SVN Repositories view

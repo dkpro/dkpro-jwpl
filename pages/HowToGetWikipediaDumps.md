@@ -4,13 +4,13 @@ title: "How to get Wikipedia Dumps"
 permalink: "/HowToGetWikipediaDumps/"
 ---
 
-You can find the Wikipedia data dumps on [http://dumps.wikimedia.org].
-Each language version has it's own subdirectory, e.g. for English this is [http://dumps.wikimedia.org/enwiki].
+You can find the Wikipedia data dumps [here](http://dumps.wikimedia.org).
+Each language version has it's own subdirectory, e.g. for English this is [here](http://dumps.wikimedia.org/enwiki).
 
 # Download Tool for Revision Dumps
 The Wikipedia revision is split into many files. Downloading them manually can be cumbersome.
 
-You can find a download tool for Wikipedia dumps at [http://github.com/babilen/wp-download/].
+You can find a download tool for Wikipedia dumps [here](http://github.com/babilen/wp-download/).
 
 It can be used for bulk downloads all dump files for any language.
 It also supports resuming aborted downloads.
