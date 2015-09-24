@@ -15,4 +15,4 @@ permalink: "/WikipediaRevisionToolkit/"
 
   * [How to use JWPL with MySQL4](/dkpro-jwpl/JWPL_MySQL4)
 
-You may also refer to http://www.ukp.tu-darmstadt.de/publications/details/?no_cache=1&tx_bibtex_pi1%5Bpub_id%5D=TUD-CS-2011-0110, which describes the Wikipedia Revision Toolkit.
+You may also refer to [this paper](http://aclweb.org/anthology/P/P11/P11-4017.pdf), which describes the Wikipedia Revision Toolkit.
