@@ -64,8 +64,8 @@ For adding JWPL components in the most recent version to your Maven project, add
 
 We use the following tools for development:
 
-    * [Eclipse](http://eclipse.org/) 3.6 or higher. We recommend the _Eclipse Classic_ distribution.
-    * [m2e](http://eclipse.org/m2e/) 1.0 or higher.
+  * [Eclipse](http://eclipse.org/) 3.6 or higher. We recommend the _Eclipse Classic_ distribution.
+  * [m2e](http://eclipse.org/m2e/) 1.0 or higher.
 
 ### For Windows Users
 
@@ -79,15 +79,15 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
 -vmargs
 {% endhighlight bat %}
 
-    * Make sure that the linebreaks are as shown above (the formatting is actually necessary)
+  * Make sure that the linebreaks are as shown above (the formatting is actually necessary)
     
   1. Open Eclipse
   
-    * Open the **preferences**
-    * Go to **Java -> Installed JREs**
-    * Click **Search** and choose your Java directory
-    * **Close** the preferences and **re-open** them
-    * **Select** _jdk1.6.0\_01_ as your JRE (this should match the entry you added in the eclipse.ini)
+  * Open the **preferences**
+  * Go to **Java -> Installed JREs**
+  * Click **Search** and choose your Java directory
+  * **Close** the preferences and **re-open** them
+  * **Select** _jdk1.6.0\_01_ as your JRE (this should match the entry you added in the eclipse.ini)
 
 # Checking out
 

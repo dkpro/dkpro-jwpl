@@ -25,4 +25,4 @@ For each Wikipedia file there is another file with the same name and the suffix 
 
 **Q: I have a question that is not answered by any of the Wiki pages. Whom should I contact?**
 
-For any technical questions about JWPL, please use the [JWPL Mailing List](http://groups.google.com/group/jwpl)
+For any technical questions about JWPL, please use the [JWPL Mailing List](http://groups.google.com/group/jwpl).

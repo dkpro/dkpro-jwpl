@@ -16,4 +16,4 @@ If you cannot or do not want to use Maven, can obtain "jars-with-dependencies" f
 
 ## Run JWPL components from the command line
 
-If you want to run JWPL components directly from the command line (e.g. the DataMachine), you should use the fatjars that come with all third-party libraries directly built-in. These jars can be downloaded from [http://search.maven.org/#search%7Cga%7C1%7Cde.tudarmstadt.ukp.wikipedia](Maven Central). Choose the JWPL component you want to use and download the respective "jar-with-dependencies.jar".
+If you want to run JWPL components directly from the command line (e.g. the DataMachine), you should use the fatjars that come with all third-party libraries directly built-in. These jars can be downloaded from [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cde.tudarmstadt.ukp.wikipedia). Choose the JWPL component you want to use and download the respective "jar-with-dependencies.jar".

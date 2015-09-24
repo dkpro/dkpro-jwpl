@@ -9,15 +9,15 @@ permalink: "/JWPLCore_GettingStarted/"
 ## Getting Started
   1. Create the JWPL database(s) using the DataMachine or TimeMachine.
   
-    * Use the DataMachine, if you just need a single database from a certain date.
-    * Use the TimeMachine (part of the Revision Toolkit) to create multiple Wikipedia databases corresponding to past states of Wikipedia
+  * Use the DataMachine, if you just need a single database from a certain date.
+  * Use the TimeMachine (part of the Revision Toolkit) to create multiple Wikipedia databases corresponding to past states of Wikipedia
     
   1. You can now access the JWPL databases with the JWPL API.
   
-    * You have several possibilities how to use the API
-       * Ceck out the API from SVN and build it using Maven
-       * Add it as a dependency to your existing Maven project as described in the DeveloperSetup
-    * Follow the examples in the [tutorial](/dkpro-jwpl/JwplTutorial). The tutorials are also included in the source code and the archives.
+  * You have several possibilities how to use the API
+    * Ceck out the API from SVN and build it using Maven
+    * Add it as a dependency to your existing Maven project as described in the DeveloperSetup
+  * Follow the examples in the [tutorial](/dkpro-jwpl/JwplTutorial). The tutorials are also included in the source code and the archives.
     
   1. If you encounter any problems, please check the [FAQ](/dkpro-jwpl/JWPL_FAQ) and the [JWPL Mailing List](http://groups.google.com/group/jwpl).
 

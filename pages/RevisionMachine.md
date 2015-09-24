@@ -20,11 +20,11 @@ permalink: "/RevisionMachine/"
   
   1. Each DiffTool instance produces one or more sql, sql.bz2 or csv files (depending on your configuration).
   
-    * These files have to be imported either into an empty db or into a db containing the [JWPL data](/dkpro-jwpl/DataMachine) generated from the same Wikipedia XML dump you also created the revision dump with. When creating a new db, make sure the database encoding is set to UTF8:
-      * `mysqladmin -u[USER] -p create [DB_NAME] DEFAULT CHARACTER SET utf8;`
-      * or when on the mysql shell: `CREATE DATABASE [DB_NAME] DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;`
-    * SQL files can be directly imported into the database. However, the import is rather slow.
-    * A much faster option is importing the data from CSV files. The data files can be imported using _mysqlimport_ or with the _LOAD DATA INFILE_ command on the MySQL console. (Further [Instructions for CSV Import](/dkpro-jwpl/InstructionsCSVImport))
+  * These files have to be imported either into an empty db or into a db containing the [JWPL data](/dkpro-jwpl/DataMachine) generated from the same Wikipedia XML dump you also created the revision dump with. When creating a new db, make sure the database encoding is set to UTF8:
+    * `mysqladmin -u[USER] -p create [DB_NAME] DEFAULT CHARACTER SET utf8;`
+    * or when on the mysql shell: `CREATE DATABASE [DB_NAME] DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;`
+  * SQL files can be directly imported into the database. However, the import is rather slow.
+  * A much faster option is importing the data from CSV files. The data files can be imported using _mysqlimport_ or with the _LOAD DATA INFILE_ command on the MySQL console. (Further [Instructions for CSV Import](/dkpro-jwpl/InstructionsCSVImport))
     
   1. When all imports have finished, you need to perform one last step. You need to run `de.tudarmstadt.ukp.wikipedia.revisionmachine.index.IndexGenerator`. As the only parameter, the IndexGenerator takes the path to a configuration file, which contains the connection data to the database with the freshly imported revisions. A sample can be seen found [here](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.revisionmachine/src/main/resources/configSamples/indexGenerator_config_sample). Again, you can choose between SQL or CSV output which you have to import into the database containing the revisions. (Further [Instructions for CSV Import](/dkpro-jwpl/InstructionsCSVImport))
   
