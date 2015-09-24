@@ -81,7 +81,7 @@ C:/Program Files/Java/jdk1.6.0_01/bin/javaw.exe
 
   * Make sure that the linebreaks are as shown above (the formatting is actually necessary)
     
-  1. Open Eclipse
+  2. Open Eclipse
   
   * Open the **preferences**
   * Go to **Java -> Installed JREs**
