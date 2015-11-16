@@ -38,8 +38,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  *
  * This class represents the interface to iterate through multiple revisions.
  *
- *
- *
  */
 public class RevisionIterator
 	implements RevisionIteratorInterface
@@ -261,13 +259,13 @@ public class RevisionIterator
 	 * @return TRUE, if the result set has another element FALSE, otherwise
 	 *
 	 * @throws SQLException
-	 *             if an error occurs while accessing the database.
+	 *             if an error occurs while accessing the database.credit b
 	 */
 	private boolean query()
 		throws SQLException
 	{
 		String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
-				+ " RevisionID, ArticleID, Timestamp, FullRevisionID "
+				+ " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered "
 				+ "FROM revisions";
 
 		if (primaryKey > 0) {
@@ -390,6 +388,11 @@ public class RevisionIterator
 			revision.setArticleID(articleID);
 			revision.setTimeStamp(new Timestamp(result.getLong(6)));
 			revision.setFullRevisionID(result.getInt(7));
+			revision.setContributorName(result.getString(8));
+			revision.setContributorId(result.getInt(9));
+			revision.setComment(result.getString(10));
+			revision.setMinor(result.getBoolean(11));
+			revision.setContributorIsRegistered(result.getBoolean(12));
 
 			return revision;
 
