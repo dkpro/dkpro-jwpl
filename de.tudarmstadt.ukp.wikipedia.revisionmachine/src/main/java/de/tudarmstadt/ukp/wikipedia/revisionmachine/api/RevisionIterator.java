@@ -26,6 +26,9 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Iterator;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.DecodingException;
@@ -42,6 +45,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 public class RevisionIterator
 	implements RevisionIteratorInterface
 {
+	
+	private static final Logger logger = LogManager.getLogger(RevisionIterator.class);
 
 	/** Reference to the configuration parameter variable */
 	private final RevisionAPIConfiguration config;
@@ -291,8 +296,8 @@ public class RevisionIterator
 			statement=this.connection.prepareStatement(query);
 			result = statement.executeQuery(query);
 		}catch(Exception e){
-			System.err.println("Conncection Closed: "+connection.isClosed());
-			System.err.println("Connection Valid: "+connection.isValid(5));
+			logger.error("Conncection Closed: "+connection.isClosed());
+			logger.error("Connection Valid: "+connection.isValid(5));
 			connect();
 			statement=this.connection.prepareStatement(query);
 			result = statement.executeQuery(query);
@@ -329,7 +334,7 @@ public class RevisionIterator
 
 			if (revCount - 1 != this.currentRevCounter) {
 
-				System.err.println("\nInvalid RevCounter -" + " [ArticleId "
+				logger.error("\nInvalid RevCounter -" + " [ArticleId "
 						+ articleID + ", RevisionId " + result.getInt(4)
 						+ ", RevisionCounter " + result.getInt(3)
 						+ "] - Expected: " + (this.currentRevCounter + 1));
@@ -368,7 +373,7 @@ public class RevisionIterator
 				}
 				catch (Exception e) {
 					this.previousRevision = null;
-					System.err.println("Reconstruction failed -"
+					logger.error("Reconstruction failed -"
 							+ " [ArticleId " + result.getInt(5)
 							+ ", RevisionId " + result.getInt(4)
 							+ ", RevisionCounter " + result.getInt(3) + "]");
@@ -515,17 +520,17 @@ public class RevisionIterator
 	{
 		if (this.connection != null) {
 			this.connection.close();
-			System.out.println("Reconnect to Database");
+			logger.trace("Reconnect to Database");
 		}
 		else {
-			System.out.println("Connect to Database");
+			logger.trace("Connect to Database");
 		}
 
 		try{
 			String driverDB = "com.mysql.jdbc.Driver";
 			Class.forName(driverDB);
 		}catch(ClassNotFoundException e){
-			System.err.println("JDBC Driver is missing");
+			logger.error("JDBC Driver is missing");
 		}
 
 		this.connection = DriverManager.getConnection(
