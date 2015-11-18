@@ -171,10 +171,8 @@ public class RevisionApi
                             .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
                                     + "WHERE NumberRevisions >= ?");
                     statement.setInt(1, minNumberRevisions);
-                }
-                else {
-                    statement = this.connection
-                            .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
+                }else {
+                    statement = this.connection.prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
                                     + "WHERE NumberRevisions BETWEEN ? AND ?");
                     statement.setInt(1, minNumberRevisions);
                     statement.setInt(2, maxNumberRevisions);
@@ -2215,6 +2213,10 @@ public class RevisionApi
     
     public RevisionAPIConfiguration getRevisionApiConfiguration(){
     	return this.config;
+    }
+    
+    public Connection getConnection(){
+    	return this.connection;
     }
 
     public static void main(String[] args)
