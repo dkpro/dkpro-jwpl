@@ -16,6 +16,7 @@ import java.util.Properties;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistryBuilder;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
@@ -36,10 +37,11 @@ public class WikiHibernateUtil implements WikiConstants {
             throw new ExceptionInInitializerError("Database configuration error. 'Database' is empty.");
         }
 
-
         String uniqueSessionKey = config.getLanguage().toString() + config.getHost() + config.getDatabase();
         if (!sessionFactoryMap.containsKey(uniqueSessionKey)) {
-            SessionFactory sessionFactory = getConfiguration(config).buildSessionFactory();
+        	Configuration configuration = getConfiguration(config);
+            ServiceRegistryBuilder ssrb = new ServiceRegistryBuilder().applySettings(configuration.getProperties());            
+            SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.buildServiceRegistry());
             sessionFactoryMap.put(uniqueSessionKey, sessionFactory);
         }
         return sessionFactoryMap.get(uniqueSessionKey);
@@ -70,23 +72,12 @@ public class WikiHibernateUtil implements WikiConstants {
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class","thread");
 
-        // Disable the second-level cache
-        p.setProperty("hibernate.cache.provider_class","org.hibernate.cache.NoCacheProvider");
-
         // Echo all executed SQL to stdout
         p.setProperty("hibernate.show_sql","false");
 
         // Update schema
         p.setProperty("hibernate.hbm2ddl.auto","update");
-
-        //Configure Connection Pool
-        p.setProperty("hibernate.c3p0.acquire_increment","3");
-        p.setProperty("hibernate.c3p0.idle_test_period","300");
-        p.setProperty("hibernate.c3p0.min_size","3");
-        p.setProperty("hibernate.c3p0.max_size","15");
-        p.setProperty("hibernate.c3p0.max_statements","10");
-        p.setProperty("hibernate.c3p0.timeout","1000");
-
+        
         return p;
     }
 
