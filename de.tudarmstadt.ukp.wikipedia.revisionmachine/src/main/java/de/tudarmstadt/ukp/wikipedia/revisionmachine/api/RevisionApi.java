@@ -334,6 +334,68 @@ public class RevisionApi
      * @throws WikiApiException
      *             if an error occurs
      */
+    public List<Timestamp> getRevisionTimestampsBetweenTimestamps(int articleID, final Timestamp from, final Timestamp to)
+        throws WikiApiException
+    {
+        List<Timestamp> timestamps = new LinkedList<Timestamp>();
+
+        try {
+            PreparedStatement statement = null;
+            ResultSet result = null;
+
+            try {
+                // Check if necessary index exists
+                if (!indexExists("revisions")) {
+                    throw new WikiInitializationException(
+                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+                }
+
+                statement = connection
+                        .prepareStatement("SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp >= ? AND Timestamp <= ?");
+                statement.setInt(1, articleID);
+                statement.setLong(2, from.getTime());
+                statement.setLong(3, to.getTime());
+                result = statement.executeQuery();
+
+                // Make the query
+                if (result == null) {
+                    throw new WikiPageNotFoundException("The article with the ID " + articleID
+                            + " was not found.");
+                }
+                while (result.next()) {
+                    timestamps.add(new Timestamp(result.getLong(1)));
+                }
+            }
+            finally {
+                if (statement != null) {
+                    statement.close();
+                }
+                if (result != null) {
+                    result.close();
+                }
+            }
+
+            return timestamps;
+
+        }
+        catch (WikiApiException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    /**
+     * Returns the timestamps of all revisions that have been made before the given revision.
+     * 
+     * @param articleID
+     *            ID of the article
+     * @return number of revisions
+     * 
+     * @throws WikiApiException
+     *             if an error occurs
+     */
     public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId)
         throws WikiApiException
     {
@@ -354,9 +416,9 @@ public class RevisionApi
                 }
 
                 statement = connection
-                        .prepareStatement("SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp < "
-                                + ts.getTime());
+                        .prepareStatement("SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp < ?");
                 statement.setInt(1, articleID);
+                statement.setLong(2, ts.getTime());
                 result = statement.executeQuery();
 
                 // Make the query
