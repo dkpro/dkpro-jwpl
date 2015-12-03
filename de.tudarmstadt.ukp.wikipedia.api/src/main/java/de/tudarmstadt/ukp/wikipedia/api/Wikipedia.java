@@ -253,7 +253,7 @@ public class Wikipedia implements WikiConstants {
     /**
      * Gets the discussion page for an article page with the given pageId.
      *
-     * @param pageId The id of the page.
+     * @param articlePageId The id of the page.
      * @return The page object for a given pageId.
      * @throws WikiApiException
      */
@@ -536,7 +536,7 @@ public class Wikipedia implements WikiConstants {
      *
      * As ids can be useful for several application (e.g. in combination with
      * the RevisionMachine, they have been made publically available via
-     * {@link getPageIds()}.
+     * {@link #getPageIds()}.
      *
      * @return A set with all pageIDs. Returning all pages is much to expensive.
      */

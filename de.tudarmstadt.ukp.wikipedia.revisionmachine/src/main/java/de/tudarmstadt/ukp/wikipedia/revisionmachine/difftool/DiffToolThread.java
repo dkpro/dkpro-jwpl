@@ -83,8 +83,6 @@ public class DiffToolThread
 	 * @param config
 	 *            Reference to the configuration
 	 *
-	 * @throws ConfigurationException
-	 *             if an error occurs while accessing the configuration
 	 * @throws LoggingException
 	 *             if an error occurs while logging
 	 */

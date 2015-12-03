@@ -265,7 +265,7 @@ public class Category implements WikiConstants {
      * Returns the set of pages that are categorized under this category.
      * @return The set of pages that are categorized under this category.
      * @throws WikiApiException
-     * @deprecated Use {@link getArticles()} instead.
+     * @deprecated Use {@link #getArticles()} instead.
      */
     @Deprecated
 	public Set<Page> getPages() throws WikiApiException {

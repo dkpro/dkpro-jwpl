@@ -75,7 +75,7 @@ public class RevisionPair implements Serializable{
 	 * The section-matching is currently done simply by matching section titles.
 	 * If the title has changed, no match will be found.
 	 *
-	 * @param markTemplate sets whether to add an inline marker for the template
+	 * @param markTemplates sets whether to add an inline marker for the template
 	 *
 	 * @return a pair of strings corresponding to the before-revision and
 	 *         after-revision

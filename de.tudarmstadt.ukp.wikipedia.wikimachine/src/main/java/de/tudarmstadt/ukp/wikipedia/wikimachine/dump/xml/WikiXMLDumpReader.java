@@ -15,8 +15,7 @@ import java.io.InputStream;
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
 
 /**
- * Universal XML Dump Parser. Set of start and end xml tags comply with
- * {@link org.mediawiki.importer.XmlDumpReader}
+ * Universal XML Dump Parser. Set of start and end xml tags comply with XmlDumpReader.
  *
  * @author ivan.galkin
  *

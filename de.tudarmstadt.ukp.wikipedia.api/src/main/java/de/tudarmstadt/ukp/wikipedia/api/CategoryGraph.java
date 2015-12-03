@@ -100,8 +100,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Creates an CategoryGraph using a serialized DirectedGraph object.
      * @param pWiki A Wikipedia object.
      * @param location The location of the serialized graph
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws WikiApiException
      */
     public CategoryGraph(Wikipedia pWiki, File location) throws WikiApiException{
         try {
@@ -395,7 +394,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
      * Nodes that are not in the same connected component as the root node are defined to have no LCS.
      * @param categoryPageId1 The pageid of the first category node.
-     * @param categoryPageId1 The pageid of the second category node.
+     * @param categoryPageId2 The pageid of the second category node.
      * @return The pageId of the lowest common subsumer of the two nodes, or null if there is no LCS.
      */
     public int getLCSId(int categoryPageId1, int categoryPageId2) throws WikiApiException {
@@ -450,7 +449,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
      * Nodes that are not in the same connected component as the root node are defined to have no LCS.
      * @param categoryPageId1 The pageid of the first category node.
-     * @param categoryPageId1 The pageid of the second category node.
+     * @param categoryPageId2 The pageid of the second category node.
      * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
      */
     public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException {
@@ -1668,7 +1667,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * Serializes the graph to the given destination.
      * @param destination The destination to which should be saved.
-     * @throws IOException
+     * @throws WikiApiException
      */
     public void saveGraph(String destination) throws WikiApiException {
         try {

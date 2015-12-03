@@ -34,7 +34,7 @@ import java.util.Properties;
  * compressed file should be specified with the place holder <code>%f</code>. <br>
  * E.g. the entry for the 7z utility could look like that: <br> {@code <entry
  * key="7z">7z e -so %f</entry>}. The properties file should confirm to
- * {@link http://java.sun.com/dtd/properties.dtd}
+ * {@link "http://java.sun.com/dtd/properties.dtd"}
  * 
  * @author ivan.galkin
  * 

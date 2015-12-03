@@ -34,7 +34,7 @@ public class Redirects {
 	 * TODO extend this list, source file codepage changes are necessary
 	 *
 	 * @see [Bug 86]
-	 * @see http://en.wikipedia.org/wiki/Wikipedia:Redirect
+	 * @see "http://en.wikipedia.org/wiki/Wikipedia:Redirect"
 	 * @author ivan.galkin
 	 *
 	 */

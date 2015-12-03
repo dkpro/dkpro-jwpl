@@ -31,8 +31,6 @@ import de.tudarmstadt.ukp.wikipedia.api.CategoryGraphManager;
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 
 /**
  * Tests for the correctness of the Category graph construction and its serialization<br>
@@ -52,7 +50,6 @@ public class GraphSerializationTest {
      * Creates a Wikipedia object.
      * Made this static so that following tests don't run if assumption fails.
      * (With AT_Before, tests would also not be executed but marked as passed)
-     * @throws WikiInitializationException
      */
     @BeforeClass
     public static void initializeWikipedia(){
@@ -86,7 +83,6 @@ public class GraphSerializationTest {
     /**
      * Creates a CategoryGraph object using the Wikipedia object as parameter.<br>
      * Tests the correctness of the constructed graph.
-     * @throws WikiApiException
      */
 	@Test
 	public void testGraphSerialization()
@@ -111,7 +107,6 @@ public class GraphSerializationTest {
      * Compares the given graph with the expected graph. Returns true only if both<br>
      * graphs are identical.
      * @param graph
-     * @return
      */
     private void testGraph(DirectedGraph<Integer,DefaultEdge> graph){
         //make sure all vertices are there

@@ -22,9 +22,6 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader;
  * Use org.mediawiki.importer engine to parse the XML-Dump (only useful fields)
  * and store it to binary file. Compression of the output files is possible.
  *
- * @see de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.Files
- * @see de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.Files#setCompressGeneratedFiles(boolean)
- * @see org.mediawiki.importer.NamespaceFilter
  *
  * @author ivan.galkin
  *

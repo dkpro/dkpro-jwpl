@@ -133,8 +133,6 @@ public class WikipediaTemplateInfo {
      * of which starts with any of the the given Strings.
      *
      * @param templateFragments a list Strings containing the beginnings of the desired templates
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
      * @return the number of pages that contain any template starting with templateFragment
      * @throws WikiApiException If there was any error retrieving the page object (most likely if the template templates are corrupted)
      */
@@ -147,8 +145,6 @@ public class WikipediaTemplateInfo {
      * of which starts with any of the the given Strings.
      *
      * @param templateFragments a list Strings containing the beginnings of the desired templates
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
      * @return the number of pages that contain any template starting with templateFragment
      * @throws WikiApiException If there was any error retrieving the page object (most likely if the template templates are corrupted)
      */
@@ -518,11 +514,11 @@ public class WikipediaTemplateInfo {
 
     /**
 	 * This method first creates a list of pages containing templates that equal
-	 * any of the provided Strings {@see getFilteredPageIds()}.
+	 * any of the provided Strings.
 	 * It then returns a list of revision ids of the revisions in which the
 	 * respective templates first appeared.
 	 *
-	 * @param templateNames
+	 * @param templateName
 	 *            the template names that have to be matched
 	 * @return An list with the revision ids of the first appearance of the template
 	 * @throws WikiApiException
@@ -849,19 +845,19 @@ public class WikipediaTemplateInfo {
     /**
      * Returns the ids of all pages that ever contained any template that started with any of the given template fragments
      *
-     * @param template template-fragments to look for
+     * @param templateFragments template-fragments to look for
      * @return list of page ids of the pages that once contained any template that started with any of the given template fragments
      * @throws WikiApiException If there was any error retrieving the page object (most
 	 *             likely if the template templates are corrupted)
      */
-    public List<Integer> getIdsOfPagesThatEverContainedTemplateFragments(List<String> templateFraments) throws WikiApiException{
+    public List<Integer> getIdsOfPagesThatEverContainedTemplateFragments(List<String> templateFragments) throws WikiApiException{
     	if(revApi==null){
     		revApi = new RevisionApi(wiki.getDatabaseConfiguration());
     	}
     	Set<Integer> pageIdSet = new HashSet<Integer>();
 
     	//TODO instead of getting rev ids and then getting page ids, do one query and make the join in the db directly
-    	List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateFragments(templateFraments);
+    	List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateFragments(templateFragments);
     	for(int revId:revsWithTemplate){
     		pageIdSet.add(revApi.getPageIdForRevisionId(revId));
     	}
@@ -953,8 +949,6 @@ public class WikipediaTemplateInfo {
 	 *
 	 * @param templateNames
 	 *            the names of the template that we want to match
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
 	 * @return A list with the ids of all pages that contain any of the the
 	 *         specified templates
 	 * @throws WikiApiException
@@ -970,8 +964,6 @@ public class WikipediaTemplateInfo {
 	 *
 	 * @param templateNames
 	 *            the names of the template that we want to match
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
 	 * @return A list with the ids of all pages that do not contain any of the the
 	 *         specified templates
 	 * @throws WikiApiException
@@ -1062,8 +1054,6 @@ public class WikipediaTemplateInfo {
 	 *
 	 * @param templateNames
 	 *            the names of the template that we want to match
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
 	 * @return A list with the ids of all revisions that contain any of the the
 	 *         specified templates
 	 * @throws WikiApiException
@@ -1080,8 +1070,6 @@ public class WikipediaTemplateInfo {
 	 *
 	 * @param templateNames
 	 *            the names of the template that we want to match
-	 * @param whitelist
-	 *            whether to return pages containing these templates (true) or return pages NOT containing these templates (false)
 	 * @return A list with the ids of all revisions that do not contain any of the the
 	 *         specified templates
 	 * @throws WikiApiException
@@ -1098,7 +1086,7 @@ public class WikipediaTemplateInfo {
 	/**
 	 * Returns the names of all templates contained in the specified page.
 	 *
-	 * @param pageId
+	 * @param page
 	 *            the page object for which the templates should be retrieved
 	 * @return A List with the names of the templates contained in the specified
 	 *         page
@@ -1106,14 +1094,14 @@ public class WikipediaTemplateInfo {
 	 *             If there was any error retrieving the page object (most
 	 *             likely if the templates are corrupted)
 	 */
-    public List<String> getTemplateNamesFromPage(Page p) throws WikiApiException{
-    	return getTemplateNamesFromPage(p.getPageId());
+    public List<String> getTemplateNamesFromPage(Page page) throws WikiApiException{
+    	return getTemplateNamesFromPage(page.getPageId());
     }
 
 	/**
 	 * Returns the names of all templates contained in the specified page.
 	 *
-	 * @param pageId
+	 * @param pageTitle
 	 *            the title of the page for which the templates should be
 	 *            retrieved
 	 * @return A List with the names of the templates contained in the specified

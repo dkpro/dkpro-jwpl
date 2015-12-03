@@ -8,9 +8,6 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-/**
- * @(#)TextParser.java
- */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
 
 import java.io.EOFException;
@@ -33,7 +30,6 @@ public class TextParser {
 	 * Create a parser from an input stream
 	 * 
 	 * @param inputStream
-	 * @throws IOException
 	 * @author ivan.galkin
 	 */
 	public void setInputStream(InputStream inputStream){

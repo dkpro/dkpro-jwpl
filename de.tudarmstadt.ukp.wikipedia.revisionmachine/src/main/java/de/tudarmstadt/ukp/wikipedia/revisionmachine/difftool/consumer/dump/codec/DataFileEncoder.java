@@ -23,7 +23,6 @@ import java.util.List;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ConfigurationException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.DecodingException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.EncodingException;
-import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.SQLConsumerException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.codec.RevisionCodecData;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.codec.RevisionEncoder;
@@ -51,8 +50,6 @@ public class DataFileEncoder
 	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
-	 * @throws LoggingException
-	 *             if an error occurred while accessing the logger
 	 */
 	public DataFileEncoder()
 		throws ConfigurationException

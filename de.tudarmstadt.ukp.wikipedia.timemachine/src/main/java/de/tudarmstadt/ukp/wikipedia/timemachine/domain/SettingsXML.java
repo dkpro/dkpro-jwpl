@@ -8,9 +8,6 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-/**
- * @(#)ConfigFormularGenerator.java
- */
 package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
 import java.io.FileInputStream;
@@ -45,11 +42,7 @@ public class SettingsXML {
 	private static final String DESCRIPTION = "This a configuration formular for the DBMapping Tool of the JWPL";
 	private static final String PLACEHOLDER = "to be edited";
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 * @throws
-	 */
+
 	public static void generateSample(String outputFileName) throws IOException {
 
 		Properties p = new Properties();

@@ -175,7 +175,7 @@ public class TextPair {
 	 * Returns the deltas between beforeText and afterText as a line separated String.
 	 * For more detailed diffs, use getPatch() or getUnifiedDiffStrings()
 	 *
-	 * @param difftype defines the type of diffs to include in the String
+	 * @param diffType defines the type of diffs to include in the String
 	 * @return diffs as line-separated String
 	 */
 	public String getLongDiffString(TYPE diffType) {
@@ -215,7 +215,6 @@ public class TextPair {
 	/**
 	 * Returns the unified diff between "Before" and "After" as a single
 	 * line-separated String
-	 * @see getUnifiedDiffStrings()
 	 *
 	 * @param contextSize numer of characters around a change to display
 	 * @return diffs as line-separated String

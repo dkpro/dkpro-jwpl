@@ -12,7 +12,7 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql;
 
 
 /**
- * The single method {@link SQLEscape#removeEscapes} removes all unwished escape
+ * The single method {@link SQLEscape#escape} removes all unwished escape
  * characters from a string to make is SQL conform. Maybe not thread-save.
  *
  * @author ivan.galkin

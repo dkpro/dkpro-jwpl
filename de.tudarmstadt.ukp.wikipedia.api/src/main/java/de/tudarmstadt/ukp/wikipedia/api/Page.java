@@ -305,7 +305,6 @@ public class Page
 	 * getNumberOfInlinks() instead.
 	 *
 	 * @return The set of pages that have a link pointing to this page.
-	 * @throws WikiApiException
 	 */
 	public Set<Page> getInlinks()
 	{
@@ -383,7 +382,6 @@ public class Page
 	 * getNumberOfOutlinks() instead.
 	 *
 	 * @return The set of pages that are linked from this page.
-	 * @throws WikiApiException
 	 */
 	public Set<Page> getOutlinks()
 	{

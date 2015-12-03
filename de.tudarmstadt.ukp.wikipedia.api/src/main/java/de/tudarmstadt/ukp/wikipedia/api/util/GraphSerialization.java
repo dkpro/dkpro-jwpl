@@ -54,7 +54,7 @@ public final class GraphSerialization {
     /**
      * Serializes the given DirectedGraph object to the given location.
      * @param graph
-     * @param location
+     * @param file
      * @throws IOException 
      */
     public static void saveGraph(DirectedGraph<Integer,DefaultEdge> graph, File file) throws IOException{
@@ -90,7 +90,7 @@ public final class GraphSerialization {
      * Deserializes a SerializableDirectedGraph object that is stored in the given<br>
      * location. This method returns the DirectedGraph object, that is wrapped in <br>
      * the SerializableDirectedGraph.
-     * @param location
+     * @param file
      * @return The DirectedGraph object, that is wrapped in the SerializableDirectedGraph.
      * @throws IOException 
      * @throws ClassNotFoundException 

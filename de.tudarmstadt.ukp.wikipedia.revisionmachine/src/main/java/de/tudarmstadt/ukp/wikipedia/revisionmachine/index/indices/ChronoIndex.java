@@ -39,9 +39,6 @@ public class ChronoIndex
 
 	/**
 	 * (Constructor) Creates a new ChronoIndex object.
-	 *
-	 * @param MAX_ALLOWED_PACKET
-	 *            MAX_ALLOWED_PACKET
 	 */
 	public ChronoIndex()
 	{

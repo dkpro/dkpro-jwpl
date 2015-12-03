@@ -51,8 +51,7 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo;
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title;
 
 /**
- * Parser of WikiMedia XML dumps. Modification of
- * {@link org.mediawiki.importer.XmlDumpReader} with some enhanced error
+ * Parser of WikiMedia XML dumps. Modification of XmlDumpReader with some enhanced error
  * resistance and adaptation mechanisms. Please see copyright and comments of
  * original code. Modification was done by Ivan Galkin <br>
  * <br>
@@ -60,7 +59,6 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title;
  * <a>http://svn.wikimedia.org/svnroot/mediawiki/trunk/mwdumper/src/org
  * /mediawiki/importer/XmlDumpReader.java</a>
  *
- * @see org.mediawiki.importer.XmlDumpReader
  *
  */
 public abstract class AbstractXmlDumpReader extends DefaultHandler {

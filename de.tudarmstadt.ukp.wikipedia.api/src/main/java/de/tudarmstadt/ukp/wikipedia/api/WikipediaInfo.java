@@ -305,7 +305,6 @@ public class WikipediaInfo {
      *      distributionOfArticlesByCategory
      * @param pWiki The wikipedia object.
      * @param catGraph The category graph.
-     * @return
      * @throws WikiPageNotFoundException
      */
     private void iterateCategoriesGetArticles(Wikipedia pWiki, CategoryGraph catGraph) throws WikiPageNotFoundException {

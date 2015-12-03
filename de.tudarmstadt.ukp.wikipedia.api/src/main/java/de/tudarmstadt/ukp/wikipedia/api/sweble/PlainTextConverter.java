@@ -20,7 +20,20 @@ import org.sweble.wikitext.engine.utils.EntityReferences;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 import org.sweble.wikitext.lazy.LinkTargetException;
 import org.sweble.wikitext.lazy.encval.IllegalCodePoint;
-import org.sweble.wikitext.lazy.parser.*;
+import org.sweble.wikitext.lazy.parser.Bold;
+import org.sweble.wikitext.lazy.parser.ExternalLink;
+import org.sweble.wikitext.lazy.parser.HorizontalRule;
+import org.sweble.wikitext.lazy.parser.ImageLink;
+import org.sweble.wikitext.lazy.parser.InternalLink;
+import org.sweble.wikitext.lazy.parser.Italics;
+import org.sweble.wikitext.lazy.parser.Itemization;
+import org.sweble.wikitext.lazy.parser.ItemizationItem;
+import org.sweble.wikitext.lazy.parser.MagicWord;
+import org.sweble.wikitext.lazy.parser.Paragraph;
+import org.sweble.wikitext.lazy.parser.Section;
+import org.sweble.wikitext.lazy.parser.Url;
+import org.sweble.wikitext.lazy.parser.Whitespace;
+import org.sweble.wikitext.lazy.parser.XmlElement;
 import org.sweble.wikitext.lazy.preprocessor.TagExtension;
 import org.sweble.wikitext.lazy.preprocessor.Template;
 import org.sweble.wikitext.lazy.preprocessor.TemplateArgument;
@@ -41,8 +54,8 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
  * better understand the visitor pattern as implemented by the Visitor class,
  * please take a look at the following resources:
  * <ul>
- * <li>{@link http://en.wikipedia.org/wiki/Visitor_pattern} (classic pattern)</li>
- * <li>{@link http://www.javaworld.com/javaworld/javatips/jw-javatip98.html}
+ * <li>{@link "http://en.wikipedia.org/wiki/Visitor_pattern"} (classic pattern)</li>
+ * <li>{@link "http://www.javaworld.com/javaworld/javatips/jw-javatip98.html"}
  * (the version we use here)</li>
  * </ul>
  *
@@ -113,7 +126,7 @@ s	 */
 	 * Creates a new visitor that produces a plain text String representation
 	 * of a parsed Wikipedia article
 	 *
-	 * @param enumerateSections true, if sections should be enumerated in the output
+	 * @param enumerateSection true, if sections should be enumerated in the output
 	 */
 	public PlainTextConverter(boolean enumerateSection)
 	{

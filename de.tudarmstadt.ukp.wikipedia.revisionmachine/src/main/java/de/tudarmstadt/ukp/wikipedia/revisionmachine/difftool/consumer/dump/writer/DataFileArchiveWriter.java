@@ -108,8 +108,6 @@ public class DataFileArchiveWriter
 	 *
 	 * @param outputName
 	 *            Name of the sql consumer
-	 * @param logger
-	 *            Reference to a logger
 	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
@@ -134,9 +132,6 @@ public class DataFileArchiveWriter
 	 * @throws IOException
 	 *             if problems occurred while closing the file or process.
 	 *
-	 * @throws SQLConsumerException
-	 *             if problems occurred while closing the connection to the
-	 *             database.
 	 */
 	@Override
 	public void close()

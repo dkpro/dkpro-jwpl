@@ -120,7 +120,7 @@ public class WikipediaXMLReader
 	 *
 	 * @param input
 	 *            Reference to the reader
-	 * @param articleFilter
+	 * @param articleNameChecker
 	 *            Reference to a name checker
 	 *
 	 * @throws ConfigurationException

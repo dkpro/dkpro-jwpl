@@ -8,9 +8,6 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-/**
- * @(#)RevisionParser.java
- */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
 
 import java.io.DataInputStream;

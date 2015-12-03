@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.SQLException;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices.AbstractIndex;
@@ -147,7 +146,7 @@ public class DataFileWriter
 	 * Wraps up the index generation process and writes all remaining statements
 	 * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
 	 *
-	 * @throws SQLException
+	 * @throws IOException
 	 *             if an error occured while writing to the file
 	 */
 	public void finish() throws IOException{

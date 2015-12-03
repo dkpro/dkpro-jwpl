@@ -149,10 +149,7 @@ public class TimedSQLDatabaseWriter
 	/**
 	 * This method will close the connection to the output.
 	 *
-	 * @throws IOException
-	 *             if problems occurred while closing the file or process.
-	 *
-	 * @throws SQLConsumerException
+	 * @throws SQLException
 	 *             if problems occurred while closing the connection to the
 	 *             database.
 	 */

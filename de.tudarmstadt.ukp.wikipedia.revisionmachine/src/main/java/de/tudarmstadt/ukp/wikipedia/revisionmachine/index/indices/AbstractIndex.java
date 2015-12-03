@@ -42,11 +42,6 @@ public abstract class AbstractIndex
 
 	/**
 	 * (Constructor) Creates an index object.
-	 *
-	 * @param insertStatement
-	 *            Insert Statement
-	 * @param MAX_ALLOWED_PACKET
-	 *            MAX_ALLOWED_PACKET
 	 */
 	public AbstractIndex()
 	{

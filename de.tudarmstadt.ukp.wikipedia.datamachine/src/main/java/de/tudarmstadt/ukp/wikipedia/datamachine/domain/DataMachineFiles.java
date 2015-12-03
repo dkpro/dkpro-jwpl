@@ -145,7 +145,7 @@ public class DataMachineFiles extends Files {
 	}
 
 	/**
-	 * @see Files#setCompressGeneratedFiles(boolean)
+	 * @see DataMachineFiles#setCompressGeneratedFiles(boolean)
 	 */
 	public boolean isCompressGeneratedFiles() {
 		return compressGeneratedFiles;

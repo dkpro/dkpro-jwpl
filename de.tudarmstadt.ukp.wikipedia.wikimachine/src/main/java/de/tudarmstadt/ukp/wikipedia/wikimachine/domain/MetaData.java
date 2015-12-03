@@ -8,9 +8,6 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-/**
- * @(#)MetaData.java
- */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.domain;
 
 import java.sql.Timestamp;

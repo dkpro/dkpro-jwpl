@@ -94,7 +94,7 @@ public class RevisionApi
     /**
      * (Constructor) Creates a new RevisionApi object.
      * 
-     * @param config
+     * @param dbConfig
      *            A database configuration object
      * @throws WikiApiException
      *             if an error occurs
@@ -389,7 +389,7 @@ public class RevisionApi
     /**
      * Returns the timestamps of all revisions that have been made before the given revision.
      * 
-     * @param articleID
+     * @param revisionId
      *            ID of the article
      * @return number of revisions
      * 
@@ -652,7 +652,6 @@ public class RevisionApi
      * 
      * @param revisionID
      *            revision before which to count the contributors
-     * @return the number of unique contributors to the article
      * @param onlyRegistered
      *            defines whether to count only registered users (true), or all users (false)
      * @return the number of unique contributors to the article
@@ -1824,21 +1823,7 @@ public class RevisionApi
 
     /**
      * This method queries and builds the specified revision.
-     * 
-     * @param fullRevPK
-     *            PK of the full revision
-     * @param limit
-     *            number of revision to query
-     * @return Revision
-     * 
-     * @throws SQLException
-     *             if an error occurs while retrieving data from the sql database.
-     * @throws IOException
-     *             if an error occurs while reading the content stream
-     * @throws DecodingException
-     *             if an error occurs while decoding the content of the revision
-     * @throws WikiPageNotFoundException
-     *             if the revision was not found
+     * @param revision
      */
     public void setRevisionTextAndParts(Revision revision)
     {

@@ -13,7 +13,7 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.debug;
 /**
  * Logger, which does not implement some concrete output technique, but knows
  * how exceptions are represented like. AbstractLogger provides a template
- * method {@link #logObject(Object)} for its derivatives.
+ * method {@link #log(Object)} for its derivatives.
  * 
  * @author ivan.galkin
  * 

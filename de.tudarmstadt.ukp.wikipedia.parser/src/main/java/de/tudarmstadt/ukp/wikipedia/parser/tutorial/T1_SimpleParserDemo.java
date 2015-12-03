@@ -12,7 +12,6 @@ package de.tudarmstadt.ukp.wikipedia.parser.tutorial;
 
 import java.io.IOException;
 
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Section;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
@@ -26,7 +25,6 @@ public class T1_SimpleParserDemo {
 
 	/**
 	 * @param args
-	 * @throws WikiApiException 
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {

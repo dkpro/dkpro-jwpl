@@ -8,9 +8,6 @@
  * Contributors:
  *     Torsten Zesch - initial API and implementation
  ******************************************************************************/
-/**
- * @(#)Revision.java
- */
 package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
 /**
@@ -74,7 +71,6 @@ public class Revision {
 	/**
 	 * Extract a time stamp from the revision long.
 	 * 
-	 * @see DumpVersion#createRevision
 	 * @param revision
 	 * @return time stamp
 	 */
@@ -85,7 +81,6 @@ public class Revision {
 	/**
 	 * Extract a text ID from the revision long
 	 * 
-	 * @see DumpVersion#createRevision
 	 * @param revision
 	 * @return text ID
 	 */

@@ -146,9 +146,6 @@ public class SQLFileWriter
 	 * @throws IOException
 	 *             if problems occurred while closing the file or process.
 	 *
-	 * @throws SQLConsumerException
-	 *             if problems occurred while closing the connection to the
-	 *             database.
 	 */
 	@Override
 	public void close()
