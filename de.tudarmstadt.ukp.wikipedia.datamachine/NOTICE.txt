@@ -1,0 +1,3 @@
+de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.SimpleXmlDumpReader:
+
+Copyright 2005 by Brion Vibber
