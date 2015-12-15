@@ -9,7 +9,7 @@
 	<parent>
     	<groupId>de.tudarmstadt.ukp.dkpro.core</groupId>
     	<artifactId>dkpro-parent-pom</artifactId>
-    	<version>11</version>
+    	<version>10</version>
 	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -242,7 +242,7 @@
 		<module>de.tudarmstadt.ukp.wikipedia.util</module>
 		<module>de.tudarmstadt.ukp.wikipedia.parser</module>
 	</modules>
-	<build>
+	<!-- <build>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -514,7 +514,7 @@
 				</pluginManagement>
 			</build>
 		</profile>
-	</profiles>	
+	</profiles>	-->
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/dkpro/dkpro-jwpl/issues</url>
