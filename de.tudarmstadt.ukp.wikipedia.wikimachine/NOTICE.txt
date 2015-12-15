@@ -6,5 +6,4 @@ full listing of individual contributors.
 
 *****************************************************************
 de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader:
-MediaWiki import/export processing tools
 Copyright 2005 by Brion Vibber
