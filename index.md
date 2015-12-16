@@ -47,7 +47,9 @@ It is now maintained by
 
 ### License
 
-GNU Lesser GPL.
+DKPro JWPL is available under the Apache Software License (ASL) version 2.
+
+It must be pointed out that while the component’s source code itself is licensed under the ASL, individual components might make use of third-party libraries or products that are not licensed under the ASL. Please make sure that you are aware of the third party licenses and respect them.
 
 [ACL_2011]: http://aclweb.org/anthology/P/P11/P11-4017.pdf
 [ACL_2011_BIB]: http://www.aclweb.org/anthology/P/P11/P11-4017.bib
