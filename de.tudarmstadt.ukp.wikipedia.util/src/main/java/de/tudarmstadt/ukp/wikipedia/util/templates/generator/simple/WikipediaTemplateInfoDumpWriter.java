@@ -37,7 +37,6 @@ import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
 /**
  * This class generates data to write into sql dump file
  *
- * @author Artem Vovk
  *
  */
 public class WikipediaTemplateInfoDumpWriter

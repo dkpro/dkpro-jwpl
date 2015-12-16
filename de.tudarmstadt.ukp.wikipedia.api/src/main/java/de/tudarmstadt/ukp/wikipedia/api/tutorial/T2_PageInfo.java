@@ -30,7 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
  * 
  * A page provides a number of informative methods.
  * 
- * @author zesch
  *
  */
 public class T2_PageInfo implements WikiConstants {

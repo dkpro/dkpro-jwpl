@@ -21,7 +21,6 @@ package de.tudarmstadt.ukp.wikipedia.parser;
  * All clases in parsedpage package, which can be created by a 
  * parser, extending this class. So it is possible for these 
  * classes to refer to a SourceCode.
- * @author CJacobi
  *
  */
 public abstract class ParsedPageObject {

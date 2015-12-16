@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 
 /**
  * Provides a Start and End Position...
- * @author CJacobi
  */
 public class Span extends ParsedPageObject{
 	

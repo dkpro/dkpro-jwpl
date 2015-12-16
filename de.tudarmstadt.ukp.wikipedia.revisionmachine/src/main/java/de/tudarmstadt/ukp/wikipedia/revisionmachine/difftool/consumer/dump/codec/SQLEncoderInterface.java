@@ -30,7 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
  * The SQLEncoderInterface provides the link to the SQLEncoder who will define
  * the formatting of the output.
  *
- * @author Simon
  *
  */
 public interface SQLEncoderInterface

@@ -26,7 +26,6 @@ import java.util.List;
  * can be either, a SectionContent or anoter SectionContainer.<br/>
  * For a description of the inherited functions of Section, take a
  * look at the Documentation of Section.
- * @author CJacobi
  *
  */
 public class SectionContainer extends Section {

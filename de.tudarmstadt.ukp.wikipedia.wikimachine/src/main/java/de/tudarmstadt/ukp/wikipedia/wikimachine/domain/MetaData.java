@@ -22,7 +22,6 @@ import java.sql.Timestamp;
 /**
  * Holds the meta data for a dump version.
  * 
- * @author Anouar
  * 
  */
 public class MetaData {

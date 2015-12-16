@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 /**
  * Routines for the conversion of the Wikipedia revisions
  * 
- * @author ivan.galkin
  */
 public class Revision {
 

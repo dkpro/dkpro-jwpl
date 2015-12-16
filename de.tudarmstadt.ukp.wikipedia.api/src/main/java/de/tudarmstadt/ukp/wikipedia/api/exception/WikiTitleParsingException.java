@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 
 /**
  * Thrown when an exceptional situation occurs during parsing a page title to create a Title object. 
- * @author zesch
  *
  */
 public class WikiTitleParsingException extends WikiApiException {

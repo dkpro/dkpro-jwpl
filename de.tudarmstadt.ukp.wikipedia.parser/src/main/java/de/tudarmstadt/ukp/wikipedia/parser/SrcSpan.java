@@ -18,7 +18,6 @@
 package de.tudarmstadt.ukp.wikipedia.parser;
 
 /**
- * @author CJacobi
  *
  */
 public class SrcSpan {

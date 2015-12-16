@@ -32,8 +32,7 @@ public abstract class RevisionParser {
 	/**
 	 * Create a parser from an input stream
 	 * 
-	 * @author ivan.galkin
-	 * @param inputStream
+		 * @param inputStream
 	 */
 	public void setInputStream(InputStream inputStream){
 		stream = new DataInputStream(inputStream);

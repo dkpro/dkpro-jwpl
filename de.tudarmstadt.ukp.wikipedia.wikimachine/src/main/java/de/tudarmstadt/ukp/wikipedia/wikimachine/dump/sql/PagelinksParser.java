@@ -26,7 +26,6 @@ import java.io.StreamTokenizer;
  *
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  *
- * @author Anouar
  *
  *
  */
@@ -45,8 +44,7 @@ public class PagelinksParser extends SQLFileParser {
 	 *
 	 * @param inputStream
 	 * @throws IOException
-	 * @author ivan.galkin
-	 */
+		 */
 	public PagelinksParser(InputStream inputStream) throws IOException {
 		init(inputStream);
 	}

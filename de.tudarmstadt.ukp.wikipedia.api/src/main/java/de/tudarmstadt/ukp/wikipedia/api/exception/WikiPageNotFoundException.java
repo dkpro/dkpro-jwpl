@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 
 /**
  * Thrown when a requested page or category could not be found in Wikipedia.
- * @author zesch
  *
  */
 public class WikiPageNotFoundException extends WikiApiException {

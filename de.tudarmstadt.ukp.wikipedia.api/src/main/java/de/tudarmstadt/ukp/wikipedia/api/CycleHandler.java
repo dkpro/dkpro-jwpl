@@ -27,7 +27,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * Methods for handling cycles in the category graph.
- * @author zesch
  *
  */
 public class CycleHandler {

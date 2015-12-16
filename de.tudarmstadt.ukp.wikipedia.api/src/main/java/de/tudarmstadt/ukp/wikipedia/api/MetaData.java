@@ -26,7 +26,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 /**
  * Provides access to meta data about a certain instance of Wikipedia.
  *
- * @author zesch
  *
  */
 public class MetaData

@@ -30,7 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
 /**
  * Thread for converting of XML stream to SQL stream.
  *
- * @author ivan.galkin
  *
  */
 class XMLDumpTableInputStreamThread extends Thread {

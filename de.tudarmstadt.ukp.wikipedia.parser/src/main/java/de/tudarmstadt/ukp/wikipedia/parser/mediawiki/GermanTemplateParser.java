@@ -28,7 +28,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 /**
  * This is the TemplateParser for the german language, with special treatment
  * for all the german templates, like "Dieser Artikel" or "Deutschlandlastig".
- * @author CJacobi
  *
  */
 public class GermanTemplateParser implements MediaWikiTemplateParser {

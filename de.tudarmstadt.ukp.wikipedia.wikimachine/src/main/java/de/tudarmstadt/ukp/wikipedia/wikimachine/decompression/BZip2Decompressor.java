@@ -27,7 +27,6 @@ import org.apache.tools.bzip2.CBZip2InputStream;
  * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream
  * to set up the archive path and returns the InputStream to read from
  * 
- * @author ivan.galkin
  * 
  */
 public class BZip2Decompressor implements IDecompressor {

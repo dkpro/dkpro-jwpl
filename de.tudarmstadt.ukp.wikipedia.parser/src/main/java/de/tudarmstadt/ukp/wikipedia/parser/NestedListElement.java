@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 
 /**
  * This is a simple ContentElement, wich occures in a NestedList.
- * @author CJacobi
  *
  */
 public class NestedListElement extends ContentElement implements NestedList{

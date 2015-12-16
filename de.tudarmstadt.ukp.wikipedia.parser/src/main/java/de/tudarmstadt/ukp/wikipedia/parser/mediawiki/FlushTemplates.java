@@ -22,7 +22,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 
 /**
  * This TemplateParser will delete ALL templates, whitout any exception!
- * @author CJacobi
  *
  */
 public final class FlushTemplates implements MediaWikiTemplateParser {

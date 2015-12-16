@@ -23,7 +23,6 @@ import java.util.Set;
 /**
  * The page class that is actually persisted by Hibernate.
  * It is accessed via a equally named class in the api package to hide session management from the user.
- * @author zesch
  *
  */
 public class Page {

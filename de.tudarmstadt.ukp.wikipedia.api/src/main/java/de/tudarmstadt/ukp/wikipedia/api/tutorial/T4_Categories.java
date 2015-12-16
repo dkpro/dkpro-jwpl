@@ -31,7 +31,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
  * 
- * @author zesch
  *
  */
 public class T4_Categories implements WikiConstants {

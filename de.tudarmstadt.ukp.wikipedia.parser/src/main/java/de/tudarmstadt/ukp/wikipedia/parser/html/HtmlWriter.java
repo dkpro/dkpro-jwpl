@@ -51,7 +51,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
  * <br/>
  * There is a ParsedPage.css for formating the HTML Tags.<br/>
  * Look at the HtmlFileDemo.java for a better intoduction.
- * @author CJacobi
  *
  */
 public class HtmlWriter {

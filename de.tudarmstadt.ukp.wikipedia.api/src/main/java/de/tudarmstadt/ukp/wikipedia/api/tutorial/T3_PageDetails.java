@@ -31,7 +31,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
  * 
  * Even more things to do with a Wikipedia page.
  * 
- * @author zesch
  *
  */
 public class T3_PageDetails implements WikiConstants {

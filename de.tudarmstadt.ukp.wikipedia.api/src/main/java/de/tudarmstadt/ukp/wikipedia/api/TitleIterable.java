@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 /**
  * An iterable over all titles.
- * @author zesch
  *
  */
 public class TitleIterable implements Iterable<Title> {

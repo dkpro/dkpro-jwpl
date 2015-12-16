@@ -23,7 +23,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 /**
  * This TemplateParser simply shows the name of the Template with all
  * parameters, without any exception.
- * @author CJacobi
  *
  */
 public class ShowTemplateNamesAndParameters implements MediaWikiTemplateParser {

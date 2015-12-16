@@ -28,7 +28,6 @@ public class ApiUtilities {
     /**
      * DOTS - print progress dots.
      * TEXT - print a message with progress in percent.
-     * @author zesch
      *
      */
     public enum ProgressInfoMode { DOTS, TEXT };

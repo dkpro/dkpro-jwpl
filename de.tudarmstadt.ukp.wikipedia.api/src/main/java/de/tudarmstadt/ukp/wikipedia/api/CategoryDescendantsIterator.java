@@ -30,7 +30,6 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * An iterator over category objects retrieved by Category.getDescendants()
- * @author zesch
  *
  */
 public class CategoryDescendantsIterator implements Iterator<Category> {
@@ -74,7 +73,6 @@ public class CategoryDescendantsIterator implements Iterator<Category> {
     /**
      * Buffers categories in a list.
      *
-     * @author zesch
      *
      */
     class CategoryBuffer{

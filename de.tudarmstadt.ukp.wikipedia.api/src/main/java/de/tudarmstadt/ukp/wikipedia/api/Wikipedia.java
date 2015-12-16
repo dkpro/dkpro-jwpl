@@ -43,7 +43,6 @@ import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
 
 /**
  * Provides access to Wikipedia articles and categories.
- * @author zesch
  *
  */
 // TODO better JavaDocs!

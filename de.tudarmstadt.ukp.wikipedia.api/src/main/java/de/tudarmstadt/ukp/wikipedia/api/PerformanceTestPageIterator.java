@@ -30,8 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
  *
  * For an unbuffered iterator set bufferSize to 1.
  * 
- * @author Anouar
- * 
  */
 public class PerformanceTestPageIterator {
 

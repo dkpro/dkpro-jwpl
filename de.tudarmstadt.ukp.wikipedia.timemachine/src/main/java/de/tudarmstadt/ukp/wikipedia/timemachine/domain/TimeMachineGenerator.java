@@ -42,7 +42,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
  * as interval<br>
  * this class produces multiple dump versions.
  *
- * @author Anouar
  *
  */
 public class TimeMachineGenerator extends AbstractSnapshotGenerator {

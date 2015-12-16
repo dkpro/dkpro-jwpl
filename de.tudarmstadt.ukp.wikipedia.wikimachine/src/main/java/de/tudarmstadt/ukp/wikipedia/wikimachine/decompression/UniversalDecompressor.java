@@ -43,7 +43,6 @@ import java.util.Properties;
  * key="7z">7z e -so %f</entry>}. The properties file should confirm to
  * {@link "http://java.sun.com/dtd/properties.dtd"}
  * 
- * @author ivan.galkin
  * 
  * @see UniversalDecompressor#getInputStream(String)
  * 

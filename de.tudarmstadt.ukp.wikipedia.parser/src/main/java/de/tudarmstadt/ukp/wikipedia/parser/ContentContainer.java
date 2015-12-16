@@ -25,7 +25,6 @@ import java.util.List;
  * ContentElement.class!) in a new Content element.<br/>
  * For a description of the Functions of the Content Interface, take a look at 
  * the Content.class documentation.<br/>
- * @author CJacobi
  *
  */
 public abstract class ContentContainer extends ParsedPageObject implements Content {

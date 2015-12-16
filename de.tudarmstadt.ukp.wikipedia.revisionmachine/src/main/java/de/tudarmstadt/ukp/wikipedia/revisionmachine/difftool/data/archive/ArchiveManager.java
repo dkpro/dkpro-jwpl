@@ -25,7 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
 /**
  * DiffManager Manages the data contained by the ArchiveProducer
  * 
- * @author Simon Kulessa
  * @version 0.5.0
  */
 public class ArchiveManager

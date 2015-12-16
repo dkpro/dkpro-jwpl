@@ -25,7 +25,6 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
  * <li>TEXT</li>
  * </ul>
  * 
- * @author ivan.galkin
  * 
  */
 public enum DumpTableEnum {

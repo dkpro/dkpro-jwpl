@@ -22,7 +22,6 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.debug;
  * how exceptions are represented like. AbstractLogger provides a template
  * method {@link #log(Object)} for its derivatives.
  * 
- * @author ivan.galkin
  * 
  */
 public abstract class AbstractLogger implements ILogger {

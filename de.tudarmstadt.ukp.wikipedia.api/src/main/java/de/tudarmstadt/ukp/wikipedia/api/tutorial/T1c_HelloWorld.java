@@ -28,7 +28,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.*;
  * 
  * Handle exceptions.
  * 
- * @author zesch
  *
  */
 public class T1c_HelloWorld implements WikiConstants {

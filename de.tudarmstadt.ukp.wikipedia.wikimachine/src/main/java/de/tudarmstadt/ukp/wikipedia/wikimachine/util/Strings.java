@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 /**
  * Utilities for Strings.
- * @author Anouar
  * 
  */
 public abstract class Strings {

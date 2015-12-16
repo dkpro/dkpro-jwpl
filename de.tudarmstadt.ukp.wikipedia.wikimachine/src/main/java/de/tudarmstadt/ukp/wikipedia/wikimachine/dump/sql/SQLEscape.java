@@ -22,8 +22,6 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql;
  * The single method {@link SQLEscape#escape} removes all unwished escape
  * characters from a string to make is SQL conform. Maybe not thread-save.
  *
- * @author ivan.galkin
- * @author Oliver Ferschke
  */
 public class SQLEscape {
 	private SQLEscape() {

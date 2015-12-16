@@ -23,7 +23,6 @@ import java.util.HashSet;
  * This class is used for filtering templates by they names using different
  * white/black lists
  * 
- * @author Artem Vovk
  * 
  */
 public class TemplateFilter

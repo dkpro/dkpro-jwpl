@@ -27,7 +27,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * An iterator over page objects selected by a query.
- * @author zesch
  *
  */
 public class PageQueryIterator implements Iterator<Page> {

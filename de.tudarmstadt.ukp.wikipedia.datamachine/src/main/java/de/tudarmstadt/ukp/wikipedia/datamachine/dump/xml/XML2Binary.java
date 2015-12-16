@@ -30,7 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader;
  * and store it to binary file. Compression of the output files is possible.
  *
  *
- * @author ivan.galkin
  *
  */
 public class XML2Binary {

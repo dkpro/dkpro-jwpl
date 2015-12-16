@@ -32,8 +32,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
  * Starter, which parsed configuration properties file and starts
  * WikipediaTemplateInfoGenerator
  *
- * @author Artem Vovk
- * @author Oliver Ferschke
  *
  */
 public class TemplateInfoGeneratorStarter

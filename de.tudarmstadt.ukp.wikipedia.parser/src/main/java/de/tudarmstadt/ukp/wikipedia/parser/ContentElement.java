@@ -25,7 +25,6 @@ import java.util.List;
  * for nearly all content containing classes...
  * 
  * Be aware, that all retured Spans refer to the String returned by getText()<br/>
- * @author CJacobi
  *
  */
 public class ContentElement extends ParsedPageObject implements Content {

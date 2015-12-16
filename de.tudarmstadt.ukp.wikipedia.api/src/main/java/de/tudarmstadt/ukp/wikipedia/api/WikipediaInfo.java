@@ -36,7 +36,6 @@ import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
 
 /** Holds numerous information on a given subset (that may also be
  * the whole Wikipedia) of Wikipedia nodes.
- * @author zesch
  */
 public class WikipediaInfo {
 

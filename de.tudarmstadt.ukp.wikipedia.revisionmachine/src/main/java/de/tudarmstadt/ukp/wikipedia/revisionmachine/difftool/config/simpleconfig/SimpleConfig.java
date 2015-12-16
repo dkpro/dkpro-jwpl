@@ -23,7 +23,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.control.
  * This class is an alternative to the ConfigGUI and can be used to produce
  * configuration files for the DiffTool.
  *
- * @author Oliver Ferschke
  */
 public class SimpleConfig
 {

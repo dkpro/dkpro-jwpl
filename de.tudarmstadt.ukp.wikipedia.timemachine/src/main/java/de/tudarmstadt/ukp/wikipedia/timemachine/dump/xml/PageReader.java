@@ -26,7 +26,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
  * This class is a specified variant of XmlDumpReader. Please see its source for more
  * information about a functionality and a license.<br>
  *
- * @author ivan.galkin
  *
  */
 public class PageReader extends AbstractXmlDumpReader {

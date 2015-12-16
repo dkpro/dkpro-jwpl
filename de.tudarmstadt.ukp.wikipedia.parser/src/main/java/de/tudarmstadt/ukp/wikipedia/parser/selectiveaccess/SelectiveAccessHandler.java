@@ -45,7 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
  * Provides access to a ParsedPage at an abstract Level.
- * @author  CJacobi
  */
 public class SelectiveAccessHandler {
 

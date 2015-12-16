@@ -27,7 +27,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * An iterator over category objects.
- * @author zesch
  *
  */
 public class TitleIterator implements Iterator<Title> {
@@ -55,7 +54,6 @@ public class TitleIterator implements Iterator<Title> {
     /**
      * Buffers titles in a list.
      *
-     * @author zesch
      *
      */
     class TitleBuffer {

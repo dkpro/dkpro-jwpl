@@ -38,8 +38,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.IEnvironmentFactory;
  * The transformation produces .txt files for the different tables in the JWPL
  * database.
  *
- * @author Anouar
- * @author ivan.galkin
  *
  */
 public class DataMachineGenerator extends AbstractSnapshotGenerator {

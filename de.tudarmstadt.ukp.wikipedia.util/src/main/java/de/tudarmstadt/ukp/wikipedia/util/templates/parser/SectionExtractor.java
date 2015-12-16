@@ -47,7 +47,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 /**
  * A visitor that extracts sections from an article AST.
  *
- * @author Oliver Ferschke
  */
 public class SectionExtractor extends AstVisitor
 {
@@ -284,7 +283,6 @@ public class SectionExtractor extends AstVisitor
 	/**
 	 * Wraps title and body text of an extraction section
 	 *
-	 * @author Oliver Ferschke
 	 *
 	 */
 	public class ExtractedSection

@@ -25,7 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 /**
  * This is a little demo, to show how the parsedpage and parsedpage.parser package
  * works.
- * @author CJacobi
  *
  */
 

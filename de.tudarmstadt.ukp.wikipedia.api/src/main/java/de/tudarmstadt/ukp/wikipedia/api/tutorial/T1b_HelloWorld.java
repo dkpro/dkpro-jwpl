@@ -28,7 +28,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
  * 
  * If you do not care about exception handling, but want to avoid crashes on every page that does not exist.
  * 
- * @author zesch
  *
  */
 public class T1b_HelloWorld implements WikiConstants {

@@ -27,7 +27,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Span;
  * A Class which manages Spans which are related to a StringBuilder.
  * With the SpanManager it is possible to work on a String (delete, insert, replace)
  * with no need to adjust the Spans related to the StringBuilder manually.
- * @author CJacobi
  *
  */
 public class SpanManager implements CharSequence {

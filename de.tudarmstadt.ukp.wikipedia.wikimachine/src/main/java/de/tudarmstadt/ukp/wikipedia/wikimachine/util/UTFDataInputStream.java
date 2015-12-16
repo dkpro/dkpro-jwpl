@@ -25,7 +25,6 @@ import java.io.InputStream;
  * This is a inverse class of {@link UTFDataOutputStream} witch goal is to
  * reminder the length limitation of written UTF-8 strings
  *
- * @author i_galkin
  *
  * @see UTFDataOutputStream
  *

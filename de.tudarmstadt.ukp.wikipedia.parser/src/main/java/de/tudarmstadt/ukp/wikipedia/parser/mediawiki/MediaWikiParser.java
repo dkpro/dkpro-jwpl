@@ -22,7 +22,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 /**
  * This is an Interface for MediaWiki Parsers. Which simply "converts" 
  * MediaWiki Source, given as a String, to a ParsedPage
- * @author CJacobi
  *
  */
 public interface MediaWikiParser {

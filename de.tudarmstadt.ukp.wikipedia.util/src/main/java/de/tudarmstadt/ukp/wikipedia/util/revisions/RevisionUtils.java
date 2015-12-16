@@ -36,7 +36,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
  * package because of dependencies to the JWPL API. RevisionMachine should stay independent
  * from the RevisionMachine
  *
- * @author Oliver Ferschke
  *
  */
 public class RevisionUtils {

@@ -25,7 +25,6 @@ import java.util.List;
  * For every content accsess function exists a setter and a remover function.<br/>
  * For a description of the inherited functions of Section, take a
  * look at the Documentation of Section.
- * @author  CJacobi
  */
 public class SectionContent extends Section{
 	

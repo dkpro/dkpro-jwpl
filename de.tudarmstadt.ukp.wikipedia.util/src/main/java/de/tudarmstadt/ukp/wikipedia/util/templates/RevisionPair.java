@@ -30,7 +30,6 @@ import de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor.Extra
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a
  * template has been added or removed (depending on the mode).
  *
- * @author Oliver Ferschke
  *
  */
 public class RevisionPair implements Serializable{

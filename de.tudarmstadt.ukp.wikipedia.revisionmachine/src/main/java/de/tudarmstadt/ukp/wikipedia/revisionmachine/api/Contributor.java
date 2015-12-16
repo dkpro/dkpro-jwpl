@@ -22,7 +22,6 @@ import java.util.List;
 /**
  * Provides basic user/conttributor information in a single object
  *
- * @author Oliver Ferschke
  *
  */
 public class Contributor

@@ -24,7 +24,6 @@ import java.util.Set;
  * This class represents different modes used in WikipediaTemplateInfoGenerator
  * and is a container for data used fot generation
  *
- * @author Artem Vovk
  *
  */
 public class GeneratorMode

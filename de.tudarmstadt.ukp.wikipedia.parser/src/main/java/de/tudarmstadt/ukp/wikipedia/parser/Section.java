@@ -32,7 +32,6 @@ import java.util.List;
  * makes the accest to the provieded Structures very simple.<br/>
  * <br/>
  * These structure requirements are implemented as SectionContainer an SectionContent.
- * @author CJacobi
  *
  */
 public abstract class Section extends ContentContainer {

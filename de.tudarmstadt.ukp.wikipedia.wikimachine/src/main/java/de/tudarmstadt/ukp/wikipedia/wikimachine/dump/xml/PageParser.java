@@ -39,8 +39,7 @@ public class PageParser {
 	 * Create a parser from an input stream
 	 * 
 	 * @param inputStream
-	 * @author ivan.galkin
-	 */
+		 */
 	public void setInputStream(InputStream inputStream) {
 		stream = new UTFDataInputStream(inputStream);
 	}

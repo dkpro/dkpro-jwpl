@@ -42,7 +42,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
  * that e.g. a ContentElement conatins a Link which isn't in the Range of 
  * this ContentElement. This must be done because some positons will be 
  * jammed by the parsing process, e.g. if a Link is the start of a Paragrah.
- * @author CJacobi
  *
  */
 public class SrcPosRangeChecker {

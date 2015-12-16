@@ -40,7 +40,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParamet
 
 /**
  * This creates a Detailed Statistic file for Tables and Templates.
- * @author CJacobi
  *
  */
 public class Statistics {

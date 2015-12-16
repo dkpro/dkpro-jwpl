@@ -22,7 +22,6 @@ import java.util.List;
 
 /**
  * In a definition List exist a Defined Term with Zero or more Definitions.
- * @author  CJacobi
  */
 public class DefinitionList extends ContentContainer{
 	

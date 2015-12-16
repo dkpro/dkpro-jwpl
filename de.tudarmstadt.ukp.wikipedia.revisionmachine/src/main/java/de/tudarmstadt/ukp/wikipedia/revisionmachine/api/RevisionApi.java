@@ -47,8 +47,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 /**
  * This class can access the database and retrieve single revisions.
  * 
- * @author Simon Kulessa
- * @author Oliver Ferschke
  */
 public class RevisionApi
 {
@@ -463,7 +461,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public List<Timestamp> getRevisionTimestamps(final int articleID)
         throws WikiApiException
@@ -535,7 +532,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public int getNumberOfUniqueContributors(final int articleID)
         throws WikiApiException
@@ -559,7 +555,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public int getNumberOfUniqueContributors(final int articleID, boolean onlyRegistered)
         throws WikiApiException
@@ -636,7 +631,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID)
         throws WikiApiException
@@ -659,7 +653,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID,
             boolean onlyRegistered)
@@ -740,7 +733,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public Map<String, Timestamp> getUserContributionMap(final int articleID)
         throws WikiApiException
@@ -770,7 +762,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter)
         throws WikiApiException
@@ -797,7 +788,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     @SuppressWarnings("unused")
     public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter,
@@ -902,7 +892,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public List<String> getUserGroups(final int userID)
         throws WikiApiException
@@ -969,7 +958,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public Map<Integer, List<Integer>> getUserRevisionIds(int userid)
         throws WikiApiException
@@ -1044,7 +1032,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public Map<Integer, List<Integer>> getUserRevisionIds(String username, int limit)
         throws WikiApiException
@@ -1124,7 +1111,6 @@ public class RevisionApi
      * 
      * @throws WikiApiException
      *             if an error occurs
-     * @author Oliver Ferschke
      */
     public Map<Timestamp, Collection<DiffPart>> getTimestampToRevisionMap(final int articleID)
         throws WikiApiException
@@ -2160,7 +2146,6 @@ public class RevisionApi
      * @return true, if index exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
-     * @author Oliver Ferschke
      */
     private boolean indexExists(String table, String indexName)
         throws SQLException
@@ -2224,7 +2209,6 @@ public class RevisionApi
      * @return true, if table exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
-     * @author Oliver Ferschke
      */
     private boolean tableExists(String table)
         throws SQLException

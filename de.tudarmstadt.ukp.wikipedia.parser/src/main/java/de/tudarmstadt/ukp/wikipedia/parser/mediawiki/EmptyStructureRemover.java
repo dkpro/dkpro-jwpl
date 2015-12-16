@@ -33,7 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.TableElement;
  * It is possible that some Elements which has been parsed are empty after
  * the Parsing process becaus of the options which has been set. This class
  * can remove these empty elmentens.
- * @author CJacobi
  *
  */
 class EmptyStructureRemover {

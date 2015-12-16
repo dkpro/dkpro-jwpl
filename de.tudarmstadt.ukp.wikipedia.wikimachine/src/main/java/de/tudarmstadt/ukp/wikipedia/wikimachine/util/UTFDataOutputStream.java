@@ -32,7 +32,6 @@ import java.io.OutputStream;
  * </ul>
  * 
  * @see DataOutputStream#writeUTF(String)
- * @author i_galkin
  * 
  */
 public class UTFDataOutputStream extends DataOutputStream {

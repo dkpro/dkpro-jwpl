@@ -44,7 +44,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParamet
  * MATH: 6499 1.72%
  * TAGS: 74236 19.67%
  * NOWIKI: 3058 0.81%</pre>
- * @author CJacobi
  *
  */
 public class Statistics2 {

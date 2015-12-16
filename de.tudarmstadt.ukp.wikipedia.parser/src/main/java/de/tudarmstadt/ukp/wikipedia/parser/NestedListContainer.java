@@ -22,7 +22,6 @@ import java.util.List;
 
 /**
  * Take a Look a NestedList description first.
- * @author CJacobi
  *
  */
 public class NestedListContainer extends ContentContainer implements NestedList{

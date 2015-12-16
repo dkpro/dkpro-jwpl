@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 /**
  * An iterable over category objects.
- * @author zesch
  *
  */
 public class CategoryIterable implements Iterable<Category> {

@@ -38,7 +38,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
  * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany", 
  *   we can get a quite long list of towns in Germany.  
  * 
- * @author zesch
  *
  */
 public class T5_TownList implements WikiConstants {

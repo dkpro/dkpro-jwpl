@@ -35,7 +35,6 @@ import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 /**
  * Tests for the correctness of the Category graph construction and its serialization<br>
  * process.
- * @author Anouar 30/09/2007
  *
  *
  */

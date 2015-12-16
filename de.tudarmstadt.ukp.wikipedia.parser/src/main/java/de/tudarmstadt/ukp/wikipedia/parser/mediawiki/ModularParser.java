@@ -35,7 +35,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
  * It exist a MediaWikiParserFactory, to get an Instance of this Parser.<br/>
  * But, if you want to, you can create a parser by yourself.
  *
- * @author CJacobi
  *
  */
 public class ModularParser implements MediaWikiParser,
@@ -2121,8 +2120,7 @@ public class ModularParser implements MediaWikiParser,
 	/**
 	 * Container for all the Parameters needed in the parseing process
 	 *
-	 * @author CJacobi
-	 *
+		 *
 	 */
 	class ContentElementParsingParameters
 	{

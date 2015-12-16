@@ -45,7 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
  * 
  * Adopted to IDumpVersion by Galkin
  * 
- * @author Anouar
  * 
  * 
  */

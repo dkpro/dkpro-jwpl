@@ -33,7 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.util.StringUtils;
 
 /**
  * An iterable over page objects selected by a query.
- * @author zesch
  *
  */
 public class PageQueryIterable implements Iterable<Page> {

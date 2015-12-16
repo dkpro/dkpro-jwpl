@@ -26,7 +26,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
  * execution <br>
  * of the DBMapping tool.
  *
- * @author Anouar
  *
  */
 public class Configuration {

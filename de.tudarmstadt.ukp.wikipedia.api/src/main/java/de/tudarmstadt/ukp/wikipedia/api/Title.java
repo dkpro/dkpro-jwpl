@@ -24,7 +24,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * Represents a Wikipedia page title.
- * @author zesch
  *
  * Title parsing regexp fixed with the help of many UKP colleagues and Samy Ateia.
  *

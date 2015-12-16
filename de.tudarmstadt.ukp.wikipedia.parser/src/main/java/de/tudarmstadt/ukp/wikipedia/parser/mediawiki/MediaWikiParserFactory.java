@@ -27,7 +27,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
  * Class for easy creating a configurated MediaWiki Parser...<br/>
- * @author CJacobi
  *
  */
 public class MediaWikiParserFactory {

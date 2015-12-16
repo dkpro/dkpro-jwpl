@@ -24,7 +24,6 @@ import java.util.List;
  * it simply has an int for col and row, and a SectionContainer for the Content.<br/>
  * This implementation is needed, because a Table in MediaWiki can contain neary
  * everything.
- * @author  CJacobi
  */
 public class TableElement extends ContentContainer{
 	

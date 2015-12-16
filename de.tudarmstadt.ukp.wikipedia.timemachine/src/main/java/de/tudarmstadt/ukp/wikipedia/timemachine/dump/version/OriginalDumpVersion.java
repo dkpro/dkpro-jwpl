@@ -42,7 +42,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
 /**
  * This class holds the data for a specific dump version.
  * 
- * @author Anouar
  * 
  */
 

@@ -90,7 +90,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
  * </ul>
  *
  * @author Open Source Research Group, University of Erlangen-Nürnberg
- * @author Oliver Ferschke
  */
 public class PlainTextConverter extends AstVisitor
 {

@@ -27,7 +27,6 @@ import org.apache.log4j.Logger;
 /**
  * Get the destination of a redirect using its text.
  *
- * @author Torsten Zesch
  */
 public class Redirects {
 
@@ -42,8 +41,7 @@ public class Redirects {
 	 *
 	 * @see [Bug 86]
 	 * @see "http://en.wikipedia.org/wiki/Wikipedia:Redirect"
-	 * @author ivan.galkin
-	 *
+		 *
 	 */
 	private static final List<String> redirectPatterns = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
@@ -69,8 +67,7 @@ public class Redirects {
 	 * @param text
 	 *            given text
 	 * @return true if text starts with #REDIRECT, false otherwise
-	 * @author ivan.galkin
-	 */
+		 */
 	public static boolean isRedirect(String text) {
 		boolean result = false;
 		String pattern;

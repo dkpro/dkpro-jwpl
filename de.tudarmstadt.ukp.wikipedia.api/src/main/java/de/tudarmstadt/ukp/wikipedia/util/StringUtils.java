@@ -78,7 +78,6 @@ public class StringUtils {
 	 * Replaces all problematic characters from a String with their escaped
 	 * versions to make it SQL conform.
 	 *
-	 * @author Oliver Ferschke
 	 * @param str unescaped String
 	 * @return SQL safe escaped String
 	 */

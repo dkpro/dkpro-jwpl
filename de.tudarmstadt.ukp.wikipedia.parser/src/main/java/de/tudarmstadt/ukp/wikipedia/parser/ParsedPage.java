@@ -24,8 +24,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
  * Provides access to structured information about a MediaWiki article page.
- * @author  CJacobi
- * @author  TZ
  */
 public class ParsedPage{	
 	

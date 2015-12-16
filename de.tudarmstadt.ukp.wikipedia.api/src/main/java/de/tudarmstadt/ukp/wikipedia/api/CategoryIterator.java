@@ -29,7 +29,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * An iterator over category objects.
- * @author zesch
  *
  */
 public class CategoryIterator implements Iterator<Category> {
@@ -57,7 +56,6 @@ public class CategoryIterator implements Iterator<Category> {
     /**
      * Buffers categories in a list.
      *
-     * @author zesch
      *
      */
     class CategoryBuffer{

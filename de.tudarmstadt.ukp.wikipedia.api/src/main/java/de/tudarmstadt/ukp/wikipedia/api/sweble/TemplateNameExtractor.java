@@ -42,7 +42,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 /**
  * A visitor that extracts template names (no parameters) from an article AST.
  *
- * @author Oliver Ferschke
  */
 public class TemplateNameExtractor extends AstVisitor
 {

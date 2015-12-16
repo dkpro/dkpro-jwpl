@@ -24,7 +24,6 @@ import java.io.PrintStream;
 /**
  * Writes the dumps of tables as txt files.
  * 
- * @author Anouar
  * 
  */
 

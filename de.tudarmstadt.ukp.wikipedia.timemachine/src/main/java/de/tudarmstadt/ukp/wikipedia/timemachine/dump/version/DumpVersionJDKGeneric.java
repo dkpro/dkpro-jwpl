@@ -41,7 +41,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
  * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} returns the
  * same type as KeyType</i>
  *
- * @author ivan.galkin
  *
  * @param <KeyType>
  *            the type of the HashMap's key

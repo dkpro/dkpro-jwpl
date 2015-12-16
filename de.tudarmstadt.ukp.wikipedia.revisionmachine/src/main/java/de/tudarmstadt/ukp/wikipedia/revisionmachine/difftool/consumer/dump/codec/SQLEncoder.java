@@ -45,7 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This creates the SQL statements
- *	@author Oliver Ferschke
  *
  */
 public class SQLEncoder

@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 /**
  * An iterable of page objects.
- * @author zesch
  *
  */
 public class PageIterable implements Iterable<Page> {

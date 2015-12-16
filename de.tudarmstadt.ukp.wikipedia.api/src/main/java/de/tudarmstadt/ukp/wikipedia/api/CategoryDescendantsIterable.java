@@ -22,7 +22,6 @@ import java.util.Iterator;
 
 /**
  * An iterable over category objects retrieved by Category.getDescendants()
- * @author zesch
  *
  */
 public class CategoryDescendantsIterable implements Iterable<Category> {

@@ -25,7 +25,6 @@ import java.io.InputStream;
  *
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  *
- * @author Anouar
  *
  */
 public class CategorylinksParser extends SQLFileParser {
@@ -43,8 +42,7 @@ public class CategorylinksParser extends SQLFileParser {
 	 * @param inputStream
 	 * @throws IOException
 	 *
-	 * @author ivan.galkin
-	 */
+		 */
 	public CategorylinksParser(InputStream inputStream) throws IOException {
 		init(inputStream);
 	}

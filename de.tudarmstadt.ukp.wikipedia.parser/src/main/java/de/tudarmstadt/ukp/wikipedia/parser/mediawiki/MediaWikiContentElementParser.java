@@ -22,7 +22,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.ContentElement;
 /**
  * This Interface makes it possible to parse a single content element.
  * Some TemplateParses might uses this Feauture.
- * @author CJacobi
  *
  */
 interface MediaWikiContentElementParser {

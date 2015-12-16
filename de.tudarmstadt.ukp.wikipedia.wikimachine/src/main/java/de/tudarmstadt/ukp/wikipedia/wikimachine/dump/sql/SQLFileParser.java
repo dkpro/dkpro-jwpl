@@ -27,7 +27,6 @@ import java.io.StreamTokenizer;
  * This class defines common utilities for the classes CategorylinksParser <br>
  * and PagelinksParser.
  * 
- * @author Anouar
  * 
  * @version 0.2 <br>
  *          <code>SQLFileParser</code> don't create a BufferedReader by himself
@@ -48,8 +47,7 @@ abstract class SQLFileParser {
 	 * @param inputStream
 	 * @throws IOException
 	 * 
-	 * @author ivan.galkin
-	 */
+		 */
 	protected void init(InputStream inputStream) throws IOException {
 		stream = inputStream;
 		st = new StreamTokenizer(new BufferedReader(new InputStreamReader(

@@ -25,7 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
  * File name constants and with the simple input/output directory building
  * rules.
  * 
- * @author ivan.galkin
  * 
  */
 public class Files {

@@ -31,8 +31,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory;
  * 
  * Refactored on 16 April 2009 by Ivan Galkin .
  * 
- * @author Anouar
- * @author ivan.galkin
  * 
  * 
  */

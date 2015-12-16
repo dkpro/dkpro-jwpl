@@ -23,7 +23,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 /**
  * Because template parsing is a special task, it is usesfull to use
  * a special parser.
- * @author CJacobi
  *
  */
 public interface MediaWikiTemplateParser {

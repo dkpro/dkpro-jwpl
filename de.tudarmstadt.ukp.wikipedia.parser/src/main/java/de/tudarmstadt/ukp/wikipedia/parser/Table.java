@@ -24,7 +24,6 @@ import java.util.List;
  * A Table has a Title and contains TableElements.<br/>
  * This Class provides all needed functions simmilar to the other classes in
  * this package.
- * @author CJacobi
  *
  */
 public class Table extends ContentContainer{

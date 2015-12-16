@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.api;
 /**
  * Represents a query for retrieving pages that meet the given conditions.
  * Conditions are represented by the fields of a query object.
- * @author zesch
  *
  */
 public class PageQuery implements WikiConstants {

@@ -33,7 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 /**
  * An interface to abstract from DumpVersion realization
  * 
- * @author ivan.galkin
  * 
  */
 public interface IDumpVersion {

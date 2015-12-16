@@ -45,7 +45,6 @@ import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
  * This class gives access to the additional information created by
  * the TemplateInfoGenerator.
  *
- * @author Oliver Ferschke
  */
 public class WikipediaTemplateInfo {
 
@@ -1600,7 +1599,6 @@ public class WikipediaTemplateInfo {
 	 * @return true, if table exists, false else
 	 * @throws SQLException
 	 *             if an error occurs connecting to or querying the db
-	 * @author Oliver Ferschke
 	 */
 	public boolean tableExists(String table)
 		throws SQLException

@@ -21,7 +21,6 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
  * A database configuration is used to establish a database connection and set various parameters.
- * @author zesch
  *
  */
 public class DatabaseConfiguration {

@@ -33,8 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 /**
  * An iterator over page objects.
  *
- * @author zesch
- * @author Oliver Ferschke
  *
  */
 public class PageIterator implements Iterator<Page> {
@@ -69,8 +67,6 @@ public class PageIterator implements Iterator<Page> {
 	/**
 	 * Buffers pages in a list.
 	 *
-	 * @author zesch
-	 * @author Oliver Ferschke
 	 *
 	 */
 	class PageBuffer{

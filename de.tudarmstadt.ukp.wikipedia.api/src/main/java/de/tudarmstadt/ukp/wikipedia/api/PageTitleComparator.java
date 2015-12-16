@@ -23,7 +23,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * Compares two pages based on the lexicographic ordering of their titles.
- * @author zesch
  *
  */
 public class PageTitleComparator implements Comparator<Page> {

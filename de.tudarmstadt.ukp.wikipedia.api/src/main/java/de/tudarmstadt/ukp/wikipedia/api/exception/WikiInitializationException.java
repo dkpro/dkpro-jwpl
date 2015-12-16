@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 
 /**
  * Thrown, when the Wikipedia object could not be properly initialized.
- * @author zesch
  *
  */
 public class WikiInitializationException extends WikiApiException {

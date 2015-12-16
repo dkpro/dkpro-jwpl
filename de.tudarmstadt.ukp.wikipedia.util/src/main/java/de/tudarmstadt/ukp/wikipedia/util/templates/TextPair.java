@@ -36,7 +36,6 @@ import difflib.Patch;
 /**
  * Represents a pair of Strings. Usually corresponding to a RevisionPair.
  *
- * @author Oliver Ferschke
  *
  */
 public class TextPair {

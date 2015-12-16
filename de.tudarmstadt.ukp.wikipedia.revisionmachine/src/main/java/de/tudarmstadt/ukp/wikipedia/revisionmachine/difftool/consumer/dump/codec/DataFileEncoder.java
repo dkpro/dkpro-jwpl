@@ -34,7 +34,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * Alternative to the SQLEncoder - writes data files instead of UNCOMPRESSED dumps
- *	@author Oliver Ferschke
  *
  */
 public class DataFileEncoder

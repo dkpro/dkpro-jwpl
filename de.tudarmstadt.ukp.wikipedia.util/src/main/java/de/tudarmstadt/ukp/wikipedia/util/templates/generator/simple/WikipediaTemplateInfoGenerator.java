@@ -51,7 +51,6 @@ import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
  * It produces an SQL file that will add this data to the extisting database. It
  * can then be accessed by the WikipediaTemplateInfo class.
  *
- * @author Oliver Ferschke
  *
  */
 public class WikipediaTemplateInfoGenerator

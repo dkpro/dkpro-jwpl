@@ -24,7 +24,6 @@ package de.tudarmstadt.ukp.wikipedia.parser;
  * Now, we got a NestedListContainer wich contains NestedLists<br/>
  * A NestedList can be a NestedListContainer or a NestedListElement.
  * 
- * @author CJacobi
  *
  */
 public interface NestedList extends Content {

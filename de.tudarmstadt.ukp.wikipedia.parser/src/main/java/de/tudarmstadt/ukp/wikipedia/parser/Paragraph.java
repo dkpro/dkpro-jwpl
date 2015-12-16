@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 
 /**
  * This is a simple ContentElement extende with a Paragraph Type.
- * @author CJacobi
  *
  */
 public class Paragraph extends ContentElement {

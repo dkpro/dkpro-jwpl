@@ -54,7 +54,6 @@ import de.tudarmstadt.ukp.wikipedia.util.OS;
 /**
  * The category graph is constructed from the links connecting Wikipedia categories.
  * It provides various accessors and graph algorithms.
- * @author zesch
  *
  */
 public class CategoryGraph implements WikiConstants, Serializable {

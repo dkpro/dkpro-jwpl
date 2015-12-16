@@ -24,7 +24,6 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
 /**
  * Universal XML Dump Parser. Set of start and end xml tags comply with XmlDumpReader.
  *
- * @author ivan.galkin
  *
  */
 public class WikiXMLDumpReader extends AbstractXmlDumpReader {

@@ -30,7 +30,6 @@ import org.jgrapht.graph.DefaultEdge;
 /**
  * Utility for serializing and deserializing DirectedGraph objects, that are<br>
  * wrapped into SerializableDirectedGraph objects.
- * @author Anouar
  *
  */
 public final class GraphSerialization {

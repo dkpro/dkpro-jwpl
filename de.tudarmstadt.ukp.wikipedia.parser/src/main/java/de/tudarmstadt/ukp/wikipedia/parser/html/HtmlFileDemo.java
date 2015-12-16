@@ -26,7 +26,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.tutorial.TestFile;
  * This Class shows how to use the HtmlTools.class...<br/>
  * Mainly, you can create an HtmlFile of a ParsedPage.
  * 
- * @author CJacobi
  */
 public class HtmlFileDemo {
 	

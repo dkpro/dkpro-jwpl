@@ -33,7 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
  * 
  * @update 18.11.2009 : constructor is replaced by initialize method
  * 
- * @author ivan.galkin
  * 
  */
 

@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat;
 
 /**
  * This class provides utilities for the conversion of timestamps.
- * @author Anouar
  *
  */
 public abstract class TimestampUtil {

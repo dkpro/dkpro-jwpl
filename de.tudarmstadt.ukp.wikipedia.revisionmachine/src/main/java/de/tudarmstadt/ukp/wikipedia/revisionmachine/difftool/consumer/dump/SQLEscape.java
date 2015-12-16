@@ -21,8 +21,6 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump;
  * The single method {@link SQLEscape#escape(String)} removes all unwished escape
  * characters from a string to make is UNCOMPRESSED conform. Maybe not thread-save.
  *
- * @author ivan.galkin
- * @author Oliver Ferschke
  * Copied from the WikiMachine to avoid having to add dependency.
  */
 public class SQLEscape {

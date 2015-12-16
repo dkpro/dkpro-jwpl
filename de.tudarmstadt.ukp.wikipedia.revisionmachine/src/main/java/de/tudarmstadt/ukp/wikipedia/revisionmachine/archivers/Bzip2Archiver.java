@@ -32,7 +32,6 @@ import org.apache.tools.bzip2.CBZip2OutputStream;
 /**
  * Class provides basic bzip2 compression/decompression functionality
  *
- * @author a_vovk
  *
  */
 public class Bzip2Archiver

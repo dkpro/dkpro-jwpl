@@ -26,7 +26,6 @@ import org.jgrapht.graph.DefaultEdge;
  * Serializable Wrapper for a DirectedGraph object, that has Integer objects as vertices and DefaultEdge objects as edges.<br>
  * There is no need in this case to serializale vertices and edges separately, because they already implement the interface Serializable.
  * 
- * @author Anouar
  *
  */
 public final class SerializableDirectedGraph implements Serializable {

@@ -28,7 +28,6 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
  * 
  * Throws an exception, if no page with the given title exists.
  * 
- * @author zesch
  *
  */
 public class T1a_HelloWorld implements WikiConstants {
