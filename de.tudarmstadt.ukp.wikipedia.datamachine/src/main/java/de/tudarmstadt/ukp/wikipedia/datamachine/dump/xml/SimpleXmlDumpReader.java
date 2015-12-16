@@ -1,7 +1,4 @@
-package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
-
-/*
-
+/*******************************************************************************
  * MediaWiki import/export processing tools
  * Copyright 2005 by Brion Vibber
  *
@@ -24,7 +21,8 @@ package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
  * SOFTWARE.
  *
  * $Id$
- */
+ *******************************************************************************/
+package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
 
 import java.io.InputStream;
 

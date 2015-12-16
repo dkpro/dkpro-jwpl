@@ -1,7 +1,10 @@
+Some classes in this module are taken from third parties and may
+be licensed differently, as indicated in the respective class
+headers.
+
 MediaWiki import/export processing tools
 http://www.mediawiki.org/wiki/Mwdumper
 
-******************************************************
 de.tudarmstadt.ukp.wikipedia.mwdumper.dumper.Dumper,
 de.tudarmstadt.ukp.wikipedia.mwdumper.dumper.ProgressFilter,
 de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Buffer,
