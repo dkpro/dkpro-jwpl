@@ -189,11 +189,6 @@
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-				<artifactId>de.tudarmstadt.ukp.wikipedia.dist</artifactId>
-				<version>1.1.0-SNAPSHOT</version>
-			</dependency>
-			<dependency>
-				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
 				<version>1.1.0-SNAPSHOT</version>
 			</dependency>
@@ -252,7 +247,6 @@
 		<module>de.tudarmstadt.ukp.wikipedia.timemachine</module>
 		<module>de.tudarmstadt.ukp.wikipedia.wikimachine</module>
 		<module>de.tudarmstadt.ukp.wikipedia.revisionmachine</module>
-		<module>de.tudarmstadt.ukp.wikipedia.dist</module>
 		<module>de.tudarmstadt.ukp.wikipedia.mwdumper</module>
 		<module>de.tudarmstadt.ukp.wikipedia.util</module>
 		<module>de.tudarmstadt.ukp.wikipedia.parser</module>
