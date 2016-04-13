@@ -16,6 +16,10 @@
   		<groupId>net.sf.trove4j</groupId>
   		<artifactId>trove4j</artifactId>
   	</dependency>
+  	<dependency>
+  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+  		<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
+  	</dependency>
   </dependencies>
   	<build>
 		<plugins>

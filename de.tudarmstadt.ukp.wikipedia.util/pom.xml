@@ -23,16 +23,31 @@
   		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   		<artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
   	</dependency>
-  	<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-core</artifactId>
-			<version>0.20.2</version>
-		</dependency>
 		<dependency>
     <groupId>com.googlecode.java-diff-utils</groupId>
     <artifactId>diffutils</artifactId>
     <version>1.2.1</version>
 </dependency>
+		<dependency>
+			<groupId>commons-logging</groupId>
+			<artifactId>commons-logging</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sweble.wikitext</groupId>
+			<artifactId>swc-engine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.fau.cs.osr.ptk</groupId>
+			<artifactId>ptk-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.sweble.wikitext</groupId>
+			<artifactId>swc-parser-lazy</artifactId>
+		</dependency>
   </dependencies>
   	<build>
 		<plugins>
