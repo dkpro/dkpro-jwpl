@@ -2,10 +2,13 @@
 	Copyright 2015
 	Ubiquitous Knowledge Processing (UKP) Lab
 	Technische Universität Darmstadt
+
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
 	You may obtain a copy of the License at
-	http://www.apache.org/licenses/LICENSE-2.0
+
+	  http://www.apache.org/licenses/LICENSE-2.0
+
 	Unless required by applicable law or agreed to in writing, software
 	distributed under the License is distributed on an "AS IS" BASIS,
 	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -240,6 +243,50 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+    <profiles>
+        <profile>
+            <id>rat-check</id>
+            <activation>
+                <file>
+                    <exists>.activate_rat-check</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.rat</groupId>
+                        <artifactId>apache-rat-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <excludes>
+                                        <!-- release generated artifact -->
+                                        <exclude>release.properties</exclude>
+                                        <exclude>CHANGES</exclude>
+                                        <exclude>LICENSE.txt</exclude>
+                                        <exclude>NOTICE</exclude>
+                                        <exclude>NOTICE.txt</exclude>
+                                        <exclude>README.md</exclude>
+                                        <exclude>README</exclude>
+                                        <exclude>src/main/resources/**/*</exclude>
+                                        <exclude>src/test/resources/**/*</exclude>
+                                        <exclude>.activate_rat-check</exclude>
+                                        <exclude>src/main/examples/configSamples/indexGenerator_config_sample</exclude>
+                                        <exclude>src/main/java/de/tudarmstadt/ukp/wikipedia/parser/tutorial/DarmstadtWikipediaArticle.txt</exclude>
+                                    </excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 	<modules>
 		<module>de.tudarmstadt.ukp.wikipedia.api</module>
 		<module>de.tudarmstadt.ukp.wikipedia.datamachine</module>
