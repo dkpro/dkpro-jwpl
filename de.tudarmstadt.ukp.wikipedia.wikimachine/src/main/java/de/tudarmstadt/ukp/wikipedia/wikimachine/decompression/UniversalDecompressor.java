@@ -34,13 +34,13 @@ import java.util.Properties;
  * 
  * Current supported archives are: GZip, BZip2. Each other archive type can be
  * added using the file "decompressor.xml" where you should specify the file
- * extension as a key and the accordant utility (incl. parameters), that have to
- * be started. Please notice, that the unpack utility have to use the standard
+ * extension as a key and the according utility (incl. parameters), that have to
+ * be started. Please note that the unpack utility has to use the standard
  * output and external unpack utilities are in preference to the internal. Also
  * there could be more heap memory necessary to use start external programs. The
  * compressed file should be specified with the place holder <code>%f</code>. <br>
  * E.g. the entry for the 7z utility could look like that: <br> {@code <entry
- * key="7z">7z e -so %f</entry>}. The properties file should confirm to
+ * key="7z">7z e -so %f</entry>}. The properties file should conform to
  * {@link "http://java.sun.com/dtd/properties.dtd"}
  * 
  * 
@@ -57,7 +57,7 @@ public class UniversalDecompressor implements IDecompressor {
 	/**
 	 * File path to decompressor properties files
 	 */
-	private static final String PROPERTIES_PATH = "decompressor.xml";
+	private static final String PROPERTIES_PATH = "src/main/resources/decompressor.xml";
 
 	/**
 	 * Archive extensions which are supported by external utilities
