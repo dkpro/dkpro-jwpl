@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015
+ * Copyright 2016
  * Ubiquitous Knowledge Processing (UKP) Lab
  * Technische Universität Darmstadt
  *
@@ -17,15 +17,48 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.hashing;
 
-public class StringHashCodeJBoss implements IStringHashCode {
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
-	public StringHashCodeJBoss() {
-		// use for instantiate as generic
-	}
+public class StringHashCodeJBoss
+    implements IStringHashCode
+{
 
-	@Override
-	public Long hashCode(String string) {
-		return HashStringUtil.hashName(string);
-	}
+    public StringHashCodeJBoss()
+    {
+        // use for instantiate as generic
+    }
+
+    @Override
+    public Long hashCode(String string)
+    {
+        MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA");
+            DataOutputStream dataOut = new DataOutputStream(
+                    new DigestOutputStream(new ByteArrayOutputStream(0x200),
+                            messageDigest));
+            dataOut.writeUTF(string);
+            dataOut.flush();
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte digest[] = messageDigest.digest();
+        long hash = 0;
+        int i = digest.length > 8 ? 8 : digest.length;
+        while (i-- > 0) {
+            hash += (long) (digest[i] & 0xff) << 8 * i;
+        }
+        return hash;
+    }
 
 }

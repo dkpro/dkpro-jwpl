@@ -2,12 +2,6 @@ Some classes in this module are taken from third parties and may
 be licensed differently, as indicated in the respective class
 headers.
 
-de.tudarmstadt.ukp.wikipedia.wikimachine.hashing.HashStringUtil:
-JBoss, Home of Professional Open Source
-Copyright 2005, JBoss Inc., and individual contributors as indicated
-by the @authors tag. See the copyright.txt in the distribution for a
-full listing of individual contributors.
-
 *****************************************************************
 de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader:
 MediaWiki import/export processing tools
