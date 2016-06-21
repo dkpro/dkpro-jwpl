@@ -276,7 +276,6 @@
                                         <exclude>src/main/resources/**/*</exclude>
                                         <exclude>src/test/resources/**/*</exclude>
                                         <exclude>.activate_rat-check</exclude>
-                                        <exclude>src/main/examples/configSamples/indexGenerator_config_sample</exclude>
                                         <exclude>src/main/java/de/tudarmstadt/ukp/wikipedia/parser/tutorial/DarmstadtWikipediaArticle.txt</exclude>
                                     </excludes>
                                 </configuration>
