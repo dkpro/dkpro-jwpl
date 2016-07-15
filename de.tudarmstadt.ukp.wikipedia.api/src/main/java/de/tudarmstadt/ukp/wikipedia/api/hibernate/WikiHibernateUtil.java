@@ -17,16 +17,15 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
+import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.service.ServiceRegistryBuilder;
-
-import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 public class WikiHibernateUtil implements WikiConstants {
 
@@ -47,8 +46,8 @@ public class WikiHibernateUtil implements WikiConstants {
         String uniqueSessionKey = config.getLanguage().toString() + config.getHost() + config.getDatabase();
         if (!sessionFactoryMap.containsKey(uniqueSessionKey)) {
         	Configuration configuration = getConfiguration(config);
-            ServiceRegistryBuilder ssrb = new ServiceRegistryBuilder().applySettings(configuration.getProperties());            
-            SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.buildServiceRegistry());
+            StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties());
+            SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.build());
             sessionFactoryMap.put(uniqueSessionKey, sessionFactory);
         }
         return sessionFactoryMap.get(uniqueSessionKey);

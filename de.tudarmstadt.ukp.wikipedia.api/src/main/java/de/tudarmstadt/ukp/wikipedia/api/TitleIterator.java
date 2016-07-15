@@ -17,13 +17,12 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import org.hibernate.Session;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.hibernate.Session;
-
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * An iterator over category objects.
@@ -125,7 +124,7 @@ public class TitleIterator implements Iterator<Title> {
 
             Session session = this.wiki.__getHibernateSession();
             session.beginTransaction();
-            List returnList = session.createSQLQuery(
+            List returnList = session.createNativeQuery(
             "select p.name from PageMapLine as p")
                 .setFirstResult(dataOffset)
                 .setMaxResults(maxBufferSize)
