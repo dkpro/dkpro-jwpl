@@ -82,8 +82,12 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.show_sql","false");
 
         // Update schema
-        p.setProperty("hibernate.hbm2ddl.auto","update");
-        
+        p.setProperty("hibernate.hbm2ddl.auto","validate");
+
+        // Avoid long running connection acquisition:
+        // Important performance fix to obtain jdbc connections a lot faster by avoiding metadata fetching
+        p.setProperty("hibernate.temp.use_jdbc_metadata_defaults","false");
+
         return p;
     }
 
