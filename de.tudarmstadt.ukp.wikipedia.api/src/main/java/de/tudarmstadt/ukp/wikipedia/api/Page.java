@@ -17,18 +17,6 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.hibernate.LockOptions;
-import org.hibernate.Session;
-import org.sweble.wikitext.engine.CompiledPage;
-import org.sweble.wikitext.engine.Compiler;
-import org.sweble.wikitext.engine.PageId;
-import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
@@ -36,6 +24,20 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
 import de.tudarmstadt.ukp.wikipedia.api.sweble.PlainTextConverter;
 import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
+import org.hibernate.LockOptions;
+import org.hibernate.Session;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
+import org.sweble.wikitext.engine.CompiledPage;
+import org.sweble.wikitext.engine.Compiler;
+import org.sweble.wikitext.engine.PageId;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
+
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Represents a Wikipedia article page.
@@ -174,7 +176,7 @@ public class Page
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
 		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session
-				.createQuery("from Page where pageId = :id").setInteger("id", pageID).uniqueResult();
+				.createQuery("from Page where pageId = :id").setParameter("id", pageID, IntegerType.INSTANCE).uniqueResult();
         session.getTransaction().commit();
 
         if (hibernatePage == null) {
@@ -200,9 +202,9 @@ public class Page
 		session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
 		Integer pageId = (Integer) session
-				.createSQLQuery(
+				.createNativeQuery(
 						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1")
-				.setString("pagetitle", searchString).uniqueResult();
+				.setParameter("pagetitle", searchString, StringType.INSTANCE).uniqueResult();
 		session.getTransaction().commit();
 
         if (pageId == null) {
@@ -292,8 +294,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		 session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(pages) from page_categories where id = :pageid")
-				.setLong("pageid", id).uniqueResult();
+				.createNativeQuery("select count(pages) from page_categories where id = :pageid")
+				.setParameter("pageid", id, LongType.INSTANCE).uniqueResult();
 		 session.getTransaction().commit();
 
 		if (returnValue != null) {
@@ -347,8 +349,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
-				.setLong("piid", id).uniqueResult();
+				.createNativeQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
+				.setParameter("piid", id, LongType.INSTANCE).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
@@ -423,8 +425,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(outLinks) from page_outlinks where id = :id")
-				.setLong("id", id).uniqueResult();
+				.createNativeQuery("select count(outLinks) from page_outlinks where id = :id")
+				.setParameter("id", id, LongType.INSTANCE).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {

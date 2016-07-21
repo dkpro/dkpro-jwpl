@@ -17,17 +17,18 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.hibernate.LockMode;
-import org.hibernate.Session;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.CategoryDAO;
+import org.hibernate.LockMode;
+import org.hibernate.Session;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
+
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Category implements WikiConstants {
 
@@ -46,7 +47,7 @@ public class Category implements WikiConstants {
         this.wiki = wiki;
         catDAO = new CategoryDAO(wiki);
         createCategory(id);
-    };
+    }
 
     /**
      * Creates a category object.
@@ -58,7 +59,7 @@ public class Category implements WikiConstants {
         this.wiki = wiki;
         catDAO = new CategoryDAO(wiki);
         createCategory(pageID);
-    };
+    }
 
     /**
      * Creates a category object.
@@ -106,9 +107,9 @@ public class Category implements WikiConstants {
         session.beginTransaction();
 
         Object returnValue;
-        returnValue = session.createSQLQuery(
+        returnValue = session.createNativeQuery(
                 "select cat.pageId from Category as cat where cat.name = :name COLLATE utf8_bin")
-                .setString("name", name)
+                .setParameter("name", name, StringType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
 
@@ -178,8 +179,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(inLinks) from category_inlinks where id = :id")
-            .setLong("id", id)
+        Object returnValue = session.createNativeQuery("select count(inLinks) from category_inlinks where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -229,8 +230,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(outLinks) from category_outlinks where id = :id")
-            .setLong("id", id)
+        Object returnValue = session.createNativeQuery("select count(outLinks) from category_outlinks where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -333,8 +334,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(pages) from category_pages where id = :id")
-            .setLong("id", id)
+        Object returnValue = session.createNativeQuery("select count(pages) from category_pages where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 

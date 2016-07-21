@@ -17,28 +17,21 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.hibernate.Query;
-import org.hibernate.Session;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.StringType;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 
 /**
@@ -161,8 +154,8 @@ public class Wikipedia implements WikiConstants {
     public Title getTitle(int pageId) throws WikiApiException {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery(
-            "select p.name from PageMapLine as p where p.id = :pId").setInteger("pId", pageId).uniqueResult();
+        Object returnValue = session.createNativeQuery(
+            "select p.name from PageMapLine as p where p.id = :pId").setParameter("pId", pageId, IntegerType.INSTANCE).uniqueResult();
         session.getTransaction().commit();
 
         String title = (String)returnValue;
@@ -184,7 +177,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Iterator results = session.createQuery(
-        "select p.pageID from PageMapLine as p where p.name = :pName").setString("pName", title).list().iterator();
+        "select p.pageID from PageMapLine as p where p.name = :pName").setParameter("pName", title, StringType.INSTANCE).list().iterator();
 
         session.getTransaction().commit();
 
@@ -213,7 +206,7 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Iterator results = session.createQuery(
-        "select p.pageID from PageMapLine as p where lower(p.name) = :pName").setString("pName", title).list().iterator();
+        "select p.pageID from PageMapLine as p where lower(p.name) = :pName").setParameter("pName", title, StringType.INSTANCE).list().iterator();
 
         session.getTransaction().commit();
 
@@ -353,7 +346,7 @@ public class Wikipedia implements WikiConstants {
         List<Page> discussionArchives = new LinkedList<Page>();
 
         Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like :name");
-        query.setString("name", articleTitle+"/%");
+        query.setParameter("name", articleTitle+"/%", StringType.INSTANCE);
         Iterator results = query.list().iterator();
 
         session.getTransaction().commit();
@@ -625,18 +618,13 @@ public class Wikipedia implements WikiConstants {
 
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery(
+        Object returnValue = session.createNativeQuery(
             "select p.id from PageMapLine as p where p.name = :pName COLLATE utf8_bin")
-            .setString("pName", encodedTitle)
+            .setParameter("pName", encodedTitle, StringType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
-        if (returnValue == null) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return returnValue != null;
     }
 
     /**
@@ -659,18 +647,13 @@ public class Wikipedia implements WikiConstants {
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        List returnList = session.createSQLQuery(
+        List returnList = session.createNativeQuery(
             "select p.id from PageMapLine as p where p.pageID = :pageId")
-            .setInteger("pageId", pageID)
+            .setParameter("pageId", pageID, IntegerType.INSTANCE)
             .list();
         session.getTransaction().commit();
 
-        if (returnList.size() == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return returnList.size() != 0;
     }
 
     /**
@@ -694,7 +677,7 @@ public class Wikipedia implements WikiConstants {
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
                 "select page.id from Page as page where page.pageId = :pageId")
-                .setInteger("pageId", pageID)
+                .setParameter("pageId", pageID, IntegerType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
@@ -728,7 +711,7 @@ public class Wikipedia implements WikiConstants {
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
                 "select cat.id from Category as cat where cat.pageId = :pageId")
-                .setInteger("pageId", pageID)
+                .setParameter("pageId", pageID, IntegerType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {

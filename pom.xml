@@ -32,6 +32,18 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<maven.compiler.source>1.7</maven.compiler.source>
+
+		<ukp.wikipedia.version>1.2.0-SNAPSHOT</ukp.wikipedia.version>
+
+		<fau.ptk.version>1.1.1</fau.ptk.version>
+		<fau.utils.version>0.3.1</fau.utils.version>
+
+		<hibernate.version>5.2.1.Final</hibernate.version>
+		<spring.version>4.3.1.RELEASE</spring.version>
+		<mysql.version>5.1.39</mysql.version>
+		<postgresql.version>9.4.1208</postgresql.version>
+
+
 	</properties>
 	<scm>
 		<connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
@@ -68,12 +80,13 @@
 			<email>richard.eckart@googlemail.com</email>
 		</developer>
 	</developers>
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.10</version>
+				<version>4.11</version>
 			</dependency>
 			<dependency>
 				<groupId>log4j</groupId>
@@ -97,12 +110,12 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>4.1.3.Final</version>
+				<version>${hibernate.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-c3p0</artifactId>
-				<version>4.1.3.Final</version>
+				<version>${hibernate.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.jgrapht</groupId>
@@ -117,7 +130,12 @@
 			<dependency>
 				<groupId>mysql</groupId>
 				<artifactId>mysql-connector-java</artifactId>
-				<version>5.1.21</version>
+				<version>${mysql.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${postgresql.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>jfree</groupId>
@@ -137,12 +155,12 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-core</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
-				<version>3.1.1.RELEASE</version>
+				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.wikimedia</groupId>
@@ -160,11 +178,6 @@
 				<version>1.1.1</version>
 			</dependency>
 			<dependency>
-				<groupId>postgresql</groupId>
-				<artifactId>postgresql</artifactId>
-				<version>9.0-801.jdbc4</version>
-			</dependency>
-			<dependency>
 				<groupId>net.java.dev.swing-layout</groupId>
 				<artifactId>swing-layout</artifactId>
 				<version>1.0.2</version>
@@ -172,42 +185,47 @@
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 				<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<version>${ukp.wikipedia.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+				<artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
+				<version>${ukp.wikipedia.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.javassist</groupId>
 				<artifactId>javassist</artifactId>
-				<version>3.16.1-GA</version>
+				<version>3.20.0-GA</version>
 			</dependency>
 			<dependency>
 				<groupId>org.sweble.wikitext</groupId>
@@ -220,21 +238,14 @@
 				<version>1.1.0</version>
 			</dependency>
 			<dependency>
-				<groupId>de.fau.cs.osr.utils</groupId>
-				<artifactId>utils</artifactId>
-				<version>0.3.0</version>
-			</dependency>
-			<dependency>
 				<groupId>de.fau.cs.osr.ptk</groupId>
 				<artifactId>ptk-common</artifactId>
-				<version>1.1.0</version>
+				<version>${fau.ptk.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-				<artifactId>
-					de.tudarmstadt.ukp.wikipedia.parser
-				</artifactId>
-				<version>1.2.0-SNAPSHOT</version>
+				<groupId>de.fau.cs.osr.utils</groupId>
+				<artifactId>utils</artifactId>
+				<version>${fau.utils.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-lang</groupId>
