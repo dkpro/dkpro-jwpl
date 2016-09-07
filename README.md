@@ -1,6 +1,6 @@
 # dkpro-jwpl
 
-DKPro JWPL (DKPro Java Wikipedia Library) is a free, Java-based application programming interface that allows to access all information in Wikipedia.
+DKPro JWPL (DKPro Java Wikipedia Library) is a free, Java-based application programming interface that facilitates access to all information in Wikipedia.
 
 Core features:
    * Fast and efficient access to Wikipedia
@@ -14,4 +14,4 @@ Features of the Wikipedia Revision Toolkit:
    * Efficient access to all article revisions (RevisionMachine)
    * Dedicated revision storage format
 
-More detailed information can be found [here](https://dkpro.github.io/dkpro-jwpl/).
+More detailed information can be found at the [DKPro JWPL website](https://dkpro.github.io/dkpro-jwpl/).
