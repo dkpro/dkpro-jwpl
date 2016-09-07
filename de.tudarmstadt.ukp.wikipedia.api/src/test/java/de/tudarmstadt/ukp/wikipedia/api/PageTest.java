@@ -95,7 +95,7 @@ public class PageTest {
 
         String text = "Wikipedia API ist die wichtigste Software überhaupt. Wikipedia API.\nNicht zu übertreffen.\nUnglaublich\nhttp://www.ukp.tu-darmstadt.de\nen:Wikipedia API fi:WikipediaAPI";
 
-        
+
         try{
             assertEquals(text, p.getPlainText());
         }catch(Exception e){

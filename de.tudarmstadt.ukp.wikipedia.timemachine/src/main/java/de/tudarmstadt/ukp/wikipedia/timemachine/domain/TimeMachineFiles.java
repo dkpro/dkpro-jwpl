@@ -48,7 +48,7 @@ public class TimeMachineFiles extends Files {
 
 	/**
 	 * Add a sub directory called "timestamp" to the current output directory
-	 * 
+	 *
 	 * @param timestamp
 	 *            - name of a new sub directory
 	 */

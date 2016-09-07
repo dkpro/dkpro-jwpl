@@ -66,17 +66,17 @@ public class SectionContent extends Section{
 		ccl.remove( p );
 	}
 	
-	public Paragraph getParagraph(int i){ 
+	public Paragraph getParagraph(int i){
 		if( paragraphs.size()> i) return paragraphs.get(i);
-		else return null; 
+		else return null;
 	}
 	
-	public List<Paragraph> getParagraphs(){ 
-		return new ArrayList<Paragraph>( paragraphs ); 
+	public List<Paragraph> getParagraphs(){
+		return new ArrayList<Paragraph>( paragraphs );
 	}
 	
-	public int nrOfTables(){ 
-		return tables.size(); 
+	public int nrOfTables(){
+		return tables.size();
 	}
 	
 	public void addTable( Table t ){
@@ -89,17 +89,17 @@ public class SectionContent extends Section{
 		ccl.remove( t );
 	}
 	
-	public Table getTable(int i){ 
+	public Table getTable(int i){
 		if( tables.size()>i) return tables.get(i);
-		else return null; 
+		else return null;
 	}
 	
-	public List<Table> getTables(){ 
-		return new ArrayList<Table>( tables ); 
+	public List<Table> getTables(){
+		return new ArrayList<Table>( tables );
 	}
 	
-	public int nrOfNestedLists(){ 
-		return nestedLists.size(); 
+	public int nrOfNestedLists(){
+		return nestedLists.size();
 	}
 	
 	public void addNestedList( NestedListContainer nl ){
@@ -112,17 +112,17 @@ public class SectionContent extends Section{
 		ccl.remove( nl );
 	}
 	
-	public NestedListContainer getNestedList(int i){ 
+	public NestedListContainer getNestedList(int i){
 		if( nestedLists.size() > i ) return nestedLists.get(i);
-		else return null; 
+		else return null;
 	}
 	
-	public List<NestedListContainer> getNestedLists(){ 
-		return new ArrayList<NestedListContainer>( nestedLists ); 
+	public List<NestedListContainer> getNestedLists(){
+		return new ArrayList<NestedListContainer>( nestedLists );
 	}
 	
-	public int nrOfDefinitionLists(){ 
-		return definitionLists.size(); 
+	public int nrOfDefinitionLists(){
+		return definitionLists.size();
 	}
 	
 	public void addDefinitionList( DefinitionList dl ){
@@ -135,9 +135,9 @@ public class SectionContent extends Section{
 		ccl.remove( dl );
 	}
 	
-	public DefinitionList getDefinitionList(int i){ 
+	public DefinitionList getDefinitionList(int i){
 		if( definitionLists.size() > i ) return definitionLists.get(i);
-		else return null; 
+		else return null;
 	}
 	
 	public List<DefinitionList> getDefinitionLists(){ return new ArrayList<DefinitionList>( definitionLists ); }

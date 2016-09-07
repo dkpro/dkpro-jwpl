@@ -28,15 +28,15 @@ public class CategoryDescendantsIterable implements Iterable<Category> {
 
     private Wikipedia wiki;
     private Category startCategory;
-    
-    /** 
+
+    /**
      * The size of the page buffer.
      * With bufferSize = 1, a database connection is needed for retrieving a single article.
      * Higher bufferSize gives better performance, but needs memory.
-     * Initialize it with 25. 
+     * Initialize it with 25.
      */
     private int bufferSize = 25;
-    
+
     public CategoryDescendantsIterable(Wikipedia wiki, Category startCategory) {
         this.wiki = wiki;
         this.startCategory = startCategory;

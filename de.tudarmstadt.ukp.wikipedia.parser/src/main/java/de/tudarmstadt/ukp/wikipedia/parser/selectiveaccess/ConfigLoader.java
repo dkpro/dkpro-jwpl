@@ -41,7 +41,7 @@ class ConfigLoader extends DefaultHandler{
 
 	public void startElement(String uri, String localName, String qName, Attributes att){
 		if( localName.equalsIgnoreCase( "cit" )){
-			citm = SelectiveAccessHandler.buildCITMap( 
+			citm = SelectiveAccessHandler.buildCITMap(
 				"true".equalsIgnoreCase( att.getValue( "text" ) ),
 				"true".equalsIgnoreCase( att.getValue( "bold" ) ),
 				"true".equalsIgnoreCase( att.getValue( "italic" ) ),

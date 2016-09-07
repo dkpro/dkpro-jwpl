@@ -25,15 +25,15 @@ public class WikiApiException extends WikiException {
     public WikiApiException() {
         super();
     }
-    
+
     public WikiApiException(String txt) {
         super(txt);
     }
-    
+
     public WikiApiException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public WikiApiException(Throwable cause) {
         super(cause);
     }

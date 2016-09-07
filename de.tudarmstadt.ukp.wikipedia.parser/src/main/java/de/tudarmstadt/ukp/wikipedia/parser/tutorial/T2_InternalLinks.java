@@ -27,7 +27,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 /**
  * This class shows how to get the internal links from a parsed page.<br>
  * Internal links point to other pages and categories in the current<br>
- * <pre>Wikipedia</pre>. 
+ * <pre>Wikipedia</pre>.
  *
  */
 public class T2_InternalLinks {
@@ -35,7 +35,7 @@ public class T2_InternalLinks {
 	/**
 	 * Prints the targets of the internal links found in the page <i>Germany</i>.
 	 * @param args
-	 * @throws WikiApiException 
+	 * @throws WikiApiException
 	 */
 	public static void main(String[] args) throws WikiApiException {
 
@@ -51,7 +51,7 @@ public class T2_InternalLinks {
         for (Link language : pp.getLanguages()) {
             System.out.println(language.getTarget());
         }
-    
+
         //get the internal links of each section
         for (Section section : pp.getSections()){
             System.out.println("Section: " + section.getTitle());

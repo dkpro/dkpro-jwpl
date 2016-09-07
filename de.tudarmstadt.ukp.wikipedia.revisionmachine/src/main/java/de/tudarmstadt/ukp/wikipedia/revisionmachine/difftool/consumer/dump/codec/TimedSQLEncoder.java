@@ -30,9 +30,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This class encodes the diffs while collecting statistical information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TimedSQLEncoder
 	extends SQLEncoder
@@ -50,10 +50,10 @@ public class TimedSQLEncoder
 
 	/**
 	 * (Constructor) Creates a new TimedSQLEncoder object.
-	 * 
+	 *
 	 * @param logger
 	 *            Reference to the logger
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 * @throws LoggingException
@@ -78,7 +78,7 @@ public class TimedSQLEncoder
 
 	/**
 	 * Returns the encoded size.
-	 * 
+	 *
 	 * @return encoded size
 	 */
 	public long getEncodedSize()
@@ -88,7 +88,7 @@ public class TimedSQLEncoder
 
 	/**
 	 * Returns the encoded sql size.
-	 * 
+	 *
 	 * @return encoded sql size
 	 */
 	public long getEncodedSQLSize()
@@ -100,13 +100,13 @@ public class TimedSQLEncoder
 
 	/**
 	 * Encodes the diff.
-	 * 
+	 *
 	 * @param task
 	 *            Reference to the DiffTask
 	 * @param diff
 	 *            Diff to encode
 	 * @return Base 64 encoded Diff
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 * @throws UnsupportedEncodingException
@@ -132,7 +132,7 @@ public class TimedSQLEncoder
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.tud.ukp.kulessa.delta.consumers.sql.codec.SQLEncodrInterface#binaryTask
 	 * (de.tudarmstadt.ukp.kulessa.delta.data.tasks.Task)
@@ -151,7 +151,7 @@ public class TimedSQLEncoder
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.tudarmstadt.ukp.kulessa.delta.consumers.sql.codec.SQLEncodrInterface
 	 * #encodeTask(de.tudarmstadt.ukp.kulessa.delta.data.tasks.Task)

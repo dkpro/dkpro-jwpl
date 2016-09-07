@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 
 /**
  * LoggingException Describes an exception that occurred during the logging.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class LoggingException
@@ -30,7 +30,7 @@ public class LoggingException
 
 	/**
 	 * (Constructor) Creates a new LoggingException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -41,7 +41,7 @@ public class LoggingException
 
 	/**
 	 * (Constructor) Creates a new LoggingException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -52,7 +52,7 @@ public class LoggingException
 
 	/**
 	 * (Constructor) Creates a new LoggingException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

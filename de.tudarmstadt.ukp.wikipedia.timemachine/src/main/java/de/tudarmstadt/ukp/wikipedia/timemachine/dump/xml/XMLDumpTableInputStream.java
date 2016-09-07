@@ -30,10 +30,10 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
  * Decorator for an <cod>InputStream</code>. Converts an XML source to SQL
  * result in a separated thread via
  * <code>org.mediawiki.importer.XmlDumpReader</code>
- * 
+ *
  * @update 18.11.2009 : constructor is replaced by initialize method
- * 
- * 
+ *
+ *
  */
 
 public class XMLDumpTableInputStream extends DumpTableInputStream {
@@ -60,7 +60,7 @@ public class XMLDumpTableInputStream extends DumpTableInputStream {
 	/**
 	 * Decorator for InputStream, which allows to convert an XML input stream to
 	 * SQL
-	 * 
+	 *
 	 * @param inputStream
 	 *            XML input stream
 	 * @throws IOException

@@ -26,20 +26,20 @@ public class Category {
     private Set<Integer> inLinks  = new HashSet<Integer>();
     private Set<Integer> outLinks = new HashSet<Integer>();
     private Set<Integer> pages    = new HashSet<Integer>();
-    
+
     /** A no argument constructor as required by Hibernate. */
     public Category () {};
-    
-    
+
+
     public long getId() {
         return id;
     }
-    
+
     @SuppressWarnings("unused")
     private void setId(long id) {
         this.id = id;
     }
-    
+
     public int getPageId() {
         return pageId;
     }
@@ -75,7 +75,7 @@ public class Category {
     public Set<Integer> getPages() {
         return pages;
     }
-    
+
     public void setPages(Set<Integer> pages) {
         this.pages = pages;
     }

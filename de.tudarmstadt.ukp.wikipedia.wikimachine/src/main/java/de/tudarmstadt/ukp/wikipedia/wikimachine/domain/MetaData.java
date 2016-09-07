@@ -21,8 +21,8 @@ import java.sql.Timestamp;
 
 /**
  * Holds the meta data for a dump version.
- * 
- * 
+ *
+ *
  */
 public class MetaData {
 

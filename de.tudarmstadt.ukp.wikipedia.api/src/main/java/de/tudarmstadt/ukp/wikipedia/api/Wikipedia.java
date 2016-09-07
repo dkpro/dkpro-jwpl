@@ -92,16 +92,16 @@ public class Wikipedia implements WikiConstants {
      * @return The page object for a given title.
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
-    public Page getPage(String title) throws WikiApiException  {        
+    public Page getPage(String title) throws WikiApiException  {
     	Page page = new Page(this, title, false);
         return page;
     }
-    
+
     /**
      * Gets the page with the exactly the given title.<br/>
-     * 
+     *
      * Note that when using this method you are responsible for converting a normal search string into the right wiki-style.<br/>
-     * 
+     *
      * If the title is a redirect, the corresponding page is returned.<br/>
      *
      * @param exactTitle The exact title of the page.
@@ -190,7 +190,7 @@ public class Wikipedia implements WikiConstants {
         }
         return resultList;
     }
-    
+
     /**
      * Gets the page ids for a given title with case insensitive matching.<br/>
      *
@@ -202,7 +202,7 @@ public class Wikipedia implements WikiConstants {
     public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
         title = title.toLowerCase();
         title = title.replaceAll(" ", "_");
-        
+
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Iterator results = session.createQuery(

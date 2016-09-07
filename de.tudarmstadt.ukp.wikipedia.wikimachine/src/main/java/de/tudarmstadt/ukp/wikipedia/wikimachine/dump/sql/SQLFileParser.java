@@ -26,8 +26,8 @@ import java.io.StreamTokenizer;
 /**
  * This class defines common utilities for the classes CategorylinksParser <br>
  * and PagelinksParser.
- * 
- * 
+ *
+ *
  * @version 0.2 <br>
  *          <code>SQLFileParser</code> don't create a BufferedReader by himself
  *          but entrust it to <code>BufferedReaderFactory</code>. Thereby
@@ -43,10 +43,10 @@ abstract class SQLFileParser {
 
 	/**
 	 * Init the SQLFileParser with the input stream
-	 * 
+	 *
 	 * @param inputStream
 	 * @throws IOException
-	 * 
+	 *
 		 */
 	protected void init(InputStream inputStream) throws IOException {
 		stream = inputStream;
@@ -62,9 +62,9 @@ abstract class SQLFileParser {
 	 * Skip the sql statements for table creation and the prefix <br>
 	 * INSERT INTO TABLE .... VALUES for values insertion.<br>
 	 * Read tokens until the word 'VALUES' is reached or the EOF.
-	 * 
+	 *
 	 * @throws IOException
-	 * 
+	 *
 	 */
 	protected void skipStatements() throws IOException {
 		while (true) {
@@ -89,7 +89,7 @@ abstract class SQLFileParser {
 	 * This method must be implemented by the PagelinksParser and the
 	 * CategorylinksParser<br>
 	 * classes.
-	 * 
+	 *
 	 * @return Returns true if a new value is now available und false otherwise.
 	 * @throws IOException
 	 */

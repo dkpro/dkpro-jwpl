@@ -20,7 +20,7 @@ package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 
 /**
- * This is an Interface for MediaWiki Parsers. Which simply "converts" 
+ * This is an Interface for MediaWiki Parsers. Which simply "converts"
  * MediaWiki Source, given as a String, to a ParsedPage
  *
  */
@@ -36,7 +36,7 @@ public interface MediaWikiParser {
 	public String configurationInfo();
 	
 	/**
-	 * Retruns the String which is uses as line separator, usually it 
+	 * Retruns the String which is uses as line separator, usually it
 	 * will be "\n" or "\r\n"
 	 */
 	public String getLineSeparator();

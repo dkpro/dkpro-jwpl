@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util;
 
 /**
  * Mathematic functions
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class MathUtilities
 {
@@ -33,7 +33,7 @@ public class MathUtilities
 
 	/**
 	 * Rounds the given number to a precision of two after digit numbers.
-	 * 
+	 *
 	 * @param v
 	 *            number
 	 * @return rounded number
@@ -46,7 +46,7 @@ public class MathUtilities
 	/**
 	 * Rounds the result of a / (a + b) to a precision of two after digit
 	 * numbers.
-	 * 
+	 *
 	 * @param a
 	 *            value a
 	 * @param b
@@ -61,7 +61,7 @@ public class MathUtilities
 	/**
 	 * Rounds the result of a / (a + b) to a precision of two after digit
 	 * numbers.
-	 * 
+	 *
 	 * @param a
 	 *            value a
 	 * @param b
@@ -75,7 +75,7 @@ public class MathUtilities
 
 	/**
 	 * Rounds the result of a / b to a precision of two after digit numbers.
-	 * 
+	 *
 	 * @param a
 	 *            value a
 	 * @param b
@@ -89,7 +89,7 @@ public class MathUtilities
 
 	/**
 	 * Returns the result of (a / b) as a percentage string
-	 * 
+	 *
 	 * @param a
 	 *            value a
 	 * @param b

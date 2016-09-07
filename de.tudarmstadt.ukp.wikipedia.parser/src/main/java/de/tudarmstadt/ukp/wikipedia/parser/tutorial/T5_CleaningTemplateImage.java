@@ -29,7 +29,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 
 /**
  * Shows how to clean an article text from "TEMPLATE" and "Image" elements
- * 
+ *
  */
 
 public class T5_CleaningTemplateImage {
@@ -62,7 +62,7 @@ public class T5_CleaningTemplateImage {
 		
 		// parse page text
 		MediaWikiParser parser = pf.createParser();
-		ParsedPage pp = parser.parse(p.getText()); 
+		ParsedPage pp = parser.parse(p.getText());
 		
 		System.out.println(pp.getText());	
 	}

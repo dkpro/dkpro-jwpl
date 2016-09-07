@@ -70,7 +70,7 @@ public class SqlWriter15 extends SqlWriter {
 				{"old_text", revision.Text == null ? "" : revision.Text},
 				{"old_flags", "utf-8"}});
 		
-		int rev_deleted = 0; 
+		int rev_deleted = 0;
 		if (revision.Contributor.Username==null) rev_deleted |= DELETED_USER;
 		if (revision.Comment==null) rev_deleted |= DELETED_COMMENT;
 		if (revision.Text==null) rev_deleted |= DELETED_TEXT;

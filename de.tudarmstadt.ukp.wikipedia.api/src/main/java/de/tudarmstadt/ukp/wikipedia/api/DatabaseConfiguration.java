@@ -30,9 +30,9 @@ public class DatabaseConfiguration {
     private String user;
     private String password;
     private Language language;
-    
+
     public DatabaseConfiguration() {}
-    
+
     public DatabaseConfiguration(String host, String database, String user, String password, Language language) {
         this.host = host;
         this.database = database;
@@ -40,7 +40,7 @@ public class DatabaseConfiguration {
         this.password = password;
         this.language = language;
     }
-    
+
     /**
      * @param database The name of the database.
      */
@@ -72,7 +72,7 @@ public class DatabaseConfiguration {
         this.language = language;
     }
 
-    
+
     /**
      * @return The name of the database.
      */

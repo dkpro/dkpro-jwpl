@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data;
 
 /**
  * This Enumerator list the possible output values.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum OutputType
 {
@@ -43,7 +43,7 @@ public enum OutputType
 
 	/**
 	 * Parses the given string.
-	 * 
+	 *
 	 * @param s
 	 *            string
 	 * @return OutputTypes

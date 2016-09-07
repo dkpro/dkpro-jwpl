@@ -28,10 +28,10 @@ public class CommonUtilities {
      */
     public static String getSetContents(Set s) {
         StringBuffer sb = new StringBuffer(1000);
-        
+
         Object[] sortedArray = s.toArray();
         Arrays.sort(sortedArray);
-        
+
         int counter = 0;
         int elementsPerRow = 10;
         for (Object element : sortedArray) {
@@ -52,7 +52,7 @@ public class CommonUtilities {
         StringBuffer sb = new StringBuffer(1000);
         Object[] sortedArray = m.keySet().toArray();
         Arrays.sort(sortedArray);
-        
+
         for (Object element : sortedArray) {
             sb.append(element.toString() + " - " + m.get(element) + System.getProperty("line.separator"));
         }

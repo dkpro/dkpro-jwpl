@@ -27,8 +27,8 @@ public class Paragraph extends ContentElement {
 	
 	private type t;
 	
-	public Paragraph(){ 
-		super(); 
+	public Paragraph(){
+		super();
 	}
 	
 	public Paragraph( type t){
@@ -36,18 +36,18 @@ public class Paragraph extends ContentElement {
 		this.t = t;
 	}
 		
-	public String toString(){ 
+	public String toString(){
 		StringBuilder result = new StringBuilder();
 		result.append( super.toString() );
 		result.append( System.getProperty("line.separator") + "PA_TYPE: " + t);
-		return result.toString(); 
+		return result.toString();
 	}	
 
-	public void setType( type t ){ 
-		this.t = t; 
+	public void setType( type t ){
+		this.t = t;
 	}
 	
-	public type getType(){ 
-		return t; 
+	public type getType(){
+		return t;
 	}
 }

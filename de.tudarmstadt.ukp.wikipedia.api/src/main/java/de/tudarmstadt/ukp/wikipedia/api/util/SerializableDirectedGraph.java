@@ -25,7 +25,7 @@ import org.jgrapht.graph.DefaultEdge;
 /**
  * Serializable Wrapper for a DirectedGraph object, that has Integer objects as vertices and DefaultEdge objects as edges.<br>
  * There is no need in this case to serializale vertices and edges separately, because they already implement the interface Serializable.
- * 
+ *
  *
  */
 public final class SerializableDirectedGraph implements Serializable {
@@ -36,7 +36,7 @@ public final class SerializableDirectedGraph implements Serializable {
     private static final long serialVersionUID = -8298189410676038723L;
 
     private DirectedGraph<Integer,DefaultEdge> graph;
-    
+
     /**
      * This Constructor is intended to be used before the serialization of the <br>
      * directed graph.
@@ -45,9 +45,9 @@ public final class SerializableDirectedGraph implements Serializable {
     public SerializableDirectedGraph(DirectedGraph<Integer,DefaultEdge> graph){
         this.graph = graph;
     }
-    
+
     /**
-     * Returns the graph. 
+     * Returns the graph.
      * @return
      */
     public DirectedGraph<Integer,DefaultEdge> getGraph(){

@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration
 
 /**
  * This class represents the chrono storage.
- * 
- * 
+ *
+ *
  * 1
  */
 public class ChronoStorage
@@ -64,7 +64,7 @@ public class ChronoStorage
 
 	/**
 	 * (Constructor) Creates a ChronoStorage object
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration
 	 * @param mapping
@@ -95,7 +95,7 @@ public class ChronoStorage
 
 	/**
 	 * Adds a revision to the chrono storage.
-	 * 
+	 *
 	 * @param rev
 	 *            reference to the revision
 	 */
@@ -174,7 +174,7 @@ public class ChronoStorage
 
 	/**
 	 * Returns whether more chrono storage blocks are available.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean hasMore()
@@ -184,7 +184,7 @@ public class ChronoStorage
 
 	/**
 	 * Removes a revision from the chrono storage.
-	 * 
+	 *
 	 * @return
 	 */
 	public Revision remove()
@@ -226,7 +226,7 @@ public class ChronoStorage
 
 	/**
 	 * Checks whether the specified chrono storage block is contained or not.
-	 * 
+	 *
 	 * @param revisionIndex
 	 *            chronological order index
 	 * @return
@@ -238,7 +238,7 @@ public class ChronoStorage
 
 	/**
 	 * Checks whether the chrono storage block is on top or not.
-	 * 
+	 *
 	 * @param revisionIndex
 	 *            chronological order index
 	 * @return
@@ -254,7 +254,7 @@ public class ChronoStorage
 
 	/**
 	 * Returns the revision of the specified chrono storage block.
-	 * 
+	 *
 	 * @param revisionIndex
 	 *            chronological order index
 	 * @return
@@ -333,7 +333,7 @@ public class ChronoStorage
 
 	/**
 	 * Returns a description of the chrono storage size.
-	 * 
+	 *
 	 * @return current revision index | storage size | size | total size
 	 */
 	public String getStorageSize()

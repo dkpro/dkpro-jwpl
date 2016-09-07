@@ -27,12 +27,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.Archiv
 
 /**
  * ArchiveRegistry of the ConfigurationTool.
- * 
+ *
  * Contains all input archives and represents the table model to display the
  * archives in the InputPanel.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class ArchiveRegistry
@@ -57,10 +57,10 @@ public class ArchiveRegistry
 
 	/**
 	 * Returns the name of the specified column.
-	 * 
+	 *
 	 * @param col
 	 *            index of the column
-	 * 
+	 *
 	 * @return name of the column
 	 */
 	@Override
@@ -89,12 +89,12 @@ public class ArchiveRegistry
 
 	/**
 	 * Returns the value at the specified position.
-	 * 
+	 *
 	 * @param row
 	 *            index of the row
 	 * @param col
 	 *            index of the column
-	 * 
+	 *
 	 * @return string representation of the specified field
 	 */
 	@Override
@@ -115,7 +115,7 @@ public class ArchiveRegistry
 
 	/**
 	 * Adds an archive description.
-	 * 
+	 *
 	 * @param description
 	 *            archive description
 	 */
@@ -126,7 +126,7 @@ public class ArchiveRegistry
 
 	/**
 	 * Removes an archive description.
-	 * 
+	 *
 	 * @param index
 	 *            index of the archive.
 	 */
@@ -137,7 +137,7 @@ public class ArchiveRegistry
 
 	/**
 	 * Returns the archive at the specified position.
-	 * 
+	 *
 	 * @param index
 	 *            position
 	 * @return ArchiveDescription
@@ -157,7 +157,7 @@ public class ArchiveRegistry
 
 	/**
 	 * Adds the ArchiveDescriptions contained in the configuration.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration
 	 */

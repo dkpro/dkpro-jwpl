@@ -158,9 +158,9 @@ public class XmlDumpReader  extends DefaultHandler {
 		if (abortFlag)
 			throw new SAXException("XmlDumpReader set abort flag.");
 
-		// check for deleted="deleted", and set deleted flag for the current element. 
+		// check for deleted="deleted", and set deleted flag for the current element.
 		String d = attributes.getValue("deleted");
-		deleted = (d!=null && d.equals("deleted")); 
+		deleted = (d!=null && d.equals("deleted"));
 		
 		try {
 			qName = (String)startElements.get(qName);
@@ -317,7 +317,7 @@ public class XmlDumpReader  extends DefaultHandler {
 	
 	void readId() {
 		int id = Integer.parseInt(bufferContents());
-		if (contrib != null) 
+		if (contrib != null)
 			contrib.Id = id;
 		else if (rev != null)
 			rev.Id = id;

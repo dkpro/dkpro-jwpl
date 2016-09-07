@@ -20,7 +20,7 @@ package de.tudarmstadt.ukp.wikipedia.parser.html;
 public class ParsedPageCSS {
 
     private static final String LF = "\n";
-    
+
     public static String getFileText() {
         StringBuilder sb = new StringBuilder();
 
@@ -109,7 +109,7 @@ public class ParsedPageCSS {
         sb.append("th.DefinitionList{ font-size: 7pt; padding: 1px; background-color: #66CC00; }");
         sb.append("td.DefinitionList{ padding: 5px; background-color: #CCFFCC; }");
         sb.append(LF);
-       
+
         return sb.toString();
     }
 

@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices;
 /**
  * This class represents the data used by the ArticleIndex. One objects
  * represents one revision block.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ArticleIndexData
 {
@@ -41,7 +41,7 @@ public class ArticleIndexData
 
 	/**
 	 * Returns the last revision counter of this block.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	public long getEndRevisionCount()
@@ -51,7 +51,7 @@ public class ArticleIndexData
 
 	/**
 	 * Returns the ID of the full revision.
-	 * 
+	 *
 	 * @return ID of the full revision
 	 */
 	public long getFullRevisionID()
@@ -61,7 +61,7 @@ public class ArticleIndexData
 
 	/**
 	 * Returns the PK of the full revision.
-	 * 
+	 *
 	 * @return PK of the full revision
 	 */
 	public long getFullRevisionPrimaryKey()
@@ -71,7 +71,7 @@ public class ArticleIndexData
 
 	/**
 	 * Returns the first revision counter of this block.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	public long getStartRevisionCount()
@@ -81,7 +81,7 @@ public class ArticleIndexData
 
 	/**
 	 * Sets the last revision counter of this block.
-	 * 
+	 *
 	 * @param endRevisionCount
 	 *            revision counter
 	 */
@@ -92,7 +92,7 @@ public class ArticleIndexData
 
 	/**
 	 * Sets the ID of the full revision.
-	 * 
+	 *
 	 * @param fullRevisionID
 	 *            ID of the full revision
 	 */
@@ -103,7 +103,7 @@ public class ArticleIndexData
 
 	/**
 	 * Sets the PK of the full revision.
-	 * 
+	 *
 	 * @param fullRevisionPrimaryKey
 	 *            PK of the full revision
 	 */
@@ -114,7 +114,7 @@ public class ArticleIndexData
 
 	/**
 	 * Sets the first revision counter of this block.
-	 * 
+	 *
 	 * @param startRevisionCount
 	 *            revision counter
 	 */

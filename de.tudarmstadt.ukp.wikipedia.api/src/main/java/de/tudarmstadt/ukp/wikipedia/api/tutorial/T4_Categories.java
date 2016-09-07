@@ -27,16 +27,16 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 4
- * 
+ *
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
- * 
+ *
  *
  */
 public class T4_Categories implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -69,7 +69,7 @@ public class T4_Categories implements WikiConstants {
             sb.append("  " + parent.getTitle() + LF);
         }
         sb.append(LF);
-        
+
         // the number of links in this page pointing to other pages (number of subordinate categories)
         sb.append("# sub categories : " + cat.getChildren().size() + LF);
         for (Category child : cat.getChildren()) {
@@ -82,13 +82,13 @@ public class T4_Categories implements WikiConstants {
         for (Page page : cat.getArticles()) {
             sb.append("  " + page.getTitle() + LF);
         }
-        
-        // extract only the pageIDs of pages that are categorized under this category   
+
+        // extract only the pageIDs of pages that are categorized under this category
         sb.append("# pageIDs : " + cat.getArticleIds().size() + LF);
         for (int pageID : cat.getArticleIds()) {
             sb.append("  " + pageID + LF);
         }
-        
+
         System.out.println(sb);
     }
 }

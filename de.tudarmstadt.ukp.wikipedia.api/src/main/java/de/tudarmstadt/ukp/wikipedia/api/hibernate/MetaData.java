@@ -24,13 +24,13 @@ public class MetaData {
     private String language;
     private String disambiguationCategory;
     private String mainCategory;
-    private String version;    
-    
+    private String version;
+
     private long nrofPages;
     private long nrofRedirects;
     private long nrofDisambiguationPages;
     private long nrofCategories;
-    
+
     /** A no argument constructor as required by Hibernate. */
     public MetaData() {}
 

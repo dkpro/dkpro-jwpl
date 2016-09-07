@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 /**
  * DecodingException Describes an exception that occurred while decoding the
  * diff information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class DecodingException
@@ -31,7 +31,7 @@ public class DecodingException
 
 	/**
 	 * (Constructor) Creates a new DecodingException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -42,7 +42,7 @@ public class DecodingException
 
 	/**
 	 * (Constructor) Creates a new DecodingException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -53,7 +53,7 @@ public class DecodingException
 
 	/**
 	 * (Constructor) Creates a new DecodingException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

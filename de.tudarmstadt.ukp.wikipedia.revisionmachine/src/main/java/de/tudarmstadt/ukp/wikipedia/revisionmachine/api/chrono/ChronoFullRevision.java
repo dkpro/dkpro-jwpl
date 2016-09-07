@@ -24,8 +24,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 
 /**
  * ChronoFullRevision
- * 
- * 
+ *
+ *
  * 1
  */
 public class ChronoFullRevision
@@ -57,7 +57,7 @@ public class ChronoFullRevision
 
 	/**
 	 * (Constructor) Creates a new ChronoFullRevision object.
-	 * 
+	 *
 	 * @param fullRevisionPK
 	 *            primary key of a full revision
 	 * @param startRC
@@ -83,7 +83,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the reference to the ChronoStorageBlock.
-	 * 
+	 *
 	 * @return chrono storage block
 	 */
 	public ChronoStorageBlock getFirst()
@@ -93,7 +93,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Sets the reference of the ChronoStorageBlock.
-	 * 
+	 *
 	 * @param block
 	 *            chrono storage block
 	 */
@@ -104,7 +104,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Adds a ChonoStorageBlock to this chrono full revision object.
-	 * 
+	 *
 	 * @param block
 	 *            reference to the chrono storage block
 	 */
@@ -153,7 +153,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the nearest available revision to the specified revision counter.
-	 * 
+	 *
 	 * @param revisionCounter
 	 *            revision counter
 	 * @return Revision
@@ -178,7 +178,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Removes the revision counter from the list of reconstructible revisions.
-	 * 
+	 *
 	 * @param revisionCounter
 	 *            revision counter
 	 */
@@ -193,22 +193,22 @@ public class ChronoFullRevision
 	/**
 	 * Removes all revision counter information starting with the specified
 	 * revision.
-	 * 
+	 *
 	 * @param invalidRevisionCounter
 	 *            invalid revision counter
-	 * 
+	 *
 	 *            public void unavailable(final int invalidRevisionCounter) {
-	 * 
+	 *
 	 *            for (int i = invalidRevisionCounter; i <= this.endRC; i++) {
 	 *            this.set.remove(i); }
-	 * 
+	 *
 	 *            if (this.set.isEmpty()) { clean(0, 0); } }
 	 */
 
 	/**
 	 * Returns whether more revisions can be reconstructed by the use of this
 	 * chrono full revision.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean isEmpty()
@@ -218,7 +218,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the next chrono full revision.
-	 * 
+	 *
 	 * @return next chrono full revision
 	 */
 	public ChronoFullRevision getNext()
@@ -228,7 +228,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Sets the link to the next chrono full revision.
-	 * 
+	 *
 	 * @param next
 	 *            next chrono full revision
 	 */
@@ -239,7 +239,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the previous chrono full revision.
-	 * 
+	 *
 	 * @return previous chrono full revision
 	 */
 	public ChronoFullRevision getPrev()
@@ -249,7 +249,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Sets the link to the previous chrono full revision.
-	 * 
+	 *
 	 * @param prev
 	 *            previous chrono full revision
 	 */
@@ -260,7 +260,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Reduces the storage space.
-	 * 
+	 *
 	 * @param currentRevisionIndex
 	 *            index of the current revision
 	 * @param revisionIndex
@@ -340,7 +340,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the size of this chrono full revision.
-	 * 
+	 *
 	 * @return size
 	 */
 	public long size()
@@ -350,7 +350,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the last revision counter based on this full revision.
-	 * 
+	 *
 	 * @return last revision counter
 	 */
 	public int getEndRC()
@@ -360,7 +360,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the pk of the full revision.
-	 * 
+	 *
 	 * @return pk of the full revision
 	 */
 	public int getFullRevisionPK()
@@ -370,7 +370,7 @@ public class ChronoFullRevision
 
 	/**
 	 * Returns the revision counter of the full revision.
-	 * 
+	 *
 	 * @return first revision counter
 	 */
 	public int getStartRC()

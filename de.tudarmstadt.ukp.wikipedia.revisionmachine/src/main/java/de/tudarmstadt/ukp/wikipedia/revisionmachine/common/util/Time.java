@@ -19,12 +19,12 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util;
 
 /**
  * This class transform milliseconds to a clock representation.
- * 
+ *
  * A clock representation describes the time (HH:MM:SS:sss) and is used for
  * measuring the processing times.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class Time
 {
@@ -50,7 +50,7 @@ public class Time
 	/**
 	 * (Constructor) Creates a new time information transforming the millisecond
 	 * value into a clock representation.
-	 * 
+	 *
 	 * @param time
 	 *            milliseconds
 	 */
@@ -140,7 +140,7 @@ public class Time
 
 	/**
 	 * Transforms a millisecond value to the clock representation.
-	 * 
+	 *
 	 * @param time
 	 *            milliseconds
 	 * @return clock representation

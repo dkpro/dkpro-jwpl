@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging;
 
 /**
  * This class contains all keys for diff tool loggers.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum LoggerType
 {

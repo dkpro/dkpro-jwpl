@@ -23,7 +23,7 @@ public class PageMapLine {
     private int pageID;
     private String stem;
     private String lemma;
-    
+
     /** A no argument constructor as required by Hibernate. */
     public PageMapLine () {}
 

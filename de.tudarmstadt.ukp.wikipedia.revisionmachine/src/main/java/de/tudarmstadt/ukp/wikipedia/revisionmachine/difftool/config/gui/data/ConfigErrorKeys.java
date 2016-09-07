@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data;
 
 /**
  * Contains the keys for the configuration verification error types.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum ConfigErrorKeys
 {

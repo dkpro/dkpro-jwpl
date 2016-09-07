@@ -22,8 +22,8 @@ import java.util.HashSet;
 /**
  * This class is used for filtering templates by they names using different
  * white/black lists
- * 
- * 
+ *
+ *
  */
 public class TemplateFilter
 {
@@ -34,7 +34,7 @@ public class TemplateFilter
 
 	/**
 	 * Init template filter with different lists
-	 * 
+	 *
 	 * @param whiteList
 	 *            list with allowed template names
 	 * @param whitePrefixList
@@ -57,7 +57,7 @@ public class TemplateFilter
 
 	/**
 	 * Checks if the input string is in white list
-	 * 
+	 *
 	 * @param tpl
 	 *            string to check
 	 * @return
@@ -73,7 +73,7 @@ public class TemplateFilter
 
 	/**
 	 * Checks if the input string is in black list
-	 * 
+	 *
 	 * @param tpl
 	 *            string to check
 	 * @return
@@ -88,7 +88,7 @@ public class TemplateFilter
 
 	/**
 	 * Checks if the input string contains prefixes from white list
-	 * 
+	 *
 	 * @param tpl
 	 *            string to check
 	 * @return
@@ -107,7 +107,7 @@ public class TemplateFilter
 
 	/**
 	 * Checks if the input string contains prefixes from black list
-	 * 
+	 *
 	 * @param tpl
 	 *            string to check
 	 * @return
@@ -124,7 +124,7 @@ public class TemplateFilter
 	/**
 	 * Checks whether to include the template with the given name in the
 	 * database or not.
-	 * 
+	 *
 	 * @param tpl
 	 *            the template name
 	 * @return true, if the template should be included in the db

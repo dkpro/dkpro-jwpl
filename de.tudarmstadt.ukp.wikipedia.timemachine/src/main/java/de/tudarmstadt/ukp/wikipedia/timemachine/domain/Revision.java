@@ -19,7 +19,7 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
 /**
  * Routines for the conversion of the Wikipedia revisions
- * 
+ *
  */
 public class Revision {
 
@@ -40,7 +40,7 @@ public class Revision {
 	/**
 	 * Compress time from long- to the integer-format: reduce the resolution to
 	 * "seconds" and zero time to 1th January 2000
-	 * 
+	 *
 	 * @param date
 	 *            date/time in the long format
 	 * @return date/time in the compressed integer format
@@ -53,7 +53,7 @@ public class Revision {
 	/**
 	 * Extract time, that was compressed with
 	 * {@link Revision#compressTime(long)}
-	 * 
+	 *
 	 * @param compressedDate
 	 *            compressed date/time in the integer format
 	 * @return date/time in the long format
@@ -65,7 +65,7 @@ public class Revision {
 	/**
 	 * Merge two unsigned integer values (text id and time stamp) to one long
 	 * value (revision) to use GNU Trove container.
-	 * 
+	 *
 	 * @param textId
 	 * @param timestamp
 	 * @return
@@ -76,7 +76,7 @@ public class Revision {
 
 	/**
 	 * Extract a time stamp from the revision long.
-	 * 
+	 *
 	 * @param revision
 	 * @return time stamp
 	 */
@@ -86,7 +86,7 @@ public class Revision {
 
 	/**
 	 * Extract a text ID from the revision long
-	 * 
+	 *
 	 * @param revision
 	 * @return text ID
 	 */

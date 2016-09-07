@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.diff.calc
 
 /**
  * Contains the information for a block. Used for the Diff Calculation.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class DiffBlock
 	implements Comparable<DiffBlock>
@@ -50,7 +50,7 @@ public class DiffBlock
 
 	/**
 	 * (DiffBlock) Creates a new DiffBlock.
-	 * 
+	 *
 	 * @param id
 	 *            ID of the block
 	 * @param revAStart
@@ -77,7 +77,7 @@ public class DiffBlock
 
 	/**
 	 * Compares the positions of both blocks.
-	 * 
+	 *
 	 * @param b
 	 *            Block
 	 */
@@ -93,7 +93,7 @@ public class DiffBlock
 
 	/**
 	 * Returns whether the block is valid or not.
-	 * 
+	 *
 	 * @return TRUE if the block has a ID of the value -1 FALSE otherwise
 	 */
 	public boolean isUnknown()
@@ -103,7 +103,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the ID of this block.
-	 * 
+	 *
 	 * @return string representation
 	 */
 	public String toString()
@@ -113,7 +113,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the ID of this block.
-	 * 
+	 *
 	 * @return ID of this block
 	 */
 	public int getId()
@@ -123,7 +123,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the end position of the block in revision A.
-	 * 
+	 *
 	 * @return end position revision A
 	 */
 	public int getRevAEnd()
@@ -133,7 +133,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the start position of the block in revision A.
-	 * 
+	 *
 	 * @return start position revision A
 	 */
 	public int getRevAStart()
@@ -143,7 +143,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the end position of the block in revision B.
-	 * 
+	 *
 	 * @return end position revision B
 	 */
 	public int getRevBEnd()
@@ -153,7 +153,7 @@ public class DiffBlock
 
 	/**
 	 * Returns the start position of the block in revision B.
-	 * 
+	 *
 	 * @return start position revision B
 	 */
 	public int getRevBStart()

@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks;
 
 /**
  * This Enumerator lists the different types of tasks.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum TaskTypes
 {

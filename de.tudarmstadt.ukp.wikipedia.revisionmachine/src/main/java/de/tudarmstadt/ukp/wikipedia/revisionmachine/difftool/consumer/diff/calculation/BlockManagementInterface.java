@@ -24,16 +24,16 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * Interface of the BlockManagement
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public interface BlockManagementInterface
 {
 
 	/**
 	 * Uses the substring blocks to create the diff operations.
-	 * 
+	 *
 	 * @param revA
 	 *            revision A
 	 * @param revB
@@ -43,7 +43,7 @@ public interface BlockManagementInterface
 	 * @param queueB
 	 *            queue B
 	 * @return Diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */

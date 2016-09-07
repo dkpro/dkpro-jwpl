@@ -36,9 +36,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels.A
 
 /**
  * ConfigDialog - Displays the ConfigVerification elements.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class ConfigDialog
@@ -47,9 +47,9 @@ public class ConfigDialog
 
 	/**
 	 * Panel of the ConfigDialog
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 */
 	private class ConfigDialogPanel
 		extends AbstractPanel
@@ -63,7 +63,7 @@ public class ConfigDialog
 
 		/**
 		 * (Constructor) Creates the ConfigDialogPanel.
-		 * 
+		 *
 		 * @param controller
 		 *            Reference to the controller
 		 */
@@ -164,7 +164,7 @@ public class ConfigDialog
 
 		/**
 		 * empty method
-		 * 
+		 *
 		 * @deprecated
 		 * @throws UnsupportedOperationException
 		 */
@@ -178,7 +178,7 @@ public class ConfigDialog
 
 		/**
 		 * empty method
-		 * 
+		 *
 		 * @deprecated
 		 * @throws UnsupportedOperationException
 		 */
@@ -192,7 +192,7 @@ public class ConfigDialog
 
 	/**
 	 * (Constructor) Creates a new ConfigDialog.
-	 * 
+	 *
 	 * @param controller
 	 *            Reference to the controller
 	 */

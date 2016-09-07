@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data;
 
 /**
  * Contains the keys for the different types of configuration items.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum ConfigItemTypes
 {

@@ -24,11 +24,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 
 /**
  * This class contains the english localized log messages for DiffTool.
- * 
+ *
  * TODO: This file should be replaced with resource files.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class DiffToolLogMessages
 {
@@ -40,7 +40,7 @@ public class DiffToolLogMessages
 
 	/**
 	 * Logs the start of the diff tool.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -52,7 +52,7 @@ public class DiffToolLogMessages
 
 	/**
 	 * Logs the status of the diff tool.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param time
@@ -87,7 +87,7 @@ public class DiffToolLogMessages
 
 	/**
 	 * Logs an exception.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e
@@ -100,7 +100,7 @@ public class DiffToolLogMessages
 
 	/**
 	 * Logs an error.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e
@@ -113,7 +113,7 @@ public class DiffToolLogMessages
 
 	/**
 	 * Logs the shutdown of the logger.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param endTime

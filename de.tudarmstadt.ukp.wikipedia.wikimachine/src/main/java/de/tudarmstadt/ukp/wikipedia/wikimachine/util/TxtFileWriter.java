@@ -23,8 +23,8 @@ import java.io.PrintStream;
 
 /**
  * Writes the dumps of tables as txt files.
- * 
- * 
+ *
+ *
  */
 
 public class TxtFileWriter extends PrintStream {
@@ -34,7 +34,7 @@ public class TxtFileWriter extends PrintStream {
 
 	/**
 	 * Instantiates a new TxtFileWriter object.
-	 * 
+	 *
 	 * @param filename
 	 * @throws IOException
 	 */
@@ -44,7 +44,7 @@ public class TxtFileWriter extends PrintStream {
 
 	/**
 	 * Add a row to the dump of the table.
-	 * 
+	 *
 	 * @param row
 	 * @throws IOException
 	 */

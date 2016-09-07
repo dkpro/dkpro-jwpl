@@ -37,7 +37,7 @@ public class PageParser {
 
 	/**
 	 * Create a parser from an input stream
-	 * 
+	 *
 	 * @param inputStream
 		 */
 	public void setInputStream(InputStream inputStream) {
@@ -74,7 +74,7 @@ public class PageParser {
 
 	/**
 	 * Returns true if the table has more rows.
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */

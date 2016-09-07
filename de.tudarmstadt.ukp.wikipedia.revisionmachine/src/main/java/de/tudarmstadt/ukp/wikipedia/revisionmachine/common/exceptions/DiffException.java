@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 /**
  * DiffException Describes an exception that occurred while calculating the
  * diff.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class DiffException
@@ -31,7 +31,7 @@ public class DiffException
 
 	/**
 	 * (Constructor) Creates a new DiffException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -42,7 +42,7 @@ public class DiffException
 
 	/**
 	 * (Constructor) Creates a new DiffException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -53,7 +53,7 @@ public class DiffException
 
 	/**
 	 * (Constructor) Creates a new DiffException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

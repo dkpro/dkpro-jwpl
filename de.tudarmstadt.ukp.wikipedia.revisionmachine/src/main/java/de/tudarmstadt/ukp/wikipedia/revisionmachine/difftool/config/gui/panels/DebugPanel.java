@@ -37,12 +37,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.Pan
 
 /**
  * Panel class of the ConfigurationTool
- * 
+ *
  * This panel contains all components for setting configuration parameters
  * related to the debug purposes.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class DebugPanel
@@ -60,7 +60,7 @@ public class DebugPanel
 
 	/**
 	 * (Constructor) Creates a new DebugPanel.
-	 * 
+	 *
 	 * @param controller
 	 *            Reference to the controller
 	 */
@@ -230,7 +230,7 @@ public class DebugPanel
 	/**
 	 * Reads the configuration parameters described in the panel from the
 	 * ConfigSettings and and sets the contained values.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the ConfigSettings object
 	 */
@@ -278,7 +278,7 @@ public class DebugPanel
 	 * Adds the xml description of the panels content to the StringBuilder.
 	 * Errors which occur during the xml transformation will be added to the
 	 * ConfigVerification.
-	 * 
+	 *
 	 * @param builder
 	 *            Reference to a StringBuilder object
 	 * @param errors

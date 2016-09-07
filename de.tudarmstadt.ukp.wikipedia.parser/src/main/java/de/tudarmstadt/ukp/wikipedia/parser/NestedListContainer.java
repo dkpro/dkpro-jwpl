@@ -48,8 +48,8 @@ public class NestedListContainer extends ContentContainer implements NestedList{
 		else return null;
 	}
 	
-	public void add( NestedList nl ){ 
-		lists.add(nl); 
+	public void add( NestedList nl ){
+		lists.add(nl);
 		ccl.add(nl);
 	}
 	
@@ -58,8 +58,8 @@ public class NestedListContainer extends ContentContainer implements NestedList{
 		ccl.remove( nl );
 	}
 	
-	public List<NestedList> getNestedLists(){ 
-		return new ArrayList<NestedList>( lists ); 
+	public List<NestedList> getNestedLists(){
+		return new ArrayList<NestedList>( lists );
 	}
 		
 	public String toString(){

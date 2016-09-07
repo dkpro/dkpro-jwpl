@@ -26,18 +26,18 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 
 /**
  * This class contains the english localized log messages for Consumers.
- * 
+ *
  * TODO: This file should be replaced with resource files.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public final class ConsumerLogMessages
 {
 
 	/**
 	 * Logs the start of a consumer.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -48,7 +48,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs an error.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e
@@ -61,7 +61,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs an exception.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e
@@ -74,7 +74,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the initialization of a consumer.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -86,7 +86,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the receival of the kill signal.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -97,7 +97,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the receival of the ping signal.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -108,7 +108,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the shutdown of the consumer.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param endTime
@@ -122,7 +122,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs that the consumer is sleeping.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -133,7 +133,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the receival of the start signal.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -144,7 +144,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the status of the consumer.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param startTime
@@ -170,7 +170,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the receival of the stop signal.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 */
@@ -181,7 +181,7 @@ public final class ConsumerLogMessages
 
 	/**
 	 * Logs the occurance of a TimeoutException.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e

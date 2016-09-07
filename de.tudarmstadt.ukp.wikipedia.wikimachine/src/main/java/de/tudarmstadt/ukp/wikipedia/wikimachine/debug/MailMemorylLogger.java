@@ -38,7 +38,7 @@ public class MailMemorylLogger extends AbstractLogger {
 	private static final String ADDRESS_FROM = "i_galkin@rbg.informatik.tu-darmstadt.de";
 
 	/**
-	 * @see {@link http 
+	 * @see {@link http
 	 *      ://gnu.gds.tuwien.ac.at/software/classpathx/javamail/javadoc /gnu/
 	 *      mail/providers/smtp/package-summary.html}
 	 */

@@ -22,9 +22,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 
 /**
  * This class contains all statistical information related to one article.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ArticleInformation
 {
@@ -98,7 +98,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the ID of the article.
-	 * 
+	 *
 	 * @return Article ID
 	 */
 	public int getArticleId()
@@ -108,7 +108,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the name of the article.
-	 * 
+	 *
 	 * @return Article name
 	 */
 	public String getArticleName()
@@ -118,7 +118,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the diffed size of the article.
-	 * 
+	 *
 	 * @return diffed size
 	 */
 	public long getDiffedSize()
@@ -128,7 +128,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the number of diff parts.
-	 * 
+	 *
 	 * @return number of diff parts
 	 */
 	public int getDiffPartCounter()
@@ -138,7 +138,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the encoded size of the article.
-	 * 
+	 *
 	 * @return encoded size
 	 */
 	public long getEncodedSize()
@@ -148,7 +148,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the size of the article after the sql encoding.
-	 * 
+	 *
 	 * @return size after encoding
 	 */
 	public long getEncodedSQLSize()
@@ -158,7 +158,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the entering time.
-	 * 
+	 *
 	 * @return entering time
 	 */
 	public long getEnteringTime()
@@ -168,7 +168,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the exiting time.
-	 * 
+	 *
 	 * @return exiting time
 	 */
 	public long getExitingTime()
@@ -178,7 +178,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the number of ignored revisions.
-	 * 
+	 *
 	 * @return number of ignored revisions
 	 */
 	public int getIgnoredRevisionsCounter()
@@ -188,7 +188,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the original size of the article.
-	 * 
+	 *
 	 * @return original size
 	 */
 	public long getOriginalSize()
@@ -198,7 +198,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the time used for the diff encoding.
-	 * 
+	 *
 	 * @return processing time diff
 	 */
 	public long getProcessingTimeDiff()
@@ -208,7 +208,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the time used for reading the task.
-	 * 
+	 *
 	 * @return processing time reading
 	 */
 	public long getProcessingTimeRead()
@@ -218,7 +218,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the time used for the sql encoding.
-	 * 
+	 *
 	 * @return processing time encoding
 	 */
 	public long getProcessingTimeSQL()
@@ -228,7 +228,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the number of parsed revisions.
-	 * 
+	 *
 	 * @return number of parsed revisions
 	 */
 	public int getReadRevisionCounter()
@@ -238,7 +238,7 @@ public class ArticleInformation
 
 	/**
 	 * Returns the revision counter.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	public int getRevisionCounter()
@@ -248,7 +248,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the ID of the article.
-	 * 
+	 *
 	 * @param articleId
 	 *            Article ID
 	 */
@@ -259,7 +259,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the name of the article.
-	 * 
+	 *
 	 * @param articleName
 	 *            Article name
 	 */
@@ -270,7 +270,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the diffed size of the article.
-	 * 
+	 *
 	 * @param diffedSize
 	 *            diffed size
 	 */
@@ -281,7 +281,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the number of diff parts.
-	 * 
+	 *
 	 * @param diffPartCounter
 	 *            number of diff parts
 	 */
@@ -292,7 +292,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the encoded size of the article.
-	 * 
+	 *
 	 * @param encodedSize
 	 *            encoded size
 	 */
@@ -303,7 +303,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the size of the article after the sql encoding.
-	 * 
+	 *
 	 * @param encodedSQLSize
 	 *            size after encoding
 	 */
@@ -314,7 +314,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the entering time of the first task for this article.
-	 * 
+	 *
 	 * @param enteringTime
 	 *            entering time
 	 */
@@ -325,7 +325,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the exiting time of the last task for this article.
-	 * 
+	 *
 	 * @param exitingTime
 	 *            exiting time
 	 */
@@ -336,7 +336,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the number of ignored revisions.
-	 * 
+	 *
 	 * @param ignoredRevisionsCounter
 	 *            number of ignored revisions
 	 */
@@ -347,7 +347,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the original size of the article.
-	 * 
+	 *
 	 * @param originalSize
 	 *            original size
 	 */
@@ -358,7 +358,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the time used for the diff encoding.
-	 * 
+	 *
 	 * @param processingTimeDiff
 	 *            processing time diff
 	 */
@@ -369,7 +369,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the time used for reading the task.
-	 * 
+	 *
 	 * @param processingTimeRead
 	 *            processing time reading
 	 */
@@ -380,7 +380,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the time used for the sql encoding.
-	 * 
+	 *
 	 * @param processingTimeSQL
 	 *            processing time encoding
 	 */
@@ -391,7 +391,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the number of parsed revisions.
-	 * 
+	 *
 	 * @param readRevisionCounter
 	 *            number of parsed revisions
 	 */
@@ -402,7 +402,7 @@ public class ArticleInformation
 
 	/**
 	 * Sets the revision counter.
-	 * 
+	 *
 	 * @param nrRevisions
 	 *            revision counter
 	 */
@@ -414,7 +414,7 @@ public class ArticleInformation
 	/**
 	 * Returns the string representation of this object. Used for logging the
 	 * statistical data.
-	 * 
+	 *
 	 * @return content representation
 	 */
 	public String toString()

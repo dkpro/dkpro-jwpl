@@ -120,13 +120,13 @@ public class XmlDumpWriter implements DumpWriter {
 		
 		if (rev.Comment == null) {
 			writer.emptyElement("comment", deletedAttrib);
-		} 
+		}
 		else if (rev.Comment.length() != 0) {
 			writer.textElement("comment", rev.Comment);
 		}
 		
-		writer.textElement("text", rev.Text, 
-				rev.Text==null ? new String[][] {{"xml:space", "preserve"}, {"deleted", "deleted"}} 
+		writer.textElement("text", rev.Text,
+				rev.Text==null ? new String[][] {{"xml:space", "preserve"}, {"deleted", "deleted"}}
 												: new String[][] {{"xml:space", "preserve"}}
 		);
 		

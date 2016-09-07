@@ -21,10 +21,10 @@ import java.util.HashMap;
 
 /**
  * LetterNode This node represents a node of the keyword tree.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * @param <V>
  *            contained value
  */
@@ -55,7 +55,7 @@ public class LetterNode<V>
 
 	/**
 	 * (Constructor) Creates a LetterNode with a keyword.
-	 * 
+	 *
 	 * @param word
 	 *            keyword
 	 */
@@ -68,7 +68,7 @@ public class LetterNode<V>
 
 	/**
 	 * Adds a word and its related value.
-	 * 
+	 *
 	 * @param word
 	 *            keyword
 	 * @param value
@@ -96,7 +96,7 @@ public class LetterNode<V>
 
 	/**
 	 * Returns the keyword.
-	 * 
+	 *
 	 * @return keyword
 	 */
 	public String getWord()
@@ -106,7 +106,7 @@ public class LetterNode<V>
 
 	/**
 	 * Returns the related value.
-	 * 
+	 *
 	 * @return related value
 	 */
 	public V getValue()
@@ -116,7 +116,7 @@ public class LetterNode<V>
 
 	/**
 	 * Returns the specified successor node.
-	 * 
+	 *
 	 * @param c
 	 *            character
 	 * @return successor node or NULL if the specified node is not available
@@ -128,7 +128,7 @@ public class LetterNode<V>
 
 	/**
 	 * Checks whether the specified successor node is contained.
-	 * 
+	 *
 	 * @param c
 	 *            character
 	 * @return TRUE | FALSE
@@ -140,7 +140,7 @@ public class LetterNode<V>
 
 	/**
 	 * Returns whether this node contains a keyword or not.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean isKeyword()

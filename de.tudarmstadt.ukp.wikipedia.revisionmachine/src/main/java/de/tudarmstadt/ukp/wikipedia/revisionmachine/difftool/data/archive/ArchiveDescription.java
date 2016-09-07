@@ -19,11 +19,11 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive;
 
 /**
  * This class represents a description of an input file.
- * 
+ *
  * TODO: The start position is currently unused.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ArchiveDescription
 {
@@ -39,7 +39,7 @@ public class ArchiveDescription
 
 	/**
 	 * (Constructor) Creates a new ArchiveDescription
-	 * 
+	 *
 	 * @param type
 	 *            InputType
 	 * @param path
@@ -53,7 +53,7 @@ public class ArchiveDescription
 
 	/**
 	 * Returns the path.
-	 * 
+	 *
 	 * @return path
 	 */
 	public String getPath()
@@ -63,7 +63,7 @@ public class ArchiveDescription
 
 	/**
 	 * Returns the start position.
-	 * 
+	 *
 	 * @return start position
 	 */
 	public long getStartPosition()
@@ -73,7 +73,7 @@ public class ArchiveDescription
 
 	/**
 	 * Returns the InputType.
-	 * 
+	 *
 	 * @return InputType
 	 */
 	public InputType getType()
@@ -83,7 +83,7 @@ public class ArchiveDescription
 
 	/**
 	 * Sets the start position.
-	 * 
+	 *
 	 * @param startPosition
 	 *            start position
 	 */
@@ -94,7 +94,7 @@ public class ArchiveDescription
 
 	/**
 	 * Returns the string representation of this object.
-	 * 
+	 *
 	 * @return [InputType, path]
 	 */
 	public String toString()

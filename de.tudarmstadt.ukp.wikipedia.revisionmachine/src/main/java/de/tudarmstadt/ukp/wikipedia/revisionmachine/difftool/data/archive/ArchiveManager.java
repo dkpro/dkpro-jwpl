@@ -24,7 +24,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
 
 /**
  * DiffManager Manages the data contained by the ArchiveProducer
- * 
+ *
  * @version 0.5.0
  */
 public class ArchiveManager
@@ -35,7 +35,7 @@ public class ArchiveManager
 
 	/**
 	 * (Constructor) Creates the ArchiveManager.
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurs while accessing the configuration
 	 */
@@ -49,7 +49,7 @@ public class ArchiveManager
 
 	/**
 	 * Returns whether an archive is available or not.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean hasArchive()
@@ -59,7 +59,7 @@ public class ArchiveManager
 
 	/**
 	 * Returns an archive.
-	 * 
+	 *
 	 * @return ArchiveDescription or NULL if no archive is available
 	 */
 	public synchronized ArchiveDescription getArchive()
@@ -75,7 +75,7 @@ public class ArchiveManager
 
 	/**
 	 * Returns the number of remaining archives.
-	 * 
+	 *
 	 * @return number of available archives
 	 */
 	public int size()
@@ -85,7 +85,7 @@ public class ArchiveManager
 
 	/**
 	 * Returns the string representation of the ArchiveManager's content.
-	 * 
+	 *
 	 * @return [ number of archives ]
 	 */
 	public String toString()

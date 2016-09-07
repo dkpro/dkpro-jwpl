@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * 
+ *
  * The standard <code>DataOutputStream.writeUTF(String)</code> limits the string
  * with 65536 byte sized buffer. To avoid this limitation there is two methods
  * to use:
@@ -30,9 +30,9 @@ import java.io.OutputStream;
  * <li>{@link UTFDataOutputStream#writeFragmentedUTF(String)}</li>
  * <li>{@link UTFDataOutputStream#writeUTFAsArray}</li>
  * </ul>
- * 
+ *
  * @see DataOutputStream#writeUTF(String)
- * 
+ *
  */
 public class UTFDataOutputStream extends DataOutputStream {
 
@@ -58,7 +58,7 @@ public class UTFDataOutputStream extends DataOutputStream {
 	 * The UTF-8 encoding uses sequences of 1, 2, or 3 bytes per character. With
 	 * he maximal length of the fragment we want to ensure, that there are no
 	 * overflow of 65536 byte sized buffer
-	 * 
+	 *
 	 * @param str
 	 *            String to be written in the output stream
 	 * @throws IOException
@@ -78,7 +78,7 @@ public class UTFDataOutputStream extends DataOutputStream {
 	 * <li>the size of the byte array</li>
 	 * <li>the unicode byte sequence of this string</li>
 	 * </ol>
-	 * 
+	 *
 	 * @param str
 	 *            String to be written in the output stream
 	 * @throws IOException

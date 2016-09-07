@@ -19,10 +19,10 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.index.indices;
 
 /**
  * This class represents the data used by the ChronoIndex.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  */
 public class ChronoIndexData
 	implements Comparable<ChronoIndexData>
@@ -45,7 +45,7 @@ public class ChronoIndexData
 
 	/**
 	 * (Constructor) Creates a new ChronoInfo object.
-	 * 
+	 *
 	 * @param time
 	 *            Timestamp value
 	 * @param revisionCounter
@@ -60,7 +60,7 @@ public class ChronoIndexData
 
 	/**
 	 * Compares this ChronoInfo to the given info.
-	 * 
+	 *
 	 * @return a negative integer, zero, or a positive integer as this object is
 	 *         less than, equal to, or greater than the specified object.
 	 */
@@ -89,7 +89,7 @@ public class ChronoIndexData
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
@@ -109,7 +109,7 @@ public class ChronoIndexData
 
 	/**
 	 * Returns the index value.
-	 * 
+	 *
 	 * @return index value
 	 */
 	public int getIndex()
@@ -119,7 +119,7 @@ public class ChronoIndexData
 
 	/**
 	 * Returns the revision counter.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	public int getRevisionCounter()
@@ -129,7 +129,7 @@ public class ChronoIndexData
 
 	/**
 	 * Returns the timestamp value.
-	 * 
+	 *
 	 * @return timestamp value
 	 */
 	public long getTime()
@@ -139,7 +139,7 @@ public class ChronoIndexData
 
 	/**
 	 * Sets the index value.
-	 * 
+	 *
 	 * @param index
 	 *            index value
 	 */
@@ -150,7 +150,7 @@ public class ChronoIndexData
 
 	/**
 	 * Sets the sort flag.
-	 * 
+	 *
 	 * @param chronoSort
 	 *            TRUE for chronological sorting, FALSE for revision counter
 	 *            sorting

@@ -24,26 +24,26 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * The RevisionApi Interface describes the link to the diff encoding unit.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public interface RevisionEncoderInterface
 {
 
 	/**
 	 * Returns the textual encoding of the given Diff.
-	 * 
+	 *
 	 * @param codecData
 	 *            CodecData used to encode the diff-data
 	 * @param diff
 	 *            diff-data
 	 * @return base 64 encoded diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the CharacterSet defined in the configuration is not
 	 *             supported by JAVA.
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding process fails
 	 */
@@ -52,17 +52,17 @@ public interface RevisionEncoderInterface
 
 	/**
 	 * Returns the binary encoding of the given Diff.
-	 * 
+	 *
 	 * @param codecData
 	 *            CodecData used to encode the diff-data
 	 * @param diff
 	 *            diff-data
 	 * @return binary encoded diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the CharacterSet defined in the configuration is not
 	 *             supported by JAVA.
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the encoding process fails
 	 */

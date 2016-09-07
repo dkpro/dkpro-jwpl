@@ -22,18 +22,18 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.*;
 
 /**
  * Tutorial 1c
- * 
+ *
  * Get the text of a wikipedia article.
  * The text will be formatted with MediaWiki markup.
- * 
+ *
  * Handle exceptions.
- * 
+ *
  *
  */
 public class T1c_HelloWorld implements WikiConstants {
 
     public static void main(String[] args) {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -41,7 +41,7 @@ public class T1c_HelloWorld implements WikiConstants {
         dbConfig.setUser("USER");
         dbConfig.setPassword("PASSWORD");
         dbConfig.setLanguage(Language.german);
-        
+
         // Create a new German wikipedia.
         Wikipedia wiki = null;
         try {
@@ -51,7 +51,7 @@ public class T1c_HelloWorld implements WikiConstants {
             e1.printStackTrace();
             System.exit(1);
         }
-        
+
         // Get the page with title "Hello world".
         String title = "Hello world";
         try {

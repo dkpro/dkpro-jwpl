@@ -25,7 +25,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.tutorial.TestFile;
 /**
  * This Class shows how to use the HtmlTools.class...<br/>
  * Mainly, you can create an HtmlFile of a ParsedPage.
- * 
+ *
  */
 public class HtmlFileDemo {
 	
@@ -33,7 +33,7 @@ public class HtmlFileDemo {
 		
         // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
         String documentText = TestFile.getFileText();
-        
+
 		// set up an individually parametrized MediaWikiParser
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
 		pf.getImageIdentifers().add("Image");
@@ -43,7 +43,7 @@ public class HtmlFileDemo {
 		
         String outFileName = "htmlFileDemo.html";
 		HtmlWriter.writeFile(outFileName, "UTF8", HtmlWriter.parsedPageToHtml(pp));
-        
+
         System.out.println("Writing output to file: " + outFileName);
 	}
 }

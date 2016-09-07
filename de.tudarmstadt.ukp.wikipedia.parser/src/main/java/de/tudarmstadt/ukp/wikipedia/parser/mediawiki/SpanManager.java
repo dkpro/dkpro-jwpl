@@ -61,7 +61,7 @@ public class SpanManager implements CharSequence {
 	
 	/**
 	 * Retruns a SrcPos for the index of the aktual SpanManager base.
-	 * @return the Position the index has, when enableSrcPosCaulation() has been called, 
+	 * @return the Position the index has, when enableSrcPosCaulation() has been called,
 	 * or -1 if it is not possible.
 	 */
 	public int getSrcPos( int index ){
@@ -78,14 +78,14 @@ public class SpanManager implements CharSequence {
 	 * Adds a List of Spans, which should be managed.
 	 */
 	public void manageList( List<Span> spans ){ 	
-		managedLists.add( spans ); 
+		managedLists.add( spans );
 	}
 
 	/**
 	 * Removes a List of Spans (not the Spans in the List), which shouldn�t be managed anymore.
 	 * @param spans
 	 */
-	public void removeManagedList( List<Span> spans ){ 
+	public void removeManagedList( List<Span> spans ){
 		final Span listIdentifer = new Span(Integer.MAX_VALUE, Integer.MIN_VALUE);	
 		spans.add( listIdentifer );	
 		managedLists.remove( spans );
@@ -127,7 +127,7 @@ public class SpanManager implements CharSequence {
 	}
 	
 	/**
-	 * Replaces the content between s.getStart() (included) and s.getEnd() (excluded) with 
+	 * Replaces the content between s.getStart() (included) and s.getEnd() (excluded) with
 	 * a String
 	 */
 	public SpanManager replace(Span s, String str){	return replace( s.getStart(), s.getEnd(), str); }
@@ -171,7 +171,7 @@ public class SpanManager implements CharSequence {
 	    if (start > end) {
 	        return "";
 	    }
-	    
+	
 	    return sb.substring(start, end);
 	}
 	
@@ -194,8 +194,8 @@ public class SpanManager implements CharSequence {
 		return null;
 	}
 	
-	public int length(){ 
-		return sb.length(); 
+	public int length(){
+		return sb.length();
 	}
 	
 	public SpanManager setCharAt(int index, char c){
@@ -204,13 +204,13 @@ public class SpanManager implements CharSequence {
 		return this;
 	}
 	
-	public char charAt(int index){ 
-		return sb.charAt(index); 
+	public char charAt(int index){
+		return sb.charAt(index);
 	}
 	
 	@Override
-    public String toString(){ 
-		return sb.toString(); 
+    public String toString(){
+		return sb.toString();
 	}
 	
 	/**

@@ -22,18 +22,18 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * Tutorial 1b
- * 
+ *
  * Get the text of a wikipedia article.
  * The text will be formatted with MediaWiki markup.
- * 
+ *
  * If you do not care about exception handling, but want to avoid crashes on every page that does not exist.
- * 
+ *
  *
  */
 public class T1b_HelloWorld implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -41,7 +41,7 @@ public class T1b_HelloWorld implements WikiConstants {
         dbConfig.setUser("USER");
         dbConfig.setPassword("PASSWORD");
         dbConfig.setLanguage(Language.german);
-        
+
         // Create a new German wikipedia.
         Wikipedia wiki = new Wikipedia(dbConfig);
 

@@ -50,7 +50,7 @@ public class SelectiveAccessHandler {
 
 	enum CIT{ TEXT, BOLD, ITALIC, LINK };
 
-	enum SIT{ SUBS, TITLE, TABLE, DEFLIST, NESTLIST, PARA }; 
+	enum SIT{ SUBS, TITLE, TABLE, DEFLIST, NESTLIST, PARA };
 	
 	protected enum SectionType{ DEFAULT_SECTION, SECTION_LEVEL, USER_SECTION };
 	
@@ -277,9 +277,9 @@ public class SelectiveAccessHandler {
 		handleContent( s.getTitleElement(), hp.get( SIT.TITLE ), sb );
 		
 		if( s.getClass() == SectionContainer.class ){
-			if( hp.get( SIT.SUBS )!= null ) 
+			if( hp.get( SIT.SUBS )!= null )
 				handleContent( s, hp.get( SIT.SUBS ), sb );
-			else 
+			else
 				for( Section ss: ((SectionContainer)s).getSubSections() )
 					handleSection( ss, sb );
 		}

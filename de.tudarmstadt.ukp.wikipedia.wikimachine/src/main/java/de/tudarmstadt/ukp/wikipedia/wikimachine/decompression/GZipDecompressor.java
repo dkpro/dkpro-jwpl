@@ -25,8 +25,8 @@ import java.util.zip.GZIPInputStream;
 /**
  * GZip Decompressor (based on Singleton Design Pattern). Uses getInputStream to
  * set up the archive path and returns the InputStream to read from
- * 
- * 
+ *
+ *
  */
 public class GZipDecompressor implements IDecompressor {
 

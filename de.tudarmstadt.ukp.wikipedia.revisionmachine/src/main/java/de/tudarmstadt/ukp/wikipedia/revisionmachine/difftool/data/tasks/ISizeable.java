@@ -19,16 +19,16 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks;
 
 /**
  * This interface defines a method for size estimations.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public interface ISizeable
 {
 
 	/**
 	 * This method should return a size estimation of the data.
-	 * 
+	 *
 	 * @return size estimation in byte
 	 */
 	public long byteSize();

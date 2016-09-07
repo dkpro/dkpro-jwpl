@@ -23,12 +23,12 @@ import java.util.List;
 /**
  * This class represents a keyword tree and is used to process or to search a
  * character sequence.
- * 
+ *
  * This keyword tree can be used for overlapping keywords.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * @param <V>
  *            related value
  */
@@ -58,7 +58,7 @@ public class MultipleKeywordTree<V>
 
 	/**
 	 * Adds a keyword and its related value.
-	 * 
+	 *
 	 * @param s
 	 *            keyword
 	 * @param value
@@ -72,9 +72,9 @@ public class MultipleKeywordTree<V>
 	/**
 	 * Checks whether the character is related to one of the current nodes (the
 	 * root node is always a current node).
-	 * 
+	 *
 	 * After the comparison the list of current nodes will be replaced.
-	 * 
+	 *
 	 * @param c
 	 *            character
 	 * @return TRUE if successor nodes could be identified FALSE otherwise
@@ -117,7 +117,7 @@ public class MultipleKeywordTree<V>
 
 	/**
 	 * Returns the list of successor nodes.
-	 * 
+	 *
 	 * @return list of successor nodes
 	 */
 	public List<LetterNode<V>> getHits()

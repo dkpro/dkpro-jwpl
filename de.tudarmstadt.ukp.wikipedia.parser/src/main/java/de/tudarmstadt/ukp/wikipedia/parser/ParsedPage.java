@@ -39,9 +39,9 @@ public class ParsedPage{
 	/**
 	 * Constructor for a blank ParsedPage.<br>
      * Only needed, if you want to create a Wikipedia article from scratch.
-     * 
+     *
      * Creating a ParsedPage from a Wikipedia article requires to create a parser object first.
-     * 
+     *
 	 */
 	public ParsedPage(){
 		this.superSection = new SectionContainer(null,0);
@@ -59,8 +59,8 @@ public class ParsedPage{
      * The name of a parsed page.
 	 * @return The name of a parsed page.
 	 */
-	public String getName(){ 
-		return name; 
+	public String getName(){
+		return name;
 	}
 	
 	/**
@@ -100,12 +100,12 @@ public class ParsedPage{
      * This is a shortcut for writing getCategoryElemement.getLinks();
 	 * @return A list of category links.
 	 */
-	public List<Link> getCategories(){ 
+	public List<Link> getCategories(){
 		if (categories == null) {
             return new ArrayList<Link>();
 		}
 
-		return categories.getLinks(); 
+		return categories.getLinks();
 	}
 	
 	/**
@@ -153,23 +153,23 @@ public class ParsedPage{
 	 * Returns a list of language Link objects.
      * This is a shortcut for writing getLanguagesElement().getLinks();
 	 */
-	public List<Link> getLanguages(){ 
-		return languages.getLinks(); 
+	public List<Link> getLanguages(){
+		return languages.getLinks();
 	}
 	
 //// I do not think that this should be a core api method, as it is language and template dependend. (TZ)
 //	/**
 //	 * Returns a ContentElement with the Content of "Dieser Artikel" Template
 //	 */
-//	public ContentElement aboutArticle(){ 
-//		return aboutArticle; 
+//	public ContentElement aboutArticle(){
+//		return aboutArticle;
 //	}
 //
 //	/**
 //	 * See aboutArticle() for Details...
 //	 */
-//	public void setAboutArticle(ContentElement aboutArticle){ 
-//		this.aboutArticle = aboutArticle; 
+//	public void setAboutArticle(ContentElement aboutArticle){
+//		this.aboutArticle = aboutArticle;
 //	}
 
 
@@ -178,7 +178,7 @@ public class ParsedPage{
 	 * @param sections A list of sections.
 	 */
 	public void setSections( List<Section> sections ){
-		for( Section s: sections ) superSection.addSection(s); 
+		for( Section s: sections ) superSection.addSection(s);
 	}
 	
 	/**
@@ -186,8 +186,8 @@ public class ParsedPage{
 	 * This function is used to upgrade a SectionContainer to a ParsedPage.
 	 * @param s A sectionContainer.
 	 */
-	public void setSections( SectionContainer s ){ 
-		superSection = s; 
+	public void setSections( SectionContainer s ){
+		superSection = s;
 	}
 	
 // TODO What means lowest level? => TZ: I think it means "highest" semantically and "lowest" in numbering (e.g. <h1>).
@@ -196,8 +196,8 @@ public class ParsedPage{
 	 * @param i The number of the section.
 	 * @return The section with number i.
 	 */
-	public Section getSection(int i){ 
-		return superSection.getSubSection(i); 
+	public Section getSection(int i){
+		return superSection.getSubSection(i);
 	}
 	
 	/**
@@ -239,7 +239,7 @@ public class ParsedPage{
      * @return The number of tables.
      */
 	public int nrOfTables(){ return superSection.nrOfTables(); }
-    
+
     /**
      * Returns the table indicated by the parameter i.
      * @param i The number of the table to return.
@@ -297,7 +297,7 @@ public class ParsedPage{
 	 */
 	public String getText(){ return superSection.getText(); }
 
-//// TODO we should not need that as we could call getText on the span itself.    
+//// TODO we should not need that as we could call getText on the span itself.
 //    /**
 //	 * Look at the SAME function in SectionContainer for Details...
 //	 */
@@ -309,34 +309,34 @@ public class ParsedPage{
      * @return The length of the text in characters.
      */
     public int length(){ return superSection.length(); }
-    
-    public List<FormatType> getFormats(){ return superSection.getFormats(); }   
 
-////I do not know what these are for and they are never used (TZ).    
-//    public List<FormatType> getFormats(int begin, int end){ return superSection.getFormats(begin,end); }  
+    public List<FormatType> getFormats(){ return superSection.getFormats(); }
+
+////I do not know what these are for and they are never used (TZ).
+//    public List<FormatType> getFormats(int begin, int end){ return superSection.getFormats(begin,end); }
 //    public List<FormatType> getFormats(Span s){ return superSection.getFormats(s); }
 
     public List<Span> getFormatSpans(FormatType t){ return superSection.getFormatSpans(t); }
-    
-////I do not know what these are for and they are never used (TZ).    
+
+////I do not know what these are for and they are never used (TZ).
 //    public List<Span> getFormatSpans(FormatType t, int start, int end ){ return superSection.getFormatSpans(t, start, end); }
 //    public List<Span> getFormatSpans(FormatType t, Span s){ return superSection.getFormatSpans(t, s); }
 	
 
     public List<Link> getLinks(){ return superSection.getLinks(); }
 
-////I do not know what these are for and they are never used (TZ).    
+////I do not know what these are for and they are never used (TZ).
 //  public List<Link> getLinks(Link.type t){ return superSection.getLinks(t); }	
 //	public List<Link> getLinks(Link.type t, int begin, int end){ return superSection.getLinks(t, begin, end); }	
 //	public List<Link> getLinks(Link.type t, Span s){ return superSection.getLinks(t, s); }		
-    
+
 	/**
      * Returns a list of templates that are used in the page.
 	 * @return A list of templates that are used in the page.
 	 */
 	public List<Template> getTemplates(){ return superSection.getTemplates(); }
 
-//// I do not know what these are for and they are never used (TZ).    
+//// I do not know what these are for and they are never used (TZ).
 //	public List<Template> getTemplates(int start, int end){ return superSection.getTemplates(start, end); }
 //	public List<Template> getTemplates(Span s){ return superSection.getTemplates(s); }
 }

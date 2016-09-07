@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util;
 
 /**
  * This utitly class contains some surrogate related methods.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class Surrogates
 {
@@ -34,7 +34,7 @@ public class Surrogates
 	/**
 	 * Returns whether a surrogate character was contained in the specified
 	 * input.
-	 * 
+	 *
 	 * @param input
 	 *            input
 	 * @return if a surrogate character was contained or not
@@ -57,7 +57,7 @@ public class Surrogates
 
 	/**
 	 * Replaces all surrogates characters with '?'.
-	 * 
+	 *
 	 * @param input
 	 *            input
 	 * @return input with '?' instead of surrogates characters

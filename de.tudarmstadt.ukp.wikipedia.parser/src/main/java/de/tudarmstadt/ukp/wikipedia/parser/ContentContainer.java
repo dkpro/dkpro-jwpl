@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * A ContentContainer is used to combine more than one Content element (not only
  * ContentElement.class!) in a new Content element.<br/>
- * For a description of the Functions of the Content Interface, take a look at 
+ * For a description of the Functions of the Content Interface, take a look at
  * the Content.class documentation.<br/>
  *
  */
@@ -32,7 +32,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	protected List<Content> ccl;
 	
 	public boolean empty(){	
-		return ccl.size() == 0; 
+		return ccl.size() == 0;
 	}
 	
 	public String getText(){
@@ -60,7 +60,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 		result.deleteCharAt( result.length()-1 );
 		return result.toString();
 	}
-	 
+	
 	public int length(){
 		int length = 0;
 		
@@ -95,7 +95,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 		return getFormatSpans(t, new Span( start, end ) );
 	}
 	
-	public List<Span> getFormatSpans(FormatType t, Span s){ 
+	public List<Span> getFormatSpans(FormatType t, Span s){
 		List<Span> result = new ArrayList<Span>();
 		
 		Span a = new Span( -1, -1 );
@@ -105,7 +105,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 			a = new Span( offset, offset+ c.length() );
 			
 			if( a.hits(s) ){
-				for( Span b: c.getFormatSpans( t, s.clone().adjust( -offset ) ) ) 
+				for( Span b: c.getFormatSpans( t, s.clone().adjust( -offset ) ) )
 					result.add( b.clone().adjust( offset ) );
 			}
 		}	
@@ -222,7 +222,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 			a = new Span( offset, offset+ c.length() );
 			
 			if( a.hits(s) )
-				result.addAll( c.getLinks( linkType, s.clone().adjust( -offset ) ) ); 
+				result.addAll( c.getLinks( linkType, s.clone().adjust( -offset ) ) );
 		}	
 		return result;
 	}
@@ -241,11 +241,11 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 		return result;
 	}
 	
-	public List<Template> getTemplates(int start, int end){ 
+	public List<Template> getTemplates(int start, int end){
 		return getTemplates( new Span(start, end ));
 	}
 	
-	public List<Template> getTemplates(Span s){ 
+	public List<Template> getTemplates(Span s){
 		List<Template> result = new ArrayList<Template>();
 		
 		Span a = new Span( -1, -1 );
@@ -255,7 +255,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 			a = new Span( offset, offset+ c.length() );
 			
 			if( a.hits(s) )
-				result.addAll( c.getTemplates( s.clone().adjust( -offset ) ) ); 
+				result.addAll( c.getTemplates( s.clone().adjust( -offset ) ) );
 		}	
 		return result;
 	}

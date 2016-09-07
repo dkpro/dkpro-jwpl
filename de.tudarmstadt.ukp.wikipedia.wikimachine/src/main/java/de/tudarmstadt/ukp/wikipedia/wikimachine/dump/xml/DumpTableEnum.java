@@ -24,8 +24,8 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
  * <li>REVISION</li>
  * <li>TEXT</li>
  * </ul>
- * 
- * 
+ *
+ *
  */
 public enum DumpTableEnum {
 	PAGE, REVISION, TEXT

@@ -33,9 +33,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 /**
  * The BlockManagement class is used to calculate the diff operations using the
  * blocks of the longest common substring search.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class BlockManagement
 	implements BlockManagementInterface
@@ -58,7 +58,7 @@ public class BlockManagement
 
 	/**
 	 * (Constructor) Creates a BlockManagement object.
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 */
@@ -74,7 +74,7 @@ public class BlockManagement
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see de.tudarmstadt.ukp.kulessa.delta.consumers.diff.calculation.
 	 * BlockManagementInterface#manage(char[], char[], java.util.ArrayList,
 	 * java.util.ArrayList)
@@ -184,7 +184,7 @@ public class BlockManagement
 
 	/**
 	 * Copies the specified interval of characters for the array.
-	 * 
+	 *
 	 * @return specified interval
 	 */
 	private String copy(final char[] array, final int start, final int end)
@@ -199,12 +199,12 @@ public class BlockManagement
 
 	/**
 	 * Creates an insert operation.
-	 * 
+	 *
 	 * @param revB
 	 *            revision B
 	 * @param curB
 	 *            Reference to the block B
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */
@@ -232,10 +232,10 @@ public class BlockManagement
 
 	/**
 	 * Creates a delete operation.
-	 * 
+	 *
 	 * @param curA
 	 *            Reference to the block A
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */
@@ -258,7 +258,7 @@ public class BlockManagement
 
 	/**
 	 * Creates a replace operation.
-	 * 
+	 *
 	 * @param revA
 	 *            Reference to revision A
 	 * @param revB
@@ -267,7 +267,7 @@ public class BlockManagement
 	 *            Reference to current block A
 	 * @param curB
 	 *            Reference to current block B
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */
@@ -300,7 +300,7 @@ public class BlockManagement
 
 	/**
 	 * Creates a cut operation.
-	 * 
+	 *
 	 * @param revA
 	 *            Reference to revision A
 	 * @param curA
@@ -333,7 +333,7 @@ public class BlockManagement
 
 	/**
 	 * Creates a paste operation.
-	 * 
+	 *
 	 * @param curB
 	 *            Reference to current block B
 	 */

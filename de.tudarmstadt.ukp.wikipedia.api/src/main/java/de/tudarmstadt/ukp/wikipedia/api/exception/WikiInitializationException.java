@@ -29,15 +29,15 @@ public class WikiInitializationException extends WikiApiException {
     public WikiInitializationException() {
         super();
     }
-    
+
     public WikiInitializationException(String txt) {
         super(txt);
     }
-    
+
     public WikiInitializationException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public WikiInitializationException(Throwable cause) {
         super(cause);
     }

@@ -61,7 +61,7 @@ public class ProgressFilter extends PageFilter {
 	/**
 	 * If we didn't just show a progress report on the last revision,
 	 * show the final results.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void writeEndWiki() throws IOException {
 		super.writeEndWiki();

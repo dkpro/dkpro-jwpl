@@ -19,7 +19,7 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 
 
 /**
- * Thrown when an exceptional situation occurs during parsing a page title to create a Title object. 
+ * Thrown when an exceptional situation occurs during parsing a page title to create a Title object.
  *
  */
 public class WikiTitleParsingException extends WikiApiException {
@@ -29,15 +29,15 @@ public class WikiTitleParsingException extends WikiApiException {
     public WikiTitleParsingException() {
         super();
     }
-    
+
     public WikiTitleParsingException(String txt) {
         super(txt);
     }
-    
+
     public WikiTitleParsingException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public WikiTitleParsingException(Throwable cause) {
         super(cause);
     }

@@ -24,9 +24,9 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * This object represents a xml file filter.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class XMLFileChooser

@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the Simple implementation of the Content Inteface, and is used 
+ * This is the Simple implementation of the Content Inteface, and is used
  * for nearly all content containing classes...
- * 
+ *
  * Be aware, that all retured Spans refer to the String returned by getText()<br/>
  *
  */
@@ -52,15 +52,15 @@ public class ContentElement extends ParsedPageObject implements Content {
 	/**
 	 * Look at getText() for Details...
 	 */
-	public void setText(String text){ 
-		this.text = text; 
+	public void setText(String text){
+		this.text = text;
 	}
 	
 	/**
 	 * Returns the Text on wich all elements of this ContentElement are bases on.
 	 */
-	public String getText(){ 
-		return text; 
+	public String getText(){
+		return text;
 	}
 	
 	/**
@@ -81,17 +81,17 @@ public class ContentElement extends ParsedPageObject implements Content {
 	/**
 	 * Retruns the length of the Text. Alternativ you can use getText().length()
 	 */
-	public int length(){ 
-		return text.length(); 
+	public int length(){
+		return text.length();
 	}
 	
 	/**
 	 * Returns true if there is no Content in this ContentElement.
 	 */
 	public boolean empty(){
-		return 
-			text.length() == 0 && 
-			links.size() == 0 && 
+		return
+			text.length() == 0 &&
+			links.size() == 0 &&
 			templates.size() == 0 &&
 			tags.size() == 0 &&
 			mathSpans.size() == 0;	
@@ -197,7 +197,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 		this.links = links;
 	}
 	
-	/** 
+	/**
 	 * Retruns a List of the Links of this ContentElement
 	 */
 	public List<Link> getLinks(){

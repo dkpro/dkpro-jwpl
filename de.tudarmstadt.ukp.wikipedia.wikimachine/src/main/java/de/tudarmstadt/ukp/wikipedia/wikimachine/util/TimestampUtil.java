@@ -39,7 +39,7 @@ public abstract class TimestampUtil {
 		return new Timestamp(time);
 	}
 	
-	//         0123456789012345678 
+	//         0123456789012345678
 	//example: 1970-01-04 18:11:40.0 to 19700104181140
 	public static String toMediaWikiString(Timestamp timestamp){
 		String original = timestamp.toString();

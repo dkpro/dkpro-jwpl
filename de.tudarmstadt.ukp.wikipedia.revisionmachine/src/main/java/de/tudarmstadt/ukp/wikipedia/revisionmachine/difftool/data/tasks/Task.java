@@ -24,10 +24,10 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.Art
 
 /**
  * The task class contains the information of a task.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * @param <D>
  *            Class of data the task contains
  */
@@ -40,7 +40,7 @@ public class Task<D>
 
 	/**
 	 * Creates a dummy task without data.
-	 * 
+	 *
 	 * @return dummy task
 	 */
 	@SuppressWarnings("rawtypes")
@@ -51,7 +51,7 @@ public class Task<D>
 
 	/**
 	 * Creates an end task.
-	 * 
+	 *
 	 * @return end task
 	 */
 	@SuppressWarnings("rawtypes")
@@ -62,7 +62,7 @@ public class Task<D>
 
 	/**
 	 * Creates a banned task.
-	 * 
+	 *
 	 * @return banned task
 	 */
 	@SuppressWarnings("rawtypes")
@@ -92,7 +92,7 @@ public class Task<D>
 
 	/**
 	 * Constructor - A new task object of the specified type will be created.
-	 * 
+	 *
 	 * @param taskType
 	 *            Type of task
 	 */
@@ -107,7 +107,7 @@ public class Task<D>
 
 	/**
 	 * Constructor - A new task object of the type TASK_FULL will be created.
-	 * 
+	 *
 	 * @param header
 	 *            reference to the article information
 	 * @param taskPartCounter
@@ -138,7 +138,7 @@ public class Task<D>
 
 	/**
 	 * Returns the type of this task.
-	 * 
+	 *
 	 * @return TaskType
 	 */
 	public TaskTypes getTaskType()
@@ -148,7 +148,7 @@ public class Task<D>
 
 	/**
 	 * Adds data to this task.
-	 * 
+	 *
 	 * @param data
 	 *            Reference to the data object.
 	 */
@@ -164,7 +164,7 @@ public class Task<D>
 
 	/**
 	 * Returns the data of this task.
-	 * 
+	 *
 	 * @return data
 	 */
 	public ArrayList<D> getContainer()
@@ -174,11 +174,11 @@ public class Task<D>
 
 	/**
 	 * Returns the data at the specified index.
-	 * 
+	 *
 	 * The index will not be check whether it is out of range or not. If you do
 	 * not know the appropriate index call the size() method before calling this
 	 * method.
-	 * 
+	 *
 	 * @param index
 	 *            index
 	 * @return data
@@ -190,7 +190,7 @@ public class Task<D>
 
 	/**
 	 * Returns the number of data parts the task contains.
-	 * 
+	 *
 	 * @return number of data parts.
 	 */
 	public int size()
@@ -200,7 +200,7 @@ public class Task<D>
 
 	/**
 	 * Returns an iterator over the data.
-	 * 
+	 *
 	 * @return Iterator
 	 */
 	public Iterator<D> iterator()
@@ -210,10 +210,10 @@ public class Task<D>
 
 	/**
 	 * Returns the size estimation of this task in bytes.
-	 * 
+	 *
 	 * The size can only be estimated if the data contains the ISizeable
 	 * interface.
-	 * 
+	 *
 	 * @return size estimation
 	 */
 	public int byteSize()
@@ -223,7 +223,7 @@ public class Task<D>
 
 	/**
 	 * Returns the type of the task.
-	 * 
+	 *
 	 * @param taskType
 	 *            TaskType
 	 */
@@ -234,7 +234,7 @@ public class Task<D>
 
 	/**
 	 * Returns the part counter.
-	 * 
+	 *
 	 * @return Part counter
 	 */
 	public int getPartCounter()
@@ -245,7 +245,7 @@ public class Task<D>
 	/**
 	 * Returns an unique task identifier consisting of article id and part
 	 * counter.
-	 * 
+	 *
 	 * @return unique task identifier
 	 */
 	public String uniqueIdentifier()
@@ -259,7 +259,7 @@ public class Task<D>
 
 	/**
 	 * Returns a string representation of the task.
-	 * 
+	 *
 	 * @return string representation
 	 */
 	@Override

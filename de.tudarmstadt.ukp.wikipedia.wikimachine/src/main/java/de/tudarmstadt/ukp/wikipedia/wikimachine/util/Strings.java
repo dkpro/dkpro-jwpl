@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 /**
  * Utilities for Strings.
- * 
+ *
  */
 public abstract class Strings {
 
@@ -62,7 +62,7 @@ public abstract class Strings {
 	
 	/**
 	 * Uppercases the first character of a string.
-	 * 
+	 *
 	 * @param s
 	 *            a string to capitalize
 	 * @return a capitalized version of the string

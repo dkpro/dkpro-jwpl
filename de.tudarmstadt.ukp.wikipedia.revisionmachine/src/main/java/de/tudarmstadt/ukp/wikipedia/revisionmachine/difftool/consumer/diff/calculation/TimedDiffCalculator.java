@@ -31,9 +31,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.Art
 
 /**
  * Calculates the Diff while collecting statistical data.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class TimedDiffCalculator
 	extends DiffCalculator
@@ -59,10 +59,10 @@ public class TimedDiffCalculator
 
 	/**
 	 * (Constructor) Creates a new DiffCalculator object.
-	 * 
+	 *
 	 * @param taskTransmitter
 	 *            Reference to the TaskTransmitter
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurred while accessing the configuration
 	 */
@@ -76,7 +76,7 @@ public class TimedDiffCalculator
 
 	/**
 	 * Initializes the processing of a new RevisionTask.
-	 * 
+	 *
 	 * @param taskID
 	 *            Article ID
 	 */
@@ -96,10 +96,10 @@ public class TimedDiffCalculator
 
 	/**
 	 * Transmits a partial DiffTask.
-	 * 
+	 *
 	 * @param result
 	 *            Reference to the DiffTask
-	 * 
+	 *
 	 * @throws TimeoutException
 	 *             if a timeout occurred
 	 */
@@ -117,12 +117,12 @@ public class TimedDiffCalculator
 
 	/**
 	 * Transmits the DiffTask at the end of the RevisionTask processing.
-	 * 
+	 *
 	 * @param task
 	 *            Reference to the RevisionTask
 	 * @param result
 	 *            Reference to the DiffTask
-	 * 
+	 *
 	 * @throws TimeoutException
 	 *             if a timeout occurred
 	 */
@@ -152,11 +152,11 @@ public class TimedDiffCalculator
 
 	/**
 	 * Calculates the diff for the given revision.
-	 * 
+	 *
 	 * @param revision
 	 *            Reference to a revision
 	 * @return Diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */
@@ -180,7 +180,7 @@ public class TimedDiffCalculator
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see
 	 * de.tud.ukp.kulessa.delta.consumers.diff.calculation.DiffCalculatorInterface
 	 * #process(de.tud.ukp.kulessa.delta.data.Task)

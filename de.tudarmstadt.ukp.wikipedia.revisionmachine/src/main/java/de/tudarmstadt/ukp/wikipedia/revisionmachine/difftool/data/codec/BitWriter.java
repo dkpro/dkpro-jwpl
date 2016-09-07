@@ -26,9 +26,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorKeys;
 /**
  * The BitWriter buffers bit that will be written byte-by-byte to an output
  * stream.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class BitWriter
 {
@@ -44,7 +44,7 @@ public class BitWriter
 
 	/**
 	 * Constructor Creates a BitWriter with a byte buffer of the given length.
-	 * 
+	 *
 	 * @param length
 	 *            Length of the byte buffer
 	 */
@@ -63,10 +63,10 @@ public class BitWriter
 
 	/**
 	 * Writes a byte to the buffer.
-	 * 
+	 *
 	 * @param val
 	 *            an integer representing a full byte
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the value is out range
 	 */
@@ -85,7 +85,7 @@ public class BitWriter
 
 	/**
 	 * Writes a single bit to the buffer.
-	 * 
+	 *
 	 * @param bit
 	 *            0 or 1
 	 * @throws EncodingException
@@ -115,12 +115,12 @@ public class BitWriter
 
 	/**
 	 * Writes a positive integer to the buffer.
-	 * 
+	 *
 	 * @param length
 	 *            the number of bits to write
 	 * @param value
 	 *            an integer value
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the length of the input is more than 31 bits.
 	 */
@@ -141,10 +141,10 @@ public class BitWriter
 	/**
 	 * Writes the byte array to the buffer. The currently used buffer will be
 	 * filled with zero bits before is is written in front of the byte-array.
-	 * 
+	 *
 	 * @param bText
 	 *            byte array
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the writing fails
 	 */
@@ -163,7 +163,7 @@ public class BitWriter
 	/**
 	 * The currently used buffer will be filled with zero bits before is is
 	 * written in the buffer.
-	 * 
+	 *
 	 * @throws EncodingException
 	 *             if the writing fails
 	 */
@@ -180,7 +180,7 @@ public class BitWriter
 
 	/**
 	 * Returns the content of the buffer as byte-array.
-	 * 
+	 *
 	 * @return byte-array
 	 */
 	public byte[] toByteArray()

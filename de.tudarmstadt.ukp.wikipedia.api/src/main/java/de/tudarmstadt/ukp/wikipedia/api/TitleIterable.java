@@ -27,15 +27,15 @@ import java.util.Iterator;
 public class TitleIterable implements Iterable<Title> {
 
     private Wikipedia wiki;
-    
-    /** 
+
+    /**
      * The size of the title buffer.
      * With bufferSize = 1, a database connection is needed for retrieving a single title.
      * Higher bufferSize gives better performance, but needs memory.
-     * Initialize it with 5000. 
+     * Initialize it with 5000.
      */
     private int bufferSize = 5000;
-    
+
     public TitleIterable(Wikipedia wiki) {
         this.wiki = wiki;
     }
@@ -48,7 +48,7 @@ public class TitleIterable implements Iterable<Title> {
     public Iterator<Title> iterator() {
         return new TitleIterator(wiki, bufferSize);
     }
-}    
+}
 
 
 

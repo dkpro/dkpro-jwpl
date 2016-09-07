@@ -42,11 +42,11 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
  * The transformation produces .txt files for the different tables<br>
  * in the JWPL database.<br>
  * <br>
- * 
+ *
  * Adopted to IDumpVersion by Galkin
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class SingleDumpVersionOriginal implements IDumpVersion {
 
@@ -100,7 +100,7 @@ public class SingleDumpVersionOriginal implements IDumpVersion {
 	 * Returns the String value of the bit 1 if the given boolean is true<br>
 	 * and an empty String otherwise. This the way bit values are written<br>
 	 * in .txt dump files.
-	 * 
+	 *
 	 * @param b
 	 * @return
 	 */

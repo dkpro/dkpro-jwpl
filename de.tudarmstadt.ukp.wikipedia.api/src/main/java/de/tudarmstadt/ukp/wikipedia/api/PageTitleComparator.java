@@ -26,7 +26,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
  *
  */
 public class PageTitleComparator implements Comparator<Page> {
-        
+
     public int compare(Page o1, Page o2) {
 
         int retVal = 0;

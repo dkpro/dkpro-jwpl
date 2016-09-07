@@ -31,7 +31,7 @@ public abstract class RevisionParser {
 
 	/**
 	 * Create a parser from an input stream
-	 * 
+	 *
 		 * @param inputStream
 	 */
 	public void setInputStream(InputStream inputStream){
@@ -56,7 +56,7 @@ public abstract class RevisionParser {
 
 	/**
 	 * Returns true if the table has more rows.
-	 * 
+	 *
 	 * @return
 	 * @throws IOException
 	 */

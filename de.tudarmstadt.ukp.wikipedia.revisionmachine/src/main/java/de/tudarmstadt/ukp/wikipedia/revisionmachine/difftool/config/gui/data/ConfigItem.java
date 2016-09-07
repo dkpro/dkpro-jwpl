@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data;
 
 /**
  * This class represents configuration verfication messages.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class ConfigItem
 {
@@ -37,7 +37,7 @@ public class ConfigItem
 
 	/**
 	 * (Constructor) Creates a new ConfigItem
-	 * 
+	 *
 	 * @param type
 	 *            Type of message
 	 * @param key
@@ -56,7 +56,7 @@ public class ConfigItem
 
 	/**
 	 * Returns the type of error.
-	 * 
+	 *
 	 * @return type of error
 	 */
 	public ConfigErrorKeys getKey()
@@ -66,7 +66,7 @@ public class ConfigItem
 
 	/**
 	 * Returns the message.
-	 * 
+	 *
 	 * @return message
 	 */
 	public String getMessage()
@@ -76,7 +76,7 @@ public class ConfigItem
 
 	/**
 	 * Returns the item type.
-	 * 
+	 *
 	 * @return item type
 	 */
 	public ConfigItemTypes getType()

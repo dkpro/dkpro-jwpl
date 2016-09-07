@@ -23,8 +23,8 @@ import java.io.InputStream;
 /**
  * The main interface for all Decompressors, which uses a archive file path and
  * returns a InputStream
- * 
- * 
+ *
+ *
  */
 public interface IDecompressor {
 

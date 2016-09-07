@@ -63,7 +63,7 @@ public class TableElement extends ContentContainer{
 	
 	public SectionContainer getSectionContainer(){ return s; }
 
-	public String toString(){ 
-		return "TABLE_DATA: \n"+  s.toString(); 
+	public String toString(){
+		return "TABLE_DATA: \n"+  s.toString();
 	}
 }

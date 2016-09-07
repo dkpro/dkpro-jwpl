@@ -20,13 +20,13 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.codec;
 /**
  * The RevisionCodecData class contains all necessary information to encode the
  * diff information.
- * 
+ *
  * Block C 3bit operation value Block S start position Block E length (end
  * position = start position + length) Block B block id Block L length of the t
  * block Block T block containing L bytes data
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class RevisionCodecData
 {
@@ -78,7 +78,7 @@ public class RevisionCodecData
 
 	/**
 	 * Gathers the information about an s block.
-	 * 
+	 *
 	 * @param value
 	 *            start position
 	 */
@@ -93,7 +93,7 @@ public class RevisionCodecData
 
 	/**
 	 * Gathers the information about an e block.
-	 * 
+	 *
 	 * @param value
 	 *            length of the diff-block
 	 */
@@ -107,7 +107,7 @@ public class RevisionCodecData
 
 	/**
 	 * Gathers the information about an b block.
-	 * 
+	 *
 	 * @param value
 	 *            block id
 	 */
@@ -121,7 +121,7 @@ public class RevisionCodecData
 
 	/**
 	 * Gathers the information about an l block.
-	 * 
+	 *
 	 * @param value
 	 *            length of the text block
 	 */
@@ -138,7 +138,7 @@ public class RevisionCodecData
 	 * Converts the input information into their log2 values. If an operation is
 	 * contained in the diff, the minimum number of bits used to encode this
 	 * block is 1 byte.
-	 * 
+	 *
 	 * @return number of bytes needed to encode the associated diff
 	 */
 	public int totalSizeInBits()
@@ -194,7 +194,7 @@ public class RevisionCodecData
 	/**
 	 * Returns the number of bits used to encode a B block. This method is
 	 * intended to used after the conversion.
-	 * 
+	 *
 	 * @return block bit-length
 	 */
 	public int getBlocksizeB()
@@ -205,7 +205,7 @@ public class RevisionCodecData
 	/**
 	 * Returns the number of bits used to encode a E block. This method is
 	 * intended to used after the conversion.
-	 * 
+	 *
 	 * @return block bit-length
 	 */
 	public int getBlocksizeE()
@@ -216,7 +216,7 @@ public class RevisionCodecData
 	/**
 	 * Returns the number of bits used to encode a L block. This method is
 	 * intended to used after the conversion.
-	 * 
+	 *
 	 * @return block bit-length
 	 */
 	public int getBlocksizeL()
@@ -227,7 +227,7 @@ public class RevisionCodecData
 	/**
 	 * Returns the number of bits used to encode a S block. This method is
 	 * intended to used after the conversion.
-	 * 
+	 *
 	 * @return block bit-length
 	 */
 	public int getBlocksizeS()
@@ -237,7 +237,7 @@ public class RevisionCodecData
 
 	/**
 	 * String representation of the revision codec data.
-	 * 
+	 *
 	 * @return string representation
 	 */
 	public String toString()
@@ -248,7 +248,7 @@ public class RevisionCodecData
 
 	/**
 	 * Whether the information has already converted to the log2 basis or not.
-	 * 
+	 *
 	 * @return conversion information
 	 */
 	public boolean isConverted()

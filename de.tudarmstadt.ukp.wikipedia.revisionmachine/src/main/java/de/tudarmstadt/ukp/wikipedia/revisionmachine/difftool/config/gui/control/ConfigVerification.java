@@ -28,9 +28,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.Con
 /**
  * This class contains the list of error or warning messages that have been
  * generated during the verification of the configuration settings.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class ConfigVerification
@@ -59,7 +59,7 @@ public class ConfigVerification
 
 	/**
 	 * Adds a configuration item to the list.
-	 * 
+	 *
 	 * @param item
 	 *            configuration item
 	 */
@@ -71,7 +71,7 @@ public class ConfigVerification
 
 	/**
 	 * Returns the name of the column with the index col.
-	 * 
+	 *
 	 * @return column name of the specified column.
 	 */
 	@Override
@@ -82,7 +82,7 @@ public class ConfigVerification
 
 	/**
 	 * Returns the number of columns.
-	 * 
+	 *
 	 * @return number of columns
 	 */
 	@Override
@@ -93,7 +93,7 @@ public class ConfigVerification
 
 	/**
 	 * Returns the number of rows.
-	 * 
+	 *
 	 * @return number of rows
 	 */
 	@Override
@@ -104,7 +104,7 @@ public class ConfigVerification
 
 	/**
 	 * Returns the value at the specified column of the specified row.
-	 * 
+	 *
 	 * @return value
 	 */
 	@Override
@@ -127,7 +127,7 @@ public class ConfigVerification
 	/**
 	 * Returns whether the configuration item list contains an error message or
 	 * not.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean hasFailed()

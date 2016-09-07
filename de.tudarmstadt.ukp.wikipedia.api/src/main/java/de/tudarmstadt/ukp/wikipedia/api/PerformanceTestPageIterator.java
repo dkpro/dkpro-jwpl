@@ -25,11 +25,11 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 /**
  * This is a test class for the version of PageIterator, that buffers a
  * certain number of pages in order to gain efficiency.
- * We get the same number of pages from a Wikipedia using 
+ * We get the same number of pages from a Wikipedia using
  * different buffer sizes and return the performance.
  *
  * For an unbuffered iterator set bufferSize to 1.
- * 
+ *
  */
 public class PerformanceTestPageIterator {
 

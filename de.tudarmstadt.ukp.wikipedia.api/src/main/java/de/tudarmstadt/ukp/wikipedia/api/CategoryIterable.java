@@ -27,15 +27,15 @@ import java.util.Iterator;
 public class CategoryIterable implements Iterable<Category> {
 
     private Wikipedia wiki;
-    
-    /** 
+
+    /**
      * The size of the page buffer.
      * With bufferSize = 1, a database connection is needed for retrieving a single article.
      * Higher bufferSize gives better performance, but needs memory.
-     * Initialize it with 500. 
+     * Initialize it with 500.
      */
     private int bufferSize = 500;
-    
+
     public CategoryIterable(Wikipedia wiki) {
         this.wiki = wiki;
     }
@@ -48,7 +48,7 @@ public class CategoryIterable implements Iterable<Category> {
     public Iterator<Category> iterator() {
         return new CategoryIterator(wiki, bufferSize);
     }
-}    
+}
 
 
 

@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 
 /**
  * This utility class contains method two create exceptions.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public final class ErrorFactory
 {
@@ -37,7 +37,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a RuntimeException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return RuntimeException
@@ -55,7 +55,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a ArticleReaderException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return ArticleReaderException
@@ -73,7 +73,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a ConfigurationException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return ConfigurationException
@@ -87,7 +87,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a ConfigurationException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -108,7 +108,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a TimeoutException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param sleepPeriod
@@ -129,7 +129,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a LoggingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return LoggingException
@@ -143,7 +143,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a LoggingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param e
@@ -163,7 +163,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a DiffException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -179,7 +179,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a DiffException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -201,7 +201,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates an EncodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return EncodingException
@@ -215,7 +215,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates an EncodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -231,7 +231,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates an EncodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -253,7 +253,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a DecodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @return DecodingException
@@ -267,7 +267,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a DecodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -283,7 +283,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a DecodingException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -306,7 +306,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a SQLConsumerException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param e
@@ -322,7 +322,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a SQLConsumerException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message
@@ -338,7 +338,7 @@ public final class ErrorFactory
 
 	/**
 	 * Creates a SQLConsumerException object.
-	 * 
+	 *
 	 * @param errorId
 	 *            reference to the error identifier
 	 * @param message

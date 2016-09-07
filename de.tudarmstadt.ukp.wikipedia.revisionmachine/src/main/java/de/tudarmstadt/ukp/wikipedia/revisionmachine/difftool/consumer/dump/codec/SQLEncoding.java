@@ -22,9 +22,9 @@ import java.util.List;
 
 /**
  * This class is used to stored the sql statements.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class SQLEncoding
 {
@@ -50,7 +50,7 @@ public class SQLEncoding
 
 	/**
 	 * Appends textual content to the query.
-	 * 
+	 *
 	 * @param seq
 	 *            textual content
 	 */
@@ -61,7 +61,7 @@ public class SQLEncoding
 
 	/**
 	 * Appends binary data to storage.
-	 * 
+	 *
 	 * @param bData
 	 *            binary data
 	 */
@@ -73,7 +73,7 @@ public class SQLEncoding
 
 	/**
 	 * Returns the size of the query.
-	 * 
+	 *
 	 * @return size of the query
 	 */
 	public int byteSize()
@@ -83,7 +83,7 @@ public class SQLEncoding
 
 	/**
 	 * Returns the number of contained binary data parts.
-	 * 
+	 *
 	 * @return number of binary data parts
 	 */
 	public int size()
@@ -93,7 +93,7 @@ public class SQLEncoding
 
 	/**
 	 * Returns the specified binary data.
-	 * 
+	 *
 	 * @param index
 	 *            index of the binary data
 	 * @return binary data
@@ -105,7 +105,7 @@ public class SQLEncoding
 
 	/**
 	 * Returns the query.
-	 * 
+	 *
 	 * @return query
 	 */
 	public String getQuery()
@@ -115,7 +115,7 @@ public class SQLEncoding
 
 	/**
 	 * Returns the string representation of this object.
-	 * 
+	 *
 	 * @return string representation
 	 */
 	public String toString()

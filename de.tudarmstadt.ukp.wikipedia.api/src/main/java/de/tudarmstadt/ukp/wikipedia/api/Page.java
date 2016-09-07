@@ -183,7 +183,7 @@ public class Page
             throw new WikiPageNotFoundException("No page with page id " + pageID + " was found.");
         }
 	}
- 
+
 	/**
 	 * CAUTION: Only returns 1 result, even if several results are possible.
 	 *
@@ -217,7 +217,7 @@ public class Page
                 	//we have to give up here or we end up in an infinite loop.
                 	
                 	//reasons for this happening might be several entries in PageMapLine with the same name but different upper/lower case variants
-                	//if the database does not allow case sensitive queries, then the API will always retrieve only the first result and if this is a redirect to a different writing variant, we are stuck in a loop. 
+                	//if the database does not allow case sensitive queries, then the API will always retrieve only the first result and if this is a redirect to a different writing variant, we are stuck in a loop.
                 	//To fix this, either a case sensitive collation should be used or the API should be able to deal with set valued results and pick the correct one from the set.
                 	//For now, we gracefully return without retrieving the Talk page for this article and throw an appropriate excption.
         			throw new WikiPageNotFoundException("No discussion page with name " + searchString + " could be retrieved. This is most likely due to multiple writing variants of the same page in the database");                	

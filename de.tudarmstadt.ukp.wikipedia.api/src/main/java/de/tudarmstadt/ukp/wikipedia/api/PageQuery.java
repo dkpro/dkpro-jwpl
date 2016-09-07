@@ -29,10 +29,10 @@ public class PageQuery implements WikiConstants {
 
     /** Whether only disambiguation pages should be retrieved. */
     private boolean onlyDisambiguationPages;
-    
+
     /** A MySql regular expression style titlePattern for the page's title */
     private String titlePattern;
-    
+
     /** The minimum in-degree of the page */
     private int minIndegree;
     /** The maximum out-degree of the page */
@@ -42,7 +42,7 @@ public class PageQuery implements WikiConstants {
     private int minOutdegree;
     /** The maximum out-degree of the page */
     private int maxOutdegree;
-    
+
     /** The minimum number of redirects of the page */
     private int minRedirects;
     /** The maximum number of redirects of the page */
@@ -52,34 +52,34 @@ public class PageQuery implements WikiConstants {
     private int minCategories;
     /** The maximum number of categories of the page */
     private int maxCategories;
-    
+
     /** The minimum number of tokens in the page */
     private int minTokens;
     /** The minimum number of tokens in the page */
     private int maxTokens;
-    
+
     public PageQuery() {
         onlyDisambiguationPages = false;
 
         titlePattern = "";
-        
+
         minIndegree   = 0;
         maxIndegree   = Integer.MAX_VALUE;
-        
+
         minOutdegree  = 0;
         maxOutdegree  = Integer.MAX_VALUE;
-        
+
         minRedirects  = 0;
         maxRedirects  = Integer.MAX_VALUE;
-        
+
         minCategories = 0;
         maxCategories = Integer.MAX_VALUE;
-        
+
         minTokens = 0;
         maxTokens = Integer.MAX_VALUE;
-        
+
     }
-    
+
     protected int getMaxCategories() {
         return maxCategories;
     }
@@ -178,14 +178,14 @@ public class PageQuery implements WikiConstants {
     }
     /**
      * Sets whether only be articles should be retrieved.
-     * @param onlyArticlePages If set to true, only article pages are returned. 
+     * @param onlyArticlePages If set to true, only article pages are returned.
      */
     public void setOnlyArticlePages(boolean onlyArticlePages) {
         this.onlyArticlePages = onlyArticlePages;
     }
     /**
      * Sets whether only disambiguation pages should be retrieved.
-     * @param onlyDisambiguationPages If set to true, only disambiguation pages are returned. 
+     * @param onlyDisambiguationPages If set to true, only disambiguation pages are returned.
      */
     public void setOnlyDisambiguationPages(boolean onlyDisambiguationPages) {
         this.onlyDisambiguationPages = onlyDisambiguationPages;
@@ -213,13 +213,13 @@ public class PageQuery implements WikiConstants {
     public void setTitlePattern(String pattern) {
         this.titlePattern = pattern;
     }
-    
+
     /**
      * @return A string that shows the current values of the query members.
      */
     public String getQueryInfo() {
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append("MaxCategories: " + maxCategories + LF);
         sb.append("MinCategories: " + minCategories + LF);
         sb.append("MaxIndegree:   " + maxIndegree + LF);
@@ -233,7 +233,7 @@ public class PageQuery implements WikiConstants {
         sb.append("Only article pages:        " + onlyArticlePages + LF);
         sb.append("Only disambiguation pages: " + onlyDisambiguationPages + LF);
         sb.append("Title pattern: " + titlePattern + LF);
-        
+
         return sb.toString();
     }
 }

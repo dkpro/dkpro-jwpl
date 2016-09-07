@@ -47,5 +47,5 @@ public class T6_HelperMethods {
 
         return uniqueArticleTitles;
     }
-    
+
 }

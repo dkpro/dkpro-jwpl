@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 /**
  * ConfigurationException Describes an exception that occurred while accessing
  * the configuration.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class ConfigurationException
@@ -34,7 +34,7 @@ public class ConfigurationException
 
 	/**
 	 * (Constructor) Creates a new ConfigurationException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -45,7 +45,7 @@ public class ConfigurationException
 
 	/**
 	 * (Constructor) Creates a new ConfigurationException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -56,7 +56,7 @@ public class ConfigurationException
 
 	/**
 	 * (Constructor) Creates a new ConfigurationException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e
@@ -69,7 +69,7 @@ public class ConfigurationException
 
 	/**
 	 * (Constructor) Creates a new ConfigurationException.
-	 * 
+	 *
 	 * @param key
 	 *            error key
 	 * @param description
@@ -83,7 +83,7 @@ public class ConfigurationException
 
 	/**
 	 * Returns the error key.
-	 * 
+	 *
 	 * @return error key
 	 */
 	public ErrorKeys getKey()

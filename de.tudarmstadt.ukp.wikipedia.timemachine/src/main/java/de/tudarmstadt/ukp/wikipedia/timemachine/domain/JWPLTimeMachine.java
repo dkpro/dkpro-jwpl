@@ -28,11 +28,11 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory;
  * The <code>main</code> method gets the path of a configuration file as
  * argument<br>
  * <br>
- * 
+ *
  * Refactored on 16 April 2009 by Ivan Galkin .
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class JWPLTimeMachine {
 
@@ -44,14 +44,14 @@ public class JWPLTimeMachine {
 
 	/**
 	 * Checks given arguments
-	 * 
+	 *
 	 * @param args
 	 * <br>
 	 *            args[0] the settings file like described in
 	 *            {@link SettingsXML}<br>
-	 * 
+	 *
 	 * @return true if all necessary arguments are given and false otherwise
-	 * 
+	 *
 	 * @see SettingsXML
 	 */
 	private static boolean checkArgs(String[] args) {

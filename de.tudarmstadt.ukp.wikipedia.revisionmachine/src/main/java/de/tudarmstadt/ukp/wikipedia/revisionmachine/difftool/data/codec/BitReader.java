@@ -23,9 +23,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorKeys;
 
 /**
  * The BitReader buffers a byte-array.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class BitReader
 {
@@ -44,7 +44,7 @@ public class BitReader
 
 	/**
 	 * Constructor of the BitReader
-	 * 
+	 *
 	 * @param input
 	 *            byte input array
 	 */
@@ -59,9 +59,9 @@ public class BitReader
 
 	/**
 	 * Reads the next bit from the input.
-	 * 
+	 *
 	 * @return 0 or 1
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */
@@ -83,16 +83,16 @@ public class BitReader
 
 	/**
 	 * Reads the next length-bits from the input.
-	 * 
+	 *
 	 * The maximum value of bits that could be read is 31. (Maximum value of a
 	 * positive number that could be stored in an integer without any
 	 * conversion.)
-	 * 
+	 *
 	 * @param length
 	 *            number of bits to read
 	 * @return content as integer value or -1 if the end of the stream has been
 	 *         reached
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */
@@ -136,9 +136,9 @@ public class BitReader
 	 * Reads the next character in the input Note: The current content of the
 	 * buffer will be deleted. This method should only be used for reading the
 	 * textual content of the diff-part.
-	 * 
+	 *
 	 * @return the next character in the string
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */

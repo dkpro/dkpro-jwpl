@@ -30,8 +30,8 @@ public class Span extends ParsedPageObject{
 		this.end = end;
 	}
 	
-	public int getStart(){ 
-		return start; 
+	public int getStart(){
+		return start;
 	}
 	
 	public Span setStart( int start ){
@@ -44,8 +44,8 @@ public class Span extends ParsedPageObject{
 		return this;
 	}
 	
-	public int getEnd(){ 
-		return end; 
+	public int getEnd(){
+		return end;
 	}
 	
 	public Span setEnd( int end ){
@@ -61,7 +61,7 @@ public class Span extends ParsedPageObject{
 	public Span adjust( int n ){ return adjust(0,n); }
 	
 	/**
-	 * Adjusts the start and end Position of the Span, if they are 
+	 * Adjusts the start and end Position of the Span, if they are
 	 * larger than the offset.
 	 */
 	public Span adjust(int offset, int n){
@@ -80,29 +80,29 @@ public class Span extends ParsedPageObject{
 		return this;	
 	}
 	
-	public boolean equals(int start, int end){ 
-		return ((this.start == start )&&( this.end == end)); 
+	public boolean equals(int start, int end){
+		return ((this.start == start )&&( this.end == end));
 	}
 	
-	public boolean equals(Span s){ 
-		return ((this.start == s.getStart() )&&( this.end == s.getEnd() )); 
+	public boolean equals(Span s){
+		return ((this.start == s.getStart() )&&( this.end == s.getEnd() ));
 	}
 
 	/**
 	 * returns true if this Span is in the range of the Span s.
 	 */
-	public boolean hits( Span s ){ 
+	public boolean hits( Span s ){
 		return start < s.getEnd() && s.getStart() < end;
 	}	
 	
-	public String toString(){ 
-		return "("+start+", "+end+")"; 
+	public String toString(){
+		return "("+start+", "+end+")";
 	}
 	
 	/**
-	 * simply src.substring( this.getStart(), this.getEnd ); 
+	 * simply src.substring( this.getStart(), this.getEnd );
 	 */
-	public String getText(String src){ 
+	public String getText(String src){
 	    if (end > src.length()) {
 	        end = src.length();
 	    }
@@ -111,7 +111,7 @@ public class Span extends ParsedPageObject{
 	
 	/**
 	 * A defined ErrorChar which will be returnd when an error occures.<br/>
-	 * An ErrorChar seems to be more easy to handle than e.g. an IndexOutOfBoundsException. 
+	 * An ErrorChar seems to be more easy to handle than e.g. an IndexOutOfBoundsException.
 	 */
 	public static final char ERRORCHAR = 0;
 	
@@ -161,11 +161,11 @@ public class Span extends ParsedPageObject{
 	/**
 	 * returns this.getEnd()-this.getStart()
 	 */
-	public int length(){ 
-		return end-start; 
+	public int length(){
+		return end-start;
 	}
 	
-	public Span clone(){ 
+	public Span clone(){
 		Span result = new Span( start, end );
 		result.setSrcSpan( this.getSrcSpan() );
 		return result;

@@ -20,12 +20,12 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util;
 /**
  * This class represents a keyword tree and is used to process or to search a
  * character sequence.
- * 
+ *
  * This keyword tree can only be used for non overlapping keywords.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * @param <V>
  *            related value
  */
@@ -49,7 +49,7 @@ public class SingleKeywordTree<V>
 
 	/**
 	 * Adds a keyword and its related value.
-	 * 
+	 *
 	 * @param s
 	 *            keyword
 	 * @param value
@@ -64,7 +64,7 @@ public class SingleKeywordTree<V>
 	 * Checks whether the character is related to the currently used node. If
 	 * the comparison fails the keyword tree will be reseted to its root node,
 	 * otherwise the related node will replace the current node.
-	 * 
+	 *
 	 * @param c
 	 *            character
 	 * @return TRUE if the current node contains a keyword FALSE otherwise
@@ -88,7 +88,7 @@ public class SingleKeywordTree<V>
 
 	/**
 	 * Returns the keyword of the current node.
-	 * 
+	 *
 	 * @return keyword
 	 */
 	public String getWord()
@@ -98,7 +98,7 @@ public class SingleKeywordTree<V>
 
 	/**
 	 * Returns the related value of the current node.
-	 * 
+	 *
 	 * @return related value
 	 */
 	public V getValue()

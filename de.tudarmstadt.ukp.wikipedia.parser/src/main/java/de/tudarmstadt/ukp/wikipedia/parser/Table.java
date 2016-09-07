@@ -63,7 +63,7 @@ public class Table extends ContentContainer{
 		return this.title;
 	}
 	
-	public void setTitleElement( ContentElement title ){ 
+	public void setTitleElement( ContentElement title ){
 		if( title != null ){
 			if( this.title == null )	ccl.add( 0, title );
 			else 						ccl.set( 0, title );
@@ -121,7 +121,7 @@ public class Table extends ContentContainer{
 		return null;
 	}
 	
-	public List<Table> getTables(){ 
+	public List<Table> getTables(){
 		List<Table> result = new ArrayList<Table>();
 		for( TableElement td: tableElements ) result.addAll( td.getTables() );
 		return result;
@@ -133,7 +133,7 @@ public class Table extends ContentContainer{
 		return result;
 	}
 	
-	public NestedList getNestedList(int i){ 
+	public NestedList getNestedList(int i){
 		int nr = 0;
 		int offset = 0;
 		for( TableElement td: tableElements ){
@@ -141,10 +141,10 @@ public class Table extends ContentContainer{
 			if( nr+offset > i )return td.getNestedList(i-offset);	
 			offset += nr;
 		}
-		return null; 
+		return null;
 	}
 	
-	public List<NestedList> getNestedLists(){ 
+	public List<NestedList> getNestedLists(){
 		List<NestedList> result = new ArrayList<NestedList>();
 		for( TableElement td: tableElements ) result.addAll( td.getNestedLists() );
 		return result;
@@ -156,7 +156,7 @@ public class Table extends ContentContainer{
 		return result;
 	}
 	
-	public DefinitionList getDefinitionList(int i){ 
+	public DefinitionList getDefinitionList(int i){
 		int nr = 0;
 		int offset = 0;
 		for( TableElement td: tableElements ){
@@ -164,10 +164,10 @@ public class Table extends ContentContainer{
 			if( nr+offset > i )return td.getDefinitionList(i-offset);	
 			offset += nr;
 		}
-		return null; 
+		return null;
 	}
 	
-	public List<DefinitionList> getDefinitionLists(){ 
+	public List<DefinitionList> getDefinitionLists(){
 		List<DefinitionList> result = new ArrayList<DefinitionList>();
 		for( TableElement td: tableElements ) result.addAll( td.getDefinitionLists() );
 		return result;

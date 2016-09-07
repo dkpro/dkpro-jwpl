@@ -25,8 +25,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingExc
 
 /**
  * The static references in this 'class' creates and controlls all loggers.
- * 
- * 
+ *
+ *
  */
 public class LoggingFactory
 {
@@ -61,11 +61,11 @@ public class LoggingFactory
 
 	/**
 	 * Creates a new Logger.
-	 * 
+	 *
 	 * @param consumerName
 	 *            Consumer Name
 	 * @return The referenced Logger
-	 * 
+	 *
 	 * @throws LoggingException
 	 */
 	public static Logger createLogger(final LoggerType type,
@@ -84,11 +84,11 @@ public class LoggingFactory
 
 	/**
 	 * Returns an already created Logger.
-	 * 
+	 *
 	 * @param consumerName
 	 *            Consumer Name
 	 * @return The referenced Logger
-	 * 
+	 *
 	 * @throws LoggingException
 	 */
 	public static Logger getLogger(final String consumerName)

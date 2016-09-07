@@ -46,7 +46,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This class can access the database and retrieve single revisions.
- * 
+ *
  */
 public class RevisionApi
 {
@@ -59,7 +59,7 @@ public class RevisionApi
 
     /**
      * (Constructor) Creates a new RevisionApi object with an existing database connection.
-     * 
+     *
      * @param config
      *            Reference to the configuration parameters
      * @param connection
@@ -76,7 +76,7 @@ public class RevisionApi
 
     /**
      * (Constructor) Creates a new RevisionApi object.
-     * 
+     *
      * @param config
      *            Reference to the configuration parameters
      * @throws WikiApiException
@@ -92,7 +92,7 @@ public class RevisionApi
 
     /**
      * (Constructor) Creates a new RevisionApi object.
-     * 
+     *
      * @param dbConfig
      *            A database configuration object
      * @throws WikiApiException
@@ -118,7 +118,7 @@ public class RevisionApi
      * disambiguation pages). <br>
      * <b>Attention</b>: When called for the first time, this query needs write-access (ALTER and
      * UPDATE) to the database and might take a while to process.
-     * 
+     *
      * @param minNumberRevisions
      *            the smallest number of revisions for an article to be selected
      * @param maxNumberRevisions
@@ -199,11 +199,11 @@ public class RevisionApi
 
     /**
      * Returns the PrimaryKey for the first revision of the given article
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return PK of the first revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -257,14 +257,14 @@ public class RevisionApi
         }
     }
 
-    
+
     /**
      * Returns the number of revisions for the specified article.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return number of revisions
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -325,11 +325,11 @@ public class RevisionApi
 
     /**
      * Returns the timestamps of all revisions that have been made before the given revision.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return number of revisions
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -387,11 +387,11 @@ public class RevisionApi
 
     /**
      * Returns the timestamps of all revisions that have been made before the given revision.
-     * 
+     *
      * @param revisionId
      *            ID of the article
      * @return number of revisions
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -451,14 +451,14 @@ public class RevisionApi
 
     /**
      * Returns the timestamps of all revisions connected to the specified article.
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return collection of timestampf of all revisions
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -522,14 +522,14 @@ public class RevisionApi
     /**
      * Returns the number of unique contributors to an article based on the people who revised the
      * article (revision contributors).<br/>
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return the number of unique contributors to the article
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -546,13 +546,13 @@ public class RevisionApi
      * <br/>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param onlyRegistered
      *            defines whether to count only registered users (true), or all users (false)
      * @return the number of unique contributors to the article
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -621,14 +621,14 @@ public class RevisionApi
     /**
      * Returns the number of unique contributors to an article that have contributed before the
      * given revision.<br/>
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param revisionID
      *            revision before which to count the contributors
      * @return the number of unique contributors to the article
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -641,16 +641,16 @@ public class RevisionApi
     /**
      * Returns the number of unique contributors to an article that have contributed before the
      * given revision.<br/>
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param revisionID
      *            revision before which to count the contributors
      * @param onlyRegistered
      *            defines whether to count only registered users (true), or all users (false)
      * @return the number of unique contributors to the article
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -723,14 +723,14 @@ public class RevisionApi
 
     /**
      * Returns a map of usernames mapped to the timestamps of their contributions
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return map of Timestamp-DiffPart-Collection pairs
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -742,7 +742,7 @@ public class RevisionApi
 
     /**
      * Returns a map of usernames mapped to the timestamps of their contributions
-     * 
+     *
      * Users of certain user groups (e.g. bots) can be filtered by providing the unwanted groups in
      * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br/>
      * <br/>
@@ -753,13 +753,13 @@ public class RevisionApi
      * <br/>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param groupfilter
      *            a list of unwanted user groups
      * @return map of Timestamp-DiffPart-Collection pairs
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -777,7 +777,7 @@ public class RevisionApi
      * <br/>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param groupfilter
@@ -785,7 +785,7 @@ public class RevisionApi
      * @param onlyRegistered
      *            true, if result should only contain registered users. false, else
      * @return map of Timestamp-DiffPart-Collection pairs
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -885,11 +885,11 @@ public class RevisionApi
 
     /**
      * Returns the group assignments of the specified user
-     * 
+     *
      * @param userID
      *            ID of the user (NOT THE USERNAME)
      * @return collection of user groups
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -951,11 +951,11 @@ public class RevisionApi
 
     /**
      * Returns the revisionids of all revisions created by given user
-     * 
+     *
      * @param userid
      *            id of the user (NOT USER NAME)
      * @return list of revision ids
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1025,11 +1025,11 @@ public class RevisionApi
 
     /**
      * Returns the revisionids of all revisions created by given user
-     * 
+     *
      * @param username
      *            name of the user (NOT USER ID)
      * @return list of revision ids
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1101,14 +1101,14 @@ public class RevisionApi
     /**
      * Returns a map of timestamps mapped on the corresponding DiffPart-Collections. Can be used to
      * compile statistics over all changes that have been made in one article.
-     * 
+     *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return map of Timestamp-DiffPart-Collection pairs
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1191,11 +1191,11 @@ public class RevisionApi
 
     /**
      * Returns the timestamp of the first revision connected to the specified article.
-     * 
+     *
      * @param articleID
      *            ID of the artsicle
      * @return first date of appearance or the article does not exist
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1207,11 +1207,11 @@ public class RevisionApi
 
     /**
      * Returns the timestamp of the last revision connected to the specified article.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @return last date of appearance or the article does not exist
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1223,15 +1223,15 @@ public class RevisionApi
 
     /**
      * Returns the timestamp of the first or last revision connected to the specified article.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param firstOrLast
      *            <code>"FirstAppearance"</code> if first date of appearance should be returned.
      *            <code>"LastAppearance"</code> if last date of appearance should be returned.
-     * 
+     *
      * @return first date of appearance or the article does not exist
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1286,11 +1286,11 @@ public class RevisionApi
 
     /**
      * ( Returns the by the id specified revision.
-     * 
+     *
      * @param revisionID
      *            ID of the revison
      * @return Revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs or the revision does not exists.
      */
@@ -1348,11 +1348,11 @@ public class RevisionApi
 
     /**
      * ( Returns the pageId (ArticleId) for the given revision
-     * 
+     *
      * @param revisionID
      *            ID of the revison
      * @return the page if for the given revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs or the revision does not exists.
      */
@@ -1409,13 +1409,13 @@ public class RevisionApi
     /**
      * Returns the by the article ID and revisionCounter specified revision. Note that this method
      * returns the revision in chronological order.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param revisionCounter
      *            number of revision
      * @return Revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs or the revision does not exists.
      */
@@ -1475,13 +1475,13 @@ public class RevisionApi
      * Returns the by the article ID and timestamp specified revision. Note that the timestamp is
      * not an unique identifier of a revision related to an article. The returned revision should be
      * the first revision that can be found inside the database.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param time
      *            Timestamp
      * @return Revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs or the revision does not exists.
      */
@@ -1589,14 +1589,14 @@ public class RevisionApi
 
     /**
      * This method maps the chronological order to the revisionCounter.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param revisionCounter
      *            chronological position
-     * 
+     *
      * @return position in the chronological order
-     * 
+     *
      * @throws SQLException
      *             if an error occurs while accesing the database.
      */
@@ -1635,17 +1635,17 @@ public class RevisionApi
 
     /**
      * This method maps the revisionCounter to the chronological order.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param revisionCounter
      *            chronological position
-     * 
+     *
      * @return position in the chronological order
-     * 
+     *
      * @throws SQLException
      *             if an error occurs while accesing the database.
-     * 
+     *
      * @deprecated this method should only be used for internal processes
      */
     @Deprecated
@@ -1684,7 +1684,7 @@ public class RevisionApi
 
     /**
      * This method returns the correct mapping of the given input.
-     * 
+     *
      * @param mapping
      *            mapping sequence
      * @param revisionCounter
@@ -1732,7 +1732,7 @@ public class RevisionApi
 
     /**
      * This method identifies the correct full revision and retrieves the reference revision.
-     * 
+     *
      * @param articleID
      *            ID of the article
      * @param revisionIndex
@@ -1742,7 +1742,7 @@ public class RevisionApi
      * @param revCounters
      *            list of revision counters
      * @return Revision
-     * 
+     *
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -1908,13 +1908,13 @@ public class RevisionApi
 
     /**
      * This method queries and builds the specified revision.
-     * 
+     *
      * @param fullRevPK
      *            PK of the full revision
      * @param limit
      *            number of revision to query
      * @return Revision
-     * 
+     *
      * @throws SQLException
      *             if an error occurs while retrieving data from the sql database.
      * @throws IOException
@@ -2004,13 +2004,13 @@ public class RevisionApi
 
     /**
      * This method queries and builds the specified revision.
-     * 
+     *
      * @param fullRevPK
      *            PK of the full revision
      * @param limit
      *            number of revision to query
      * @return Revision
-     * 
+     *
      * @throws SQLException
      *             if an error occurs while retrieving data from the sql database.
      * @throws IOException
@@ -2096,7 +2096,7 @@ public class RevisionApi
 
     /**
      * This method closes the connection to the database.
-     * 
+     *
      * @throws SQLException
      *             if an error occurs while closing the connection
      */
@@ -2123,7 +2123,7 @@ public class RevisionApi
 
     /**
      * Checks if some index (besides the PRIMARY-Index) exists in a given table.
-     * 
+     *
      * @param table
      *            the table to check
      * @return true, if index exists, false else
@@ -2138,7 +2138,7 @@ public class RevisionApi
 
     /**
      * Checks if an index with a specific name exists in a given table.
-     * 
+     *
      * @param table
      *            the table to check
      * @param indexName
@@ -2202,10 +2202,10 @@ public class RevisionApi
 
     /**
      * Checks if a specific table exists
-     * 
+     *
      * @param table
      *            the table to check
-     * 
+     *
      * @return true, if table exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
@@ -2242,11 +2242,11 @@ public class RevisionApi
         }
 
     }
-    
+
     public RevisionAPIConfiguration getRevisionApiConfiguration(){
     	return this.config;
     }
-    
+
     public Connection getConnection(){
     	return this.connection;
     }

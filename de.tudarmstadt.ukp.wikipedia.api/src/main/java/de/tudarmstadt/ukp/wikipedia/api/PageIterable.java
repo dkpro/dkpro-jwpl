@@ -28,18 +28,18 @@ public class PageIterable implements Iterable<Page> {
 
     /** The Wikipedia object */
     private Wikipedia wiki;
-    
+
     /** Whether only articles are retrieved (or also disambiguation pages) */
     private boolean onlyArticles;
-    
-    /** 
+
+    /**
      * The size of the page buffer.
      * With bufferSize = 1, a database connection is needed for retrieving a single article.
      * Higher bufferSize gives better performance, but needs memory.
-     * Initialize it with 500. 
+     * Initialize it with 500.
      */
     private int bufferSize = 500;
-    
+
     public PageIterable(Wikipedia wiki, boolean onlyArticles) {
         this.wiki = wiki;
         this.onlyArticles = onlyArticles;
@@ -55,5 +55,5 @@ public class PageIterable implements Iterable<Page> {
         return new PageIterator(wiki, onlyArticles, bufferSize);
     }
 }
-    
+
 

@@ -29,15 +29,15 @@ public interface MediaWikiTemplateParser {
 	
 	/**
 	 * Takes a Template and do whatever is required for handling this Template.
-	 * It is possible to delete this template, to parse it to e.g a Link or 
+	 * It is possible to delete this template, to parse it to e.g a Link or
 	 * to return MediaWiki code which can be parsed by a MediaWiki parser.<br/>
-	 * If you are interested how this works, you shoud read the documentation 
+	 * If you are interested how this works, you shoud read the documentation
 	 * of ResolvedTemplate.
 	 */
 	public ResolvedTemplate parseTemplate(Template t, ParsedPage pp);
 	
 	/**
-	 * Returns some information about what the TemplateParser does am how 
+	 * Returns some information about what the TemplateParser does am how
 	 * it is configurated.
 	 */
 	public String configurationInfo();

@@ -32,11 +32,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
  * The namespaces are read in from the <siteinfo> of the Wikipedia dump. The
  * corresponding prefixes of the language version are then used by the filter to
  * determine whether an article is part of an unwanted namespace or not. <br/>
- * 
+ *
  * If the ArticleFilter is not initialized or given an empty list of namespaces,
  * nothing is filtered at all.
- * 
- * 
+ *
+ *
  */
 public class ArticleFilter
 {
@@ -66,7 +66,7 @@ public class ArticleFilter
 
 	/**
 	 * Creates an ArticleFilter that uses configuration file to filter prefixes
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 */
 	@SuppressWarnings("unchecked")
@@ -80,7 +80,7 @@ public class ArticleFilter
 	/**
 	 * Creates a new filter that filters all pages except the namespaces
 	 * provided in the namespaceWhitelist
-	 * 
+	 *
 	 * @param namespaceWhitelist
 	 *            list of namespaces that should NOT be filtered
 	 */
@@ -97,7 +97,7 @@ public class ArticleFilter
 	/**
 	 * Initialized the Namespace-Prefix mapping for the current language version
 	 * of Wikipedia.
-	 * 
+	 *
 	 * @param namespaceMap
 	 *            mapping of namespace ids to the corresponding article title
 	 *            prefixes
@@ -135,7 +135,7 @@ public class ArticleFilter
 
 	/**
 	 * Filter any pages by title prefixes
-	 * 
+	 *
 	 * @param title
 	 *            the page title
 	 * @return true, if the page should be used. false, else

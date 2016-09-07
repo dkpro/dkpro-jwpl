@@ -32,9 +32,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration
 /**
  * Iterates over the database to retrieve the necessary information for the
  * index generation.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class IndexIterator
 	implements Iterator<Revision>
@@ -57,10 +57,10 @@ public class IndexIterator
 
 	/**
 	 * (Constructor) Creates the IndexIterator object.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the configuration
-	 * 
+	 *
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
@@ -94,9 +94,9 @@ public class IndexIterator
 
 	/**
 	 * Queries the database for more revision information.
-	 * 
+	 *
 	 * @return TRUE if the resultset contains elements FALSE otherwise
-	 * 
+	 *
 	 * @throws SQLException
 	 *             if an error occurs while accessing the database
 	 */
@@ -124,7 +124,7 @@ public class IndexIterator
 	/**
 	 * Returns the next revision information. (Does not contain the encoded
 	 * diff)
-	 * 
+	 *
 	 * @return Revision
 	 */
 	public Revision next()
@@ -153,7 +153,7 @@ public class IndexIterator
 
 	/**
 	 * Returns TRUE if another revision information is available.
-	 * 
+	 *
 	 * @return TRUE | FALSE
 	 */
 	public boolean hasNext()
@@ -180,7 +180,7 @@ public class IndexIterator
 
 	/**
 	 * unsupported method
-	 * 
+	 *
 	 * @deprecated
 	 * @throws UnsupportedOperationException
 	 */

@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * A Section consists at first of a Title. In MediaWiki a Title can contain
- * e.g. Links, Images or ItalicText. Therefore a simple ContentElement 
+ * e.g. Links, Images or ItalicText. Therefore a simple ContentElement
  * is used as Section Title.<br/>
  * The next Point is the hirachical Section Level, which every Section has.<br/>
  * <br/>
@@ -61,15 +61,15 @@ public abstract class Section extends ContentContainer {
 	 */
 	public String getTitle(){
 		if( title!=null )
-			return title.getText(); 
-		else 
+			return title.getText();
+		else
 			return null;
 	}
 	
 	/**
 	 * Look at getTitleElement() for Details...
 	 */
-	public void setTitleElement( ContentElement title ){ 
+	public void setTitleElement( ContentElement title ){
 		if( title != null ){
 			if( this.title == null )	ccl.add( 0, title );
 			else 						ccl.set( 0, title );
@@ -80,8 +80,8 @@ public abstract class Section extends ContentContainer {
 	}
 	
 	/**
-	 * Returns a ContentElement representing the content, originally given as 
-	 * MediaWiki SourcCode, beween one ore more equality chars at the beginning 
+	 * Returns a ContentElement representing the content, originally given as
+	 * MediaWiki SourcCode, beween one ore more equality chars at the beginning
 	 * of a line. This is known as Title.
 	 */
 	public ContentElement getTitleElement(){ return title; }
@@ -152,7 +152,7 @@ public abstract class Section extends ContentContainer {
 	public abstract List<DefinitionList> getDefinitionLists();
 	
 	/**
-	 * Returns a sequence of Chars followed by ZERO. 
+	 * Returns a sequence of Chars followed by ZERO.
 	 * For easy handling the result is of the Type String.
 	 */
 	public abstract String toString();

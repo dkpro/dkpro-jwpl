@@ -34,8 +34,8 @@ public class OS {
         }
         return osType;
     }
-    
-    /** Gets the memory used by the JVM in MB. 
+
+    /** Gets the memory used by the JVM in MB.
      * @return Returns how much memory (in MB) is used by the JVM at the moment.
      */
     public static double getUsedMemory() {

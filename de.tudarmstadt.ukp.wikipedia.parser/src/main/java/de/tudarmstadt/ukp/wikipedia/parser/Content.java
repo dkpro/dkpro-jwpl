@@ -30,15 +30,15 @@ public interface Content{
 	
 	public enum FormatType {
 			/** Bold Text */	
-			BOLD, 
-            /** Italic Text */  
-			ITALIC, 
+			BOLD,
+            /** Italic Text */
+			ITALIC,
 			/** The Content between Math Tags */	
 			MATH,
             /** The Content between NoWiki Tags */
             NOWIKI,
-            /** The begin and end position of an unkown Tag defined by &lt; and > */    
-			TAG, 
+            /** The begin and end position of an unkown Tag defined by &lt; and > */
+			TAG,
 		};
 	
 	/**

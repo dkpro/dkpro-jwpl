@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * This is the structure implementation of Section.<br/>
- * A SectionContainer contains SubSections of type Section, which 
+ * A SectionContainer contains SubSections of type Section, which
  * can be either, a SectionContent or anoter SectionContainer.<br/>
  * For a description of the inherited functions of Section, take a
  * look at the Documentation of Section.
@@ -77,7 +77,7 @@ public class SectionContainer extends Section {
 	 * Returns a List of all SubSections of the next level.
 	 */
 	public List<Section> getSubSections(){
-		return new ArrayList<Section>( sections ); 
+		return new ArrayList<Section>( sections );
 	}
 	
 	/* (non-Javadoc)
@@ -127,7 +127,7 @@ public class SectionContainer extends Section {
 		return null;
 	}
 	
-	public List<Table> getTables(){ 
+	public List<Table> getTables(){
 		List<Table> result = new ArrayList<Table>();
 		for( Section s: sections ) result.addAll( s.getTables() );
 		return result;
@@ -139,7 +139,7 @@ public class SectionContainer extends Section {
 		return result;
 	}
 	
-	public NestedListContainer getNestedList(int i){ 
+	public NestedListContainer getNestedList(int i){
 		int nr = 0;
 		int offset = 0;
 		for( Section s: sections ){
@@ -147,10 +147,10 @@ public class SectionContainer extends Section {
 			if( nr+offset > i )return s.getNestedList(i-offset);	
 			offset += nr;
 		}
-		return null; 
+		return null;
 	}
 	
-	public List<NestedListContainer> getNestedLists(){ 
+	public List<NestedListContainer> getNestedLists(){
 		List<NestedListContainer> result = new ArrayList<NestedListContainer>();
 		for( Section s: sections ) result.addAll( s.getNestedLists() );
 		return result;
@@ -162,7 +162,7 @@ public class SectionContainer extends Section {
 		return result;
 	}
 	
-	public DefinitionList getDefinitionList(int i){ 
+	public DefinitionList getDefinitionList(int i){
 		int nr = 0;
 		int offset = 0;
 		for( Section s: sections ){
@@ -170,10 +170,10 @@ public class SectionContainer extends Section {
 			if( nr+offset > i )return s.getDefinitionList(i-offset);	
 			offset += nr;
 		}
-		return null; 
+		return null;
 	}
 	
-	public List<DefinitionList> getDefinitionLists(){ 
+	public List<DefinitionList> getDefinitionLists(){
 		List<DefinitionList> result = new ArrayList<DefinitionList>();
 		for( Section s: sections ) result.addAll( s.getDefinitionLists() );
 		return result;
@@ -183,8 +183,8 @@ public class SectionContainer extends Section {
 		StringBuilder result = new StringBuilder();
 		result.append( "SS_TITLE:\n"+ this.getTitleElement() );
 		result.append( "\nSS_LEVEL: "+this.getLevel());
-		result.append( "\nSS_SUBSECTIONS: "+ sections.size() ); 
-		for( Section s: sections ) 
+		result.append( "\nSS_SUBSECTIONS: "+ sections.size() );
+		for( Section s: sections )
 			result.append("\nSS_SUBSECTION:\n"+s.toString());
 		
 		return result.toString();

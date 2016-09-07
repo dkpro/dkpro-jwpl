@@ -74,10 +74,10 @@ public class DefinitionList extends ContentContainer{
 	}
 	
 	public ContentElement getDefinedTerm(){	
-		return definedTerm; 
+		return definedTerm;
 	}
 	
-	public void setDefinedTerm( ContentElement definedTerm ){ 
+	public void setDefinedTerm( ContentElement definedTerm ){
 		if( definedTerm != null ){
 			if( this.definedTerm == null )	ccl.add( 0, definedTerm );
 			else 							ccl.set( 0, definedTerm );
@@ -106,7 +106,7 @@ public class DefinitionList extends ContentContainer{
 		else return null;
 	}
 	
-	public List<ContentElement> getDefinitions(){ 
-		return new ArrayList<ContentElement>( definitions ); 
+	public List<ContentElement> getDefinitions(){
+		return new ArrayList<ContentElement>( definitions );
 	}
 }

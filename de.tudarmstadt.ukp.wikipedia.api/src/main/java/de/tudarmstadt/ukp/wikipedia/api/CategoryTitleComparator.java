@@ -26,7 +26,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
  *
  */
 public class CategoryTitleComparator implements Comparator<Category> {
-        
+
     public int compare(Category o1, Category o2) {
 
         int retVal = 0;

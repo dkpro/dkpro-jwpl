@@ -37,9 +37,9 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 /**
  * The RevisionDecoder class contains methods to decode an encoded diff
  * information.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class RevisionDecoder
 {
@@ -52,7 +52,7 @@ public class RevisionDecoder
 
 	/**
 	 * (Constructor) Creates a new RevisionDecoder object.
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurs while accessing the configuration
 	 *             parameters
@@ -70,7 +70,7 @@ public class RevisionDecoder
 
 	/**
 	 * (Constructor) Creates a new RevisionDecoder object.
-	 * 
+	 *
 	 * @param wikipediaEncoding
 	 *            Character encoding
 	 */
@@ -82,10 +82,10 @@ public class RevisionDecoder
 
 	/**
 	 * (Constructor) Creates a new RevisionDecoder object.
-	 * 
+	 *
 	 * @param input
 	 *            binary encoded diff
-	 * 
+	 *
 	 * @throws ConfigurationException
 	 *             if an error occurs while accessing the configuration
 	 *             parameters
@@ -105,9 +105,9 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes the information and returns the Diff.
-	 * 
+	 *
 	 * @return Diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws DecodingException
@@ -154,7 +154,7 @@ public class RevisionDecoder
 	/**
 	 * Decodes the information, after the codec was successfully decoded, and
 	 * returns the Diff.
-	 * 
+	 *
 	 * @param blockSize_C
 	 *            length of a C block
 	 * @param blockSize_S
@@ -166,7 +166,7 @@ public class RevisionDecoder
 	 * @param blockSize_L
 	 *            length of a L block
 	 * @return Diff
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws DecodingException
@@ -215,13 +215,13 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes an Add operation.
-	 * 
+	 *
 	 * @param blockSize_S
 	 *            length of a S block
 	 * @param blockSize_L
 	 *            length of a L block
 	 * @return DiffPart, Add operation
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws DecodingException
@@ -253,7 +253,7 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes a Cut operation.
-	 * 
+	 *
 	 * @param blockSize_S
 	 *            length of a S block
 	 * @param blockSize_E
@@ -261,7 +261,7 @@ public class RevisionDecoder
 	 * @param blockSize_B
 	 *            length of a B block
 	 * @return DiffPart, Cut operation
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */
@@ -292,13 +292,13 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes a Delete operation.
-	 * 
+	 *
 	 * @param blockSize_S
 	 *            length of a S block
 	 * @param blockSize_E
 	 *            length of a E block
 	 * @return DiffPart, Delete operation
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */
@@ -325,11 +325,11 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes a FullRevision operation.
-	 * 
+	 *
 	 * @param blockSize_L
 	 *            length of a L block
 	 * @return DiffPart, FullRevision
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws DecodingException
@@ -358,13 +358,13 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes a Paste operation.
-	 * 
+	 *
 	 * @param blockSize_S
 	 *            length of a S block
 	 * @param blockSize_B
 	 *            length of a B block
 	 * @return DiffPart, Paste operation
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding failed
 	 */
@@ -392,7 +392,7 @@ public class RevisionDecoder
 
 	/**
 	 * Decodes a Replace operation.
-	 * 
+	 *
 	 * @param blockSize_S
 	 *            length of a S block
 	 * @param blockSize_E
@@ -400,7 +400,7 @@ public class RevisionDecoder
 	 * @param blockSize_L
 	 *            length of a L block
 	 * @return DiffPart, Replace operation
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 * @throws DecodingException
@@ -436,7 +436,7 @@ public class RevisionDecoder
 
 	/**
 	 * Inflates the zipped input.
-	 * 
+	 *
 	 * @param zipinput
 	 *            zipped input
 	 * @param start
@@ -472,7 +472,7 @@ public class RevisionDecoder
 
 	/**
 	 * Assigns the binary input.
-	 * 
+	 *
 	 * @param input
 	 *            binary encoded diff
 	 */
@@ -489,12 +489,12 @@ public class RevisionDecoder
 
 	/**
 	 * Assigns an input stream.
-	 * 
+	 *
 	 * @param input
 	 *            Reference to an input stream
 	 * @param binary
 	 *            flag, whether the data is binary or not
-	 * 
+	 *
 	 * @throws IOException
 	 *             if an error occurs while reading the stream
 	 */
@@ -563,10 +563,10 @@ public class RevisionDecoder
 
 	/**
 	 * Assigns base 64 encoded input.
-	 * 
+	 *
 	 * @param input
 	 *            base 64 encoded diff
-	 * 
+	 *
 	 * @throws DecodingException
 	 *             if the decoding fails
 	 */

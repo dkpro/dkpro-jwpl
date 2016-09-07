@@ -29,8 +29,8 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 /**
  * This is a utility class that generates a template for the configuration file<br>
  * The template must be edited prior to be used for the DBMapping tool.<br>
- * 
- * 
+ *
+ *
  */
 public class SettingsXML {
 

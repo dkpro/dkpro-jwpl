@@ -39,8 +39,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
  * Checks the Range of the SrcSpans of a ParsedPage, so it isn't possible
- * that e.g. a ContentElement conatins a Link which isn't in the Range of 
- * this ContentElement. This must be done because some positons will be 
+ * that e.g. a ContentElement conatins a Link which isn't in the Range of
+ * this ContentElement. This must be done because some positons will be
  * jammed by the parsing process, e.g. if a Link is the start of a Paragrah.
  *
  */
@@ -50,7 +50,7 @@ public class SrcPosRangeChecker {
 		for( Section s: pp.getSections() ){
 			if( s.getClass() == SectionContent.class )
 				checkRange( (SectionContent)s );
-			else 
+			else
 				checkRange( (SectionContainer)s );
 		}
 	}
@@ -62,7 +62,7 @@ public class SrcPosRangeChecker {
 		for( Section s: sc.getSubSections() ){
 			if( s.getClass() == SectionContent.class )
 				checkRange( (SectionContent)s );
-			else 
+			else
 				checkRange( (SectionContainer)s );
 		}
 	}
@@ -75,7 +75,7 @@ public class SrcPosRangeChecker {
 			eil.add( s.getTitleElement().getSrcSpan() );
 		}
 				
-		for( Paragraph p: s.getParagraphs() ){ 
+		for( Paragraph p: s.getParagraphs() ){
 			checkRange( p );
 			eil.add( p.getSrcSpan() );
 		}
@@ -129,7 +129,7 @@ public class SrcPosRangeChecker {
 		for( Section s: te.getSubSections() ){
 			if( s.getClass() == SectionContent.class )
 				checkRange( (SectionContent)s );
-			else 
+			else
 				checkRange( (SectionContainer)s );
 		}
 		

@@ -34,7 +34,7 @@ public class T3_LinkContexts {
 		
         // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
         String documentText = TestFile.getFileText();
-        
+
         // get a ParsedPage object
         MediaWikiParserFactory pf = new MediaWikiParserFactory();
         MediaWikiParser parser = pf.createParser();

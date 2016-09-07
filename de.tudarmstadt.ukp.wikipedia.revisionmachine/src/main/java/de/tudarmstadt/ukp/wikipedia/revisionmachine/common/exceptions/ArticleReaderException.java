@@ -28,7 +28,7 @@ public class ArticleReaderException
 
 	/**
 	 * (Constructor) Creates a new ArticleReaderException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -39,7 +39,7 @@ public class ArticleReaderException
 
 	/**
 	 * (Constructor) Creates a new ArticleReaderException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -50,7 +50,7 @@ public class ArticleReaderException
 
 	/**
 	 * (Constructor) Creates a new ArticleReaderException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

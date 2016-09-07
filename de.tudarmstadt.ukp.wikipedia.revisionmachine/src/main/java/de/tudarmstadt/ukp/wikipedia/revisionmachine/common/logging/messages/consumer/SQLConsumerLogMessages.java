@@ -27,18 +27,18 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This class contains the english localized log messages for SQLConsumers.
- * 
+ *
  * TODO: This file should be replaced with resource files.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class SQLConsumerLogMessages
 {
 
 	/**
 	 * Logs the processing of a diff task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param diff
@@ -58,7 +58,7 @@ public class SQLConsumerLogMessages
 
 	/**
 	 * Logs the creation of an output file.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param path
@@ -72,7 +72,7 @@ public class SQLConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an OutOfMemoryError while reading a task.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param task
@@ -96,7 +96,7 @@ public class SQLConsumerLogMessages
 
 	/**
 	 * Logs the occurance of an SqlConsumerException.
-	 * 
+	 *
 	 * @param logger
 	 *            reference to the logger
 	 * @param e

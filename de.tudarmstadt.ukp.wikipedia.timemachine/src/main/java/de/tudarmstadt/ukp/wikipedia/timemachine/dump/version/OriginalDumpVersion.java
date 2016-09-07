@@ -41,8 +41,8 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
 
 /**
  * This class holds the data for a specific dump version.
- * 
- * 
+ *
+ *
  */
 
 public class OriginalDumpVersion implements IDumpVersion {
@@ -81,7 +81,7 @@ public class OriginalDumpVersion implements IDumpVersion {
 
 	/**
 	 * Creates a new DumpVersion that corresponds to the specified time stamp.
-	 * 
+	 *
 	 * @param timestamp
 	 */
 	public OriginalDumpVersion(Timestamp timestamp) {
@@ -388,7 +388,7 @@ public class OriginalDumpVersion implements IDumpVersion {
 	 * Returns the String value of the bit 1 if the given boolean is true<br>
 	 * and an empty String otherwise. This the way bit values are written<br>
 	 * in .txt dump files.
-	 * 
+	 *
 	 * @param b
 	 * @return
 	 */

@@ -31,19 +31,19 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 5
- * 
+ *
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
- * 
- * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany", 
- *   we can get a quite long list of towns in Germany.  
- * 
+ *
+ * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany",
+ *   we can get a quite long list of towns in Germany.
+ *
  *
  */
 public class T5_TownList implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -69,7 +69,7 @@ public class T5_TownList implements WikiConstants {
         for (Page p : topCat.getArticles()) {
             towns.add(p.getTitle().getPlainTitle());
         }
-        
+
         // Get the pages categorized under each subcategory of "Towns in Germany".
         for (Category townCategory : topCat.getDescendants()) {
             for (Page p : townCategory.getArticles()) {
@@ -77,7 +77,7 @@ public class T5_TownList implements WikiConstants {
             }
             System.out.println("Number of towns: " + towns.size());
         }
-        
+
         // Output the pages
         for (String town : towns) {
             System.out.println(town);

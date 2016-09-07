@@ -29,30 +29,30 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 /**
  * The DiffCalculatorInterface represents the interface to the diff processing
  * unit.
- * 
+ *
  * Please notice that there is no default method to return the generated diff.
  * The currently implementation uses the TaskTransmitterInterface (given as
  * parameter of the constructor) to send the diffed data to the DiffProducer.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public interface DiffCalculatorInterface
 {
 
 	/**
 	 * This method process the given task to generate the diff.
-	 * 
+	 *
 	 * @param task
 	 *            RevisionTask
-	 * 
+	 *
 	 * @throws DiffException
 	 *             if the diff process fails
-	 * 
+	 *
 	 * @throws TimeoutException
 	 *             if the TaskTransmitter times out during the transmission of
 	 *             the task to the DiffProducer.
-	 * 
+	 *
 	 * @throws UnsupportedEncodingException
 	 *             if the CharacterSet defined in the configuration is not
 	 *             supported by JAVA.
@@ -63,7 +63,7 @@ public interface DiffCalculatorInterface
 	/**
 	 * This method is used to delete all information concerning the partial task
 	 * processing.
-	 * 
+	 *
 	 * This method has to be called if the process method throws an exception.
 	 */
 	public void reset();

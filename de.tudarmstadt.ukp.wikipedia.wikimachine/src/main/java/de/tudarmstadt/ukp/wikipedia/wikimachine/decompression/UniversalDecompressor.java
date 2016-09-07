@@ -31,7 +31,7 @@ import java.util.Properties;
  * derivatives to uncompress it on the fly. Otherwise the possible compression
  * will be ignored and the plain unmodified byte stream will be returned. <br>
  * <br>
- * 
+ *
  * Current supported archives are: GZip, BZip2. Each other archive type can be
  * added using the file "decompressor.xml" where you should specify the file
  * extension as a key and the according utility (incl. parameters), that have to
@@ -42,10 +42,10 @@ import java.util.Properties;
  * E.g. the entry for the 7z utility could look like that: <br> {@code <entry
  * key="7z">7z e -so %f</entry>}. The properties file should conform to
  * {@link "http://java.sun.com/dtd/properties.dtd"}
- * 
- * 
+ *
+ *
  * @see UniversalDecompressor#getInputStream(String)
- * 
+ *
  */
 
 public class UniversalDecompressor implements IDecompressor {
@@ -71,7 +71,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the file extension is supported by the external utility
-	 * 
+	 *
 	 * @param extension
 	 * @return true if this extension is supported with external utilities
 	 */
@@ -82,7 +82,7 @@ public class UniversalDecompressor implements IDecompressor {
 	/**
 	 * Check if the file extension is supported by the internal
 	 * <code>IDecompressor</code>
-	 * 
+	 *
 	 * @param extension
 	 * @return
 	 */
@@ -118,7 +118,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Return the extension of the filename
-	 * 
+	 *
 	 * @param fileName
 	 *            that should be inputed
 	 * @return file extension or null
@@ -138,7 +138,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the file is supported by the internal or external decompressor
-	 * 
+	 *
 	 * @param fileName
 	 * @return true if the file extension is supported
 	 */
@@ -150,7 +150,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Start an external utility to unpack the the archive
-	 * 
+	 *
 	 * @param fileName
 	 * @return InputStream to read the decompressed data
 	 */
@@ -169,7 +169,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Get default InputStream to read the data from the file
-	 * 
+	 *
 	 * @param fileName
 	 * @return FileInputStream(fileName)
 	 */
@@ -195,7 +195,7 @@ public class UniversalDecompressor implements IDecompressor {
 	 * External decompression utilities are in preference to the internal. If
 	 * there is nether external nor internal possibilities to unpack the file -
 	 * the standard <code>FileInputSteam</code> will be returned
-	 * 
+	 *
 	 * @see UniversalDecompressor
 	 */
 	@Override
@@ -218,7 +218,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the specified file exists
-	 * 
+	 *
 	 * @param fileName
 	 *            file path to check
 	 * @return bool if the file exists and can be read

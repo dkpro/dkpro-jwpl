@@ -23,20 +23,20 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 
 /**
  * This interface represents the link to the input.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public interface ArticleReaderInterface
 {
 
 	/**
 	 * Determines whether another task is available or not.
-	 * 
+	 *
 	 * This method has to be called before calling the next() method.
-	 * 
+	 *
 	 * @return TRUE | FALSE
-	 * 
+	 *
 	 * @throws ArticleReaderException
 	 *             if the parsing of the input fails
 	 */
@@ -45,9 +45,9 @@ public interface ArticleReaderInterface
 
 	/**
 	 * Returns the next RevisionTask.
-	 * 
+	 *
 	 * @return RevisionTask.
-	 * 
+	 *
 	 * @throws ArticleReaderException
 	 *             if the parsing of the input fails
 	 */
@@ -56,7 +56,7 @@ public interface ArticleReaderInterface
 
 	/**
 	 * Resets the task processing status of the ArticleReader.
-	 * 
+	 *
 	 * This method has to be called if the hasNext() or next() methods throw an
 	 * exception.
 	 */
@@ -64,7 +64,7 @@ public interface ArticleReaderInterface
 
 	/**
 	 * Returns the number of bytes that the ArticleReader has processed.
-	 * 
+	 *
 	 * @return number of bytes (current position in the file / archive)
 	 */
 	long getBytePosition();

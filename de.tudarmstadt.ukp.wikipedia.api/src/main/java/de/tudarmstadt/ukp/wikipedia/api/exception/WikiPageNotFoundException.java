@@ -29,15 +29,15 @@ public class WikiPageNotFoundException extends WikiApiException {
     public WikiPageNotFoundException() {
         super();
     }
-    
+
     public WikiPageNotFoundException(String txt) {
         super(txt);
     }
-    
+
     public WikiPageNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public WikiPageNotFoundException(Throwable cause) {
         super(cause);
     }

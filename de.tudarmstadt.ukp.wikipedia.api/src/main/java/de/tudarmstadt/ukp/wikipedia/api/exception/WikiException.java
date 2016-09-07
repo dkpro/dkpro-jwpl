@@ -20,19 +20,19 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 public class WikiException extends Exception {
 
     static final long serialVersionUID = 1L;
-    
+
     public WikiException() {
     	super();
     }
-    
+
     public WikiException(String txt) {
         super(txt);
     }
-    
+
     public WikiException(String message, Throwable cause) {
 		super(message, cause);
 	}
-    
+
     public WikiException(Throwable cause) {
 		super(cause);
 	}

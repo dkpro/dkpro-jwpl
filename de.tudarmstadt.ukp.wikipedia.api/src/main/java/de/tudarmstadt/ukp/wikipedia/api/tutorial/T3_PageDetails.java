@@ -28,9 +28,9 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 3
- * 
+ *
  * Even more things to do with a Wikipedia page.
- * 
+ *
  *
  */
 public class T3_PageDetails implements WikiConstants {
@@ -47,7 +47,7 @@ public class T3_PageDetails implements WikiConstants {
 
         // Create a new German wikipedia.
         Wikipedia wiki = new Wikipedia(dbConfig);
-        
+
         String title = "Hello world";
         Page page;
         try {
@@ -63,13 +63,13 @@ public class T3_PageDetails implements WikiConstants {
         sb.append("Title          : " + page.getTitle() + LF);
         sb.append(LF);
 
-        // output the page's redirects 
+        // output the page's redirects
         sb.append("Redirects" + LF);
         for (String redirect : page.getRedirects()) {
             sb.append("  " + new Title(redirect).getPlainTitle() + LF);
         }
         sb.append(LF);
-        
+
         // output the page's categories
         sb.append("Categories" + LF);
         for (Category category : page.getCategories()) {
@@ -89,7 +89,7 @@ public class T3_PageDetails implements WikiConstants {
         for (Page outLinkPage : page.getOutlinks()) {
             sb.append("  " + outLinkPage.getTitle() + LF);
         }
-        
+
         System.out.println(sb);
     }
 }

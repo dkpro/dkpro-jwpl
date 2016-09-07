@@ -33,11 +33,11 @@ public class TitleIterator implements Iterator<Title> {
 //    private final static Logger logger = Logger.getLogger(TitleIterator.class);
 
     private TitleBuffer buffer;
-    
+
     public TitleIterator(Wikipedia wiki, int bufferSize) {
         buffer = new TitleBuffer(bufferSize, wiki);
     }
-        
+
     public boolean hasNext(){
         return buffer.hasNext();
     }
@@ -45,7 +45,7 @@ public class TitleIterator implements Iterator<Title> {
     public Title next(){
         return buffer.next();
     }
-    
+
     public void remove() {
         throw new UnsupportedOperationException();
     }
@@ -56,7 +56,7 @@ public class TitleIterator implements Iterator<Title> {
      *
      */
     class TitleBuffer {
-        
+
         private Wikipedia wiki;
 
         private List<String> titleStringBuffer;
@@ -64,7 +64,7 @@ public class TitleIterator implements Iterator<Title> {
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset;   // the offset in the buffer
         private int dataOffset;     // the overall offset in the data
-        
+
         public TitleBuffer(int bufferSize, Wikipedia wiki){
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
@@ -73,7 +73,7 @@ public class TitleIterator implements Iterator<Title> {
             this.bufferOffset = 0;
             this.dataOffset = 0;
         }
-        
+
         /**
          * If there are elements in the buffer left, then return true.
          * If the end of the filled buffer is reached, then try to load new buffer.
@@ -87,9 +87,9 @@ public class TitleIterator implements Iterator<Title> {
                 return this.fillBuffer();
             }
         }
-        
+
         /**
-         * 
+         *
          * @return The next Title or null if no more categories are available.
          */
         public Title next(){
@@ -106,7 +106,7 @@ public class TitleIterator implements Iterator<Title> {
                 return null;
             }
         }
-        
+
         private Title getBufferElement() {
             String titleString = titleStringBuffer.get(bufferOffset);
             Title title = null;
@@ -119,7 +119,7 @@ public class TitleIterator implements Iterator<Title> {
             dataOffset++;
             return title;
         }
-        
+
         private boolean fillBuffer() {
 
             Session session = this.wiki.__getHibernateSession();
@@ -131,14 +131,14 @@ public class TitleIterator implements Iterator<Title> {
                 .setFetchSize(maxBufferSize)
                 .list();
             session.getTransaction().commit();
-            
+
             // clear the old buffer and all variables regarding the state of the buffer
             titleStringBuffer.clear();
             bufferOffset = 0;
             bufferFillSize = 0;
 
             titleStringBuffer.addAll(returnList);
-            
+
             if (titleStringBuffer.size() > 0) {
                 bufferFillSize = titleStringBuffer.size();
                 return true;
@@ -147,6 +147,6 @@ public class TitleIterator implements Iterator<Title> {
                 return false;
             }
         }
-    
+
     }
 }

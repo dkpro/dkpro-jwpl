@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 /**
  * TimeoutException Describes an exception that occurred because of a timeout
  * event.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class TimeoutException
@@ -31,7 +31,7 @@ public class TimeoutException
 
 	/**
 	 * (Constructor) Creates a new TimeoutException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -42,7 +42,7 @@ public class TimeoutException
 
 	/**
 	 * (Constructor) Creates a new TimeoutException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -53,7 +53,7 @@ public class TimeoutException
 
 	/**
 	 * (Constructor) Creates a new TimeoutException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

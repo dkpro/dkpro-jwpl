@@ -21,16 +21,16 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 
 /**
  * This class represents an object in the chrono storage space.
- * 
+ *
  * A node contains multiple links: - Reference to the chrono full revision
- * 
+ *
  * - links to the previous and next index block an index reference describes the
  * chronological order
- * 
+ *
  * - links to the previous and next counter block an counter reference describes
  * the normal order
- * 
- * 
+ *
+ *
  * 1
  */
 public class ChronoStorageBlock
@@ -62,7 +62,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the related chrono full revision.
-	 * 
+	 *
 	 * @return chrono full revision
 	 */
 	public ChronoFullRevision getChronoFullRevision()
@@ -72,7 +72,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the next counter block.
-	 * 
+	 *
 	 * @return next counter block
 	 */
 	public ChronoStorageBlock getCounterNext()
@@ -82,7 +82,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Sets the next counter block.
-	 * 
+	 *
 	 * @param counterNext
 	 *            next counter block
 	 */
@@ -93,7 +93,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the previous counter block.
-	 * 
+	 *
 	 * @return previous counter block
 	 */
 	public ChronoStorageBlock getCounterPrev()
@@ -103,7 +103,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Sets the previous counter block.
-	 * 
+	 *
 	 * @param counterPrev
 	 *            previous counter block
 	 */
@@ -114,7 +114,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the next index block.
-	 * 
+	 *
 	 * @return next index block
 	 */
 	public ChronoStorageBlock getIndexNext()
@@ -124,7 +124,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Sets the next index block.
-	 * 
+	 *
 	 * @param indexNext
 	 *            next index block
 	 */
@@ -135,7 +135,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the previous index block.
-	 * 
+	 *
 	 * @return previous index block
 	 */
 	public ChronoStorageBlock getIndexPrev()
@@ -145,7 +145,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Sets the previous index block.
-	 * 
+	 *
 	 * @param indexPrev
 	 *            previous counter block
 	 */
@@ -156,7 +156,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * (Constructor) Creates a new ChronoStorageBlock.
-	 * 
+	 *
 	 * @param cfr
 	 *            Reference to the chrono full revision
 	 * @param revisionIndex
@@ -182,7 +182,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns whether this revision was already returned or not.
-	 * 
+	 *
 	 * @return flag
 	 */
 	public boolean isDelivered()
@@ -192,7 +192,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Sets whether this revision was already returned or not.
-	 * 
+	 *
 	 * @param delivered
 	 *            flag
 	 */
@@ -203,7 +203,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the revision index.
-	 * 
+	 *
 	 * @return revision index
 	 */
 	public int getRevisionIndex()
@@ -213,7 +213,7 @@ public class ChronoStorageBlock
 
 	/**
 	 * Returns the revision counter.
-	 * 
+	 *
 	 * @return revision counter
 	 */
 	public int getRevisionCounter()

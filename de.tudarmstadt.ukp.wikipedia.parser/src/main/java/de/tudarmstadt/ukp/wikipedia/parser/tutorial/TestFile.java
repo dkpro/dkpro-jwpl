@@ -20,7 +20,7 @@ package de.tudarmstadt.ukp.wikipedia.parser.tutorial;
 public class TestFile {
 
     private static final String LF = "\n";
-    
+
     public static String getFileText() {
         StringBuilder sb = new StringBuilder();
         sb.append("'''Darmstadt''' is a city in the [[States of Germany|Bundesland]] (federal state) of [[Hesse]]n in [[Germany]]. As of 2005, its population was 139,000. The city is located in the southern part of the [[Frankfurt Rhine Main Area|Rhine Main Metropolitan Area]].");

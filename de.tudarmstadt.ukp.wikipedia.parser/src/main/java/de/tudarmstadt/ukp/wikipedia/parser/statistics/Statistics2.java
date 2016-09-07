@@ -31,7 +31,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 
 /**
- * Creates a little Statistic about occurence of MediaWiki Elements...<br/> 
+ * Creates a little Statistic about occurence of MediaWiki Elements...<br/>
  * <br/>
  * Results for 15.05.2006 Database:<br/><pre>
  * SUBS: 279896 74.19%
@@ -169,10 +169,10 @@ public class Statistics2 {
 				long runnedTime = aktualTime - startTime + offsetTime;
 				long totalTime = (runnedTime * nrOfPages) / nrOfAnalyzedPages;
 				
-				System.out.println( 
+				System.out.println(
 						percentString(nrOfAnalyzedPages,nrOfPages)+
 						" -> "+nrOfAnalyzedPages+" of "+nrOfPages+" pages in "+ runnedTime/1000+"sec"+
-						" -> "+(totalTime-runnedTime)/60000+"min left" 
+						" -> "+(totalTime-runnedTime)/60000+"min left"
 					);
 				
 				screenInfo();
@@ -197,7 +197,7 @@ public class Statistics2 {
 	}
 	
 	private static void screenInfo(){
-		System.out.print( 
+		System.out.print(
 				pi("SUBS",nrOfPagesWithSubSections) +
 				pi("NL", nrOfPagesWithNl ) +
 				pi("DL", nrOfPagesWithDl ) +

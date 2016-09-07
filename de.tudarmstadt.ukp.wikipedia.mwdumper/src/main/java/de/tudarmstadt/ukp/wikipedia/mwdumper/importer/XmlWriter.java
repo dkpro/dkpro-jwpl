@@ -42,7 +42,7 @@ public class XmlWriter {
 	}
 	
 	/**
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void close() throws IOException {
 		writer.flush();
@@ -52,7 +52,7 @@ public class XmlWriter {
 	
 	/**
 	 * Write the <?xml?> header.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void openXml() throws IOException {
 		writeRaw("<?xml version=\"1.0\" encoding=\"" + encoding + "\" ?>\n");
@@ -68,7 +68,7 @@ public class XmlWriter {
 	/**
 	 * Write an empty element, such as <el/>, on a standalone line.
 	 * Takes an optional dictionary of attributes.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void emptyElement(String element) throws IOException {
 		emptyElement(element, null);
@@ -82,7 +82,7 @@ public class XmlWriter {
 	/**
 	 * Write an element open tag, such as <el>, on a standalone line.
 	 * Takes an optional dictionary of attributes.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void openElement(String element) throws IOException {
 		openElement(element, null);
@@ -95,7 +95,7 @@ public class XmlWriter {
 	/**
 	 * Write an element close tag, such as </el>, on a standalone line.
 	 * If indent=False is passed, indentation will not be added.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void closeElement() throws IOException {
 		closeElement(true);
@@ -116,7 +116,7 @@ public class XmlWriter {
 	 * on a standalone line. If the text is empty, an empty element will
 	 * be output as <el/>. Takes an optional list of tuples with attribute
 	 * names and values.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public void textElement(String element, String text) throws IOException {
 		textElement(element, text, null);

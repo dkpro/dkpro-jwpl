@@ -20,9 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 /**
  * SQLConsumerException Describes an exception that occurred while accessing the
  * database.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public class SQLConsumerException
@@ -31,7 +31,7 @@ public class SQLConsumerException
 
 	/**
 	 * (Constructor) Creates a new SQLConsumerException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 */
@@ -42,7 +42,7 @@ public class SQLConsumerException
 
 	/**
 	 * (Constructor) Creates a new SQLConsumerException.
-	 * 
+	 *
 	 * @param e
 	 *            inner exception
 	 */
@@ -53,7 +53,7 @@ public class SQLConsumerException
 
 	/**
 	 * (Constructor) Creates a new SQLConsumerException.
-	 * 
+	 *
 	 * @param description
 	 *            message
 	 * @param e

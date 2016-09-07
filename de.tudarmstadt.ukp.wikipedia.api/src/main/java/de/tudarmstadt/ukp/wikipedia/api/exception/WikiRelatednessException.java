@@ -21,7 +21,7 @@ package de.tudarmstadt.ukp.wikipedia.api.exception;
 public class WikiRelatednessException extends WikiException {
 
     static final long serialVersionUID = 1L;
-    
+
     public WikiRelatednessException(){
         super();
     }
@@ -33,7 +33,7 @@ public class WikiRelatednessException extends WikiException {
     public WikiRelatednessException(String message, Throwable cause) {
         super(message, cause);
     }
-    
+
     public WikiRelatednessException(Throwable cause) {
         super(cause);
     }

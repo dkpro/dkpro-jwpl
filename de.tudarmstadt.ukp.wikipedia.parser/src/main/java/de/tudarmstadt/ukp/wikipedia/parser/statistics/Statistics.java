@@ -45,7 +45,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParamet
 public class Statistics {
 	
 	// Constants
-	public static final String path = "./data/parsedpage/statistics/"; 
+	public static final String path = "./data/parsedpage/statistics/";
 	
 	// Variables
 	static long nrOfPages;
@@ -114,10 +114,10 @@ public class Statistics {
 				long runnedTime = aktualTime - startTime + offsetTime;
 				long totalTime = (runnedTime * nrOfPages) / nrOfAnalyzedPages;
 				
-				System.out.println( 
+				System.out.println(
 						percentString(nrOfAnalyzedPages,nrOfPages)+
 						" -> "+nrOfAnalyzedPages+" of "+nrOfPages+" pages in "+ runnedTime/1000+"sec"+
-						" -> "+(totalTime-runnedTime)/60000+"min left" 
+						" -> "+(totalTime-runnedTime)/60000+"min left"
 					);
 			}			
 			
@@ -275,8 +275,8 @@ public class Statistics {
 			
 			if( index!=-1 ){
 				newTemplateNrOfOccurence.set(
-						index, 
-						newTemplateNrOfOccurence.get(index)+ 
+						index,
+						newTemplateNrOfOccurence.get(index)+
 						templateNrOfOccurence.get(i)
 					);
 			}

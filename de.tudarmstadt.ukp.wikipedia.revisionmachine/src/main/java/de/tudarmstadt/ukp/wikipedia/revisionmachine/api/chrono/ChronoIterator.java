@@ -32,8 +32,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * ChronoIterator Iterates articles in chronological order.
- * 
- * 
+ *
+ *
  * 1
  */
 public class ChronoIterator
@@ -65,7 +65,7 @@ public class ChronoIterator
 
 	/**
 	 * (Constructor) Create a ChronoIterator object
-	 * 
+	 *
 	 * @param config
 	 *            reference to the configuration
 	 * @param connection
@@ -190,7 +190,7 @@ public class ChronoIterator
 
 	/**
 	 * Returns if all revision have retrieved.
-	 * 
+	 *
 	 * @return
 	 */
 	public boolean hasNext()
@@ -200,7 +200,7 @@ public class ChronoIterator
 
 	/**
 	 * Returns the next revision.
-	 * 
+	 *
 	 * @return next revision
 	 */
 	public Revision next()
@@ -372,7 +372,7 @@ public class ChronoIterator
 
 	/**
 	 * Returns the storage size description.
-	 * 
+	 *
 	 * @return storage size description
 	 */
 	public String getStorageSize()

@@ -27,12 +27,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.control.
 
 /**
  * AbstractPanel Super panel class of the KonfigurationTool
- * 
+ *
  * All panels (which contain configuration parameters) will inherit from this
  * class.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 @SuppressWarnings("serial")
 public abstract class AbstractPanel
@@ -44,7 +44,7 @@ public abstract class AbstractPanel
 
 	/**
 	 * (Constructor) Creates an AbstractPanel object.
-	 * 
+	 *
 	 * @param controller
 	 *            Reference to the controller
 	 */
@@ -70,7 +70,7 @@ public abstract class AbstractPanel
 	/**
 	 * The default paint method was expanded with calls of the validate() and
 	 * relocate() methods.
-	 * 
+	 *
 	 * @param g
 	 *            Graphics
 	 */
@@ -88,7 +88,7 @@ public abstract class AbstractPanel
 	 * Adds the xml description of the panels content to the StringBuilder.
 	 * Errors which occur during the xml transformation will be added to the
 	 * ConfigVerification.
-	 * 
+	 *
 	 * @param builder
 	 *            Reference to a StringBuilder object
 	 * @param errors
@@ -100,7 +100,7 @@ public abstract class AbstractPanel
 	/**
 	 * Reads the configuration parameters described in the panel from the
 	 * ConfigSettings and and sets the contained values.
-	 * 
+	 *
 	 * @param config
 	 *            Reference to the ConfigSettings object
 	 */

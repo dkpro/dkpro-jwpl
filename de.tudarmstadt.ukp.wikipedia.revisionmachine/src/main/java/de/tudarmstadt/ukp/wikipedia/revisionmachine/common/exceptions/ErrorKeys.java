@@ -19,9 +19,9 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions;
 
 /**
  * This class contains an enumeration of the possible error sources.
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public enum ErrorKeys
 {
