@@ -1,4 +1,6 @@
 # dkpro-jwpl
+[![Build Status](https://travis-ci.org/dkpro/dkpro-jwpl.svg)](https://travis-ci.org/dkpro/dkpro-jwpl)
+[![codecov.io](http://codecov.io/github/dkpro/dkpro-jwpl/coverage.svg?branch=master)](http://codecov.io/github/dkpro/dkpro-jwpl?branch=master)
 
 DKPro JWPL (DKPro Java Wikipedia Library) is a free, Java-based application programming interface that facilitates access to all information in Wikipedia.
 
