@@ -59,6 +59,11 @@ import org.sweble.wikitext.lazy.preprocessor.XmlComment;
 import org.sweble.wikitext.lazy.utils.XmlCharRef;
 import org.sweble.wikitext.lazy.utils.XmlEntityRef;
 
+import de.fau.cs.osr.ptk.common.AstVisitor;
+import de.fau.cs.osr.ptk.common.ast.AstNode;
+import de.fau.cs.osr.ptk.common.ast.NodeList;
+import de.fau.cs.osr.ptk.common.ast.Text;
+import de.fau.cs.osr.utils.StringUtils;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 /**
