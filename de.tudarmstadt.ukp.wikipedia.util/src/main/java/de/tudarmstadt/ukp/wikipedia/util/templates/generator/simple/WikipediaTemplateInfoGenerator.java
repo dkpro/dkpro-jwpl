@@ -350,7 +350,7 @@ public class WikipediaTemplateInfoGenerator
 	/**
 	 *
 	 * Returns the set of names of all templates that are contained in the given
-	 * article (without duplicates).<br/>
+	 * article (without duplicates).<br>
 	 * The names are SQL escaped using StringUtils.sqlEscape
 	 *
 	 * @param pageText

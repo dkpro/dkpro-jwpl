@@ -22,9 +22,9 @@ import java.util.List;
 
 /**
  * A ContentContainer is used to combine more than one Content element (not only
- * ContentElement.class!) in a new Content element.<br/>
+ * ContentElement.class!) in a new Content element.<br>
  * For a description of the Functions of the Content Interface, take a look at
- * the Content.class documentation.<br/>
+ * the Content.class documentation.<br>
  *
  */
 public abstract class ContentContainer extends ParsedPageObject implements Content {
@@ -49,7 +49,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	/**
-	 * Returns the Text in the Span List in a String...<br/>
+	 * Returns the Text in the Span List in a String...<br>
 	 * all Spans must refer to the text returned by getText().
 	 */
 	public String getText(List<Span> sl){

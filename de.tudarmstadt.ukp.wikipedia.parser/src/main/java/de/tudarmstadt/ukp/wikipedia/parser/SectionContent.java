@@ -21,8 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is a Implementation of the Content of a Section.<br/>
- * For every content accsess function exists a setter and a remover function.<br/>
+ * This is a Implementation of the Content of a Section.<br>
+ * For every content accsess function exists a setter and a remover function.<br>
  * For a description of the inherited functions of Section, take a
  * look at the Documentation of Section.
  */

@@ -47,9 +47,9 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
- * Renders a ParsedPage in HTML...<br/>
- * <br/>
- * There is a ParsedPage.css for formating the HTML Tags.<br/>
+ * Renders a ParsedPage in HTML...<br>
+ * <br>
+ * There is a ParsedPage.css for formating the HTML Tags.<br>
  * Look at the HtmlFileDemo.java for a better intoduction.
  *
  */
@@ -163,7 +163,7 @@ public class HtmlWriter {
 
 				"<table class=\"SectionTh\"><tr>\n" +
 				"<th class=\"SectionTh\">\n" +
-				(s.getClass() == SectionContainer.class?"SectionStructure":"SectionContent")+":<br/>\n"+
+				(s.getClass() == SectionContainer.class?"SectionStructure":"SectionContent")+":<br>\n"+
 				"Level: "+s.getLevel()+"\n"+
 				"</th><th class=\"SectionTh\">\n" +
 				(s.getTitleElement()!=null?contentElementToHtml( s.getTitleElement() ):"")+
@@ -421,7 +421,7 @@ public class HtmlWriter {
 
 		if( l.getParameters().size() != 0 ){
 			for( String parameter: l.getParameters() ) {
-				result.append("<br/>\nPARAMETER: \""+convertTags( parameter )+"\"");
+				result.append("<br>\nPARAMETER: \""+convertTags( parameter )+"\"");
 			}
 		}
 
@@ -444,13 +444,13 @@ public class HtmlWriter {
 			"<table class=\"Template\">\n" +
 			"<tr><th class=\"Template\">Template</th></tr>\n"+
 			"<tr><td class=\"Template\">" +
-			"Name: \""+convertTags( t.getName() )+"\"<br/>"+
+			"Name: \""+convertTags( t.getName() )+"\"<br>"+
 			"</td></tr>\n");
 
 		if( t.getParameters().size() != 0 ){
 			result.append("<tr><td class=\"Template\">");
 			for( String parameter: t.getParameters() ) {
-				result.append("Parameter: \""+convertTags( parameter )+"\"<br/>");
+				result.append("Parameter: \""+convertTags( parameter )+"\"<br>");
 			}
 			result.append("</td></tr>\n");
 		}

@@ -20,10 +20,10 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 import java.util.List;
 
 /**
- * This is a main Interface used by nearly all classes of this package.<br/>
- * <br/>
- * Be aware, that all retured Spans refer to the String returned by getText()<br/>
- * this is true for any implementing class!<br/>
+ * This is a main Interface used by nearly all classes of this package.<br>
+ * <br>
+ * Be aware, that all retured Spans refer to the String returned by getText()<br>
+ * this is true for any implementing class!<br>
  *
  */
 public interface Content{

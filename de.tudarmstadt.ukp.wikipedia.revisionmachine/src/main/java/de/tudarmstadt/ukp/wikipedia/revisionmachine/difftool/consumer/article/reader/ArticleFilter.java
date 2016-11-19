@@ -28,10 +28,10 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
 
 /**
- * Filter articles from unwanted namespaces.<br/>
+ * Filter articles from unwanted namespaces.<br>
  * The namespaces are read in from the <siteinfo> of the Wikipedia dump. The
  * corresponding prefixes of the language version are then used by the filter to
- * determine whether an article is part of an unwanted namespace or not. <br/>
+ * determine whether an article is part of an unwanted namespace or not. <br>
  *
  * If the ArticleFilter is not initialized or given an empty list of namespaces,
  * nothing is filtered at all.

@@ -29,7 +29,7 @@ public class ResolvedTemplate{
 
 	/**
 	 * is the Object which the Template Parser has been parsed, and will be
-	 * integrated by the ContentElementParseing process. <br/>
+	 * integrated by the ContentElementParseing process. <br>
 	 * If parsedObject == null, the template will be discarded...
 	 */
 	private Object parsedObject;
@@ -52,7 +52,7 @@ public class ResolvedTemplate{
 
 	/**
 	 * Will be called by the parser after the parsing process and will replace
-	 * the TEXT which is within the bounds of the original template src. <br/>
+	 * the TEXT which is within the bounds of the original template src. <br>
 	 * If NULL is returned, the parser won't do anything.
 	 */
 	public String getPostParseReplacement() {
@@ -68,7 +68,7 @@ public class ResolvedTemplate{
 
 	/**
 	 * will be called by the parser before the Parsing process and replaces the original
-	 * template code. MediaWiki code which is returned here, will be parsed.<br/>
+	 * template code. MediaWiki code which is returned here, will be parsed.<br>
 	 * length()>0 ! empty stings would not be accepted.
 	 */
 	public String getPreParseReplacement() {
@@ -93,7 +93,7 @@ public class ResolvedTemplate{
 
 	/**
 	 * Returns the Object which is representative for the Template Code.
-	 * It can be a Template or any object the parser knows.<br/>
+	 * It can be a Template or any object the parser knows.<br>
 	 * If the Template is e.g. a Link the Link will be returned here.
 	 */
 	public Object getParsedObject() {

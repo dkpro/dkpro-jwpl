@@ -20,8 +20,8 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 import java.util.List;
 
 /**
- * This Class implements a Field in a Table...<br/>
- * it simply has an int for col and row, and a SectionContainer for the Content.<br/>
+ * This Class implements a Field in a Table...<br>
+ * it simply has an int for col and row, and a SectionContainer for the Content.<br>
  * This implementation is needed, because a Table in MediaWiki can contain neary
  * everything.
  */

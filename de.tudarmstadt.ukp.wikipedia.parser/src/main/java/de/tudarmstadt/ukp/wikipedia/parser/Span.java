@@ -110,7 +110,7 @@ public class Span extends ParsedPageObject{
 	}
 	
 	/**
-	 * A defined ErrorChar which will be returnd when an error occures.<br/>
+	 * A defined ErrorChar which will be returnd when an error occures.<br>
 	 * An ErrorChar seems to be more easy to handle than e.g. an IndexOutOfBoundsException.
 	 */
 	public static final char ERRORCHAR = 0;

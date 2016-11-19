@@ -77,7 +77,7 @@ public class Wikipedia implements WikiConstants {
 
     /**
      * Gets the page with the given title.
-     * If the title is a redirect, the corresponding page is returned.<br/>
+     * If the title is a redirect, the corresponding page is returned.<br>
      * If the title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia article title starts with an uppercase letter.
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
      *
@@ -98,11 +98,11 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Gets the page with the exactly the given title.<br/>
+     * Gets the page with the exactly the given title.<br>
      *
-     * Note that when using this method you are responsible for converting a normal search string into the right wiki-style.<br/>
+     * Note that when using this method you are responsible for converting a normal search string into the right wiki-style.<br>
      *
-     * If the title is a redirect, the corresponding page is returned.<br/>
+     * If the title is a redirect, the corresponding page is returned.<br>
      *
      * @param exactTitle The exact title of the page.
      * @return The page object for a given title.
@@ -114,8 +114,8 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Get all pages which match all lowercase/uppercase version of the given title.<br/>
-     * If the title is a redirect, the corresponding page is returned.<br/>
+     * Get all pages which match all lowercase/uppercase version of the given title.<br>
+     * If the title is a redirect, the corresponding page is returned.<br>
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
      *
      * @param title The title of the page.
@@ -166,7 +166,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Gets the page ids for a given title.<br/>
+     * Gets the page ids for a given title.<br>
      *
      *
      * @param title The title of the page.
@@ -192,7 +192,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Gets the page ids for a given title with case insensitive matching.<br/>
+     * Gets the page ids for a given title with case insensitive matching.<br>
      *
      *
      * @param title The title of the page.
@@ -292,8 +292,8 @@ public class Wikipedia implements WikiConstants {
 
     /**
 	 * Returns an iterable containing all archived discussion pages for
-     * the page with the given title String. <br/>
-     * The page retrieval works as defined in {@link #getPage(int)}. <br/>
+     * the page with the given title String. <br>
+     * The page retrieval works as defined in {@link #getPage(int)}. <br>
      * The most recent discussion page is NOT included here!
      * It can be obtained with {@link #getDiscussionPage(Page)}.
      *
@@ -308,8 +308,8 @@ public class Wikipedia implements WikiConstants {
 
     /**
 	 * Returns an iterable containing all archived discussion pages for
-     * the page with the given title String. <br/>
-     * The page retrieval works as defined in {@link #getPage(String title)}.<br/>
+     * the page with the given title String. <br>
+     * The page retrieval works as defined in {@link #getPage(String title)}.<br>
      * The most recent discussion page is NOT included here!
      * It can be obtained with {@link #getDiscussionPage(Page)}.
      *
@@ -326,7 +326,7 @@ public class Wikipedia implements WikiConstants {
      * Return an iterable containing all archived discussion pages for
      * the given article page. The most recent discussion page is not included.
      * The most recent discussion page can be obtained with {@link #getDiscussionPage(Page)}.
-     * <br/>
+     * <br>
      * The provided page Object must not be a discussion page itself! If it is
      * a discussion page, is returned unchanged.
      *

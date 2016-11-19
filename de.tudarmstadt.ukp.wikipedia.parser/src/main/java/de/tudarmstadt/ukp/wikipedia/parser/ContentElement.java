@@ -24,7 +24,7 @@ import java.util.List;
  * This is the Simple implementation of the Content Inteface, and is used
  * for nearly all content containing classes...
  *
- * Be aware, that all retured Spans refer to the String returned by getText()<br/>
+ * Be aware, that all retured Spans refer to the String returned by getText()<br>
  *
  */
 public class ContentElement extends ParsedPageObject implements Content {

@@ -568,7 +568,7 @@ public class Page
 
     /**
 	 * <p>Returns the Wikipedia article as plain text using the SwebleParser with
-	 * a SimpleWikiConfiguration and the PlainTextConverter. <br/>
+	 * a SimpleWikiConfiguration and the PlainTextConverter. <br>
 	 * If you have different needs regarding the plain text, you can use
 	 * getParsedPage(Visitor v) and provide your own Sweble-Visitor. Examples
 	 * are in the <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package

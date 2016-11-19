@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
- * Class for easy creating a configurated MediaWiki Parser...<br/>
+ * Class for easy creating a configurated MediaWiki Parser...<br>
  *
  */
 public class MediaWikiParserFactory {
@@ -54,7 +54,7 @@ public class MediaWikiParserFactory {
 	}
 
 	/**
-	 * Creates a fully configurated parser factory for the specified language.<br/>
+	 * Creates a fully configurated parser factory for the specified language.<br>
 	 * Next step is .createParser()...
 	 */
 	public MediaWikiParserFactory(Language language){

@@ -104,7 +104,7 @@ public class IndexGenerator
 
 	/**
 	 * Starts index generation using the database credentials in the
-	 * properties file specified in args[0].<br/>
+	 * properties file specified in args[0].<br>
 	 * The properties file should have the following structure:
 	 * <ul><li>host=dbhost</li>
 	 * <li>db=revisiondb</li>
@@ -115,7 +115,7 @@ public class IndexGenerator
 	 * <li>charset=UTF8 (or others) (optional)</li>
 	 * <li>buffer=15000 (optional)</li>
 	 * <li>maxAllowedPackets=16760832  (optional)</li></ul>
-	 * <br/>
+	 * <br>
 	 *
 	 * @param args allows only one entry that contains the path to the config file
 	 */

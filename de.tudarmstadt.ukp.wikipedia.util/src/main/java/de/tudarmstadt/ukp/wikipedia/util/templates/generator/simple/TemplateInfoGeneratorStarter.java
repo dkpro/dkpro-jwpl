@@ -57,7 +57,7 @@ public class TemplateInfoGeneratorStarter
 
 	/**
 	 * Starts index generation using the database credentials in the properties
-	 * file specified in args[0].<br/>
+	 * file specified in args[0].<br>
 	 * The properties file should have the following structure:
 	 * <ul>
 	 * <li>host=dbhost</li>
@@ -70,7 +70,7 @@ public class TemplateInfoGeneratorStarter
 	 * <li>pagebuffer=5000 (optional)</li>
 	 * <li>maxAllowedPackets=16760832 (optional)</li>
 	 * </ul>
-	 * <br/>
+	 * <br>
 	 *
 	 * @param args
 	 *            allows only one entry that contains the path to the config

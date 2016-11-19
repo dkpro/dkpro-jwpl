@@ -521,7 +521,7 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article based on the people who revised the
-     * article (revision contributors).<br/>
+     * article (revision contributors).<br>
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -541,9 +541,9 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article based on the people who revised the
-     * article (revision contributors).<br/>
-     * It is possible to only count the registerd users, if onlyRegistered is set to true.<br/>
-     * <br/>
+     * article (revision contributors).<br>
+     * It is possible to only count the registerd users, if onlyRegistered is set to true.<br>
+     * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
      *
@@ -620,7 +620,7 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article that have contributed before the
-     * given revision.<br/>
+     * given revision.<br>
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -640,7 +640,7 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article that have contributed before the
-     * given revision.<br/>
+     * given revision.<br>
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -744,13 +744,13 @@ public class RevisionApi
      * Returns a map of usernames mapped to the timestamps of their contributions
      *
      * Users of certain user groups (e.g. bots) can be filtered by providing the unwanted groups in
-     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br/>
-     * <br/>
+     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br>
+     * <br>
      * Filtered results also include unregistered users (because they cannot be filtered using user
      * groups) In order to get results containing only registered users, use
      * getUserContributionMap(final int articleID, List<String> groupfilter, boolean onlyRegistered)
-     * and set {@code onlyRegistered=true}.<br/>
-     * <br/>
+     * and set {@code onlyRegistered=true}.<br>
+     * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
      *
@@ -770,11 +770,11 @@ public class RevisionApi
     }
 
     /**
-     * Returns a map of usernames mapped to the timestamps of their contributions.<br/>
-     * <br/>
+     * Returns a map of usernames mapped to the timestamps of their contributions.<br>
+     * <br>
      * Users of certain user groups (e.g. bots) can be filtered by providing the unwanted groups in
-     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br/>
-     * <br/>
+     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br>
+     * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
      *

@@ -53,7 +53,7 @@ public class RevisionAPIConfiguration
 
 	/**
 	 * <p>(Constructor) Creates the default configuration.</p>
-	 * OutputType: UNCOMPRESSED (revisionIndex.sql)<br/>
+	 * OutputType: UNCOMPRESSED (revisionIndex.sql)<br>
 	 *
 	 */
 	public RevisionAPIConfiguration()
@@ -76,7 +76,7 @@ public class RevisionAPIConfiguration
 	 * <p>Creates a (default) RevisionAPIConfiguration from an existing
 	 * DatabaseConfiguration.</p>
 	 *
-	 * OutputType: DATABASE<br/>
+	 * OutputType: DATABASE<br>
 	 */
 	public RevisionAPIConfiguration(DatabaseConfiguration existingWikiConfig)
 	{

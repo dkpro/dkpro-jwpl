@@ -23,14 +23,14 @@ import java.util.List;
 /**
  * A Section consists at first of a Title. In MediaWiki a Title can contain
  * e.g. Links, Images or ItalicText. Therefore a simple ContentElement
- * is used as Section Title.<br/>
- * The next Point is the hirachical Section Level, which every Section has.<br/>
- * <br/>
+ * is used as Section Title.<br>
+ * The next Point is the hirachical Section Level, which every Section has.<br>
+ * <br>
  * Further, a Section can contain other Sections or Content, but not
  * both. This is a difference between the API and MediaWiki. In return, the
  * accsess to the Elements is possible with just a few functions. This fact
- * makes the accest to the provieded Structures very simple.<br/>
- * <br/>
+ * makes the accest to the provieded Structures very simple.<br>
+ * <br>
  * These structure requirements are implemented as SectionContainer an SectionContent.
  *
  */

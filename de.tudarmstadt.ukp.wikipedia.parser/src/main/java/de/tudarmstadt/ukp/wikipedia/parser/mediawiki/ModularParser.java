@@ -31,8 +31,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 
 /**
- * This is a Parser for MediaWiki Source.<br/>
- * It exist a MediaWikiParserFactory, to get an Instance of this Parser.<br/>
+ * This is a Parser for MediaWiki Source.<br>
+ * It exist a MediaWikiParserFactory, to get an Instance of this Parser.<br>
  * But, if you want to, you can create a parser by yourself.
  *
  *
@@ -423,7 +423,7 @@ public class ModularParser implements MediaWikiParser,
 
 
 	/**
-	 * Deleting all comments out of the SpanManager...<br/>
+	 * Deleting all comments out of the SpanManager...<br>
 	 * &lt!-- COMMENT -->
 	 */
 	private void deleteComments(SpanManager sm)

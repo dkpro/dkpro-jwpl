@@ -31,9 +31,9 @@ import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.ShowTemplateNamesAndParameters;
 
 /**
- * Creates a little Statistic about occurence of MediaWiki Elements...<br/>
- * <br/>
- * Results for 15.05.2006 Database:<br/><pre>
+ * Creates a little Statistic about occurence of MediaWiki Elements...<br>
+ * <br>
+ * Results for 15.05.2006 Database:<br><pre>
  * SUBS: 279896 74.19%
  * NL: 255511 67.72%
  * DL: 1679 0.44%

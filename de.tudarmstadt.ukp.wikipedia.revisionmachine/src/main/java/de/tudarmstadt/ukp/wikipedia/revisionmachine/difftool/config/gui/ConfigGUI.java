@@ -28,7 +28,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels.C
 /**
  * This class represents the main class of the graphical configuration tool
  * for the DiffTool.
- * <br/>
+ * <br>
  * <p>
  * The GUI can be used to set all necessary configuration parameters for the
  * DiffTool. However, it currently does not verify the validity of the
@@ -36,8 +36,8 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels.C
  * It only checks whether the individual setting contain valid values.
  * Consequently, it is possible to produce configurations that won't
  * work.</p>
- * <br/>
- * Example:<br/>
+ * <br>
+ * Example:<br>
  * If the output mode is set to <i>bzip2</i>, it is currently not possible
  * to split the output into several files. However, the ConfigGUI allows for
  * this setting.

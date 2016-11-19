@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the structure implementation of Section.<br/>
+ * This is the structure implementation of Section.<br>
  * A SectionContainer contains SubSections of type Section, which
- * can be either, a SectionContent or anoter SectionContainer.<br/>
+ * can be either, a SectionContent or anoter SectionContainer.<br>
  * For a description of the inherited functions of Section, take a
  * look at the Documentation of Section.
  *
