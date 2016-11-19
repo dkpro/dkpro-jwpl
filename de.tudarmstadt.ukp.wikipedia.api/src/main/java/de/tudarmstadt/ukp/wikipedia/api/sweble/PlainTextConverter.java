@@ -59,11 +59,6 @@ import org.sweble.wikitext.lazy.preprocessor.XmlComment;
 import org.sweble.wikitext.lazy.utils.XmlCharRef;
 import org.sweble.wikitext.lazy.utils.XmlEntityRef;
 
-import de.fau.cs.osr.ptk.common.AstVisitor;
-import de.fau.cs.osr.ptk.common.ast.AstNode;
-import de.fau.cs.osr.ptk.common.ast.NodeList;
-import de.fau.cs.osr.ptk.common.ast.Text;
-import de.fau.cs.osr.utils.StringUtils;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 /**
@@ -71,9 +66,8 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
  * better understand the visitor pattern as implemented by the Visitor class,
  * please take a look at the following resources:
  * <ul>
- * <li>{@link "http://en.wikipedia.org/wiki/Visitor_pattern"} (classic pattern)</li>
- * <li>{@link "http://www.javaworld.com/javaworld/javatips/jw-javatip98.html"}
- * (the version we use here)</li>
+ * <li><a href="http://en.wikipedia.org/wiki/Visitor_pattern">Visitor Pattern (classic pattern)</a></li>
+ * <li><a href="http://www.javaworld.com/javaworld/javatips/jw-javatip98.html">the version we use here</a></li>
  * </ul>
  *
  * The methods needed to descend into an AST and visit the children of a given

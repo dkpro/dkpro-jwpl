@@ -1297,7 +1297,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * Get the neighbors of a given node.
      * The category graph is treated as an undirected graph.
-     * @param category The category under consideration.
+     * @param node the reference node.
      * @return The set of category nodes that are neighbors of this category.
      */
     protected Set<Integer> getNeighbors(int node) {
