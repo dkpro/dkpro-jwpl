@@ -71,8 +71,8 @@ public class SphinxWriter implements DumpWriter {
 	}
 	
 	/**
-	 * @fixme What's the "group" number here do?
-	 * @fixme preprocess the text to strip some formatting?
+	 * FIXME What's the "group" number here do?
+	 * FIXME preprocess the text to strip some formatting?
 	 */
 	public void writeEndPage() throws IOException {
 		writer.openElement("document");
@@ -91,7 +91,7 @@ public class SphinxWriter implements DumpWriter {
 	}
 	
 	/**
-	 * @fixme double-check that it wants Unix timestamp
+	 * FIXME double-check that it wants Unix timestamp
 	 */
 	static String formatTimestamp(Calendar ts) {
 		return Long.toString(ts.getTimeInMillis() / 1000L);

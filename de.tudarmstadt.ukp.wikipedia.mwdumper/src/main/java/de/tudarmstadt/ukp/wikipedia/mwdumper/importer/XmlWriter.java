@@ -51,7 +51,7 @@ public class XmlWriter {
 	
 	
 	/**
-	 * Write the <?xml?> header.
+	 * Write the &lt;?xml?&gt; header.
 	 * @throws IOException
 	 */
 	public void openXml() throws IOException {
@@ -66,7 +66,7 @@ public class XmlWriter {
 	
 	
 	/**
-	 * Write an empty element, such as <el/>, on a standalone line.
+	 * Write an empty element, such as &lt;el/&gt;, on a standalone line.
 	 * Takes an optional dictionary of attributes.
 	 * @throws IOException
 	 */
@@ -114,7 +114,7 @@ public class XmlWriter {
 	/**
 	 * Write an element with a text node included, such as <el>foo</el>,
 	 * on a standalone line. If the text is empty, an empty element will
-	 * be output as <el/>. Takes an optional list of tuples with attribute
+	 * be output as &lt;el/&gt;. Takes an optional list of tuples with attribute
 	 * names and values.
 	 * @throws IOException
 	 */

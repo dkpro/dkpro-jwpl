@@ -215,7 +215,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	 * Request that the dump processing be aborted. At the next element, an
 	 * exception will be thrown to stop the XML parser.
 	 *
-	 * @fixme Is setting a bool thread-safe? It should be atomic...
+	 * FIXME Is setting a bool thread-safe? It should be atomic...
 	 */
 	public void abort() {
 		abortFlag = true;
