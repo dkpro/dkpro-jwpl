@@ -80,7 +80,7 @@ public class XmlWriter {
 	}
 	
 	/**
-	 * Write an element open tag, such as <el>, on a standalone line.
+	 * Write an element open tag, such as &lt;el/&gt;, on a standalone line.
 	 * Takes an optional dictionary of attributes.
 	 * @throws IOException
 	 */
@@ -93,7 +93,7 @@ public class XmlWriter {
 	}
 	
 	/**
-	 * Write an element close tag, such as </el>, on a standalone line.
+	 * Write an element close tag, such as &lt;el/&gt;, on a standalone line.
 	 * If indent=False is passed, indentation will not be added.
 	 * @throws IOException
 	 */
@@ -112,7 +112,7 @@ public class XmlWriter {
 	}
 	
 	/**
-	 * Write an element with a text node included, such as <el>foo</el>,
+	 * Write an element with a text node included, such as &lt;el/&gt;foo&lt;el/&gt;,
 	 * on a standalone line. If the text is empty, an empty element will
 	 * be output as &lt;el/&gt;. Takes an optional list of tuples with attribute
 	 * names and values.
