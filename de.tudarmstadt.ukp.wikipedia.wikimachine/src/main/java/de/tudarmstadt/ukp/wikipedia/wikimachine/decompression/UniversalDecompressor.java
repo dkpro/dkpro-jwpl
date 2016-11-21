@@ -41,13 +41,10 @@ import java.util.Properties;
  * compressed file should be specified with the place holder <code>%f</code>. <br>
  * E.g. the entry for the 7z utility could look like that: <br> {@code <entry
  * key="7z">7z e -so %f</entry>}. The properties file should conform to
- * {@link "http://java.sun.com/dtd/properties.dtd"}
- *
+ * <a href="http://java.sun.com/dtd/properties.dtd">Java Properties DTD</a>
  *
  * @see UniversalDecompressor#getInputStream(String)
- *
  */
-
 public class UniversalDecompressor implements IDecompressor {
 
 	/**
@@ -124,8 +121,9 @@ public class UniversalDecompressor implements IDecompressor {
 	 * @return file extension or null
 	 */
 	private String getExtension(String fileName) {
-		if (fileName == null)
-			return null;
+		if (fileName == null) {
+            return null;
+        }
 
 		String ext = null;
 		int i = fileName.lastIndexOf('.');
