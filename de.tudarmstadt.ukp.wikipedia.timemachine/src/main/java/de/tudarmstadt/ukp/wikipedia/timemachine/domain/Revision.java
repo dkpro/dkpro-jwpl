@@ -29,7 +29,7 @@ public class Revision {
 	 */
 	private static final Long TIME_ZERO = 946724195435l;
 	/**
-	 * We measure the time not from 1th Janury 1900 but from 1th January 2000
+	 * We measure the time not from 1th January 1900 but from 1th January 2000
 	 */
 	private static final Integer MS_IN_SEC = 1000;
 
@@ -65,10 +65,6 @@ public class Revision {
 	/**
 	 * Merge two unsigned integer values (text id and time stamp) to one long
 	 * value (revision) to use GNU Trove container.
-	 *
-	 * @param textId
-	 * @param timestamp
-	 * @return
 	 */
 	public static long createRevision(int textId, int timestamp) {
 		return (long) textId << 32 | (long) timestamp;
@@ -77,7 +73,6 @@ public class Revision {
 	/**
 	 * Extract a time stamp from the revision long.
 	 *
-	 * @param revision
 	 * @return time stamp
 	 */
 	public static int getTimestamp(long revision) {
@@ -87,7 +82,6 @@ public class Revision {
 	/**
 	 * Extract a text ID from the revision long
 	 *
-	 * @param revision
 	 * @return text ID
 	 */
 	public static int getTextId(long revision) {
