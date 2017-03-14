@@ -200,6 +200,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	public void readDump() throws IOException {
 		try {
 			SAXParserFactory factory = SAXParserFactory.newInstance();
+			factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
 			SAXParser parser = factory.newSAXParser();
 
 			parser.parse(input, this);
