@@ -19,6 +19,7 @@ Anouar Haha
 Christian Jacobi
 Simon Kulessa
 Tristan Miller
+Kunal Sheth
 Artem Vovk
 Martin Wiesner
 Torsten Zesch
