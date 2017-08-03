@@ -69,8 +69,8 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 		logger.log("parse input dumps...");
 		new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()),
 				files);
-		System.gc();
-
+		
+		
 		dumpVersionProcessor.setDumpVersions(new IDumpVersion[] { version });
 
 		logger.log("processing table page...");

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -1643,8 +1645,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     private void serializeMap(Map<?,?> map, File file) {
         try {
-            ObjectOutputStream os = new ObjectOutputStream(
-                    new FileOutputStream(file));
+            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(
+                    new FileOutputStream(file)));
             os.writeObject(map);
             os.close();
         } catch (Exception e) {
@@ -1659,7 +1661,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     private Map deserializeMap(File file) {
         Map<?,?> map;
         try {
-            ObjectInputStream is = new ObjectInputStream(new FileInputStream(file));
+            ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
             map = (Map<?,?>) is.readObject();
             is.close();
         } catch (Exception e) {

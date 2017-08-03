@@ -67,7 +67,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	public void freeAfterCategoryLinksParsing() {
 		cPageIdNameMap.clear();
 		cNamePageIdMap.clear();
-		System.gc();
 	}
 
 	@Override
@@ -108,13 +107,13 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 	@Override
 	public void initialize(Timestamp timestamp) {
-		pPageIdNameMap = new HashMap<Integer, String>();
-		cPageIdNameMap = new TIntHashSet();
-		pNamePageIdMap = new HashMap<KeyType, Integer>();
-		cNamePageIdMap = new HashMap<KeyType, Integer>();
-		rPageIdNameMap = new HashMap<Integer, String>();
-		disambiguations = new TIntHashSet();
-		textIdPageIdMap = new TIntIntHashMap();
+		pPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		cPageIdNameMap = new TIntHashSet(1_000_000);
+		pNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
+		cNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
+		rPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		disambiguations = new TIntHashSet(1_000_000);
+		textIdPageIdMap = new TIntIntHashMap(1_000_000);
 	}
 
 	@SuppressWarnings("unchecked")

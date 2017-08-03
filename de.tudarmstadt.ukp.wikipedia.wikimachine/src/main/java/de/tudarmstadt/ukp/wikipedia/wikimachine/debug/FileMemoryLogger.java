@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.debug;
 
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -46,8 +47,8 @@ public class FileMemoryLogger extends AbstractLogger {
 	public FileMemoryLogger() {
 
 		try {
-			output = new PrintStream(new FileOutputStream(FILENAME_FORMAT
-					.format(new Date()).concat(".txt")));
+			output = new PrintStream(new BufferedOutputStream(new FileOutputStream(FILENAME_FORMAT
+					.format(new Date()).concat(".txt"))));
 			output.println(FILEHEADER);
 		} catch (FileNotFoundException e) {
 			log4j.error(e.getMessage());

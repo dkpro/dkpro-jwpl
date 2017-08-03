@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.decompression;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,10 +34,10 @@ public class BZip2Decompressor implements IDecompressor {
 
 	@Override
 	public InputStream getInputStream(String fileName) throws IOException {
-		FileInputStream inputStream;
+		BufferedInputStream inputStream;
 		InputStream outputStream = null;
 
-		inputStream = new FileInputStream(fileName);
+		inputStream = new BufferedInputStream(new FileInputStream(fileName));
 		/**
 		 * skip 2 first bytes (see the documentation of CBZip2InputStream) e.g.
 		 * here http://lucene.apache.org/tika/xref/org/apache/tika/parser

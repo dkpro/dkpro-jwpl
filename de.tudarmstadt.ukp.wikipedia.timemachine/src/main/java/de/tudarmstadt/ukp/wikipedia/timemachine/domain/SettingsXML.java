@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -62,7 +64,7 @@ public class SettingsXML {
 		p.put(PAGE_LINKS_FILE, PLACEHOLDER);
 		p.put(CATEGORY_LINKS_FILE, PLACEHOLDER);
 		p.put(OUTPUT_DIRECTORY, PLACEHOLDER);
-		p.storeToXML(new FileOutputStream(outputFileName), DESCRIPTION);
+		p.storeToXML(new BufferedOutputStream(new FileOutputStream(outputFileName)), DESCRIPTION);
 
 	}
 
@@ -73,7 +75,7 @@ public class SettingsXML {
 		try {
 			result = new Configuration(logger);
 			Properties properties = new Properties();
-			properties.loadFromXML(new FileInputStream(configFile));
+			properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
 
 			result.setLanguage(properties.get(LANGUAGE).toString());
 			result.setMainCategory(properties.get(MAIN_CATEGORY).toString());
@@ -94,7 +96,7 @@ public class SettingsXML {
 		TimeMachineFiles result;
 		try {
 			Properties properties = new Properties();
-			properties.loadFromXML(new FileInputStream(configFile));
+			properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
 			result = new TimeMachineFiles(logger);
 
 			result.setMetaHistoryFile(properties.get(META_HISTORY_FILE)

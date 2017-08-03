@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -231,8 +232,8 @@ public class WikipediaTemplateInfoDumpWriter
 	{
 		Writer writer = null;
 		try {
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(outputPath), charset));
+			writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
+					new FileOutputStream(outputPath)), charset));
 			StringBuffer dataToDump = new StringBuffer();
 
 			dataToDump.append(generateTemplateIdSQLStatement(this.tableExists));

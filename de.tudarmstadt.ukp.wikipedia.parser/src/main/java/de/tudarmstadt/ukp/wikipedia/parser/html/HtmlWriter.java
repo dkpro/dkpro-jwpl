@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.parser.html;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -487,8 +488,8 @@ public class HtmlWriter {
         File outFile = new File(filename);
         Writer destFile = null;
         try {
-            destFile = new BufferedWriter(new OutputStreamWriter(
-                            new FileOutputStream(outFile), encoding));
+            destFile = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
+                            new FileOutputStream(outFile)), encoding));
         } catch (UnsupportedEncodingException e1) {
             logger.error("Unsupported encoding exception while opening file " + outFile.getAbsolutePath());
             e1.printStackTrace();

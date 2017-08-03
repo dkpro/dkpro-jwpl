@@ -26,6 +26,7 @@
 package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
 
 import java.lang.Integer;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -41,8 +42,8 @@ public class RevisionListFilter implements DumpWriter {
 	public RevisionListFilter(DumpWriter sink, String sourceFileName) throws IOException {
 		this.sink = sink;
 		revIds = new TreeSet();
-		BufferedReader input = new BufferedReader(new InputStreamReader(
-			new FileInputStream(sourceFileName), "utf-8"));
+		BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
+			new FileInputStream(sourceFileName)), "utf-8"));
 		String line = input.readLine();
 		while (line != null) {
 			line = line.trim();
