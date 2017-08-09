@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
