@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.GZIPOutputStream;
@@ -41,22 +42,20 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 	private Revision lastRevision;
 
 	protected void createUncompressed() throws IOException {
-		pageFile = new UTFDataOutputStream(new FileOutputStream(files
-				.getGeneratedPage()));
-		revisionFile = new UTFDataOutputStream(new FileOutputStream(files
-				.getGeneratedRevision()));
-		textFile = new UTFDataOutputStream(new FileOutputStream(files
-				.getGeneratedText()));
+		pageFile = new UTFDataOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedPage())));
+		revisionFile = new UTFDataOutputStream(
+				new BufferedOutputStream(new FileOutputStream(files.getGeneratedRevision())));
+		textFile = new UTFDataOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedText())));
 	}
 
 	protected void createCompressed() throws IOException {
 
-		pageFile = new UTFDataOutputStream(new GZIPOutputStream(
-				new FileOutputStream(files.getGeneratedPage())));
-		revisionFile = new UTFDataOutputStream(new GZIPOutputStream(
-				new FileOutputStream(files.getGeneratedRevision())));
-		textFile = new UTFDataOutputStream(new GZIPOutputStream(
-				new FileOutputStream(files.getGeneratedText())));
+		pageFile = new UTFDataOutputStream(
+				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedPage()))));
+		revisionFile = new UTFDataOutputStream(
+				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedRevision()))));
+		textFile = new UTFDataOutputStream(
+				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedText()))));
 
 	}
 
@@ -120,8 +119,7 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 	private void updatePage(Page page, Revision revision) throws IOException {
 		pageFile.writeInt(page.Id);
 		pageFile.writeInt(page.Title.Namespace);
-		pageFile.writeUTFAsArray(SQLEscape.escape(SQLEscape
-				.titleFormat(page.Title.Text)));
+		pageFile.writeUTFAsArray(SQLEscape.escape(SQLEscape.titleFormat(page.Title.Text)));
 		// pageFile.writeBoolean(revision.isRedirect());
 		pageFile.writeBoolean(Redirects.isRedirect(revision.Text));
 	}

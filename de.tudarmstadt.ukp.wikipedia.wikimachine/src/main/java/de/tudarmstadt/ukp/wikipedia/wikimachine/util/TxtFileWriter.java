@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.util;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -39,7 +40,7 @@ public class TxtFileWriter extends PrintStream {
 	 * @throws IOException
 	 */
 	public TxtFileWriter(String filename) throws IOException {
-		super(new FileOutputStream(filename), AUTOFLUSH, ENCODING);
+		super(new BufferedOutputStream(new FileOutputStream(filename)), AUTOFLUSH, ENCODING);
 	}
 
 	/**

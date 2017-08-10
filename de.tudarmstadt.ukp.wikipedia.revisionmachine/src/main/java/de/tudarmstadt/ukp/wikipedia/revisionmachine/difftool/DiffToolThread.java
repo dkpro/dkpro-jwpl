@@ -287,7 +287,6 @@ public class DiffToolThread
 
 			while (archives.hasArchive()) {
 
-				System.gc();
 
 				// Retrieve Archive
 				try {

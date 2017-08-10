@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -56,7 +57,7 @@ public class WikipediaXMLWriter
 	public WikipediaXMLWriter(final String path)
 		throws IOException
 	{
-		this.writer = new OutputStreamWriter(new FileOutputStream(path),
+		this.writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(path)),
 				"UTF-8");
 	}
 

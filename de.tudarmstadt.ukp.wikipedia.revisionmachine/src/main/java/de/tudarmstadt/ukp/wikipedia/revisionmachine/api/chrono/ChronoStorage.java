@@ -328,7 +328,7 @@ public class ChronoStorage
 			last = block;
 		}
 
-		System.gc();
+		
 	}
 
 	/**

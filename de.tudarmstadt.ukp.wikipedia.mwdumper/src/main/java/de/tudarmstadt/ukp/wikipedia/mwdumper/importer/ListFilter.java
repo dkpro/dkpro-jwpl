@@ -25,6 +25,7 @@
 
 package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,8 +38,8 @@ public class ListFilter extends PageFilter {
 	public ListFilter(DumpWriter sink, String sourceFileName) throws IOException {
 		super(sink);
 		list = new HashMap();
-		BufferedReader input = new BufferedReader(new InputStreamReader(
-			new FileInputStream(sourceFileName), "utf-8"));
+		BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
+			new FileInputStream(sourceFileName)), "utf-8"));
 		String line = input.readLine();
 		while (line != null) {
 			if (!line.startsWith("#")) {

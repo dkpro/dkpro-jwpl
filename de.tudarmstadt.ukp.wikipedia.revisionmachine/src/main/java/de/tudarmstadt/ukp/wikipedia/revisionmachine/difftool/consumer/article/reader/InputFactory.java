@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.reader;
 
+import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -151,7 +152,7 @@ public class InputFactory
 	{
 
 		try {
-			return new InputStreamReader(new FileInputStream(archivePath),
+			return new InputStreamReader(new BufferedInputStream(new FileInputStream(archivePath)),
 					WIKIPEDIA_ENCODING);
 
 		}

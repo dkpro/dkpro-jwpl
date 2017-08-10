@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -244,8 +245,8 @@ public class DataFileWriter
 
 		this.dataFile = new File(filePath);
 
-		this.writer = new BufferedWriter(new OutputStreamWriter(
-		        new FileOutputStream(filePath), WIKIPEDIA_ENCODING));
+		this.writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
+		        new FileOutputStream(filePath)), WIKIPEDIA_ENCODING));
 
 
 		this.writer.flush();

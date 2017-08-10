@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -213,10 +214,10 @@ public class TemplateInfoGeneratorStarter
 	private static Properties load(String configFilePath)
 	{
 		Properties props = new Properties();
-		FileInputStream fis = null;
+		BufferedInputStream fis = null;
 		try {
 			File configFile = new File(configFilePath);
-			fis = new FileInputStream(configFile);
+			fis = new BufferedInputStream(new FileInputStream(configFile));
 			props.load(fis);
 		}
 		catch (IOException e) {

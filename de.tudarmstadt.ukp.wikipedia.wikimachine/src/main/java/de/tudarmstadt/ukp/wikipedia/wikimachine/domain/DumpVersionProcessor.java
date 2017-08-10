@@ -31,7 +31,7 @@ public class DumpVersionProcessor {
 
 	private static ILogger logger;
 
-	private Integer step2Log = 10000;
+	private Integer step2Log = 100000;
 	private Integer step2GC = step2Log * 10;
 	private Integer step2Flush = step2GC;
 
@@ -181,9 +181,6 @@ public class DumpVersionProcessor {
 		if (step2Log != 0 && counter % step2Log == 0) {
 			String message = event + " " + counter;
 			logger.log(message);
-		}
-		if (step2GC != 0 && counter % step2GC == 0) {
-			System.gc();
 		}
 	}
 

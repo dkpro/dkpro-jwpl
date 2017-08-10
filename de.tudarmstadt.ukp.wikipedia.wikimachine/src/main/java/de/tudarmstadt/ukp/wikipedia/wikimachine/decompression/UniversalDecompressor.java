@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.decompression;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -174,7 +175,7 @@ public class UniversalDecompressor implements IDecompressor {
 	private InputStream getDefault(String fileName) {
 		InputStream result = null;
 		try {
-			result = new FileInputStream(fileName);
+			result = new BufferedInputStream(new FileInputStream(fileName));
 		} catch (IOException ignore) {
 		}
 

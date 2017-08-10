@@ -55,7 +55,7 @@ public class Bzip2Archiver
 
 			File fileToArchive = new File(path);
 
-			FileInputStream input = new FileInputStream(fileToArchive);
+			BufferedInputStream input = new BufferedInputStream(new FileInputStream(fileToArchive));
 
 			File archivedFile = new File(fileToArchive.getName() + ".bz2");
 			archivedFile.createNewFile();
@@ -130,7 +130,7 @@ public class Bzip2Archiver
 	{
 		File fileToUncompress = new File(path);
 
-		FileInputStream fileStream = new FileInputStream(fileToUncompress);
+		BufferedInputStream fileStream = new BufferedInputStream(new FileInputStream(fileToUncompress));
 
 		// read bzip2 prefix: BZ
 		fileStream.read();
@@ -161,7 +161,7 @@ public class Bzip2Archiver
 
 		unarchived.createNewFile();
 
-		FileInputStream inputStr = new FileInputStream(bzip2);
+		BufferedInputStream inputStr = new BufferedInputStream(new FileInputStream(bzip2));
 
 		// read bzip2 prefix
 		inputStr.read();
