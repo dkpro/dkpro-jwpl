@@ -188,7 +188,7 @@ public class CategoryTest {
 		List<Integer> expectedPageIds = new ArrayList<Integer>();
 		List<Integer> isIds = new ArrayList<Integer>();
 		try {
-			for(Page p : cat.getPages()) {
+			for(Page p : cat.getArticles()) {
 				isIds.add(p.getPageId());
 			}
 		} catch (WikiApiException e) {
