@@ -65,6 +65,8 @@ public class Page
 	// Note: The page itself is _not_ a redirect, it is just a page.
 	private boolean isRedirect = false;
 
+	private WikiConfig config = DefaultConfigEnWp.generate();
+
 	/**
 	 * Creates a page object.
 	 *
@@ -159,7 +161,7 @@ public class Page
 
 	/**
 	 * @throws WikiApiException
-	 * @see de.tudarmstadt.ukp.wikipedia.api.Page#Page(long)
+	 * @see de.tudarmstadt.ukp.wikipedia.api.Page
 	 */
 	private void fetchByHibernateId(long id)
 		throws WikiApiException
@@ -591,7 +593,7 @@ public class Page
 		throws WikiApiException
 	{
 		//Configure the PlainTextConverter for plain text parsing
-		return (String) parsePage(new PlainTextConverter());
+		return (String) parsePage(new PlainTextConverter(config, false, Integer.MAX_VALUE));
 	}
 
 	/**

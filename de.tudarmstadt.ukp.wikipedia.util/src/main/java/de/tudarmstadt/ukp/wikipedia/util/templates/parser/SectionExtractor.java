@@ -29,42 +29,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
 
-import org.sweble.wikitext.engine.Page;
 import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.LinkTargetException;
-import org.sweble.wikitext.lazy.parser.Bold;
-import org.sweble.wikitext.lazy.parser.DefinitionDefinition;
-import org.sweble.wikitext.lazy.parser.DefinitionList;
-import org.sweble.wikitext.lazy.parser.DefinitionTerm;
-import org.sweble.wikitext.lazy.parser.ExternalLink;
-import org.sweble.wikitext.lazy.parser.InternalLink;
-import org.sweble.wikitext.lazy.parser.Italics;
-import org.sweble.wikitext.lazy.parser.LinkTarget;
-import org.sweble.wikitext.lazy.parser.LinkTitle;
-import org.sweble.wikitext.lazy.parser.Paragraph;
-import org.sweble.wikitext.lazy.parser.Section;
-import org.sweble.wikitext.lazy.parser.Whitespace;
-import org.sweble.wikitext.lazy.parser.XmlElementClose;
-import org.sweble.wikitext.lazy.parser.XmlElementEmpty;
-import org.sweble.wikitext.lazy.parser.XmlElementOpen;
-import org.sweble.wikitext.lazy.preprocessor.Template;
-
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
-import de.fau.cs.osr.ptk.common.ast.NodeList;
-import de.fau.cs.osr.ptk.common.ast.Text;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.fau.cs.osr.ptk.common.ast.AstText;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.nodes.*;
+import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 /**
  * A visitor that extracts sections from an article AST.
  *
  */
-public class SectionExtractor extends AstVisitor
+public class SectionExtractor extends AstVisitor<WtNode>
 {
-	private final SimpleWikiConfiguration config;
+	private final WikiConfig config;
 
 	private List<ExtractedSection> sections;
 
@@ -96,17 +77,7 @@ public class SectionExtractor extends AstVisitor
 	 */
 	public SectionExtractor()
 	{
-		SimpleWikiConfiguration config=null;
-		try{
-			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
-		}catch(IOException e){
-			//TODO logger
-			e.printStackTrace();
-		}catch(JAXBException e){
-			//TODO logger
-			e.printStackTrace();
-		}
-		this.config=config;
+		this.config = DefaultConfigEnWp.generate();
 	}
 
 	/**
@@ -115,13 +86,13 @@ public class SectionExtractor extends AstVisitor
 	 *
 	 * @param config the Sweble configuration
 	 */
-	public SectionExtractor(SimpleWikiConfiguration config)
+	public SectionExtractor(WikiConfig config)
 	{
 		this.config = config;
 	}
 
 	@Override
-	protected boolean before(AstNode node)
+	protected WtNode before(WtNode node)
 	{
 		// This method is called by go() before visitation starts
 		sections = new ArrayList<ExtractedSection>();
@@ -130,60 +101,60 @@ public class SectionExtractor extends AstVisitor
 	}
 
 	@Override
-	protected Object after(AstNode node, Object result)
+	protected Object after(WtNode node, Object result)
 	{
 		return sections;
 	}
 
 	// =========================================================================
 
-	public void visit(Page n)
+	public void visit(WtPage n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Whitespace n)
+	public void visit(WtWhitespace n)
 	{
 		bodyBuilder.append(" ");
 	}
 
-	public void visit(Bold n)
+	public void visit(WtBold n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Italics n)
+	public void visit(WtItalics n)
 	{
 		iterate(n);
 	}
 
-	public void visit(ExternalLink link)
+	public void visit(WtExternalLink link)
 	{
 		iterate(link.getTitle());
 	}
 
-	public void visit(LinkTitle n)
+	public void visit(WtLinkTitle n)
 	{
 		iterate(n);
 	}
 
-	public void visit(LinkTarget n)
+	public void visit(WtLinkTarget n)
 	{
 		iterate(n);
 	}
 
-	public void visit(InternalLink link)
+	public void visit(WtInternalLink link)
 	{
 		try
 		{
-			PageTitle page = PageTitle.make(config, link.getTarget());
+			PageTitle page = PageTitle.make(config, link.getTarget().getAsString());
 			if (page.getNamespace().equals(config.getNamespace("Category"))) {
 				return;
 			}else{
 				String curLinkTitle="";
-				for(AstNode n:link.getTitle().getContent()){
-					if(n instanceof Text){
-						curLinkTitle = ((Text)n).getContent().trim();
+				for(AstNode n:link.getTitle()){
+					if(n instanceof AstText){
+						curLinkTitle = ((AstText)n).getContent().trim();
 					}
 				}
 				if(curLinkTitle.isEmpty()){
@@ -199,25 +170,25 @@ public class SectionExtractor extends AstVisitor
 		}
 
 	}
-	public void visit(DefinitionList n){
+	public void visit(WtDefinitionList n){
 		iterate(n);
 	}
 
-	public void visit(DefinitionTerm n){
+	public void visit(WtDefinitionListTerm n){
 		iterate(n);
 	}
 
-	public void visit(DefinitionDefinition n){
+	public void visit(WtDefinitionListDef n){
 		iterate(n);
 	}
 
-	public void visit(XmlElementOpen n){
+	public void visit(WtXmlStartTag n){
 	}
 
-	public void visit(XmlElementClose n){
+	public void visit(WtXmlEndTag n){
 	}
 
-	public void visit(XmlElementEmpty n){
+	public void visit(WtXmlEmptyTag n){
 	}
 
 
@@ -225,21 +196,21 @@ public class SectionExtractor extends AstVisitor
 	{
 	}
 
-	public void visit(NodeList n)
+	public void visit(WtNodeList n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Paragraph n)
+	public void visit(WtParagraph n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Template tmpl) throws IOException
+	public void visit(WtTemplate tmpl) throws IOException
 	{
 		for(AstNode n:tmpl.getName()){
-			if(n instanceof Text){
-				String s = ((Text)n).getContent();
+			if(n instanceof AstText){
+				String s = ((AstText)n).getContent();
 				s=s.replace("\n", "").replace("\r", "");
 				if (!s.trim().isEmpty()) {
 					curTpls.add(s);
@@ -256,19 +227,19 @@ public class SectionExtractor extends AstVisitor
 		}
 	}
 
-	public void visit(Text n)
+	public void visit(AstText n)
 	{
 		bodyBuilder.append(n.getContent());
 	}
 
-	public void visit(Section sect) throws IOException
+	public void visit(WtSection sect) throws IOException
 	{
 
 		String title = null;
 
-		for(AstNode n:sect.getTitle()){
-			if(n instanceof Text){
-				title = ((Text)n).getContent();
+		for(AstNode n:sect.getBody()){
+			if(n instanceof AstText){
+				title = ((AstText)n).getContent();
 			}
 		}
 		iterate(sect.getBody());

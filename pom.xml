@@ -36,6 +36,10 @@
     <fau.utils.version>0.3.1</fau.utils.version>
     <hibernate.version>5.2.17.Final</hibernate.version>
     <spring.version>4.3.17.RELEASE</spring.version>
+    <fau.ptk.version>3.0.8</fau.ptk.version>
+    <fau.utils.version>3.0.8</fau.utils.version>
+    <hibernate.version>5.2.17</hibernate.version>
+    <spring.version>4.3.17.RELEASE</spring.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
   </properties>
@@ -229,6 +233,11 @@
       <dependency>
         <groupId>org.sweble.wikitext</groupId>
         <artifactId>swc-engine</artifactId>
+        <version>3.1.6</version>
+      </dependency>
+      <dependency>
+        <groupId>org.sweble.wom3</groupId>
+        <artifactId>sweble-wom3-parent</artifactId>
         <version>3.1.6</version>
       </dependency>
       <dependency>
