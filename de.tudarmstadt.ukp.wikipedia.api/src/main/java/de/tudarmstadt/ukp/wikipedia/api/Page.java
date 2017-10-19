@@ -26,11 +26,14 @@ import org.hibernate.Session;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
-import org.sweble.wikitext.engine.CompiledPage;
-import org.sweble.wikitext.engine.Compiler;
+import org.sweble.wikitext.engine.FullPreprocessedPage;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
+import org.sweble.wikitext.engine.WtEngineImpl;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.nodes.EngProcessedPage;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -617,19 +620,21 @@ public class Page
 	 * @return the parsed page
 	 * @throws WikiApiException
 	 */
-	public CompiledPage getCompiledPage() throws WikiApiException
+	public EngProcessedPage getCompiledPage() throws WikiApiException
 	{
-		CompiledPage cp;
+		EngProcessedPage cp;
 		try{
-			SimpleWikiConfiguration config = new SimpleWikiConfiguration(SWEBLE_CONFIG);
+			// TODO: extract based on locale
+			Language lang = this.wiki.getLanguage();
+			WikiConfig config = DefaultConfigEnWp.generate();
+			WtEngineImpl engine = new WtEngineImpl(config);
 
 			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
 			PageId pageId = new PageId(pageTitle, -1);
 
 			// Compile the retrieved page
-			Compiler compiler = new Compiler(config);
-			cp = compiler.postprocess(pageId, this.getText(), null);
-		}catch(Exception e){
+			cp = engine.postprocess(pageId, this.getText(), null);
+		} catch(Exception e){
 			throw new WikiApiException(e);
 		}
 		return cp;
