@@ -26,14 +26,10 @@ import org.hibernate.Session;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
-import org.sweble.wikitext.engine.FullPreprocessedPage;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
-import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
@@ -65,7 +61,6 @@ public class Page
 	// Note: The page itself is _not_ a redirect, it is just a page.
 	private boolean isRedirect = false;
 
-	private WikiConfig config = DefaultConfigEnWp.generate();
 
 	/**
 	 * Creates a page object.
@@ -593,7 +588,7 @@ public class Page
 		throws WikiApiException
 	{
 		//Configure the PlainTextConverter for plain text parsing
-		return (String) parsePage(new PlainTextConverter(config, false, Integer.MAX_VALUE));
+		return (String) parsePage(new PlainTextConverter(this.wiki.wikiConfig, false, Integer.MAX_VALUE));
 	}
 
 	/**
@@ -626,12 +621,9 @@ public class Page
 	{
 		EngProcessedPage cp;
 		try{
-			// TODO: extract based on locale
-			Language lang = this.wiki.getLanguage();
-			WikiConfig config = DefaultConfigEnWp.generate();
-			WtEngineImpl engine = new WtEngineImpl(config);
+			WtEngineImpl engine = new WtEngineImpl(this.wiki.wikiConfig);
 
-			PageTitle pageTitle = PageTitle.make(config, this.getTitle().toString());
+			PageTitle pageTitle = PageTitle.make(this.wiki.wikiConfig, this.getTitle().toString());
 			PageId pageId = new PageId(pageTitle, -1);
 
 			// Compile the retrieved page

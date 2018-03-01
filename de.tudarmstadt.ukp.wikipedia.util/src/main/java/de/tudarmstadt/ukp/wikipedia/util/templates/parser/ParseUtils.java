@@ -100,7 +100,7 @@ public class ParseUtils
 	 *
 	 * @return the parsed page
 	 * @throws LinkTargetException
-	 * @throws EngProcessedPage if the wiki page could not be compiled by the parser
+	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 * @throws JAXBException
 	 * @throws FileNotFoundException
 	 */
