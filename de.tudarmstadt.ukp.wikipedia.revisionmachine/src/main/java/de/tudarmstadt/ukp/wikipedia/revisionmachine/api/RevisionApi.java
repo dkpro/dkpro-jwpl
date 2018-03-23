@@ -747,9 +747,8 @@ public class RevisionApi
      * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br>
      * <br>
      * Filtered results also include unregistered users (because they cannot be filtered using user
-     * groups) In order to get results containing only registered users, use
-     * getUserContributionMap(final int articleID, List<String> groupfilter, boolean onlyRegistered)
-     * and set {@code onlyRegistered=true}.<br>
+     * groups) In order to get results containing only registered users, use {@link
+     * #getUserContributionMap(int, String[], boolean)} and set {@code onlyRegistered=true}.<br>
      * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.

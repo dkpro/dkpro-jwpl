@@ -23,9 +23,6 @@ import static org.junit.Assume.assumeNoException;
 
 import java.io.File;
 
-import junit.framework.JUnit4TestAdapter;
-import junit.textui.TestRunner;
-
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.After;
@@ -38,6 +35,8 @@ import de.tudarmstadt.ukp.wikipedia.api.CategoryGraphManager;
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
+import junit.framework.JUnit4TestAdapter;
+import junit.textui.TestRunner;
 
 /**
  * Tests for the correctness of the Category graph construction and its serialization<br>

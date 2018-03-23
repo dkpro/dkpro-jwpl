@@ -25,10 +25,10 @@
 
 package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
 
-import java.util.Map;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class NamespaceSet {
 	Map byname;

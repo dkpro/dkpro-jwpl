@@ -20,7 +20,6 @@ package de.tudarmstadt.ukp.wikipedia.api;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**

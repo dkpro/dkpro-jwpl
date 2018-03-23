@@ -219,9 +219,9 @@ public class WikipediaTemplateInfoDumpWriter
 	 * Generate and write sql statements to output file
 	 *
 	 * @param revTableExists
-	 *            if revision table does not exists ->create index
+	 *            if revision table does not exists -&gt; create index
 	 * @param pageTableExists
-	 *            if page table does not exists ->create index
+	 *            if page table does not exists -&gt; create index
 	 * @param mode
 	 *            generation mode
 	 * @throws Exception

@@ -22,10 +22,10 @@ import java.io.IOException;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.CategorylinksParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.PagelinksParser;
+import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.version.IDumpVersion;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.PageParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.RevisionParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
-import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.version.IDumpVersion;
 
 public class DumpVersionProcessor {
 

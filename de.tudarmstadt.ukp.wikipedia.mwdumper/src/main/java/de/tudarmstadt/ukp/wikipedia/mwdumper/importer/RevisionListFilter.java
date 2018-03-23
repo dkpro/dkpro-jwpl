@@ -25,7 +25,6 @@
 
 package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
 
-import java.lang.Integer;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;

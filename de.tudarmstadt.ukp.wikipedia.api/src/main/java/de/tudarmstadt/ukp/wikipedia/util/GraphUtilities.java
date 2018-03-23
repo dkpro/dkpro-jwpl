@@ -17,10 +17,13 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import de.tudarmstadt.ukp.wikipedia.api.Page;
 
 public class GraphUtilities {

@@ -23,19 +23,18 @@ import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
-import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableInputStream;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
+import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableInputStream;
 
 /**
- * Decorator for an <cod>InputStream</code>. Converts an XML source to SQL
+ * Decorator for an <code>InputStream</code>. Converts an XML source to SQL
  * result in a separated thread via
  * <code>org.mediawiki.importer.XmlDumpReader</code>
  *
- * @update 18.11.2009 : constructor is replaced by initialize method
- *
- *
+ * <ul>
+ * <li>update 18.11.2009 : constructor is replaced by initialize method</li>
+ * </ul>
  */
-
 public class XMLDumpTableInputStream extends DumpTableInputStream {
 
 	private static final int BUFFERSIZE = 8192;
@@ -65,7 +64,8 @@ public class XMLDumpTableInputStream extends DumpTableInputStream {
 	 *            XML input stream
 	 * @throws IOException
 	 */
-	public void initialize(InputStream inputStream, DumpTableEnum table)
+	@Override
+    public void initialize(InputStream inputStream, DumpTableEnum table)
 			throws IOException {
 
 		unbufferedResult = new PipedInputStream();

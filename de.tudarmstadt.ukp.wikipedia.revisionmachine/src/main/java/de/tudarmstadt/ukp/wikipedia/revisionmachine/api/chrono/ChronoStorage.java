@@ -68,7 +68,7 @@ public class ChronoStorage
 	 * @param config
 	 *            Reference to the configuration
 	 * @param mapping
-	 *            Mapping information (revision counter -> chronological
+	 *            Mapping information (revision counter -&gt; chronological
 	 *            revision counter)
 	 * @param firstCFR
 	 *            Head of the double linked list of full revisions blocks

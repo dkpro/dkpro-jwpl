@@ -17,12 +17,17 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
-import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
@@ -30,8 +35,12 @@ import org.hibernate.query.Query;
 import org.hibernate.type.IntegerType;
 import org.hibernate.type.StringType;
 
-import java.util.*;
-import java.util.Map.Entry;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
+import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
 
 
 /**

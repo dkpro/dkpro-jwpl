@@ -31,6 +31,7 @@ import javax.xml.parsers.SAXParserFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Content;
+import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 import de.tudarmstadt.ukp.wikipedia.parser.DefinitionList;
 import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.NestedList;
@@ -41,7 +42,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.SectionContainer;
 import de.tudarmstadt.ukp.wikipedia.parser.SectionContent;
 import de.tudarmstadt.ukp.wikipedia.parser.Span;
 import de.tudarmstadt.ukp.wikipedia.parser.Table;
-import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
  * Provides access to a ParsedPage at an abstract Level.

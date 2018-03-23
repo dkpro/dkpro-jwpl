@@ -62,15 +62,31 @@ package de.tudarmstadt.ukp.wikipedia.mwdumper.dumper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.util.zip.GZIPOutputStream;
-import java.lang.ClassNotFoundException;
-
 import java.text.ParseException;
+import java.util.zip.GZIPOutputStream;
 
-import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.*;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.AfterTimeStampFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.BeforeTimeStampFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.ExactListFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.LatestFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.ListFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.MultiWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NotalkFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.RevisionListFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SphinxWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlFileStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlServerStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter14;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter15;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.TitleMatchFilter;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpWriter;
 
 
 class Dumper {

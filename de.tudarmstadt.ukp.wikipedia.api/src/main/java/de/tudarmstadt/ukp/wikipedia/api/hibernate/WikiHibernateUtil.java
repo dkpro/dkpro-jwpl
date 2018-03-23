@@ -17,15 +17,16 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
-import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 
 public class WikiHibernateUtil implements WikiConstants {
 

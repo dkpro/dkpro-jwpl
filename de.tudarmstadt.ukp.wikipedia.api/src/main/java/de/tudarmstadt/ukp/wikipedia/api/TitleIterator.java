@@ -17,12 +17,13 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import org.hibernate.Session;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.hibernate.Session;
+
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * An iterator over category objects.

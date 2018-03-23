@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import static de.tudarmstadt.ukp.wikipedia.api.WikiConstants.LF;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 

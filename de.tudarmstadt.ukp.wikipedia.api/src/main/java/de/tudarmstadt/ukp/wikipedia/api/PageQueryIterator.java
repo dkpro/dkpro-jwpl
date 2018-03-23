@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 

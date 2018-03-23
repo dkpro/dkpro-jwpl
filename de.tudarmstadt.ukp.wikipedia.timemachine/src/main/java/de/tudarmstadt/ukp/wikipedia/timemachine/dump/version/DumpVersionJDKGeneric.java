@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.dump.version;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -36,9 +33,11 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.hashing.IStringHashCode;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 /**
- * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} returns the
+ * <i>Please be sure, that {@code hashCode(String)} of the provided HashAlgorithm type returns the
  * same type as KeyType</i>
  *
  *

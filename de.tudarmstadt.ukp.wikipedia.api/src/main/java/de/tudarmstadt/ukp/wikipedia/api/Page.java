@@ -17,13 +17,10 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import de.fau.cs.osr.ptk.common.AstVisitor;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
-import de.tudarmstadt.ukp.wikipedia.api.sweble.PlainTextConverter;
-import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.type.IntegerType;
@@ -35,9 +32,13 @@ import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import de.fau.cs.osr.ptk.common.AstVisitor;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
+import de.tudarmstadt.ukp.wikipedia.api.sweble.PlainTextConverter;
+import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
 
 /**
  * Represents a Wikipedia article page.

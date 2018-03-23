@@ -17,8 +17,12 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.tutorial;
 
-import de.tudarmstadt.ukp.wikipedia.api.*;
-import de.tudarmstadt.ukp.wikipedia.api.exception.*;
+import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
+import de.tudarmstadt.ukp.wikipedia.api.Page;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 
 /**
  * Tutorial 1c

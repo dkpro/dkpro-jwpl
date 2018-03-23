@@ -27,12 +27,7 @@ package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * Generates XML stream suitable for the Sphinx search engine's xmlpipe input.

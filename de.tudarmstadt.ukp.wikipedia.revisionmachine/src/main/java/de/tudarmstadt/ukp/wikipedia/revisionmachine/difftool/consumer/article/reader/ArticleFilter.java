@@ -29,7 +29,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.Configuratio
 
 /**
  * Filter articles from unwanted namespaces.<br>
- * The namespaces are read in from the <siteinfo> of the Wikipedia dump. The
+ * The namespaces are read in from the {@code <siteinfo>} of the Wikipedia dump. The
  * corresponding prefixes of the language version are then used by the filter to
  * determine whether an article is part of an unwanted namespace or not. <br>
  *

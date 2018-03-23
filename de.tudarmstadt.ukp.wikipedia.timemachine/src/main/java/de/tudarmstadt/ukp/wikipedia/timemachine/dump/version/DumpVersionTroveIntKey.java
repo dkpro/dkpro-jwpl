@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.dump.version;
 
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
-
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -35,6 +32,8 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 	private static final String SQL_NULL = "NULL";

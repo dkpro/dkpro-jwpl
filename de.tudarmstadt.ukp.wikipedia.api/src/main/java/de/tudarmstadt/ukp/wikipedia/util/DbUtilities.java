@@ -17,7 +17,10 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

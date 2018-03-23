@@ -25,8 +25,6 @@ package de.tudarmstadt.ukp.wikipedia.mwdumper.importer;
  */
 
 import junit.framework.TestCase;
-import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceSet;
-import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title;
 
 public class TitleTest extends TestCase {
 	NamespaceSet namespaces;

@@ -17,18 +17,19 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.CategoryDAO;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.type.LongType;
 import org.hibernate.type.StringType;
 
-import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.Set;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import de.tudarmstadt.ukp.wikipedia.api.hibernate.CategoryDAO;
 
 public class Category implements WikiConstants {
 

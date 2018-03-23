@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import de.tudarmstadt.ukp.wikipedia.util.OS;
 
 public class ApiUtilities {
 

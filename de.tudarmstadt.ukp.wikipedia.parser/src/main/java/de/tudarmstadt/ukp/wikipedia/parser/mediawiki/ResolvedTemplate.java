@@ -69,7 +69,7 @@ public class ResolvedTemplate{
 	/**
 	 * will be called by the parser before the Parsing process and replaces the original
 	 * template code. MediaWiki code which is returned here, will be parsed.<br>
-	 * length()>0 ! empty stings would not be accepted.
+	 * length() &gt; 0 ! empty stings would not be accepted.
 	 */
 	public String getPreParseReplacement() {
 		return preParseReplacement;

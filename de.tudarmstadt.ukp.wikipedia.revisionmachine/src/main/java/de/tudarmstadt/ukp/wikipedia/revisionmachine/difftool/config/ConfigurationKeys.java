@@ -97,7 +97,7 @@ public enum ConfigurationKeys
 	WIKIPEDIA_ENCODING,
 
 	/**
-	 * Type: Integer Range: > 1 Used by: DiffConsumers - Diff Generation
+	 * Type: Integer Range: &gt; 1 Used by: DiffConsumers - Diff Generation
 	 *
 	 * Description: This number indicates which revisions should be full
 	 * revisions.
@@ -115,7 +115,7 @@ public enum ConfigurationKeys
 	COUNTER_FULL_REVISION,
 
 	/**
-	 * Type: Integer Range: > 1 Used by: DiffConsumers - Common Longest
+	 * Type: Integer Range: &gt; 1 Used by: DiffConsumers - Common Longest
 	 * Substring Search
 	 *
 	 * Description: This number indicates when a matching sequence between two

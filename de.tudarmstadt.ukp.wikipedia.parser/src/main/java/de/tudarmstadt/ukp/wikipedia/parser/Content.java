@@ -37,7 +37,7 @@ public interface Content{
 			MATH,
             /** The Content between NoWiki Tags */
             NOWIKI,
-            /** The begin and end position of an unkown Tag defined by &lt; and > */
+            /** The begin and end position of an unknown Tag defined by &lt; and &gt; */
 			TAG,
 		};
 	

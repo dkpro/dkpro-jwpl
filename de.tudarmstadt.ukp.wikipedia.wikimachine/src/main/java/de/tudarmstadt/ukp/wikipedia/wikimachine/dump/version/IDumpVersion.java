@@ -25,7 +25,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.Files;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.MetaData;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.CategorylinksParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.PagelinksParser;
-
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.PageParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.RevisionParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;

@@ -422,20 +422,22 @@ public class MediaWikiParserFactory {
 	public void setShowImageText( boolean showImageText ){ this.showImageText = showImageText; }
 
 	/**
-	 * Returns if &lf; * > tags should be deleted or annotaded.
+	 * Returns if &lt; * &gt; tags should be deleted or annotaded.
 	 * @return true if the tags should be deleted.
 	 */
 	public boolean getDeleteTags() { return deleteTags; }
 
 	/**
-	 * Sets if &lf; * > tags should be deleted or annotaded.
+	 * Sets if &lt; * &gt; tags should be deleted or annotaded.
 	 */
 	public void setDeleteTags(boolean deleteTags) {	this.deleteTags = deleteTags; }
 
-	/**
-	 * Retruns if the Content of math tags (&lf;math>&lf;CONTENT/math>) should be deleted or annotated.
-	 * @return true, if the tag content should be annotated.
-	 */
+    /**
+     * Retruns if the Content of math tags (&lt;math&gt;&lt;CONTENT/math&gt;) should be deleted or
+     * annotated.
+     * 
+     * @return true, if the tag content should be annotated.
+     */
 	public boolean getShowMathTagContent() { return showMathTagContent; }
 
 	/**

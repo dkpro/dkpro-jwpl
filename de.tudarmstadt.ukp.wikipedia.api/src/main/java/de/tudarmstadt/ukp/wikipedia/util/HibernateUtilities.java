@@ -17,7 +17,9 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.util;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.hibernate.Session;
 

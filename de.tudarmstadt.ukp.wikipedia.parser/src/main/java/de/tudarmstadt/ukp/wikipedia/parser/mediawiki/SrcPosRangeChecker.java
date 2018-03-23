@@ -20,6 +20,7 @@ package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 import de.tudarmstadt.ukp.wikipedia.parser.ContentElement;
 import de.tudarmstadt.ukp.wikipedia.parser.DefinitionList;
 import de.tudarmstadt.ukp.wikipedia.parser.Link;
@@ -35,7 +36,6 @@ import de.tudarmstadt.ukp.wikipedia.parser.SrcSpan;
 import de.tudarmstadt.ukp.wikipedia.parser.Table;
 import de.tudarmstadt.ukp.wikipedia.parser.TableElement;
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
-import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
 
 /**
  * Checks the Range of the SrcSpans of a ParsedPage, so it isn't possible
