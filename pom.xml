@@ -35,7 +35,7 @@
     <fau.ptk.version>1.1.1</fau.ptk.version>
     <fau.utils.version>0.3.1</fau.utils.version>
     <hibernate.version>5.2.17.Final</hibernate.version>
-    <spring.version>4.3.16.RELEASE</spring.version>
+    <spring.version>4.3.17.RELEASE</spring.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
   </properties>
