@@ -26,10 +26,10 @@ public class WikiConfigTest {
 
     @Test
     public void testGetWikiConf() {
-        WikiConfig portugueseConf = Wikipedia.getWikiconfig(WikiConstants.Language.portuguese);
-        WikiConfig englishConf = Wikipedia.getWikiconfig(WikiConstants.Language.english);
-        WikiConfig testConf = Wikipedia.getWikiconfig(WikiConstants.Language._test);
-        WikiConfig frenchConf = Wikipedia.getWikiconfig(WikiConstants.Language.french);
+        WikiConfig portugueseConf = WikiConstants.Language.portuguese.getWikiconfig();
+        WikiConfig englishConf = WikiConstants.Language.english.getWikiconfig();
+        WikiConfig testConf = WikiConstants.Language._test.getWikiconfig();
+        WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
         // assertion block
         assertTrue(portugueseConf.getContentLanguage() == "pt");
         assertTrue(englishConf.getContentLanguage() == "en");

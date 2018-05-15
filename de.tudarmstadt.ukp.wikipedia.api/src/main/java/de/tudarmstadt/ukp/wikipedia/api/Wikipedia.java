@@ -41,16 +41,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
-import com.neovisionaries.i18n.LanguageCode;
 import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.*;
-import java.util.Map.Entry;
 
 
 /**
@@ -94,37 +85,9 @@ public class Wikipedia implements WikiConstants {
         this.idMapCategories = new HashMap<Integer,Long>();
 
         this.metaData = new MetaData(this);
-        this.wikiConfig = getWikiconfig(this.language);
+        this.wikiConfig = this.language.getWikiconfig();
 	}
 
-    /**
-     * Configures a language specific configuration for parsing wikipedia pages.
-     * @param lang language parameter using for configuration
-     * @return WikiConfig
-     */
-    public static WikiConfig getWikiconfig(Language lang) {
-        WikiConfig config = DefaultConfigEnWp.generate();
-        if (lang != Language._test) {
-            // We need to capitalize the language name otherwise the locale lib cannot find it.
-            String langName = lang.name().substring(0, 1).toUpperCase() + lang.name().substring(1);
-            try {
-                List<LanguageCode> langCodes = LanguageCode.findByName(langName);
-                if (!langCodes.isEmpty()) {
-                    String langCode = langCodes.get(0).name();
-                    return LanguageConfigGenerator.generateWikiConfig(langCode);
-                } else {
-                    System.out.println(String.format("Cannot find language codes for %s", langName));
-                }
-            } catch (IOException | ParserConfigurationException | SAXException e) {
-                System.out.println(
-                        String.format("Failed to create WikiConfig for language for %s, using default instead",
-                                langName)
-                );
-                e.printStackTrace();
-            }
-        }
-        return config;
-    }
 
     /**
      * Gets the page with the given title.

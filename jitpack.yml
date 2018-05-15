@@ -1,2 +1,0 @@
-install:
-   - mvn -DskipTests -Drat.ignoreErrors=true install

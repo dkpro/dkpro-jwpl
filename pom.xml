@@ -23,7 +23,7 @@
   <description>A free, Java-based application programming interface that allows to access all information contained in Wikipedia.</description>
   <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
   <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-  <version>1.2.1-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <parent>
     <groupId>org.dkpro</groupId>
     <artifactId>dkpro-parent-pom</artifactId>
@@ -32,13 +32,9 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <ukp.wikipedia.version>1.2.0-SNAPSHOT</ukp.wikipedia.version>
-    <fau.ptk.version>1.1.1</fau.ptk.version>
-    <fau.utils.version>0.3.1</fau.utils.version>
-    <hibernate.version>5.2.17.Final</hibernate.version>
-    <spring.version>4.3.17.RELEASE</spring.version>
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
-    <hibernate.version>5.2.17</hibernate.version>
+    <hibernate.version>5.2.17.Final</hibernate.version>
     <spring.version>4.3.17.RELEASE</spring.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
@@ -133,7 +129,7 @@
       <dependency>
         <groupId>com.neovisionaries</groupId>
         <artifactId>nv-i18n</artifactId>
-        <version>1.22</version>
+        <version>1.23</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
