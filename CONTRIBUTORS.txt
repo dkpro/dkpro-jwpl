@@ -24,3 +24,4 @@ Julien Subercaze
 Artem Vovk
 Martin Wiesner
 Torsten Zesch
+Thiago Galery
