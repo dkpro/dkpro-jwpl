@@ -41,6 +41,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 
 /**
@@ -67,6 +68,8 @@ public class Wikipedia implements WikiConstants {
 
     private final MetaData metaData;
 
+    public WikiConfig wikiConfig;
+
     /**
      * Creates a new Wikipedia object accessing the database indicated by the dbConfig parameter.
      * @param dbConfig A database configuration object telling the Wikipedida object where the data is stored and how it can be accessed.
@@ -82,7 +85,9 @@ public class Wikipedia implements WikiConstants {
         this.idMapCategories = new HashMap<Integer,Long>();
 
         this.metaData = new MetaData(this);
+        this.wikiConfig = this.language.getWikiconfig();
 	}
+
 
     /**
      * Gets the page with the given title.

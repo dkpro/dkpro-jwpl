@@ -25,46 +25,41 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBException;
-
-import org.sweble.wikitext.engine.Page;
-import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.utils.EntityReferences;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.LinkTargetException;
-import org.sweble.wikitext.lazy.encval.IllegalCodePoint;
-import org.sweble.wikitext.lazy.parser.Bold;
-import org.sweble.wikitext.lazy.parser.ExternalLink;
-import org.sweble.wikitext.lazy.parser.HorizontalRule;
-import org.sweble.wikitext.lazy.parser.ImageLink;
-import org.sweble.wikitext.lazy.parser.InternalLink;
-import org.sweble.wikitext.lazy.parser.Italics;
-import org.sweble.wikitext.lazy.parser.Itemization;
-import org.sweble.wikitext.lazy.parser.ItemizationItem;
-import org.sweble.wikitext.lazy.parser.MagicWord;
-import org.sweble.wikitext.lazy.parser.Paragraph;
-import org.sweble.wikitext.lazy.parser.Section;
-import org.sweble.wikitext.lazy.parser.Url;
-import org.sweble.wikitext.lazy.parser.Whitespace;
-import org.sweble.wikitext.lazy.parser.XmlElement;
-import org.sweble.wikitext.lazy.preprocessor.TagExtension;
-import org.sweble.wikitext.lazy.preprocessor.Template;
-import org.sweble.wikitext.lazy.preprocessor.TemplateArgument;
-import org.sweble.wikitext.lazy.preprocessor.TemplateParameter;
-import org.sweble.wikitext.lazy.preprocessor.XmlComment;
-import org.sweble.wikitext.lazy.utils.XmlCharRef;
-import org.sweble.wikitext.lazy.utils.XmlEntityRef;
-
+import de.fau.cs.osr.utils.StringTools;
 import de.fau.cs.osr.ptk.common.AstVisitor;
-import de.fau.cs.osr.ptk.common.ast.AstNode;
-import de.fau.cs.osr.ptk.common.ast.NodeList;
-import de.fau.cs.osr.ptk.common.ast.Text;
-import de.fau.cs.osr.utils.StringUtils;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.fau.cs.osr.ptk.common.ast.AstText;
+
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.nodes.WtBold;
+import org.sweble.wikitext.parser.nodes.WtExternalLink;
+import org.sweble.wikitext.parser.nodes.WtHorizontalRule;
+import org.sweble.wikitext.parser.nodes.WtIllegalCodePoint;
+import org.sweble.wikitext.parser.nodes.WtImageLink;
+import org.sweble.wikitext.parser.nodes.WtInternalLink;
+import org.sweble.wikitext.parser.nodes.WtItalics;
+import org.sweble.wikitext.parser.nodes.WtListItem;
+import org.sweble.wikitext.parser.nodes.WtNode;
+import org.sweble.wikitext.parser.nodes.WtNodeList;
+import org.sweble.wikitext.parser.nodes.WtParagraph;
+import org.sweble.wikitext.parser.nodes.WtPage;
+import org.sweble.wikitext.parser.nodes.WtSection;
+import org.sweble.wikitext.parser.nodes.WtUrl;
+import org.sweble.wikitext.parser.nodes.WtWhitespace;
+import org.sweble.wikitext.parser.nodes.WtXmlElement;
+import org.sweble.wikitext.parser.nodes.WtTagExtension;
+import org.sweble.wikitext.parser.nodes.WtTemplate;
+import org.sweble.wikitext.parser.nodes.WtTemplateArgument;
+import org.sweble.wikitext.parser.nodes.WtTemplateParameter;
+import org.sweble.wikitext.parser.nodes.WtLinkTitle;
+import org.sweble.wikitext.parser.nodes.WtXmlComment;
+import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
+import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
+import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 /**
  * A visitor to convert an article AST into a plain text representation. To
@@ -90,11 +85,11 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
  *
  * @author Open Source Research Group, University of Erlangen-Nürnberg
  */
-public class PlainTextConverter extends AstVisitor
+public class PlainTextConverter extends AstVisitor<WtNode>
 {
 	private static final Pattern ws = Pattern.compile("\\s+");
 
-	private final SimpleWikiConfiguration config;
+	private final WikiConfig config;
 
 	private final int wrapCol;
 
@@ -122,17 +117,7 @@ public class PlainTextConverter extends AstVisitor
 s	 */
 	public PlainTextConverter()
 	{
-		SimpleWikiConfiguration config=null;
-		try{
-			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
-		}catch(IOException e){
-			//TODO logger
-			e.printStackTrace();
-		}catch(JAXBException e){
-			//TODO logger
-			e.printStackTrace();
-		}
-		this.config=config;
+		this.config = DefaultConfigEnWp.generate();
 		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
 		this.enumerateSections=false;
 	}
@@ -145,17 +130,7 @@ s	 */
 	 */
 	public PlainTextConverter(boolean enumerateSection)
 	{
-		SimpleWikiConfiguration config=null;
-		try{
-			new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
-		}catch(IOException e){
-			//TODO logger
-			e.printStackTrace();
-		}catch(JAXBException e){
-			//TODO logger
-			e.printStackTrace();
-		}
-		this.config=config;
+		this.config = DefaultConfigEnWp.generate();
 		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
 		this.enumerateSections=enumerateSection;
 	}
@@ -168,7 +143,7 @@ s	 */
 	 * @param enumerateSections true, if sections should be enumerated in the output
 	 * @param wrapCol defines max length of a line. longer lines will be broken.
 	 */
-	public PlainTextConverter(SimpleWikiConfiguration config, boolean enumerateSections, int wrapCol)
+	public PlainTextConverter(WikiConfig config, boolean enumerateSections, int wrapCol)
 	{
 		this.config = config;
 		this.wrapCol = wrapCol;
@@ -176,7 +151,7 @@ s	 */
 	}
 
 	@Override
-	protected boolean before(AstNode node)
+	protected WtNode before(WtNode node)
 	{
 		// This method is called by go() before visitation starts
 		sb = new StringBuilder();
@@ -190,7 +165,7 @@ s	 */
 	}
 
 	@Override
-	protected Object after(AstNode node, Object result)
+	protected Object after(WtNode node, Object result)
 	{
 		finishLine();
 
@@ -201,7 +176,7 @@ s	 */
 
 	// =========================================================================
 
-	public void visit(AstNode n)
+	public void visit(WtNode n)
 	{
 		// Fallback for all nodes that are not explicitly handled below
 //		write("<");
@@ -209,48 +184,49 @@ s	 */
 //		write(" />");
 	}
 
-	public void visit(NodeList n)
+	public void visit(WtNodeList n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Page p)
+	public void visit(WtPage p)
 	{
-		iterate(p.getContent());
+		iterate(p);
 	}
 
-	public void visit(Text text)
+	public void visit(AstText text)
 	{
 		write(text.getContent());
 	}
 
-	public void visit(Whitespace w)
+	public void visit(WtWhitespace w)
 	{
 		write(" ");
 	}
 
-	public void visit(Bold b)
+	public void visit(WtBold b)
 	{
 		//write("**");
-		iterate(b.getContent());
+		iterate(b);
 		//write("**");
 	}
 
-	public void visit(Italics i)
+	public void visit(WtItalics i)
 	{
 		//write("//");
-		iterate(i.getContent());
+		iterate(i);
 		//write("//");
 	}
 
-	public void visit(XmlCharRef cr)
+	public void visit(WtXmlCharRef cr)
 	{
 		write(Character.toChars(cr.getCodePoint()));
 	}
 
-	public void visit(XmlEntityRef er)
+	public void visit(WtXmlEntityRef er)
 	{
-		String ch = EntityReferences.resolve(er.getName());
+
+		String ch = er.getResolved();
 		if (ch == null)
 		{
 			write('&');
@@ -263,14 +239,14 @@ s	 */
 		}
 	}
 
-	public void visit(Url url)
+	public void visit(WtUrl url)
 	{
 		write(url.getProtocol());
 		write(':');
 		write(url.getPath());
 	}
 
-	public void visit(ExternalLink link)
+	public void visit(WtExternalLink link)
 	{
 		//TODO How should we represent external links in the plain text output?
 		write('[');
@@ -278,11 +254,11 @@ s	 */
 		write(']');
 	}
 
-	public void visit(InternalLink link)
+	public void visit(WtInternalLink link)
 	{
 		try
 		{
-			PageTitle page = PageTitle.make(config, link.getTarget());
+			PageTitle page = PageTitle.make(config, link.getTarget().getAsString());
 			if (page.getNamespace().equals(config.getNamespace("Category"))) {
 				return;
 			}
@@ -292,10 +268,11 @@ s	 */
 		}
 
 		write(link.getPrefix());
-		if (link.getTitle().getContent() == null
-		        || link.getTitle().getContent().isEmpty())
+		WtLinkTitle pageTitle = link.getTitle();
+
+		if (pageTitle == null || pageTitle.isEmpty())
 		{
-			write(link.getTarget());
+			write(link.getTarget().getAsString());
 		}
 		else
 		{
@@ -304,7 +281,7 @@ s	 */
 		write(link.getPostfix());
 	}
 
-	public void visit(Section s)
+	public void visit(WtSection s)
 	{
 		finishLine();
 		StringBuilder saveSb = sb;
@@ -313,7 +290,7 @@ s	 */
 		sb = new StringBuilder();
 		noWrap = true;
 
-		iterate(s.getTitle());
+		iterate(s.getHeading());
 		finishLine();
 		String title = sb.toString().trim();
 
@@ -364,20 +341,20 @@ s	 */
 		sections.add(sections.removeLast() + 1);
 	}
 
-	public void visit(Paragraph p)
+	public void visit(WtParagraph p)
 	{
-		iterate(p.getContent());
+		iterate(p);
 		newline(1);
 	}
 
-	public void visit(HorizontalRule hr)
+	public void visit(WtHorizontalRule hr)
 	{
 		newline(1);
 //		write(StringUtils.strrep('-', wrapCol));
 //		newline(1);
 	}
 
-	public void visit(XmlElement e)
+	public void visit(WtXmlElement e)
 	{
 		if (e.getName().equalsIgnoreCase("br"))
 		{
@@ -389,52 +366,43 @@ s	 */
 		}
 	}
 
-	public void visit(Itemization n)
+	public void visit(WtListItem n)
 	{
-		iterate(n.getContent());
-	}
-
-	public void visit(ItemizationItem n)
-	{
-		iterate(n.getContent());
-		newline(1);
+		iterate(n);
 	}
 
 
 	// =========================================================================
 	// Stuff we want to hide
 
-	public void visit(ImageLink n)
+	public void visit(WtImageLink n)
 	{
 	}
 
-	public void visit(IllegalCodePoint n)
+	public void visit(WtIllegalCodePoint n)
 	{
 	}
 
-	public void visit(XmlComment n)
+	public void visit(WtXmlComment n)
 	{
 	}
 
-	public void visit(Template n)
+	public void visit(WtTemplate n)
 	{
 	}
 
-	public void visit(TemplateArgument n)
+	public void visit(WtTemplateArgument n)
 	{
 	}
 
-	public void visit(TemplateParameter n)
+	public void visit(WtTemplateParameter n)
 	{
 	}
 
-	public void visit(TagExtension n)
+	public void visit(WtTagExtension n)
 	{
 	}
 
-	public void visit(MagicWord n)
-	{
-	}
 
 	// =========================================================================
 
@@ -464,7 +432,7 @@ s	 */
 	private void writeNewlines(int num)
 	{
 		finishLine();
-		sb.append(StringUtils.strrep('\n', num));
+		sb.append(StringTools.strrep('\n', num));
 		needNewlines = 0;
 		needSpace = false;
 	}

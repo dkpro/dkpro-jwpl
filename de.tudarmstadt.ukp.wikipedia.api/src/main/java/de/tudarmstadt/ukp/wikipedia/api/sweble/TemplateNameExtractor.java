@@ -29,23 +29,21 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.JAXBException;
-
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.preprocessor.Template;
-
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstNode;
-import de.fau.cs.osr.ptk.common.ast.Text;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.fau.cs.osr.ptk.common.ast.AstText;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.nodes.WtNode;
+import org.sweble.wikitext.parser.nodes.WtTemplate;
 
 /**
  * A visitor that extracts template names (no parameters) from an article AST.
  *
  */
-public class TemplateNameExtractor extends AstVisitor
+public class TemplateNameExtractor extends AstVisitor<WtNode>
 {
-	private final SimpleWikiConfiguration config;
+	private final WikiConfig config;
 
 
 	private List<String> templates;
@@ -60,17 +58,7 @@ public class TemplateNameExtractor extends AstVisitor
 	 */
 	public TemplateNameExtractor()
 	{
-		SimpleWikiConfiguration config=null;
-		try{
-			config = new SimpleWikiConfiguration(WikiConstants.SWEBLE_CONFIG);
-		}catch(IOException e){
-			//TODO logger
-			e.printStackTrace();
-		}catch(JAXBException e){
-			//TODO logger
-			e.printStackTrace();
-		}
-		this.config=config;
+		this.config = DefaultConfigEnWp.generate();
 	}
 
 	/**
@@ -79,13 +67,13 @@ public class TemplateNameExtractor extends AstVisitor
 	 *
 	 * @param config the Sweble configuration
 	 */
-	public TemplateNameExtractor(SimpleWikiConfiguration config)
+	public TemplateNameExtractor(WikiConfig config)
 	{
 		this.config = config;
 	}
 
 	@Override
-	protected boolean before(AstNode node)
+	protected WtNode before(WtNode node)
 	{
 		// This method is called by go() before visitation starts
 		templates = new LinkedList<String>();
@@ -93,23 +81,23 @@ public class TemplateNameExtractor extends AstVisitor
 	}
 
 	@Override
-	protected Object after(AstNode node, Object result)
+	protected Object after(WtNode node, Object result)
 	{
 		return templates;
 	}
 
 	// =========================================================================
 
-	public void visit(AstNode n)
+	public void visit(WtNode n)
 	{
 		iterate(n);
 	}
 
-	public void visit(Template tmpl) throws IOException
+	public void visit(WtTemplate tmpl) throws IOException
 	{
 		for(AstNode n:tmpl.getName()){
-			if(n instanceof Text){
-				add(((Text)n).getContent());
+			if(n instanceof AstText){
+				add(((AstText)n).getContent());
 			}
 		}
 	}

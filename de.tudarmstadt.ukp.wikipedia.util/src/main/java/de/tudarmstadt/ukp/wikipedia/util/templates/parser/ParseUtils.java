@@ -24,13 +24,14 @@ import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBException;
 
-import org.sweble.wikitext.engine.CompiledPage;
-import org.sweble.wikitext.engine.Compiler;
-import org.sweble.wikitext.engine.CompilerException;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.EngineException;
+import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.utils.SimpleWikiConfiguration;
-import org.sweble.wikitext.lazy.LinkTargetException;
+import org.sweble.wikitext.engine.WtEngineImpl;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.sweble.TemplateNameExtractor;
@@ -47,9 +48,8 @@ public class ParseUtils
 	 * @param title article title
 	 * @param revision the revision id
 	 * @return list of ExtractedSections
-	 * @throws CompilerException if the wiki page could not be compiled by the parser
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
+	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 
@@ -61,9 +61,9 @@ public class ParseUtils
 	 * @param revision the revision id
 	 * @param templatesToMark a list of template names that should be annotated in the text
 	 * @return list of ExtractedSections
-	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision, List<String> templatesToMark) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
+	public static List<ExtractedSection> getSections(String text, String title, long revision, List<String> templatesToMark) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(templatesToMark), text, title, revision);
 	}
 
@@ -74,9 +74,9 @@ public class ParseUtils
 	 * @param text article text with wiki markup
 	 * @param title article title
 	 * @return list of template names
-	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	public static List<String> getTemplateNames(String text, String title) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
+	public static List<String> getTemplateNames(String text, String title) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
 		return (List<String>) parsePage(new TemplateNameExtractor(), text, title, -1);
 	}
 
@@ -87,9 +87,9 @@ public class ParseUtils
 	 * @return the parsed page. The actual return type depends on the provided
 	 *         visitor. You have to cast the return type according to the return
 	 *         type of the go() method of your visitor.
-	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException{
+	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
 		// Use the provided visitor to parse the page
 		return v.go(getCompiledPage(text, title, revision).getPage());
 	}
@@ -100,19 +100,20 @@ public class ParseUtils
 	 *
 	 * @return the parsed page
 	 * @throws LinkTargetException
-	 * @throws CompilerException if the wiki page could not be compiled by the parser
+	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 * @throws JAXBException
 	 * @throws FileNotFoundException
 	 */
-	private static CompiledPage getCompiledPage(String text, String title, long revision) throws LinkTargetException, CompilerException, FileNotFoundException, JAXBException
+	private static EngProcessedPage getCompiledPage(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException
 	{
-		SimpleWikiConfiguration config = new SimpleWikiConfiguration(SWEBLE_CONFIG);
+		WikiConfig config = DefaultConfigEnWp.generate();
 
 		PageTitle pageTitle = PageTitle.make(config, title);
 		PageId pageId = new PageId(pageTitle, revision);
 		// Compile the retrieved page
-		Compiler compiler = new Compiler(config);
-		return compiler.postprocess(pageId, text, null);
+		WtEngineImpl engine = new WtEngineImpl(config);
+		// Compile the retrieved page
+		return engine.postprocess(pageId, text, null);
 	}
 
 	/**

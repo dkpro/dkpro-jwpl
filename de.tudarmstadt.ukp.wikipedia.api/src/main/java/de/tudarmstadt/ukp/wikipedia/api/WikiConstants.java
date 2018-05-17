@@ -17,6 +17,15 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import com.neovisionaries.i18n.LanguageCode;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.List;
+
 public interface WikiConstants {
     /**
      * Shortcut for System.getProperty("line.separator").
@@ -296,6 +305,31 @@ public interface WikiConstants {
         zealandic,
         zhuang,
         zulu,
-        _test
+        _test;
+
+        /**
+         * Configures a language specific configuration for parsing wikipedia pages.
+         * @return WikiConfig
+         */
+        public WikiConfig getWikiconfig(Language this) {
+            WikiConfig config = DefaultConfigEnWp.generate();
+            if (this != Language._test) {
+                // We need to capitalize the language name otherwise the locale lib cannot find it.
+                String langName = this.name().substring(0, 1).toUpperCase() + this.name().substring(1);
+                try {
+                    List<LanguageCode> langCodes = LanguageCode.findByName(langName);
+                    if (!langCodes.isEmpty()) {
+                        String langCode = langCodes.get(0).name();
+                        return LanguageConfigGenerator.generateWikiConfig(langCode);
+                    }
+                } catch (IOException | ParserConfigurationException | SAXException e) {
+                    System.out.println(
+                            String.format("Failed to create WikiConfig for language for %s, using default instead",
+                                    langName)
+                    );
+                }
+            }
+            return config;
+        }
     }
 }

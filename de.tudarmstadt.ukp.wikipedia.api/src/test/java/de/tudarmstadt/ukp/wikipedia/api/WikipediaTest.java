@@ -29,6 +29,7 @@ import org.junit.Test;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 public class WikipediaTest {
 
