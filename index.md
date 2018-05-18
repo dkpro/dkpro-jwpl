@@ -5,7 +5,7 @@
 # this work, you have to use › layout: frontpage
 #
 layout: frontpage
-title: "DKPro JWPL and the Wikipedia Revision Toolkit"
+title: "Welcome"
 ---
 
 JWPL (Java Wikipedia Library) is a free, Java-based application programming interface that allows to access all information in Wikipedia.
