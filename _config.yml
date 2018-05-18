@@ -31,8 +31,8 @@ improve_content: //github.com/dkpro/dkpro-jwpl/edit/gh-pages
 # This URL points directly to the images directory making
 # things easier to link to images in posts and templates. It needs a slash.
 #
-# Example: <img src="{{ site.urlimg }}/{{ post.image.title }}">
-# Markdown-Example for posts ![Image Text]({{ site.urlimg }}/image.jpg)
+# Example: <img src="{{ site.urlimg }}/{{ post.image.title }}">
+# Markdown-Example for posts ![Image Text]({{ site.urlimg }}/image.jpg)
 #
 urlimg: "/dkpro-jwpl/images/"
 
