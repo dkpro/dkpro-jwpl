@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "About"
+title: "About Us"
 permalink: "/info/"
 ---
 

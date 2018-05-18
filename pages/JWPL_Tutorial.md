@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Tutorial"
+title: "Tutorial"
 permalink: "/JwplTutorial/"
 ---
 

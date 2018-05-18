@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL TimeMachine"
+title: "TimeMachine"
 permalink: "/TimeMachine/"
 ---
 

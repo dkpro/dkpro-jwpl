@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL and MySQL 4"
+title: "Using MySQL 4"
 permalink: "/JWPL_MySQL4/"
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL FAQ"
+title: "FAQ"
 permalink: "/JWPL_FAQ/"
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL DataMachine"
+title: "DataMachine"
 permalink: "/DataMachine/"
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Core "
+title: "Core"
 permalink: "/JWPL_Core/"
 ---
 

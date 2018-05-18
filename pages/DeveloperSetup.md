@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Developer Setup"
+title: "Developer Setup"
 permalink: "/DeveloperSetup/"
 ---
 

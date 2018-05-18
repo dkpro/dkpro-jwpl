@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Languages"
+title: "Languages"
 permalink: "/JWPL_Languages/"
 ---
 

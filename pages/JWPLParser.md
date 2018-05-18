@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Parser"
+title: "Parser"
 permalink: "/JWPLParser/"
 ---
 
