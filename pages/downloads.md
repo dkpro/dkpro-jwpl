@@ -4,11 +4,11 @@ title: "Downloads"
 permalink: "/downloads/"
 ---
 
-{% assign stable = (site.data.releases | where:"status", "stable" | first) %}
+{% assign stable = site.data.releases | where: "status", "stable" | first %}
 
 ## Maven
 
-{{ site.title }} is availble via the Maven infrastructure.
+{{ site.title }} is available via the Maven infrastructure.
 
 {% highlight xml %}
 <properties>
