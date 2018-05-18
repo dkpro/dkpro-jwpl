@@ -1,6 +1,6 @@
 ---
 layout: page-fullwidth
-title: "JWPL Documentation"
+title: "Documentation"
 permalink: "/documentation/"
 ---
 
