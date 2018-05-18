@@ -217,4 +217,4 @@ google_analytics_tracking_id: UA-18651735-2
 #
 # used in _includes/sidebar.html
 
-openhub_id: jwpl
+# openhub_id: jwpl
