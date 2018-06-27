@@ -36,7 +36,7 @@ public class TitleIteratorTest extends BaseJWPLTest{
 	 * assumptions
 	 */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);

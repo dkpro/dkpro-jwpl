@@ -32,7 +32,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 public class CategoryGraphTest extends BaseJWPLTest{
 
-	private CategoryGraph catGraph;
+	private static CategoryGraph catGraph;
 
     /**
      * Made this static so that following tests don't run if assumption fails.
@@ -41,7 +41,7 @@ public class CategoryGraphTest extends BaseJWPLTest{
      * assumptions
      */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
 		try {
@@ -53,7 +53,7 @@ public class CategoryGraphTest extends BaseJWPLTest{
         try {
             catGraph = CategoryGraphManager.getCategoryGraph(wiki, false);
         } catch (WikiApiException e) {
-            fail("CategoryGraph could not be initialized.");
+            fail("CategoryGraph could not be initialized: "+e.getLocalizedMessage());
         }
     }
 
