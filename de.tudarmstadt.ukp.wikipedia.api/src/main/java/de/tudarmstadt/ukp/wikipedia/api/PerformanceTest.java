@@ -42,14 +42,8 @@ public class PerformanceTest implements WikiConstants {
     int maxiCycles = 5;
     int pageCycles = 50;
 
+    // TODO Shall this call here also work against a MySQL backend? Seems this should be put into a real Integration Test.
     public static void main(String[] args) throws WikiApiException {
-
-//        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-//        dbConfig.setDatabase("wikiapi_de");
-//        dbConfig.setHost("homer.tk.informatik.tu-darmstadt.de");
-//        dbConfig.setUser("wikiapi");
-//        dbConfig.setPassword("wikiapitk");
-//        dbConfig.setLanguage(Language.german);
 
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setDatabase("wikiapi_en");
@@ -78,7 +72,7 @@ public class PerformanceTest implements WikiConstants {
     	pt.loadPagesAndAccessFieldsTest("extern");
         System.out.println();
 
-// TODO test iteration speed
+        // TODO test iteration speed
 
     }
 

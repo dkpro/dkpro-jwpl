@@ -2067,6 +2067,7 @@ public class RevisionApi
 
     }
 
+    // FIXME This is a hardcoded dependency to MySQL at runtime and needs to be reworked
     private Connection getConnection(RevisionAPIConfiguration config)
         throws WikiApiException
     {

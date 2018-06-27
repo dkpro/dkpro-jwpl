@@ -23,24 +23,44 @@
     <version>1.2.0-SNAPSHOT</version>
   </parent>
   <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
-  <dependencies>
-  	<dependency>
-  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>commons-logging</groupId>
-  		<artifactId>commons-logging</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<scope>test</scope>
-  	</dependency>
-  </dependencies>
   <name>MediaWiki Parser</name>
   <description>A modular parser for MediaWiki markup.
 
-As of June 2012, the parser module is no longer maintained. 
+As of June 2012, the parser module is no longer maintained.
 Please use the SWEBLE parser (http://sweble.org/) for parsing MediaWiki markup. See the JWPL Google Code project page for further information.</description>
+
+  <dependencies>
+	 <dependency>
+		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+		<artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+	 </dependency>
+	 <dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+	 </dependency>
+	  <dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-api</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-log4j12</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>log4j</groupId>
+		  <artifactId>log4j</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.hsqldb</groupId>
+		  <artifactId>hsqldb</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+  </dependencies>
 </project>

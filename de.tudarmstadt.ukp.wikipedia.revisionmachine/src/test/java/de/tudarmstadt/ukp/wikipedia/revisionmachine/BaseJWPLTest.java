@@ -15,15 +15,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.api;
+package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
+import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
+import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 
 /**
  * Simple test base class to inject the same hsqldb test context into every test
  * class to avoid duplicated code and efforts. Also shuts down the
  * hibernate/hsqldb context properly.
- *
+ * 
  * @author mawiesne
  */
 public abstract class BaseJWPLTest {

@@ -27,15 +27,14 @@ import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Iterator;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.DecodingException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.codec.RevisionDecoder;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Part of the JWPL Revision API
@@ -47,7 +46,7 @@ public class RevisionIterator
 	implements RevisionIteratorInterface
 {
 	
-	private static final Logger logger = LogManager.getLogger(RevisionIterator.class);
+	private static final Logger logger = LoggerFactory.getLogger(RevisionIterator.class);
 
 	/** Reference to the configuration parameter variable */
 	private final RevisionAPIConfiguration config;

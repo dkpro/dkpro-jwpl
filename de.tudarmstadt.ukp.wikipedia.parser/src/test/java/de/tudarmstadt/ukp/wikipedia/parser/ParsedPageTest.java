@@ -19,6 +19,7 @@ package de.tudarmstadt.ukp.wikipedia.parser;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Assume;
@@ -33,31 +34,25 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 
-public class ParsedPageTest {
+public class ParsedPageTest extends BaseJWPLTest{
 
-	private static Wikipedia wiki;
+    private static String LF = "\n";
 
-	/**
+    /**
      * Made this static so that following tests don't run if assumption fails.
      * (With AT_Before, tests also would not be executed but marked as passed)
      * This could be changed back as soon as JUnit ignored tests after failed
      * assumptions
-	 */
-	@BeforeClass
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-			Assume.assumeNoException(e);
-			//fail("Wikipedia could not be initialized.");
-		}
-	}
+     */
+    @BeforeClass
+    public static void setupWikipedia() {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        try {
+            wiki = new Wikipedia(db);
+        } catch (Exception e) {
+            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+        }
+    }
 
 	@Test
 	public void testParsedPage(){
@@ -70,7 +65,7 @@ public class ParsedPageTest {
             fail("A WikiApiException occured while getting the page " + title);
         }
 
-        String LF = "\n";
+
         String text = "Wikipedia API ist die wichtigste Software überhaupt." + LF +
         	"Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de en:Wikipedia API";
 
@@ -79,7 +74,7 @@ public class ParsedPageTest {
         MediaWikiParser parser = pf.createParser();
 
 		ParsedPage pp = parser.parse(p.getText());
-
+        assertNotNull(pp);
 
         int i=0;
         for (Link link : pp.getSection(0).getLinks()) {
@@ -92,6 +87,8 @@ public class ParsedPageTest {
             }
             i++;
         }
-        assertEquals(text, pp.getText());
+        String parsedPageText = pp.getText();
+        assertNotNull(parsedPageText);
+        assertEquals(text, parsedPageText);
 	}
 }
