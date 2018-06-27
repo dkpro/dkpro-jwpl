@@ -1,0 +1,9 @@
+Some classes in this module are taken from third parties: 
+
+de.tudarmstadt.ukp.wikipedia.util.templates.parser.SectionExtractor:
+
+Derived from the TextConverter class which was published in the
+Sweble example project provided on http://http://sweble.org 
+by the Open Source Research Group,
+University of Erlangen-Nürnberg under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0)

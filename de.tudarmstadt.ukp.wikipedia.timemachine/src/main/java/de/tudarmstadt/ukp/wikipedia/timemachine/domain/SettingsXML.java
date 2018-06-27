@@ -1,18 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
-/**
- * @(#)ConfigFormularGenerator.java
- */
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,9 +31,8 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 /**
  * This is a utility class that generates a template for the configuration file<br>
  * The template must be edited prior to be used for the DBMapping tool.<br>
- * 
- * @author Anouar
- * 
+ *
+ *
  */
 public class SettingsXML {
 
@@ -45,11 +50,7 @@ public class SettingsXML {
 	private static final String DESCRIPTION = "This a configuration formular for the DBMapping Tool of the JWPL";
 	private static final String PLACEHOLDER = "to be edited";
 
-	/**
-	 * @param args
-	 * @throws IOException
-	 * @throws
-	 */
+
 	public static void generateSample(String outputFileName) throws IOException {
 
 		Properties p = new Properties();
@@ -63,7 +64,7 @@ public class SettingsXML {
 		p.put(PAGE_LINKS_FILE, PLACEHOLDER);
 		p.put(CATEGORY_LINKS_FILE, PLACEHOLDER);
 		p.put(OUTPUT_DIRECTORY, PLACEHOLDER);
-		p.storeToXML(new FileOutputStream(outputFileName), DESCRIPTION);
+		p.storeToXML(new BufferedOutputStream(new FileOutputStream(outputFileName)), DESCRIPTION);
 
 	}
 
@@ -74,7 +75,7 @@ public class SettingsXML {
 		try {
 			result = new Configuration(logger);
 			Properties properties = new Properties();
-			properties.loadFromXML(new FileInputStream(configFile));
+			properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
 
 			result.setLanguage(properties.get(LANGUAGE).toString());
 			result.setMainCategory(properties.get(MAIN_CATEGORY).toString());
@@ -95,7 +96,7 @@ public class SettingsXML {
 		TimeMachineFiles result;
 		try {
 			Properties properties = new Properties();
-			properties.loadFromXML(new FileInputStream(configFile));
+			properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
 			result = new TimeMachineFiles(logger);
 
 			result.setMetaHistoryFile(properties.get(META_HISTORY_FILE)

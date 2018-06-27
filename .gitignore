@@ -1,0 +1,12 @@
+### Rules for Maven build
+target
+.class
+
+### Rules for Eclipse environments
+.settings
+.classpath
+.project
+
+### Rules for IntelliJ IDEA environments
+.idea
+*.iml

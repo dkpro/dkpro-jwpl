@@ -1,15 +1,24 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -47,7 +56,6 @@ import de.tudarmstadt.ukp.wikipedia.util.OS;
 /**
  * The category graph is constructed from the links connecting Wikipedia categories.
  * It provides various accessors and graph algorithms.
- * @author zesch
  *
  */
 public class CategoryGraph implements WikiConstants, Serializable {
@@ -100,8 +108,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Creates an CategoryGraph using a serialized DirectedGraph object.
      * @param pWiki A Wikipedia object.
      * @param location The location of the serialized graph
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws WikiApiException
      */
     public CategoryGraph(Wikipedia pWiki, File location) throws WikiApiException{
         try {
@@ -386,24 +393,33 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
      */
     public Category getLCS(Category category1, Category category2) throws WikiApiException {
+        return getLCS(category1.getPageId(),category2.getPageId());
+    }
+
+
+    /**
+     * Gets the lowest common subsumer (LCS) of two nodes.
+     * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
+     * Nodes that are not in the same connected component as the root node are defined to have no LCS.
+     * @param categoryPageId1 The pageid of the first category node.
+     * @param categoryPageId2 The pageid of the second category node.
+     * @return The pageId of the lowest common subsumer of the two nodes, or null if there is no LCS.
+     */
+    public int getLCSId(int categoryPageId1, int categoryPageId2) throws WikiApiException {
 
 //      TODO here might be a problem concerning multiple inheritence in the category graph, if there is more than one path of equal length to the root, the method will only find one, but the other (not found) LCS may have a higher information content
-//
-        int node1 = category1.getPageId();
-        int node2 = category2.getPageId();
-
-// TODO is the lcs between the same node really defined or should this be handled in the measures (i.e. SR(n1,n1) = 1 per definitionem??)
-        if (node1 == node2) {
-            return wiki.getCategory(node1);
+// 		TODO is the lcs between the same node really defined or should this be handled in the measures (i.e. SR(n1,n1) = 1 per definitionem??)
+        if (categoryPageId1 == categoryPageId2) {
+            return categoryPageId1;
         }
 
-        List<Integer> nodeList1 = getRootPathMap().get(node1);
-        List<Integer> nodeList2 = getRootPathMap().get(node2);
+        List<Integer> nodeList1 = getRootPathMap().get(categoryPageId1);
+        List<Integer> nodeList2 = getRootPathMap().get(categoryPageId2);
 
-        // if one of the paths is null => return null
+        // if one of the paths is null => return -1
         if (nodeList1 == null || nodeList2 == null || nodeList1.size() == 0 || nodeList2.size() == 0) {
             logger.debug("One of the node lists is null or empty!");
-            return null;
+            return -1;
         }
 
         logger.debug(nodeList1);
@@ -411,29 +427,42 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
         // node 1 subsumes node 2 ?
         for (int tmpNode2 : nodeList2) {
-            if (tmpNode2 == node1) {
-                return wiki.getCategory(node1);
+            if (tmpNode2 == categoryPageId1) {
+                return categoryPageId1;
             }
         }
 
         // node 2 subsumes node 1 ?
         for (int tmpNode1 : nodeList1) {
-            if (tmpNode1 == node2) {
-                return wiki.getCategory(node2);
+            if (tmpNode1 == categoryPageId2) {
+                return categoryPageId2;
             }
         }
         // they have a lcs ?
         for (int tmpNode1 : nodeList1) {
             for (int tmpNode2 : nodeList2) {
                 if (tmpNode1 == tmpNode2) {
-                    return wiki.getCategory(tmpNode1);
+                    return tmpNode1;
                 }
             }
         }
 
         logger.debug("No lcs found.");
 
-        return null;
+        return -1;
+    }
+
+    /**
+     * Gets the lowest common subsumer (LCS) of two nodes.
+     * The LCS of two nodes is first node on the path to the root, that has both nodes as sons.
+     * Nodes that are not in the same connected component as the root node are defined to have no LCS.
+     * @param categoryPageId1 The pageid of the first category node.
+     * @param categoryPageId2 The pageid of the second category node.
+     * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     */
+    public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException {
+    	int lcsid = getLCSId(categoryPageId1, categoryPageId2);
+    	return lcsid>-1?wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)):null;
     }
 
 
@@ -1270,7 +1299,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * Get the neighbors of a given node.
      * The category graph is treated as an undirected graph.
-     * @param category The category under consideration.
+     * @param node the reference node.
      * @return The set of category nodes that are neighbors of this category.
      */
     protected Set<Integer> getNeighbors(int node) {
@@ -1589,14 +1618,19 @@ public class CategoryGraph implements WikiConstants, Serializable {
         return graph;
     }
 
-    protected Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
+    public UndirectedGraph<Integer, DefaultEdge> getUndirectedGraph()
+	{
+		return undirectedGraph;
+	}
+
+	public Map<Integer,Integer> getHyponymCountMap() throws WikiApiException {
         if (hyponymCountMap == null) {
             createHyponymCountMap();
         }
         return this.hyponymCountMap;
     }
 
-    protected Map<Integer,List<Integer>> getRootPathMap() throws WikiApiException {
+    public Map<Integer,List<Integer>> getRootPathMap() throws WikiApiException {
         if (rootPathMap == null) {
             createRootPathMap();
         }
@@ -1611,8 +1645,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     private void serializeMap(Map<?,?> map, File file) {
         try {
-            ObjectOutputStream os = new ObjectOutputStream(
-                    new FileOutputStream(file));
+            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(
+                    new FileOutputStream(file)));
             os.writeObject(map);
             os.close();
         } catch (Exception e) {
@@ -1627,7 +1661,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     private Map deserializeMap(File file) {
         Map<?,?> map;
         try {
-            ObjectInputStream is = new ObjectInputStream(new FileInputStream(file));
+            ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
             map = (Map<?,?>) is.readObject();
             is.close();
         } catch (Exception e) {
@@ -1641,7 +1675,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * Serializes the graph to the given destination.
      * @param destination The destination to which should be saved.
-     * @throws IOException
+     * @throws WikiApiException
      */
     public void saveGraph(String destination) throws WikiApiException {
         try {

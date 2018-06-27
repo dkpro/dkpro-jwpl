@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.util.regex.Matcher;
@@ -17,56 +24,82 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 /**
  * Represents a Wikipedia page title.
- * @author zesch
+ *
+ * Title parsing regexp fixed with the help of many UKP colleagues and Samy Ateia.
  *
  */
 public class Title {
 
-    private String encodedTitle;
-    private String decodedTitle;
-    private String mEntity;
-    private String mDisambiguationText;
+    private String wikiStyleTitle;
+    private String plainTitle;
+    private String entity;
+    private String disambiguationText;
     private String rawTitleText;
-    
+    private final String sectionText;
+
     /**
      * Create a title object using a title string.
      * The string gets parsed into an entity part and a disambiguation part.
-     * As Wikipedia page names represent spaces as underscores, we create a version with spaces and one without. 
+     * As Wikipedia page names represent spaces as underscores, we create a version with spaces and one without.
      * @param titleText The title string of the page.
-     * @throws WikiTitleParsingException 
+     * @throws WikiTitleParsingException
      */
     public Title(String titleText) throws WikiTitleParsingException  {
         if (titleText.length() == 0) {
             throw new WikiTitleParsingException("Title is empty.");
         }
-        
-        if (titleText.substring(0, 1).toLowerCase().equals(titleText.substring(0, 1))) {
-            this.rawTitleText = titleText.substring(0,1).toUpperCase() + titleText.substring(1,titleText.length());
-        }
-        else {
+
+/*
+ * Do not convert first character to upper case. We perform case insensitive querying
+ */
+//        if (titleText.substring(0, 1).toLowerCase().equals(titleText.substring(0, 1))) {
+//            this.rawTitleText = titleText.substring(0,1).toUpperCase() + titleText.substring(1,titleText.length());
+//        }
+//        else {
             this.rawTitleText = titleText;
-        }
-        
-        this.encodedTitle = this.encodeTitleWikistyle(rawTitleText);
-        this.decodedTitle = this.decodeTitleWikistyle(rawTitleText);
-        
-        String regexFindParts = "(.*?).\\((.+?)\\)";
+//        }
 
-        Pattern patternNamespace = Pattern.compile(regexFindParts); 
-        Matcher matcherNamespace = patternNamespace.matcher(decodedTitle); 
+        // "Car_(automobile)#Introduction"
+        // should be split into:
+        // - "Car"
+        // - "automobile"
+        // - "Introduction"
 
-        String entity = null;
-        String disambiguationText = null;
-        // group 0 is the whole match
-        if (matcherNamespace.find()) { 
-             entity = matcherNamespace.group(1);
-             disambiguationText = matcherNamespace.group(2);
-             setEntity(entity);
-             setDisambiguationText(disambiguationText);
+        String titlePart = null;
+        String sectionPart = null;
+        if (rawTitleText.contains("#")) {
+            titlePart = rawTitleText.substring(0, rawTitleText.lastIndexOf("#"));
+            sectionPart = rawTitleText.substring(rawTitleText.lastIndexOf("#")+1,rawTitleText.length());
         }
         else {
-            setEntity(decodedTitle);
+            titlePart = rawTitleText;
         }
+
+        this.sectionText = sectionPart;
+
+        String regexFindParts = "(.*?)[ _]\\((.+?)\\)$";
+
+        Pattern patternNamespace = Pattern.compile(regexFindParts);
+        Matcher matcherNamespace = patternNamespace.matcher(
+        		this.decodeTitleWikistyle(titlePart)
+        );
+
+        // group 0 is the whole match
+        if (matcherNamespace.find()) {
+            this.entity = matcherNamespace.group(1);
+            this.disambiguationText = matcherNamespace.group(2);
+
+            String relevantTitleParts = this.entity + " (" + this.disambiguationText + ")";
+            this.plainTitle = decodeTitleWikistyle(relevantTitleParts);
+            this.wikiStyleTitle = encodeTitleWikistyle(relevantTitleParts);
+        }
+        else {
+        	this.plainTitle = decodeTitleWikistyle(titlePart);
+        	this.wikiStyleTitle = encodeTitleWikistyle(titlePart);
+            this.entity = this.plainTitle;
+            this.disambiguationText = null;
+        }
+
         if (getEntity() == null) {
             throw new WikiTitleParsingException("Title was not properly initialized.");
         }
@@ -77,7 +110,7 @@ public class Title {
      *
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
-     * 
+     *
      * @param pTitle The string to encode.
      * @return The wiki-style encoded string.
      */
@@ -85,15 +118,15 @@ public class Title {
         String encodedTitle = pTitle.replace(' ', '_');
         return encodedTitle;
     }
-    
+
     /**
      * Decodes a wiki-style title string to plain text.
-     * 
+     *
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
      *
      * @param pTitle The string to decode.
-     * @return The decoded string. 
+     * @return The decoded string.
      */
     private String decodeTitleWikistyle(String pTitle) {
         String encodedTitle = pTitle.replace('_', ' ');
@@ -105,28 +138,30 @@ public class Title {
      * @return The disambigutation text of a page title (i.e., the part in parentheses following the page's name).
      */
     public String getDisambiguationText() {
-        return mDisambiguationText;
+        return disambiguationText;
     }
-    private void setDisambiguationText(String disambiguationText) {
-        this.mDisambiguationText = disambiguationText;
-    }
+
     /**
      * Returns the name of the entity (i.e. the page's title *without* disambiguation string).
-     * @return The name of the entity (i.e. the page's title *without* disambiguation string). 
+     * @return The name of the entity (i.e. the page's title *without* disambiguation string).
      */
     public String getEntity() {
-        return mEntity;
-    }
-    private void setEntity(String entity) {
-        this.mEntity = entity;
+        return entity;
     }
 
     /**
      * Returns the plain title, without wikistyle underscores replacing spaces.
-     * @return The plain title, without wikistyle underscores replacing spaces. 
+     * @return The plain title, without wikistyle underscores replacing spaces.
      */
     public String getPlainTitle() {
-        return decodedTitle;
+        return plainTitle;
+    }
+
+    /**
+     * @return Returns the section part of a link "Article (Disambiguation)#Section".
+     */
+    public String getSectionText() {
+        return sectionText;
     }
 
     /**
@@ -134,15 +169,15 @@ public class Title {
      * @return The wikistyle title, with spaces replaced by underscores.
      */
     public String getWikiStyleTitle() {
-        return encodedTitle;
+        return wikiStyleTitle;
     }
-    
+
     protected String getRawTitleText() {
         return rawTitleText;
     }
-    
+
+    @Override
     public String toString() {
         return getPlainTitle();
     }
-
 }

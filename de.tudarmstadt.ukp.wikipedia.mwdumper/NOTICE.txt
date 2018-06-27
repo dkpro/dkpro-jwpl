@@ -1,0 +1,44 @@
+Some classes in this module are taken from third parties and may
+be licensed differently, as indicated in the respective class
+headers.
+
+MediaWiki import/export processing tools
+http://www.mediawiki.org/wiki/Mwdumper
+
+de.tudarmstadt.ukp.wikipedia.mwdumper.dumper.Dumper,
+de.tudarmstadt.ukp.wikipedia.mwdumper.dumper.ProgressFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Buffer,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Contributor,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.ExactListFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.LatestFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.ListFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.MultiWriter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceSet,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NotalkFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.PageFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Siteinfo,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SphinxWriter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlLiteral,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter14,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.SqlWriter15,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.TitleMatchFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpWriter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.TitleTest:
+Copyright 2005 by Brion Vibber
+
+******************************************************
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.AfterTimeStampFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.BeforeTimeStampFilter,
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.TimeStampFilter:
+Copyright 2006 by Aurimas Fischer
+
+******************************************************
+de.tudarmstadt.ukp.wikipedia.mwdumper.importer.RevisionListFilter:
+Copyright 2006 by Tim Starling

@@ -1,15 +1,23 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.decompression;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -24,24 +32,20 @@ import java.util.Properties;
  * derivatives to uncompress it on the fly. Otherwise the possible compression
  * will be ignored and the plain unmodified byte stream will be returned. <br>
  * <br>
- * 
+ *
  * Current supported archives are: GZip, BZip2. Each other archive type can be
  * added using the file "decompressor.xml" where you should specify the file
- * extension as a key and the accordant utility (incl. parameters), that have to
- * be started. Please notice, that the unpack utility have to use the standard
+ * extension as a key and the according utility (incl. parameters), that have to
+ * be started. Please note that the unpack utility has to use the standard
  * output and external unpack utilities are in preference to the internal. Also
  * there could be more heap memory necessary to use start external programs. The
  * compressed file should be specified with the place holder <code>%f</code>. <br>
  * E.g. the entry for the 7z utility could look like that: <br> {@code <entry
- * key="7z">7z e -so %f</entry>}. The properties file should confirm to
- * {@link http://java.sun.com/dtd/properties.dtd}
- * 
- * @author ivan.galkin
- * 
+ * key="7z">7z e -so %f</entry>}. The properties file should conform to
+ * <a href="http://java.sun.com/dtd/properties.dtd">Java Properties DTD</a>
+ *
  * @see UniversalDecompressor#getInputStream(String)
- * 
  */
-
 public class UniversalDecompressor implements IDecompressor {
 
 	/**
@@ -51,7 +55,7 @@ public class UniversalDecompressor implements IDecompressor {
 	/**
 	 * File path to decompressor properties files
 	 */
-	private static final String PROPERTIES_PATH = "decompressor.xml";
+	private static final String PROPERTIES_PATH = "src/main/resources/decompressor.xml";
 
 	/**
 	 * Archive extensions which are supported by external utilities
@@ -65,7 +69,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the file extension is supported by the external utility
-	 * 
+	 *
 	 * @param extension
 	 * @return true if this extension is supported with external utilities
 	 */
@@ -76,7 +80,7 @@ public class UniversalDecompressor implements IDecompressor {
 	/**
 	 * Check if the file extension is supported by the internal
 	 * <code>IDecompressor</code>
-	 * 
+	 *
 	 * @param extension
 	 * @return
 	 */
@@ -112,14 +116,15 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Return the extension of the filename
-	 * 
+	 *
 	 * @param fileName
 	 *            that should be inputed
 	 * @return file extension or null
 	 */
 	private String getExtension(String fileName) {
-		if (fileName == null)
-			return null;
+		if (fileName == null) {
+            return null;
+        }
 
 		String ext = null;
 		int i = fileName.lastIndexOf('.');
@@ -132,7 +137,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the file is supported by the internal or external decompressor
-	 * 
+	 *
 	 * @param fileName
 	 * @return true if the file extension is supported
 	 */
@@ -144,7 +149,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Start an external utility to unpack the the archive
-	 * 
+	 *
 	 * @param fileName
 	 * @return InputStream to read the decompressed data
 	 */
@@ -163,14 +168,14 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Get default InputStream to read the data from the file
-	 * 
+	 *
 	 * @param fileName
 	 * @return FileInputStream(fileName)
 	 */
 	private InputStream getDefault(String fileName) {
 		InputStream result = null;
 		try {
-			result = new FileInputStream(fileName);
+			result = new BufferedInputStream(new FileInputStream(fileName));
 		} catch (IOException ignore) {
 		}
 
@@ -189,7 +194,7 @@ public class UniversalDecompressor implements IDecompressor {
 	 * External decompression utilities are in preference to the internal. If
 	 * there is nether external nor internal possibilities to unpack the file -
 	 * the standard <code>FileInputSteam</code> will be returned
-	 * 
+	 *
 	 * @see UniversalDecompressor
 	 */
 	@Override
@@ -212,7 +217,7 @@ public class UniversalDecompressor implements IDecompressor {
 
 	/**
 	 * Check if the specified file exists
-	 * 
+	 *
 	 * @param fileName
 	 *            file path to check
 	 * @return bool if the file exists and can be read

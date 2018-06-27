@@ -1,22 +1,31 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
@@ -39,7 +48,7 @@ public class Category implements WikiConstants {
         this.wiki = wiki;
         catDAO = new CategoryDAO(wiki);
         createCategory(id);
-    };
+    }
 
     /**
      * Creates a category object.
@@ -51,7 +60,7 @@ public class Category implements WikiConstants {
         this.wiki = wiki;
         catDAO = new CategoryDAO(wiki);
         createCategory(pageID);
-    };
+    }
 
     /**
      * Creates a category object.
@@ -99,9 +108,9 @@ public class Category implements WikiConstants {
         session.beginTransaction();
 
         Object returnValue;
-        returnValue = session.createSQLQuery(
-                "select cat.pageId from Category as cat where cat.name = ? COLLATE utf8_bin")
-                .setString(0, name)
+        returnValue = session.createNativeQuery(
+                "select cat.pageId from Category as cat where cat.name = :name COLLATE utf8_bin")
+                .setParameter("name", name, StringType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
 
@@ -171,8 +180,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(inLinks) from category_inlinks where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createNativeQuery("select count(inLinks) from category_inlinks where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -222,8 +231,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(outLinks) from category_outlinks where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createNativeQuery("select count(outLinks) from category_outlinks where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
@@ -265,7 +274,7 @@ public class Category implements WikiConstants {
      * Returns the set of pages that are categorized under this category.
      * @return The set of pages that are categorized under this category.
      * @throws WikiApiException
-     * @deprecated Use {@link getArticles()} instead.
+     * @deprecated Use {@link #getArticles()} instead.
      */
     @Deprecated
 	public Set<Page> getPages() throws WikiApiException {
@@ -326,8 +335,8 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery("select count(pages) from category_pages where id = ?")
-            .setLong(0, id)
+        Object returnValue = session.createNativeQuery("select count(pages) from category_pages where id = :id")
+            .setParameter("id", id, LongType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 

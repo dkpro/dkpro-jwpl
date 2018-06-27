@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.tutorial;
 
 import java.util.Set;
@@ -24,20 +31,19 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 5
- * 
+ *
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
- * 
- * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany", 
- *   we can get a quite long list of towns in Germany.  
- * 
- * @author zesch
+ *
+ * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany",
+ *   we can get a quite long list of towns in Germany.
+ *
  *
  */
 public class T5_TownList implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -63,7 +69,7 @@ public class T5_TownList implements WikiConstants {
         for (Page p : topCat.getArticles()) {
             towns.add(p.getTitle().getPlainTitle());
         }
-        
+
         // Get the pages categorized under each subcategory of "Towns in Germany".
         for (Category townCategory : topCat.getDescendants()) {
             for (Page p : townCategory.getArticles()) {
@@ -71,7 +77,7 @@ public class T5_TownList implements WikiConstants {
             }
             System.out.println("Number of towns: " + towns.size());
         }
-        
+
         // Output the pages
         for (String town : towns) {
             System.out.println(town);

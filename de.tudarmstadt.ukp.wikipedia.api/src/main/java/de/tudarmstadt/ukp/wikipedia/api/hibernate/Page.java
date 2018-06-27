@@ -1,21 +1,28 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The page class that is actually persisted by Hibernate.
- * It is accessed via a equally named class in the api package to hide session management from the user. 
- * @author zesch
+ * It is accessed via a equally named class in the api package to hide session management from the user.
  *
  */
 public class Page {
@@ -31,7 +38,7 @@ public class Page {
 
     /** A no argument constructor as required by Hibernate. */
     public Page () {};
-    
+
     public long getId() {
         return id;
     }
@@ -105,7 +112,11 @@ public class Page {
         return isDisambiguation;
     }
 
-    public void setIsDisambiguation(boolean isDisambiguation) {
-        this.isDisambiguation = isDisambiguation;
-    }
+	public void setIsDisambiguation(Boolean isDisambiguation)
+	{
+		if (isDisambiguation == null) {
+			isDisambiguation = false;
+		}
+		this.isDisambiguation = isDisambiguation;
+	}
 }

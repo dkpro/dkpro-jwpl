@@ -1,0 +1,6 @@
+Some classes in this module are taken from third parties and may
+be licensed differently, as indicated in the respective class
+headers.
+
+de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.SimpleXmlDumpReader:
+Copyright 2005 by Brion Vibber

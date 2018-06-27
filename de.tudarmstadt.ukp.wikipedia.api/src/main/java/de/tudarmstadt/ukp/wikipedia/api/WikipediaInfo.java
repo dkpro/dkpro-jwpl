@@ -1,16 +1,30 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -22,7 +36,6 @@ import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
 
 /** Holds numerous information on a given subset (that may also be
  * the whole Wikipedia) of Wikipedia nodes.
- * @author zesch
  */
 public class WikipediaInfo {
 
@@ -188,68 +201,6 @@ public class WikipediaInfo {
         logger.error(endTime + "ms");
     }
 
-////this is a bit slow - created in-memory category-article map instead
-////may be deleted, if you do not know what do to with it
-//  /**
-//   * Articles in wikipedia may be tagged with multiple categories.
-//   * It may be interesting to know how many articles have at least one category in common.
-//   * Such articles would have a semantic relatedness of 1 even if they share a quite secondary category.
-//   * @param pWiki The wikipedia object.
-//   * @param pGraph The category graph.
-//   * @return The number of articles that have at least one category in common.
-//   */
-//  public int getArticlesWithOverlappingCategories(Wikipedia pWiki, CategoryGraph pGraph) {
-//      Set<Integer> overlappingArticles = new HashSet<Integer>();
-//
-//      // iterate over all node pairs
-//      Set<Integer> nodes = pGraph.getGraph().vertexSet();
-//
-//      // sort the Array so we can use a simple iteration with two for loops to access all pairs
-//      Object[] nodeArray = nodes.toArray();
-//      Arrays.sort(nodeArray);
-//
-//      Set<Integer> innerPages = null;
-//      Set<Integer> outerPages = null;
-//      int progress = 0;
-//      for (int i=0; i<nodes.size(); i++) {
-//          progress++;
-//          ApiUtilities.printProgressInfo(progress, nodes.size(), 100, ApiUtilities.ProgressInfoMode.TEXT, "Getting number of articles with overlapping categories.");
-//
-//          int outerNode = (Integer) nodeArray[i];
-//
-//          Category outerCat = pWiki.getCategory(outerNode);
-//          if (outerCat != null) {
-//              outerPages = new HashSet<Integer>(outerCat.getPages());
-//          }
-//          else {
-//              logger.info(outerNode + " is not a category.");
-//          }
-//
-//          for (int j=i+1; j<nodes.size(); j++) {
-//              int innerNode = (Integer) nodeArray[j];
-//
-//              Category innerCat = pWiki.getCategory(innerNode);
-//              if (outerCat != null) {
-//                  innerPages = new HashSet<Integer>(innerCat.getPages());
-//              }
-//              else {
-//                  logger.info(outerNode + " is not a category.");
-//              }
-//
-//              for (int outerPage : outerPages) {
-//                  if (innerPages.contains(outerPage)) {
-//                      if (overlappingArticles.contains(outerPage)) {
-//                          logger.error("HIER");
-//                          overlappingArticles.add(outerPage);
-//                      }
-//                  }
-//              }
-//
-//          }
-//      }
-//
-//      return overlappingArticles.size();
-//  }
 
     /**
      * Articles in wikipedia may be tagged with multiple categories.
@@ -360,7 +311,6 @@ public class WikipediaInfo {
      *      distributionOfArticlesByCategory
      * @param pWiki The wikipedia object.
      * @param catGraph The category graph.
-     * @return
      * @throws WikiPageNotFoundException
      */
     private void iterateCategoriesGetArticles(Wikipedia pWiki, CategoryGraph catGraph) throws WikiPageNotFoundException {

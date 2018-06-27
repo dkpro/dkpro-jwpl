@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.tutorial;
 
 import de.tudarmstadt.ukp.wikipedia.api.Category;
@@ -20,17 +27,16 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 4
- * 
+ *
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
- * 
- * @author zesch
+ *
  *
  */
 public class T4_Categories implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
-        
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -63,7 +69,7 @@ public class T4_Categories implements WikiConstants {
             sb.append("  " + parent.getTitle() + LF);
         }
         sb.append(LF);
-        
+
         // the number of links in this page pointing to other pages (number of subordinate categories)
         sb.append("# sub categories : " + cat.getChildren().size() + LF);
         for (Category child : cat.getChildren()) {
@@ -76,13 +82,13 @@ public class T4_Categories implements WikiConstants {
         for (Page page : cat.getArticles()) {
             sb.append("  " + page.getTitle() + LF);
         }
-        
-        // extract only the pageIDs of pages that are categorized under this category   
+
+        // extract only the pageIDs of pages that are categorized under this category
         sb.append("# pageIDs : " + cat.getArticleIds().size() + LF);
         for (int pageID : cat.getArticleIds()) {
             sb.append("  " + pageID + LF);
         }
-        
+
         System.out.println(sb);
     }
 }

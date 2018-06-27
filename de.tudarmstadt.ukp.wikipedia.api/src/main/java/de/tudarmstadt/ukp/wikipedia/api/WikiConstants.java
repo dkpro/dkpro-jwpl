@@ -1,23 +1,54 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import com.neovisionaries.i18n.LanguageCode;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.util.List;
+
 public interface WikiConstants {
+    /**
+     * Shortcut for System.getProperty("line.separator").
+     */
+    public static final String LF = System.getProperty("line.separator");
+
+    /**
+     * The prefix that is added to page titles of discussion pages
+     * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
+     */
+    public static final String DISCUSSION_PREFIX = "Discussion:";
+
+    /**
+     * Configuration file for the Sweble parser
+     */
+    public static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
     /**
      * Enumerates the languages for which Wikipedia APIs are available.
      * A Wikipedia object can be created using one of these languages.
      */
     // Languages should be lowercase and match the corresponding snowball stemmer names.
-    public enum Language { 
+    public enum Language {
         abkhazian,
         afar,
         afrikaans,
@@ -274,12 +305,31 @@ public interface WikiConstants {
         zealandic,
         zhuang,
         zulu,
-        _test
-    }
-    
-    /**
-     * Shortcut for System.getProperty("line.separator").
-     */
-    public static final String LF = System.getProperty("line.separator");
+        _test;
 
+        /**
+         * Configures a language specific configuration for parsing wikipedia pages.
+         * @return WikiConfig
+         */
+        public WikiConfig getWikiconfig(Language this) {
+            WikiConfig config = DefaultConfigEnWp.generate();
+            if (this != Language._test) {
+                // We need to capitalize the language name otherwise the locale lib cannot find it.
+                String langName = this.name().substring(0, 1).toUpperCase() + this.name().substring(1);
+                try {
+                    List<LanguageCode> langCodes = LanguageCode.findByName(langName);
+                    if (!langCodes.isEmpty()) {
+                        String langCode = langCodes.get(0).name();
+                        return LanguageConfigGenerator.generateWikiConfig(langCode);
+                    }
+                } catch (IOException | ParserConfigurationException | SAXException e) {
+                    System.out.println(
+                            String.format("Failed to create WikiConfig for language for %s, using default instead",
+                                    langName)
+                    );
+                }
+            }
+            return config;
+        }
+    }
 }

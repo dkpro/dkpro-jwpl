@@ -1,20 +1,25 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.datamachine.domain;
 
 import java.io.IOException;
 
-import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
 import de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.XML2Binary;
-
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.AbstractSnapshotGenerator;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.Files;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.domain.MetaData;
@@ -32,10 +37,8 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.IEnvironmentFactory;
  * Transforms a database from mediawiki format to JWPL format.<br>
  * The transformation produces .txt files for the different tables in the JWPL
  * database.
- * 
- * @author Anouar
- * @author ivan.galkin
- * 
+ *
+ *
  */
 public class DataMachineGenerator extends AbstractSnapshotGenerator {
 
@@ -51,6 +54,7 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 		this.files = (DataMachineFiles) files;
 	}
 
+	@Override
 	public void start() throws Exception {
 		version = environmentFactory.getDumpVersion();
 		MetaData metaData = MetaData.initWithConfig(configuration);
@@ -61,12 +65,12 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 	}
 
 	private void processInputDump() throws IOException {
-		
+
 		logger.log("parse input dumps...");
 		new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()),
 				files);
-		System.gc();
-
+		
+		
 		dumpVersionProcessor.setDumpVersions(new IDumpVersion[] { version });
 
 		logger.log("processing table page...");
@@ -94,18 +98,20 @@ public class DataMachineGenerator extends AbstractSnapshotGenerator {
 	 * Parse either "pages-articles.xml" or "pages-meta-current.xml". If both
 	 * files exist in the input directory "pages-meta-current.xml" will be
 	 * favored.
-	 * 
+	 *
 	 * @return the input articles dump
 	 */
 	private String getPagesArticlesFile() {
 		String pagesArticlesFile = null;
 		String parseMessage = null;
 
+		//Use of minimal dump only with articles
 		if (files.getInputPagesArticles() != null) {
 			pagesArticlesFile = files.getInputPagesArticles();
 			parseMessage = "Discussions are unavailable";
 		}
 
+		//Use of dump with discussions
 		if (files.getInputPagesMetaCurrent() != null) {
 			pagesArticlesFile = files.getInputPagesMetaCurrent();
 			parseMessage = "Discussions are available";

@@ -1,56 +1,66 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.Session;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.LongType;
+import org.hibernate.type.StringType;
+import org.sweble.wikitext.engine.PageId;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.WtEngineImpl;
+import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
-import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
-import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.PageDAO;
+import de.tudarmstadt.ukp.wikipedia.api.sweble.PlainTextConverter;
+import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
 
 /**
  * Represents a Wikipedia article page.
  *
- * @author zesch
  *
  */
 // Adapter class for hidding hibernate session management from the user.
 public class Page
 	implements WikiConstants
 {
-	private Wikipedia wiki;
+	private final Wikipedia wiki;
 
-	private PageDAO pageDAO;
+	private final PageDAO pageDAO;
 
 	// The hibernatePage that is represented by this WikiAPI page.
 	// The indirection is necessary to shield the user from Hibernate sessions.
 	private de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage;
 
-//	// The String that was used to search that page
-//	// If it differs from the page's name, we searched for a redirect.
-//	private String searchString;
-
 	// If we search for a redirect, the corresponding page is delivered transparently.
 	// In that case, isRedirect is set to true, to indicate that.
 	// Note: The page itself is _not_ a redirect, it is just a page.
 	private boolean isRedirect = false;
+
 
 	/**
 	 * Creates a page object.
@@ -98,18 +108,55 @@ public class Page
 	public Page(Wikipedia wiki, String pName)
 		throws WikiApiException
 	{
-		if (pName == null || pName.length() == 0) {
-			throw new WikiPageNotFoundException();
-		}
+		this(wiki, pName, false);
+	}
+	
+	/**
+     * Creates a page object.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param pName
+     *            The name of the page.
+     * @param useExactTitle
+     *            Whether to use the exact title or try to guess the correct wiki-style title.
+     * @throws WikiApiException
+     */
+    public Page(Wikipedia wiki, String pName, boolean useExactTitle)
+        throws WikiApiException
+    {
+        if (pName == null || pName.length() == 0) {
+            throw new WikiPageNotFoundException();
+        }
+        this.wiki = wiki;
+        this.pageDAO = new PageDAO(wiki);
+        Title pageTitle = new Title(pName);
+        fetchByTitle(pageTitle, useExactTitle);
+    }
+
+	/**
+	 * Creates a Page object from an already retrieved hibernate Page
+	 *
+	 * @param wiki
+	 *            The wikipedia object.
+	 * @param id
+	 *            The hibernate id of the page.
+	 * @param hibernatePage
+	 * 			  The {@code api.hibernatePage} that has already been retrieved
+	 * @throws WikiApiException
+	 */
+	protected Page(Wikipedia wiki, long id,
+			de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage)
+		throws WikiApiException
+	{
 		this.wiki = wiki;
 		this.pageDAO = new PageDAO(wiki);
-		Title pageTitle = new Title(pName);
-		fetchByTitle(pageTitle);
+		this.hibernatePage = hibernatePage;
 	}
 
 	/**
 	 * @throws WikiApiException
-	 * @see de.tudarmstadt.ukp.wikipedia.api.Page#Page(long)
+	 * @see de.tudarmstadt.ukp.wikipedia.api.Page
 	 */
 	private void fetchByHibernateId(long id)
 		throws WikiApiException
@@ -130,7 +177,7 @@ public class Page
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
 		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session
-				.createQuery("from Page where pageId = ?").setInteger(0, pageID).uniqueResult();
+				.createQuery("from Page where pageId = :id").setParameter("id", pageID, IntegerType.INSTANCE).uniqueResult();
         session.getTransaction().commit();
 
         if (hibernatePage == null) {
@@ -138,47 +185,60 @@ public class Page
         }
 	}
 
-	private void fetchByTitle(Title pTitle)
+	/**
+	 * CAUTION: Only returns 1 result, even if several results are possible.
+	 *
+	 * @param pTitle
+	 * @throws WikiApiException
+	 */
+	private void fetchByTitle(Title pTitle, boolean useExactTitle)
 		throws WikiApiException
 	{
-		String searchString = pTitle.getWikiStyleTitle();
+		String searchString = pTitle.getPlainTitle();
+		if (!useExactTitle) {
+		    searchString = pTitle.getWikiStyleTitle();
+		}
+
 		Session session;
 		session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
 		Integer pageId = (Integer) session
-				.createSQLQuery(
-						"select pml.pageID from PageMapLine as pml where pml.name = ? COLLATE utf8_bin")
-				.setString(0, searchString).uniqueResult();
+				.createNativeQuery(
+						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1")
+				.setParameter("pagetitle", searchString, StringType.INSTANCE).uniqueResult();
+		session.getTransaction().commit();
 
-		if (pageId == null) {
+        if (pageId == null) {
 			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
 		}
-
 		fetchByPageId(pageId);
-
-//		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session.createSQLQuery(
-//				"SELECT p.* " +
-//				"FROM Page AS p " +
-//				"JOIN PageMapLine AS pml ON p.pageId = pml.pageID " +
-//				"WHERE pml.name COLLATE utf8_bin = ? LIMIT 1")
-//				.addEntity(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-//				.setString(0, searchString)
-//				.uniqueResult();
-//
-//		session.getTransaction().commit();
-//
-//
-//		// if there is no page with this name, the hibernatePage is null
-//		if (hibernatePage == null) {
-//			throw new WikiPageNotFoundException("No page with name " + searchString + " was found.");
-//		}
-
-        // If this page was created using a redirect searchString, then set the isRedirect flag.
-        // A redirect searchString differs from the page's name.
-        if (searchString != null) {
-            if (!searchString.equals(getTitle().getRawTitleText())) {
-                this.isRedirect = true;
-            }
+        if (!this.isRedirect&&searchString != null&&!searchString.equals(getTitle().getRawTitleText())) {
+                if(this.isRedirect){
+                	//in case we already tried to re-retrieve the discussion page unsuccessfully,
+                	//we have to give up here or we end up in an infinite loop.
+                	
+                	//reasons for this happening might be several entries in PageMapLine with the same name but different upper/lower case variants
+                	//if the database does not allow case sensitive queries, then the API will always retrieve only the first result and if this is a redirect to a different writing variant, we are stuck in a loop.
+                	//To fix this, either a case sensitive collation should be used or the API should be able to deal with set valued results and pick the correct one from the set.
+                	//For now, we gracefully return without retrieving the Talk page for this article and throw an appropriate excption.
+        			throw new WikiPageNotFoundException("No discussion page with name " + searchString + " could be retrieved. This is most likely due to multiple writing variants of the same page in the database");                	
+                }else{
+            		this.isRedirect = true;
+                    /*
+                     * WORKAROUND
+                     * in our page is a redirect to a discussion page, we might not retrieve the target discussion page as expected but rather the article associated with the target discussion page
+                     * we check this here and re-retrieve the correct page.
+                     * this error should be avoided by keeping the namespace information in the database
+                     * This fix has been provided by Shiri Dori-Hacohen and is discussed in the Google Group under https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
+                     */
+                    if (searchString.startsWith(DISCUSSION_PREFIX) && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
+                    	try {
+                    		fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()), useExactTitle);
+                    	} catch (WikiPageNotFoundException e) {
+                    		throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX + getTitle().getRawTitleText() + " was found.");
+                    	}
+                    }                	
+                }
         }
 	}
 
@@ -187,11 +247,7 @@ public class Page
 	 */
 	protected long __getId()
 	{
-//		Session session = this.wiki.__getHibernateSession();
-//		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		long id = hibernatePage.getId();
-//		session.getTransaction().commit();
 		return id;
 	}
 
@@ -200,11 +256,7 @@ public class Page
 	 */
 	public int getPageId()
 	{
-//		Session session = this.wiki.__getHibernateSession();
-//		session.beginTransaction();
-//		session.lock(hibernatePage, LockMode.NONE);
 		int id = hibernatePage.getPageId();
-//		session.getTransaction().commit();
 		return id;
 	}
 
@@ -217,7 +269,7 @@ public class Page
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		Set<Integer> tmp = new UnmodifiableArraySet<Integer>(hibernatePage.getCategories());
 		session.getTransaction().commit();
 
@@ -243,8 +295,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		 session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(pages) from page_categories where id = ?")
-				.setLong(0, id).uniqueResult();
+				.createNativeQuery("select count(pages) from page_categories where id = :pageid")
+				.setParameter("pageid", id, LongType.INSTANCE).uniqueResult();
 		 session.getTransaction().commit();
 
 		if (returnValue != null) {
@@ -259,13 +311,12 @@ public class Page
 	 * getNumberOfInlinks() instead.
 	 *
 	 * @return The set of pages that have a link pointing to this page.
-	 * @throws WikiApiException
 	 */
 	public Set<Page> getInlinks()
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> pageIDs = new UnmodifiableArraySet<Integer>(hibernatePage.getInLinks());
 		session.getTransaction().commit();
@@ -299,8 +350,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = ?")
-				.setLong(0, id).uniqueResult();
+				.createNativeQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
+				.setParameter("piid", id, LongType.INSTANCE).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
@@ -317,14 +368,16 @@ public class Page
 	 */
 	public Set<Integer> getInlinkIDs()
 	{
+		Set<Integer> tmpSet = new HashSet<Integer>();
+
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getInLinks());
 
 		session.getTransaction().commit();
+
 		return tmpSet;
 	}
 
@@ -335,13 +388,13 @@ public class Page
 	 * getNumberOfOutlinks() instead.
 	 *
 	 * @return The set of pages that are linked from this page.
-	 * @throws WikiApiException
 	 */
 	public Set<Page> getOutlinks()
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+//		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		// Have to copy links here since getPage later will close the session.
 		Set<Integer> tmpSet = new UnmodifiableArraySet<Integer>(hibernatePage.getOutLinks());
 		session.getTransaction().commit();
@@ -373,8 +426,8 @@ public class Page
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
-				.createSQLQuery("select count(outLinks) from page_outlinks where id = ?")
-				.setLong(0, id).uniqueResult();
+				.createNativeQuery("select count(outLinks) from page_outlinks where id = :id")
+				.setParameter("id", id, LongType.INSTANCE).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
@@ -391,11 +444,12 @@ public class Page
 	 */
 	public Set<Integer> getOutlinkIDs()
 	{
+		Set<Integer> tmpSet = new HashSet<Integer>();
+
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-		Set<Integer> tmpSet = new HashSet<Integer>();
 		tmpSet.addAll(hibernatePage.getOutLinks());
 
 		session.getTransaction().commit();
@@ -413,7 +467,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
 		String name = hibernatePage.getName();
 		session.getTransaction().commit();
 		Title title = new Title(name);
@@ -429,7 +482,7 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
+		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		Set<String> tmpSet = new HashSet<String>(hibernatePage.getRedirects());
 		session.getTransaction().commit();
 		return tmpSet;
@@ -444,7 +497,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
 		String text = hibernatePage.getText();
 		session.getTransaction().commit();
 
@@ -491,7 +543,6 @@ public class Page
 	{
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		session.lock(hibernatePage, LockMode.NONE);
 		boolean isDisambiguation = hibernatePage.getIsDisambiguation();
 		session.getTransaction().commit();
 		return isDisambiguation;
@@ -507,139 +558,91 @@ public class Page
 		return isRedirect;
 	}
 
-	/**
-	 * Returns the Wikipedia article as plain text. Page.getText() returns the Wikipedia article
-	 * with all Wiki markup.
+    /**
+     * @return True, if the page is a discussion page.
+     * @throws WikiTitleParsingException
+     */
+    public boolean isDiscussion() throws WikiTitleParsingException
+    {
+        return getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX);
+    }
+
+    /**
+	 * <p>Returns the Wikipedia article as plain text using the SwebleParser with
+	 * a SimpleWikiConfiguration and the PlainTextConverter. <br>
+	 * If you have different needs regarding the plain text, you can use
+	 * getParsedPage(Visitor v) and provide your own Sweble-Visitor. Examples
+	 * are in the <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package
+	 * or on http://www.sweble.org </p>
 	 *
-	 * @return The plain text of a Wikipedia article without all markup.
+	 * <p>Alternatively, use Page.getText() to return the Wikipedia article
+	 * with all Wiki markup. You can then use the old JWPL MediaWiki parser for
+	 * creating a plain text version. The JWPL parser is now located in a
+	 * separate project <code>de.tudarmstad.ukp.wikipedia.parser</code>.
+	 * Please refer to the JWPL Google Code project page for further reference.</p>
+	 *
+	 * @return The plain text of a Wikipedia article
 	 * @throws WikiApiException
 	 */
 	public String getPlainText()
 		throws WikiApiException
 	{
-		ParsedPage pp = getParsedPage();
-		if (pp == null) {
-			return "";
-		}
-		return getTitle().getPlainTitle() + " " + pp.getText();
+		//Configure the PlainTextConverter for plain text parsing
+		return (String) parsePage(new PlainTextConverter(this.wiki.wikiConfig, false, Integer.MAX_VALUE));
 	}
 
 	/**
-	 * Returns a ParsedPage object as would have been returned by the JWPL Parser.
+	 * Parses the page with the Sweble parser using a SimpleWikiConfiguration
+	 * and the provided visitor. For further information about the visitor
+	 * concept, look at the examples in the
+	 * <code>de.tudarmstadt.ukp.wikipedia.api.sweble</code> package, or on
+	 * <code>http://www.sweble.org</code> or on the JWPL Google Code project
+	 * page.
 	 *
-	 * @return A ParsedPage object as would have been returned by the JWPL Parser.
+	 * @return the parsed page. The actual return type depends on the provided
+	 *         visitor. You have to cast the return type according to the return
+	 *         type of the go() method of your visitor.
+	 * @throws WikiApiException
 	 */
-	public ParsedPage getParsedPage()
+	public Object parsePage(AstVisitor v) throws WikiApiException
 	{
-		return wiki.getParser().parse(getText());
+		// Use the provided visitor to parse the page
+		return v.go(getCompiledPage().getPage());
 	}
 
 	/**
-	 * Note that this method only returns the anchors that are not equal to the page's title.
+	 * Returns CompiledPage produced by the SWEBLE parser using the
+	 * SimpleWikiConfiguration.
 	 *
-	 * @return A set of strings used as anchor texts in links pointing to that page.
-	 * @throws WikiTitleParsingException
+	 * @return the parsed page
+	 * @throws WikiApiException
 	 */
-	public Set<String> getInlinkAnchors()
-		throws WikiTitleParsingException
+	public EngProcessedPage getCompiledPage() throws WikiApiException
 	{
-		Set<String> inAnchors = new HashSet<String>();
-		for (Page p : getInlinks()) {
-			ParsedPage pp = p.getParsedPage();
-			if (pp == null) {
-				return inAnchors;
-			}
-			for (Link l : pp.getLinks()) {
-				String pageTitle = p.getTitle().getPlainTitle();
-				String anchorText = l.getText();
-				if (l.getTarget().equals(pageTitle) && !anchorText.equals(pageTitle)) {
-					inAnchors.add(anchorText);
-				}
-			}
+		EngProcessedPage cp;
+		try{
+			WtEngineImpl engine = new WtEngineImpl(this.wiki.wikiConfig);
+
+			PageTitle pageTitle = PageTitle.make(this.wiki.wikiConfig, this.getTitle().toString());
+			PageId pageId = new PageId(pageTitle, -1);
+
+			// Compile the retrieved page
+			cp = engine.postprocess(pageId, this.getText(), null);
+		} catch(Exception e){
+			throw new WikiApiException(e);
 		}
-		return inAnchors;
+		return cp;
 	}
 
-	/**
-	 * Note that this method only returns the anchors that are not equal to the title of the page
-	 * they are pointing to.
-	 *
-	 * @return A mapping from the page titles of links in that page to the anchor texts used in the
-	 *         links.
-	 * @throws WikiTitleParsingException
+
+	///////////////////////////////////////////////////////////////////
+	/*
+	 * The methods getInlinkAnchors() and getOutLinkAnchors() have not yet been
+	 * migrated to the SWEBLE parser. The original versions based on the
+	 * JWPL MediaWikiParser can be found in
+	 * de.tudarmstadt.ukp.wikipedia.parser.LinkAnchorExtractor
 	 */
-	public Map<String, Set<String>> getOutlinkAnchors()
-		throws WikiTitleParsingException
-	{
-		Map<String, Set<String>> outAnchors = new HashMap<String, Set<String>>();
-		ParsedPage pp = getParsedPage();
-		if (pp == null) {
-			return outAnchors;
-		}
-		for (Link l : pp.getLinks()) {
-			if (l.getTarget().length() == 0) {
-				continue;
-			}
-
-			String targetTitle = new Title(l.getTarget()).getPlainTitle();
-			if (!l.getType().equals(Link.type.EXTERNAL) && !l.getType().equals(Link.type.IMAGE)
-					&& !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
-					&& !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
-													// are categories or other meta data
-			{
-				String anchorText = l.getText();
-				if (!anchorText.equals(targetTitle)) {
-					Set<String> anchors;
-					if (outAnchors.containsKey(targetTitle)) {
-						anchors = outAnchors.get(targetTitle);
-					}
-					else {
-						anchors = new HashSet<String>();
-					}
-					anchors.add(anchorText);
-					outAnchors.put(targetTitle, anchors);
-				}
-			}
-		}
-		return outAnchors;
-	}
-
-	// // TZ: old buggy implementation of getPlainText(). To be removed in next clean-up session :)
-	// /**
-	// * Returns the Wikipedia article as plain text.
-	// * Page.getText() returns the Wikipedia article with all Wiki markup.
-	// *
-	// * @return The plain text of a Wikipedia article without all markup.
-	// * @throws WikiApiException
-	// */
-	// protected String getPlainText() throws WikiApiException {
-	// String plainText = getText();
-	//
-	// plainText = plainText.replaceAll("<.+?>"," ");
-	// plainText = plainText.replaceAll("__.+?__"," ");
-	// plainText = plainText.replaceAll("\\[http.+?\\]"," ");
-	// plainText = plainText.replaceAll("\\[Bild.+?\\]"," ");
-	// plainText = plainText.replaceAll("\\{\\|.+?\\|\\}"," ");
-	// plainText = plainText.replaceAll(" - "," ");
-	//
-	// plainText = plainText.replace('[',' ');
-	// plainText = plainText.replace(']',' ');
-	// plainText = plainText.replace('=',' ');
-	// plainText = plainText.replace('*',' ');
-	// plainText = plainText.replace('\'',' ');
-	// plainText = plainText.replace('.',' ');
-	// plainText = plainText.replace(',',' ');
-	// plainText = plainText.replace(';',' ');
-	// plainText = plainText.replace('|',' ');
-	// plainText = plainText.replace(':',' ');
-	// plainText = plainText.replace('{',' ');
-	// plainText = plainText.replace('}',' ');
-	// plainText = plainText.replace('(',' ');
-	// plainText = plainText.replace(')',' ');
-	// plainText = plainText.replaceAll("\\s{2,}"," ");
-	//
-	// return this.getTitle() + " " + plainText;
-	// }
+	///////////////////////////////////////////////////////////////////
 
 	/**
 	 * Returns a string with infos about this page object.

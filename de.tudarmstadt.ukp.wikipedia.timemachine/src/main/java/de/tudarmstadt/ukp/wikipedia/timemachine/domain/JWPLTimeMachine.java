@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.timemachine.domain;
 
 import de.tudarmstadt.ukp.wikipedia.wikimachine.debug.ILogger;
@@ -21,13 +28,11 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory;
  * The <code>main</code> method gets the path of a configuration file as
  * argument<br>
  * <br>
- * 
+ *
  * Refactored on 16 April 2009 by Ivan Galkin .
- * 
- * @author Anouar
- * @author ivan.galkin
- * 
- * 
+ *
+ *
+ *
  */
 public class JWPLTimeMachine {
 
@@ -39,14 +44,14 @@ public class JWPLTimeMachine {
 
 	/**
 	 * Checks given arguments
-	 * 
+	 *
 	 * @param args
 	 * <br>
 	 *            args[0] the settings file like described in
 	 *            {@link SettingsXML}<br>
-	 * 
+	 *
 	 * @return true if all necessary arguments are given and false otherwise
-	 * 
+	 *
 	 * @see SettingsXML
 	 */
 	private static boolean checkArgs(String[] args) {

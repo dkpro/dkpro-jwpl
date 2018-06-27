@@ -1,17 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.datamachine.dump.version;
-
-import gnu.trove.TIntHashSet;
-import gnu.trove.TIntIntHashMap;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -27,12 +31,17 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.hashing.IStringHashCode;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
+import gnu.trove.map.hash.TIntIntHashMap;
+import gnu.trove.set.hash.TIntHashSet;
 
 public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCode>
 		extends AbstractDumpVersion {
 
 	private static final String SQL_NULL = "NULL";
-	private static final String DISCUSSION_FLAG = "Discussion:";
+	//TODO 	This constant is used to flag page titles of discussion pages.
+	//		Is also defined in wikipedia.api:WikiConstants.DISCUSSION_PREFIX
+	//		It just doesn't make sense to add a dependency just for the constant
+	private static final String DISCUSSION_PREFIX = "Discussion:";
 
 	private Map<Integer, String> pPageIdNameMap;
 	private TIntHashSet cPageIdNameMap;
@@ -57,7 +66,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	public void freeAfterCategoryLinksParsing() {
 		cPageIdNameMap.clear();
 		cNamePageIdMap.clear();
-		System.gc();
 	}
 
 	@Override
@@ -98,13 +106,13 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 	@Override
 	public void initialize(Timestamp timestamp) {
-		pPageIdNameMap = new HashMap<Integer, String>();
-		cPageIdNameMap = new TIntHashSet();
-		pNamePageIdMap = new HashMap<KeyType, Integer>();
-		cNamePageIdMap = new HashMap<KeyType, Integer>();
-		rPageIdNameMap = new HashMap<Integer, String>();
-		disambiguations = new TIntHashSet();
-		textIdPageIdMap = new TIntIntHashMap();
+		pPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		cPageIdNameMap = new TIntHashSet(1_000_000);
+		pNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
+		cNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
+		rPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		disambiguations = new TIntHashSet(1_000_000);
+		textIdPageIdMap = new TIntIntHashMap(1_000_000);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -112,6 +120,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	public void processCategoryLinksRow(CategorylinksParser clParser)
 			throws IOException {
 		String cl_to = clParser.getClTo();
+
 		if (cl_to != null) {
 			KeyType clToHash = (KeyType) hashAlgorithm.hashCode(cl_to);
 
@@ -135,7 +144,10 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 			}
 		}
-
+		else {
+		    throw new IOException("Parsin error." + CategorylinksParser.class.getName() +
+		                          " returned null value in " + this.getClass().getName());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -163,33 +175,37 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 		int page_id = pageParser.getPageId();
 		String page_title = pageParser.getPageTitle();
 		if (page_title != null) {
-			KeyType pageTitleHash = (KeyType) hashAlgorithm
-					.hashCode(page_title);
-
 			switch (page_namespace) {
-			case NS_CATEGORY: {
-				// skip redirect categories if skipCategory is enabled
-				if (!(skipCategory && pageParser.getPageIsRedirect())) {
-					cPageIdNameMap.add(page_id);
-					cNamePageIdMap.put(pageTitleHash, page_id);
-					txtFW.addRow(page_id, page_id, page_title);
+				case NS_CATEGORY: {
+					// skip redirect categories if skipCategory is enabled
+					if (!(skipCategory && pageParser.getPageIsRedirect())) {
+						cPageIdNameMap.add(page_id);
+						cNamePageIdMap.put(
+								(KeyType) hashAlgorithm.hashCode(page_title),
+								page_id);
+						txtFW.addRow(page_id, page_id, page_title);
+					}
+					break;
 				}
-				break;
-			}
 
-			case NS_TALK: {
-				page_title = DISCUSSION_FLAG + page_title;
-			}
-
-			case NS_MAIN: {
-				if (pageParser.getPageIsRedirect()) {
-					rPageIdNameMap.put(page_id, page_title);
-				} else {
-					pPageIdNameMap.put(page_id, page_title);
-					pNamePageIdMap.put(pageTitleHash, page_id);
+				case NS_TALK: {
+					page_title = DISCUSSION_PREFIX + page_title;
+					//the NS_MAIN block will also be executed
+					//for NS_TALK pages ...
 				}
-				break;
-			}
+
+				case NS_MAIN: {
+					if (pageParser.getPageIsRedirect()) {
+						rPageIdNameMap.put(page_id, page_title);
+					}
+					else {
+						pPageIdNameMap.put(page_id, page_title);
+						pNamePageIdMap.put(
+								(KeyType) hashAlgorithm.hashCode(page_title),
+								page_id);
+					}
+					break;
+				}
 			}
 		}
 

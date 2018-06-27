@@ -1,64 +1,74 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.hibernate.type.IntegerType;
+import org.hibernate.type.StringType;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
-import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
-import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 
 /**
  * Provides access to Wikipedia articles and categories.
- * @author zesch
  *
  */
 // TODO better JavaDocs!
 public class Wikipedia implements WikiConstants {
 
 	private final Log logger = LogFactory.getLog(getClass());
-    private Language language;
-    private DatabaseConfiguration dbConfig;
-
-    private MediaWikiParser parser;
+    private final Language language;
+    private final DatabaseConfiguration dbConfig;
 
     /**
      * A mapping from page pageIDs to hibernateIDs.
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
      * The wikiapi startup time is way too long otherwise. */
-    private Map<Integer, Long> idMapPages;
+    private final Map<Integer, Long> idMapPages;
     /**
      * A mapping from categories pageIDs to hibernateIDs.
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
      * The wikiapi startup time is way too long otherwise. */
-    private Map<Integer, Long> idMapCategories;
+    private final Map<Integer, Long> idMapCategories;
 
-    private MetaData metaData;
+    private final MetaData metaData;
+
+    public WikiConfig wikiConfig;
 
     /**
      * Creates a new Wikipedia object accessing the database indicated by the dbConfig parameter.
@@ -74,26 +84,14 @@ public class Wikipedia implements WikiConstants {
         this.idMapPages      = new HashMap<Integer,Long>();
         this.idMapCategories = new HashMap<Integer,Long>();
 
-//// TODO We have to find a way to check the encoding language independently.
-//        if (!checkEncoding()) {
-//            throw new WikiApiException("There is an encoding problem within the WikiAPI database.");
-//        }
-
         this.metaData = new MetaData(this);
+        this.wikiConfig = this.language.getWikiconfig();
+	}
 
-        MediaWikiParserFactory pf = new MediaWikiParserFactory();
-        this.parser = pf.createParser();
-
-
-//// Building the maps at startup time was removed because it is way too slow
-//// It was replaced by a cache-like mechanism.
-//        idMapPages      = HibernateUtilities.getIdMappingPages();
-//        idMapCategories = HibernateUtilities.getIdMappingCategories();
-    }
 
     /**
      * Gets the page with the given title.
-     * If the title is a redirect, the corresponding page is returned.<br/>
+     * If the title is a redirect, the corresponding page is returned.<br>
      * If the title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia article title starts with an uppercase letter.
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
      *
@@ -106,11 +104,46 @@ public class Wikipedia implements WikiConstants {
      *
      * @param title The title of the page.
      * @return The page object for a given title.
-     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPage(String title) throws WikiApiException  {
-        Page page = new Page(this, title);
+    	Page page = new Page(this, title, false);
         return page;
+    }
+
+    /**
+     * Gets the page with the exactly the given title.<br>
+     *
+     * Note that when using this method you are responsible for converting a normal search string into the right wiki-style.<br>
+     *
+     * If the title is a redirect, the corresponding page is returned.<br>
+     *
+     * @param exactTitle The exact title of the page.
+     * @return The page object for a given title.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
+     */
+    public Page getPageByExactTitle(String exactTitle) throws WikiApiException  {
+        Page page = new Page(this, exactTitle, true);
+        return page;
+    }
+
+    /**
+     * Get all pages which match all lowercase/uppercase version of the given title.<br>
+     * If the title is a redirect, the corresponding page is returned.<br>
+     * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
+     *
+     * @param title The title of the page.
+     * @return A set of page objects matching this title.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
+     */
+    public Set<Page> getPages(String title) throws WikiApiException  {
+        Set<Integer> ids = new HashSet<Integer>(getPageIdsCaseInsensitive(title));
+
+        Set<Page> pages = new HashSet<Page>();
+        for (Integer id : ids) {
+            pages.add(new Page(this, id));
+        }
+        return pages;
     }
 
     /**
@@ -121,14 +154,224 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException
      */
     public Page getPage(int pageId) throws WikiApiException {
-//        long hibernateId = __getPageHibernateId(pageId);
-//
-//        if (hibernateId == -1) {
-//            throw new WikiPageNotFoundException("Could not find hibernateId for page " + pageId);
-//        }
-
         Page page = new Page(this, pageId);
         return page;
+    }
+
+    /**
+     * Gets the title for a given pageId.
+     *
+     * @param pageId The id of the page.
+     * @return The title for the given pageId.
+     * @throws WikiApiException
+     */
+    public Title getTitle(int pageId) throws WikiApiException {
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Object returnValue = session.createNativeQuery(
+            "select p.name from PageMapLine as p where p.id = :pId").setParameter("pId", pageId, IntegerType.INSTANCE).uniqueResult();
+        session.getTransaction().commit();
+
+        String title = (String)returnValue;
+        if(title==null){
+        	throw new WikiPageNotFoundException();
+        }
+        return new Title(title);
+    }
+
+    /**
+     * Gets the page ids for a given title.<br>
+     *
+     *
+     * @param title The title of the page.
+     * @return The id for the page with the given title.
+     * @throws WikiApiException
+     */
+    public List<Integer> getPageIds(String title) throws WikiApiException {
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Iterator results = session.createQuery(
+        "select p.pageID from PageMapLine as p where p.name = :pName").setParameter("pName", title, StringType.INSTANCE).list().iterator();
+
+        session.getTransaction().commit();
+
+        if(!results.hasNext()){
+        	throw new WikiPageNotFoundException();
+        }
+        List<Integer> resultList = new LinkedList<Integer>();
+        while(results.hasNext()){
+        	resultList.add((Integer)results.next());
+        }
+        return resultList;
+    }
+
+    /**
+     * Gets the page ids for a given title with case insensitive matching.<br>
+     *
+     *
+     * @param title The title of the page.
+     * @return The ids of the pages with the given title.
+     * @throws WikiApiException
+     */
+    public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
+        title = title.toLowerCase();
+        title = title.replaceAll(" ", "_");
+
+        Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        Iterator results = session.createQuery(
+        "select p.pageID from PageMapLine as p where lower(p.name) = :pName").setParameter("pName", title, StringType.INSTANCE).list().iterator();
+
+        session.getTransaction().commit();
+
+        if(!results.hasNext()){
+            throw new WikiPageNotFoundException();
+        }
+        List<Integer> resultList = new LinkedList<Integer>();
+        while(results.hasNext()){
+            resultList.add((Integer)results.next());
+        }
+        return resultList;
+    }
+
+	/**
+	 * Returns the article page for a given discussion page.
+	 *
+	 * @param discussionPage
+	 *            the discussion page object
+	 * @return The page object of the article associated with the discussion. If
+	 *         the parameter already was an article, it is returned directly.
+	 * @throws WikiApiException
+	 */
+    public Page getArticleForDiscussionPage(Page discussionPage) throws WikiApiException {
+    	if(discussionPage.isDiscussion()){
+    		String title = discussionPage.getTitle().getPlainTitle().replaceAll(WikiConstants.DISCUSSION_PREFIX, "");
+
+    		if(title.contains("/")){
+        		//If we have a discussion archive
+        		//TODO This does not support articles that contain slashes-
+        		//However, the rest of the API cannot cope with that as well, so this should not be any extra trouble
+    			title = title.split("/")[0];
+    		}
+    		return getPage(title);
+    	}else{
+    		return discussionPage;
+    	}
+
+    }
+
+
+    /**
+     * Gets the discussion page for an article page with the given pageId.
+     *
+     * @param articlePageId The id of the page.
+     * @return The page object for a given pageId.
+     * @throws WikiApiException
+     */
+    public Page getDiscussionPage(int articlePageId) throws WikiApiException {
+        //Retrieve discussion page with article title
+    	//TODO not the prettiest solution, but currently discussions are only marked in the title
+    	return getDiscussionPage(getPage(articlePageId));
+    }
+
+    /**
+     * Gets the discussion page for the page with the given title.
+     * The page retrieval works as defined in {@link #getPage(String title)}
+     *
+     * @param title The title of the page for which the discussions should be retrieved.
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Page getDiscussionPage(String title) throws WikiApiException  {
+    	return getDiscussionPage(getPage(title));
+    }
+
+    /**
+     * Gets the discussion page for the given article page
+     * The provided page must not be a discussion page
+     *
+     * @param articlePage the article page for which a discussion page should be retrieved
+     * @return The discussion page object for the given article page object
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Page getDiscussionPage(Page articlePage) throws WikiApiException{
+    	String articleTitle = articlePage.getTitle().toString();
+    	if(articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+    		return articlePage;
+    	}else{
+        	return new Page(this, WikiConstants.DISCUSSION_PREFIX+articleTitle);
+    	}
+    }
+
+
+    /**
+	 * Returns an iterable containing all archived discussion pages for
+     * the page with the given title String. <br>
+     * The page retrieval works as defined in {@link #getPage(int)}. <br>
+     * The most recent discussion page is NOT included here!
+     * It can be obtained with {@link #getDiscussionPage(Page)}.
+     *
+     * @param articlePageId The id of the page for which to the the discussion archives
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(int articlePageId) throws WikiApiException {
+        //Retrieve discussion archive pages with page id
+    	return getDiscussionArchives(getPage(articlePageId));
+    }
+
+    /**
+	 * Returns an iterable containing all archived discussion pages for
+     * the page with the given title String. <br>
+     * The page retrieval works as defined in {@link #getPage(String title)}.<br>
+     * The most recent discussion page is NOT included here!
+     * It can be obtained with {@link #getDiscussionPage(Page)}.
+     *
+     * @param title The title of the page for which the discussions should be retrieved.
+     * @return The page object for the discussion page.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(String title) throws WikiApiException  {
+        //Retrieve discussion archive pages with page title
+    	return getDiscussionArchives(getPage(title));
+    }
+
+    /**
+     * Return an iterable containing all archived discussion pages for
+     * the given article page. The most recent discussion page is not included.
+     * The most recent discussion page can be obtained with {@link #getDiscussionPage(Page)}.
+     * <br>
+     * The provided page Object must not be a discussion page itself! If it is
+     * a discussion page, is returned unchanged.
+     *
+     * @param articlePage the article page for which a discussion archives should be retrieved
+     * @return An iterable with the discussion archive page objects for the given article page object
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+     */
+    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
+        String articleTitle = articlePage.getTitle().getWikiStyleTitle();
+    	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+    		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
+    	}
+
+    	Session session = this.__getHibernateSession();
+        session.beginTransaction();
+
+        List<Page> discussionArchives = new LinkedList<Page>();
+
+        Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like :name");
+        query.setParameter("name", articleTitle+"/%", StringType.INSTANCE);
+        Iterator results = query.list().iterator();
+
+        session.getTransaction().commit();
+
+        while (results.hasNext()) {
+            int pageID = (Integer) results.next();
+            discussionArchives.add(getPage(pageID));
+        }
+
+        return discussionArchives;
+
     }
 
 //// I do not want to make this public at the moment (TZ, March, 2007)
@@ -301,6 +544,11 @@ public class Wikipedia implements WikiConstants {
      * Protected method that is much faster than the public version, but exposes too much implementation details.
      * Get a set with all pageIDs. Returning all page objects is much too expensive.
      * Does not include redirects, as they are only pointers to real pages.
+     *
+     * As ids can be useful for several application (e.g. in combination with
+     * the RevisionMachine, they have been made publically available via
+     * {@link #getPageIds()}.
+     *
      * @return A set with all pageIDs. Returning all pages is much to expensive.
      */
     protected Set<Integer> __getPages() {
@@ -315,6 +563,12 @@ public class Wikipedia implements WikiConstants {
         return pageSet;
     }
 
+    /**
+     * @return an iterable over all pageids (without redirects)
+     */
+    public Iterable<Integer> getPageIds(){
+    	return this.__getPages();
+    }
 
     /**
      * Get the pages that match the given query.
@@ -364,32 +618,27 @@ public class Wikipedia implements WikiConstants {
      */
     public boolean existsPage(String title) {
 
-        // TODO carefully, this is a hack to provide a much quicker way to test whether a page exists.
-        // Encoding the title in this way surpasses the normal way of creating a title first.
-        // This should get a unit test to make sure the encoding function is in line with the title object.
-        // Anyway, I do not like this hack :-|
-
         if (title == null || title.length() == 0) {
             return false;
         }
 
-        String encodedTitle = title.replace(' ', '_');
-        encodedTitle = encodedTitle.substring(0,1).toUpperCase() + encodedTitle.substring(1,encodedTitle.length());
+        Title t;
+        try {
+			t = new Title(title);
+		} catch (WikiTitleParsingException e) {
+			return false;
+		}
+		String encodedTitle = t.getWikiStyleTitle();
 
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createSQLQuery(
-            "select p.id from PageMapLine as p where p.name = ? COLLATE utf8_bin")
-            .setString(0, encodedTitle)
+        Object returnValue = session.createNativeQuery(
+            "select p.id from PageMapLine as p where p.name = :pName COLLATE utf8_bin")
+            .setParameter("pName", encodedTitle, StringType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
 
-        if (returnValue == null) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return returnValue != null;
     }
 
     /**
@@ -412,18 +661,13 @@ public class Wikipedia implements WikiConstants {
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        List returnList = session.createSQLQuery(
-            "select p.id from PageMapLine as p where p.pageID = ?")
-            .setInteger(0, pageID)
+        List returnList = session.createNativeQuery(
+            "select p.id from PageMapLine as p where p.pageID = :pageId")
+            .setParameter("pageId", pageID, IntegerType.INSTANCE)
             .list();
         session.getTransaction().commit();
 
-        if (returnList.size() == 0) {
-            return false;
-        }
-        else {
-            return true;
-        }
+        return returnList.size() != 0;
     }
 
     /**
@@ -446,8 +690,8 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
-                "select page.id from Page as page where page.pageId = ?")
-                .setInteger(0, pageID)
+                "select page.id from Page as page where page.pageId = :pageId")
+                .setParameter("pageId", pageID, IntegerType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
@@ -480,8 +724,8 @@ public class Wikipedia implements WikiConstants {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object retObjectPage = session.createQuery(
-                "select cat.id from Category as cat where cat.pageId = ?")
-                .setInteger(0, pageID)
+                "select cat.id from Category as cat where cat.pageId = :pageId")
+                .setParameter("pageId", pageID, IntegerType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
@@ -517,10 +761,6 @@ public class Wikipedia implements WikiConstants {
         return WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
     }
 
-    protected MediaWikiParser getParser() {
-        return parser;
-    }
-
     /**
      * The ID consists of the host, the database, and the language.
      * This should be unique in most cases.
@@ -536,287 +776,12 @@ public class Wikipedia implements WikiConstants {
         return sb.toString();
     }
 
-//// Fast methods for CM. Methods consume a _lot_ of memory. I do not know why.
-//    public Map<String,Integer> getTitleIdMap() {
-//        Map<String,Integer> titleIdMap = new HashMap<String,Integer>();
-//
-//        Session session = this.__getHibernateSession();
-//        session.beginTransaction();
-//        Iterator results = session.createQuery(
-//                "select pml.name, pml.pageID from PageMapLine as pml")
-//                .list()
-//                .iterator();
-//        while (results.hasNext()) {
-//            Object[] row = (Object[]) results.next();
-//            titleIdMap.put((String) row[0], (Integer) row[1]);
-//        }
-//        return titleIdMap;
-//    }
-//
-//    public Map<Integer,String> getIdTitleMap() {
-//        Map<Integer,String> idTitleMap = new HashMap<Integer,String>();
-//
-//        Session session = this.__getHibernateSession();
-//        session.beginTransaction();
-//        Iterator results = session.createQuery(
-//                "select pml.pageID, pml.name from PageMapLine as pml")
-//                .list()
-//                .iterator();
-//        while (results.hasNext()) {
-//            Object[] row = (Object[]) results.next();
-//            idTitleMap.put((Integer) row[0], (String) row[1]);
-//        }
-//        return idTitleMap;
-//
-//    }
-
-    //    public void close() {
-//        this.dbConfig = null;
-//        this.idMap.clear();
-//        this.language = null;
-//        this.metaData = null;
-//    }
-
-
-//    /**
-//     * @return Returns the page idMap.
-//     */
-//    public Map<Integer, Long> getIdMapPages() {
-//        return idMapPages;
-//    }
-//
-//    /**
-//     * @return Returns the category idMap.
-//     */
-//    public Map<Integer, Long> getIdMapCategories() {
-//        return idMapPages;
-//    }
-
-//    /**
-//     * Check, whether the Wikiapi tables have the correct encoding.
-//     * The test case in this method are language specific!
-//     * @return True if the encoding is correct, false otherwise
-//     */
-//    private boolean checkEncoding() {
-//        String catStr = "Begriffskl\u00e4rung";
-//        Category cat = this.getCategory(catStr);
-//        if (cat == null) {
-//            return false;
-//        }
-//        else {
-//            return true;
-//        }
-//    }
-
-//// this is no longer used, as users can test for redirects by asking page.isRedirect()
-//// we should not inflate the API with this method
-//  /**
-//  * Gets the page for a given name.
-//  * It only finds the page with *exactly* the given name.
-//  * @param pName The name of the page.
-//  * @param searchRedirects If true, redirects are searched and the corresponding page is retrieved. (Note: redirects and pages are handled transparently, thus you probably want to include redirects in your search.)
-//  * @return The page object for a given name.
-//  * @throws WikiPageNotFoundException If no page (or redirect - depending on the flag) with this name exists.
-//  */
-// public Page getPage(String pName, Boolean searchRedirects) throws WikiPageNotFoundException {
-//     Page page = new Page(this, pName, searchRedirects);
-//     return page;
-// }
-
-//// this was only used for the relatedness cache. I replaced the call with getPage(title).getPageId().
-//// If it is too slow, I can tweak it anyway.
-//  /**
-//  * Convenience method that returns the pageID for the given title or -1 if there is no page with this title.
-//  * @param title A page name.
-//  * @return The pageID for the given token or -1 if there is no page with this title.
-//  */
-// public int getPageIdByTitle(String title) {
-//     Page page;
-//     try {
-//         page = getPage(title, true);
-//     } catch (WikiPageNotFoundException e) {
-//         return -1;
-//     }
-//     int pageID = page.getPageId();
-//     return pageID;
-// }
-
-
-//// No longer used.
-//    /**
-//     * Convenience method that return the pageID for the given title or -1 if there is no category with this title.
-//     * @param title A category name.
-//     * @return The pageID for the given token or -1 if there is no category with this title.
-//     * @throws WikiApiException
-//     */
-//    public int getCategoryIdByTitle(String title) throws WikiApiException {
-//        Category cat = getCategory(title);
-//        // if no category with this title exists, return -1
-//        if (cat == null) {
-//            return -1;
-//        }
-//        int catID = cat.getPageId();
-//        return catID;
-//    }
-
-
-////number of pages was moved to the MetaData table
-//  //
-//      private void setNumberOfPages() {
-//          Session session = WikiHibernateUtil.getSessionFactory().getCurrentSession();
-//          session.beginTransaction();
-//          Number numberOfPages_number = (Number) session.createQuery(
-//                  "select count(*) from Page as page")
-//                  .uniqueResult();
-//
-//          numberOfPages = numberOfPages_number.intValue();
-//          session.getTransaction().commit();
-//      }
-
-//// I have moved that to a method returning only an iterable that fetches the objects at run-time. The whole list simply does not fit in memory.
-//  /**
-//  * Get a set with all pageIDs of article pages (articles = pages MINUS disambiguation pages MINUS redirects).
-//  * ATTENTION: This is a run-time optimized function that exposes implementation details. It may change in subsequent releases without notice.
-//  * @return A set with all article pageIds.  Returning all page objects would be much too expensive.
-//  */
-// public Set<Integer> getArticles() {
-//     Session session = WikiHibernateUtil.getSessionFactory(this.language).getCurrentSession();
-//     session.beginTransaction();
-//
-//     int notDisambiguation = 0;
-//
-//     List<Integer> idList = session.createQuery(
-//     "select p.pageId from Page as p where p.isDisambiguation = ?")
-//     .setInteger(0, notDisambiguation)
-//     .list();
-//
-//     Set<Integer> pageIdList = new HashSet<Integer>(idList);
-//
-//     session.getTransaction().commit();
-//
-//     return pageIdList;
-// }
-
-//// This functionality is covered by the query interface.
-//    /**
-//     * Gets the categories that match the regular expression string.
-//     * Only MySQL style regular Expressions are allowed, that means:
-//     *   % for any number of arbitrary characters
-//     *   _ for a single arbitrary character
-//     * @param pRegEx The regular expression.
-//     * @return A set with the category objects that match the regular expression.
-//     * @throws WikiApiException
-//     */
-//    public Set<Category> getCategoriesByPattern(String pRegEx) throws WikiApiException {
-//        Title title = new Title(pRegEx);
-//        String regEx = title.getWikiStyleTitle();
-//        Set<Category> pageSet = new HashSet<Category>();
-//        Session session = WikiHibernateUtil.getSessionFactory(this.language).getCurrentSession();
-//        session.beginTransaction();
-//        Iterator results = session.createSQLQuery(
-//                "select cat.id from Category as cat where cat.name like ? COLLATE utf8_bin")
-//                .setString(0, regEx)
-//                .list()
-//                .iterator();
-//        session.getTransaction().commit();
-//        while (results.hasNext()) {
-//            Long id = (Long) results.next();
-//            try {
-//                Category cat = new Category(this, id);
-//                pageSet.add(cat);
-//            } catch (WikiPageNotFoundException e) {}
-//        }
-//
-//        return pageSet;
-//    }
-
-//// Removed, because it exposes implementation details.
-//// If we need a convenience method like that it should be at least protected.
-//    /**
-//     * Get the page IDs of a set of categories.
-//     * @param categories The set of categories.
-//     * @return A set of corresponding category pageIDs.
-//     */
-//    public Set<Integer> getCategoryIDs(Set<Category> categories) {
-//        Set<Integer> catPageIDs = new HashSet<Integer>();
-//        for (Category cat : categories) {
-//            catPageIDs.add(cat.getPageId());
-//        }
-//        return catPageIDs;
-//    }
-
-////Removed, because it exposes implementation details.
-////If we need a convenience method like that it should be at least protected.
-//    /**
-//     * Get the page IDs of a set of article pages
-//     * @param pages The set of pages.
-//     * @return A set of corresponding page IDs.
-//     */
-//    protected Set<Integer> getPageIDs(Set<Page> pages) {
-//        Set<Integer> pageIDs = new HashSet<Integer>();
-//        for (Page page : pages) {
-//            pageIDs.add(page.getPageId());
-//        }
-//        return pageIDs;
-//    }
-
-//// this should be accessed via MetaData
-//  /** Gets the root of the category tree.
-//  * @return The category object or null if no category with this name exists.
-//  * @throws WikiApiException
-//  */
-// public Category getRootCategory() throws WikiApiException {
-//     return getCategory(this.getMainCategoryName());
-// }
-
-////This functionality is covered by the query interface.
-//    /**
-//     * Gets the pages that match the regular expression string.
-//     * Only MySQL style regular Expressions are allowed, that means:
-//     *   % for any number of arbitrary characters
-//     *   _ for a single arbitrary character
-//     * @param pRegEx The regular expression.
-//     * @return A set with the page objects that match the regular expression.
-//     * @throws WikiApiException
-//     */
-//    public Set<Page> getPagesByPattern(String pRegEx) throws WikiApiException {
-//        Title title = new Title(pRegEx);
-//        pRegEx = title.getWikiStyleTitle();
-//        Set<Page> pageSet = new HashSet<Page>();
-//        Session session = WikiHibernateUtil.getSessionFactory(this.language).getCurrentSession();
-//        session.beginTransaction();
-//
-//        Iterator results = session.createSQLQuery(
-//        "select pml.pageID from PageMapLine as pml where pml.name like ? COLLATE utf8_bin")
-//        .setString(0, pRegEx)
-//        .list()
-//        .iterator();
-//
-//        session.getTransaction().commit();
-//
-//        while (results.hasNext()) {
-//            int pageID = (Integer) results.next();
-//            Page page = null;
-//            try {
-//                page = this.__getPage(pageID);
-//            } catch (WikiPageNotFoundException e) {
-//                logger.error("Page with pageID " + pageID + " could not be found. Fatal error. Terminating.");
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
-//            // as redirects point to a regular page, we might try to add a page multiple times here
-//            // The set ensures that it is only present once afterwards. Good sets :)
-//            pageSet.add(page);
-//        }
-//
-//        return pageSet;
-//    }
-
 }
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {
 
-    public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
+    @Override
+	public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
 
         double c1 = e1.getValue();
         double c2 = e2.getValue();

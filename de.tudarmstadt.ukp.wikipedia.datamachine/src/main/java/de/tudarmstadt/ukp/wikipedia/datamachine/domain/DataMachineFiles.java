@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.datamachine.domain;
 
 import java.io.File;
@@ -24,6 +31,9 @@ public class DataMachineFiles extends Files {
 	private final static String GENERATED_PAGE = "page.bin";
 	private final static String GENERATED_REVISION = "revision.bin";
 	private final static String GENERATED_TEXT = "text.bin";
+	/*
+	 * discussions.bin is currently unused. Discussions are put in pages.bin
+	 */
 	private final static String GENERATED_DISCUSSIONS = "discussions.bin";
 
 	private final static String ARCHIVE_EXTENSION = ".gz";
@@ -75,6 +85,8 @@ public class DataMachineFiles extends Files {
 		File[] filesInDataDirectory = dataDirectory.listFiles();
 		if (filesInDataDirectory.length > 2) {
 			for (File currentFile : filesInDataDirectory) {
+
+				//TODO improve file check. Only accept files that come in a supported compression format
 				String currentFileName = currentFile.getName();
 				if (currentFileName.contains(INPUT_PAGESARTICLES)) {
 					inputPagesarticles = currentFile;
@@ -89,7 +101,7 @@ public class DataMachineFiles extends Files {
 		}
 		// either inputPagesarticles or inputPagesMetaCurrent have to be placed
 		// in the input directory
-		return !((inputPagesarticles == null && inputPagesMetaCurrent == null)
+		return !((inputPagesarticles == null && inputPagesMetaCurrent == null )
 				|| inputPagelinks == null || inputCategorylinks == null);
 	}
 
@@ -129,6 +141,7 @@ public class DataMachineFiles extends Files {
 				.getAbsolutePath() : null;
 	}
 
+
 	private String getGeneratedPath(String fileName) {
 		String path = dataDirectory.getAbsolutePath() + File.separator
 				+ fileName;
@@ -139,7 +152,7 @@ public class DataMachineFiles extends Files {
 	}
 
 	/**
-	 * @see Files#setCompressGeneratedFiles(boolean)
+	 * @see DataMachineFiles#setCompressGeneratedFiles(boolean)
 	 */
 	public boolean isCompressGeneratedFiles() {
 		return compressGeneratedFiles;
@@ -154,7 +167,7 @@ public class DataMachineFiles extends Files {
 	 * page-articles XML Dump every time you need it: during processPage(),
 	 * processRevision() and processText(). See TimeMachine solution especially
 	 * the package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml
-	 * 
+	 *
 	 * @param compressGeneratedFiles
 	 */
 	public void setCompressGeneratedFiles(boolean compressGeneratedFiles) {

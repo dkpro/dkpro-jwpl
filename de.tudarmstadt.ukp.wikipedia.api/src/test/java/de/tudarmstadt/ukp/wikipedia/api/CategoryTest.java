@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import static org.junit.Assert.assertEquals;
@@ -17,11 +24,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
 public class CategoryTest extends BaseJWPLTest {
@@ -32,7 +38,7 @@ public class CategoryTest extends BaseJWPLTest {
 
 		try {
 			wiki = new Wikipedia(db);
-		} catch (WikiInitializationException e) {
+		} catch (Exception e) {
 			fail("Wikipedia could not be initialized.");
 		}
 	}
@@ -55,9 +61,9 @@ public class CategoryTest extends BaseJWPLTest {
 			e.printStackTrace();
 			fail("A WikiTitleParsingException occured while testing the title of the cateogry 'People of UKP'");
 		}
-		
+
 	}
-	
+
 	@Test
 	public void testCategoryPageId(){
 		//we test the category 'People of UKP'
@@ -72,7 +78,7 @@ public class CategoryTest extends BaseJWPLTest {
 		//test the pageId
 		assertEquals("testing the pageId",8,cat.getPageId());
 	}
-	
+
 	@Test
 	public void testCategoryParents(){
 		//we test the category 'People of UKP'
@@ -88,7 +94,7 @@ public class CategoryTest extends BaseJWPLTest {
 		List<Integer> expectedPageIds = new ArrayList<Integer>();
 		expectedPageIds.add(5);
         expectedPageIds.add(6);
-		
+
         List<Integer> isIds = new ArrayList<Integer>();
 		for(Category parent : cat.getParents()) {
             isIds.add(parent.getPageId());
@@ -97,7 +103,7 @@ public class CategoryTest extends BaseJWPLTest {
 		Collections.sort(isIds);
 		assertEquals("parents", expectedPageIds, isIds);
 	}
-	
+
     @Test
     public void testCategoryDescendants(){
         Category cat = null;
@@ -107,7 +113,7 @@ public class CategoryTest extends BaseJWPLTest {
             e.printStackTrace();
             fail("A WikiApiException occured while getting the category 'UKP'");
         }
-        
+
         //test the descendants
         List<Integer> expectedPageIds = new ArrayList<Integer>();
         expectedPageIds.add(7);
@@ -145,13 +151,14 @@ public class CategoryTest extends BaseJWPLTest {
 		expectedPageIds.clear();
 		expectedPageIds.add(13);expectedPageIds.add(12);expectedPageIds.add(15);
 		expectedPageIds.add(14);
-		for(Category child : cat.getChildren())
+		for(Category child : cat.getChildren()) {
 			isIds.add(child.getPageId());
+		}
 		Collections.sort(expectedPageIds);
 		Collections.sort(isIds);
 		assertEquals("children",expectedPageIds,isIds);
 	}
-	
+
 	@Test
 	public void testCategoryPages(){
 		//we test the category 'People of UKP'
@@ -166,8 +173,9 @@ public class CategoryTest extends BaseJWPLTest {
 		List<Integer> expectedPageIds = new ArrayList<Integer>();
 		List<Integer> isIds = new ArrayList<Integer>();
 		try {
-			for(Page p : cat.getPages())
+			for(Page p : cat.getArticles()) {
 				isIds.add(p.getPageId());
+			}
 		} catch (WikiApiException e) {
 			e.printStackTrace();
 			fail("A WikiApiException occured while getting the pages of the category 'People of UKP' for testing.");

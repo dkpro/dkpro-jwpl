@@ -1,13 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql;
 
 import java.io.IOException;
@@ -15,9 +22,10 @@ import java.io.InputStream;
 
 /**
  * A Parser for the sql file that defines the table categorylinks.
- * 
- * @author Anouar
- * 
+ *
+ * A fix for Issue 102 has been provided by Google Code user astronautguo
+ *
+ *
  */
 public class CategorylinksParser extends SQLFileParser {
 
@@ -30,12 +38,11 @@ public class CategorylinksParser extends SQLFileParser {
 
 	/**
 	 * Create a parser from an input stream
-	 * 
+	 *
 	 * @param inputStream
 	 * @throws IOException
-	 * 
-	 * @author ivan.galkin
-	 */
+	 *
+		 */
 	public CategorylinksParser(InputStream inputStream) throws IOException {
 		init(inputStream);
 	}
@@ -54,9 +61,11 @@ public class CategorylinksParser extends SQLFileParser {
 		return clTo;
 	}
 
-	public boolean next() throws IOException {
-		if (EOF_reached)
-			return false;
+	@Override
+    public boolean next() throws IOException {
+		if (EOF_reached) {
+            return false;
+		}
 		// read '('
 		st.nextToken();
 		// read cl_from
@@ -66,7 +75,7 @@ public class CategorylinksParser extends SQLFileParser {
 		st.nextToken();
 		// read cl_to
 		st.nextToken();
-		clTo = st.sval;
+		clTo = SQLEscape.escape(st.sval);
 		// read ','
 		st.nextToken();
 		// read cl_sortkey
@@ -75,12 +84,22 @@ public class CategorylinksParser extends SQLFileParser {
 		st.nextToken();
 		// read cl_timestamp
 		st.nextToken();
-		// read ')'
+
+		boolean EOE = false;  // end of entry
+		while (!EOE) {
+	        st.nextToken();
+	        // corresponds to closing parenthesis
+	        if (st.ttype == 41) {
+	            EOE = true;
+	        }
+		}
+
+		// read ',' or ';'. If ';' is found then skip statement or expect eof.
 		st.nextToken();
-		// read ',' or ';'. If ';' is found then skip statement or espect eof.
-		st.nextToken();
-		if (st.toString().substring(7, 8).equals(";"))
-			skipStatements();
+
+		if (st.toString().substring(7, 8).equals(";")) {
+            skipStatements();
+		}
 		return true;
 	}
 }

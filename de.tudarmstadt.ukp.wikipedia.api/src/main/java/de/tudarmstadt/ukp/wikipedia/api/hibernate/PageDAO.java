@@ -1,23 +1,28 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.LockMode;
+import org.hibernate.LockOptions;
 import org.hibernate.SessionFactory;
 
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.Page;
-import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 
 /**
  * Home object for class Page
@@ -73,7 +78,8 @@ public class PageDAO {
     public void attachClean(Page instance) {
         logger.debug("attaching clean Page instance");
         try {
-            sessionFactory.getCurrentSession().lock(instance, LockMode.NONE);
+//            sessionFactory.getCurrentSession().lock(instance, LockMode.NONE);
+            sessionFactory.getCurrentSession().buildLockRequest(LockOptions.NONE).lock(instance);
             logger.debug("attach successful");
         } catch (RuntimeException re) {
             logger.error("attach failed", re);

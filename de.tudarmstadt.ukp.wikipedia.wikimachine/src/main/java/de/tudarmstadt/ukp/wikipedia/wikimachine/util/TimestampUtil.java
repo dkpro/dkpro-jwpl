@@ -1,16 +1,20 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
-/**
- * @(#)TimestampUtil.java
- */
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.wikimachine.util;
 
 import java.sql.Timestamp;
@@ -20,7 +24,6 @@ import java.text.SimpleDateFormat;
 
 /**
  * This class provides utilities for the conversion of timestamps.
- * @author Anouar
  *
  */
 public abstract class TimestampUtil {
@@ -36,7 +39,7 @@ public abstract class TimestampUtil {
 		return new Timestamp(time);
 	}
 	
-	//         0123456789012345678 
+	//         0123456789012345678
 	//example: 1970-01-04 18:11:40.0 to 19700104181140
 	public static String toMediaWikiString(Timestamp timestamp){
 		String original = timestamp.toString();

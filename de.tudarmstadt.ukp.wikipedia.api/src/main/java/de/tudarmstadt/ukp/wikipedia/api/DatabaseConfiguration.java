@@ -1,20 +1,26 @@
 /*******************************************************************************
- * Copyright (c) 2010 Torsten Zesch.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the GNU Lesser Public License v3
- * which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
- * 
- * Contributors:
- *     Torsten Zesch - initial API and implementation
- ******************************************************************************/
+ * Copyright 2017
+ * Ubiquitous Knowledge Processing (UKP) Lab
+ * Technische Universität Darmstadt
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
  * A database configuration is used to establish a database connection and set various parameters.
- * @author zesch
  *
  */
 public class DatabaseConfiguration {
@@ -26,32 +32,31 @@ public class DatabaseConfiguration {
     private Language language;
 	private String jdbcURL;
 	private String databaseDriver;
-    
+
     public DatabaseConfiguration() {}
-    
+
     public DatabaseConfiguration(String host, String database, String user, String password, Language language) {
         this.host = host;
         this.database = database;
         this.user = user;
         this.password = password;
         this.language = language;
-        
-        
+
+
         // static mysql usecase - default by revision 49
         this.setDatabaseDriver("com.mysql.jdbc.Driver");
         this.setJdbcURL("jdbc:mysql://" + host + "/" + database);
     }
-    
-    /*
-     * Fix by mwiesner
-     * - ensures explicit DMBS type specific configuration for hsqldb from junit tests context
+
+    /**
+     * Allows explicit DMBS type specific configuration for hsqldb from junit tests context
      */
     public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user, String password, Language language) {
     	this(host, database, user, password, language);
         this.setDatabaseDriver(databaseDriver);
         this.setJdbcURL(jdbcURL);
     }
-    
+
     /**
      * @param database The name of the database.
      */
@@ -83,7 +88,7 @@ public class DatabaseConfiguration {
         this.language = language;
     }
 
-    
+
     /**
      * @return The name of the database.
      */

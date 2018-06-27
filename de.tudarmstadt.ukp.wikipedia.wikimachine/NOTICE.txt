@@ -1,0 +1,8 @@
+Some classes in this module are taken from third parties and may
+be licensed differently, as indicated in the respective class
+headers.
+
+*****************************************************************
+de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader:
+MediaWiki import/export processing tools
+Copyright 2005 by Brion Vibber
