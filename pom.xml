@@ -295,6 +295,7 @@
                     <exclude>NOTICE.txt</exclude>
                     <exclude>README.md</exclude>
                     <exclude>README</exclude>
+                    <exclude>db/**/*</exclude>
                     <exclude>src/main/resources/**/*</exclude>
                     <exclude>src/test/resources/**/*</exclude>
                     <exclude>.activate_rat-check</exclude>
