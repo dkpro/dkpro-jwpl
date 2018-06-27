@@ -28,13 +28,19 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 public class PageTest extends BaseJWPLTest{
 
+	/**
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
+	 */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			fail("Wikipedia could not be initialized.");
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 
@@ -42,14 +48,14 @@ public class PageTest extends BaseJWPLTest{
 	public void testPageTitle() throws Exception {
 		String title = "Wikipedia API";
         Page p = wiki.getPage("Wikipedia API");
-		assertEquals("testing the title", title, p.getTitle().getPlainTitle().toString());
+		assertEquals("testing the title", title, p.getTitle().getPlainTitle());
 	}
 
     @Test
     public void testExactPageTitle() throws Exception {
         String title = "Wikipedia_API";
         Page p = wiki.getPage("Wikipedia_API");
-        assertEquals("testing the title", title, p.getTitle().getRawTitleText().toString());
+        assertEquals("testing the title", title, p.getTitle().getRawTitleText());
     }
 
 	@Test

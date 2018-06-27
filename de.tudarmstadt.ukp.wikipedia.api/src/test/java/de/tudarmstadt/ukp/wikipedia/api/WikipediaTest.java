@@ -32,20 +32,21 @@ import org.sweble.wikitext.engine.config.WikiConfig;
 
 public class WikipediaTest extends BaseJWPLTest{
 
+	private static Wikipedia wiki;
 
-    /**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
-     */
+	/**
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
+	 */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			fail("Wikipedia could not be initialized.");
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 

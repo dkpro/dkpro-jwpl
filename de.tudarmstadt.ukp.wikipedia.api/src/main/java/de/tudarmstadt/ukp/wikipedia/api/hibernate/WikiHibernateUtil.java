@@ -65,40 +65,41 @@ public class WikiHibernateUtil implements WikiConstants {
         String jdbcURL  = config.getJdbcURL();
         String databaseDriverClass = config.getDatabaseDriver();
 
-        String hibernateDialect = null;
-        if(jdbcURL.toLowerCase().contains("mysql"))
-        {
-        	hibernateDialect = "org.hibernate.dialect.MySQLDialect";
-        }
-        // TODO potentially other dialects might be interesting here as well now...
-        else
-        {
-        	hibernateDialect = "org.hibernate.dialect.HSQLDialect";
-        }
-
         Properties p = new Properties();
+        boolean useMySQL = false;
+        boolean useHSQL = false;
+        // XXX other dialects might be interesting here as well...
+        if(jdbcURL.toLowerCase().contains("mysql")) {
+            useMySQL = true;
+        }
+        else if(jdbcURL.toLowerCase().contains("hsql")) {
+            useHSQL = true;
+        }
 
         // SQL dialect
-        p.setProperty("hibernate.dialect",hibernateDialect);
+        if(useMySQL) {
+            p.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
+        }
+        if(useHSQL) {
+            p.setProperty("hibernate.dialect","org.hibernate.dialect.HSQLDialect");
+        }
+
         // Database connection settings
         p.setProperty("hibernate.connection.driver_class", databaseDriverClass);
         p.setProperty("hibernate.connection.url", jdbcURL);
         /*
-         * fix mwiesner
-         *  - needed to ensure working hsqldb queries - don't remove it...!
+         *  Needed to ensure working hsqldb queries - don't remove it...!
          */
         p.setProperty("hibernate.connection.useUnicode","true");
         p.setProperty("hibernate.connection.characterEncoding", "UTF-8");
 //        p.setProperty("hibernate.connection.hibernate.connection.characterEncoding", "UTF-8");
 //        p.setProperty("hibernate.connection.hibernate.connection.clobCharacterEncoding","UTF-8");
-        // end fix
 
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);
 
         // JDBC connection pool (use the built-in) -->
         p.setProperty("hibernate.connection.pool_size","1");
-
 
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class","thread");
@@ -116,14 +117,17 @@ public class WikiHibernateUtil implements WikiConstants {
         // Important performance fix to obtain jdbc connections a lot faster by avoiding metadata fetching
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults","false");
 
-        // Set C3P0 Connection Pool in case somebody wants to use it in production settings
-        // if no C3P0 is available at runtime, related warnings can be ignored safely as the built-in CP will be used.
-        p.setProperty("hibernate.c3p0.acquire_increment","3");
-        p.setProperty("hibernate.c3p0.idle_test_period","300");
-        p.setProperty("hibernate.c3p0.min_size","3");
-        p.setProperty("hibernate.c3p0.max_size","15");
-        p.setProperty("hibernate.c3p0.max_statements","10");
-        p.setProperty("hibernate.c3p0.timeout","1000");
+        if(useMySQL) {
+            // Set C3P0 Connection Pool in case somebody wants to use it in production settings
+            // if no C3P0 is available at runtime, related warnings can be ignored safely as the built-in CP will be used.
+            p.setProperty("hibernate.c3p0.acquire_increment","3");
+            p.setProperty("hibernate.c3p0.idle_test_period","300");
+            p.setProperty("hibernate.c3p0.min_size","3");
+            p.setProperty("hibernate.c3p0.max_size","15");
+            p.setProperty("hibernate.c3p0.max_statements","10");
+            p.setProperty("hibernate.c3p0.timeout","1000");
+
+        }
         return p;
     }
 
