@@ -38,7 +38,7 @@ public abstract class BaseJWPLTest {
 		db.setUser("sa");
 		db.setPassword("");
 		db.setLanguage(Language._test);
-		db.setJdbcURL("jdbc:hsqldb:file:./db/wikiapi_test");
+		db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
 		db.setDatabaseDriver("org.hsqldb.jdbcDriver");
 		return db;
 	}
