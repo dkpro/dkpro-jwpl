@@ -29,13 +29,19 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 public class TitleIteratorTest extends BaseJWPLTest{
 
+	/**
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
+	 */
 	@BeforeClass
 	public void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			fail("Wikipedia could not be initialized.");
+            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 

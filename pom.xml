@@ -38,6 +38,7 @@
     <spring.version>4.3.17.RELEASE</spring.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
+    <hsqldb.version>2.4.0</hsqldb.version>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
@@ -135,6 +136,12 @@
         <groupId>org.postgresql</groupId>
         <artifactId>postgresql</artifactId>
         <version>${postgresql.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>${hsqldb.version}</version>
+        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>jfree</groupId>

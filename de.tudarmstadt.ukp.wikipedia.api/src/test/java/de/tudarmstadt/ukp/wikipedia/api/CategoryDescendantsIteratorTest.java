@@ -32,23 +32,20 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
 
-	private Wikipedia wiki;
-	
-	@Before
-	public void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.tk.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
-		
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-			assumeNoException(e);
-			//fail("Wikipedia could not be initialized.");
-		}
+    /**
+     * Made this static so that following tests don't run if assumption fails.
+     * (With AT_Before, tests also would not be executed but marked as passed)
+     * This could be changed back as soon as JUnit ignored tests after failed
+     * assumptions
+     */
+	@BeforeClass
+	public static void setupWikipedia() {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        try {
+            wiki = new Wikipedia(db);
+        } catch (Exception e) {
+            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+        }
 	}
 
 

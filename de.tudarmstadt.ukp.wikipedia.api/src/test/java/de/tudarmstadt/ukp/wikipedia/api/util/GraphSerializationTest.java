@@ -23,6 +23,7 @@ import static org.junit.Assume.assumeNoException;
 
 import java.io.File;
 
+import de.tudarmstadt.ukp.wikipedia.api.*;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.After;
@@ -30,11 +31,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.CategoryGraph;
-import de.tudarmstadt.ukp.wikipedia.api.CategoryGraphManager;
-import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
-import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import junit.framework.JUnit4TestAdapter;
 import junit.textui.TestRunner;
 
@@ -44,7 +41,7 @@ import junit.textui.TestRunner;
  *
  *
  */
-public class GraphSerializationTest {
+public class GraphSerializationTest extends BaseJWPLTest {
 
     String serializationFileName = "testCategoryGraph.ser";
 
@@ -52,22 +49,18 @@ public class GraphSerializationTest {
     private static Wikipedia wiki;
 
     /**
-     * Creates a Wikipedia object.
      * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests would also not be executed but marked as passed)
+     * (With AT_Before, tests also would not be executed but marked as passed)
+     * This could be changed back as soon as JUnit ignored tests after failed
+     * assumptions
      */
     @BeforeClass
-    public static void initializeWikipedia(){
-        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-        dbConfig.setDatabase("wikiapi_test");
-        dbConfig.setHost("bender.ukp.informatik.tu-darmstadt.de");
-        dbConfig.setLanguage(Language._test);
-        dbConfig.setPassword("student");
-        dbConfig.setUser("student");
-        try{
-        	wiki = new Wikipedia(dbConfig);
-        }catch(Exception e){
-        	assumeNoException(e);
+    public static void setupWikipedia() {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        try {
+            wiki = new Wikipedia(db);
+        } catch (Exception e) {
+            fail("Wikipedia could not be initialized.");
         }
     }
 
