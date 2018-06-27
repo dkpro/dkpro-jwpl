@@ -75,7 +75,7 @@ public class CategoryIterator implements Iterator<Category> {
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
             this.dataOffset = 0;
-//TODO test whether this works when zero pages are retrieved
+            //TODO test whether this works when zero pages are retrieved
         }
 
         /**
@@ -122,8 +122,7 @@ public class CategoryIterator implements Iterator<Category> {
 
             Session session = this.wiki.__getHibernateSession();
             session.beginTransaction();
-            List returnValues = null;
-            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Category.class)
+            List returnValues = session.createQuery("SELECT c FROM Category c")
                 .setFirstResult(dataOffset)
                 .setMaxResults(maxBufferSize)
                 .setFetchSize(maxBufferSize)

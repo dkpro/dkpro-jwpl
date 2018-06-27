@@ -76,7 +76,8 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiInitializationException
      */
     public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException {
-        logger.info("Creating Wikipedia object.");
+
+        logger.debug("Creating Wikipedia object.");
 
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
@@ -107,8 +108,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPage(String title) throws WikiApiException  {
-    	Page page = new Page(this, title, false);
-        return page;
+    	return new Page(this, title, false);
     }
 
     /**
@@ -123,8 +123,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPageByExactTitle(String exactTitle) throws WikiApiException  {
-        Page page = new Page(this, exactTitle, true);
-        return page;
+        return new Page(this, exactTitle, true);
     }
 
     /**
@@ -154,8 +153,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException
      */
     public Page getPage(int pageId) throws WikiApiException {
-        Page page = new Page(this, pageId);
-        return page;
+        return new Page(this, pageId);
     }
 
     /**
@@ -406,8 +404,8 @@ public class Wikipedia implements WikiConstants {
             String pageName = (String) row[1];
 
 
-//// this returns a similarity - if we want to use it, we have to change the semantics the ordering of the results
-//            double distance = new Levenshtein().getSimilarity(pageName, pPattern);
+            // this returns a similarity - if we want to use it, we have to change the semantics the ordering of the results
+            //            double distance = new Levenshtein().getSimilarity(pageName, pPattern);
             double distance = new LevenshteinStringDistance().distance(pageName, pattern);
 
             distanceMap.put(pageID, distance);
@@ -510,9 +508,7 @@ public class Wikipedia implements WikiConstants {
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        List<Integer> idList = session.createQuery(
-            "select cat.pageId from Category as cat")
-            .list();
+        List<Integer> idList = session.createQuery("select cat.pageId from Category as cat").list();
         Set<Integer> categorySet = new HashSet<Integer>(idList);
         session.getTransaction().commit();
 

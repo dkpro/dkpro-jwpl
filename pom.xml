@@ -34,11 +34,18 @@
     <ukp.wikipedia.version>1.2.0-SNAPSHOT</ukp.wikipedia.version>
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
-    <hibernate.version>5.2.17.Final</hibernate.version>
     <spring.version>4.3.17.RELEASE</spring.version>
+
+    <!-- DB specific dependency versions -->
+    <hibernate.version>5.2.17.Final</hibernate.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
     <hsqldb.version>2.4.0</hsqldb.version>
+
+    <!-- Logger specific dependency versions -->
+    <slf4j.version>1.7.21</slf4j.version>
+    <log4j.version>1.2.16</log4j.version>
+
   </properties>
   <scm>
     <connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
@@ -84,9 +91,20 @@
         <version>4.11</version>
       </dependency>
       <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
-        <version>1.2.16</version>
+        <version>${log4j.version}</version>
         <exclusions>
           <exclusion>
             <artifactId>jms</artifactId>
@@ -123,14 +141,14 @@
         <version>3.0.2</version>
       </dependency>
       <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <version>${mysql.version}</version>
-      </dependency>
-      <dependency>
         <groupId>com.neovisionaries</groupId>
         <artifactId>nv-i18n</artifactId>
         <version>1.23</version>
+      </dependency>
+      <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <version>${mysql.version}</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>
@@ -231,7 +249,7 @@
       <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
-        <version>3.20.0-GA</version>
+        <version>3.22.0-GA</version>
       </dependency>
       <dependency>
         <groupId>org.sweble.wikitext</groupId>

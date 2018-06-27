@@ -30,6 +30,9 @@ import org.hibernate.criterion.Restrictions;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+
 /**
  * An iterator over page objects.
  *
@@ -206,19 +209,18 @@ public class PageIterator implements Iterator<Page> {
 				Session session = this.wiki.__getHibernateSession();
 		        session.beginTransaction();
 		        List returnValues = null;
+				Query query;
 		        if (onlyArticles) {
-		            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-		            .add(Restrictions.eq("isDisambiguation", false))
-		            .add(Restrictions.gt("id", lastPage))
-		            .setMaxResults(maxBufferSize)
-		            .list();
+					query = session.createQuery("SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId");
+					query.setParameter("isDisambiguation", false);
+					query.setParameter("pageId", lastPage);
 		        }
 		        else {
-		            returnValues = session.createCriteria(de.tudarmstadt.ukp.wikipedia.api.hibernate.Page.class)
-		            .add(Restrictions.gt("id", lastPage))
-		            .setMaxResults(maxBufferSize)
-		            .list();
+					query = session.createQuery("SELECT p FROM Page p WHERE p.id > :pageId");
+					query.setParameter("pageId", lastPage);
 		        }
+				query.setMaxResults(maxBufferSize);
+				returnValues = query.getResultList();
 		        session.getTransaction().commit();
 
 		        // clear the old buffer and all variables regarding the state of the buffer
