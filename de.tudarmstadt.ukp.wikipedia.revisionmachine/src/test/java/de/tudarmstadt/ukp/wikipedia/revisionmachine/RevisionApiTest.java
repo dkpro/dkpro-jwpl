@@ -36,8 +36,27 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 
-public class RevisionApiTest
-{
+/* FIXME This needs to be ported */
+public class RevisionApiTest { //extends BaseJWPLTest {
+
+	/**
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
+	 */
+	/*
+	@BeforeClass
+	public static void setupWikipedia() {
+		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+		try {
+			wiki = new Wikipedia(db);
+		} catch (Exception e) {
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+		}
+		Assume.assumeNotNull(wiki);
+	}
+	*/
 
 	private static Wikipedia wiki = null;
 
@@ -48,6 +67,7 @@ public class RevisionApiTest
 	 * assumptions
 	 */
 	@BeforeClass
+	@Deprecated
 	public static void setupWikipedia()
 	{
 		DatabaseConfiguration db = new DatabaseConfiguration();
