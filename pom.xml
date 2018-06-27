@@ -290,6 +290,8 @@
                     <!-- release generated artifact -->
                     <exclude>release.properties</exclude>
                     <exclude>CHANGES</exclude>
+                    <exclude>CONTRIBUTING.md</exclude>
+                    <exclude>CONTRIBUTORS.txt</exclude>
                     <exclude>LICENSE.txt</exclude>
                     <exclude>NOTICE</exclude>
                     <exclude>NOTICE.txt</exclude>
