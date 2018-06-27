@@ -111,7 +111,12 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.show_sql","false");
 
         // Do only update schema on changes
-        p.setProperty("hibernate.hbm2ddl.auto","validate");
+        if(useMySQL) {
+            p.setProperty("hibernate.hbm2ddl.auto","validate");
+        }
+        if(useHSQL) {
+            p.setProperty("hibernate.hbm2ddl.auto","none");
+        }
 
         // Avoid long running connection acquisition:
         // Important performance fix to obtain jdbc connections a lot faster by avoiding metadata fetching

@@ -39,7 +39,7 @@ public class CategoryTest extends BaseJWPLTest {
 	 * assumptions
 	 */
 	@BeforeClass
-	public void setupWikipedia() {
+	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
 		try {
@@ -65,7 +65,7 @@ public class CategoryTest extends BaseJWPLTest {
 			assertEquals("testing the title","People of UKP",cat.getTitle().toString());
 		} catch (WikiTitleParsingException e) {
 			e.printStackTrace();
-			fail("A WikiTitleParsingException occured while testing the title of the cateogry 'People of UKP'");
+			fail("A WikiTitleParsingException occurred while testing the title of the category 'People of UKP'");
 		}
 
 	}
