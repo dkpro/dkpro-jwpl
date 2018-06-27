@@ -10,3 +10,9 @@ target
 ### Rules for IntelliJ IDEA environments
 .idea
 *.iml
+
+### Rules log files and other temporary artefacts
+*.log
+*.tmp
+*_hypoCountMap
+
