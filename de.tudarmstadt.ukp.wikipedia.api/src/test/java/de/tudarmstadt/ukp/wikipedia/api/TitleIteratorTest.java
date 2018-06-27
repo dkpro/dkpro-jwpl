@@ -18,6 +18,7 @@
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
@@ -50,11 +51,12 @@ public class TitleIteratorTest extends BaseJWPLTest{
 	public void test_titleIteratorTest() {
 
         int nrOfTitles = 0;
-		Iterator<Title> titleIter = wiki.getTitles().iterator();
-
+		Iterable<Title> iterable = wiki.getTitles();
+		assertNotNull(iterable);
+		Iterator<Title> titleIter = iterable.iterator();
 		while (titleIter.hasNext()) {
 			Title t = titleIter.next();
-            System.out.println(t.getPlainTitle());
+			assertNotNull(t);
 			nrOfTitles++;
 		}
 		assertEquals("Number of titles == 36", 36, nrOfTitles);
