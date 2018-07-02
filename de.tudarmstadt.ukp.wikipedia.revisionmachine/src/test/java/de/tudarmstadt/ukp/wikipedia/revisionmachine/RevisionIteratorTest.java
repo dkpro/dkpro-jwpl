@@ -53,7 +53,7 @@ public class RevisionIteratorTest { //extends BaseJWPLTest{
 	/*
 	@BeforeClass
 	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+		DatabaseConfiguration db = obtainHSQLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {

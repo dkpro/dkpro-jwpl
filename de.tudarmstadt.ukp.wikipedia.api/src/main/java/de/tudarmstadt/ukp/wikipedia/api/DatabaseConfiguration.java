@@ -49,10 +49,11 @@ public class DatabaseConfiguration {
     }
 
     /**
-     * Allows explicit DMBS type specific configuration for hsqldb from junit tests context
+     * Allows explicit DBMS type specific configuration for hsqldb from junit tests context
      */
-    public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user, String password, Language language) {
-    	this(host, database, user, password, language);
+    public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user,
+                                 String password, Language language) {
+        this(host, database, user, password, language);
         this.setDatabaseDriver(databaseDriver);
         this.setJdbcURL(jdbcURL);
     }
