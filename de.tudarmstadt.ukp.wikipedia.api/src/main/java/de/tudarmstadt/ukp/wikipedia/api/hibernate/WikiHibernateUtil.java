@@ -92,8 +92,6 @@ public class WikiHibernateUtil implements WikiConstants {
          */
         p.setProperty("hibernate.connection.useUnicode","true");
         p.setProperty("hibernate.connection.characterEncoding", "UTF-8");
-//        p.setProperty("hibernate.connection.hibernate.connection.characterEncoding", "UTF-8");
-//        p.setProperty("hibernate.connection.hibernate.connection.clobCharacterEncoding","UTF-8");
 
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);

@@ -22,7 +22,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -46,7 +45,7 @@ public class ParsedPageTest extends BaseJWPLTest{
      */
     @BeforeClass
     public static void setupWikipedia() {
-        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        DatabaseConfiguration db = obtainHSQLDBConfiguration();
         try {
             wiki = new Wikipedia(db);
         } catch (Exception e) {
