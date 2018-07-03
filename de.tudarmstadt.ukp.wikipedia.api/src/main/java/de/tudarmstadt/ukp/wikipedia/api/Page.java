@@ -282,7 +282,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing {@link Page#getCategories().size()}, as that would require
+	 * This is a more efficient shortcut for writing {@link Page#getCategories()}.size, as that would require
 	 * to load all the categories first.
 	 *
 	 * @return The number of categories.
@@ -307,7 +307,7 @@ public class Page
 
 	/**
 	 * Returns the set of pages that have a link pointing to this page. <b>Warning:</b> Do not use
-	 * this for getting the number of inlinks with {@link Page#getInlinks().size()}. This is too slow. Use
+	 * this for getting the number of inlinks with {@link Page#getInlinks()}.size(). This is too slow. Use
 	 * {@link Page#getNumberOfInlinks()} instead.
 	 *
 	 * @return The set of pages that have a link pointing to this page.
@@ -337,7 +337,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing {@link Page#getInlinks().size()}, as that would require to
+	 * This is a more efficient shortcut for writing {@link Page#getInlinks()}.size(), as that would require to
 	 * load all the inlinks first.
 	 *
 	 * @return The number of inlinks.
@@ -384,7 +384,7 @@ public class Page
 	/**
 	 * Returns the set of pages that are linked from this page. Outlinks in a page might also point
 	 * to non-existing pages. They are not included in the result set. <b>Warning:</b> Do not use
-	 * this for getting the number of outlinks with {@link Page#getOutlinks().size()}. This is too slow. Use
+	 * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too slow. Use
 	 * {@link Page#getNumberOfOutlinks()} instead.
 	 *
 	 * @return The set of pages that are linked from this page.
@@ -413,7 +413,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing {@link Page#getOutlinks().size()}, as that would require
+	 * This is a more efficient shortcut for writing {@link Page#getOutlinks()}.size(), as that would require
 	 * to load all the outlinks first.
 	 *
 	 * @return The number of outlinks.

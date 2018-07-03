@@ -71,9 +71,9 @@ public class Wikipedia implements WikiConstants {
     public WikiConfig wikiConfig;
 
     /**
-     * Creates a new Wikipedia object accessing the database indicated by the dbConfig parameter.
-     * @param dbConfig A database configuration object telling the Wikipedida object where the data is stored and how it can be accessed.
-     * @throws WikiInitializationException
+     * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig parameter.
+     * @param dbConfig A {@link DatabaseConfiguration} object telling the {@link Wikipedia} object where the data is stored and how it can be accessed.
+     * @throws WikiInitializationException Thrown if errors occurred while bootstrapping the {@link Wikipedia} instance.
      */
     public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException {
 
@@ -609,7 +609,7 @@ public class Wikipedia implements WikiConstants {
      * Trying to retrieve a page that does not exist in Wikipedia throws an exception.
      * You may catch the exception or use this test, depending on your task.
      * @param title The title of the page.
-     * @return {@True}, if a page or redirect with that title exits, {@false} otherwise.
+     * @return {@code True}, if a page or redirect with that title exits, {@code false} otherwise.
      */
     public boolean existsPage(String title) {
 
@@ -641,7 +641,7 @@ public class Wikipedia implements WikiConstants {
      * Trying to retrieve a pageID that does not exist in Wikipedia throws an exception.
      *
      * @param pageID A pageID.
-     * @return {@True}, if a page with that pageID exits, {@false} otherwise.
+     * @return {@code True}, if a page with that pageID exits, {@code false} otherwise.
      */
     public boolean existsPage(int pageID) {
 
