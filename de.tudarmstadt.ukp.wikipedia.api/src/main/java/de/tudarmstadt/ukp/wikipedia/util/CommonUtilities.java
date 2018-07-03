@@ -23,8 +23,10 @@ import java.util.Set;
 
 public class CommonUtilities {
 
-    /** Debug output an internal set structure.
-     * @param s
+    /**
+     * Debug output an internal set structure.
+     * @param s Must not be {@code null}.
+     * @return The resulting String of the contents of {@code s}.
      */
     public static String getSetContents(Set s) {
         StringBuffer sb = new StringBuffer(1000);
@@ -45,8 +47,10 @@ public class CommonUtilities {
         return sb.toString();
     }
 
-    /** Debug output an internal map structure as key-value pairs.
-     * @param m
+    /**
+     * Debug output an internal map structure as key-value pairs.
+     * @param m Must not be {@code null}.
+     * @return The resulting String of the contents of {@code m}.
      */
     public static String getMapContents(Map m) {
         StringBuffer sb = new StringBuffer(1000);
