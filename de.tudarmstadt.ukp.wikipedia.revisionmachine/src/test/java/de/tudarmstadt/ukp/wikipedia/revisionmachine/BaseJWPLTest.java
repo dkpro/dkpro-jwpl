@@ -32,15 +32,10 @@ public abstract class BaseJWPLTest {
 
 	protected static Wikipedia wiki;
 
-	protected static final DatabaseConfiguration obtainHSDLDBConfiguration() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("localhost");
-		db.setUser("sa");
-		db.setPassword("");
-		db.setLanguage(Language._test);
-		db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
-		db.setDatabaseDriver("org.hsqldb.jdbcDriver");
-		return db;
+	protected static final DatabaseConfiguration obtainHSDLDBConfiguration(String databaseName, Language language) {
+		return new DatabaseConfiguration("org.hsqldb.jdbcDriver",
+				"jdbc:hsqldb:file:./src/test/resources/db/"+databaseName,
+				"localhost", databaseName, "sa",
+				"", language);
 	}
 }

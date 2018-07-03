@@ -42,17 +42,10 @@ import org.slf4j.LoggerFactory;
  * This class represents the interface to iterate through multiple revisions.
  *
  */
-public class RevisionIterator
-	implements RevisionIteratorInterface
+public class RevisionIterator extends AbstractRevisionService implements RevisionIteratorInterface
 {
 	
 	private static final Logger logger = LoggerFactory.getLogger(RevisionIterator.class);
-
-	/** Reference to the configuration parameter variable */
-	private final RevisionAPIConfiguration config;
-
-	/** Reference to the database connection */
-	private Connection connection;
 
 	/** Reference to the ResultSet */
 	private ResultSet result;
@@ -147,8 +140,7 @@ public class RevisionIterator
 	 * @throws WikiApiException
 	 *             if an error occurs
 	 */
-	public RevisionIterator(final RevisionAPIConfiguration config,
-			final int startPK)
+	public RevisionIterator(final RevisionAPIConfiguration config, final int startPK)
 		throws WikiApiException
 	{
 
@@ -202,21 +194,15 @@ public class RevisionIterator
 	{
 
 		this.config = config;
-		try {
-			this.primaryKey = -1;
-			this.endPK = Integer.MAX_VALUE;
+		this.primaryKey = -1;
+		this.endPK = Integer.MAX_VALUE;
 
-			this.statement = null;
-			this.result = null;
-			this.previousRevision = null;
+		this.statement = null;
+		this.result = null;
+		this.previousRevision = null;
+		MAX_NUMBER_RESULTS = config.getBufferSize();
 
-			MAX_NUMBER_RESULTS = config.getBufferSize();
-
-			connect();
-		}
-		catch (SQLException e) {
-			throw new WikiApiException(e);
-		}
+		connection = getConnection(config);
 	}
 
 	/**
@@ -250,6 +236,8 @@ public class RevisionIterator
 
 		revAPIConfig.setHost(db.getHost());
 		revAPIConfig.setDatabase(db.getDatabase());
+		revAPIConfig.setDatabaseDriver(db.getDatabaseDriver());
+		revAPIConfig.setJdbcURL(db.getJdbcURL());
 		revAPIConfig.setUser(db.getUser());
 		revAPIConfig.setPassword(db.getPassword());
 		revAPIConfig.setLanguage(db.getLanguage());
@@ -258,13 +246,13 @@ public class RevisionIterator
 	}
 
 	/**
-	 * Sends the query to the database and stores the result. The statement and
-	 * resultset connection will not be closed.
+	 * Sends the query to the database and stores the result. The {@link java.sql.Statement} and
+	 * {@link ResultSet} connection will not be closed.
 	 *
-	 * @return TRUE, if the result set has another element FALSE, otherwise
+	 * @return {@code true}, if the result set has another element {@code false}, otherwise
 	 *
 	 * @throws SQLException
-	 *             if an error occurs while accessing the database.credit b
+	 *             if an error occurs while accessing the database.
 	 */
 	private boolean query()
 		throws SQLException
@@ -294,13 +282,20 @@ public class RevisionIterator
 
 		try{
 			statement=this.connection.prepareStatement(query);
-			result = statement.executeQuery(query);
+			result = statement.executeQuery();
 		}catch(Exception e){
-			logger.error("Conncection Closed: "+connection.isClosed());
-			logger.error("Connection Valid: "+connection.isValid(5));
-			connect();
-			statement=this.connection.prepareStatement(query);
-			result = statement.executeQuery(query);
+			logger.error(e.getLocalizedMessage(), e);
+			try {
+				boolean connectionReady = !connection.isClosed() && connection.isValid(5);
+				logger.debug("Connection ready: {}", connectionReady);
+				if(!connectionReady) {
+					connection = getConnection(config);
+				}
+				statement = this.connection.prepareStatement(query);
+				result = statement.executeQuery(query);
+			} catch (WikiApiException wae) {
+				logger.error(wae.getLocalizedMessage(), wae);
+			}
 		}
 
 
@@ -334,10 +329,10 @@ public class RevisionIterator
 
 			if (revCount - 1 != this.currentRevCounter) {
 
-				logger.error("\nInvalid RevCounter -" + " [ArticleId "
+				logger.error("Invalid RevCounter -" + " [ArticleId "
 						+ articleID + ", RevisionId " + result.getInt(4)
-						+ ", RevisionCounter " + result.getInt(3)
-						+ "] - Expected: " + (this.currentRevCounter + 1));
+						+ ", RevisionCounter " +revCount + "] - Expected: "
+						+ (this.currentRevCounter + 1));
 
 				this.currentRevCounter = revCount;
 				this.previousRevision = null;
@@ -346,9 +341,6 @@ public class RevisionIterator
 			}
 
 			this.currentRevCounter = revCount;
-
-
-
 			this.primaryKey = result.getInt(1);
 
 			Revision revision = new Revision(revCount);
@@ -402,24 +394,13 @@ public class RevisionIterator
 			return revision;
 
 		}
-		catch (DecodingException e) {
-			throw new RuntimeException(e);
-		}
-		catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-		catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		catch (WikiApiException e) {
+		catch (DecodingException | SQLException | IOException | WikiApiException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	/**
 	 * Returns whether another revision is available or not.
-	 *
-	 * @return TRUE or FALSE
 	 */
 	@Override
 	public boolean hasNext()
@@ -450,10 +431,9 @@ public class RevisionIterator
 	}
 
 	/**
-	 * This method is unsupported.
+	 * This method is unsupported and will result in a {@link UnsupportedOperationException}.
 	 *
 	 * @deprecated
-	 * @throws UnsupportedOperationException
 	 */
 	@Override
 	@Deprecated
@@ -462,24 +442,11 @@ public class RevisionIterator
 		throw new UnsupportedOperationException();
 	}
 
-	/**
-	 * This method closes the connection to the input component.
-	 *
-	 * @throws SQLException
-	 *             if an error occurs while closing the connection to the
-	 *             database.
-	 */
-	@Override
-	public void close()
-		throws SQLException
-	{
-		if (this.connection != null) {
-			this.connection.close();
-		}
-	}
 
+	// TODO This should go into a demo or test class separated from the code here...
+	@Deprecated
 	public static void main(final String[] args)
-		throws Exception
+			throws Exception
 	{
 
 		RevisionAPIConfiguration config = new RevisionAPIConfiguration();
@@ -513,29 +480,5 @@ public class RevisionIterator
 
 		// w.close();
 		System.out.println(Time.toClock(System.currentTimeMillis() - start));
-	}
-
-	public void connect()
-		throws SQLException
-	{
-		if (this.connection != null) {
-			this.connection.close();
-			logger.trace("Reconnect to Database");
-		}
-		else {
-			logger.trace("Connect to Database");
-		}
-
-		try{
-			String driverDB = "com.mysql.jdbc.Driver";
-			Class.forName(driverDB);
-		}catch(ClassNotFoundException e){
-			logger.error("JDBC Driver is missing");
-		}
-
-		this.connection = DriverManager.getConnection(
-						"jdbc:mysql://" + this.config.getHost()
-								+ "/" + this.config.getDatabase(),
-						this.config.getUser(), this.config.getPassword());
 	}
 }
