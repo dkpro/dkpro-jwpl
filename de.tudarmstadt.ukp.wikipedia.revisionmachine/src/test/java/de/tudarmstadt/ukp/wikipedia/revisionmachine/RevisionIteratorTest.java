@@ -17,17 +17,12 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
+import static org.junit.Assert.*;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
@@ -37,12 +32,16 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionAPIConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
 
-/* FIXME This needs to be ported */
-public class RevisionIteratorTest { //extends BaseJWPLTest{
+public class RevisionIteratorTest extends BaseJWPLTest {
 
-	private static Wikipedia wiki = null;
-	private static RevisionIterator revisionIterator = null;
+    // Note: In the stripped HSQLDB data set only 382 revisions exist for the Page 'Car'
+	private static final int GLOBAL_REVISION_COUNT = 382;
+
+    private static Wikipedia wiki = null;
 	private static RevisionAPIConfiguration config = null;
+
+	// The object under test
+	private RevisionIterator revisionIterator = null;
 
 	/**
 	 * Made this static so that following tests don't run if assumption fails.
@@ -50,85 +49,61 @@ public class RevisionIteratorTest { //extends BaseJWPLTest{
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	/*
 	@BeforeClass
 	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSQLDBConfiguration();
+		DatabaseConfiguration db = obtainHSDLDBConfiguration(
+				"wikiapi_simple_20090119_stripped", Language.simple_english);
 		try {
 			wiki = new Wikipedia(db);
+			config = new RevisionAPIConfiguration(wiki.getDatabaseConfiguration());
 		} catch (Exception e) {
-			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+			fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
 		}
-		Assume.assumeNotNull(wiki);
+		assertNotNull(wiki);
+		assertNotNull(config);
 
-		config = new RevisionAPIConfiguration();
-		config.setHost(db.getHost());
-		config.setDatabase(db.getDatabase());
-		config.setUser(db.getUser());
-		config.setPassword(db.getPassword());
-		config.setLanguage(db.getLanguage());
 	}
-	*/
 
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignores tests after failed
-	 * assumptions
-	 */
-	@BeforeClass
-	@Deprecated
-	public static void setupWikipedia()
+	@Before
+	public void setupInstanceUnderTest()
 	{
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setDatabase("wikiapi_simple_20090119");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language.simple_english);
 		try {
-			wiki = new Wikipedia(db);
+			revisionIterator = new RevisionIterator(config);
+			assertNotNull(revisionIterator);
+		} catch (WikiApiException e) {
+			fail("RevisionIterator could not be initialized: " + e.getLocalizedMessage());
 		}
-		catch (Exception e) {
-			assumeNoException(e);
-		}
-		Assume.assumeNotNull(wiki);
+	}
 
-		config = new RevisionAPIConfiguration();
-		config.setHost(db.getHost());
-		config.setDatabase(db.getDatabase());
-		config.setUser(db.getUser());
-		config.setPassword(db.getPassword());
-		config.setLanguage(db.getLanguage());
+	@After
+	public void cleanUpInstanceUnderTest()
+	{
+		if(revisionIterator!=null) {
+			try {
+				revisionIterator.close();
+			} catch (SQLException e) {
+				fail("RevisionIterator could not be shut down correctly: " + e.getLocalizedMessage());
+			}
+		}
 	}
 
 	@Test
 	public void iteratorTest() {
 
 		int i = 0;
-		try{
-			revisionIterator = new RevisionIterator(config);
-		}catch (WikiApiException e) {
-			assertFalse("Error creating iterator", true);
-		}
+
 		while (revisionIterator.hasNext() && i < 500) {
 			Revision revision = revisionIterator.next();
-			revision.getArticleID();
-			revision.getFullRevisionID();
-			revision.getRevisionCounter();
-			revision.getRevisionText();
-			revision.getTimeStamp();
+			assertNotNull(revision);
+			assertTrue(revision.getArticleID() > 0);
+            assertTrue(revision.getFullRevisionID() > 0);
+            assertTrue(revision.getRevisionCounter() > 0);
+            assertNotNull(revision.getRevisionText());
+            assertNotNull(revision.getTimeStamp());
 			i++;
 		}
-		assertEquals(500, i);
 
-		//close iterator
-		try {
-			revisionIterator.close();
-		}
-		catch (SQLException e) {
-			assertFalse("Error closing iterator", true);
-		}
+		assertEquals(GLOBAL_REVISION_COUNT, i);
 	}
 
 
@@ -136,25 +111,14 @@ public class RevisionIteratorTest { //extends BaseJWPLTest{
 	public void lazyLoadingTest() {
 		ArrayList<String> texts = new ArrayList<String>();
 		int i = 0;
-		//create new iterator without lazy loading
-		try{
-			revisionIterator = new RevisionIterator(config);
-		}catch (WikiApiException e) {
-			assertFalse("Error creating iterator", true);
-		}
 
 		while (revisionIterator.hasNext() && i < 500) {
 			Revision revision = revisionIterator.next();
+            assertNotNull(revision);
 			texts.add(revision.getRevisionText());
 			i++;
 		}
-		//closing iterator
-		try {
-			revisionIterator.close();
-		}
-		catch (SQLException e) {
-			assertFalse("Error closing iterator", true);
-		}
+        assertEquals(GLOBAL_REVISION_COUNT, i);
 
 		ArrayList<String> lazyLoadedTexts = new ArrayList<String>();
 		i = 0;
@@ -163,7 +127,7 @@ public class RevisionIteratorTest { //extends BaseJWPLTest{
 		try{
 			revisionIterator = new RevisionIterator(config, true);
 		}catch (WikiApiException e) {
-			assertFalse("Error creating iterator", true);
+            fail("RevisionIterator could not be initialized with lazy loading = 'true': " + e.getLocalizedMessage());
 		}
 
 		while (revisionIterator.hasNext() && i < 1000) {
@@ -171,19 +135,19 @@ public class RevisionIteratorTest { //extends BaseJWPLTest{
 			lazyLoadedTexts.add(revision.getRevisionText());
 			i++;
 		}
+        assertEquals(GLOBAL_REVISION_COUNT, i);
 
 		for (int j = 0; j < texts.size(); j++) {
 			if(!texts.get(j).equals(lazyLoadedTexts.get(j))){
 				assertFalse(true);
 			}
 		}
-
 		//close iterator
 		try {
 			revisionIterator.close();
 		}
 		catch (SQLException e) {
-			assertFalse("Error closing iterator", true);
+            fail("RevisionIterator could not be shut down correctly: " + e.getLocalizedMessage());
 		}
 
 	}
