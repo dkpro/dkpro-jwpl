@@ -15,35 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.parser.html;
+package de.tudarmstadt.ukp.wikipedia.tutorial;
 
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
+import de.tudarmstadt.ukp.wikipedia.parser.Section;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
-import de.tudarmstadt.ukp.wikipedia.parser.tutorial.TestFile;
 
 /**
- * This Class shows how to use the HtmlTools.class...<br>
- * Mainly, you can create an HtmlFile of a ParsedPage.
+ * This class shows how to get the internal links from a parsed page.<br>
+ * Internal links point to other pages and categories in the current<br>
+ * <pre>Wikipedia</pre>.
  *
  */
-public class HtmlFileDemo {
-	
-	public static void main( String[] argv ) throws Exception{
-		
+public class T2_InternalLinks {
+
+	/**
+	 * Prints the targets of the internal links found in the page <i>Germany</i>.
+	 * @param args
+	 * @throws WikiApiException
+	 */
+	public static void main(String[] args) throws WikiApiException {
+
         // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
         String documentText = TestFile.getFileText();
-
-		// set up an individually parametrized MediaWikiParser
+		
+		// get a ParsedPage object
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
-		pf.getImageIdentifers().add("Image");
 		MediaWikiParser parser = pf.createParser();
+		ParsedPage pp = parser.parse(documentText);
 		
-		ParsedPage pp = parser.parse( documentText );
-		
-        String outFileName = "htmlFileDemo.html";
-		HtmlWriter.writeFile(outFileName, "UTF8", HtmlWriter.parsedPageToHtml(pp));
+        // only the links to other Wikipedia language editions
+        for (Link language : pp.getLanguages()) {
+            System.out.println(language.getTarget());
+        }
 
-        System.out.println("Writing output to file: " + outFileName);
-	}
+        //get the internal links of each section
+        for (Section section : pp.getSections()){
+            System.out.println("Section: " + section.getTitle());
+
+            for (Link link : section.getLinks(Link.type.INTERNAL)) {
+                System.out.println("  " + link.getTarget());
+            }
+        }
+    }
 }
