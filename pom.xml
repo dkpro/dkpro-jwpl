@@ -291,7 +291,7 @@
                     <exclude>src/main/resources/**/*</exclude>
                     <exclude>src/test/resources/**/*</exclude>
                     <exclude>.activate_rat-check</exclude>
-                    <exclude>src/main/java/de/tudarmstadt/ukp/wikipedia/parser/tutorial/DarmstadtWikipediaArticle.txt</exclude>
+                    <exclude>src/main/java/de/tudarmstadt/ukp/wikipedia/tutorial/DarmstadtWikipediaArticle.txt</exclude>
                   </excludes>
                 </configuration>
               </execution>
@@ -310,6 +310,7 @@
     <module>de.tudarmstadt.ukp.wikipedia.mwdumper</module>
     <module>de.tudarmstadt.ukp.wikipedia.util</module>
     <module>de.tudarmstadt.ukp.wikipedia.parser</module>
+    <module>de.tudarmstadt.ukp.wikipedia.tutorial</module>
   </modules>
   <issueManagement>
     <system>GitHub</system>
