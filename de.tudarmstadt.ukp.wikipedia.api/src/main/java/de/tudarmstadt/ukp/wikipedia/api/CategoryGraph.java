@@ -97,7 +97,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
 
     /**
-     * Creates an empty category graph. You cannot do much with such a graph.
+     * Creates an empty {@link CategoryGraph}. You cannot do much with such a graph.
      * Sometimes an empty category graph can be useful if you just need a CategoryGraph object, but do not care about its content.
      */
     public CategoryGraph() throws WikiApiException {
@@ -105,10 +105,10 @@ public class CategoryGraph implements WikiConstants, Serializable {
     }
 
     /**
-     * Creates an CategoryGraph using a serialized DirectedGraph object.
-     * @param pWiki A Wikipedia object.
+     * Creates an {@link CategoryGraph} using a serialized DirectedGraph object.
+     * @param pWiki A {@link Wikipedia} object.
      * @param location The location of the serialized graph
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, File location) throws WikiApiException{
         try {
@@ -121,9 +121,9 @@ public class CategoryGraph implements WikiConstants, Serializable {
     }
 
     /**
-     * Creates a CategoryGraph object using all categories of the given Wikipedia.
-     * @param pWiki A Wikipedia object.
-     * @throws WikiApiException
+     * Creates a {@link CategoryGraph} object using all categories of the given Wikipedia.
+     * @param pWiki A {@link Wikipedia} object.
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki) throws WikiApiException {
         constructCategoryGraph(pWiki, pWiki.__getCategories(), null);
@@ -133,7 +133,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Creates a CategoryGraph object using all categories, but filters all categories starting with strings contained in the filterList.
      * @param pWiki The Wikipedia object.
      * @param filterList A list of strings. All categories starting with or matching such a string are not added to the category graph.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, List<String> filterList) throws WikiApiException {
         constructCategoryGraph(pWiki, pWiki.__getCategories(), filterList);
@@ -143,7 +143,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Creates a CategoryGraph object using the categories given by the iterable
      * @param pWiki The Wikipedia object.
      * @param categories An iterable of the categories to use for construction of the category graph.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, Iterable<Category> categories) throws WikiApiException {
         Set<Integer> pageIDs = new HashSet<Integer>();
@@ -158,7 +158,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @param pWiki The Wikipedia object.
      * @param categories An iterable of the categories to use for construction of the category graph.
      * @param filterList A list of strings. All categories starting with or matching such a string are not added to the category graph.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, Iterable<Category> categories, List<String> filterList) throws WikiApiException {
         Set<Integer> pageIDs = new HashSet<Integer>();
@@ -172,7 +172,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Creates a category graph using a subset (that may also be the full set :) of the categories.
      * @param pWiki The wiki object.
      * @param pPageIDs A set of pageIDs of the category pages that should be used to build the category graph.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     protected CategoryGraph(Wikipedia pWiki, Set<Integer> pPageIDs) throws WikiApiException {
         constructCategoryGraph(pWiki, pPageIDs, null);
@@ -371,7 +371,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @param cat A category.
      * @param filterList A list of filter strings.
      * @return True, if the category title starts with or is equal to a string in the filter list. False, otherwise.
-     * @throws WikiTitleParsingException
+     * @throws WikiTitleParsingException Thrown if errors occurred.
      */
     private boolean matchesFilter(Category cat, List<String> filterList) throws WikiTitleParsingException {
         String categoryTitle = cat.getTitle().getPlainTitle();
@@ -577,7 +577,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @param root The root node of the graph.
      * @param node A node of the graph.
      * @return The shortest path from node to root as a list of pagIs of the nodes on the path; or null if no path exists
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     private List<Integer> getPathToRoot(int root, int node) throws WikiApiException {
         List<Integer> pathToRoot = new LinkedList<Integer>();
@@ -688,7 +688,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @param cat1 The first category.
      * @param cat2 The second category.
      * @return The number of edges of the path between node1 and node2. 0, if the nodes are identical. -1, if no path exists.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public int getTaxonomicallyBoundPathLengthInEdges(Category cat1, Category cat2) throws WikiApiException {
         int node1 = cat1.getPageId();
@@ -898,7 +898,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * As the categoryGraph is a graph rather than a tree, the hyponymCount for top nodes can be greater than the number of nodes in the graph.
      * This is due to the multiple counting of nodes having more than one parent.
      * Thus, we have to scale hyponym counts to fall in [0,NumberOfNodes].
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     private void scaleHyponymCountMap() throws WikiApiException {
         for (int key : getHyponymCountMap().keySet()) {
@@ -944,7 +944,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
       * #cat is the number of categories in the graph
      * @param category The category node for which the intrinsic information content should be returned.
      * @return The intrinsic information content for this category node.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public double getIntrinsicInformationContent(Category category) throws WikiApiException {
         int node = category.getPageId();
@@ -970,7 +970,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Computing n paths will take some time.
      * Thus, efficient computing is based on the assumption that all subpaths in the shortest path to the root, are also shortest paths for the corresponding nodes.
      * Starting with the leaf nodes gives the longest initial paths with most subpaths.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public void createRootPathMap() throws WikiApiException {
 
@@ -1032,7 +1032,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     // TODO the method is only public, because the test deletes the file after creating it - I have no idea at the moment how to do it
     /**
      * Deleted the root path map file.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public void deleteRootPathMap() throws WikiApiException {
         File rootPathFile = new File(this.rootPathMapFilename + "_" + wiki.getLanguage() + "_" + wiki.getMetaData().getVersion());
@@ -1093,27 +1093,24 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * @param pageID The pageID of the category.
      * @return The indegree of the given category.
-     * @throws WikiApiException
      */
-    protected int getInDegree(int pageID) throws WikiApiException {
+    protected int getInDegree(int pageID) {
         return graph.inDegreeOf(pageID);
     }
 
     /**
      * @param pageID The pageID of the category.
      * @return The outdegree of the given category.
-     * @throws WikiApiException
      */
-    protected int getOutDegree(int pageID) throws WikiApiException {
+    protected int getOutDegree(int pageID) {
         return graph.outDegreeOf(pageID);
     }
 
     /**
      * @param pageID The pageID of the category.
      * @return A set of child nodes of the given category.
-     * @throws WikiApiException
      */
-    protected Set<Integer> __getChildren(int pageID) throws WikiApiException {
+    protected Set<Integer> __getChildren(int pageID) {
         Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(pageID);
         Set<Integer> outLinks = new HashSet<Integer>();
         for (DefaultEdge edge : outgoingEdges) {
@@ -1125,9 +1122,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * @param pageID The pageID of the category.
      * @return A set of parent nodes of the given category.
-     * @throws WikiApiException
      */
-    protected Set<Integer> __getParents(int pageID) throws WikiApiException {
+    protected Set<Integer> __getParents(int pageID) {
         Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(pageID);
         Set<Integer> inLinks = new HashSet<Integer>();
         for (DefaultEdge edge : incomingEdges) {
@@ -1532,7 +1528,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * This parameter is already set in the constructor as it is needed for computation of relatedness values.
      * Therefore its computation does not trigger setGraphParameters (it is too slow), even if the depth is implicitly determined there, too.
      * @return The depth of the category graph, i.e. the maximum path length starting with the root node.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public double getDepth() throws WikiApiException {
         if (depth < 0) {    // has not been initialized
@@ -1553,7 +1549,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * This parameter is already set in the constructor as it is needed for computation of relatedness values.
      * Therefore its computation does not trigger setGraphParameters (it is too slow), even if the depth is implicitly determined there, too.
      * @return The depth of the category graph, i.e. the maximum path length starting with the root node.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     private double getDepthFromRootPathMap() throws WikiApiException {
         int max = 0;
@@ -1576,7 +1572,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * Computes the depth of the category graph, i.e. the maximum path length starting with the root node.
      * @return The depth of the hierarchy.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     private double computeDepth() throws WikiApiException {
         Category root = wiki.getMetaData().getMainCategory();
@@ -1644,13 +1640,10 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @param file The file for saving the map.
      */
     private void serializeMap(Map<?,?> map, File file) {
-        try {
-            ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(
-                    new FileOutputStream(file)));
+        try(ObjectOutputStream os = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)))){
             os.writeObject(map);
-            os.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -1660,22 +1653,20 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     private Map deserializeMap(File file) {
         Map<?,?> map;
-        try {
-            ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
+        try(ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
             map = (Map<?,?>) is.readObject();
-            is.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getLocalizedMessage(), e);
             return null;
         }
         return map;
     }
 
-// TODO should be refactored a bit.
+    // TODO should be refactored a bit.
     /**
      * Serializes the graph to the given destination.
      * @param destination The destination to which should be saved.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public void saveGraph(String destination) throws WikiApiException {
         try {
