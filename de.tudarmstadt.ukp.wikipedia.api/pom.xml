@@ -28,7 +28,7 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.jgrapht</groupId>
 			<artifactId>jgrapht-jdk1.5</artifactId>
@@ -37,7 +37,7 @@
 			<groupId>de.fau.cs.osr.utils</groupId>
 			<artifactId>utils</artifactId>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>de.fau.cs.osr.ptk</groupId>
 			<artifactId>ptk-common</artifactId>
 		</dependency>
@@ -57,11 +57,32 @@
 			<groupId>com.neovisionaries</groupId>
 			<artifactId>nv-i18n</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 	<build>
 		<plugins>
@@ -86,5 +107,5 @@
 			</executions>
 			</plugin>
 		</plugins>
-	</build>	
+	</build>
 </project>

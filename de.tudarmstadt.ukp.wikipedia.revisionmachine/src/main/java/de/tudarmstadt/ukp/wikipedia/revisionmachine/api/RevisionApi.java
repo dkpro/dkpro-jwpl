@@ -18,13 +18,7 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,69 +40,49 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.
 
 /**
  * This class can access the database and retrieve single revisions.
- *
  */
-public class RevisionApi
+public class RevisionApi extends AbstractRevisionService
 {
 
-    /** Reference to database connection */
-    private Connection connection;
-
-    /** Reference to the configuration parameters */
-    private final RevisionAPIConfiguration config;
-
     /**
-     * (Constructor) Creates a new RevisionApi object with an existing database connection.
+     * Creates a new {@link RevisionApi} object with an existing database connection.
      *
      * @param config
      *            Reference to the configuration parameters
      * @param connection
      *            Reference to the database connection
-     * @throws WikiApiException
      */
     public RevisionApi(final RevisionAPIConfiguration config, final Connection connection)
-        throws WikiApiException
     {
-
         this.config = config;
         this.connection = connection;
     }
 
     /**
-     * (Constructor) Creates a new RevisionApi object.
+     * Creates a new {@link RevisionApi} object.
      *
      * @param config
      *            Reference to the configuration parameters
      * @throws WikiApiException
      *             if an error occurs
      */
-    public RevisionApi(final RevisionAPIConfiguration config)
-        throws WikiApiException
+    public RevisionApi(final RevisionAPIConfiguration config) throws WikiApiException
     {
-
         this.config = config;
         this.connection = getConnection(config);
     }
 
     /**
-     * (Constructor) Creates a new RevisionApi object.
+     * Creates a new {@link RevisionApi} object.
      *
      * @param dbConfig
      *            A database configuration object
      * @throws WikiApiException
      *             if an error occurs
      */
-    public RevisionApi(final DatabaseConfiguration dbConfig)
-        throws WikiApiException
+    public RevisionApi(final DatabaseConfiguration dbConfig) throws WikiApiException
     {
-
-        RevisionAPIConfiguration config = new RevisionAPIConfiguration();
-        config.setHost(dbConfig.getHost());
-        config.setDatabase(dbConfig.getDatabase());
-        config.setUser(dbConfig.getUser());
-        config.setPassword(dbConfig.getPassword());
-        config.setLanguage(dbConfig.getLanguage());
-
+        RevisionAPIConfiguration config = new RevisionAPIConfiguration(dbConfig);
         this.config = config;
         this.connection = getConnection(config);
     }
@@ -124,7 +98,7 @@ public class RevisionApi
      * @param maxNumberRevisions
      *            the highest number of revisions for an article to be selected (-1 for infinite)
      * @return the set of selected article ids (includes redirects and disambiguation pages)
-     * @throws WikiApiException
+     * @throws WikiApiException if an error occurs
      */
     public Set<Integer> getArticleIDsWithNumberOfRevisions(final int minNumberRevisions,
             int maxNumberRevisions)
@@ -541,8 +515,9 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article based on the people who revised the
-     * article (revision contributors).<br>
-     * It is possible to only count the registerd users, if onlyRegistered is set to true.<br>
+     * article (revision contributors).
+     * 
+     * It is possible to only count the registered users, if onlyRegistered is set to true
      * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -550,7 +525,7 @@ public class RevisionApi
      * @param articleID
      *            ID of the article
      * @param onlyRegistered
-     *            defines whether to count only registered users (true), or all users (false)
+     *            defines whether to count only registered users {@code true}, or all users (false)
      * @return the number of unique contributors to the article
      *
      * @throws WikiApiException
@@ -620,7 +595,7 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article that have contributed before the
-     * given revision.<br>
+     * given revision.
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -640,7 +615,7 @@ public class RevisionApi
 
     /**
      * Returns the number of unique contributors to an article that have contributed before the
-     * given revision.<br>
+     * given revision.
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -648,7 +623,7 @@ public class RevisionApi
      * @param revisionID
      *            revision before which to count the contributors
      * @param onlyRegistered
-     *            defines whether to count only registered users (true), or all users (false)
+     *            defines whether to count only registered users {@code true}, or all users (false)
      * @return the number of unique contributors to the article
      *
      * @throws WikiApiException
@@ -722,7 +697,7 @@ public class RevisionApi
     }
 
     /**
-     * Returns a map of usernames mapped to the timestamps of their contributions
+     * Returns a map of usernames mapped to the timestamps of their contributions.
      *
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -741,10 +716,10 @@ public class RevisionApi
     }
 
     /**
-     * Returns a map of usernames mapped to the timestamps of their contributions
+     * Returns a map of usernames mapped to the timestamps of their contributions.
      *
      * Users of certain user groups (e.g. bots) can be filtered by providing the unwanted groups in
-     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br>
+     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is {@code null} or empty.<br>
      * <br>
      * Filtered results also include unregistered users (because they cannot be filtered using user
      * groups) In order to get results containing only registered users, use {@link
@@ -769,10 +744,10 @@ public class RevisionApi
     }
 
     /**
-     * Returns a map of usernames mapped to the timestamps of their contributions.<br>
+     * Returns a map of usernames mapped to the timestamps of their contributions.
      * <br>
      * Users of certain user groups (e.g. bots) can be filtered by providing the unwanted groups in
-     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is null or empty.<br>
+     * the {@code groupFilter}. Nothing is filtered if the {@code groupFilter} is {@code null} or empty.<br>
      * <br>
      * In order to make this query fast, create a MySQL-Index (BTREE) on the ArticleID in the
      * revisions-table.
@@ -782,7 +757,7 @@ public class RevisionApi
      * @param groupfilter
      *            a list of unwanted user groups
      * @param onlyRegistered
-     *            true, if result should only contain registered users. false, else
+     *            {@code true} if result should only contain registered users. {@code false} otherwise
      * @return map of Timestamp-DiffPart-Collection pairs
      *
      * @throws WikiApiException
@@ -831,8 +806,7 @@ public class RevisionApi
                     }
                     // and combine with results from unregistered users
                     if (!onlyRegistered) {
-                        statementStr
-                                .append(" UNION ( SELECT ContributorName, Timestamp FROM revisions AS rev WHERE ArticleID=? AND rev.ContributorId IS NULL)");
+                        statementStr.append(" UNION ( SELECT ContributorName, Timestamp FROM revisions AS rev WHERE ArticleID=? AND rev.ContributorId IS NULL)");
                     }
 
                     statement = connection.prepareStatement(statementStr.toString());
@@ -970,8 +944,7 @@ public class RevisionApi
             }
 
             if (!indexExists("revisions", "userids")) {
-                System.err
-                        .println("You should create and index for the field ContributorID: create index userids ON revisions(ContributorId(15));");
+                System.err.println("You should create and index for the field ContributorID: create index userids ON revisions(ContributorId(15));");
             }
 
             PreparedStatement statement = null;
@@ -1192,7 +1165,7 @@ public class RevisionApi
      * Returns the timestamp of the first revision connected to the specified article.
      *
      * @param articleID
-     *            ID of the artsicle
+     *            ID of the article
      * @return first date of appearance or the article does not exist
      *
      * @throws WikiApiException
@@ -1284,10 +1257,10 @@ public class RevisionApi
     }
 
     /**
-     * ( Returns the by the id specified revision.
+     * Returns the by the id specified revision.
      *
      * @param revisionID
-     *            ID of the revison
+     *            ID of the revision
      * @return Revision
      *
      * @throws WikiApiException
@@ -1346,10 +1319,10 @@ public class RevisionApi
     }
 
     /**
-     * ( Returns the pageId (ArticleId) for the given revision
+     * Returns the pageId (ArticleId) for the given revision
      *
      * @param revisionID
-     *            ID of the revison
+     *            ID of the revision
      * @return the page if for the given revision
      *
      * @throws WikiApiException
@@ -1896,11 +1869,11 @@ public class RevisionApi
                 }
             }
         }
-        catch (WikiPageNotFoundException e) {
+        catch (WikiPageNotFoundException | DecodingException | SQLException | IOException e) {
             throw new RuntimeException(e);
         }
-        catch (Exception e) {
-            throw new RuntimeException(e);
+        catch (RuntimeException e) {
+            throw e;
         }
 
     }
@@ -2027,13 +2000,22 @@ public class RevisionApi
         ResultSet result = null;
 
         try {
-            statement = this.connection
-                    .prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-                            + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit);
+            String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+                    + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
+
+            /*
+             * As HSQL does not support ResultSet.last() per default, we have to specify these extra parameters here.
+             *
+             * With these parameters in place, the 'last()' call works as expected.
+             *
+             * See also: https://stackoverflow.com/q/19533991
+             */
+            statement = this.connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             statement.setInt(1, fullRevPK);
             result = statement.executeQuery();
 
             Revision revision = null;
+
             if (result.last()) {
                 revision = new Revision(result.getInt(3), this);
 
@@ -2067,65 +2049,12 @@ public class RevisionApi
 
     }
 
-    private Connection getConnection(RevisionAPIConfiguration config)
-        throws WikiApiException
-    {
-        Connection c;
-        try {
-
-            String driverDB = "com.mysql.jdbc.Driver";
-            Class.forName(driverDB);
-
-            c = DriverManager.getConnection(
-                    "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(),
-                    config.getUser(), config.getPassword());
-            if (!c.isValid(5)) {
-                throw new WikiApiException("Connection could not be established.");
-            }
-        }
-        catch (SQLException e) {
-            throw new WikiApiException(e);
-        }
-        catch (ClassNotFoundException e) {
-            throw new WikiApiException(e);
-        }
-
-        return c;
-    }
-
-    /**
-     * This method closes the connection to the database.
-     *
-     * @throws SQLException
-     *             if an error occurs while closing the connection
-     */
-    public void close()
-        throws SQLException
-    {
-        if (this.connection != null) {
-            this.connection.close();
-        }
-    }
-
-    public void reconnect()
-        throws SQLException
-    {
-        close();
-        try {
-            this.connection = getConnection(config);
-        }
-        catch (WikiApiException e) {
-            close();
-            System.err.println("Could not reconnect. Closing connection...");
-        }
-    }
-
     /**
      * Checks if some index (besides the PRIMARY-Index) exists in a given table.
      *
      * @param table
      *            the table to check
-     * @return true, if index exists, false else
+     * @return {@code true} if index exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
      */
@@ -2142,7 +2071,7 @@ public class RevisionApi
      *            the table to check
      * @param indexName
      *            the name of the index (may be null)
-     * @return true, if index exists, false else
+     * @return {@code true} if index exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
      */
@@ -2205,7 +2134,7 @@ public class RevisionApi
      * @param table
      *            the table to check
      *
-     * @return true, if table exists, false else
+     * @return {@code true} if table exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
      */
@@ -2250,6 +2179,7 @@ public class RevisionApi
     	return this.connection;
     }
 
+    @Deprecated // This should go into a demo or test class separated from the code here...
     public static void main(String[] args)
         throws Exception
     {

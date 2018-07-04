@@ -69,7 +69,7 @@ public class Page
 	 *            The wikipedia object.
 	 * @param id
 	 *            The hibernate id of the page.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	protected Page(Wikipedia wiki, long id)
 		throws WikiApiException
@@ -86,7 +86,7 @@ public class Page
 	 *            The wikipedia object.
 	 * @param pageID
 	 *            The pageID of the page.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	protected Page(Wikipedia wiki, int pageID)
 		throws WikiApiException
@@ -103,7 +103,7 @@ public class Page
 	 *            The wikipedia object.
 	 * @param pName
 	 *            The name of the page.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	public Page(Wikipedia wiki, String pName)
 		throws WikiApiException
@@ -120,7 +120,7 @@ public class Page
      *            The name of the page.
      * @param useExactTitle
      *            Whether to use the exact title or try to guess the correct wiki-style title.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public Page(Wikipedia wiki, String pName, boolean useExactTitle)
         throws WikiApiException
@@ -143,7 +143,7 @@ public class Page
 	 *            The hibernate id of the page.
 	 * @param hibernatePage
 	 * 			  The {@code api.hibernatePage} that has already been retrieved
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	protected Page(Wikipedia wiki, long id,
 			de.tudarmstadt.ukp.wikipedia.api.hibernate.Page hibernatePage)
@@ -155,7 +155,7 @@ public class Page
 	}
 
 	/**
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 * @see de.tudarmstadt.ukp.wikipedia.api.Page
 	 */
 	private void fetchByHibernateId(long id)
@@ -189,7 +189,7 @@ public class Page
 	 * CAUTION: Only returns 1 result, even if several results are possible.
 	 *
 	 * @param pTitle
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	private void fetchByTitle(Title pTitle, boolean useExactTitle)
 		throws WikiApiException
@@ -282,7 +282,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing "getCategories().size()", as that would require
+	 * This is a more efficient shortcut for writing {@link Page#getCategories()}.size, as that would require
 	 * to load all the categories first.
 	 *
 	 * @return The number of categories.
@@ -307,8 +307,8 @@ public class Page
 
 	/**
 	 * Returns the set of pages that have a link pointing to this page. <b>Warning:</b> Do not use
-	 * this for getting the number of inlinks with getInlinks().size(). This is too slow. Use
-	 * getNumberOfInlinks() instead.
+	 * this for getting the number of inlinks with {@link Page#getInlinks()}.size(). This is too slow. Use
+	 * {@link Page#getNumberOfInlinks()} instead.
 	 *
 	 * @return The set of pages that have a link pointing to this page.
 	 */
@@ -337,7 +337,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing "getInlinks().size()", as that would require to
+	 * This is a more efficient shortcut for writing {@link Page#getInlinks()}.size(), as that would require to
 	 * load all the inlinks first.
 	 *
 	 * @return The number of inlinks.
@@ -384,8 +384,8 @@ public class Page
 	/**
 	 * Returns the set of pages that are linked from this page. Outlinks in a page might also point
 	 * to non-existing pages. They are not included in the result set. <b>Warning:</b> Do not use
-	 * this for getting the number of outlinks with getOutlinks().size(). This is too slow. Use
-	 * getNumberOfOutlinks() instead.
+	 * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too slow. Use
+	 * {@link Page#getNumberOfOutlinks()} instead.
 	 *
 	 * @return The set of pages that are linked from this page.
 	 */
@@ -413,7 +413,7 @@ public class Page
 	}
 
 	/**
-	 * This is a more efficient shortcut for writing "getOutlinks().size()", as that would require
+	 * This is a more efficient shortcut for writing {@link Page#getOutlinks()}.size(), as that would require
 	 * to load all the outlinks first.
 	 *
 	 * @return The number of outlinks.
@@ -457,10 +457,8 @@ public class Page
 	}
 
 	/**
-	 * Returns the title of the page.
-	 *
 	 * @return The title of the page.
-	 * @throws WikiTitleParsingException
+	 * @throws WikiTitleParsingException Thrown if errors occurred while parsing.
 	 */
 	public Title getTitle()
 		throws WikiTitleParsingException
@@ -489,8 +487,6 @@ public class Page
 	}
 
 	/**
-	 * Returns the text of the page with media wiki markup.
-	 *
 	 * @return The text of the page with media wiki markup.
 	 */
 	public String getText()
@@ -535,9 +531,7 @@ public class Page
 	}
 
 	/**
-	 * Returns true, if the page is a disambiguation page, false otherwise.
-	 *
-	 * @return True, if the page is a disambiguation page, false otherwise.
+	 * @return {@code True}, if the page is a disambiguation page, {@code false} otherwise.
 	 */
 	public boolean isDisambiguation()
 	{
@@ -549,9 +543,7 @@ public class Page
 	}
 
 	/**
-	 * Returns true, if the page was returned by querying a redirect string, false otherwise.
-	 *
-	 * @return True, if the page was returned by querying a redirect string, false otherwise.
+	 * @return {@code True}, if the page was returned by querying a redirect string, {@code false} otherwise.
 	 */
 	public boolean isRedirect()
 	{
@@ -559,7 +551,7 @@ public class Page
 	}
 
     /**
-     * @return True, if the page is a discussion page.
+     * @return {@code True}, if the page is a discussion page.
      * @throws WikiTitleParsingException
      */
     public boolean isDiscussion() throws WikiTitleParsingException
@@ -582,7 +574,7 @@ public class Page
 	 * Please refer to the JWPL Google Code project page for further reference.</p>
 	 *
 	 * @return The plain text of a Wikipedia article
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	public String getPlainText()
 		throws WikiApiException
@@ -602,7 +594,7 @@ public class Page
 	 * @return the parsed page. The actual return type depends on the provided
 	 *         visitor. You have to cast the return type according to the return
 	 *         type of the go() method of your visitor.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	public Object parsePage(AstVisitor v) throws WikiApiException
 	{
@@ -611,11 +603,10 @@ public class Page
 	}
 
 	/**
-	 * Returns CompiledPage produced by the SWEBLE parser using the
-	 * SimpleWikiConfiguration.
+	 * Returns CompiledPage produced by the SWEBLE parser using the SimpleWikiConfiguration.
 	 *
 	 * @return the parsed page
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	public EngProcessedPage getCompiledPage() throws WikiApiException
 	{
@@ -645,10 +636,8 @@ public class Page
 	///////////////////////////////////////////////////////////////////
 
 	/**
-	 * Returns a string with infos about this page object.
-	 *
 	 * @return A string with infos about this page object.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
 	protected String getPageInfo()
 		throws WikiApiException

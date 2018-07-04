@@ -71,12 +71,13 @@ public class Wikipedia implements WikiConstants {
     public WikiConfig wikiConfig;
 
     /**
-     * Creates a new Wikipedia object accessing the database indicated by the dbConfig parameter.
-     * @param dbConfig A database configuration object telling the Wikipedida object where the data is stored and how it can be accessed.
-     * @throws WikiInitializationException
+     * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig parameter.
+     * @param dbConfig A {@link DatabaseConfiguration} object telling the {@link Wikipedia} object where the data is stored and how it can be accessed.
+     * @throws WikiInitializationException Thrown if errors occurred while bootstrapping the {@link Wikipedia} instance.
      */
     public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException {
-        logger.info("Creating Wikipedia object.");
+
+        logger.debug("Creating Wikipedia object.");
 
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
@@ -107,8 +108,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPage(String title) throws WikiApiException  {
-    	Page page = new Page(this, title, false);
-        return page;
+    	return new Page(this, title, false);
     }
 
     /**
@@ -123,8 +123,7 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Page getPageByExactTitle(String exactTitle) throws WikiApiException  {
-        Page page = new Page(this, exactTitle, true);
-        return page;
+        return new Page(this, exactTitle, true);
     }
 
     /**
@@ -151,11 +150,10 @@ public class Wikipedia implements WikiConstants {
      *
      * @param pageId The id of the page.
      * @return The page object for a given pageId.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public Page getPage(int pageId) throws WikiApiException {
-        Page page = new Page(this, pageId);
-        return page;
+        return new Page(this, pageId);
     }
 
     /**
@@ -163,7 +161,7 @@ public class Wikipedia implements WikiConstants {
      *
      * @param pageId The id of the page.
      * @return The title for the given pageId.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public Title getTitle(int pageId) throws WikiApiException {
     	Session session = this.__getHibernateSession();
@@ -185,7 +183,7 @@ public class Wikipedia implements WikiConstants {
      *
      * @param title The title of the page.
      * @return The id for the page with the given title.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIds(String title) throws WikiApiException {
     	Session session = this.__getHibernateSession();
@@ -211,7 +209,7 @@ public class Wikipedia implements WikiConstants {
      *
      * @param title The title of the page.
      * @return The ids of the pages with the given title.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
         title = title.toLowerCase();
@@ -241,7 +239,7 @@ public class Wikipedia implements WikiConstants {
 	 *            the discussion page object
 	 * @return The page object of the article associated with the discussion. If
 	 *         the parameter already was an article, it is returned directly.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred.
 	 */
     public Page getArticleForDiscussionPage(Page discussionPage) throws WikiApiException {
     	if(discussionPage.isDiscussion()){
@@ -266,7 +264,7 @@ public class Wikipedia implements WikiConstants {
      *
      * @param articlePageId The id of the page.
      * @return The page object for a given pageId.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public Page getDiscussionPage(int articlePageId) throws WikiApiException {
         //Retrieve discussion page with article title
@@ -381,7 +379,7 @@ public class Wikipedia implements WikiConstants {
      * @param pPattern The pattern.
      * @param pSize The maximum size of the result list. Only the most similar results will be included.
      * @return A map of pages with names similar to the pattern and their distance values. Smaller distances are more similar.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     protected Map<Page, Double> getSimilarPages(String pPattern, int pSize) throws WikiApiException {
         Title title = new Title(pPattern);
@@ -406,8 +404,8 @@ public class Wikipedia implements WikiConstants {
             String pageName = (String) row[1];
 
 
-//// this returns a similarity - if we want to use it, we have to change the semantics the ordering of the results
-//            double distance = new Levenshtein().getSimilarity(pageName, pPattern);
+            // this returns a similarity - if we want to use it, we have to change the semantics the ordering of the results
+            //            double distance = new Levenshtein().getSimilarity(pageName, pPattern);
             double distance = new LevenshteinStringDistance().distance(pageName, pattern);
 
             distanceMap.put(pageID, distance);
@@ -506,13 +504,11 @@ public class Wikipedia implements WikiConstants {
      * @return A set with all category pageIDs
      */
     protected Set<Integer> __getCategories() {
-// TODO this should be replaced with the buffered category iterator, as it might produce an HeapSpace Overflow, if there are too many categories.
+        // TODO this should be replaced with the buffered category iterator, as it might produce an HeapSpace Overflow, if there are too many categories.
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        List<Integer> idList = session.createQuery(
-            "select cat.pageId from Category as cat")
-            .list();
+        List<Integer> idList = session.createQuery("select cat.pageId from Category as cat").list();
         Set<Integer> categorySet = new HashSet<Integer>(idList);
         session.getTransaction().commit();
 
@@ -576,7 +572,7 @@ public class Wikipedia implements WikiConstants {
      * Attention: may be running very slow, depending on the size of the Wikipedia!
      * @param query A query object containing the query conditions.
      * @return A set of pages that match the given query.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public Iterable<Page> getPages(PageQuery query) throws WikiApiException {
         return new PageQueryIterable(this, query);
@@ -602,7 +598,6 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Returns the language of this Wikipedia.
      * @return The language of this Wikipedia.
      */
     public Language getLanguage() {
@@ -614,7 +609,7 @@ public class Wikipedia implements WikiConstants {
      * Trying to retrieve a page that does not exist in Wikipedia throws an exception.
      * You may catch the exception or use this test, depending on your task.
      * @param title The title of the page.
-     * @return True, if a page or redirect with that title exits, false otherwise.
+     * @return {@code True}, if a page or redirect with that title exits, {@code false} otherwise.
      */
     public boolean existsPage(String title) {
 
@@ -646,7 +641,7 @@ public class Wikipedia implements WikiConstants {
      * Trying to retrieve a pageID that does not exist in Wikipedia throws an exception.
      *
      * @param pageID A pageID.
-     * @return True, if a page with that pageID exits, false otherwise.
+     * @return {@code True}, if a page with that pageID exits, {@code false} otherwise.
      */
     public boolean existsPage(int pageID) {
 
@@ -754,8 +749,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Shortcut for getting a hibernate session.
-     * @return
+     * @return Shortcut for getting a hibernate session.
      */
     protected Session __getHibernateSession() {
         return WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();

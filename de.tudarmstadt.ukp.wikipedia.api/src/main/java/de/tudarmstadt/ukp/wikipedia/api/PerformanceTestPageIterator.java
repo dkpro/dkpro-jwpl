@@ -48,6 +48,7 @@ public class PerformanceTestPageIterator {
 		System.out.println("------------------------------");
 	}
 
+	// TODO Shall this call here also work against a MySQL backend? Seems this should be put into a real Integration Test.
 	public static void main(String[] args) throws Exception {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_uk");

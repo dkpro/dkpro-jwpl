@@ -21,13 +21,9 @@ import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.OutputTypes;
 
 /**
- * This class contains the additional parameters for the RevisionApi.
- *
- *
- *
+ * This class contains the additional parameters for the {@link RevisionApi}.
  */
-public class RevisionAPIConfiguration
-	extends DatabaseConfiguration
+public class RevisionAPIConfiguration extends DatabaseConfiguration
 {
 
 	/** Number of maximum size of an result set */
@@ -93,6 +89,8 @@ public class RevisionAPIConfiguration
 
 		setHost(existingWikiConfig.getHost());
 		setDatabase(existingWikiConfig.getDatabase());
+		setDatabaseDriver(existingWikiConfig.getDatabaseDriver());
+		setJdbcURL(existingWikiConfig.getJdbcURL());
 		setUser(existingWikiConfig.getUser());
 		setPassword(existingWikiConfig.getPassword());
 		setLanguage(existingWikiConfig.getLanguage());
@@ -172,7 +170,7 @@ public class RevisionAPIConfiguration
 	}
 
 	/**
-	 * Sets the character endocing.
+	 * Sets the character encoding.
 	 *
 	 * @param characterSet
 	 *            character encoding
@@ -186,7 +184,7 @@ public class RevisionAPIConfiguration
 	 * Set the memory size used for the purpose of storing revisions.
 	 *
 	 * @param chronoStorageSpace
-	 *            memory sizeresult
+	 *            memory size result
 	 */
 	public void setChronoStorageSpace(final long chronoStorageSpace)
 	{

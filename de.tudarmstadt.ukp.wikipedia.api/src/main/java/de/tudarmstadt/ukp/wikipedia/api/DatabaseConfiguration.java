@@ -20,8 +20,7 @@ package de.tudarmstadt.ukp.wikipedia.api;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
- * A database configuration is used to establish a database connection and set various parameters.
- *
+ * An instance of {@link DatabaseConfiguration} is used to establish a database connection and set various parameters.
  */
 public class DatabaseConfiguration {
 
@@ -30,15 +29,47 @@ public class DatabaseConfiguration {
     private String user;
     private String password;
     private Language language;
+	private String jdbcURL;
+	private String databaseDriver;
 
     public DatabaseConfiguration() {}
 
+    /**
+     * A constructor for MySQL backends, i.e. the default production setting.
+     *
+     * @param host           The hostname the machine the database is hosted on.
+     * @param database       The name of the database to connect to.
+     * @param user           The username as part of the credentials used for for authentication.
+     * @param password       The password as part of the credentials used for for authentication.
+     * @param language       The {@link Language} used for the underlying connection.
+     */
     public DatabaseConfiguration(String host, String database, String user, String password, Language language) {
+
+        this("com.mysql.jdbc.Driver", "jdbc:mysql://" + host + "/" + database,
+                host, database, user, password, language);
+    }
+
+    /**
+     * A constructor for an explicit DBMS specific configuration, e.g. for HSQLDB in tests contexts.
+     *
+     * @param databaseDriver The fully qualified name of the JDBC driver.
+     * @param jdbcURL        A valid JDBC url used to open connections.
+     * @param host           The hostname the machine the database is hosted on.
+     * @param database       The name of the database to connect to.
+     * @param user           The username as part of the credentials used for for authentication.
+     * @param password       The password as part of the credentials used for for authentication.
+     * @param language       The {@link Language} used for the underlying connection.
+     */
+    public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user,
+                                 String password, Language language) {
         this.host = host;
         this.database = database;
         this.user = user;
         this.password = password;
         this.language = language;
+
+        this.setDatabaseDriver(databaseDriver);
+        this.setJdbcURL(jdbcURL);
     }
 
     /**
@@ -71,8 +102,6 @@ public class DatabaseConfiguration {
     public void setLanguage(Language language) {
         this.language = language;
     }
-
-
     /**
      * @return The name of the database.
      */
@@ -103,4 +132,28 @@ public class DatabaseConfiguration {
     public Language getLanguage() {
         return language;
     }
+	/**
+	 * @param databaseDriver the databaseDriver to set
+	 */
+	public void setDatabaseDriver(String databaseDriver) {
+		this.databaseDriver = databaseDriver;
+	}
+	/**
+	 * @return the databaseDriver
+	 */
+	public String getDatabaseDriver() {
+		return databaseDriver;
+	}
+	/**
+	 * @param jdbcURL the jdbcURL to set
+	 */
+	public void setJdbcURL(String jdbcURL) {
+		this.jdbcURL = jdbcURL;
+	}
+	/**
+	 * @return the jdbcURL
+	 */
+	public String getJdbcURL() {
+		return jdbcURL;
+	}
 }

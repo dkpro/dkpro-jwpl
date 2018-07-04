@@ -108,8 +108,9 @@ public class Category implements WikiConstants {
         session.beginTransaction();
 
         Object returnValue;
+        /* XXX this query was mysql specific before using "COLLATE utf8_bin" at the end. */
         returnValue = session.createNativeQuery(
-                "select cat.pageId from Category as cat where cat.name = :name COLLATE utf8_bin")
+                "select cat.pageId from Category as cat where cat.name = :name")
                 .setParameter("name", name, StringType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
@@ -313,9 +314,8 @@ public class Category implements WikiConstants {
     /**
      * Returns the set of article ids that are categorized under this category.
      * @return The set of article ids that are categorized under this category.
-     * @throws WikiApiException
      */
-    public Set<Integer> getArticleIds() throws WikiApiException {
+    public Set<Integer> getArticleIds() {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
@@ -329,7 +329,7 @@ public class Category implements WikiConstants {
      * This is a more efficient shortcut for writing "getPages().size()", as that would require to load all the pages first.
      * @return The number of pages.
      */
-    public int getNumberOfPages() throws WikiApiException {
+    public int getNumberOfPages() {
         BigInteger nrOfPages = new BigInteger("0");
 
         long id = this.__getId();
@@ -350,9 +350,8 @@ public class Category implements WikiConstants {
      * This method exposes implementation details and should not be made public.
      * It is used for performance tuning.
      * @return The set of pages that are categorized under this category.
-     * @throws WikiPageNotFoundException
      */
-    protected Set<Integer> __getPages() throws WikiPageNotFoundException {
+    protected Set<Integer> __getPages() {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);

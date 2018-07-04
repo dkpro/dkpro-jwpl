@@ -15,32 +15,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.revisionmachine.api;
+package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Iterator;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 
 /**
- * The RevisionIteratorInterface extends the generic {@link java.util.Iterator}
- * Interface with a close() function.
+ * Simple test base class to inject the same hsqldb test context into every test
+ * class to avoid duplicated code and efforts. Also shuts down the
+ * hibernate/hsqldb context properly.
  *
- * Since the {@link IOException} does not have inner exception in JAVA 1.5 the close
- * method has to throw both exception for both input components.
- *
+ * @author mawiesne
  */
-public interface RevisionIteratorInterface
-	extends Iterator<Revision>
-{
+public abstract class BaseJWPLTest {
 
-	/**
-	 * Closes the reader or connection to the input component.
-	 *
-	 * @throws IOException
-	 *             if an error occurs while reading from the input archive.
-	 * @throws SQLException
-	 *             if an error occurs while accessing the sql database.
-	 */
-	void close()
-		throws IOException, SQLException;
+	protected static Wikipedia wiki;
+
+	protected static final DatabaseConfiguration obtainHSDLDBConfiguration() {
+		DatabaseConfiguration db = new DatabaseConfiguration();
+		db.setDatabase("wikiapi_test");
+		db.setHost("localhost");
+		db.setUser("sa");
+		db.setPassword("");
+		db.setLanguage(Language._test);
+		db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
+		db.setDatabaseDriver("org.hsqldb.jdbcDriver");
+		return db;
+	}
 }

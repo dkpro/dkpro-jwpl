@@ -26,34 +26,27 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import org.sweble.wikitext.engine.config.WikiConfig;
 
-public class WikipediaTest {
+public class WikipediaTest extends BaseJWPLTest{
 
 	private static Wikipedia wiki;
 
 	/**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
 	 */
 	@BeforeClass
 	public static void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
+		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			Assume.assumeNoException(e);
-			//fail("Wikipedia could not be initialized.");
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 

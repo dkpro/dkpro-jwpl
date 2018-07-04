@@ -43,8 +43,8 @@ public class CycleHandler {
 
     /**
      * Creates a cycle handler object.
-     * @param wiki The Wikipedia object to use.
-     * @param categoryGraph The category graph in which cycles should be handeled.
+     * @param wiki The {@link Wikipedia} object to use.
+     * @param categoryGraph The category graph in which cycles should be handled.
      */
     public CycleHandler(Wikipedia wiki, CategoryGraph categoryGraph) {
         this.wiki = wiki;
@@ -230,7 +230,7 @@ public class CycleHandler {
      * The JGraphT cycle detection seems not to find all cycles. Thus, I wrote my own cycle detection.
      * It is a colored DFS and should find all (viscious :) cycles.
      * @return True, if the graph contains a cycle.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean containsCycle() throws WikiApiException  {
         DefaultEdge edge = findCycle();
@@ -248,7 +248,7 @@ public class CycleHandler {
 
     /**
      * Removes cycles from the graph that was used to construct the cycle handler.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public void removeCycles() throws WikiApiException {
         DefaultEdge edge = null;

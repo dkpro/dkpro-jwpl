@@ -18,38 +18,29 @@
 package de.tudarmstadt.ukp.wikipedia.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 
-import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
-
-public class PageIteratorTest {
-
-	private static Wikipedia wiki;
+public class PageIteratorTest extends BaseJWPLTest {
 
 	/**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
 	 */
 	@BeforeClass
 	public static void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
+		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			Assume.assumeNoException(e);
-			//fail("Wikipedia could not be initialized.");
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 
@@ -66,18 +57,22 @@ public class PageIteratorTest {
         Iterator<Page> articleIter = wiki.getArticles().iterator();
 
 		while (pageIter.hasNext()) {
-			@SuppressWarnings("unused")
 			Page p = pageIter.next();
+			assertNotNull(p);
 			nrOfPages++;
 		}
 		assertEquals("Number of pages == 30", 30, nrOfPages);
 
 		while (articleIter.hasNext()) {
-			@SuppressWarnings("unused")
 			Page p = articleIter.next();
+			assertNotNull(p);
 			nrOfArticles++;
 		}
-		assertEquals("Number of articles == 28", 28, nrOfArticles);
+		// TODO check why this was 28 and not 30 as in the most recent wikiapi_test db script
+		// assertEquals("Number of articles == 28", 28, nrOfArticles);
+		
+		// Assuming 30 is the correct number now
+		assertEquals("Number of articles == 30", 30, nrOfArticles);
 
 	}
 

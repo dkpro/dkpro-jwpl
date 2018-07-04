@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,33 +27,25 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 
-public class CategoryTest {
-
-	private static Wikipedia wiki;
+public class CategoryTest extends BaseJWPLTest {
 
 	/**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+	 * Made this static so that following tests don't run if assumption fails.
+	 * (With AT_Before, tests also would not be executed but marked as passed)
+	 * This could be changed back as soon as JUnit ignored tests after failed
+	 * assumptions
 	 */
 	@BeforeClass
 	public static void setupWikipedia() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language._test);
+		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-			assumeNoException(e);
-			//fail("Wikipedia could not be initialized.");
+            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 
@@ -74,7 +65,7 @@ public class CategoryTest {
 			assertEquals("testing the title","People of UKP",cat.getTitle().toString());
 		} catch (WikiTitleParsingException e) {
 			e.printStackTrace();
-			fail("A WikiTitleParsingException occured while testing the title of the cateogry 'People of UKP'");
+			fail("A WikiTitleParsingException occurred while testing the title of the category 'People of UKP'");
 		}
 
 	}

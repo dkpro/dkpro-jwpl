@@ -18,16 +18,15 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
 
 import java.lang.reflect.Field;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
-import org.junit.Assume;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
@@ -36,33 +35,52 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 
-public class RevisionApiTest
-{
+public class RevisionApiTest extends BaseJWPLTest {
 
 	private static Wikipedia wiki = null;
+
+	// The object under test
+	private RevisionApi revisionApi;
 
 	/**
 	 * Made this static so that following tests don't run if assumption fails.
 	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignores tests after failed
+	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
 	@BeforeClass
-	public static void setupWikipedia()
-	{
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_simple_20090119");
-		db.setHost("bender.ukp.informatik.tu-darmstadt.de");
-		db.setUser("student");
-		db.setPassword("student");
-		db.setLanguage(Language.simple_english);
+	public static void setupWikipedia() {
+		DatabaseConfiguration db = obtainHSDLDBConfiguration(
+				"wikiapi_simple_20090119_stripped", Language.simple_english);
 		try {
 			wiki = new Wikipedia(db);
+		} catch (Exception e) {
+			fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
 		}
-		catch (Exception e) {
-			assumeNoException(e);
+		Assert.assertNotNull(wiki);
+	}
+
+	@Before
+	public void setupInstanceUnderTest()
+	{
+		try {
+			revisionApi = new RevisionApi(wiki.getDatabaseConfiguration());
+			assertNotNull(revisionApi);
+		} catch (WikiApiException e) {
+			fail("RevisionApi could not be initialized: " + e.getLocalizedMessage());
 		}
-		Assume.assumeNotNull(wiki);
+	}
+
+	@After
+	public void cleanUpInstanceUnderTest()
+	{
+		if(revisionApi!=null) {
+			try {
+				revisionApi.close();
+			} catch (SQLException e) {
+				fail("RevisionApi could not be shut down correctly: " + e.getLocalizedMessage());
+			}
+		}
 	}
 
 	@Test
@@ -71,14 +89,11 @@ public class RevisionApiTest
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
-		String pageName = "Car";
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
-			int pageId = wiki.getPage(pageName).getPageId();
+
+			int pageId = wiki.getPage("Car").getPageId();
 
 			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
-
 			Revision revision = revisionApi.getRevision(pageId, timestamp);
 
 			assertEquals(1142935, revision.getRevisionID());
@@ -99,8 +114,6 @@ public class RevisionApiTest
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
 			int pageId = wiki.getPage("Car").getPageId();
 
 			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
@@ -113,10 +126,8 @@ public class RevisionApiTest
 			assertEquals(349, revision1.getRevisionCounter());
 
 			assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
-			assertEquals(revision1.getFullRevisionID(),
-					revision2.getFullRevisionID());
-			assertEquals(revision1.getRevisionCounter(),
-					revision2.getRevisionCounter());
+			assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
+			assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
 			assertEquals(revision1.getArticleID(), revision2.getArticleID());
 
 		}
@@ -133,8 +144,6 @@ public class RevisionApiTest
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
 			int pageId = wiki.getPage("Car").getPageId();
 
 			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
@@ -147,10 +156,8 @@ public class RevisionApiTest
 			assertEquals(349, revision1.getRevisionCounter());
 
 			assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
-			assertEquals(revision1.getFullRevisionID(),
-					revision2.getFullRevisionID());
-			assertEquals(revision1.getRevisionCounter(),
-					revision2.getRevisionCounter());
+			assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
+			assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
 			assertEquals(revision1.getArticleID(), revision2.getArticleID());
 
 		}
@@ -167,22 +174,15 @@ public class RevisionApiTest
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
 			int pageId = wiki.getPage("Car").getPageId();
 
-			Timestamp firstDayOfAppearance = revisionApi
-					.getFirstDateOfAppearance(pageId);
-			Timestamp lastDayOfAppearance = revisionApi
-					.getLastDateOfAppearance(pageId);
+			Timestamp firstDayOfAppearance = revisionApi.getFirstDateOfAppearance(pageId);
+			Timestamp lastDayOfAppearance = revisionApi.getLastDateOfAppearance(pageId);
 			int nrOfRevisions = revisionApi.getNumberOfRevisions(pageId);
 
-			assertEquals("2004-04-07 02:31:34.0",
-					firstDayOfAppearance.toString());
-			assertEquals("2009-01-19 04:58:09.0",
-					lastDayOfAppearance.toString());
+			assertEquals("2004-04-07 02:31:34.0", firstDayOfAppearance.toString());
+			assertEquals("2009-01-19 04:58:09.0", lastDayOfAppearance.toString());
 			assertEquals(382, nrOfRevisions);
-
 		}
 		catch (WikiApiException e) {
 			e.printStackTrace();
@@ -197,17 +197,11 @@ public class RevisionApiTest
 
 		String pageName = "Car";
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
 			int pageId = wiki.getPage(pageName).getPageId();
 
-			Timestamp lastRevisionTimestamp = revisionApi
-					.getLastDateOfAppearance(pageId);
-			Revision revision = revisionApi.getRevision(pageId,
-					lastRevisionTimestamp);
-			assertEquals(wiki.getPage(pageId).getText(),
-					revision.getRevisionText());
-
+			Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
+			Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
+			assertEquals(wiki.getPage(pageId).getText(), revision.getRevisionText());
 		}
 		catch (WikiApiException e) {
 			e.printStackTrace();
@@ -223,18 +217,12 @@ public class RevisionApiTest
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
 		try {
-			RevisionApi revisionApi = new RevisionApi(
-					wiki.getDatabaseConfiguration());
 			int pageId = wiki.getPage("Car").getPageId();
 
-			Timestamp lastRevisionTimestamp = revisionApi
-					.getLastDateOfAppearance(pageId);
-			Revision revision = revisionApi.getRevision(pageId,
-					lastRevisionTimestamp);
+			Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
+			Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
 
-			Field privateStringField = Revision.class
-					.getDeclaredField("revisionText");
-
+			Field privateStringField = Revision.class.getDeclaredField("revisionText");
 			privateStringField.setAccessible(true);
 
 			String fieldValue = (String) privateStringField.get(revision);
@@ -242,35 +230,18 @@ public class RevisionApiTest
 				fail("Not lazy loaded!");
 			}
 
+			// trigger the load of the data
 			revision.getRevisionText();
+
 			fieldValue = (String) privateStringField.get(revision);
 			if (fieldValue == null) {
 				fail("Not lazy loaded!");
 			}
 
-		}
-		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-
-		}
-		catch (SecurityException e) {
+		} catch (WikiApiException | SecurityException | NoSuchFieldException |
+				 IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 			fail(e.getMessage());
 		}
-		catch (NoSuchFieldException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-		catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-		catch (IllegalAccessException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
-		}
-
 	}
-
 }
