@@ -15,9 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.parser.tutorial;
-
-import java.util.List;
+package de.tudarmstadt.ukp.wikipedia.tutorial;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
@@ -25,24 +23,27 @@ import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
-import de.tudarmstadt.ukp.wikipedia.parser.Section;
+import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.FlushTemplates;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 
 /**
- * Displays the titles of the sections found in the page <i>Dog</i>.<br>
+ * Shows how to clean an article text from "TEMPLATE" and "Image" elements
+ *
  */
-public class T4_InterfacingWithWikipedia {
 
+public class T5_CleaningTemplateImage {
+	
 	public static void main(String[] args) throws WikiApiException {
+
 		//db connection settings
 		DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-        dbConfig.setDatabase("DATABASE");
-        dbConfig.setHost("HOST");
-        dbConfig.setUser("USER");
-        dbConfig.setPassword("PASSWORD");
-        dbConfig.setLanguage(Language.english);
-		
+	    dbConfig.setDatabase("DATABASE");
+	    dbConfig.setHost("HOST");
+	    dbConfig.setUser("USER");
+	    dbConfig.setPassword("PASSWORD");
+	    dbConfig.setLanguage(Language.english);
+
 		//initialize a wiki
 		Wikipedia wiki = new Wikipedia(dbConfig);
 		
@@ -51,14 +52,18 @@ public class T4_InterfacingWithWikipedia {
 		
 		//get a ParsedPage object
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
+		pf.setTemplateParserClass(FlushTemplates.class); // Filtering TEMPLATE-Elements
+		
+		String IMAGE = "Image"; // Replace it with the image template name in your Wiki language edition,
+								// e.g. "Image" in English
+		
+		// filtering Image-Elements
+		pf.getImageIdentifers().add(IMAGE);	
+		
+		// parse page text
 		MediaWikiParser parser = pf.createParser();
 		ParsedPage pp = parser.parse(p.getText());
-	
-		//get the sections of the page
-		List<Section> sections = pp.getSections();
 		
-		for(Section section : sections) {
-            System.out.println(section.getTitle());
-        }
+		System.out.println(pp.getText());	
 	}
 }

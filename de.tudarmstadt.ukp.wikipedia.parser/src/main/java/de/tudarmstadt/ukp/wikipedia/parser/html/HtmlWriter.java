@@ -42,6 +42,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.NestedListElement;
 import de.tudarmstadt.ukp.wikipedia.parser.Paragraph;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Section;
+import de.tudarmstadt.ukp.wikipedia.parser.SectionContent;
 import de.tudarmstadt.ukp.wikipedia.parser.SectionContainer;
 import de.tudarmstadt.ukp.wikipedia.parser.Span;
 import de.tudarmstadt.ukp.wikipedia.parser.Table;
@@ -51,8 +52,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
 /**
  * Renders a ParsedPage in HTML...<br>
  * <br>
- * There is a ParsedPage.css for formating the HTML Tags.<br>
- * Look at the HtmlFileDemo.java for a better intoduction.
+ * There is a ParsedPage.css for formatting the HTML Tags.<br>
+ * Look at the {@code T7_HtmlFileDemo.java} in the 'tutorial' module for a better introduction.
  *
  */
 public class HtmlWriter {
@@ -60,10 +61,10 @@ public class HtmlWriter {
 	private final static Log logger = LogFactory.getLog(HtmlWriter.class);
 
     /**
-	 * Generates HTML Output for a ParsedPage.
+	 * Generates HTML Output for a {@link ParsedPage}.
 	 *
-	 * @param pp The parsed page.
-	 * @return A string containing the HTML rendering of the parsed page.
+	 * @param pp The page that shall be parsed.
+	 * @return A string containing the HTML rendering of the {@link ParsedPage}.
 	 */
 	public static String parsedPageToHtml( ParsedPage pp ){
 		StringBuilder result = new StringBuilder();
@@ -77,7 +78,6 @@ public class HtmlWriter {
     			pp.getName()+
     			"</th></tr>\n");
 
-//    		//Dieser Artikel
 //    		if( pp.aboutArticle()!=null ){
 //    			result.append("<tr><td class=\"ParsedPage\">\n");
 //    			result.append("About Article:" + contentElementToHtml( pp.aboutArticle() ));
@@ -117,8 +117,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Creates the header of the HTML page
-	 * @return The HTML header
+	 * @return Creates and returns the header of the HTML page
 	 */
 	private static String getHtmlHeader() {
 		StringBuilder header = new StringBuilder();
@@ -135,8 +134,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Creates the footer of the HTML page
-	 * @return The HTML footer
+	 * @return Creates and returns the footer of the HTML page
 	 */
 	private static String getHtmlFooter() {
 		StringBuilder footer = new StringBuilder();
@@ -146,6 +144,9 @@ public class HtmlWriter {
 		return footer.toString();
 	}
 
+	/**
+	 * @return Creates and returns the CSS definitions of the HTML page
+	 */
 	private static String getCSS() {
 		StringBuilder css = new StringBuilder();
 		css.append("<style>");
@@ -156,7 +157,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a SectionContainer or SectionContent.
+	 * Generates HTML Output for a {@link SectionContainer} or {@link SectionContent}.
 	 */
 	private static String sectionToHtml( Section s ){
 
@@ -214,14 +215,14 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a Paragraph.
+	 * Generates HTML Output for a {@link Paragraph}.
 	 */
 	private static String paragraphToHtml( Paragraph p ){
 		return contentElementToHtml( p, "Paragraph", "Paragraph: "+p.getType() );
 	}
 
 	/**
-	 * Generates HTML Output for a ContentElement.
+	 * Generates HTML Output for a {@link ContentElement}.
 	 */
 	private static String contentElementToHtml( ContentElement ce ){
 		return contentElementToHtml( ce, "ContentElement", "ContentElement" );
@@ -286,7 +287,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a DefinitionList.
+	 * Generates HTML Output for a {@link DefinitionList}.
 	 */
 	private static String definitionListToHtml( DefinitionList dl){
 		if( dl == null ) {
@@ -316,7 +317,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a NestedList.
+	 * Generates HTML Output for a {@link NestedList}.
 	 */
 	private static String nestedListToHtml( NestedList nl ){
 		if( nl == null ) {
@@ -347,7 +348,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a Table.
+	 * Generates HTML Output for a {@link Table}.
 	 */
 	private static String tableToHtml( Table t ){
 
@@ -388,7 +389,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a TableElement.
+	 * Generates HTML Output for a {@link TableElement}.
 	 */
 	private static String tableElementToHtml( TableElement td ){
 		StringBuilder result = new StringBuilder();
@@ -408,7 +409,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a Link.
+	 * Generates HTML Output for a {@link Link}.
 	 */
 	private static String linkToHtml( Link l ){
 		if( l == null ) {
@@ -433,7 +434,7 @@ public class HtmlWriter {
 	}
 
 	/**
-	 * Generates HTML Output for a Template.
+	 * Generates HTML Output for a {@link Template}.
 	 */
 	private static String templateToHtml( Template t){
 		if( t == null ) {
@@ -487,55 +488,15 @@ public class HtmlWriter {
     public static void writeFile(String filename, String encoding, String text) {
 
         File outFile = new File(filename);
-        Writer destFile = null;
-        try {
-            destFile = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
-                            new FileOutputStream(outFile)), encoding));
+        try (Writer destFile = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(outFile)), encoding))) {
+            destFile.write(text);
         } catch (UnsupportedEncodingException e1) {
             logger.error("Unsupported encoding exception while opening file " + outFile.getAbsolutePath());
-            e1.printStackTrace();
         } catch (FileNotFoundException e1) {
-            logger.error("File " + outFile.getAbsolutePath() + " not found.");
-            e1.printStackTrace();
-        }
-
-        try {
-            destFile.write(text);
+            logger.error("File " + outFile.getAbsolutePath() + " not found.",  e1);
         } catch (IOException e) {
-            logger.error("IO exception while writing file " + outFile.getAbsolutePath());
-            e.printStackTrace();
-        }
-        try {
-            destFile.close();
-        } catch (IOException e) {
-            logger.error("IO exception while closing file " + outFile.getAbsolutePath());
-            e.printStackTrace();
+            logger.error("IO exception while writing file " + outFile.getAbsolutePath(), e);
         }
     }
-
-//    private static String getFileContent(String filename, String encoding) {
-//
-//        File file = new File(filename);
-//
-//        InputStream is;
-//        String textContents = "";
-//        try {
-//            is = new FileInputStream(file);
-//            // as the whole file is read at once -> buffering not necessary
-//            // InputStream is = new BufferedInputStream(new FileInputStream(file));
-//            byte[] contents = new byte[(int) file.length()];
-//            is.read(contents);
-//            textContents = new String(contents, encoding);
-//        } catch (FileNotFoundException e) {
-//            logger.error("File " + file.getAbsolutePath() + " not found.");
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            logger.error("IO exception while reading file " + file.getAbsolutePath());
-//            e.printStackTrace();
-//        }
-//
-//        return textContents;
-//    }
-
 
 }
