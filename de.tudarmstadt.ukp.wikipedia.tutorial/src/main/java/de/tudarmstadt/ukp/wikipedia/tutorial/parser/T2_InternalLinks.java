@@ -15,50 +15,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.tutorial;
+package de.tudarmstadt.ukp.wikipedia.tutorial.parser;
 
-import java.util.List;
-
-import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
-import de.tudarmstadt.ukp.wikipedia.api.Page;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
-import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Section;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 
 /**
- * Displays the titles of the sections found in the page <i>Dog</i>.<br>
+ * This class shows how to get the internal links from a parsed page.<br>
+ * Internal links point to other pages and categories in the current<br>
+ * <pre>Wikipedia</pre>.
+ *
  */
-public class T4_InterfacingWithWikipedia {
+public class T2_InternalLinks {
 
+	/**
+	 * Prints the targets of the internal links found in the page <i>Germany</i>.
+	 * @param args
+	 * @throws WikiApiException
+	 */
 	public static void main(String[] args) throws WikiApiException {
-		//db connection settings
-		DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-        dbConfig.setDatabase("DATABASE");
-        dbConfig.setHost("HOST");
-        dbConfig.setUser("USER");
-        dbConfig.setPassword("PASSWORD");
-        dbConfig.setLanguage(Language.english);
+
+        // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
+        String documentText = TestFile.getFileText();
 		
-		//initialize a wiki
-		Wikipedia wiki = new Wikipedia(dbConfig);
-		
-		//get the page 'Dog'
-		Page p = wiki.getPage("Dog");
-		
-		//get a ParsedPage object
+		// get a ParsedPage object
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
 		MediaWikiParser parser = pf.createParser();
-		ParsedPage pp = parser.parse(p.getText());
-	
-		//get the sections of the page
-		List<Section> sections = pp.getSections();
+		ParsedPage pp = parser.parse(documentText);
 		
-		for(Section section : sections) {
-            System.out.println(section.getTitle());
+        // only the links to other Wikipedia language editions
+        for (Link language : pp.getLanguages()) {
+            System.out.println(language.getTarget());
         }
-	}
+
+        //get the internal links of each section
+        for (Section section : pp.getSections()){
+            System.out.println("Section: " + section.getTitle());
+
+            for (Link link : section.getLinks(Link.type.INTERNAL)) {
+                System.out.println("  " + link.getTarget());
+            }
+        }
+    }
 }
