@@ -100,7 +100,7 @@ public class Title {
             this.disambiguationText = null;
         }
 
-        if (getEntity() == null) {
+        if (getEntity() == null || (getEntity() != null && getEntity().isEmpty())) {
             throw new WikiTitleParsingException("Title was not properly initialized.");
         }
     }
