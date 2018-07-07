@@ -21,6 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a Wikipedia page title.
@@ -38,11 +39,12 @@ public class Title {
     private final String sectionText;
 
     /**
-     * Create a title object using a title string.
+     * Create a {@link Title} object using a title string.
      * The string gets parsed into an entity part and a disambiguation part.
      * As Wikipedia page names represent spaces as underscores, we create a version with spaces and one without.
+     *
      * @param titleText The title string of the page.
-     * @throws WikiTitleParsingException
+     * @throws WikiTitleParsingException Thrown if errors occurred during sanitation of the {@code titleText}.
      */
     public Title(String titleText) throws WikiTitleParsingException  {
         if (titleText.length() == 0) {
@@ -100,7 +102,7 @@ public class Title {
             this.disambiguationText = null;
         }
 
-        if (getEntity() == null) {
+        if (StringUtils.isEmpty(getEntity())) {
             throw new WikiTitleParsingException("Title was not properly initialized.");
         }
     }
@@ -111,12 +113,11 @@ public class Title {
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
      *
-     * @param pTitle The string to encode.
+     * @param pTitle The string to encode. Must not be {@code null}.
      * @return The wiki-style encoded string.
      */
     private String encodeTitleWikistyle(String pTitle) {
-        String encodedTitle = pTitle.replace(' ', '_');
-        return encodedTitle;
+        return pTitle.replace(' ', '_');
     }
 
     /**
@@ -125,24 +126,21 @@ public class Title {
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
      *
-     * @param pTitle The string to decode.
+     * @param pTitle The string to decode. Must not be {@code null}.
      * @return The decoded string.
      */
     private String decodeTitleWikistyle(String pTitle) {
-        String encodedTitle = pTitle.replace('_', ' ');
-        return encodedTitle;
+        return pTitle.replace('_', ' ');
     }
 
     /**
-     * Returns the disambigutation text of a page title (i.e., the part in parentheses following the page's name).
-     * @return The disambigutation text of a page title (i.e., the part in parentheses following the page's name).
+     * @return The disambiguation text of a page title (i.e., the part in parentheses following the page's name).
      */
     public String getDisambiguationText() {
         return disambiguationText;
     }
 
     /**
-     * Returns the name of the entity (i.e. the page's title *without* disambiguation string).
      * @return The name of the entity (i.e. the page's title *without* disambiguation string).
      */
     public String getEntity() {
@@ -150,7 +148,6 @@ public class Title {
     }
 
     /**
-     * Returns the plain title, without wikistyle underscores replacing spaces.
      * @return The plain title, without wikistyle underscores replacing spaces.
      */
     public String getPlainTitle() {
@@ -165,7 +162,6 @@ public class Title {
     }
 
     /**
-     * Returns the wikistyle title, with spaces replaced by underscores.
      * @return The wikistyle title, with spaces replaced by underscores.
      */
     public String getWikiStyleTitle() {

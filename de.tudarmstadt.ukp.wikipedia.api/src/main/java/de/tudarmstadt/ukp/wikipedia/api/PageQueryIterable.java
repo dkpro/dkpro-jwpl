@@ -68,7 +68,7 @@ public class PageQueryIterable implements Iterable<Page> {
 
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        List<Integer> idList = session.createQuery(hql).list();
+        List<Integer> idList = session.createQuery(hql, Integer.class).list();
         session.getTransaction().commit();
 
         int progress = 0;

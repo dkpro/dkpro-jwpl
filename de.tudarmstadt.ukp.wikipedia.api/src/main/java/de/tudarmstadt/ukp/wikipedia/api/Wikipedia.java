@@ -167,7 +167,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createNativeQuery(
-            "select p.name from PageMapLine as p where p.id = :pId").setParameter("pId", pageId, IntegerType.INSTANCE).uniqueResult();
+            "select p.name from PageMapLine as p where p.pageId= :pId").setParameter("pId", pageId, IntegerType.INSTANCE).uniqueResult();
         session.getTransaction().commit();
 
         String title = (String)returnValue;
@@ -443,7 +443,7 @@ public class Wikipedia implements WikiConstants {
 
     /**
      * Gets the category for a given title.
-     * If the category title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia category title starts with an uppercase letter.
+     * If the {@link Category} title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia category title starts with an uppercase letter.
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia category titles.
      *
      * For example, the (possible) category "Famous steamboats" could be queried with
@@ -462,7 +462,7 @@ public class Wikipedia implements WikiConstants {
 
     /**
      * Gets the category for a given pageId.
-     * @param pageId The id of the category.
+     * @param pageId The id of the {@link Category}.
      * @return The category object or null if no category with this pageId exists.
      */
     public Category getCategory(int pageId) {
@@ -480,7 +480,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * This returns an iterable over all categories, as returning all category objects would be much too expensive.
+     * This returns an iterable over all {@link Category categories}, as returning all category objects would be much too expensive.
      * @return An iterable over all categories.
      */
     public Iterable<Category> getCategories() {
@@ -488,7 +488,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Get all wikipedia categories.
+     * Get all wikipedia {@link Category categories}.
      * Returns only an iterable, as a collection may not fit into memory for a large wikipedia.
      * @param bufferSize The size of the internal page buffer.
      * @return An iterable over all categories.
@@ -504,11 +504,12 @@ public class Wikipedia implements WikiConstants {
      * @return A set with all category pageIDs
      */
     protected Set<Integer> __getCategories() {
-        // TODO this should be replaced with the buffered category iterator, as it might produce an HeapSpace Overflow, if there are too many categories.
 
+        // TODO this should be replaced with the buffered category iterator, as it might produce an HeapSpace Overflow, if there are too many categories.
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        List<Integer> idList = session.createQuery("select cat.pageId from Category as cat").list();
+        List<Integer> idList = session.createQuery(
+                "select cat.pageId from Category as cat", Integer.class).list();
         Set<Integer> categorySet = new HashSet<Integer>(idList);
         session.getTransaction().commit();
 
@@ -538,21 +539,20 @@ public class Wikipedia implements WikiConstants {
 
     /**
      * Protected method that is much faster than the public version, but exposes too much implementation details.
-     * Get a set with all pageIDs. Returning all page objects is much too expensive.
+     * Get a set with all {@code pageIDs}. Returning all page objects is much too expensive.
      * Does not include redirects, as they are only pointers to real pages.
      *
      * As ids can be useful for several application (e.g. in combination with
-     * the RevisionMachine, they have been made publically available via
+     * the RevisionMachine, they have been made publicly available via
      * {@link #getPageIds()}.
      *
-     * @return A set with all pageIDs. Returning all pages is much to expensive.
+     * @return A set with all {@code pageIDs}. Returning all pages is much to expensive.
      */
     protected Set<Integer> __getPages() {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         List<Integer> idList = session.createQuery(
-            "select page.pageId from Page as page")
-            .list();
+            "select page.pageId from Page as page", Integer.class).list();
         Set<Integer> pageSet = new HashSet<Integer>(idList);
         session.getTransaction().commit();
 
@@ -560,7 +560,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * @return an iterable over all pageids (without redirects)
+     * @return an iterable over all {@code pageIDs} (without redirects)
      */
     public Iterable<Integer> getPageIds(){
     	return this.__getPages();
@@ -598,7 +598,7 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * @return The language of this Wikipedia.
+     * @return The {@link Language} of this Wikipedia.
      */
     public Language getLanguage() {
         return this.language;
@@ -628,7 +628,7 @@ public class Wikipedia implements WikiConstants {
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createNativeQuery(
-            "select p.id from PageMapLine as p where p.name = :pName COLLATE utf8_bin")
+            "select p.id from PageMapLine as p where p.name = :pName")
             .setParameter("pName", encodedTitle, StringType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();
@@ -645,9 +645,8 @@ public class Wikipedia implements WikiConstants {
      */
     public boolean existsPage(int pageID) {
 
-        // TODO carefully, this is a hack to provide a much quicker way to test whether a page exists.
+        // This is a hack to provide a much quicker way to test whether a page exists.
         // Encoding the title in this way surpasses the normal way of creating a title first.
-        // This should get a unit test to make sure the encoding function is in line with the title object.
         // Anyway, I do not like this hack :-|
 
         if (pageID < 0) {
@@ -733,16 +732,14 @@ public class Wikipedia implements WikiConstants {
     }
 
     /**
-     * Returns a MetaData object containing all meta data about this instance of Wikipedia.
-     * @return A MetaData object containing all meta data about this instance of Wikipedia.
+     * @return A {@link MetaData} object containing all meta data about this instance of Wikipedia.
      */
     public MetaData getMetaData() {
         return this.metaData;
     }
 
     /**
-     * Returns the DatabaseConfiguration object that was used to create the Wikipedia object.
-     * @return The DatabaseConfiguration object that was used to create the Wikipedia object.
+     * @return The {@link DatabaseConfiguration} object that was used to create the Wikipedia object.
      */
     public DatabaseConfiguration getDatabaseConfiguration() {
         return this.dbConfig;
