@@ -44,9 +44,8 @@ import de.tudarmstadt.ukp.wikipedia.util.UnmodifiableArraySet;
  *
  *
  */
-// Adapter class for hidding hibernate session management from the user.
-public class Page
-	implements WikiConstants
+// Adapter class for hiding hibernate session management from the user.
+public class Page implements WikiConstants
 {
 	private final Wikipedia wiki;
 
@@ -293,11 +292,11 @@ public class Page
 
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
-		 session.beginTransaction();
+		session.beginTransaction();
 		Object returnValue = session
 				.createNativeQuery("select count(pages) from page_categories where id = :pageid")
 				.setParameter("pageid", id, LongType.INSTANCE).uniqueResult();
-		 session.getTransaction().commit();
+		session.getTransaction().commit();
 
 		if (returnValue != null) {
 			nrOfCategories = (BigInteger) returnValue;
@@ -642,27 +641,27 @@ public class Page
 	protected String getPageInfo()
 		throws WikiApiException
 	{
-		StringBuffer sb = new StringBuffer(1000);
+		StringBuilder sb = new StringBuilder(1000);
 
-		sb.append("ID             : " + __getId() + LF);
-		sb.append("PageID         : " + getPageId() + LF);
-		sb.append("Name           : " + getTitle() + LF);
-		sb.append("Disambiguation : " + isDisambiguation() + LF);
-		sb.append("Redirects" + LF);
+		sb.append("ID             : ").append(__getId()).append(LF);
+		sb.append("PageID         : ").append(getPageId()).append(LF);
+		sb.append("Name           : ").append(getTitle()).append(LF);
+		sb.append("Disambiguation : ").append(isDisambiguation()).append(LF);
+		sb.append("Redirects").append(LF);
 		for (String redirect : getRedirects()) {
-			sb.append("  " + redirect + LF);
+			sb.append("  ").append(redirect).append(LF);
 		}
-		sb.append("Categories" + LF);
+		sb.append("Categories").append(LF);
 		for (Category category : getCategories()) {
-			sb.append("  " + category.getTitle() + LF);
+			sb.append("  ").append(category.getTitle()).append(LF);
 		}
-		sb.append("In-Links" + LF);
+		sb.append("In-Links").append(LF);
 		for (Page inLink : getInlinks()) {
-			sb.append("  " + inLink.getTitle() + LF);
+			sb.append("  ").append(inLink.getTitle()).append(LF);
 		}
-		sb.append("Out-Links" + LF);
+		sb.append("Out-Links").append(LF);
 		for (Page outLink : getOutlinks()) {
-			sb.append("  " + outLink.getTitle() + LF);
+			sb.append("  ").append(outLink.getTitle()).append(LF);
 		}
 
 		return sb.toString();

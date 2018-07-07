@@ -26,8 +26,6 @@ import java.util.Iterator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
-
 public class TitleIteratorTest extends BaseJWPLTest{
 
 	/**
@@ -59,7 +57,7 @@ public class TitleIteratorTest extends BaseJWPLTest{
 			assertNotNull(t);
 			nrOfTitles++;
 		}
-		assertEquals("Number of titles == 36", 36, nrOfTitles);
+		assertEquals("Number of titles == 37", 37, nrOfTitles);
 
 	}
 }
