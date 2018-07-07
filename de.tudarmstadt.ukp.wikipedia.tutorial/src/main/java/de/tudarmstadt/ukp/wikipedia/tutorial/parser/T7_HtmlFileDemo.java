@@ -15,42 +15,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.tutorial;
-
-import java.io.IOException;
+package de.tudarmstadt.ukp.wikipedia.tutorial.parser;
 
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
-import de.tudarmstadt.ukp.wikipedia.parser.Section;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
+import de.tudarmstadt.ukp.wikipedia.parser.html.HtmlWriter;
 
 /**
- * Displays informations about the inner structure of a page.
+ * This class shows how to use the HtmlTools.class...<br>
+ * Mainly, you can create an HtmlFile of a {@link ParsedPage}.
  *
  */
-public class T1_SimpleParserDemo {
-
-	/**
-	 * @param args
-	 * @throws IOException
-	 */
-	public static void main(String[] args) throws IOException {
-
+public class T7_HtmlFileDemo {
+	
+	public static void main( String[] argv ) {
+		
         // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
         String documentText = TestFile.getFileText();
 
-        //get a ParsedPage object
+		// set up an individually parametrized MediaWikiParser
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
+		pf.getImageIdentifers().add("Image");
 		MediaWikiParser parser = pf.createParser();
-		ParsedPage pp = parser.parse(documentText);
 		
-		//get the sections
-		for(Section section : pp.getSections()) {
-			System.out.println("section : " + section.getTitle());
-			System.out.println(" nr of paragraphs      : " + section.nrOfParagraphs());
-			System.out.println(" nr of tables          : " + section.nrOfTables());
-			System.out.println(" nr of nested lists    : " + section.nrOfNestedLists());
-			System.out.println(" nr of definition lists: " + section.nrOfDefinitionLists());
-		}
+		ParsedPage pp = parser.parse( documentText );
+		
+        String outFileName = "htmlFileDemo.html";
+		HtmlWriter.writeFile(outFileName, "UTF8", HtmlWriter.parsedPageToHtml(pp));
+
+        System.out.println("Writing output to file: " + outFileName);
 	}
 }

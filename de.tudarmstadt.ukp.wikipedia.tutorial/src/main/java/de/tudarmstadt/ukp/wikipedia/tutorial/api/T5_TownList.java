@@ -15,8 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.api.tutorial;
+package de.tudarmstadt.ukp.wikipedia.tutorial.api;
 
+import java.util.Set;
+import java.util.TreeSet;
+
+import de.tudarmstadt.ukp.wikipedia.api.Category;
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
@@ -26,13 +30,17 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 
 
 /**
- * Tutorial 2
+ * Tutorial 5
  *
- * A page provides a number of informative methods.
+ * Wikipedia categories are used as a kind of semantic tag for pages.
+ * They are organized in a thesaurus like structure.
+ *
+ * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany",
+ *   we can get a quite long list of towns in Germany.
  *
  *
  */
-public class T2_PageInfo implements WikiConstants {
+public class T5_TownList implements WikiConstants {
 
     public static void main(String[] args) throws WikiApiException {
 
@@ -44,36 +52,36 @@ public class T2_PageInfo implements WikiConstants {
         dbConfig.setPassword("PASSWORD");
         dbConfig.setLanguage(Language.german);
 
-        // Create a new German wikipedia
+        // Create a new German wikipedia.
         Wikipedia wiki = new Wikipedia(dbConfig);
 
-        String title = "Hello world";
-        Page page;
+        // Get the category "Towns in Germany"
+        String title = "Towns in Germany";
+        Category topCat;
         try {
-            page = wiki.getPage(title);
+            topCat = wiki.getCategory(title);
         } catch (WikiPageNotFoundException e) {
-            throw new WikiApiException("Page " + title + " does not exist");
+            throw new WikiApiException("Category " + title + " does not exist");
         }
 
-        // the title of the page
-        System.out.println("Queried string       : " + title);
-        System.out.println("Title                : " + page.getTitle());
+        // Add the pages categorized under "Towns in Germany".
+        Set<String> towns = new TreeSet<String>();
+        for (Page p : topCat.getArticles()) {
+            towns.add(p.getTitle().getPlainTitle());
+        }
 
-        // whether the page is a disambiguation page
-        System.out.println("IsDisambiguationPage : " + page.isDisambiguation());
+        // Get the pages categorized under each subcategory of "Towns in Germany".
+        for (Category townCategory : topCat.getDescendants()) {
+            for (Page p : townCategory.getArticles()) {
+                towns.add(p.getTitle().getPlainTitle());
+            }
+            System.out.println("Number of towns: " + towns.size());
+        }
 
-        // whether the page is a redirect
-        // If a page is a redirect, we can use it like a normal page.
-        // The other infos in this example are transparently served by the page that the redirect points to.
-        System.out.println("redirect page query  : " + page.isRedirect());
+        // Output the pages
+        for (String town : towns) {
+            System.out.println(town);
+        }
 
-        // the number of links pointing to this page
-        System.out.println("# of ingoing links   : " + page.getNumberOfInlinks());
-
-        // the number of links in this page pointing to other pages
-        System.out.println("# of outgoing links  : " + page.getNumberOfOutlinks());
-
-        // the number of categories that are assigned to this page
-        System.out.println("# of categories      : " + page.getNumberOfCategories());
     }
 }
