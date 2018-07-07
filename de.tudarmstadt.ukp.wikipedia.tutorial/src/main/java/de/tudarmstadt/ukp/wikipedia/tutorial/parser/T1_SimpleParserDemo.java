@@ -15,50 +15,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.tutorial;
+package de.tudarmstadt.ukp.wikipedia.tutorial.parser;
 
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
-import de.tudarmstadt.ukp.wikipedia.parser.Link;
+import java.io.IOException;
+
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Section;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParser;
 import de.tudarmstadt.ukp.wikipedia.parser.mediawiki.MediaWikiParserFactory;
 
 /**
- * This class shows how to get the internal links from a parsed page.<br>
- * Internal links point to other pages and categories in the current<br>
- * <pre>Wikipedia</pre>.
+ * Displays informations about the inner structure of a page.
  *
  */
-public class T2_InternalLinks {
+public class T1_SimpleParserDemo {
 
 	/**
-	 * Prints the targets of the internal links found in the page <i>Germany</i>.
 	 * @param args
-	 * @throws WikiApiException
+	 * @throws IOException
 	 */
-	public static void main(String[] args) throws WikiApiException {
+	public static void main(String[] args) throws IOException {
 
         // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
         String documentText = TestFile.getFileText();
-		
-		// get a ParsedPage object
+
+        //get a ParsedPage object
 		MediaWikiParserFactory pf = new MediaWikiParserFactory();
 		MediaWikiParser parser = pf.createParser();
 		ParsedPage pp = parser.parse(documentText);
 		
-        // only the links to other Wikipedia language editions
-        for (Link language : pp.getLanguages()) {
-            System.out.println(language.getTarget());
-        }
-
-        //get the internal links of each section
-        for (Section section : pp.getSections()){
-            System.out.println("Section: " + section.getTitle());
-
-            for (Link link : section.getLinks(Link.type.INTERNAL)) {
-                System.out.println("  " + link.getTarget());
-            }
-        }
-    }
+		//get the sections
+		for(Section section : pp.getSections()) {
+			System.out.println("section : " + section.getTitle());
+			System.out.println(" nr of paragraphs      : " + section.nrOfParagraphs());
+			System.out.println(" nr of tables          : " + section.nrOfTables());
+			System.out.println(" nr of nested lists    : " + section.nrOfNestedLists());
+			System.out.println(" nr of definition lists: " + section.nrOfDefinitionLists());
+		}
+	}
 }

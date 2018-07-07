@@ -15,7 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.tutorial;
+package de.tudarmstadt.ukp.wikipedia.tutorial.parser;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;

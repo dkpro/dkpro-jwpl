@@ -15,20 +15,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.api.tutorial;
-
-import java.util.Set;
-import java.util.TreeSet;
+package de.tudarmstadt.ukp.wikipedia.tutorial.api;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
-import de.tudarmstadt.ukp.wikipedia.api.Title;
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
+import de.tudarmstadt.ukp.wikipedia.api.Page;
+import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
-import de.tudarmstadt.ukp.wikipedia.api.exception.WikiInitializationException;
+import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
-public class T6_HelperMethods {
+/**
+ * Tutorial 1b
+ *
+ * Get the text of a wikipedia article.
+ * The text will be formatted with MediaWiki markup.
+ *
+ * If you do not care about exception handling, but want to avoid crashes on every page that does not exist.
+ *
+ *
+ */
+public class T1b_HelloWorld implements WikiConstants {
 
-    public static Set<String> getUniqueArticleTitles() throws WikiInitializationException {
+    public static void main(String[] args) throws WikiApiException {
+
         // configure the database connection parameters
         DatabaseConfiguration dbConfig = new DatabaseConfiguration();
         dbConfig.setHost("SERVER_URL");
@@ -40,12 +48,13 @@ public class T6_HelperMethods {
         // Create a new German wikipedia.
         Wikipedia wiki = new Wikipedia(dbConfig);
 
-        Set<String> uniqueArticleTitles = new TreeSet<String>();
-        for (Title title : wiki.getTitles()) {
-            uniqueArticleTitles.add(title.getPlainTitle());
+        String title = "Hello world";
+        if (wiki.existsPage(title)) {
+            Page page = wiki.getPage(title);
+            System.out.println(page.getText());
         }
-
-        return uniqueArticleTitles;
+        else {
+            System.out.println("Page " + title + " does not exist");
+        }
     }
-
 }
