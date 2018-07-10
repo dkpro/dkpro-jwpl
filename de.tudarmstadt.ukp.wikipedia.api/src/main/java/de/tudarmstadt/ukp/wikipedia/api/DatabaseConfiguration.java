@@ -73,6 +73,17 @@ public class DatabaseConfiguration {
     }
 
     /**
+     * @return {@code True} if collation is supported by the database backend, else {@code false}.
+     */
+    boolean supportsCollation() {
+        if(databaseDriver!=null) {
+            return databaseDriver.contains("mysql");
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * @param database The name of the database.
      */
     public void setDatabase(String database) {
@@ -156,4 +167,5 @@ public class DatabaseConfiguration {
 	public String getJdbcURL() {
 		return jdbcURL;
 	}
+
 }

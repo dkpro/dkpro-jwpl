@@ -51,6 +51,9 @@ import org.sweble.wikitext.engine.config.WikiConfig;
 // TODO better JavaDocs!
 public class Wikipedia implements WikiConstants {
 
+    // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove it!
+    static final String SQL_COLLATION = " COLLATE utf8_bin";
+
 	private final Log logger = LogFactory.getLog(getClass());
     private final Language language;
     private final DatabaseConfiguration dbConfig;
@@ -87,6 +90,12 @@ public class Wikipedia implements WikiConstants {
 
         this.metaData = new MetaData(this);
         this.wikiConfig = this.language.getWikiconfig();
+
+        if(dbConfig.supportsCollation()) {
+            logger.info("Wikipedia database backend supports character collation features.");
+        } else {
+            logger.debug("Wikipedia database backend does not support character collation features.");
+        }
 	}
 
 
@@ -627,8 +636,11 @@ public class Wikipedia implements WikiConstants {
 
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createNativeQuery(
-            "select p.id from PageMapLine as p where p.name = :pName")
+        String query = "select p.id from PageMapLine as p where p.name = :pName";
+        if(dbConfig.supportsCollation()) {
+            query += SQL_COLLATION;
+        }
+        Object returnValue = session.createNativeQuery(query)
             .setParameter("pName", encodedTitle, StringType.INSTANCE)
             .uniqueResult();
         session.getTransaction().commit();

@@ -108,9 +108,12 @@ public class Category implements WikiConstants {
         session.beginTransaction();
 
         Object returnValue;
-        /* XXX this query was mysql specific before using "COLLATE utf8_bin" at the end. */
-        returnValue = session.createNativeQuery(
-                "select cat.pageId from Category as cat where cat.name = :name")
+
+        String query = "select cat.pageId from Category as cat where cat.name = :name";
+        if(wiki.getDatabaseConfiguration().supportsCollation()) {
+            query += Wikipedia.SQL_COLLATION;
+        }
+        returnValue = session.createNativeQuery(query)
                 .setParameter("name", name, StringType.INSTANCE)
                 .uniqueResult();
         session.getTransaction().commit();
