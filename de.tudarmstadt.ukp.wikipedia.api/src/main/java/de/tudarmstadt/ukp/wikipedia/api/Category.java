@@ -109,7 +109,7 @@ public class Category implements WikiConstants {
 
         Object returnValue;
 
-        String query = "select cat.pageId from Category as cat where cat.name = :name ";
+        String query = "select cat.pageId from Category as cat where cat.name = :name";
         if(wiki.getDatabaseConfiguration().supportsCollation()) {
             query += Wikipedia.SQL_COLLATION;
         }

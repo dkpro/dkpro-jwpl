@@ -51,7 +51,8 @@ import org.sweble.wikitext.engine.config.WikiConfig;
 // TODO better JavaDocs!
 public class Wikipedia implements WikiConstants {
 
-    static final String SQL_COLLATION = "COLLATE utf8_bin";
+    // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove it!
+    static final String SQL_COLLATION = " COLLATE utf8_bin";
 
 	private final Log logger = LogFactory.getLog(getClass());
     private final Language language;
@@ -635,7 +636,7 @@ public class Wikipedia implements WikiConstants {
 
     	Session session = this.__getHibernateSession();
         session.beginTransaction();
-        String query = "select p.id from PageMapLine as p where p.name = :pName ";
+        String query = "select p.id from PageMapLine as p where p.name = :pName";
         if(dbConfig.supportsCollation()) {
             query += SQL_COLLATION;
         }
