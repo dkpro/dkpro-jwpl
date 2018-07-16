@@ -79,7 +79,7 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * @see de.tudarmstadt.ukp.wikipedia.api.Category#Category(long)
+     * @see de.tudarmstadt.ukp.wikipedia.api.Category#Category(Wikipedia, long)
      */
     private void createCategory(long id) throws WikiPageNotFoundException {
         Session session = this.wiki.__getHibernateSession();
@@ -144,7 +144,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns a unique page id.
      * @return A unique page id.
      */
     public int getPageId() {
@@ -157,7 +156,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns a set containing parents (supercategories) of this category.
      * @return A set containing parents (supercategories) of this category.
      */
     public Set<Category> getParents() {
@@ -208,7 +206,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns a set containing the children (subcategories) of this category.
      * @return A set containing the children (subcategories) of this category.
      */
     public Set<Category> getChildren() {
@@ -259,7 +256,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns the title of the category.
      * @return The title of the category.
      * @throws WikiTitleParsingException
      */
@@ -275,7 +271,6 @@ public class Category implements WikiConstants {
 
 
     /**
-     * Returns the set of pages that are categorized under this category.
      * @return The set of pages that are categorized under this category.
      * @throws WikiApiException
      * @deprecated Use {@link #getArticles()} instead.
@@ -296,7 +291,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns the set of articles that are categorized under this category.
      * @return The set of articles that are categorized under this category.
      * @throws WikiApiException
      */
@@ -315,7 +309,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns the set of article ids that are categorized under this category.
      * @return The set of article ids that are categorized under this category.
      */
     public Set<Integer> getArticleIds() {
