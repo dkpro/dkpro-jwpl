@@ -58,7 +58,7 @@ public class RevisionUtils {
 	 *
 	 * @param revisionId revision of the article for which the talk page revision should be retrieved
 	 * @return the revision of the talk page that was current at the creation time of the given article revision
-	 * @throws WikiApiException if any error occured accessing the Wiki db
+	 * @throws WikiApiException if any error occurred accessing the Wiki db
 	 * @throws WikiPageNotFoundException if no discussion page was available at the time of the given article revision
 	 */
 	public Revision getDiscussionRevisionForArticleRevision(int revisionId) throws WikiApiException, WikiPageNotFoundException{

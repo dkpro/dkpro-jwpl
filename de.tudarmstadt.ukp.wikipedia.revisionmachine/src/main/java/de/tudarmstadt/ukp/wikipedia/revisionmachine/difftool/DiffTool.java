@@ -69,9 +69,9 @@ public class DiffTool
 	 * @return ConfigurationSettings
 	 *
 	 * @throws IOException
-	 *             if an error occured while reading the configuration file
+	 *             if an error occurred while reading the configuration file
 	 * @throws SAXException
-	 *             if an error occured while using the xml parser
+	 *             if an error occurred while using the xml parser
 	 * @throws ParserConfigurationException
 	 *             if the initialization of the xml parser failed
 	 */

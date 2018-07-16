@@ -37,9 +37,9 @@ public interface IndexWriterInterface
 	 * @param index
 	 *            Reference to an index
 	 * @throws IOException
-	 *             if an error occured while writing the output
+	 *             if an error occurred while writing the output
 	 * @throws SQLException
-	 *             if an error occured while transmitting the output
+	 *             if an error occurred while transmitting the output
 	 */
 	void write(final AbstractIndex index)
 		throws IOException, SQLException;
@@ -48,9 +48,9 @@ public interface IndexWriterInterface
 	 * Closes the file or the database connection.
 	 *
 	 * @throws IOException
-	 *             if an error occured while closing the file
+	 *             if an error occurred while closing the file
 	 * @throws SQLException
-	 *             if an error occured while closing the database connection
+	 *             if an error occurred while closing the database connection
 	 */
 	void close()
 		throws IOException, SQLException;
@@ -60,9 +60,9 @@ public interface IndexWriterInterface
 	 * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
 	 *
 	 * @throws SQLException
-	 *             if an error occured while accessing the database
+	 *             if an error occurred while accessing the database
 	 * @throws IOException
-	 *             if an error occured while accessing the sql file
+	 *             if an error occurred while accessing the sql file
 	 */
 	public void finish() throws IOException, SQLException;
 }

@@ -244,10 +244,9 @@ public class Page implements WikiConstants
 	/**
 	 * @return Returns the id.
 	 */
-	protected long __getId()
+	long __getId()
 	{
-		long id = hibernatePage.getId();
-		return id;
+		return hibernatePage.getId();
 	}
 
 	/**
@@ -255,8 +254,7 @@ public class Page implements WikiConstants
 	 */
 	public int getPageId()
 	{
-		int id = hibernatePage.getPageId();
-		return id;
+		return hibernatePage.getPageId();
 	}
 
 	/**

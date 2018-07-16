@@ -25,6 +25,8 @@ import org.junit.*;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -352,6 +354,39 @@ public class PageTest extends BaseJWPLTest {
 		} catch (WikiApiException e) {
 			fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
 		}
+	}
+
+	@Test
+	public void testPageTitleComparatorEquality() {
+		Page page1 = fetchPage(A_FAMOUS_PAGE);
+		assertNotNull(page1);
+		Page page2 =  fetchPage(A_FAMOUS_PAGE);
+		assertNotNull(page2);
+
+		List<Page> pages = new ArrayList<Page>();
+		pages.add(page1);
+		pages.add(page2);
+		pages.sort(new PageTitleComparator());
+
+		assertEquals(page1, pages.get(0));
+		assertEquals(page2, pages.get(1));
+	}
+
+	@Test
+	public void testCategoryTitleComparatorNewOrder() {
+		Page page1 = fetchPage(A_FAMOUS_PAGE);
+		assertNotNull(page1);
+		// this page should be re-ordered before "Wikipedia..."
+		Page page2 = fetchPage("Unconnected_page");
+		assertNotNull(page2);
+
+		List<Page> pages = new ArrayList<Page>();
+		pages.add(page1);
+		pages.add(page2);
+		pages.sort(new PageTitleComparator());
+
+		assertEquals(page2, pages.get(0));
+		assertEquals(page1, pages.get(1));
 	}
 
 	private Page fetchPage(final String title) {

@@ -388,7 +388,7 @@ public class WikipediaXMLWriter
 	 * Closes the writer.
 	 *
 	 * @throws IOException
-	 *             if an error occured while closing the writer
+	 *             if an error occurred while closing the writer
 	 */
 	public void close()
 		throws IOException
