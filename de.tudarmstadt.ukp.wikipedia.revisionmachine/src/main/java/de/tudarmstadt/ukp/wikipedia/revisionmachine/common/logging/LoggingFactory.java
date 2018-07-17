@@ -24,8 +24,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingException;
 
 /**
- * The static references in this 'class' creates and controlls all loggers.
- *
+ * The static references in this 'class' creates and controls all loggers.
  *
  */
 public class LoggingFactory

@@ -18,7 +18,6 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writer;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ConfigurationException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingException;
@@ -30,12 +29,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.ArticleInformation;
+import org.slf4j.event.Level;
 
 /**
  * This class writes the output to an archive while collecting statistical
  * information.
- *
- *
  *
  */
 public class TimedSQLArchiveWriter
@@ -143,7 +141,6 @@ public class TimedSQLArchiveWriter
 			info.setProcessingTimeSQL(processingTimeSQL);
 
 			String succesReport = info.toString();
-			//System.out.println(succesReport);
 			this.outputLogger.logMessage(Level.INFO, "\r\n" + succesReport);
 		}
 	}

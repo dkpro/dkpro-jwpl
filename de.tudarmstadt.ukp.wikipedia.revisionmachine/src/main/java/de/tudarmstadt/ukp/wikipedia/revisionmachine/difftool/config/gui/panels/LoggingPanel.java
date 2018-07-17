@@ -18,7 +18,6 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.panels;
 
 import java.io.File;
-import java.util.logging.Level;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
@@ -33,14 +32,13 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.Con
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.ConfigItem;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.ConfigItemTypes;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.PanelKeys;
+import org.slf4j.event.Level;
 
 /**
  * Panel class of the ConfigurationTool
  *
  * This panel contains all components for setting configuration parameters
  * related to the logging.
- *
- *
  *
  */
 @SuppressWarnings("serial")
@@ -50,7 +48,7 @@ public class LoggingPanel
 
 	private JLabel diffToolLabel;
 	private JTextField diffToolField;
-	private JComboBox diffToolLogLevelComboBox;
+	private JComboBox<Level> diffToolLogLevelComboBox;
 
 	/**
 	 * (Constructor) Creates a new LoggingPanel.
@@ -78,14 +76,14 @@ public class LoggingPanel
 		diffToolField.setBounds(170, 10, 200, 25);
 		this.add(diffToolField);
 
-		diffToolLogLevelComboBox = new JComboBox();
+		diffToolLogLevelComboBox = new JComboBox<>();
 		diffToolLogLevelComboBox.setBounds(390, 10, 100, 25);
 
-		diffToolLogLevelComboBox.addItem(Level.ALL);
-		diffToolLogLevelComboBox.addItem(Level.SEVERE);
-		diffToolLogLevelComboBox.addItem(Level.WARNING);
+		diffToolLogLevelComboBox.addItem(Level.ERROR);
+		diffToolLogLevelComboBox.addItem(Level.WARN);
 		diffToolLogLevelComboBox.addItem(Level.INFO);
-		diffToolLogLevelComboBox.addItem(Level.OFF);
+		diffToolLogLevelComboBox.addItem(Level.DEBUG);
+		diffToolLogLevelComboBox.addItem(Level.TRACE);
 
 		this.add(diffToolLogLevelComboBox);
 	}
@@ -185,13 +183,10 @@ public class LoggingPanel
 			pathDiffTool += File.separator;
 		}
 
-		builder.append("\t\t<root_folder>\"" + pathDiffTool
-				+ "\"</root_folder>\r\n");
+		builder.append("\t\t<root_folder>\"").append(pathDiffTool).append( "\"</root_folder>\r\n");
 		builder.append("\t\t<diff_tool>\r\n");
-		builder.append("\t\t\t<level>"
-				+ diffToolLogLevelComboBox.getSelectedItem() + "</level>\r\n");
+		builder.append("\t\t\t<level>").append(diffToolLogLevelComboBox.getSelectedItem() ).append("</level>\r\n");
 		builder.append("\t\t</diff_tool>\r\n");
-
 		builder.append("\t</logging>\r\n");
 	}
 }

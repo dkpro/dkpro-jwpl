@@ -18,6 +18,7 @@
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.control;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,7 +26,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationReader;
@@ -33,11 +33,10 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.gui.data.Con
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.OutputType;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.SurrogateModes;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
+import org.slf4j.event.Level;
 
 /**
  * This class contain all configuration parameters.
- *
- *
  *
  */
 public class ConfigSettings
@@ -53,7 +52,7 @@ public class ConfigSettings
 	private Map<ConfigurationKeys, Object> parameterMap;
 
 	/**
-	 * (Constructor) Creates an empty ConfigurationSetting object of unspecified
+	 * Creates an empty {@link ConfigSettings} object of unspecified
 	 * type.
 	 */
 	public ConfigSettings()
@@ -63,7 +62,7 @@ public class ConfigSettings
 	}
 
 	/**
-	 * (Constructor) Creates an empty ConfigurationSetting object of given type.
+	 * Creates an empty {@link ConfigSettings} object of given type.
 	 *
 	 * @param type
 	 *            Configuration Type
@@ -138,7 +137,6 @@ public class ConfigSettings
 	 */
 	public void setConfigParameter(final ConfigurationKeys key, Object value)
 	{
-
 		// before setting parameter, check if paths have trailing File.separator
 		if (key == ConfigurationKeys.LOGGING_PATH_DEBUG
 				|| key == ConfigurationKeys.LOGGING_PATH_DIFFTOOL
@@ -166,7 +164,6 @@ public class ConfigSettings
 	 */
 	public Object getConfigParameter(final ConfigurationKeys configParameter)
 	{
-
 		if (this.parameterMap.containsKey(configParameter)) {
 			return this.parameterMap.get(configParameter);
 		}
@@ -182,23 +179,19 @@ public class ConfigSettings
 	{
 		clear();
 
-		setConfigParameter(
-				ConfigurationKeys.VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING, 12);
+		setConfigParameter(ConfigurationKeys.VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING, 12);
 
 		setConfigParameter(ConfigurationKeys.COUNTER_FULL_REVISION, 1000);
 
-		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS,
-				5000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS, 5000000l);
 
 		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS, 1000000l);
 
-		setConfigParameter(
-				ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, 1000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, 1000000l);
 
-		setConfigParameter(ConfigurationKeys.MODE_SURROGATES,
-				SurrogateModes.DISCARD_REVISION);
+		setConfigParameter(ConfigurationKeys.MODE_SURROGATES, SurrogateModes.DISCARD_REVISION);
 
-		setConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING, "UTF-8");
+		setConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING, StandardCharsets.UTF_8.toString());
 
 		setConfigParameter(ConfigurationKeys.MODE_OUTPUT, OutputType.BZIP2);
 
@@ -210,8 +203,7 @@ public class ConfigSettings
 
 		setConfigParameter(ConfigurationKeys.LOGGING_PATH_DIFFTOOL, "logs");
 
-		setConfigParameter(ConfigurationKeys.LOGGING_LOGLEVEL_DIFFTOOL,
-				Level.INFO);
+		setConfigParameter(ConfigurationKeys.LOGGING_LOGLEVEL_DIFFTOOL, Level.INFO);
 
 		setConfigParameter(ConfigurationKeys.VERIFICATION_DIFF, false);
 
@@ -225,8 +217,6 @@ public class ConfigSettings
 		defaultNamespaces.add(0);
 		defaultNamespaces.add(1);
 		setConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP, defaultNamespaces);
-
-
 
 		this.type = ConfigEnum.DEFAULT;
 	}
