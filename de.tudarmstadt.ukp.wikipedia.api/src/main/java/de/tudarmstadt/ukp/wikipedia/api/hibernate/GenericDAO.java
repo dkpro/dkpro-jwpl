@@ -38,18 +38,17 @@ public abstract class GenericDAO<T> {
 
     private final String entityClass;
 
-    GenericDAO(Wikipedia wiki, String entityClass) {
+    GenericDAO(Wikipedia wiki, Class entityClass) {
         this.wiki = wiki;
-        this.entityClass = entityClass;
-        this. sessionFactory = initializeSessionFactory();
+        this.entityClass = entityClass.getName();
+        this.sessionFactory = initializeSessionFactory();
     }
 
     private SessionFactory initializeSessionFactory() {
         try {
             return WikiHibernateUtil.getSessionFactory(wiki.getDatabaseConfiguration());
         } catch (Exception e) {
-            logger.error("Could not locate SessionFactory in JNDI", e);
-            throw new IllegalStateException("Could not locate SessionFactory in JNDI");
+            throw new IllegalStateException("Could not locate SessionFactory in JNDI", e);
         }
     }
 
@@ -66,7 +65,7 @@ public abstract class GenericDAO<T> {
             getSession().persist(transientInstance);
             logger.trace("persist successful");
         } catch (RuntimeException re) {
-            logger.error("persist failed", re);
+            logger.error("Failed persisting " + entityClass + " instance", re);
             throw re;
         }
     }
@@ -76,7 +75,7 @@ public abstract class GenericDAO<T> {
             getSession().delete(persistentInstance);
             logger.trace("delete successful");
         } catch (RuntimeException re) {
-            logger.error("delete failed", re);
+            logger.error("Failed deleting " + entityClass + " instance", re);
             throw re;
         }
     }
@@ -87,7 +86,7 @@ public abstract class GenericDAO<T> {
             logger.trace("merge successful");
             return result;
         } catch (RuntimeException re) {
-            logger.error("merge failed", re);
+            logger.error("Failed merging " + entityClass + " instance", re);
             throw re;
         }
     }
@@ -97,7 +96,7 @@ public abstract class GenericDAO<T> {
             getSession().buildLockRequest(LockOptions.NONE).lock(instance);
             logger.trace("attach successful");
         } catch (RuntimeException re) {
-            logger.error("attach failed", re);
+            logger.error("Failed attaching " + entityClass + " instance", re);
             throw re;
         }
     }
@@ -116,13 +115,13 @@ public abstract class GenericDAO<T> {
         try {
             T instance = (T) getSession().get(entityClass, id);
             if (instance == null) {
-                logger.trace("get successful, no instance found");
+                logger.trace("get successful, no " + entityClass + " instance found");
             } else {
                 logger.trace("get successful, instance found");
             }
             return instance;
         } catch (RuntimeException re) {
-            logger.error("get failed", re);
+            logger.error("Failed finding " + entityClass + " instance by id", re);
             throw re;
         }
     }

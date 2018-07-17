@@ -33,7 +33,7 @@ public class PageDAO extends GenericDAO<Page> {
 	private final Log logger = LogFactory.getLog(getClass());
 
     public PageDAO(Wikipedia pWiki) {
-        super(pWiki, "de.tudarmstadt.ukp.wikipedia.api.hibernate.Page");
+        super(pWiki, Page.class);
     }
 
     @Override

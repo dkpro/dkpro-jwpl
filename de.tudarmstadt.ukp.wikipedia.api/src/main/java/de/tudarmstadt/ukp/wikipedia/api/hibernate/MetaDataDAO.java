@@ -34,7 +34,7 @@ public class MetaDataDAO extends GenericDAO<MetaData> implements WikiConstants {
 	private final Log logger = LogFactory.getLog(getClass());
 
     public MetaDataDAO(Wikipedia wiki) {
-        super(wiki, "de.tudarmstadt.ukp.wikipedia.api.hibernate.MetaData");
+        super(wiki, MetaData.class);
     }
 
     @Override

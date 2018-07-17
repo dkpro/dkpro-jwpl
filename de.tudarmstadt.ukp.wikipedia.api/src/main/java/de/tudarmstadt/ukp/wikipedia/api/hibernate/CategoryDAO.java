@@ -33,7 +33,7 @@ public class CategoryDAO extends GenericDAO<Category> {
 	private final Log logger = LogFactory.getLog(getClass());
 
     public CategoryDAO(Wikipedia pWiki) {
-        super(pWiki, "de.tudarmstadt.ukp.wikipedia.api.hibernate.Category");
+        super(pWiki, Category.class);
     }
 
     @Override
