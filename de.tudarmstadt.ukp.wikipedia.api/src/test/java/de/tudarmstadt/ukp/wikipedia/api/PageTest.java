@@ -91,8 +91,11 @@ public class PageTest extends BaseJWPLTest {
 	@Test
 	public void testGetText() {
 		String expectedMarkupText = "Wikipedia API ist die wichtigste [[Software]] überhaupt.\n" +
-				"[[JWPL|Wikipedia API]]. Nicht zu übertreffen. " +
-				"Unglaublich [[http://www.ukp.tu-darmstadt.de]] [[en:Wikipedia API]] [[fi:WikipediaAPI]]";
+				"[[JWPL|Wikipedia API]].\n\n" +
+				"*Nicht zu übertreffen.\n\n" +
+				"*Unglaublich\n\n" +
+				"*[[http://www.ukp.tu-darmstadt.de]]\n\n" +
+				"[[en:Wikipedia API]] [[fi:WikipediaAPI]]";
 		try {
 			String textWithMarkup = page.getText();
 			assertNotNull(textWithMarkup);
@@ -105,15 +108,18 @@ public class PageTest extends BaseJWPLTest {
 	}
 
 	@Test
-	@Ignore // FIXME see #161 and #160
 	public void testGetPlainText() {
-		String expectedPlainText = "Wikipedia API ist die wichtigste Software überhaupt. Wikipedia API.\n" +
-				"Nicht zu übertreffen.\nUnglaublich\nhttp://www.ukp.tu-darmstadt.de\nen:Wikipedia API fi:WikipediaAPI";
+		String expectedPlainText = "Wikipedia API ist die wichtigste Software überhaupt.\n" +
+				"Wikipedia API.\n" +
+				"Nicht zu übertreffen.\n" +
+				"Unglaublich\n" +
+				"http://www.ukp.tu-darmstadt.de\n" +
+				"en:Wikipedia API fi:WikipediaAPI";
 		try {
 			assertEquals(expectedPlainText, page.getPlainText());
-		} catch (Exception e) {
-			// TODO see #161 and #160
-			Assume.assumeNoException(e);
+		} catch (WikiApiException e) {
+			fail("A WikiApiException occurred while parsing the page for its text (plain via Sweble): "
+					+ e.getLocalizedMessage());
 		}
 	}
 
