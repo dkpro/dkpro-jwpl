@@ -94,6 +94,9 @@ public class Wikipedia implements WikiConstants {
         }
 	}
 
+	WikiConfig getWikConfig() {
+        return wikiConfig;
+    }
 
     /**
      * Gets the page with the given title.
@@ -802,6 +805,7 @@ public class Wikipedia implements WikiConstants {
         sb.append(this.getDatabaseConfiguration().getLanguage());
         return sb.toString();
     }
+
 }
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {
