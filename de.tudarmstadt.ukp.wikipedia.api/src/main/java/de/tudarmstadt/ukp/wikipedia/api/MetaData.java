@@ -24,11 +24,8 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 
 /**
  * Provides access to meta data about a certain instance of Wikipedia.
- *
- *
  */
-public class MetaData
-	implements WikiConstants
+public class MetaData implements WikiConstants
 {
 	// private MetaDataDAO metaDAO;
 	private de.tudarmstadt.ukp.wikipedia.api.hibernate.MetaData hibernateMetaData;
@@ -49,11 +46,13 @@ public class MetaData
 	};
 
 	/**
-	 * Returns the id of the MetaData object.
-	 *
-	 * @return The id of the MetaData object.
+	 * @return The id of the {@link MetaData} object.
 	 */
-	public long getId()
+	/*
+	 * Note well:
+	 * Access is limited to package-private here intentionally, as the database ID is considered framework-internal use.
+	 */
+	long getId()
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
@@ -64,8 +63,6 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the number of categories in the current Wikipedia.
-	 *
 	 * @return The number of categories in the current Wikipedia.
 	 */
 	public long getNumberOfCategories()
@@ -79,8 +76,6 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the number of pages in the current Wikipedia.
-	 *
 	 * @return The number of pages in the current Wikipedia.
 	 */
 	public long getNumberOfPages()
@@ -94,9 +89,7 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the number of disambituation pages in the current Wikipedia.
-	 *
-	 * @return The number of disambituation pages in the current Wikipedia.
+	 * @return The number of disambiguation pages in the current Wikipedia.
 	 */
 	public long getNumberOfDisambiguationPages()
 	{
@@ -109,8 +102,6 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the number of redirects in the current Wikipedia.
-	 *
 	 * @return The number of redirects in the current Wikipedia.
 	 */
 	public long getNumberOfRedirectPages()
@@ -124,49 +115,38 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the disambiguation category.
-	 *
-	 * @return The disambiguation category.
-	 * @throws WikiApiException
+	 * @return The disambiguation {@link Category}.
+	 * @throws WikiApiException Thrown if errors occurred fetching the information.
 	 */
-	public Category getDisambiguationCategory()
-		throws WikiApiException
+	public Category getDisambiguationCategory() throws WikiApiException
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
 		session.lock(hibernateMetaData, LockMode.NONE);
 		String disambCategoryTitle = hibernateMetaData.getDisambiguationCategory();
 		session.getTransaction().commit();
-		Category disambCategory = wiki.getCategory(disambCategoryTitle);
-		return disambCategory;
+		return wiki.getCategory(disambCategoryTitle);
 	}
 
 	/**
-	 * Returns the name of the main/root category.
-	 *
-	 * @return The name of the main/root category.
-	 * @throws WikiApiException
+	 * @return The name of the main/root {@link Category}.
+	 * @throws WikiApiException Thrown if errors occurred fetching the information.
 	 */
-	public Category getMainCategory()
-		throws WikiApiException
+	public Category getMainCategory() throws WikiApiException
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
 		session.lock(hibernateMetaData, LockMode.NONE);
 		String mainCategoryTitle = hibernateMetaData.getMainCategory();
 		session.getTransaction().commit();
-		Category mainCategory = wiki.getCategory(mainCategoryTitle);
-		return mainCategory;
+		return wiki.getCategory(mainCategoryTitle);
 	}
 
 	/**
-	 * Returns the version of the wikipedia data.
-	 *
 	 * @return The version of the wikipedia data.
-	 * @throws WikiApiException
+	 * @throws WikiApiException Thrown if errors occurred fetching the information.
 	 */
-	public String getVersion()
-		throws WikiApiException
+	public String getVersion() throws WikiApiException
 	{
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
@@ -177,8 +157,6 @@ public class MetaData
 	}
 
 	/**
-	 * Returns the language of this wikipedia.
-	 *
 	 * @return The language of this wikipedia.
 	 */
 	public Language getLanguage()

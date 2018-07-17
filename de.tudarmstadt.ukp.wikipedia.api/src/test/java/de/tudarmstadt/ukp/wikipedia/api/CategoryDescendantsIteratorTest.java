@@ -60,7 +60,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
             cat = wiki.getCategory("UKP");
         } catch (WikiApiException e) {
             e.printStackTrace();
-            fail("A WikiApiException occured while getting the category 'UKP'");
+            fail("A WikiApiException occurred while getting the category 'UKP'");
         }
 
 
@@ -95,7 +95,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
             cat = wiki.getCategory("UKP");
         } catch (WikiApiException e) {
             e.printStackTrace();
-            fail("A WikiApiException occured while getting the category 'UKP'");
+            fail("A WikiApiException occurred while getting the category 'UKP'");
         }
 
 

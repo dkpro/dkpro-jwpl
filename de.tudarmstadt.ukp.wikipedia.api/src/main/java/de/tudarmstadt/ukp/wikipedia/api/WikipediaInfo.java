@@ -87,9 +87,10 @@ public class WikipediaInfo {
     }
 
 
-    /** Computes the average fan out of the page set.
+    /**
+     * Computes the average fan out of the page set.
      * Fan out is the number of outgoing links per page.
-     * @param pageIDs The IDs of the pages.
+     * @param pages The pages in an iterable form.
      * @return The average fan out.
      */
     private double computeAverageFanOut(Iterable<Page> pages) {
@@ -99,8 +100,8 @@ public class WikipediaInfo {
             pageIDs.add(pages.iterator().next().getPageId());
         }
 
-        if (pageIDs == null) {
-            logger.error("Cannot compute average fan-out of an empty page set.");
+        if (pageIDs.isEmpty()) {
+            logger.warn("Cannot compute average fan-out of an empty page set.");
             return 0.0;
         }
 
@@ -145,7 +146,7 @@ public class WikipediaInfo {
 
     /**
      * Building a mapping from categories to article sets.
-     * @parm pWiki The wikipedia object.
+     * @param pWiki The wikipedia object.
      * @param pNodes The category nodes that should be used to build the map.
      * @return A mapping from categories to article sets.
      * @throws WikiPageNotFoundException

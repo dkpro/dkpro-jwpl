@@ -136,9 +136,9 @@ public class Indexer
 	 * forward them to the output writer.
 	 *
 	 * @throws IOException
-	 *             if an error occured while writing the output
+	 *             if an error occurred while writing the output
 	 * @throws SQLException
-	 *             if an error occured while accessing the database
+	 *             if an error occurred while accessing the database
 	 */
 	private void send()
 		throws IOException, SQLException
