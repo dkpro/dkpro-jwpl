@@ -244,6 +244,10 @@ public class Page implements WikiConstants
 	/**
 	 * @return Returns the id.
 	 */
+	/*
+	 * Note well:
+	 * Access is limited to package-private here intentionally, as the database ID is considered framework-internal use.
+	 */
 	long __getId()
 	{
 		return hibernatePage.getId();

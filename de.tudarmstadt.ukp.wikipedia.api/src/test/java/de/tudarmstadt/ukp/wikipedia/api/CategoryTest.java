@@ -17,14 +17,19 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.*;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 

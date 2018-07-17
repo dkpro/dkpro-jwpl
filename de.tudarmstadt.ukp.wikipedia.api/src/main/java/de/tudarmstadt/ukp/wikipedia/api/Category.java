@@ -134,6 +134,10 @@ public class Category implements WikiConstants {
      * This returns the internal id. Do not confuse this with the pageId.
      * @return Returns the internal id.
      */
+    /*
+     * Note well:
+     * Access is limited to package-private here intentionally, as the database ID is considered framework-internal use.
+     */
     long __getId() {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
@@ -322,6 +326,10 @@ public class Category implements WikiConstants {
      * This method exposes implementation details and should not be made public.
      * It is used for performance tuning.
      * @return The set of pages that are categorized under this category.
+     */
+    /*
+     * Note well:
+     * Access is limited to package-private here intentionally, as it is API-internal use only.
      */
     Set<Integer> __getPages() {
         return getArticleIds();

@@ -48,6 +48,10 @@ public class MetaData implements WikiConstants
 	/**
 	 * @return The id of the {@link MetaData} object.
 	 */
+	/*
+	 * Note well:
+	 * Access is limited to package-private here intentionally, as the database ID is considered framework-internal use.
+	 */
 	long getId()
 	{
 		Session session = this.wiki.__getHibernateSession();
