@@ -591,7 +591,7 @@ public class Page implements WikiConstants
 	 *         type of the go() method of your visitor.
 	 * @throws WikiApiException Thrown if errors occurred.
 	 */
-	public Object parsePage(AstVisitor v) throws WikiApiException
+	private Object parsePage(AstVisitor v) throws WikiApiException
 	{
 		// Use the provided visitor to parse the page
 		return v.go(getCompiledPage().getPage());
@@ -603,7 +603,7 @@ public class Page implements WikiConstants
 	 * @return the parsed page
 	 * @throws WikiApiException Thrown if errors occurred.
 	 */
-	public EngProcessedPage getCompiledPage() throws WikiApiException
+	private EngProcessedPage getCompiledPage() throws WikiApiException
 	{
 		EngProcessedPage cp;
 		try{

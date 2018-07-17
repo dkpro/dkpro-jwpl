@@ -25,13 +25,11 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
-import java.util.LinkedList;
-import java.util.regex.Pattern;
-
-import de.fau.cs.osr.utils.StringTools;
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstText;
-
+import de.fau.cs.osr.utils.StringTools;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
@@ -61,6 +59,9 @@ import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
 import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
+import java.util.LinkedList;
+import java.util.regex.Pattern;
+
 /**
  * A visitor to convert an article AST into a plain text representation. To
  * better understand the visitor pattern as implemented by the Visitor class,
@@ -87,7 +88,10 @@ import org.sweble.wikitext.parser.parser.LinkTargetException;
  */
 public class PlainTextConverter extends AstVisitor<WtNode>
 {
+
 	private static final Pattern ws = Pattern.compile("\\s+");
+
+	private final Log logger = LogFactory.getLog(getClass());
 
 	private final WikiConfig config;
 
@@ -113,41 +117,37 @@ public class PlainTextConverter extends AstVisitor<WtNode>
 
 	/**
 	 * Creates a new visitor that produces a plain text String representation
-	 * of a parsed Wikipedia article
+	 * of a parsed Wikipedia article.
 s	 */
 	public PlainTextConverter()
 	{
-		this.config = DefaultConfigEnWp.generate();
-		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
-		this.enumerateSections=false;
+		this(DefaultConfigEnWp.generate(), false, Integer.MAX_VALUE); //no fixed textwidth
 	}
 
 	/**
 	 * Creates a new visitor that produces a plain text String representation
-	 * of a parsed Wikipedia article
+	 * of a parsed Wikipedia article.
 	 *
-	 * @param enumerateSection true, if sections should be enumerated in the output
+	 * @param enumerateSection {@code True}, if sections should be enumerated in the output, {@code false} otherwise.
 	 */
 	public PlainTextConverter(boolean enumerateSection)
 	{
-		this.config = DefaultConfigEnWp.generate();
-		this.wrapCol = Integer.MAX_VALUE; //no fixed textwidth
-		this.enumerateSections=enumerateSection;
+		this(DefaultConfigEnWp.generate(), enumerateSection, Integer.MAX_VALUE); //no fixed textwidth
 	}
 
 	/**
 	 * Creates a new visitor that produces a plain text String representation
-	 * of a parsed Wikipedia article
+	 * of a parsed Wikipedia article.
 	 *
-	 * @param config
-	 * @param enumerateSections true, if sections should be enumerated in the output
-	 * @param wrapCol defines max length of a line. longer lines will be broken.
+	 * @param config A valid {@link WikiConfig} instance. Must not be {@code null}.
+	 * @param enumerateSections {@code True}, if sections should be enumerated in the output, {@code false} otherwise.
+	 * @param wrapCol Defines the max length of a line. longer lines will be broken.
 	 */
 	public PlainTextConverter(WikiConfig config, boolean enumerateSections, int wrapCol)
 	{
 		this.config = config;
 		this.wrapCol = wrapCol;
-		this.enumerateSections=enumerateSections;
+		this.enumerateSections = enumerateSections;
 	}
 
 	@Override
@@ -176,6 +176,11 @@ s	 */
 
 	// =========================================================================
 
+	/*
+	 * We CAN NOT allow this method being implemented here, as it will clash with
+	 * 'visit(de.fau.cs.osr.ptk.common.ast.AstText)' otherwise at runtime.
+	 * Thus, we are ignoring it for now. (see #160)
+	 *
 	public void visit(WtNode n)
 	{
 		// Fallback for all nodes that are not explicitly handled below
@@ -183,6 +188,7 @@ s	 */
 //		write(n.getNodeName());
 //		write(" />");
 	}
+	*/
 
 	public void visit(WtNodeList n)
 	{
@@ -265,6 +271,7 @@ s	 */
 		}
 		catch (LinkTargetException e)
 		{
+			logger.warn(e.getLocalizedMessage());
 		}
 
 		write(link.getPrefix());
@@ -487,7 +494,11 @@ s	 */
 			}
 		}
 
-		if (Character.isSpaceChar(s.charAt(s.length() - 1))) {
+		char charAtEnd = s.charAt(s.length() - 1);
+		if('\n' == charAtEnd){
+			writeNewlines(1);
+		}
+		if (Character.isSpaceChar(charAtEnd)) {
 			wantSpace();
 		}
 	}
