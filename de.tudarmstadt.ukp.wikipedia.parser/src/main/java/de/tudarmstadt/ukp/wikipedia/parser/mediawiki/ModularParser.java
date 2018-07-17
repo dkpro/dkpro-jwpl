@@ -18,13 +18,11 @@
 package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Content;
 import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
@@ -43,20 +41,21 @@ import de.tudarmstadt.ukp.wikipedia.parser.SrcSpan;
 import de.tudarmstadt.ukp.wikipedia.parser.Table;
 import de.tudarmstadt.ukp.wikipedia.parser.TableElement;
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- * This is a Parser for MediaWiki Source.<br>
- * It exist a MediaWikiParserFactory, to get an Instance of this Parser.<br>
- * But, if you want to, you can create a parser by yourself.
- *
+ * This is a parser for MediaWiki Source.
+ * 
+ * It exist a {@link MediaWikiParserFactory}, to get an instance of this Parser.<br>
  *
  */
 public class ModularParser implements MediaWikiParser,
 		MediaWikiContentElementParser
 {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	// Options, set by the ParserFactory
 	private String lineSeparator;
@@ -70,14 +69,14 @@ public class ModularParser implements MediaWikiParser,
 	private boolean calculateSrcSpans = true;
 
 	/**
-	 * Creates a unconfigurated Parser...
+	 * Creates a un-configured {@link ModularParser}...
 	 */
 	public ModularParser()
 	{
 	}
 
 	/**
-	 * Creates a fully configurated parser...
+	 * Creates a fully configured {@link ModularParser}...
 	 */
 	public ModularParser(String lineSeparator, List<String> languageIdentifers,
 			List<String> categoryIdentifers, List<String> imageIdentifers,
@@ -98,7 +97,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	@Override
 	public String getLineSeparator()
@@ -107,7 +106,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setLineSeparator(String lineSeparator)
 	{
@@ -115,7 +114,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public List<String> getLanguageIdentifers()
 	{
@@ -123,7 +122,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setLanguageIdentifers(List<String> languageIdentifers)
 	{
@@ -131,7 +130,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public List<String> getCategoryIdentifers()
 	{
@@ -139,7 +138,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setCategoryIdentifers(List<String> categoryIdentifers)
 	{
@@ -147,7 +146,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public List<String> getImageIdentifers()
 	{
@@ -155,7 +154,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setImageIdentifers(List<String> imageIdentifers)
 	{
@@ -163,7 +162,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public MediaWikiTemplateParser getTemplateParser()
 	{
@@ -171,7 +170,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setTemplateParser(MediaWikiTemplateParser templateParser)
 	{
@@ -179,7 +178,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public boolean showImageText()
 	{
@@ -187,7 +186,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setShowImageText(boolean showImageText)
 	{
@@ -195,7 +194,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public boolean deleteTags()
 	{
@@ -203,7 +202,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setDeleteTags(boolean deleteTags)
 	{
@@ -211,7 +210,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public boolean showMathTagContent()
 	{
@@ -219,7 +218,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setShowMathTagContent(boolean showMathTagContent)
 	{
@@ -227,7 +226,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public boolean calculateSrcSpans()
 	{
@@ -235,7 +234,7 @@ public class ModularParser implements MediaWikiParser,
 	}
 
 	/**
-	 * Look at MediaWikiParserFactory for a description...
+	 * Look at {@link MediaWikiParserFactory} for a description...
 	 */
 	public void setCalculateSrcSpans(boolean calculateSrcSpans)
 	{
@@ -304,34 +303,34 @@ public class ModularParser implements MediaWikiParser,
 	{
 		if (lineSeparator == null)
 		{
-			logger.error("Set lineSeparator");
+			logger.debug("Set lineSeparator");
 			return false;
 		}
 		if (categoryIdentifers == null)
 		{
-			logger.error("Set categoryIdentifers");
+			logger.warn("Set categoryIdentifers");
 			return false;
 		}
 		if (languageIdentifers == null)
 		{
-			logger.error("Set languageIdentifers");
+			logger.warn("Set languageIdentifers");
 			return false;
 		}
 		if (imageIdentifers == null)
 		{
-			logger.error("Set imageIdentifers");
+			logger.warn("Set imageIdentifers");
 			return false;
 		}
 		if (templateParser == null)
 		{
-			logger.error("Set templateParser");
+			logger.warn("Set templateParser");
 			return false;
 		}
 		return true;
 	}
 
 	/**
-	 * Look at the MediaWikiParser for a description...
+	 * Look at the {@link MediaWikiParser} for a description...
 	 */
 	@Override
 	public ParsedPage parse(String src)
@@ -342,8 +341,8 @@ public class ModularParser implements MediaWikiParser,
 			return null;
 		}
 
-		// check if the is something to parse. somtimes there is an empty string
-		// due to an error of other clases...
+		// check if the is something to parse. sometimes there is an empty string
+		// due to an error of other classes...
 		if (src == null || src.length() == 0)
 		{
 			return null;
@@ -769,7 +768,7 @@ public class ModularParser implements MediaWikiParser,
 		catch (StringIndexOutOfBoundsException e)
 		{
 			// there is no need to do anything!
-			logger.debug("EXCEPTION IS OK: " + e);
+			logger.debug("EXCEPTION IS OK: {}", e.getLocalizedMessage());
 		}
 
 		if (begin + level == end)
@@ -1379,8 +1378,7 @@ public class ModularParser implements MediaWikiParser,
 
 		if (start > end)
 		{
-			logger.debug("tokenize(" + start + ", " + end
-					+ ") doesn't make sense");
+			logger.debug("tokenize({},{}) doesn't make sense", start, end);
 			return result;
 		}
 

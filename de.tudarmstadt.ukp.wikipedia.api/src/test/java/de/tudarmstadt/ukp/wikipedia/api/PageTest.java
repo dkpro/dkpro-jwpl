@@ -19,26 +19,31 @@ package de.tudarmstadt.ukp.wikipedia.api;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.*;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 public class PageTest extends BaseJWPLTest {
+
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final String A_FAMOUS_PAGE = "Wikipedia API";
 	private static final int A_FAMOUS_PAGE_ID = 1014;
 	// Here: ORMs internal object identifier aka Primary Key.
 	private static final long A_FAMOUS_PAGE_OBJECT_ID = 1;
-
-	private final Log logger = LogFactory.getLog(getClass());
 
 	// The object under test
 	private Page page;

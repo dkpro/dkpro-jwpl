@@ -19,14 +19,15 @@ package de.tudarmstadt.ukp.wikipedia.api;
 
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -35,7 +36,7 @@ import static org.junit.Assert.*;
 
 public class WikipediaTest extends BaseJWPLTest{
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static Wikipedia wiki;
 

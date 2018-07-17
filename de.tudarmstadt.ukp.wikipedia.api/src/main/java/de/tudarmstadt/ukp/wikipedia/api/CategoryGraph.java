@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,8 +36,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
@@ -52,6 +51,8 @@ import de.tudarmstadt.ukp.wikipedia.api.util.GraphSerialization;
 import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
 import de.tudarmstadt.ukp.wikipedia.util.CommonUtilities;
 import de.tudarmstadt.ukp.wikipedia.util.OS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The category graph is constructed from the links connecting Wikipedia categories.
@@ -59,7 +60,8 @@ import de.tudarmstadt.ukp.wikipedia.util.OS;
  *
  */
 public class CategoryGraph implements WikiConstants, Serializable {
-	private final Log logger = LogFactory.getLog(getClass());
+    
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     static final long serialVersionUID = 1l;
 
@@ -422,8 +424,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
             return -1;
         }
 
-        logger.debug(nodeList1);
-        logger.debug(nodeList2);
+        logger.debug(nodeList1.toString());
+        logger.debug(nodeList2.toString());
 
         // node 1 subsumes node 2 ?
         for (int tmpNode2 : nodeList2) {
@@ -713,8 +715,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
             return -1;
         }
 
-        logger.debug(nodeList1);
-        logger.debug(nodeList2);
+        logger.debug(nodeList1.toString());
+        logger.debug(nodeList2.toString());
 
         // node1 is on path of node2 to the root
         int distance1=0;
@@ -1066,12 +1068,12 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
             // the first entry should be the current Node, the last entry should be the root
             // check whether this assumption is valid
-            if (nodesOnPath.get(0).intValue() != currentNode ||             // the first node of the list should always be the current node
-                     nodesOnPath.get(nodesOnPath.size()-1).intValue() != root) { // the last node of the list should always be the root node
+            if (nodesOnPath.get(0) != currentNode ||             // the first node of the list should always be the current node
+                     nodesOnPath.get(nodesOnPath.size()-1) != root) { // the last node of the list should always be the root node
                 logger.error("Something is wrong with the path to the root");
-                logger.error(nodesOnPath.get(0).intValue() + " -- " + currentNode);
-                logger.error(nodesOnPath.get(nodesOnPath.size()-1).intValue() + " -- " + root);
-                logger.error(nodesOnPath.size());
+                logger.error(nodesOnPath.get(0) + " -- " + currentNode);
+                logger.error(nodesOnPath.get(nodesOnPath.size()-1) + " -- " + root);
+                logger.error("size = {}", nodesOnPath.size());
                 System.exit(1);
             }
 
