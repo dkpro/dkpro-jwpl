@@ -32,8 +32,6 @@ public interface WikiConstants {
      */
     String LF = System.getProperty("line.separator");
 
-    Character LF_CHAR = WikiConstants.LF.charAt(0);
-
     /**
      * The prefix that is added to page titles of discussion pages
      * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric

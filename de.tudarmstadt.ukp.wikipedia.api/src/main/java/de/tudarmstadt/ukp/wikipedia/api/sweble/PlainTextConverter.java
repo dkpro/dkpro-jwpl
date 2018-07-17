@@ -25,44 +25,19 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
  * (http://www.apache.org/licenses/LICENSE-2.0)
  */
 
-import java.util.LinkedList;
-import java.util.regex.Pattern;
-
-import de.fau.cs.osr.utils.StringTools;
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstText;
-
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
+import de.fau.cs.osr.utils.StringTools;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.parser.nodes.WtBold;
-import org.sweble.wikitext.parser.nodes.WtExternalLink;
-import org.sweble.wikitext.parser.nodes.WtHorizontalRule;
-import org.sweble.wikitext.parser.nodes.WtIllegalCodePoint;
-import org.sweble.wikitext.parser.nodes.WtImageLink;
-import org.sweble.wikitext.parser.nodes.WtInternalLink;
-import org.sweble.wikitext.parser.nodes.WtItalics;
-import org.sweble.wikitext.parser.nodes.WtListItem;
-import org.sweble.wikitext.parser.nodes.WtNode;
-import org.sweble.wikitext.parser.nodes.WtNodeList;
-import org.sweble.wikitext.parser.nodes.WtParagraph;
-import org.sweble.wikitext.parser.nodes.WtPage;
-import org.sweble.wikitext.parser.nodes.WtSection;
-import org.sweble.wikitext.parser.nodes.WtUrl;
-import org.sweble.wikitext.parser.nodes.WtWhitespace;
-import org.sweble.wikitext.parser.nodes.WtXmlElement;
-import org.sweble.wikitext.parser.nodes.WtTagExtension;
-import org.sweble.wikitext.parser.nodes.WtTemplate;
-import org.sweble.wikitext.parser.nodes.WtTemplateArgument;
-import org.sweble.wikitext.parser.nodes.WtTemplateParameter;
-import org.sweble.wikitext.parser.nodes.WtLinkTitle;
-import org.sweble.wikitext.parser.nodes.WtXmlComment;
-import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
-import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
+import org.sweble.wikitext.parser.nodes.*;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
+
+import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 /**
  * A visitor to convert an article AST into a plain text representation. To
@@ -497,7 +472,7 @@ s	 */
 		}
 
 		char charAtEnd = s.charAt(s.length() - 1);
-		if(WikiConstants.LF_CHAR.equals(charAtEnd)){
+		if('\n' == charAtEnd){
 			writeNewlines(1);
 		}
 		if (Character.isSpaceChar(charAtEnd)) {
