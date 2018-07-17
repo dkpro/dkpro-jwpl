@@ -262,8 +262,6 @@ public class Page implements WikiConstants
 	}
 
 	/**
-	 * Returns a set of categories that this page belongs to.
-	 *
 	 * @return The a set of categories that this page belongs to.
 	 */
 	public Set<Category> getCategories()
@@ -473,9 +471,7 @@ public class Page implements WikiConstants
 	}
 
 	/**
-	 * Returns the set of strings that are redirects to this page.
-	 *
-	 * @return The set of redirect strings.
+	 * @return The set of strings that are redirects to this page.
 	 */
 	public Set<String> getRedirects()
 	{

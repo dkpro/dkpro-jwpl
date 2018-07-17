@@ -148,7 +148,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns a unique page id.
      * @return A unique page id.
      */
     public int getPageId() {
@@ -161,7 +160,6 @@ public class Category implements WikiConstants {
     }
 
     /**
-     * Returns a set containing parents (supercategories) of this category.
      * @return A set containing parents (supercategories) of this category.
      */
     public Set<Category> getParents() {

@@ -17,16 +17,8 @@
  *******************************************************************************/
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -403,10 +395,7 @@ public class Wikipedia implements WikiConstants {
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Iterator results = session.createQuery(
-                "select pml.pageID, pml.name from PageMapLine as pml")
-                .list()
-                .iterator();
+        Iterator results = session.createQuery("select pml.pageID, pml.name from PageMapLine as pml").list().iterator();
         while (results.hasNext()) {
             Object[] row = (Object[]) results.next();
             int pageID = (Integer) row[0];
@@ -494,6 +483,37 @@ public class Wikipedia implements WikiConstants {
      */
     public Iterable<Category> getCategories() {
         return new CategoryIterable(this);
+    }
+
+
+    /**
+     * Gets the {@link Category categories} for a given {@link Page} identified by its {@code pageTitle}.
+     * @param pageTitle The title of a {@link Page}, not a category.
+     * @return The category objects which are associated with the given {@code pageTitle}.
+     * @throws WikiPageNotFoundException Thrown if no {@link Page} exists for the given {@code pageTitle}.
+     */
+    public Set<Category> getCategories(String pageTitle) throws WikiPageNotFoundException
+    {
+        if (pageTitle == null || pageTitle.length() == 0) {
+            throw new WikiPageNotFoundException();
+        }
+
+        Session session = this.__getHibernateSession();
+        session.beginTransaction();
+        List<Integer> categoryHibernateIds = session.createQuery(
+                "select c from Page p left join p.categories c where p.name = :pageTitle", Integer.class)
+                .setParameter("pageTitle", pageTitle).list();
+        session.getTransaction().commit();
+
+        Set<Category> categorySet = new HashSet<Category>(categoryHibernateIds.size());
+        for (int hibernateId : categoryHibernateIds) {
+            try {
+                categorySet.add(new Category(this, hibernateId));
+            } catch (WikiPageNotFoundException e) {
+                logger.warn("Could not load Category by it's HibernateId = '"+hibernateId+"'");
+            }
+        }
+        return categorySet;
     }
 
     /**
@@ -778,7 +798,6 @@ public class Wikipedia implements WikiConstants {
         sb.append(this.getDatabaseConfiguration().getLanguage());
         return sb.toString();
     }
-
 }
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {

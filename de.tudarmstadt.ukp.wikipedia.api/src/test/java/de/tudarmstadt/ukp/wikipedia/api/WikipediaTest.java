@@ -323,6 +323,49 @@ public class WikipediaTest extends BaseJWPLTest{
 	}
 
 	@Test
+	public void testGetCategoriesByPageTitle() {
+		int expectedCategoryPageId = 9;
+		String expectedCategoryTitle = "Publications of UKP";
+		try {
+			Set<Category> categories = wiki.getCategories(A_FAMOUS_PAGE);
+			assertNotNull(categories);
+			assertFalse(categories.isEmpty());
+			assertEquals(1, categories.size());
+			Category c = categories.iterator().next();
+			assertNotNull(c);
+			assertEquals(expectedCategoryPageId, c.getPageId());
+			assertEquals(expectedCategoryTitle, c.getTitle().toString());
+		} catch (WikiTitleParsingException e) {
+			fail("A WikiTitleParsingException occurred while getting the categories of a page by its title");
+		} catch (WikiPageNotFoundException e) {
+			fail("A WikiPageNotFoundException occurred while getting the categories of a page by its title");
+		}
+	}
+
+	@Test
+	public void testGetCategoriesByPageTitleInvalid1() {
+		try {
+			wiki.getCategories("");
+		} catch (WikiPageNotFoundException wpnfe) {
+			// this is expected here
+		} catch (RuntimeException re) {
+			fail("Expected a WikiPageNotFoundException, yet encountered RuntimeException: " + re.getLocalizedMessage());
+		}
+	}
+
+	@Test
+	public void testGetCategoriesByPageTitleInvalid2() {
+		try {
+			wiki.getCategories(null);
+		} catch (WikiPageNotFoundException wpnfe) {
+			// this is expected here
+		} catch (RuntimeException re) {
+			fail("Expected a WikiPageNotFoundException, yet encountered RuntimeException: " + re.getLocalizedMessage());
+		}
+	}
+
+
+	@Test
 	public void testGetLanguage() {
 		assertNotNull(wiki.getLanguage());
 	}
