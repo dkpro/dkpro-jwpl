@@ -56,7 +56,7 @@ public class Logger
 	 * @param consumerName
 	 *            name
 	 * @throws LoggingException
-	 *             if an error occured
+	 *             if an error occurred
 	 */
 	public Logger(final LoggerType type, final String consumerName)
 		throws LoggingException

@@ -48,7 +48,7 @@ public class DatabaseWriter
 	 *             if the JDBC Driver could not be located
 	 *
 	 * @throws SQLException
-	 *             if an error occured while creating the index tables
+	 *             if an error occurred while creating the index tables
 	 */
 	public DatabaseWriter(final RevisionAPIConfiguration config)
 		throws ClassNotFoundException, SQLException
@@ -108,7 +108,7 @@ public class DatabaseWriter
 	 * @param index
 	 *            Reference to an index
 	 * @throws SQLException
-	 *             if an error occured while transmitting the output
+	 *             if an error occurred while transmitting the output
 	 */
 	public void write(final AbstractIndex index)
 		throws SQLException
@@ -135,7 +135,7 @@ public class DatabaseWriter
 	 * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
 	 *
 	 * @throws SQLException
-	 *             if an error occured while accessing the database
+	 *             if an error occurred while accessing the database
 	 */
 	public void finish() throws SQLException{
 		Statement statement = connection.createStatement();
@@ -156,7 +156,7 @@ public class DatabaseWriter
 	 * Closes the file or the database connection.
 	 *
 	 * @throws SQLException
-	 *             if an error occured while closing the database connection
+	 *             if an error occurred while closing the database connection
 	 */
 	public void close()
 		throws SQLException

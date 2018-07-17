@@ -61,7 +61,7 @@ public class ParsedPageTest extends BaseJWPLTest{
             p = wiki.getPage(title);
         } catch (WikiApiException e) {
             e.printStackTrace();
-            fail("A WikiApiException occured while getting the page " + title);
+            fail("A WikiApiException occurred while getting the page " + title);
         }
 
 
