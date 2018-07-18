@@ -1,29 +1,44 @@
-/*******************************************************************************
- * Copyright 2017
- * Ubiquitous Knowledge Processing (UKP) Lab
- * Technische Universität Darmstadt
+/*
+ * This file was derived from the TextConverter class which was published in the
+ * Sweble example project provided on
+ * http://http://sweble.org by the Open Source Research Group,
+ * University of Erlangen-Nürnberg under the Apache License, Version 2.0
+ * (http://www.apache.org/licenses/LICENSE-2.0)
+ * 
+ * Copyright 2011 The Open Source Research Group,
+ *                University of Erlangen-Nürnberg
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *******************************************************************************/
-package de.tudarmstadt.ukp.wikipedia.util.templates.parser;
-
-/**
- * Derived from the TextConverter class which was published in the
- * Sweble example project provided on
- * http://http://sweble.org by the Open Source Research Group,
- * University of Erlangen-Nürnberg under the Apache License, Version 2.0
- * (http://www.apache.org/licenses/LICENSE-2.0)
+ *
+ * --- Modifications to the original file are licensed as state below ---
+ *
+ * Licensed to the Technische Universität Darmstadt under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * licenses this file to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.
+ *  
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+package de.tudarmstadt.ukp.wikipedia.util.templates.parser;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,7 +56,6 @@ import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 /**
  * A visitor that extracts sections from an article AST.
- *
  */
 public class SectionExtractor extends AstVisitor<WtNode>
 {
