@@ -10,7 +10,7 @@ Each language version has it's own subdirectory, e.g. for English this is [here]
 # Download Tool for Revision Dumps
 The Wikipedia revision is split into many files. Downloading them manually can be cumbersome.
 
-You can find a download tool for Wikipedia dumps [here](http://github.com/babilen/wp-download/).
+You can find a download tool for Wikipedia dumps [here](https://github.com/pacurromon/wp-download).
 
 It can be used for bulk downloads all dump files for any language.
 It also supports resuming aborted downloads.
@@ -30,4 +30,4 @@ Resume: swwiki-20090821-pages-articles.xml.bz2
 swwiki-20090821-pages-articles.xml.bz2 [****] 100% Time: 00:00:00   3.19 M/s
 {% endhighlight bat %}
 
-For further instructions/support, please refer to the website of the tool.
+For further instructions/support, please refer to the [website of the tool](https://github.com/pacurromon/wp-download).
