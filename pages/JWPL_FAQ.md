@@ -17,7 +17,7 @@ When first connecting to a newly installed database, indexes are created. This t
 **Q: Why can't I use my already running Mediawiki/Wikipedia installation with JWPL?**
 
 JWPL was designed for accessing Wikipedia in the scope of large-scale NLP applications. Thus, JWPL accesses an optimized data representation to allow for efficient access.
-If you need to query a running Wikipedia installation, you should use another API, e.g. [http://www.mediawiki.org/wiki/API].
+If you need to query a running Wikipedia installation, you should use another API, e.g. the [MediaWiki API](http://www.mediawiki.org/wiki/API).
 
 **Q: How can I verify the integrity of the downloaded data?**
 
