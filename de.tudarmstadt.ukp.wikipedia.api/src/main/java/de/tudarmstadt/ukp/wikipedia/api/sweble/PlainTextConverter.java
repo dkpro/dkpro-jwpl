@@ -176,7 +176,7 @@ s	 */
 		needSpace = false;
 		noWrap = false;
 		sections = new LinkedList<Integer>();
-		rows = new LinkedList<List<String>>();
+		rows = new ArrayList<List<String>>();
 		return super.before(node);
 	}
 
@@ -305,7 +305,7 @@ s	 */
 		{
 			// remember this as it could be needed to process table rows correctly
 			currentLinkTitleInCell =  link.getTarget().getAsString();
-			if(currentLinkTitleInCell.contains("#"))  {
+			if(currentLinkTitleInCell.contains("#")) {
 				// only take the first part of the string, no anchors on pages (divided by '#' symbols)
 				currentLinkTitleInCell = currentLinkTitleInCell.split(Pattern.quote("#"), 2)[0];
 			}
