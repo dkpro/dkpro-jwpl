@@ -52,6 +52,7 @@ public class PageTest extends BaseJWPLTest {
 	@BeforeClass
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+		//DatabaseConfiguration db = obtainMySQLConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
@@ -121,6 +122,28 @@ public class PageTest extends BaseJWPLTest {
 			assertEquals(expectedPlainText, page.getPlainText());
 		} catch (WikiApiException e) {
 			fail("A WikiApiException occurred while parsing the page for its text (plain via Sweble): "
+					+ e.getLocalizedMessage());
+		}
+	}
+
+	@Test
+	public void testGetPlainTextWithTable() {
+		String title = "Humanbiologie";
+		String expectedPlainTextOfTable =
+				"Die Attraktivität der Fachrichtungen Humanbiologie beziehungsweise Biomedizin als " +
+						"Studienfächer ist in jüngerer Zeit deutlich gestiegen.\n" +
+				"\n" +
+				"Studiengang|besteht seit|Abschluss|Hochschule\n" +
+				"Humanbiologie (Biomedical Science)|1979|Bachelor / Master|Marburg (U)\n" +
+				"Molekulare Biomedizin|2014|Bachelor|Rheinische Fachhochschule Köln \n" +
+				"Kategorie:Biologie Kategorie:Medizin Kategorie:Humangenetik Kategorie:Studienfach";
+		try {
+			Page page = fetchPage(title);
+			assertNotNull(page);
+			assertEquals(6000, page.getPageId());
+			assertEquals(expectedPlainTextOfTable, page.getPlainText());
+		} catch (WikiApiException e) {
+			fail("A WikiApiException occurred while parsing the page for its text (plain with table via Sweble): "
 					+ e.getLocalizedMessage());
 		}
 	}

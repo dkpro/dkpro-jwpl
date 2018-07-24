@@ -40,6 +40,7 @@ import org.sweble.wikitext.parser.nodes.WtIllegalCodePoint;
 import org.sweble.wikitext.parser.nodes.WtImageLink;
 import org.sweble.wikitext.parser.nodes.WtInternalLink;
 import org.sweble.wikitext.parser.nodes.WtItalics;
+import org.sweble.wikitext.parser.nodes.WtInnerNode2;
 import org.sweble.wikitext.parser.nodes.WtListItem;
 import org.sweble.wikitext.parser.nodes.WtNode;
 import org.sweble.wikitext.parser.nodes.WtNodeList;
@@ -50,16 +51,25 @@ import org.sweble.wikitext.parser.nodes.WtUrl;
 import org.sweble.wikitext.parser.nodes.WtWhitespace;
 import org.sweble.wikitext.parser.nodes.WtXmlElement;
 import org.sweble.wikitext.parser.nodes.WtTagExtension;
+import org.sweble.wikitext.parser.nodes.WtTable;
+import org.sweble.wikitext.parser.nodes.WtTableCaption;
+import org.sweble.wikitext.parser.nodes.WtTableHeader;
+import org.sweble.wikitext.parser.nodes.WtTableRow;
+import org.sweble.wikitext.parser.nodes.WtTableCell;
+import org.sweble.wikitext.parser.nodes.WtTableImplicitTableBody;
 import org.sweble.wikitext.parser.nodes.WtTemplate;
 import org.sweble.wikitext.parser.nodes.WtTemplateArgument;
 import org.sweble.wikitext.parser.nodes.WtTemplateParameter;
 import org.sweble.wikitext.parser.nodes.WtLinkTitle;
+import org.sweble.wikitext.parser.nodes.WtXmlAttribute;
 import org.sweble.wikitext.parser.nodes.WtXmlComment;
 import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
 import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -106,11 +116,16 @@ public class PlainTextConverter extends AstVisitor<WtNode>
 	private int needNewlines;
 
 	private boolean needSpace;
-
 	private boolean noWrap;
 	private boolean enumerateSections;
 
 	private LinkedList<Integer> sections;
+
+	/* Things needed for processing tables */
+	private List<List<String>> rows;
+	private List<String> currentRow;
+	private StringBuilder currentCell;
+	private String currentLinkTitleInCell;
 
 	// =========================================================================
 
@@ -161,6 +176,7 @@ s	 */
 		needSpace = false;
 		noWrap = false;
 		sections = new LinkedList<Integer>();
+		rows = new ArrayList<List<String>>();
 		return super.before(node);
 	}
 
@@ -202,7 +218,14 @@ s	 */
 
 	public void visit(AstText text)
 	{
-		write(text.getContent());
+		if(currentCell != null) {
+			// handles table cell content
+			currentCell.append(text.getContent());
+		} else {
+			// regular case for all nodes that are not explicitly handled below
+			write(text.getContent());
+		}
+
 	}
 
 	public void visit(WtWhitespace w)
@@ -262,6 +285,7 @@ s	 */
 
 	public void visit(WtInternalLink link)
 	{
+		currentLinkTitleInCell = null;
 		try
 		{
 			PageTitle page = PageTitle.make(config, link.getTarget().getAsString());
@@ -279,7 +303,16 @@ s	 */
 
 		if (pageTitle == null || pageTitle.isEmpty())
 		{
-			write(link.getTarget().getAsString());
+			// remember this as it could be needed to process table rows correctly
+			currentLinkTitleInCell =  link.getTarget().getAsString();
+			if(currentLinkTitleInCell.contains("#")) {
+				// only take the first part of the string, no anchors on pages (divided by '#' symbols)
+				currentLinkTitleInCell = currentLinkTitleInCell.split(Pattern.quote("#"), 2)[0];
+			}
+			// for regular cases: just write the original value here
+			if(currentCell==null) {
+				write(link.getTarget().getAsString());
+			}
 		}
 		else
 		{
@@ -373,9 +406,104 @@ s	 */
 		}
 	}
 
+	public void visit(WtXmlAttribute n)
+	{
+		// ignore formatting information from xml attributes as the result is expected in plain text
+	}
+
 	public void visit(WtListItem n)
 	{
 		iterate(n);
+	}
+
+	/**
+	 * Called when a {@link WtTable table structure} is about to be processed.
+	 * @param n A node representing a table.
+	 */
+	public void visit(WtTable n)
+	{
+		iterate(n);
+	}
+
+	/**
+	 * Called when an inner {@link WtTableImplicitTableBody table body} is about to be processed.
+	 * @param n A node representing a table body.
+	 */
+	public void visit(WtTableImplicitTableBody n)
+	{
+		iterate(n);
+	}
+
+	/**
+	 * Called when a {@link WtTableCaption table caption} is about to be processed.
+	 * @param n A node representing a table caption.
+	 */
+	public void visit(WtTableCaption n)
+	{
+		iterate(n);
+	}
+
+	/**
+	 * Called when a {@link WtTableRow table row} is about to be processed.
+	 * @param n A node representing a table row.
+	 */
+	public void visit(WtTableRow n)
+	{
+		if (currentRow == null)
+		{
+			currentRow = new ArrayList<String>();
+			iterate(n);
+			if(currentRow.size() > 0)
+			{
+				rows.add(currentRow);
+			}
+			if(currentRow.size() == n.getBody().size()) {
+				StringBuilder tableRowFormatted = new StringBuilder();
+				for(int i = 0; i < currentRow.size(); i++) {
+					tableRowFormatted.append(currentRow.get(i));
+					if(i+1 < currentRow.size()) {
+						// appending a separator char only in between cells here
+						tableRowFormatted.append('|');
+					}
+				}
+				writeWord(tableRowFormatted.toString());
+			}
+			currentRow = null;
+		}
+	}
+
+	/**
+	 * Called when a header {@link WtTableHeader cell} is about to be processed.
+	 * @param n A node representing a table header cell.
+	 */
+	public void visit(WtTableHeader n)
+	{
+		processCellContent(n);
+	}
+
+	/**
+	 * Called when a regular {@link WtTableCell  cell} is about to be processed.
+	 * @param n A node representing a table header cell.
+	 */
+	public void visit(WtTableCell n)
+	{
+		processCellContent(n);
+	}
+
+	private void processCellContent(WtInnerNode2 n)
+	{
+		if (currentRow != null)
+		{
+			currentCell = new StringBuilder();
+			iterate(n);
+			String cellValue = currentCell.toString().trim();
+			if(currentLinkTitleInCell != null) {
+				cellValue = currentLinkTitleInCell + " " + cellValue;
+				currentLinkTitleInCell = null;
+			}
+			currentRow.add(cellValue);
+			currentCell = null;
+		}
 	}
 
 

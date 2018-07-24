@@ -46,7 +46,7 @@ public class PageIteratorTest extends BaseJWPLTest {
 
 
 	/**
-	 * The test wikipedia contains 28 articles + 2 disambiguation + 1 discussion pages.
+	 * The test wikipedia contains 29 articles + 2 disambiguation + 1 discussion pages.
 	 */
 	@Test
 	public void test_pageIteratorTest() {
@@ -61,23 +61,21 @@ public class PageIteratorTest extends BaseJWPLTest {
 			assertNotNull(p);
 			nrOfPages++;
 		}
-		assertEquals("Number of pages == 31", 31, nrOfPages);
+		assertEquals("Number of pages == 32", 32, nrOfPages);
 
 		while (articleIter.hasNext()) {
 			Page p = articleIter.next();
 			assertNotNull(p);
 			nrOfArticles++;
 		}
-		// TODO check why this was 28 and not 30 as in the most recent wikiapi_test db script
-		// assertEquals("Number of articles == 28", 28, nrOfArticles);
 		
-		// Assuming 31 is the correct number now
-		assertEquals("Number of articles == 31", 31, nrOfArticles);
+		// Assuming 32 is the correct number now
+		assertEquals("Number of articles == 32", 32, nrOfArticles);
 
 	}
 
 	/**
-	 * The test wikipedia contains 28 articles + 2 disambiguation + 1 discussion pages.
+	 * The test wikipedia contains 29 articles + 2 disambiguation + 1 discussion pages.
 	 */
 	@Test
 	public void test_pageIteratorTestBufferSize() {
@@ -90,7 +88,7 @@ public class PageIteratorTest extends BaseJWPLTest {
 				Page p = pageIter.next();
 				nrOfPages++;
 			}
-			assertEquals("Number of pages == 31", 31, nrOfPages);
+			assertEquals("Number of pages == 32", 32, nrOfPages);
 		}
 	}
 }
