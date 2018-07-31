@@ -29,7 +29,7 @@ permalink: "/DataMachine/"
     * Make sure the database encoding is set to UTF8.
     * Create a database: `mysqladmin -u[USER] -p create [DB_NAME] DEFAULT CHARACTER SET utf8;`, or, when on the mysql shell: `CREATE DATABASE [DB_NAME] DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;`
     * Create all necessary tables using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql)
-  * Import the data files into the database: `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} `pwd`/*.txt``
+  * Import the data files into the database: `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} *.txt`
   * Now you are ready to use the database with the JWPL Core API (also see [JWPLCore:GettingStarted](/dkpro-jwpl/JWPLCore_GettingStarted)). When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 
 ## Example Transformation Commands
