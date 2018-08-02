@@ -19,9 +19,8 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.debug;
 
 /**
  * Logger, which does not implement some concrete output technique, but knows
- * how exceptions are represented like. AbstractLogger provides a template
+ * how exceptions are handled. AbstractLogger provides a template
  * method {@link #log(Object)} for its derivatives.
- *
  *
  */
 public abstract class AbstractLogger implements ILogger {
@@ -45,7 +44,7 @@ public abstract class AbstractLogger implements ILogger {
 	}
 
 	protected String createThrowableMessage(Throwable e) {
-		StringBuffer message = new StringBuffer();
+		StringBuilder message = new StringBuilder();
 		message.append(e.getMessage());
 		message.append('\n');
 		for (StackTraceElement currentTrace : e.getStackTrace()) {

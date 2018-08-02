@@ -105,6 +105,7 @@
         <groupId>log4j</groupId>
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
+        <scope>runtime</scope>
         <exclusions>
           <exclusion>
             <artifactId>jms</artifactId>
