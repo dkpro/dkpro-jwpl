@@ -57,7 +57,7 @@ public class TitleIteratorTest extends BaseJWPLTest{
 			assertNotNull(t);
 			nrOfTitles++;
 		}
-		assertEquals("Number of titles == 37", 37, nrOfTitles);
+		assertEquals("Number of titles == 38", 38, nrOfTitles);
 
 	}
 }
