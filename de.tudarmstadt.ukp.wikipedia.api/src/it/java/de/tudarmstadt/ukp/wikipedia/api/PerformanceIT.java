@@ -43,18 +43,14 @@ public class PerformanceIT implements WikiConstants {
     private static PerformanceTest pt;
 
     @BeforeClass
-    public static void setupWikipedia() {
+    public static void setupWikipedia() throws WikiApiException {
         Properties configuration = loadConfiguration();
         retrievedNumberOfPages = Integer.parseInt(configuration.getProperty("performance.pages.retrieved"));
         DatabaseConfiguration dbConfig = obtainITDBConfiguration(configuration);
-        try {
-            wiki = new Wikipedia(dbConfig);
-            int maxiCycles = Integer.parseInt(configuration.getProperty("performance.cycles.maxi"));
-            int pageCycles = Integer.parseInt(configuration.getProperty("performance.cycles.page"));
-            pt = new PerformanceTest(wiki, maxiCycles, pageCycles);
-        } catch (Exception e) {
-            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
-        }
+        wiki = new Wikipedia(dbConfig);
+        int maxiCycles = Integer.parseInt(configuration.getProperty("performance.cycles.maxi"));
+        int pageCycles = Integer.parseInt(configuration.getProperty("performance.cycles.page"));
+        pt = new PerformanceTest(wiki, maxiCycles, pageCycles);
     }
 
     private static DatabaseConfiguration obtainITDBConfiguration(Properties configuration) {
