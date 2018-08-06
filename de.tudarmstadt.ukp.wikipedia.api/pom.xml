@@ -120,7 +120,6 @@
             <!-- Activate if your machine has access to UKP MySQL DB resources at UKP in Darmstadt-->
             <id>mysql-ukp</id>
             <properties>
-                <!-- TODO @reckart: check if this works and/or modify it so this profile works at UKP Lab -->
                 <database.host>bender.ukp.informatik.tu-darmstadt.de</database.host>
                 <database.name>wikiapi_en</database.name>
                 <database.user>wikiapi</database.user>
