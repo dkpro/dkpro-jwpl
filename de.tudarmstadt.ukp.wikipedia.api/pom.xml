@@ -122,8 +122,8 @@
             <properties>
                 <database.host>bender.ukp.informatik.tu-darmstadt.de</database.host>
                 <database.name>wikiapi_en</database.name>
-                <database.user>wikiapi</database.user>
-                <database.password>wikiapitk</database.password>
+                <database.user>student</database.user>
+                <database.password>student</database.password>
                 <!-- The original values used at UKP -->
                 <performance.pages.retrieved>4000</performance.pages.retrieved>
                 <performance.cycles.maxi>5</performance.cycles.maxi>
