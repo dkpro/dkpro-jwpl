@@ -149,6 +149,25 @@ public class PageTest extends BaseJWPLTest {
 	}
 
 	@Test
+	public void testGetPlainTextWithXMLEndTag() {
+		String title = "Liste_von_Materia_Medica_der_traditionellen_uigurischen_Medizin";
+		String expectedPlainText = "Dies ist eine Liste von Materia Medica der traditionellen uigurischen Medizin. " +
+				"Die uigurische Medizin entwickelte sich aus der arabischen Medizin, der antiken griechischen Medizin " +
+				"und der traditionellen chinesischen Medizin. " +
+				"Übersicht" + "\n" +
+				"Quellen: [cintcm.com], [tcm-resources.com]";
+		try {
+			Page page = fetchPage(title);
+			assertNotNull(page);
+			assertEquals(6001, page.getPageId());
+			assertEquals(expectedPlainText, page.getPlainText());
+		} catch (WikiApiException e) {
+			fail("A WikiApiException occurred while parsing the page for its text (plain with table via Sweble): "
+					+ e.getLocalizedMessage());
+		}
+	}
+
+	@Test
 	public void testGetNumberOfCategories() {
 		int categories = page.getNumberOfCategories();
 		assertTrue(categories > 0);
