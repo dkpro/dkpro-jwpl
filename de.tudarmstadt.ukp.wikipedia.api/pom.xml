@@ -25,6 +25,16 @@
 		<artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
 		<version>1.2.0-SNAPSHOT</version>
 	</parent>
+
+    <properties>
+        <!--
+            By default, we skip the integration tests for regular contributors
+            as they might not have access to one of the two institution specific
+            MySQL resource profiles.
+        -->
+        <skip.integration.tests>true</skip.integration.tests>
+    </properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.hibernate</groupId>
@@ -59,6 +69,7 @@
 			<artifactId>nv-i18n</artifactId>
 		</dependency>
 
+        <!-- logger dependencies -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -74,6 +85,7 @@
 			<scope>test</scope>
 		</dependency>
 
+        <!-- JUnit dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -84,9 +96,202 @@
             <artifactId>hsqldb</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Used in Integration Tests only -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
+
+	<profiles>
+        <profile>
+            <!-- Activate if your machine has access to UKP MySQL DB resources at UKP in Darmstadt-->
+            <id>mysql-ukp</id>
+            <properties>
+                <database.host>bender.ukp.informatik.tu-darmstadt.de</database.host>
+                <database.name>wikiapi_en</database.name>
+                <database.user>student</database.user>
+                <database.password>student</database.password>
+                <!-- The original values used at UKP -->
+                <performance.pages.retrieved>4000</performance.pages.retrieved>
+                <performance.cycles.maxi>5</performance.cycles.maxi>
+                <performance.cycles.page>50</performance.cycles.page>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Activate if your machine has access to MySQL DB resources at HHN in Heilbronn -->
+            <id>mysql-hhn</id>
+            <properties>
+                <database.host>tulum-data.gecko.hs-heilbronn.de</database.host>
+                <database.name>wikiapi_de_jwpl_IT_test</database.name>
+                <database.user>student</database.user>
+                <database.password>student</database.password>
+                <!-- Adjusted value to reduce stress level at HHN CI servers -->
+                <performance.pages.retrieved>1000</performance.pages.retrieved>
+                <performance.cycles.maxi>5</performance.cycles.maxi>
+                <performance.cycles.page>20</performance.cycles.page>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>junit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <build.profile.id>dev</build.profile.id>
+                <!--
+                    Only unit tests are run when the development profile is active.
+                    See global: 
+                    <skip.integration.tests>true</skip.integration.tests>
+                -->
+            </properties>
+        </profile>
+        <!-- The Configuration of the integration-test profile -->
+        <profile>
+            <id>integration-test</id>
+            <properties>
+                <build.profile.id>integration-test</build.profile.id>
+                <!--
+                    Integration tests are run when the integration-test profile is active
+                -->
+                <skip.integration.tests>false</skip.integration.tests>
+            </properties>
+        </profile>
+        <profile>
+            <id>jacoco</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <forkMode>once</forkMode>
+                            <argLine>@{jacoco.argLine} -Xms256m -Xmx384m -XX:+CMSClassUnloadingEnabled -Dfile.encoding=UTF-8</argLine>
+                            <!-- Show 100% of the lines from the stack trace (doesn't work) -->
+                            <trimStackTrace>false</trimStackTrace>
+                            <includes>
+                                <!-- Include unit tests within integration-test phase. -->
+                                <include>**/*Test.java</include>
+                            </includes>
+                            <excludes>
+                                <!-- Exclude integration tests within (unit) test phase. -->
+                                <exclude>**/*IT.java</exclude>
+                            </excludes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 	<build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/it/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
 		<plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>${maven.build.helper.plugin}</version>
+                <executions>
+                    <!-- Configures the source directory of our integration tests -->
+                    <execution>
+                        <id>add-integration-test-sources</id>
+                        <phase>generate-test-sources</phase>
+                        <goals>
+                            <goal>add-test-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/it/java</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                    <!-- Configures the resource directory of our integration tests -->
+                    <execution>
+                        <id>add-integration-test-resources</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>add-test-resource</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <!--
+                                    Placeholders that are found from the files located in the configured resource
+                                    directories are replaced with the property values found from the profile
+                                    specific configuration file.
+                                -->
+                                <resource>
+                                    <filtering>true</filtering>
+                                    <directory>src/it/resources</directory>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkMode>once</forkMode>
+					<argLine>-Xms256m -Xmx256m -XX:+CMSClassUnloadingEnabled -Dfile.encoding=UTF-8</argLine>
+					<!-- Show 100% of the lines from the stack trace (doesn't work) -->
+					<trimStackTrace>false</trimStackTrace>
+					<includes>
+						<!-- Include unit tests within integration-test phase. -->
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<!-- Exclude integration tests within (unit) test phase. -->
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>${maven.failsafe.plugin}</version>
+				<configuration>
+					<argLine>-Xms256m -Xmx384m -XX:+CMSClassUnloadingEnabled -Dfile.encoding=UTF-8</argLine>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<skipITs>${skip.integration.tests}</skipITs>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>

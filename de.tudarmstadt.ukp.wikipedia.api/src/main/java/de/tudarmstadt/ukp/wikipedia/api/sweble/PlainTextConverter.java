@@ -65,6 +65,7 @@ import org.sweble.wikitext.parser.nodes.WtXmlAttribute;
 import org.sweble.wikitext.parser.nodes.WtXmlComment;
 import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
 import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
+import org.sweble.wikitext.parser.nodes.WtXmlEndTag;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 import java.lang.invoke.MethodHandles;
@@ -405,6 +406,11 @@ s	 */
 		{
 			iterate(e.getBody());
 		}
+	}
+
+	public void visit(WtXmlEndTag t)
+	{
+		iterate(t);
 	}
 
 	public void visit(WtXmlAttribute n)

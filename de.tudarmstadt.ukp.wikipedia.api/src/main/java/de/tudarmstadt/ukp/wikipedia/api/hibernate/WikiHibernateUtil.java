@@ -127,7 +127,7 @@ public class WikiHibernateUtil implements WikiConstants {
             p.setProperty("hibernate.c3p0.idle_test_period","300");
             p.setProperty("hibernate.c3p0.min_size","3");
             p.setProperty("hibernate.c3p0.max_size","15");
-            p.setProperty("hibernate.c3p0.max_statements","10");
+            p.setProperty("hibernate.c3p0.max_statements","100");
             p.setProperty("hibernate.c3p0.timeout","1000");
 
         }
