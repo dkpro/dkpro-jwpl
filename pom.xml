@@ -50,7 +50,7 @@
     <!-- Maven plugin versions -->
     <maven.failsafe.plugin>2.21.0</maven.failsafe.plugin>
     <maven.build.helper.plugin>3.0.0</maven.build.helper.plugin>
-
+    <maven.pmd.plugin>3.10.0</maven.pmd.plugin>
   </properties>
   <scm>
     <connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
@@ -87,7 +87,7 @@
       <email>richard.eckart@googlemail.com</email>
     </developer>
   </developers>
-
+  
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -296,7 +296,46 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <!-- TODO move it to the PMD profile, once the PR builder executes "pmd" goal again -->
+  <build>
+    <plugins>
+      <!-- Overriding the PMD configuration of the parent pom to support 'analysis caching' -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>${maven.pmd.plugin}</version>
+        <configuration>
+          <targetJdk>${maven.compiler.target}</targetJdk>
+          <failOnViolation>false</failOnViolation>
+          <minimumTokens>100</minimumTokens>
+          <analysisCache>true</analysisCache>
+          <includeTests>true</includeTests>
+          <linkXRef>false</linkXRef>
+        </configuration>
+        <executions>
+          <execution>
+            <id>pmd</id>
+            <phase>package</phase>
+            <goals>
+              <goal>check</goal>
+              <goal>pmd</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
   <profiles>
+
+    <!-- TODO put the pmd plugin config here instead of directly executing it, as we can simply override the parent profile -->
+    <!--
+    <profile>
+      <id>pmd</id>
+    </profile>
+    -->
+    
     <profile>
       <id>rat-check</id>
       <activation>
