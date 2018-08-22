@@ -491,11 +491,11 @@ public class HtmlWriter {
         try (Writer destFile = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(outFile)), encoding))) {
             destFile.write(text);
         } catch (UnsupportedEncodingException e1) {
-            logger.error("Unsupported encoding exception while opening file " + outFile.getAbsolutePath(), e1);
+            logger.error("Unsupported encoding exception while opening file '{}'", outFile.getAbsolutePath(), e1);
         } catch (FileNotFoundException e1) {
-            logger.error("File " + outFile.getAbsolutePath() + " not found.",  e1);
+            logger.error("File '{}' not found.", outFile.getAbsolutePath(),  e1);
         } catch (IOException e) {
-            logger.error("IO exception while writing file " + outFile.getAbsolutePath(), e);
+            logger.error("IO exception while writing file '{}", outFile.getAbsolutePath(), e);
         }
     }
 

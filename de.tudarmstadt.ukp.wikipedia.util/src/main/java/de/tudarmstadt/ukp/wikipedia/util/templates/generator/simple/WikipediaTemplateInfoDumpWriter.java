@@ -219,10 +219,8 @@ public class WikipediaTemplateInfoDumpWriter
 	 *            if page table does not exists -&gt; create index
 	 * @param mode
 	 *            generation mode
-	 * @throws Exception
 	 */
-	public void writeSQL(boolean revTableExists, boolean pageTableExists,
-			GeneratorMode mode) throws Exception
+	void writeSQL(boolean revTableExists, boolean pageTableExists, GeneratorMode mode)
 	{
 		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
 				new BufferedOutputStream(new FileOutputStream(outputPath)), charset))){
@@ -241,7 +239,7 @@ public class WikipediaTemplateInfoDumpWriter
 			writer.write(dataToDump.toString());
 		}
 		catch (IOException e) {
-			logger.error("Error writing SQL file: " + e.getMessage(), e);
+			logger.error("Error writing SQL file: {}", e.getMessage(), e);
 		}
 	}
 

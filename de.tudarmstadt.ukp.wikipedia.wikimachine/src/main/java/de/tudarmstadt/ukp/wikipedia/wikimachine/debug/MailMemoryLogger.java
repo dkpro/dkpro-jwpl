@@ -84,7 +84,7 @@ public class MailMemoryLogger extends AbstractLogger {
 	private StringBuffer messageBuffer;
 	private int messageCount;
 
-	public static String now() {
+	private static String now() {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT_NOW);
 		return sdf.format(cal.getTime());
@@ -105,7 +105,7 @@ public class MailMemoryLogger extends AbstractLogger {
 		messageCount = 0;
 	}
 
-	protected void appendRunntimeInfo() {
+	protected void appendRuntimeInfo() {
 		messageBuffer.append("local time\t");
 		messageBuffer.append(new Date());
 		messageBuffer.append("\ttotal memory\t");
@@ -136,7 +136,7 @@ public class MailMemoryLogger extends AbstractLogger {
 
 	@Override
 	public void logObject(Object message) {
-		appendRunntimeInfo();
+		appendRuntimeInfo();
 		messageBuffer.append(message);
 		messageBuffer.append("\n");
 		long timeStamp = System.currentTimeMillis();

@@ -36,10 +36,6 @@
             <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
             <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
         </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-        </dependency>
     </dependencies>
     <name>JWPL Tutorial </name>
     <description>A collection of classes that demonstrate the use of JWPL in several tutorial parts.</description>

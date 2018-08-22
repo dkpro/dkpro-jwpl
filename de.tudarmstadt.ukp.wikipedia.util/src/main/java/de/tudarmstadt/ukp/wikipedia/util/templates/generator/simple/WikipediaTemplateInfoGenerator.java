@@ -255,8 +255,7 @@ public class WikipediaTemplateInfoGenerator
 				try{
 					revisionIter.close();
 				}catch(SQLException e){
-					System.err.println("Error closing RevisionIterator");
-					e.printStackTrace();
+					logger.error("Error closing RevisionIterator", e);
 				}
 			}
 		}
@@ -287,8 +286,7 @@ public class WikipediaTemplateInfoGenerator
 			try{
 				extractTemplates();
 			}catch(WikiApiException e){
-				System.err.println("Error extracting templates.");
-				e.printStackTrace();
+				logger.error("Error extracting templates.", e);
 			}
 		}
 
@@ -326,7 +324,7 @@ public class WikipediaTemplateInfoGenerator
 	 * Loads existing ids into the map. If no id exists, a template will
 	 * get a new one in the dump writer
 	 *
-	 * @param info
+	 * @param info Must not be {@code null}.
 	 * @param templateNames
 	 *            template names to use
 	 */
@@ -350,7 +348,8 @@ public class WikipediaTemplateInfoGenerator
 	 *
 	 * Returns the set of names of all templates that are contained in the given
 	 * article (without duplicates).<br>
-	 * The names are SQL escaped using StringUtils.sqlEscape
+	 *
+	 * Note: The names are SQL escaped using {@link StringUtils#sqlEscape(String)}.
 	 *
 	 * @param pageText
 	 *            the page to get the templates from
