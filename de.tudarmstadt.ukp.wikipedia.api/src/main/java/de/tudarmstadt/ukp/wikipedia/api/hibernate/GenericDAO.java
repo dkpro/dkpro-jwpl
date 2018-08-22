@@ -18,11 +18,13 @@
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * A common base class for DAO classes.
@@ -31,7 +33,7 @@ import org.hibernate.SessionFactory;
  */
 public abstract class GenericDAO<T> {
 
-    private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     
     private final Wikipedia wiki;
     private final SessionFactory sessionFactory;
@@ -61,6 +63,7 @@ public abstract class GenericDAO<T> {
     }
 
     public void persist(T transientInstance) {
+        logger.debug("persisting MetaData instance");
         try {
             getSession().persist(transientInstance);
             logger.trace("persist successful");

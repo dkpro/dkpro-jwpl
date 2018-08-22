@@ -19,18 +19,16 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.logging.Level;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorFactory;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ErrorKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationKeys;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config.ConfigurationManager;
+import org.slf4j.event.Level;
 
 /**
  * DiffTool Logger class
- *
- *
  *
  */
 public class Logger
@@ -75,7 +73,7 @@ public class Logger
 				logLevel = Level.INFO;
 				break;
 			case DIFF_TOOL_ERROR:
-				logLevel = Level.SEVERE;
+				logLevel = Level.ERROR;
 				break;
 			case DIFF_TOOL:
 				logLevel = (Level) config
@@ -86,9 +84,7 @@ public class Logger
 						.createLoggingException(ErrorKeys.LOGGING_LOGGER_INITIALIZISATION_FAILED);
 			}
 
-			if (logLevel != Level.OFF) {
-				this.writer = new FileWriter(path + consumerName + ".log");
-			}
+			this.writer = new FileWriter(path + consumerName + ".log");
 
 		}
 		catch (Exception e) {
@@ -176,7 +172,7 @@ public class Logger
 			ex.printStackTrace();
 		}
 
-		if (logLevel.intValue() > level.intValue()) {
+		if (logLevel.toInt() > level.toInt()) {
 			return;
 		}
 
@@ -211,7 +207,7 @@ public class Logger
 			ex.printStackTrace();
 		}
 
-		if (logLevel.intValue() > level.intValue()) {
+		if (logLevel.toInt() > level.toInt()) {
 			return;
 		}
 
@@ -233,7 +229,7 @@ public class Logger
 	public synchronized void logMessage(final Level level, final String message)
 	{
 
-		if (logLevel.intValue() > level.intValue()) {
+		if (logLevel.toInt() > level.toInt()) {
 			return;
 		}
 

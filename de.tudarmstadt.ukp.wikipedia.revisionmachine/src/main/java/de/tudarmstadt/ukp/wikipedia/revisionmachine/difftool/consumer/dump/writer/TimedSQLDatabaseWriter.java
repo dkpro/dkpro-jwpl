@@ -19,7 +19,6 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.dump.writ
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.logging.Level;
 
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ConfigurationException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.LoggingException;
@@ -31,12 +30,11 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.info.ArticleInformation;
+import org.slf4j.event.Level;
 
 /**
  * This class writes the output to a database while collecting statistical
  * information.
- *
- *
  *
  */
 public class TimedSQLDatabaseWriter

@@ -577,7 +577,7 @@ public class Page implements WikiConstants
 		throws WikiApiException
 	{
 		//Configure the PlainTextConverter for plain text parsing
-		return (String) parsePage(new PlainTextConverter(this.wiki.wikiConfig, false, Integer.MAX_VALUE));
+		return (String) parsePage(new PlainTextConverter(this.wiki.getWikConfig(), false, Integer.MAX_VALUE));
 	}
 
 	/**
@@ -609,9 +609,9 @@ public class Page implements WikiConstants
 	{
 		EngProcessedPage cp;
 		try{
-			WtEngineImpl engine = new WtEngineImpl(this.wiki.wikiConfig);
+			WtEngineImpl engine = new WtEngineImpl(this.wiki.getWikConfig());
 
-			PageTitle pageTitle = PageTitle.make(this.wiki.wikiConfig, this.getTitle().toString());
+			PageTitle pageTitle = PageTitle.make(this.wiki.getWikConfig(), this.getTitle().toString());
 			PageId pageId = new PageId(pageTitle, -1);
 
 			// Compile the retrieved page

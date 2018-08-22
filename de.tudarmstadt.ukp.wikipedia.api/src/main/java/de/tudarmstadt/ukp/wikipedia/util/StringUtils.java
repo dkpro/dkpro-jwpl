@@ -19,16 +19,17 @@ package de.tudarmstadt.ukp.wikipedia.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Iterator;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class StringUtils {
 
-	private static final Log logger = LogFactory.getLog(StringUtils.class);
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final StringBuilder buffer = new StringBuilder(10_000_000);
 
@@ -79,8 +80,7 @@ public class StringUtils {
 		try {
 			return FileUtils.readFileToString(file, encoding);
 		} catch (IOException e) {
-			logger.error("Exception while reading file " + file.getAbsolutePath());
-			e.printStackTrace();
+			logger.error("Exception while reading file " + file.getAbsolutePath(), e);
 			return "";
 		}
 

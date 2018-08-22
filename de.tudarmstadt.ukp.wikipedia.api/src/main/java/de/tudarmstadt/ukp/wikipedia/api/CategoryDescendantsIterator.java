@@ -17,6 +17,7 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,8 +25,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -34,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CategoryDescendantsIterator implements Iterator<Category> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Wikipedia wiki;
 

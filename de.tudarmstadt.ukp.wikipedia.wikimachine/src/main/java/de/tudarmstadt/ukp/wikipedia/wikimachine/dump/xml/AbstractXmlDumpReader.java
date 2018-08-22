@@ -26,18 +26,17 @@ package de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.lang.invoke.MethodHandles;
+import java.time.ZoneId;
+import java.util.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -53,15 +52,16 @@ import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Title;
 /**
  * Parser of WikiMedia XML dumps. Modification of XmlDumpReader with some enhanced error
  * resistance and adaptation mechanisms. Please see copyright and comments of
- * original code. Modification was done by Ivan Galkin <br>
- * <br>
- * See SVN at
- * <a>http://svn.wikimedia.org/svnroot/mediawiki/trunk/mwdumper/src/org
- * /mediawiki/importer/XmlDumpReader.java</a>
+ * original code. <br>
  *
+ * Modifications done by Ivan Galkin <br>
  *
+ * See {@link de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader}.
  */
 public abstract class AbstractXmlDumpReader extends DefaultHandler {
+
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	
 	protected static final String SITENAME = "sitename";
 	protected static final String GENERATOR = "generator";
 	protected static final String CASE = "case";
@@ -92,32 +92,29 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	protected static final String CONTRIBUTOR = "contributor";
 	protected static final String REVISION = "revision";
 
-	InputStream input;
-	DumpWriter writer;
+	private InputStream input;
+	private DumpWriter writer;
 
 	private char[] buffer;
 	private int len;
 	private boolean hasContent = false;
 	private boolean deleted = false;
 
-	Siteinfo siteinfo;
-	Page page;
-	boolean pageSent;
-	Contributor contrib;
-	Revision rev;
-	int nskey;
+	private Siteinfo siteinfo;
+	private Page page;
+	private boolean pageSent;
+	private Contributor contrib;
+	private Revision rev;
+	private int nskey;
 
-	boolean abortFlag;
-	boolean errorState = false;
+	private boolean abortFlag;
+	private boolean errorState = false;
 
-	protected Map<String, String> startElements = new HashMap<String, String>(
-			64);
+	protected Map<String, String> startElements = new HashMap<String, String>(64);
 	protected Map<String, String> endElements = new HashMap<String, String>(64);
-	protected Map<String, String> forbiddenIdStartElements = new HashMap<String, String>(
-			64);
 
-	protected Map<String, String> forbiddenIdEndElements = new HashMap<String, String>(
-			64);
+	private Map<String, String> forbiddenIdStartElements = new HashMap<String, String>(64);
+	private Map<String, String> forbiddenIdEndElements = new HashMap<String, String>(64);
 
 	/**
 	 * Fill {@link #forbiddenIdStartElements}
@@ -170,7 +167,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 
 	/**
 	 * Initialize a processor for a MediaWiki XML dump stream. Events are sent
-	 * to a single DumpWriter output sink, but you can chain multiple output
+	 * to a single {@link DumpWriter} output sink, but you can chain multiple output
 	 * processors with a MultiWriter.
 	 *
 	 * @param inputStream
@@ -193,10 +190,10 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 
 	/**
 	 * Reads through the entire XML dump on the input stream, sending events to
-	 * the DumpWriter as it goes. May throw exceptions on invalid input or due
+	 * the {@link DumpWriter} as it goes. May throw exceptions on invalid input or due
 	 * to problems with the output.
 	 *
-	 * @throws IOException
+	 * @throws IOException Thrown if errors occurred during parsing.
 	 */
 	public void readDump() throws IOException {
 		try {
@@ -205,9 +202,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 			SAXParser parser = factory.newSAXParser();
 
 			parser.parse(input, this);
-		} catch (ParserConfigurationException e) {
-			throw new IOException(e);
-		} catch (SAXException e) {
+		} catch (ParserConfigurationException | SAXException e) {
 			throw new IOException(e);
 		}
 		writer.close();
@@ -217,7 +212,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	 * Request that the dump processing be aborted. At the next element, an
 	 * exception will be thrown to stop the XML parser.
 	 *
-	 * FIXME Is setting a bool thread-safe? It should be atomic...
+	 * TODO Investigate: Is setting a bool thread-safe? It should be atomic...
 	 */
 	public void abort() {
 		abortFlag = true;
@@ -227,12 +222,11 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	// SAX handler interface methods:
 
 	/**
-	 * Add by Ivan Galkin.<br>
 	 * If error with wrong id tag occurs, the errorState flag will be set. In
 	 * this case some start tags have to be ignored.
 	 *
 	 * @param startTag
-	 * @return true if startTag is not allowed and will be ignored
+	 * @return {@code true} if {@code startTag} is not allowed and will be ignored
 	 * @see #setupForbiddenStartElements()
 	 */
 	private boolean notAllowedStart(String startTag) {
@@ -242,12 +236,11 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	}
 
 	/**
-	 * Add by Ivan Galkin.<br>
 	 * If error with wrong id tag occurs, the errorState flag will be set. In
 	 * this case some end tags have to be ignored.
 	 *
-	 * @param startTag
-	 * @return true if startTag is not allowed and will be ignored
+	 * @param endTag
+	 * @return {@code true} if {@code endTag} is not allowed and will be ignored
 	 * @see #setupForbiddenEndElements()
 	 */
 	private boolean notAllowedEnd(String endTag) {
@@ -282,25 +275,25 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 			}
 
 			// frequent tags:
-			if (qName == REVISION) {
+			if (Objects.equals(qName, REVISION)) {
 				openRevision();
 			}
-			else if (qName == CONTRIBUTOR) {
+			else if (Objects.equals(qName, CONTRIBUTOR)) {
 				openContributor();
 			}
-			else if (qName == PAGE) {
+			else if (Objects.equals(qName, PAGE)) {
 				openPage();
 			}
-			else if (qName == MEDIAWIKI) {
+			else if (Objects.equals(qName, MEDIAWIKI)) {
 				openMediaWiki();
 			}
-			else if (qName == SITEINFO) {
+			else if (Objects.equals(qName, SITEINFO)) {
 				openSiteinfo();
 			}
-			else if (qName == NAMESPACES) {
+			else if (Objects.equals(qName, NAMESPACES)) {
 				openNamespaces();
 			}
-			else if (qName == NAMESPACE) {
+			else if (Objects.equals(qName, NAMESPACE)) {
 				openNamespace(attributes);
 			}
 		} catch (IOException e) {
@@ -333,67 +326,67 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 				return;
 			}
 			// frequent tags:
-			if (qName == ID) {
+			if (Objects.equals(qName, ID)) {
 				readId();
 			}
-			else if (qName == REVISION) {
+			else if (Objects.equals(qName, REVISION)) {
 				closeRevision();
 			}
-			else if (qName == TIMESTAMP) {
+			else if (Objects.equals(qName, TIMESTAMP)) {
 				readTimestamp();
 			}
-			else if (qName == TEXT) {
+			else if (Objects.equals(qName, TEXT)) {
 				readText();
 			}
-			else if (qName == CONTRIBUTOR) {
+			else if (Objects.equals(qName, CONTRIBUTOR)) {
 				closeContributor();
 			}
-			else if (qName == USERNAME) {
+			else if (Objects.equals(qName, USERNAME)) {
 				readUsername();
 			}
-			else if (qName == IP) {
+			else if (Objects.equals(qName, IP)) {
 				readIp();
 			}
-			else if (qName == COMMENT) {
+			else if (Objects.equals(qName, COMMENT)) {
 				readComment();
 			}
-			else if (qName == MINOR) {
+			else if (Objects.equals(qName, MINOR)) {
 				readMinor();
 			}
-			else if (qName == PAGE) {
+			else if (Objects.equals(qName, PAGE)) {
 				closePage();
 			}
-			else if (qName == TITLE) {
+			else if (Objects.equals(qName, TITLE)) {
 				readTitle();
 			}
-			else if (qName == RESTRICTIONS) {
+			else if (Objects.equals(qName, RESTRICTIONS)) {
 				readRestrictions();
 			}
 			else if (qName.startsWith("Thread")) {
 				threadAttribute(qName);
 			}
-			else if (qName == MEDIAWIKI) {
+			else if (Objects.equals(qName, MEDIAWIKI)) {
 				closeMediaWiki();
 			}
-			else if (qName == SITEINFO) {
+			else if (Objects.equals(qName, SITEINFO)) {
 				closeSiteinfo();
 			}
-			else if (qName == SITENAME) {
+			else if (Objects.equals(qName, SITENAME)) {
 				readSitename();
 			}
-			else if (qName == BASE) {
+			else if (Objects.equals(qName, BASE)) {
 				readBase();
 			}
-			else if (qName == GENERATOR) {
+			else if (Objects.equals(qName, GENERATOR)) {
 				readGenerator();
 			}
-			else if (qName == CASE) {
+			else if (Objects.equals(qName, CASE)) {
 				readCase();
 			}
-			else if (qName == NAMESPACES) {
+			else if (Objects.equals(qName, NAMESPACES)) {
 				closeNamespaces();
 			}
-			else if (qName == NAMESPACE)
+			else if (Objects.equals(qName, NAMESPACE))
 			 {
 				closeNamespace();
 			// else throw(SAXException)new
@@ -407,7 +400,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	// ----------
 
 	@SuppressWarnings("unchecked")
-	void threadAttribute(String attrib) throws IOException {
+	private void threadAttribute(String attrib) throws IOException {
 		if (attrib.equals("ThreadPage")) {
 			page.DiscussionThreadingInfo.put(attrib, new Title(
 					bufferContents(), siteinfo.Namespaces));
@@ -417,23 +410,23 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 		}
 	}
 
-	void openMediaWiki() throws IOException {
+	private void openMediaWiki() throws IOException {
 		siteinfo = null;
 		writer.writeStartWiki();
 	}
 
-	void closeMediaWiki() throws IOException {
+	private void closeMediaWiki() throws IOException {
 		writer.writeEndWiki();
 		siteinfo = null;
 	}
 
 	// ------------------
 
-	void openSiteinfo() {
+	private void openSiteinfo() {
 		siteinfo = new Siteinfo();
 	}
 
-	void closeSiteinfo() throws IOException {
+	private void closeSiteinfo() throws IOException {
 		writer.writeSiteinfo(siteinfo);
 	}
 
@@ -458,57 +451,57 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 		}
 	}
 
-	void readSitename() {
+	private void readSitename() {
 		siteinfo.Sitename = bufferContents();
 	}
 
-	void readBase() {
+	private void readBase() {
 		siteinfo.Base = bufferContents();
 	}
 
-	void readGenerator() {
+	private void readGenerator() {
 		siteinfo.Generator = bufferContents();
 	}
 
-	void readCase() {
+	private void readCase() {
 		siteinfo.Case = bufferContents();
 	}
 
-	void openNamespaces() {
+	private void openNamespaces() {
 		siteinfo.Namespaces = new NamespaceSet();
 	}
 
-	void openNamespace(Attributes attribs) {
+	private void openNamespace(Attributes attribs) {
 		nskey = Integer.parseInt(attribs.getValue("key"));
 	}
 
-	void closeNamespace() {
+	private void closeNamespace() {
 		siteinfo.Namespaces.add(nskey, bufferContents());
 	}
 
-	void closeNamespaces() {
+	private void closeNamespaces() {
 		// NOP
 	}
 
 	// -----------
 
-	void openPage() {
+	private void openPage() {
 		page = new Page();
 		pageSent = false;
 	}
 
-	void closePage() throws IOException {
+	private void closePage() throws IOException {
 		if (pageSent) {
 			writer.writeEndPage();
 		}
 		page = null;
 	}
 
-	void readTitle() {
+	private void readTitle() {
 		page.Title = new Title(bufferContents(), siteinfo.Namespaces);
 	}
 
-	void readId() {
+	private void readId() {
 		int id = Integer.parseInt(bufferContents());
 		if (contrib != null) {
 			contrib.Id = id;
@@ -520,10 +513,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 			page.Id = id;
 		}
 		else {
-			Logger
-					.getLogger(AbstractXmlDumpReader.class.getName())
-					.debug(
-							"Unexpected <id> outside a <page>, <revision>, or <contributor>");
+			logger.debug("Unexpected <id> outside a <page>, <revision>, or <contributor>");
 			errorState = true;
 			contrib = null;
 			rev = null;
@@ -531,13 +521,13 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 		}
 	}
 
-	void readRestrictions() {
+	private void readRestrictions() {
 		page.Restrictions = bufferContents();
 	}
 
 	// ------
 
-	void openRevision() throws IOException {
+	private void openRevision() throws IOException {
 		if (!pageSent) {
 			writer.writeStartPage(page);
 			pageSent = true;
@@ -546,59 +536,59 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 		rev = new Revision();
 	}
 
-	void closeRevision() throws IOException {
+	private void closeRevision() throws IOException {
 		writer.writeRevision(rev);
 		rev = null;
 	}
 
-	void readTimestamp() {
+	private void readTimestamp() {
 		rev.Timestamp = parseUTCTimestamp(bufferContents());
 	}
 
-	void readComment() {
+	private void readComment() {
 		rev.Comment = bufferContentsOrNull();
 		if (rev.Comment == null && !deleted)
 		 {
-			rev.Comment = ""; // NOTE: null means deleted/supressed
+			rev.Comment = ""; // NOTE: null means deleted/suppressed
 		}
 	}
 
-	void readMinor() {
+	private void readMinor() {
 		rev.Minor = true;
 	}
 
-	void readText() {
+	private void readText() {
 		rev.Text = bufferContentsOrNull();
 		if (rev.Text == null && !deleted)
 		 {
-			rev.Text = ""; // NOTE: null means deleted/supressed
+			rev.Text = ""; // NOTE: null means deleted/suppressed
 		}
 	}
 
 	// -----------
-	void openContributor() {
+	private void openContributor() {
 		// XXX: record deleted flag?! as it is, any empty <contributor> tag
 		// counts as "deleted"
 		contrib = new Contributor();
 	}
 
-	void closeContributor() {
-		// NOTE: if the contributor was supressed, nither username nor id have
+	private void closeContributor() {
+		// NOTE: if the contributor was suppressed, neither username nor id have
 		// been set in the Contributor object
 		rev.Contributor = contrib;
 		contrib = null;
 	}
 
-	void readUsername() {
+	private void readUsername() {
 		contrib.Username = bufferContentsOrNull();
 	}
 
-	void readIp() {
+	private void readIp() {
 		contrib.Username = bufferContents();
 		contrib.isIP = true;
 	}
 
-	private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+	private static final TimeZone utc = TimeZone.getTimeZone(ZoneId.of("UTC"));
 
 	private static Calendar parseUTCTimestamp(String text) {
 		// 2003-10-26T04:50:47Z
@@ -606,8 +596,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 		String trimmed = text.trim();
 		GregorianCalendar ts = new GregorianCalendar(utc);
 		ts.set(Integer.parseInt(trimmed.substring(0, 0 + 4)), // year
-				Integer.parseInt(trimmed.substring(5, 5 + 2)) - 1, // month is
-				// 0-based!
+				Integer.parseInt(trimmed.substring(5, 5 + 2)) - 1, // month is 0-based!
 				Integer.parseInt(trimmed.substring(8, 8 + 2)), // day
 				Integer.parseInt(trimmed.substring(11, 11 + 2)), // hour
 				Integer.parseInt(trimmed.substring(14, 14 + 2)), // minute

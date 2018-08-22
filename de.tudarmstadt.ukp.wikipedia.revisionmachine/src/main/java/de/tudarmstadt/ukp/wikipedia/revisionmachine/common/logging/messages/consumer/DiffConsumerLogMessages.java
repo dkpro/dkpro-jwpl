@@ -17,21 +17,18 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages.consumer;
 
-import java.util.logging.Level;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.DiffException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
+import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for DiffConsumers.
  *
  * TODO: This file should be replaced with resource files.
- *
- *
  *
  */
 public class DiffConsumerLogMessages
@@ -90,7 +87,7 @@ public class DiffConsumerLogMessages
 			final DiffException e)
 	{
 
-		logger.logException(Level.SEVERE, "DiffException", e);
+		logger.logException(Level.ERROR, "DiffException", e);
 	}
 
 	/**
@@ -137,11 +134,11 @@ public class DiffConsumerLogMessages
 	{
 
 		if (task != null) {
-			logger.logError(Level.WARNING, "Error while reading a task: "
+			logger.logError(Level.WARN, "Error while reading a task: "
 					+ task.toString(), e);
 		}
 		else {
-			logger.logError(Level.WARNING,
+			logger.logError(Level.WARN,
 					"Error while reading an unknown task", e);
 		}
 	}
@@ -162,7 +159,7 @@ public class DiffConsumerLogMessages
 			final Task<Revision> article, long time, long transmittingTime)
 	{
 
-		logger.logMessage(Level.FINE,
+		logger.logMessage(Level.TRACE,
 				"Start Procssing Task\t" + article.toString());
 	}
 

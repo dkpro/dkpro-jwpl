@@ -17,27 +17,27 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
 import de.tudarmstadt.ukp.wikipedia.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- * An iterable over page objects selected by a query.
- *
+ * An iterable over {@link Page} objects selected by a query.
  */
 public class PageQueryIterable implements Iterable<Page> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Wikipedia wiki;
     private List<Integer> pageIdList;
@@ -96,7 +96,7 @@ public class PageQueryIterable implements Iterable<Page> {
             try {
                 page = wiki.getPage(pageID);
             } catch (WikiPageNotFoundException e) {
-                logger.error("Page with pageID " + pageID + " could not be found. Fatal error. Terminating.");
+                logger.error("Page with pageID {} could not be found. Fatal error. Terminating.", pageID);
                 e.printStackTrace();
                 System.exit(1);
             }
@@ -181,7 +181,7 @@ public class PageQueryIterable implements Iterable<Page> {
             // if still here, add page
             pageIdList.add(pageID);
         } // for
-        logger.info("Query selected " + pageIdList.size() + " pages.");
+        logger.info("Query selected {} pages.", pageIdList.size());
     }
 
     public Iterator<Page> iterator() {

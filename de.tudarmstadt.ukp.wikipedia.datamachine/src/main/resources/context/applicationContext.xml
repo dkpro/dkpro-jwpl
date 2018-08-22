@@ -9,19 +9,19 @@
 	<!-- single variant
 		de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory
 	-->
-	<bean id="environmentFactory" class="de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory" scope="singleton">
+	<bean id="environmentFactory" class="de.tudarmstadt.ukp.wikipedia.wikimachine.factory.SpringFactory">
 	</bean>
 
 	<!-- variants: use one or several loggers from the list
 		de.tudarmstadt.ukp.wikipedia.wikimachine.debug.FileMemoryLogger
-		de.tudarmstadt.ukp.wikipedia.wikimachine.debug.MailMemorylLogger
-		de.tudarmstadt.ukp.wikipedia.wikimachine.debug.Log4jLogger
+		de.tudarmstadt.ukp.wikipedia.wikimachine.debug.MailMemoryLogger
+		de.tudarmstadt.ukp.wikipedia.wikimachine.debug.Slf4JLogger
 	-->
-	<bean id="logger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.CompositeLogger" scope="singleton">
+	<bean id="logger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.CompositeLogger">
 		<constructor-arg>
 			<list>
-				<bean id="fileLogger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.FileMemoryLogger" scope="singleton" />
-				<bean id="log4jLogger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.Log4jLogger" scope="singleton" />
+				<bean id="fileLogger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.FileMemoryLogger"/>
+				<bean id="slf4JLogger" class="de.tudarmstadt.ukp.wikipedia.wikimachine.debug.Slf4JLogger"/>
 			</list>
 		</constructor-arg>
 	</bean>
@@ -31,25 +31,25 @@
 	de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.BZip2Decompressor
 	de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.GZipDecompressor	
 	-->
-	<bean id="decompressor" class="de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.UniversalDecompressor" scope="singleton">
+	<bean id="decompressor" class="de.tudarmstadt.ukp.wikipedia.wikimachine.decompression.UniversalDecompressor">
 	</bean>
 
 	<!-- variants 
 	de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineGenerator [datamachine]
 	de.tudarmstadt.ukp.wikipedia.timemachine.domain.TimeMachineGenerator [timemachine]
 	-->
-	<bean id="snapshotGenerator" class="de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineGenerator" scope="singleton">
+	<bean id="snapshotGenerator" class="de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineGenerator">
 		<constructor-arg ref="environmentFactory" />
 	</bean>
 
 	<!-- single variant
 		de.tudarmstadt.ukp.wikipedia.wikimachine.domain.DumpVersionProcessor
-		TODO: maybe a multithread dump version processor will be added
+		TODO: maybe a multithreaded dump version processor will be added
 		
 		step2Log, step2GC and step2Flush are settings used to find/ to aboid memory leaks
 		use property's value="0" to disable it 
 	-->
-	<bean id="dumpVersionProcessor" class="de.tudarmstadt.ukp.wikipedia.wikimachine.domain.DumpVersionProcessor" scope="singleton">
+	<bean id="dumpVersionProcessor" class="de.tudarmstadt.ukp.wikipedia.wikimachine.domain.DumpVersionProcessor">
 		<constructor-arg ref="logger" />
 		<property name="step2Log" value="10000" />
 		<property name="step2GC" value="1000000" />
@@ -75,7 +75,7 @@
 	
 	Factory Template:
 		
-	<bean id="dumpVersionFactory" class="factoryClass" scope="singleton"/>
+	<bean id="dumpVersionFactory" class="factoryClass"/>
 	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
 		<property name="logger">
 			<ref bean="logger" />
@@ -92,7 +92,7 @@
 	
 	-->
 
-	<bean id="dumpVersionFactory" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.version.SingleDumpVersionJDKStringKeyFactory" scope="singleton" />
+	<bean id="dumpVersionFactory" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.version.SingleDumpVersionJDKStringKeyFactory" />
 	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
 		<property name="logger">
 			<ref bean="logger" />
@@ -116,21 +116,21 @@
 	<!-- variants 
 	de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.PageParser [datamachine] & [timemachine]
 	-->
-	<bean id="pageParser" class="de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.PageParser" scope="singleton">
+	<bean id="pageParser" class="de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.PageParser">
 	</bean>
 
 	<!-- variants 
 	de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.DataMachineRevisionParser [datamachine]
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml.TimeMachineRevisionParser [timemachine]
 	-->
-	<bean id="revisionParser" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.DataMachineRevisionParser" scope="singleton">
+	<bean id="revisionParser" class="de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml.DataMachineRevisionParser">
 	</bean>
 
 
 	<!-- variants 
 	de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser [datamachine] & [timemachine]
 	-->
-	<bean id="textParser" class="de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser" scope="singleton">
+	<bean id="textParser" class="de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser">
 	</bean>
 
 

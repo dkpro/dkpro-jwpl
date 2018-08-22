@@ -17,12 +17,14 @@
  */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.util;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Get the destination of a redirect using its text.
@@ -30,18 +32,17 @@ import org.apache.log4j.Logger;
  */
 public class Redirects {
 
-	private static final Logger log4j = Logger.getLogger(Redirects.class);
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private Redirects() {
 	}
 
 	/**
-	 * redirects patterns for some popular languages <br>
+	 * Contains redirects patterns for some popular languages <br>
 	 * TODO extend this list, source file codepage changes are necessary
 	 *
 	 * @see [Bug 86]
-	 * @see "http://en.wikipedia.org/wiki/Wikipedia:Redirect"
-		 *
+	 * @see <a href="http://en.wikipedia.org/wiki/Wikipedia:Redirect">Redirect</a>
 	 */
 	private static final List<String> redirectPatterns = new ArrayList<String>() {
 		private static final long serialVersionUID = 1L;
@@ -64,10 +65,9 @@ public class Redirects {
 	/**
 	 * Check if given text starts with #REDIRECT, with case ignoring
 	 *
-	 * @param text
-	 *            given text
-	 * @return true if text starts with #REDIRECT, false otherwise
-		 */
+	 * @param text The text fragment to check. Must not be {@code null}.
+	 * @return {@code true} if text starts with #REDIRECT, false otherwise
+	 */
 	public static boolean isRedirect(String text) {
 		boolean result = false;
 		String pattern;
@@ -80,13 +80,9 @@ public class Redirects {
 	}
 
 	/**
-	 *
 	 * Return the redirect destination of according to wikimedia syntax.
 	 *
-	 * FIXME the whole function body was temporary wrapped with try/catch to
-	 * find a error in this code
-	 *
-	 * @param pageText
+	 * @param pageText Must not be {@code null}.
 	 * @return redirect destination
 	 */
 	public static String getRedirectDestination(String pageText) {
@@ -148,7 +144,7 @@ public class Redirects {
 			}
 		} catch (Exception e) {
 			redirectString = null;
-			log4j.debug("Error in Redirects ignored");
+			logger.debug("Error in Redirects ignored");
 		}
 
 		return redirectString;

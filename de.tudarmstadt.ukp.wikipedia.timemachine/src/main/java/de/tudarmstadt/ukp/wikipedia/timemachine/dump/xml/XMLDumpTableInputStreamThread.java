@@ -20,27 +20,29 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.xml;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import org.apache.log4j.Logger;
+import java.lang.invoke.MethodHandles;
 
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.NamespaceFilter;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.AbstractXmlDumpReader;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.DumpTableEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Thread for converting of XML stream to SQL stream.
- *
- *
  */
 class XMLDumpTableInputStreamThread extends Thread {
+
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
 	/**
 	 * Enable the main and category pages as well as discussions
 	 */
 	private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
 
 	/**
-	 * Generalization <code>org.mediawiki.importer.XmlDumpReader</code> that
-	 * parses the XML dump
+	 * Generalization {@link de.tudarmstadt.ukp.wikipedia.mwdumper.importer.XmlDumpReader}
+	 * that parses the XML dump
 	 */
 	private AbstractXmlDumpReader xmlReader;
 
@@ -49,9 +51,6 @@ class XMLDumpTableInputStreamThread extends Thread {
 	 */
 	private boolean isComplete;
 
-	private static final Logger log4j = Logger
-			.getLogger(XMLDumpTableInputStreamThread.class);
-
 	/**
 	 * Initiate input and output streams
 	 *
@@ -59,7 +58,7 @@ class XMLDumpTableInputStreamThread extends Thread {
 	 *            XML input stream
 	 * @param oStream
 	 *            SQL output stream
-	 * @throws IOException
+	 * @throws IOException Thrown in case errors occurred.
 	 */
 	public XMLDumpTableInputStreamThread(InputStream iStream,
 			OutputStream oStream, DumpTableEnum table) throws IOException {
@@ -90,9 +89,8 @@ class XMLDumpTableInputStreamThread extends Thread {
 			xmlReader.readDump();
 			isComplete = true;
 		} catch (IOException e) {
-			log4j.error(e.getMessage());
-			RuntimeException rte = new RuntimeException(e);
-			throw rte;
+			logger.error(e.getMessage(), e);
+			throw new RuntimeException(e);
 		}
 	}
 

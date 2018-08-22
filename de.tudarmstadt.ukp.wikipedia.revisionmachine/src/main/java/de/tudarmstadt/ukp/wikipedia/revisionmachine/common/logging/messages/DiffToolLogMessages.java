@@ -17,18 +17,14 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages;
 
-import java.util.logging.Level;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
+import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for DiffTool.
  *
  * TODO: This file should be replaced with resource files.
- *
- *
- *
  */
 public class DiffToolLogMessages
 {
@@ -95,7 +91,7 @@ public class DiffToolLogMessages
 	 */
 	public static void logException(final Logger logger, final Exception e)
 	{
-		logger.logException(Level.SEVERE, "Unexpected Exception", e);
+		logger.logException(Level.ERROR, "Unexpected Exception", e);
 	}
 
 	/**
@@ -108,7 +104,7 @@ public class DiffToolLogMessages
 	 */
 	public static void logError(final Logger logger, final Error e)
 	{
-		logger.logError(Level.SEVERE, "Unexpected Error", e);
+		logger.logError(Level.ERROR, "Unexpected Error", e);
 	}
 
 	/**

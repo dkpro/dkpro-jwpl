@@ -17,11 +17,12 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants;
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Data access object for class {@link MetaData}.
@@ -31,7 +32,7 @@ import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
  */
 public class MetaDataDAO extends GenericDAO<MetaData> implements WikiConstants {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public MetaDataDAO(Wikipedia wiki) {
         super(wiki, MetaData.class);

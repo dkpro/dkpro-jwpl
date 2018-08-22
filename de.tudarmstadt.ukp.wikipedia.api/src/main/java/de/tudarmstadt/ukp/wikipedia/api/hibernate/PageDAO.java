@@ -17,10 +17,11 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api.hibernate;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 /**
  * Data access object for class {@link Page}.
@@ -30,7 +31,7 @@ import de.tudarmstadt.ukp.wikipedia.api.Wikipedia;
  */
 public class PageDAO extends GenericDAO<Page> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public PageDAO(Wikipedia pWiki) {
         super(pWiki, Page.class);

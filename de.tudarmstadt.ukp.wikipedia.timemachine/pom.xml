@@ -15,34 +15,46 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<parent>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
-  <version>1.2.0-SNAPSHOT</version>
+		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+		<artifactId>de.tudarmstadt.ukp.wikipedia</artifactId>
+		<version>1.2.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
-  <name>TimeMachine</name>
-  <dependencies>
-  	<dependency>
-  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  		<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-  		</dependency>
-  	<dependency>
-  		<groupId>net.sf.trove4j</groupId>
-  		<artifactId>trove4j</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  		<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
-  	</dependency>
-  	<dependency>
-  		<groupId>log4j</groupId>
-  		<artifactId>log4j</artifactId>
-  	</dependency>
-  </dependencies>
-    	<build>
+	<artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
+	<name>TimeMachine</name>
+	<dependencies>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+			<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.trove4j</groupId>
+			<artifactId>trove4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+			<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
+		</dependency>
+		<!-- logger dependencies -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -51,23 +63,22 @@
 						<id>create-executable-jar</id>
 						<phase>package</phase>
 						<goals>
-						<goal>single</goal>
+							<goal>single</goal>
 						</goals>
 						<configuration>
 							<attach>false</attach>
-							<descriptorRefs>
-								<descriptorRef>
-									jar-with-dependencies
-								</descriptorRef>
-							</descriptorRefs>
+							<descriptors>
+								<descriptor>src/main/assembly/assembly.xml</descriptor>
+							</descriptors>
 							<archive>
 								<manifest>
-									<mainClass>de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine</mainClass>
+									<mainClass>de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine
+									</mainClass>
 								</manifest>
 							</archive>
 						</configuration>
 					</execution>
-			</executions>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -17,20 +17,17 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages.consumer;
 
-import java.util.logging.Level;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.SQLConsumerException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.content.Diff;
+import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for SQLConsumers.
  *
  * TODO: This file should be replaced with resource files.
- *
- *
  *
  */
 public class SQLConsumerLogMessages
@@ -71,7 +68,7 @@ public class SQLConsumerLogMessages
 	}
 
 	/**
-	 * Logs the occurance of an OutOfMemoryError while reading a task.
+	 * Logs the occurrence of an OutOfMemoryError while reading a task.
 	 *
 	 * @param logger
 	 *            reference to the logger
@@ -85,17 +82,17 @@ public class SQLConsumerLogMessages
 	{
 
 		if (task != null) {
-			logger.logError(Level.WARNING, "Error while reading a task: "
+			logger.logError(Level.WARN, "Error while reading a task: "
 					+ task.toString(), e);
 		}
 		else {
-			logger.logError(Level.WARNING,
+			logger.logError(Level.WARN,
 					"Error while reading an unknown task", e);
 		}
 	}
 
 	/**
-	 * Logs the occurance of an SqlConsumerException.
+	 * Logs the occurrence of an SqlConsumerException.
 	 *
 	 * @param logger
 	 *            reference to the logger
@@ -106,7 +103,7 @@ public class SQLConsumerLogMessages
 			final SQLConsumerException e)
 	{
 
-		logger.logException(Level.SEVERE, "SQLConsumerException", e);
+		logger.logException(Level.ERROR, "SQLConsumerException", e);
 	}
 
 	/** No object - utility class */

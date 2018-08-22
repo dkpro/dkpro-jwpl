@@ -21,17 +21,23 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.lang.invoke.MethodHandles;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * A logger implementation which directs its logging output to a file with a CSV format.
+ *
+ * The format - and it's semantics - is defined by the header: {@link FileMemoryLogger#FILEHEADER}.
+ */
 public class FileMemoryLogger extends AbstractLogger {
 
 	private static final String FILEHEADER = "\"Date/Time\",\"Total Memory\",\"Free Memory\",\"Message\"";
 
-	private static final Logger log4j = Logger
-			.getLogger(FileMemoryLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private static final SimpleDateFormat FILENAME_FORMAT = new SimpleDateFormat(
 			"yyyyMMdd_HHmmss");
@@ -51,7 +57,7 @@ public class FileMemoryLogger extends AbstractLogger {
 					.format(new Date()).concat(".txt"))));
 			output.println(FILEHEADER);
 		} catch (FileNotFoundException e) {
-			log4j.error(e.getMessage());
+			logger.error(e.getMessage(), e);
 			output = null;
 		}
 

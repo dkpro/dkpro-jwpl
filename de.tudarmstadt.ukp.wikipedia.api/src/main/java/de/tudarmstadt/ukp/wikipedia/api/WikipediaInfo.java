@@ -17,6 +17,7 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,20 +27,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Holds numerous information on a given subset (that may also be
  * the whole Wikipedia) of Wikipedia nodes.
  */
 public class WikipediaInfo {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Iterable<Page> pages;
     private double averageFanOut;
@@ -165,7 +166,7 @@ public class WikipediaInfo {
                 categoryArticleMap.put(node, pages);
             }
             else {
-                logger.info(node + " is not a category.");
+                logger.info("{} is not a category.", node);
             }
         }
 
@@ -196,10 +197,10 @@ public class WikipediaInfo {
 
         int articlesWithOverlappingCategories = getArticlesWithOverlappingCategories(pWiki, catGraph);
         double overlappingCategoriesRatio = (double) articlesWithOverlappingCategories / (double) pWiki.getMetaData().getNumberOfPages();
-        logger.error(articlesWithOverlappingCategories + " - " + pWiki.getMetaData().getNumberOfPages() + " - " + overlappingCategoriesRatio);
+        logger.info(articlesWithOverlappingCategories + " - " + pWiki.getMetaData().getNumberOfPages() + " - " + overlappingCategoriesRatio);
 
         double endTime = (System.currentTimeMillis() - startTime) / 1000.0;
-        logger.error(endTime + "ms");
+        logger.debug("{} ms", endTime);
     }
 
 
@@ -258,12 +259,12 @@ public class WikipediaInfo {
         int numberOfCategorizedArticles = getNumberOfCategorizedArticles(pWiki, catGraph);
         double categorizedArticlesRatio = (double) numberOfCategorizedArticles / (double) pWiki.getMetaData().getNumberOfPages();
 
-        logger.info("Categorized articles: " + numberOfCategorizedArticles);
-        logger.info("All articles:         " + pWiki.getMetaData().getNumberOfPages());
-        logger.info("Ratio:                " + categorizedArticlesRatio);
+        logger.info("Categorized articles: {}", numberOfCategorizedArticles);
+        logger.info("All articles:         {}", pWiki.getMetaData().getNumberOfPages());
+        logger.info("Ratio:                {}", categorizedArticlesRatio);
 
         double endTime = (System.currentTimeMillis() - startTime) / 1000.0;
-        logger.error(endTime + "ms");
+        logger.debug( "{}ms", endTime);
     }
 
     public double getAveragePathLengthFromRoot(Wikipedia pWiki, CategoryGraph connectedCatGraph) throws WikiApiException {
@@ -348,7 +349,7 @@ public class WikipediaInfo {
                 }
             }
             else {
-                logger.info(node + " is not a category.");
+                logger.info("{} is not a category.", node);
             }
         }
         this.degreeDistribution = localDegreeDistribution;

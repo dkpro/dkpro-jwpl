@@ -17,19 +17,20 @@
  */
 package de.tudarmstadt.ukp.wikipedia.util;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DbUtilities {
 
     private Connection conn;
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public DbUtilities(Connection conn) {
         this.conn = conn;
@@ -53,7 +54,7 @@ public class DbUtilities {
             }
         }
         catch (SQLException e) {
-            logger.error("Table " + tableName + " does not exist.", new Throwable() );
+            logger.error("Table " + tableName + " does not exist.", new RuntimeException(e));
         }
 
         return false;

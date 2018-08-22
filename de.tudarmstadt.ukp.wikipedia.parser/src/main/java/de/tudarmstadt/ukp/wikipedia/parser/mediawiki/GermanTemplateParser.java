@@ -17,14 +17,14 @@
  */
 package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Link;
 import de.tudarmstadt.ukp.wikipedia.parser.ParsedPage;
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is the TemplateParser for the german language, with special treatment
@@ -33,7 +33,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
  */
 public class GermanTemplateParser implements MediaWikiTemplateParser {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final String templatePrefix = "TEMPLATE[";
 	private final String templatePostfix = "]";
@@ -99,7 +99,7 @@ public class GermanTemplateParser implements MediaWikiTemplateParser {
 			List<String> templateParameters = t.getParameters();
 
 			if( s.equals(templateName)){
-				logger.info("ParseTemplate: " + templateName);
+				logger.info("ParseTemplate: {}", templateName);
 				if( templateName.equals("Dieser Artikel")){
 
 // I removed that from the core API, as it is not likely to be present in most non-German articles. (TZ)

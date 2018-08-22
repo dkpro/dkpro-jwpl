@@ -17,19 +17,16 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages.consumer;
 
-import java.util.logging.Level;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.TimeoutException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.MathUtilities;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.util.Time;
+import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for Consumers.
  *
  * TODO: This file should be replaced with resource files.
- *
- *
  *
  */
 public final class ConsumerLogMessages
@@ -56,7 +53,7 @@ public final class ConsumerLogMessages
 	 */
 	public static void logError(final Logger logger, final Error e)
 	{
-		logger.logError(Level.SEVERE, "Unexpected Error", e);
+		logger.logError(Level.ERROR, "Unexpected Error", e);
 	}
 
 	/**
@@ -69,7 +66,7 @@ public final class ConsumerLogMessages
 	 */
 	public static void logException(final Logger logger, final Exception e)
 	{
-		logger.logException(Level.SEVERE, "Unexpected Exception", e);
+		logger.logException(Level.ERROR, "Unexpected Exception", e);
 	}
 
 	/**
@@ -128,7 +125,7 @@ public final class ConsumerLogMessages
 	 */
 	public static void logSleep(final Logger logger)
 	{
-		logger.logMessage(Level.FINER, "Consumer is sleeping");
+		logger.logMessage(Level.DEBUG, "Consumer is sleeping");
 	}
 
 	/**
@@ -159,7 +156,7 @@ public final class ConsumerLogMessages
 	{
 
 		logger.logMessage(
-				Level.FINE,
+				Level.DEBUG,
 				"Consumer-Status-Report ["
 						+ Time.toClock(System.currentTimeMillis() - startTime)
 						+ "]" + "\tEFFICIENCY\t "
@@ -180,7 +177,7 @@ public final class ConsumerLogMessages
 	}
 
 	/**
-	 * Logs the occurance of a TimeoutException.
+	 * Logs the occurrence of a TimeoutException.
 	 *
 	 * @param logger
 	 *            reference to the logger
@@ -191,7 +188,7 @@ public final class ConsumerLogMessages
 			final TimeoutException e)
 	{
 
-		logger.logException(Level.WARNING, "TimeoutException", e);
+		logger.logException(Level.WARN, "TimeoutException", e);
 	}
 
 	/** No object - utility class */

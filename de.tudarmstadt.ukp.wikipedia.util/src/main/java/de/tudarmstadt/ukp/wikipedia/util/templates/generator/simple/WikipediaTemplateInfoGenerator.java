@@ -17,6 +17,7 @@
  */
 package de.tudarmstadt.ukp.wikipedia.util.templates.generator.simple;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -24,9 +25,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import de.tudarmstadt.ukp.wikipedia.api.DatabaseConfiguration;
 import de.tudarmstadt.ukp.wikipedia.api.Page;
@@ -45,19 +43,21 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionIterator;
 import de.tudarmstadt.ukp.wikipedia.util.StringUtils;
 import de.tudarmstadt.ukp.wikipedia.util.templates.WikipediaTemplateInfo;
 import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class determines which page in a JWPL database contains which templates.
- * It produces an SQL file that will add this data to the extisting database. It
- * can then be accessed by the WikipediaTemplateInfo class.
- *
+ * It produces an SQL file that will add this data to the existing database. It
+ * can then be accessed by the {@link WikipediaTemplateInfo} class.
  *
  */
 public class WikipediaTemplateInfoGenerator
 {
-	private MediaWikiParser parser = null;
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+	private MediaWikiParser parser;
 	private Wikipedia wiki;
+
 	private final DatabaseConfiguration dbConf;
 
 	private final int pageBuffer;
@@ -165,7 +165,7 @@ public class WikipediaTemplateInfoGenerator
 			pageCounter++;
 
 			if (pageCounter % VERBOSITY == 0) {
-				logger.info(pageCounter + " pages processed ...");
+				logger.info( "{} pages processed ...", pageCounter);
 			}
 
 			Page curPage = pageIter.next();
@@ -185,7 +185,7 @@ public class WikipediaTemplateInfoGenerator
 
 					revisionCounter++;
 					if (revisionCounter % (VERBOSITY*10) == 0) {
-						logger.info(revisionCounter + " revisions processed ...");
+						logger.info("{} revisions processed ...", revisionCounter);
 					}
 
 					Revision curRevision = revApi.getRevision(curPageId, ts);
@@ -212,7 +212,7 @@ public class WikipediaTemplateInfoGenerator
 			pageCounter++;
 
 			if (pageCounter % VERBOSITY == 0) {
-				logger.info(pageCounter + " pages processed ...");
+				logger.info("{} pages processed ...", pageCounter);
 			}
 
 			Page curPage = pageIter.next();
@@ -239,7 +239,7 @@ public class WikipediaTemplateInfoGenerator
 				revCounter++;
 
 				if (revCounter % VERBOSITY == 0) {
-					logger.info(revCounter + " revisions processed ...");
+					logger.info("{} revisions processed ...", revCounter);
 				}
 
 				Revision curRevision = revisionIter.next();
@@ -249,15 +249,13 @@ public class WikipediaTemplateInfoGenerator
 						revisionFilter, curRevisionId, TPLNAME_TO_REVISIONIDS);
 			}
 		}catch(WikiApiException e){
-			System.err.println("Error initializing Revision Iterator");
-			e.printStackTrace();
+			logger.error("Error initializing Revision Iterator", e);
 		}finally{
 			if(revisionIter!=null){
 				try{
 					revisionIter.close();
 				}catch(SQLException e){
-					System.err.println("Error closing RevisionIterator");
-					e.printStackTrace();
+					logger.error("Error closing RevisionIterator", e);
 				}
 			}
 		}
@@ -288,8 +286,7 @@ public class WikipediaTemplateInfoGenerator
 			try{
 				extractTemplates();
 			}catch(WikiApiException e){
-				System.err.println("Error extracting templates.");
-				e.printStackTrace();
+				logger.error("Error extracting templates.", e);
 			}
 		}
 
@@ -327,7 +324,7 @@ public class WikipediaTemplateInfoGenerator
 	 * Loads existing ids into the map. If no id exists, a template will
 	 * get a new one in the dump writer
 	 *
-	 * @param info
+	 * @param info Must not be {@code null}.
 	 * @param templateNames
 	 *            template names to use
 	 */
@@ -351,7 +348,8 @@ public class WikipediaTemplateInfoGenerator
 	 *
 	 * Returns the set of names of all templates that are contained in the given
 	 * article (without duplicates).<br>
-	 * The names are SQL escaped using StringUtils.sqlEscape
+	 *
+	 * Note: The names are SQL escaped using {@link StringUtils#sqlEscape(String)}.
 	 *
 	 * @param pageText
 	 *            the page to get the templates from
@@ -370,8 +368,7 @@ public class WikipediaTemplateInfoGenerator
 			}
 			catch (Exception e) {
 				// Most likely parsing problems
-				e.printStackTrace();
-				logger.warn("Problems parsing page");
+				logger.error("Problems parsing page!", e);
 			}
 		}
 		return names;
@@ -385,7 +382,7 @@ public class WikipediaTemplateInfoGenerator
 				nWiki = new Wikipedia(dbConf);
 			}
 			catch (WikiInitializationException e) {
-				System.err.println("Error initializing Wiki connection");
+				logger.error("Error initializing Wiki connection!", e);
 			}
 			return nWiki;
 		}

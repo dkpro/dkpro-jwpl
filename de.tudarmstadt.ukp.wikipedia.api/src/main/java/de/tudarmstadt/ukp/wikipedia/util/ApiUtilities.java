@@ -17,12 +17,14 @@
  */
 package de.tudarmstadt.ukp.wikipedia.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
 
 public class ApiUtilities {
 
-	private static final Log logger = LogFactory.getLog(ApiUtilities.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * DOTS - print progress dots.

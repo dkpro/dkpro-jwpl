@@ -17,15 +17,16 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.jgrapht.graph.DefaultEdge;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Methods for handling cycles in the category graph.
@@ -33,7 +34,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
  */
 public class CycleHandler {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     Wikipedia wiki;
     CategoryGraph categoryGraph;

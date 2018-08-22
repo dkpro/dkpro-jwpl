@@ -26,10 +26,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import de.tudarmstadt.ukp.wikipedia.parser.Content;
 import de.tudarmstadt.ukp.wikipedia.parser.Content.FormatType;
@@ -48,6 +46,8 @@ import de.tudarmstadt.ukp.wikipedia.parser.Span;
 import de.tudarmstadt.ukp.wikipedia.parser.Table;
 import de.tudarmstadt.ukp.wikipedia.parser.TableElement;
 import de.tudarmstadt.ukp.wikipedia.parser.Template;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Renders a ParsedPage in HTML...<br>
@@ -58,7 +58,7 @@ import de.tudarmstadt.ukp.wikipedia.parser.Template;
  */
 public class HtmlWriter {
 
-	private final static Log logger = LogFactory.getLog(HtmlWriter.class);
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
 	 * Generates HTML Output for a {@link ParsedPage}.
@@ -491,11 +491,11 @@ public class HtmlWriter {
         try (Writer destFile = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(outFile)), encoding))) {
             destFile.write(text);
         } catch (UnsupportedEncodingException e1) {
-            logger.error("Unsupported encoding exception while opening file " + outFile.getAbsolutePath());
+            logger.error("Unsupported encoding exception while opening file '{}'", outFile.getAbsolutePath(), e1);
         } catch (FileNotFoundException e1) {
-            logger.error("File " + outFile.getAbsolutePath() + " not found.",  e1);
+            logger.error("File '{}' not found.", outFile.getAbsolutePath(),  e1);
         } catch (IOException e) {
-            logger.error("IO exception while writing file " + outFile.getAbsolutePath(), e);
+            logger.error("IO exception while writing file '{}", outFile.getAbsolutePath(), e);
         }
     }
 

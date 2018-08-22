@@ -17,11 +17,10 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.*;
 import java.util.Map.Entry;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.hibernate.type.IntegerType;
@@ -33,6 +32,8 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.WikiHibernateUtil;
 import de.tudarmstadt.ukp.wikipedia.util.distance.LevenshteinStringDistance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.config.WikiConfig;
 
 
@@ -42,11 +43,12 @@ import org.sweble.wikitext.engine.config.WikiConfig;
  */
 // TODO better JavaDocs!
 public class Wikipedia implements WikiConstants {
+    
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove it!
     static final String SQL_COLLATION = " COLLATE utf8_bin";
 
-	private final Log logger = LogFactory.getLog(getClass());
     private final Language language;
     private final DatabaseConfiguration dbConfig;
 
@@ -55,6 +57,7 @@ public class Wikipedia implements WikiConstants {
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
      * The wikiapi startup time is way too long otherwise. */
     private final Map<Integer, Long> idMapPages;
+
     /**
      * A mapping from categories pageIDs to hibernateIDs.
      * It is a kind of cache. It is only filled, if a pageID was previously accessed.
@@ -63,7 +66,8 @@ public class Wikipedia implements WikiConstants {
 
     private final MetaData metaData;
 
-    public WikiConfig wikiConfig;
+    // Note: This should only be accessed internally.
+    private WikiConfig wikiConfig;
 
     /**
      * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig parameter.
@@ -72,7 +76,7 @@ public class Wikipedia implements WikiConstants {
      */
     public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException {
 
-        logger.debug("Creating Wikipedia object.");
+        logger.trace("Creating Wikipedia object.");
 
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
@@ -86,10 +90,13 @@ public class Wikipedia implements WikiConstants {
         if(dbConfig.supportsCollation()) {
             logger.info("Wikipedia database backend supports character collation features.");
         } else {
-            logger.debug("Wikipedia database backend does not support character collation features.");
+            logger.debug("Wikipedia database backend does NOT support character collation features.");
         }
 	}
 
+	WikiConfig getWikConfig() {
+        return wikiConfig;
+    }
 
     /**
      * Gets the page with the given title.
@@ -798,6 +805,7 @@ public class Wikipedia implements WikiConstants {
         sb.append(this.getDatabaseConfiguration().getLanguage());
         return sb.toString();
     }
+
 }
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {

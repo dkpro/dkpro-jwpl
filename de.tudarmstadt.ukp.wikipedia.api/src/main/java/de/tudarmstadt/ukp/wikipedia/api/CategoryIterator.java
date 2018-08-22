@@ -17,15 +17,16 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An iterator over category objects.
@@ -33,7 +34,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
  */
 public class CategoryIterator implements Iterator<Category> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private CategoryBuffer buffer;
 

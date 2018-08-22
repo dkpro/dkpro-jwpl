@@ -17,6 +17,11 @@
  */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.debug;
 
+
+/**
+ * A logger implementation which combines several {@link ILogger} instances into a chain which is processed in
+ * the order in which the chain was initially composed.
+ */
 public class CompositeLogger implements ILogger {
 
 	private ILogger loggers[];

@@ -17,8 +17,6 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.messages.consumer;
 
-import java.util.logging.Level;
-
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.Revision;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.exceptions.ArticleReaderException;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.common.logging.Logger;
@@ -28,6 +26,7 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.consumer.article.Ar
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.ArchiveDescription;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.Task;
 import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.tasks.TaskTypes;
+import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for ArticleConsumers.
@@ -41,7 +40,7 @@ public final class ArticleConsumerLogMessages
 {
 
 	/**
-	 * Logs the retiraval of an archive desriptor.
+	 * Logs the retrieval of an archive descriptor.
 	 *
 	 * @param logger
 	 *            reference to the logger
@@ -53,7 +52,7 @@ public final class ArticleConsumerLogMessages
 	{
 
 		logger.logMessage(Level.INFO, "Retrieved archive " + archive.toString()
-				+ " succesfully");
+				+ " successfully");
 	}
 
 	/**
@@ -108,7 +107,7 @@ public final class ArticleConsumerLogMessages
 			final ArchiveDescription archive, final Error e)
 	{
 
-		logger.logError(Level.SEVERE, "Error while accessing archive "
+		logger.logError(Level.ERROR, "Error while accessing archive "
 				+ archive.toString(), e);
 	}
 
@@ -126,7 +125,7 @@ public final class ArticleConsumerLogMessages
 			final ArchiveDescription archive, final Exception e)
 	{
 
-		logger.logException(Level.SEVERE, "Exception while accessing archive "
+		logger.logException(Level.ERROR, "Exception while accessing archive "
 				+ archive.toString(), e);
 	}
 
@@ -189,11 +188,11 @@ public final class ArticleConsumerLogMessages
 	{
 
 		if (task != null) {
-			logger.logException(Level.SEVERE, "Error while reading a task: "
+			logger.logException(Level.ERROR, "Error while reading a task: "
 					+ task.toString(), e);
 		}
 		else {
-			logger.logException(Level.SEVERE,
+			logger.logException(Level.ERROR,
 					"Error while reading an unknown task", e);
 		}
 	}
@@ -213,11 +212,11 @@ public final class ArticleConsumerLogMessages
 	{
 
 		if (task != null) {
-			logger.logError(Level.WARNING, "Error while reading a task: "
+			logger.logError(Level.WARN, "Error while reading a task: "
 					+ task.toString(), e);
 		}
 		else {
-			logger.logError(Level.WARNING,
+			logger.logError(Level.WARN,
 					"Error while reading an unknown task", e);
 		}
 	}
@@ -231,7 +230,7 @@ public final class ArticleConsumerLogMessages
 	public static void logRetrieveArchiveFailed(final Logger logger)
 	{
 
-		logger.logMessage(Level.WARNING, "Consumer failed to obtain an archive");
+		logger.logMessage(Level.WARN, "Consumer failed to obtain an archive");
 	}
 
 	/**
@@ -265,7 +264,7 @@ public final class ArticleConsumerLogMessages
 				+ "\tWORK  [" + Time.toClock(workingTime) + "]" + "\tSLEEP ["
 				+ Time.toClock(sleepingTime) + "]";
 
-		logger.logMessage(Level.FINE, message);
+		logger.logMessage(Level.DEBUG, message);
 	}
 
 	/**
@@ -280,7 +279,7 @@ public final class ArticleConsumerLogMessages
 			final ArticleReaderException e)
 	{
 
-		logger.logException(Level.SEVERE, "TaskReaderException", e);
+		logger.logException(Level.ERROR, "TaskReaderException", e);
 	}
 
 	/** No object - utility class */

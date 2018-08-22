@@ -108,8 +108,6 @@ public class DiffToolThread
 	 * This class is used to receive tasks from the diff modules and transmits
 	 * them to the sql modules.
 	 *
-	 *
-	 *
 	 */
 	private class TaskTransmitter
 		implements TaskTransmitterInterface

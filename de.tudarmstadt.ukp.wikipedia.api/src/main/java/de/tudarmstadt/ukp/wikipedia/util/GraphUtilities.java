@@ -17,18 +17,18 @@
  */
 package de.tudarmstadt.ukp.wikipedia.util;
 
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.Page;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GraphUtilities {
 
-	private static final Log logger = LogFactory.getLog(GraphUtilities.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public static Set<Integer> getRandomPageSubset(Iterable<Page> pages, int pResultSetSize) {
         Set<Integer> pageIDs = new HashSet<Integer>();
@@ -48,7 +48,7 @@ public class GraphUtilities {
         Set<Integer> uniqueRandomSet = new HashSet<Integer>();
 
         if (pPageIDs.size() < pResultSetSize) {
-            logger.error("Requested subset size is larger than the original page set size.");
+            logger.warn("Requested subset size is larger than the original page set size.");
             return null;
         }
 

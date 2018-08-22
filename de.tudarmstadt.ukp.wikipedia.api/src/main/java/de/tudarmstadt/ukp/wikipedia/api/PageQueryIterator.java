@@ -17,22 +17,22 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
- * An iterator over page objects selected by a query.
+ * An iterator over {@link Page} objects selected by a query.
  *
  */
 public class PageQueryIterator implements Iterator<Page> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Wikipedia wiki;
     private int iterPosition;
@@ -58,8 +58,7 @@ public class PageQueryIterator implements Iterator<Page> {
         try {
             page = this.wiki.getPage(pageIDs.get(iterPosition));
         } catch (WikiApiException e) {
-            logger.error("Could not load page with id " + pageIDs.get(iterPosition));
-            e.printStackTrace();
+            logger.error("Could not load page with id {}", pageIDs.get(iterPosition), e);
         }
         iterPosition++;
         return page;

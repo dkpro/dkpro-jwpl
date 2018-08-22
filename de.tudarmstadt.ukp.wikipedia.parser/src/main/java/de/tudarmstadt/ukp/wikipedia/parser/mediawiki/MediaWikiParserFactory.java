@@ -17,21 +17,20 @@
  */
 package de.tudarmstadt.ukp.wikipedia.parser.mediawiki;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Class for easy creating a configurated MediaWiki Parser...<br>
- *
+ * A factory for easy creation of a configured {@link MediaWikiParser}.
  */
 public class MediaWikiParserFactory {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private Class parserClass;
 	private Class templateParserClass;
@@ -47,15 +46,15 @@ public class MediaWikiParserFactory {
 	private boolean calculateSrcSpans;
 
 	/**
-	 * Creates a new UNCONFIGURATED Parser Factory.
+	 * Creates a new un-configured {@link MediaWikiParserFactory}.
 	 */
 	public MediaWikiParserFactory(){
 		initVariables();
 	}
 
 	/**
-	 * Creates a fully configurated parser factory for the specified language.<br>
-	 * Next step is .createParser()...
+	 * Creates a fully configured {@link MediaWikiParserFactory} for the specified {@link Language}.<br>
+	 * Next step is {@link MediaWikiParserFactory#createParser()}.
 	 */
 	public MediaWikiParserFactory(Language language){
         initVariables();
@@ -66,7 +65,7 @@ public class MediaWikiParserFactory {
         	initEnglishVariables();
         }else
         {
-        	logger.warn("No language specific parser for "+language.toString()+" available. Using default values.");
+        	logger.warn("No language specific parser for '{}' available. Using default values.", language.toString());
         }
 	}
 
@@ -248,7 +247,7 @@ public class MediaWikiParserFactory {
 	 * Creates a MediaWikiParser with the configurations which has been set.
 	 */
 	public MediaWikiParser createParser(){
-		logger.debug( "Selected Parser: " + parserClass );
+		logger.debug( "Selected Parser: {}", parserClass );
 
 		if( parserClass == ModularParser.class ){
 			ModularParser mwgp = new ModularParser(
@@ -280,13 +279,13 @@ public class MediaWikiParserFactory {
 
 			MediaWikiTemplateParser mwtp;
 
-			logger.debug( "Selected TemplateParser: "+ templateParserClass);
+			logger.debug( "Selected TemplateParser: {}", templateParserClass);
 			if( templateParserClass == GermanTemplateParser.class ){
 				for( String s: deleteTemplates) {
-					logger.debug( "DeleteTemplate: '" + s + "'");
+					logger.debug( "DeleteTemplate: '{}'", s);
 				}
 				for( String s: parseTemplates) {
-					logger.debug( "ParseTemplate: '" + s + "'");
+					logger.debug( "ParseTemplate: '{}'", s);
 				}
 				mwtp = new GermanTemplateParser( mwgp, deleteTemplates, parseTemplates );
 			}

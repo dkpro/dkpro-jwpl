@@ -20,12 +20,12 @@ package de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.config;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.event.Level;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,8 +41,6 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.difftool.data.archive.InputT
 
 /**
  * This Reader reads the xml-configuration files for the DiffTool.
- *
- *
  *
  */
 public class ConfigurationReader
@@ -750,7 +748,7 @@ public class ConfigurationReader
 			}
 			else if (name.equals(KEY_LOG_LEVEL)) {
 
-				level = Level.parse(nnode.getChildNodes().item(0)
+				level = Level.valueOf(nnode.getChildNodes().item(0)
 						.getNodeValue());
 				config.setConfigParameter(logLevel, level);
 			}

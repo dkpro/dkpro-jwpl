@@ -17,30 +17,27 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 
 /**
- * An iterator over page objects.
- *
- *
+ * An iterator over {@link Page} objects.
  */
 public class PageIterator implements Iterator<Page> {
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final PageBuffer buffer;
 
@@ -68,9 +65,7 @@ public class PageIterator implements Iterator<Page> {
 	}
 
 	/**
-	 * Buffers pages in a list.
-	 *
-	 *
+	 * Buffers {@link Page pages} in a list.
 	 */
 	class PageBuffer{
 
@@ -128,7 +123,7 @@ public class PageIterator implements Iterator<Page> {
 
 		/**
 		 *
-		 * @return The next Page or null if no more pages are available.
+		 * @return The next {@link Page} or {@code null} if no more pages are available.
 		 */
 		public Page next(){
 			// if there are still elements in the buffer, just retrieve the next one

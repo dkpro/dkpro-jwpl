@@ -23,26 +23,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import de.tudarmstadt.ukp.wikipedia.util.templates.generator.GeneratorConstants;
-
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class generates data to write into sql dump file
- *
- *
  */
 public class WikipediaTemplateInfoDumpWriter
 {
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private Map<String, Integer> tplNameToTplId;
 	private String outputPath;
@@ -60,8 +55,8 @@ public class WikipediaTemplateInfoDumpWriter
 	}
 
 	/**
-	 * Generate sql statement for data defined in dataSourceToUse and for table
-	 * in tableToWrite
+	 * Generate sql statement for data defined in {@code dataSourceToUse} and for table
+	 * in {@code tableToWrite}
 	 *
 	 * @param dataSourceToUse
 	 *            source to use for string generation
@@ -224,17 +219,12 @@ public class WikipediaTemplateInfoDumpWriter
 	 *            if page table does not exists -&gt; create index
 	 * @param mode
 	 *            generation mode
-	 * @throws Exception
 	 */
-	public void writeSQL(boolean revTableExists, boolean pageTableExists,
-			GeneratorMode mode)
-		throws Exception
+	void writeSQL(boolean revTableExists, boolean pageTableExists, GeneratorMode mode)
 	{
-		Writer writer = null;
-		try {
-			writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
-					new FileOutputStream(outputPath)), charset));
-			StringBuffer dataToDump = new StringBuffer();
+		try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+				new BufferedOutputStream(new FileOutputStream(outputPath)), charset))){
+			StringBuilder dataToDump = new StringBuilder();
 
 			dataToDump.append(generateTemplateIdSQLStatement(this.tableExists));
 
@@ -242,26 +232,14 @@ public class WikipediaTemplateInfoDumpWriter
 				dataToDump.append(generatePageSQLStatement(pageTableExists,
 						mode.templateNameToPageId));
 			}
-
 			if (mode.active_for_revisions) {
 				dataToDump.append(generateRevisionSQLStatement(revTableExists,
 						mode.templateNameToRevId));
 			}
-
 			writer.write(dataToDump.toString());
 		}
 		catch (IOException e) {
-			logger.error("Error writing SQL file: " + e.getMessage());
-		}
-		finally {
-			try {
-				if (writer != null) {
-					writer.close();
-				}
-			}
-			catch (IOException e) {
-				logger.error("Error closing stream: " + e.getMessage());
-			}
+			logger.error("Error writing SQL file: {}", e.getMessage(), e);
 		}
 	}
 

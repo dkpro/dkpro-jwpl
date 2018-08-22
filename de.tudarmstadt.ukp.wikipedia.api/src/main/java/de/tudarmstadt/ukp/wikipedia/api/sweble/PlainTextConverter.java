@@ -28,8 +28,8 @@ package de.tudarmstadt.ukp.wikipedia.api.sweble;
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstText;
 import de.fau.cs.osr.utils.StringTools;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
@@ -68,6 +68,7 @@ import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
 import org.sweble.wikitext.parser.nodes.WtXmlEndTag;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -102,7 +103,7 @@ public class PlainTextConverter extends AstVisitor<WtNode>
 
 	private static final Pattern ws = Pattern.compile("\\s+");
 
-	private final Log logger = LogFactory.getLog(getClass());
+	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
 	private final WikiConfig config;
 

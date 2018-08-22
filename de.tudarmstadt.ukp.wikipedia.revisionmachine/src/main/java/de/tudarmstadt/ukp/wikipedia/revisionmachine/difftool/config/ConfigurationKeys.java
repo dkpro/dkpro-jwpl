@@ -279,7 +279,7 @@ public enum ConfigurationKeys
 	LOGGING_PATH_DEBUG,
 
 	/**
-	 * Type: java.util.logging.Level Used by: DiffTool Logger
+	 * Type: {@link org.slf4j.event.Level} Used by: DiffTool Logger
 	 *
 	 * Description: Log level for the diff tool logger
 	 *
