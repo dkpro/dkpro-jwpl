@@ -16,3 +16,5 @@ target
 *.tmp
 *_hypoCountMap
 
+### Embedded DB properties file
+de.tudarmstadt.ukp.wikipedia.revisionmachine/src/test/resources/db/*.properties

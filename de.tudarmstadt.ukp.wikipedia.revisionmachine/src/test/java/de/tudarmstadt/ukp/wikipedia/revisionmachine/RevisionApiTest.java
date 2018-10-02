@@ -24,6 +24,8 @@ import static org.junit.Assert.fail;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 
 import org.junit.*;
@@ -38,6 +40,12 @@ import de.tudarmstadt.ukp.wikipedia.revisionmachine.api.RevisionApi;
 public class RevisionApiTest extends BaseJWPLTest {
 
 	private static Wikipedia wiki = null;
+
+	private Timestamp convertToUTC(Timestamp ts) {
+
+		final LocalDateTime dt = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.UTC);
+		return Timestamp.valueOf(dt);
+	}
 
 	// The object under test
 	private RevisionApi revisionApi;
@@ -176,12 +184,12 @@ public class RevisionApiTest extends BaseJWPLTest {
 		try {
 			int pageId = wiki.getPage("Car").getPageId();
 
-			Timestamp firstDayOfAppearance = revisionApi.getFirstDateOfAppearance(pageId);
-			Timestamp lastDayOfAppearance = revisionApi.getLastDateOfAppearance(pageId);
+			Timestamp firstDayOfAppearance = convertToUTC(revisionApi.getFirstDateOfAppearance(pageId));
+			Timestamp lastDayOfAppearance = convertToUTC(revisionApi.getLastDateOfAppearance(pageId));
 			int nrOfRevisions = revisionApi.getNumberOfRevisions(pageId);
 
-			assertEquals("2004-04-07 02:31:34.0", firstDayOfAppearance.toString());
-			assertEquals("2009-01-19 04:58:09.0", lastDayOfAppearance.toString());
+			assertEquals("2004-04-07 00:31:34.0", firstDayOfAppearance.toString());
+			assertEquals("2009-01-19 03:58:09.0", lastDayOfAppearance.toString());
 			assertEquals(382, nrOfRevisions);
 		}
 		catch (WikiApiException e) {
