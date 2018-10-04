@@ -32,8 +32,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <ukp.wikipedia.version>1.2.0-SNAPSHOT</ukp.wikipedia.version>
-    <fau.ptk.version>3.0.9-SNAPSHOT</fau.ptk.version>
-    <fau.utils.version>3.0.9-SNAPSHOT</fau.utils.version>
+    <fau.ptk.version>3.0.8</fau.ptk.version>
+    <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
     <spring.version>4.3.17.RELEASE</spring.version>
