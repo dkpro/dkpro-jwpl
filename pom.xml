@@ -36,12 +36,12 @@
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
-    <spring.version>4.3.30.RELEASE</spring.version>
+    <spring.version>5.3.9</spring.version>
 
     <!-- DB specific dependency versions -->
     <hibernate.version>5.2.18.Final</hibernate.version>
     <mysql.version>5.1.46</mysql.version>
-    <postgresql.version>42.2.18</postgresql.version>
+    <postgresql.version>42.2.22</postgresql.version>
     <hsqldb.version>2.5.0</hsqldb.version>
     <c3p0.version>0.9.5.4</c3p0.version>
 

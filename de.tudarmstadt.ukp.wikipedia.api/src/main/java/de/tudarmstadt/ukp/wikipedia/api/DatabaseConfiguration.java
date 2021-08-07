@@ -77,7 +77,7 @@ public class DatabaseConfiguration {
      */
     boolean supportsCollation() {
         if(databaseDriver!=null) {
-            return databaseDriver.contains("mysql");
+            return databaseDriver.contains("mysql") || databaseDriver.contains("mariadb");
         } else {
             return false;
         }
