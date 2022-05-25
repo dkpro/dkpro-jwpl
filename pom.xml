@@ -36,7 +36,7 @@
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
-    <spring.version>4.3.17.RELEASE</spring.version>
+    <spring.version>5.2.22.RELEASE</spring.version>
 
     <!-- DB specific dependency versions -->
     <hibernate.version>5.2.17.Final</hibernate.version>
