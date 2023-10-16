@@ -61,8 +61,19 @@
 			<artifactId>swc-parser-lazy</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.sweble.wikitext</groupId>
-			<artifactId>swc-engine</artifactId>
+            <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
+			<artifactId>swc-engine-shade</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.sweble.wikitext</groupId>
+                    <artifactId>swc-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.sweble.wikitext</groupId>
+                    <artifactId>swc-parser-lazy</artifactId>
+                </exclusion>
+            </exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.neovisionaries</groupId>

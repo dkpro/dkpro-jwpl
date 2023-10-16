@@ -17,19 +17,17 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.LockMode;
 import org.hibernate.Session;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StringType;
 
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiPageNotFoundException;
 import de.tudarmstadt.ukp.wikipedia.api.exception.WikiTitleParsingException;
 import de.tudarmstadt.ukp.wikipedia.api.hibernate.CategoryDAO;
+import org.hibernate.type.StandardBasicTypes;
 
 public class Category implements WikiConstants {
 
@@ -114,7 +112,7 @@ public class Category implements WikiConstants {
             query += Wikipedia.SQL_COLLATION;
         }
         returnValue = session.createNativeQuery(query)
-                .setParameter("name", name, StringType.INSTANCE)
+                .setParameter("name", name, StandardBasicTypes.STRING)
                 .uniqueResult();
         session.getTransaction().commit();
 
@@ -181,20 +179,20 @@ public class Category implements WikiConstants {
      * @return The number of parents of this category.
      */
     public int getNumberOfParents() {
-        BigInteger nrOfInlinks = new BigInteger("0");
+        int nrOfInlinks = 0;
 
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createNativeQuery("select count(inLinks) from category_inlinks where id = :id")
-            .setParameter("id", id, LongType.INSTANCE)
+            .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfInlinks = (BigInteger) returnValue;
+            nrOfInlinks = ((Long) returnValue).intValue();
         }
-        return nrOfInlinks.intValue();
+        return nrOfInlinks;
     }
 
     /**
@@ -231,20 +229,20 @@ public class Category implements WikiConstants {
      * @return The number of children of this category.
      */
     public int getNumberOfChildren() {
-        BigInteger nrOfOutlinks = new BigInteger("0");
+        int nrOfOutlinks = 0;
 
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createNativeQuery("select count(outLinks) from category_outlinks where id = :id")
-            .setParameter("id", id, LongType.INSTANCE)
+            .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfOutlinks = (BigInteger) returnValue;
+            nrOfOutlinks = ((Long) returnValue).intValue();
         }
-        return nrOfOutlinks.intValue();
+        return nrOfOutlinks;
     }
 
     /**
@@ -304,20 +302,20 @@ public class Category implements WikiConstants {
      * @return The number of pages.
      */
     public int getNumberOfPages() {
-        BigInteger nrOfPages = new BigInteger("0");
+        int nrOfPages = 0;
 
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         Object returnValue = session.createNativeQuery("select count(pages) from category_pages where id = :id")
-            .setParameter("id", id, LongType.INSTANCE)
+            .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfPages = (BigInteger) returnValue;
+            nrOfPages = ((Long) returnValue).intValue();
         }
-        return nrOfPages.intValue();
+        return nrOfPages;
     }
 
     /**

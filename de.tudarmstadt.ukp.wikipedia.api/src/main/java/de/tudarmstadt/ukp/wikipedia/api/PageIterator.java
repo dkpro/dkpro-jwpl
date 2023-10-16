@@ -30,7 +30,7 @@ import de.tudarmstadt.ukp.wikipedia.api.exception.WikiApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 /**
  * An iterator over {@link Page} objects.

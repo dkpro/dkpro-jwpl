@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.xml.bind.JAXBException;
-
+import jakarta.xml.bind.JAXBException;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.EngineException;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
@@ -49,7 +48,7 @@ public class ParseUtils
 	 * @param revision the revision id
 	 * @return list of ExtractedSections
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
+	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException {
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 

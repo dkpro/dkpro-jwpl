@@ -39,7 +39,7 @@
     <spring.version>5.3.30</spring.version>
 
     <!-- DB specific dependency versions -->
-    <hibernate.version>5.6.15.Final</hibernate.version>
+    <hibernate.version>6.1.7.Final</hibernate.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.6.0</postgresql.version>
     <hsqldb.version>2.7.2</hsqldb.version>
@@ -220,11 +220,6 @@
         <version>${org.sweble.wikitext.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sweble.wikitext</groupId>
-        <artifactId>swc-engine</artifactId>
-        <version>${org.sweble.wikitext.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.sweble.wom3</groupId>
         <artifactId>sweble-wom3-parent</artifactId>
         <version>${org.sweble.wikitext.version}</version>
@@ -247,7 +242,7 @@
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
         <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>2.3.3</version>
+        <version>4.0.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
@@ -307,6 +302,7 @@
     <module>de.tudarmstadt.ukp.wikipedia.util</module>
     <module>de.tudarmstadt.ukp.wikipedia.parser</module>
     <module>de.tudarmstadt.ukp.wikipedia.tutorial</module>
+    <module>deps</module>
   </modules>
   <issueManagement>
     <system>GitHub</system>
