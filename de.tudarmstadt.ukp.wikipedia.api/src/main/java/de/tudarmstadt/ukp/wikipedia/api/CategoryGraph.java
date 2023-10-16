@@ -36,10 +36,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jgrapht.DirectedGraph;
-import org.jgrapht.UndirectedGraph;
-import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.alg.DijkstraShortestPath;
+import org.jgrapht.GraphPath;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
+import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.AsUndirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -51,6 +50,7 @@ import de.tudarmstadt.ukp.wikipedia.api.util.GraphSerialization;
 import de.tudarmstadt.ukp.wikipedia.util.ApiUtilities;
 import de.tudarmstadt.ukp.wikipedia.util.CommonUtilities;
 import de.tudarmstadt.ukp.wikipedia.util.OS;
+import org.jgrapht.graph.DefaultUndirectedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,9 +69,9 @@ public class CategoryGraph implements WikiConstants, Serializable {
     private Wikipedia wiki;
 
     // the category graph
-    private DirectedGraph<Integer, DefaultEdge> graph;
+    private DefaultDirectedGraph<Integer, DefaultEdge> graph;
     // the category graph
-    private UndirectedGraph<Integer, DefaultEdge> undirectedGraph;
+    private AsUndirectedGraph<Integer, DefaultEdge> undirectedGraph;
 
     // a map holding the degree distribution of the graph
     private Map<Integer, Integer> degreeDistribution;
@@ -180,11 +180,11 @@ public class CategoryGraph implements WikiConstants, Serializable {
         constructCategoryGraph(pWiki, pPageIDs, null);
     }
 
-    public CategoryGraph(Wikipedia pWiki, DirectedGraph<Integer,DefaultEdge> pGraph) throws WikiApiException {
+    public CategoryGraph(Wikipedia pWiki, DefaultDirectedGraph<Integer,DefaultEdge> pGraph) throws WikiApiException {
         constructCategoryGraph(pWiki, pGraph);
     }
 
-    private void constructCategoryGraph(Wikipedia pWiki, DirectedGraph<Integer,DefaultEdge> pGraph) throws WikiApiException {
+    private void constructCategoryGraph(Wikipedia pWiki, DefaultDirectedGraph<Integer,DefaultEdge> pGraph) throws WikiApiException {
         this.wiki = pWiki;
         this.graph = pGraph;
         this.numberOfNodes = this.graph.vertexSet().size();
@@ -661,12 +661,12 @@ public class CategoryGraph implements WikiConstants, Serializable {
             }
 
             // get the path from root node to node 1
-            List edgeList = DijkstraShortestPath.findPathBetween(undirectedGraph, node1.getPageId(), node2.getPageId());
+            GraphPath edgeList = DijkstraShortestPath.findPathBetween(undirectedGraph, node1.getPageId(), node2.getPageId());
             if (edgeList == null) {
                 return -1;
             }
             else {
-                return edgeList.size();
+                return edgeList.getLength();
             }
         }
         // if the given nodes are not in the category graph, return -1
@@ -1141,7 +1141,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
         ConnectivityInspector connectInspect = new ConnectivityInspector<Integer, DefaultEdge>(graph);
 
         // if the graph is connected, simply return the whole graph
-        if (connectInspect.isGraphConnected()) {
+        if (connectInspect.isConnected()) {
             return this;
         }
 
@@ -1612,11 +1612,11 @@ public class CategoryGraph implements WikiConstants, Serializable {
     /**
      * @return Returns the graph.
      */
-    public DirectedGraph<Integer, DefaultEdge> getGraph() {
+    public DefaultDirectedGraph<Integer, DefaultEdge> getGraph() {
         return graph;
     }
 
-    public UndirectedGraph<Integer, DefaultEdge> getUndirectedGraph()
+    public AsUndirectedGraph<Integer, DefaultEdge> getUndirectedGraph()
 	{
 		return undirectedGraph;
 	}

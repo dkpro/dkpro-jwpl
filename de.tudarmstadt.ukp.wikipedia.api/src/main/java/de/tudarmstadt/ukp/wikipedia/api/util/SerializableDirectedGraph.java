@@ -19,7 +19,7 @@ package de.tudarmstadt.ukp.wikipedia.api.util;
 
 import java.io.Serializable;
 
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
@@ -35,14 +35,14 @@ public final class SerializableDirectedGraph implements Serializable {
      */
     private static final long serialVersionUID = -8298189410676038723L;
 
-    private DirectedGraph<Integer,DefaultEdge> graph;
+    private DefaultDirectedGraph<Integer,DefaultEdge> graph;
 
     /**
      * This Constructor is intended to be used before the serialization of the <br>
      * directed graph.
      * @param graph
      */
-    public SerializableDirectedGraph(DirectedGraph<Integer,DefaultEdge> graph){
+    public SerializableDirectedGraph(DefaultDirectedGraph<Integer,DefaultEdge> graph){
         this.graph = graph;
     }
 
@@ -50,7 +50,7 @@ public final class SerializableDirectedGraph implements Serializable {
      * Returns the graph.
      * @return
      */
-    public DirectedGraph<Integer,DefaultEdge> getGraph(){
+    public DefaultDirectedGraph<Integer,DefaultEdge> getGraph(){
         return graph;
     }
 }

@@ -94,7 +94,7 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>4.13.2</version>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
@@ -134,8 +134,8 @@
       </dependency>
       <dependency>
         <groupId>org.jgrapht</groupId>
-        <artifactId>jgrapht-jdk1.5</artifactId>
-        <version>0.7.3</version>
+        <artifactId>jgrapht-core</artifactId>
+        <version>1.5.2</version>
       </dependency>
       <dependency>
         <groupId>net.sf.trove4j</groupId>
@@ -145,7 +145,7 @@
       <dependency>
         <groupId>com.neovisionaries</groupId>
         <artifactId>nv-i18n</artifactId>
-        <version>1.23</version>
+        <version>1.29</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>

@@ -41,8 +41,8 @@
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.jgrapht</groupId>
-			<artifactId>jgrapht-jdk1.5</artifactId>
+            <groupId>org.jgrapht</groupId>
+            <artifactId>jgrapht-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>de.fau.cs.osr.utils</groupId>

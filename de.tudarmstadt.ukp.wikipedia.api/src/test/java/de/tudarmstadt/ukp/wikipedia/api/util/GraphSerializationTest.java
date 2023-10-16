@@ -24,14 +24,13 @@ import static org.junit.Assume.assumeNoException;
 import java.io.File;
 
 import de.tudarmstadt.ukp.wikipedia.api.*;
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import de.tudarmstadt.ukp.wikipedia.api.WikiConstants.Language;
 import junit.framework.JUnit4TestAdapter;
 import junit.textui.TestRunner;
 
@@ -106,7 +105,7 @@ public class GraphSerializationTest extends BaseJWPLTest {
      * graphs are identical.
      * @param graph
      */
-    private void testGraph(DirectedGraph<Integer,DefaultEdge> graph){
+    private void testGraph(DefaultDirectedGraph<Integer,DefaultEdge> graph){
         //make sure all vertices are there
         for(int i=1;i<16;i++){
             if(!graph.containsVertex(i)) {
