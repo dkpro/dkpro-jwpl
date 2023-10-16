@@ -71,7 +71,7 @@
     	  <artifactId>mysql-connector-java</artifactId>
 	  </dependency>
   </dependencies>
-    	<build>
+	<build>
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -89,8 +89,15 @@
 							</descriptors>
 						</configuration>
 					</execution>
-			</executions>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+				</configuration>
 			</plugin>
 		</plugins>
-	</build>	
+	</build>
 </project>
