@@ -31,10 +31,6 @@
 			<artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>net.sf.trove4j</groupId>
-			<artifactId>trove4j</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>de.tudarmstadt.ukp.wikipedia</groupId>
 			<artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
 		</dependency>
