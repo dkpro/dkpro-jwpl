@@ -39,11 +39,10 @@
     <spring.version>5.3.30</spring.version>
 
     <!-- DB specific dependency versions -->
-    <hibernate.version>5.6.15</hibernate.version>
+    <hibernate.version>5.6.15.Final</hibernate.version>
     <mysql.version>5.1.44</mysql.version>
     <postgresql.version>42.2.2</postgresql.version>
     <hsqldb.version>2.7.2</hsqldb.version>
-    <c3p0.version>0.9.5.2</c3p0.version>
 
     <!-- Logger specific dependency versions -->
     <slf4j.version>1.7.21</slf4j.version>
@@ -132,18 +131,6 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-c3p0</artifactId>
-        <version>${hibernate.version}</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>com.mchange</groupId>
-        <artifactId>c3p0</artifactId>
-        <version>${c3p0.version}</version>
-        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.jgrapht</groupId>
