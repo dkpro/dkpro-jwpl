@@ -20,7 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.datamachine.dump.version;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.CategorylinksParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.PagelinksParser;
@@ -44,12 +46,12 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	private static final String DISCUSSION_PREFIX = "Discussion:";
 
 	private Map<Integer, String> pPageIdNameMap;
-	private TIntHashSet cPageIdNameMap;
+	private Set<Integer> cPageIdNameMap;
 	private Map<KeyType, Integer> pNamePageIdMap;
 	private Map<KeyType, Integer> cNamePageIdMap;
 	private Map<Integer, String> rPageIdNameMap;
-	private TIntHashSet disambiguations;
-	private TIntIntHashMap textIdPageIdMap;
+	private Set<Integer> disambiguations;
+	private Map<Integer, Integer> textIdPageIdMap;
 
 	IStringHashCode hashAlgorithm;
 
@@ -107,12 +109,12 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 	@Override
 	public void initialize(Timestamp timestamp) {
 		pPageIdNameMap = new HashMap<Integer, String>(1_000_000);
-		cPageIdNameMap = new TIntHashSet(1_000_000);
+		cPageIdNameMap = new HashSet<>(1_000_000);
 		pNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
 		cNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
 		rPageIdNameMap = new HashMap<Integer, String>(1_000_000);
-		disambiguations = new TIntHashSet(1_000_000);
-		textIdPageIdMap = new TIntIntHashMap(1_000_000);
+		disambiguations = new HashSet<>(1_000_000);
+		textIdPageIdMap = new HashMap<Integer, Integer>(1_000_000);
 	}
 
 	@SuppressWarnings("unchecked")
