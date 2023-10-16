@@ -17,6 +17,10 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.archivers;
 
+
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.shade.org.apache.tools.bzip2.CBZip2InputStream;
+import de.tudarmstadt.ukp.wikipedia.revisionmachine.shade.org.apache.tools.bzip2.CBZip2OutputStream;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.apache.tools.bzip2.CBZip2InputStream;
-import org.apache.tools.bzip2.CBZip2OutputStream;
 
 /**
  * Class provides basic bzip2 compression/decompression functionality
