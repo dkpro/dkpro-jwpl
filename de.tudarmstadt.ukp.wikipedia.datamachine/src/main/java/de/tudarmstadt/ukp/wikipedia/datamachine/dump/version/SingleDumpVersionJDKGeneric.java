@@ -33,8 +33,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.hashing.IStringHashCode;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
 
 public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCode>
 		extends AbstractDumpVersion {
