@@ -22,7 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.tools.bzip2.CBZip2InputStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.shade.org.apache.tools.bzip2.CBZip2InputStream;
 
 /**
  * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream

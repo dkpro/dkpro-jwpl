@@ -28,8 +28,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.tools.bzip2.CBZip2InputStream;
-import org.apache.tools.bzip2.CBZip2OutputStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.shade.org.apache.tools.bzip2.CBZip2InputStream;
+import de.tudarmstadt.ukp.wikipedia.mwdumper.shade.org.apache.tools.bzip2.CBZip2OutputStream;
 
 public class Tools {
 	static final int IN_BUF_SZ = 1024 * 1024;
