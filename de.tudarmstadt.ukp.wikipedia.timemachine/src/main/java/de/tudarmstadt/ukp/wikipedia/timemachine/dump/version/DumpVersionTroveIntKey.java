@@ -20,7 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.version;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.tudarmstadt.ukp.wikipedia.timemachine.domain.Revision;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.CategorylinksParser;
@@ -32,8 +34,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
 
 public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 	private static final String SQL_NULL = "NULL";
@@ -45,16 +45,16 @@ public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 	 * after revision parsing the map will be erased and the keys sorted in the
 	 * array list
 	 */
-	private TIntHashSet pageIdRevList;
+	private Set<Integer> pageIdRevList;
 
 	/**
 	 * caches the page id's of disambiguation pages.
 	 */
-	private TIntHashSet disambiguations;
+	private Set<Integer> disambiguations;
 	/**
 	 * maps text id's to the page id's.
 	 */
-	private TIntIntHashMap textIdPageIdMap;
+	private Map<Integer, Integer> textIdPageIdMap;
 	/**
 	 * maps page id's of pages to their names
 	 */
@@ -62,12 +62,12 @@ public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 	/**
 	 * maps names of pages to their page id's.
 	 */
-	private TIntIntHashMap pNamePageIdMap;
+	private Map<Integer, Integer>  pNamePageIdMap;
 
 	/**
 	 * maps names of categories to their page id's.
 	 */
-	private TIntIntHashMap cNamePageIdMap;
+	private Map<Integer, Integer> cNamePageIdMap;
 
 	/**
 	 * maps page id's of redirects to their names.
@@ -100,7 +100,7 @@ public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 
 	@Override
 	public void freeAfterRevisonParsing() {
-		pageIdRevList = new TIntHashSet(pageIdRevMap.keySet().size());
+		pageIdRevList = new HashSet<>(pageIdRevMap.keySet().size());
 		for (Integer key : pageIdRevMap.keySet()) {
 			pageIdRevList.add(key);
 		}
@@ -128,21 +128,21 @@ public class DumpVersionTroveIntKey extends AbstractDumpVersion {
 		 * filled in revisions
 		 */
 		pageIdRevMap = new HashMap<Integer, Long>();
-		textIdPageIdMap = new TIntIntHashMap();
+		textIdPageIdMap = new HashMap<>();
 
 		/**
 		 * filled in pages
 		 */
 		pPageIdNameMap = new HashMap<Integer, String>();
-		pNamePageIdMap = new TIntIntHashMap();
+		pNamePageIdMap = new HashMap<>();
 
-		cNamePageIdMap = new TIntIntHashMap();
+		cNamePageIdMap = new HashMap<>();
 		rPageIdNameMap = new HashMap<Integer, String>();
 
 		/**
 		 * filled in categories
 		 */
-		disambiguations = new TIntHashSet();
+		disambiguations = new HashSet<>();
 	}
 
 	@Override
