@@ -29,8 +29,8 @@ public class DatabaseConfiguration {
     private String user;
     private String password;
     private Language language;
-	private String jdbcURL;
-	private String databaseDriver;
+	  private String jdbcURL;
+	  private String databaseDriver;
 
     public DatabaseConfiguration() {}
 
@@ -77,7 +77,7 @@ public class DatabaseConfiguration {
      */
     boolean supportsCollation() {
         if(databaseDriver!=null) {
-            return databaseDriver.contains("mysql");
+          return databaseDriver.contains("mysql") || databaseDriver.contains("mariadb");
         } else {
             return false;
         }

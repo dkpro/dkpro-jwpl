@@ -46,7 +46,7 @@ public class Wikipedia implements WikiConstants {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove it!
-    static final String SQL_COLLATION = " COLLATE utf8_bin";
+    static final String SQL_COLLATION = " COLLATE utf8mb4_bin"; /*" COLLATE utf8_bin";*/
 
     private final Language language;
     private final DatabaseConfiguration dbConfig;
