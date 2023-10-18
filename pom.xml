@@ -41,12 +41,13 @@
     <!-- DB specific dependency versions -->
     <hibernate.version>6.1.7.Final</hibernate.version>
     <mysql.version>5.1.44</mysql.version>
+    <mariadb.version>3.2.0</mariadb.version>
     <postgresql.version>42.6.0</postgresql.version>
     <hsqldb.version>2.7.2</hsqldb.version>
 
     <!-- Logger specific dependency versions -->
     <slf4j.version>1.7.30</slf4j.version>
-    <log4j2.version>2.20.0</log4j2.version>
+    <log4j2.version>2.21.0</log4j2.version>
 
     <!-- Maven plugin versions -->
     <maven.failsafe.plugin>2.21.0</maven.failsafe.plugin>
@@ -105,16 +106,16 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j2.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
         <version>${log4j2.version}</version>
-        <scope>provided</scope>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
+        <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
       </dependency>
@@ -135,9 +136,10 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.postgresql</groupId>
-        <artifactId>postgresql</artifactId>
-        <version>${postgresql.version}</version>
+        <groupId>org.mariadb.jdbc</groupId>
+        <artifactId>mariadb-java-client</artifactId>
+        <version>${mariadb.version}</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.hsqldb</groupId>

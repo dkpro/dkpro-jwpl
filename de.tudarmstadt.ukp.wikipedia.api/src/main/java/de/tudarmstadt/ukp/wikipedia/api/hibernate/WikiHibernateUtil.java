@@ -82,7 +82,7 @@ public class WikiHibernateUtil implements WikiConstants {
         if(useMySQL) {
             p.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
         } else if(useMariaDB) {
-            p.setProperty("hibernate.dialect","org.hibernate.dialect.MariaDB103Dialect");
+            p.setProperty("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
         } else if(useHSQL) {
             p.setProperty("hibernate.dialect","org.hibernate.dialect.HSQLDialect");
         }
