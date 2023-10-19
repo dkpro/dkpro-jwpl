@@ -305,7 +305,7 @@
     <module>de.tudarmstadt.ukp.wikipedia.util</module>
     <module>de.tudarmstadt.ukp.wikipedia.parser</module>
     <module>de.tudarmstadt.ukp.wikipedia.tutorial</module>
-    <module>deps</module>
+    <module>jwpl-deps</module>
   </modules>
   <issueManagement>
     <system>GitHub</system>

@@ -62,7 +62,7 @@
 		</dependency>
 		<dependency>
             <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-			<artifactId>swc-engine-shade</artifactId>
+			<artifactId>jwpl-swc-engine-shade</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>

@@ -23,11 +23,11 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>deps</artifactId>
+    <artifactId>jwpl-deps</artifactId>
     <name>Dependencies :: Jakarta</name>
     <packaging>pom</packaging>
 
     <modules>
-        <module>swc-engine-shade</module>
+        <module>jwpl-swc-engine-shade</module>
     </modules>
 </project>
