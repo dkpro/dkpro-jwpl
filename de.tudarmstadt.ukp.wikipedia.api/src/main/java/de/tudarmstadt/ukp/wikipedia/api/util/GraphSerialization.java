@@ -26,11 +26,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
-import org.jgrapht.DirectedGraph;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
- * Utility for serializing and deserializing {@link DirectedGraph} objects, that are<br>
+ * Utility for serializing and deserializing {@link DefaultDirectedGraph} objects, that are<br>
  * wrapped into {@link SerializableDirectedGraph} objects.
  *
  */
@@ -43,13 +43,13 @@ public final class GraphSerialization {
 	}
 
 	/**
-	 * Serializes the given {@link DirectedGraph} object to the given location.
+	 * Serializes the given {@link DefaultDirectedGraph} object to the given location.
 	 * 
 	 * @param graph Must not be {@code null}.
 	 * @param location Must not be {@code null} and a valid file path.
 	 * @throws IOException Thrown if errors occurred on the IO level.
 	 */
-	public static void saveGraph(DirectedGraph<Integer, DefaultEdge> graph, String location) throws IOException {
+	public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, String location) throws IOException {
 		File file = new File(location);
 		file.createNewFile();
 		if (!file.canWrite()) {
@@ -59,13 +59,13 @@ public final class GraphSerialization {
 	}
 
 	/**
-	 * Serializes the given {@link DirectedGraph} object to the given location.
+	 * Serializes the given {@link DefaultDirectedGraph} object to the given location.
 	 *
 	 * @param graph Must not be {@code null}.
 	 * @param file Must not be {@code null} and valid {@link File}.
 	 * @throws IOException Thrown if errors occurred on the IO level.
 	 */
-	public static void saveGraph(DirectedGraph<Integer, DefaultEdge> graph, File file) throws IOException {
+	public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, File file) throws IOException {
 		SerializableDirectedGraph serialGraph = new SerializableDirectedGraph(graph);
 		BufferedOutputStream fos;
 		ObjectOutputStream out;
@@ -78,16 +78,16 @@ public final class GraphSerialization {
 
 	/**
 	 * Deserializes a {@link SerializableDirectedGraph} object that is stored in the
-	 * given location. This method returns the {@link DirectedGraph} object, that is wrapped
+	 * given location. This method returns the {@link DefaultDirectedGraph} object, that is wrapped
 	 * in the {@link SerializableDirectedGraph}.
 	 * 
 	 * @param location Must not be {@code null} and a valid file path.
-	 * @return The {@link DirectedGraph} object, that is wrapped in the
+	 * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
 	 *         {@link SerializableDirectedGraph}.
 	 * @throws IOException Thrown if errors occurred on the IO level.
 	 * @throws ClassNotFoundException Thrown if a class could not be find while deserialization.
 	 */
-	public static DirectedGraph<Integer, DefaultEdge> loadGraph(String location)
+	public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(String location)
 			throws IOException, ClassNotFoundException {
 		File file = new File(location);
 		if (!file.canWrite()) {
@@ -98,16 +98,16 @@ public final class GraphSerialization {
 
 	/**
 	 * Deserializes a {@link SerializableDirectedGraph} object that is stored in the
-	 * given location. This method returns the {@link DirectedGraph}  object, that is wrapped
+	 * given location. This method returns the {@link DefaultDirectedGraph}  object, that is wrapped
 	 * in the {@link SerializableDirectedGraph}.
-	 * 
+	 *
 	 * @param file Must not be {@code null} and valid {@link File}.
-	 * @return The {@link DirectedGraph} object, that is wrapped in the
+	 * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
 	 *         {@link SerializableDirectedGraph}.
 	 * @throws IOException Thrown if errors occurred on the IO level.
 	 * @throws ClassNotFoundException Thrown if a class could not be find while deserialization.
 	 */
-	public static DirectedGraph<Integer, DefaultEdge> loadGraph(File file) throws IOException, ClassNotFoundException {
+	public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(File file) throws IOException, ClassNotFoundException {
 		SerializableDirectedGraph serialGraph;
 		BufferedInputStream fin;
 		ObjectInputStream in;

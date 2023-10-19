@@ -29,8 +29,8 @@ public class DatabaseConfiguration {
     private String user;
     private String password;
     private Language language;
-	private String jdbcURL;
-	private String databaseDriver;
+	  private String jdbcURL;
+	  private String databaseDriver;
 
     public DatabaseConfiguration() {}
 
@@ -39,8 +39,8 @@ public class DatabaseConfiguration {
      *
      * @param host           The hostname the machine the database is hosted on.
      * @param database       The name of the database to connect to.
-     * @param user           The username as part of the credentials used for for authentication.
-     * @param password       The password as part of the credentials used for for authentication.
+     * @param user           The username as part of the credentials used for authentication.
+     * @param password       The password as part of the credentials used for authentication.
      * @param language       The {@link Language} used for the underlying connection.
      */
     public DatabaseConfiguration(String host, String database, String user, String password, Language language) {
@@ -50,14 +50,14 @@ public class DatabaseConfiguration {
     }
 
     /**
-     * A constructor for an explicit DBMS specific configuration, e.g. for HSQLDB in tests contexts.
+     * A constructor for an explicit DBMS specific configuration.
      *
      * @param databaseDriver The fully qualified name of the JDBC driver.
      * @param jdbcURL        A valid JDBC url used to open connections.
      * @param host           The hostname the machine the database is hosted on.
      * @param database       The name of the database to connect to.
-     * @param user           The username as part of the credentials used for for authentication.
-     * @param password       The password as part of the credentials used for for authentication.
+     * @param user           The username as part of the credentials used for authentication.
+     * @param password       The password as part of the credentials used for authentication.
      * @param language       The {@link Language} used for the underlying connection.
      */
     public DatabaseConfiguration(String databaseDriver, String jdbcURL, String host, String database, String user,
@@ -77,7 +77,7 @@ public class DatabaseConfiguration {
      */
     boolean supportsCollation() {
         if(databaseDriver!=null) {
-            return databaseDriver.contains("mysql");
+          return databaseDriver.contains("mysql") || databaseDriver.contains("mariadb");
         } else {
             return false;
         }

@@ -59,7 +59,10 @@ public class PerformanceIT implements WikiConstants {
         String user = configuration.getProperty("database.user");
         String password = configuration.getProperty("database.password");
         // String host, String database, String user, String password, Language language
-        return new DatabaseConfiguration(host, name, user, password, Language.english);
+        return new DatabaseConfiguration(
+                "org.mariadb.jdbc.Driver",
+                "jdbc:mariadb://" + host + "/" + name + "?serverTimezone=Europe/Berlin&autoReconnect=true&useSSL=false",
+                host, name, user, password, Language.english);
     }
 
     private static Properties loadConfiguration() {

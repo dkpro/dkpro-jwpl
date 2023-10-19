@@ -17,6 +17,9 @@
  */
 package de.tudarmstadt.ukp.wikipedia.mwdumper.dumper;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,9 +30,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
-
-import org.apache.tools.bzip2.CBZip2InputStream;
-import org.apache.tools.bzip2.CBZip2OutputStream;
 
 public class Tools {
 	static final int IN_BUF_SZ = 1024 * 1024;
@@ -61,7 +61,7 @@ public class Tools {
 		if (first != 'B' || second != 'Z') {
 			throw new IOException("Didn't find BZ file signature in .bz2 file");
 		}
-		return new CBZip2InputStream(infile);
+		return new BZip2CompressorInputStream(infile);
 	}
 
 	static OutputStream openStandardOutput() {
@@ -73,7 +73,7 @@ public class Tools {
 		// bzip2 expects a two-byte 'BZ' signature header
 		outfile.write('B');
 		outfile.write('Z');
-		return new CBZip2OutputStream(outfile);
+		return new BZip2CompressorOutputStream(outfile);
 	}
 
 	static OutputStream createOutputFile(String param) throws IOException, FileNotFoundException {

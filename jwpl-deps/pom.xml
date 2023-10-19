@@ -23,25 +23,11 @@
         <version>2.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>de.tudarmstadt.ukp.wikipedia.wikimachine</artifactId>
-    <name>WikiMachine</name>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-            <artifactId>de.tudarmstadt.ukp.wikipedia.mwdumper</artifactId>
-        </dependency>
-        <!-- logger dependencies -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>jwpl-deps</artifactId>
+    <name>Dependencies :: Jakarta</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>jwpl-swc-engine-shade</module>
+    </modules>
 </project>

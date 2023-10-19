@@ -67,20 +67,23 @@ public class WikiHibernateUtil implements WikiConstants {
 
         Properties p = new Properties();
         boolean useMySQL = false;
+        boolean useMariaDB = false;
         boolean useHSQL = false;
         // XXX other dialects might be interesting here as well...
         if(jdbcURL.toLowerCase().contains("mysql")) {
             useMySQL = true;
-        }
-        else if(jdbcURL.toLowerCase().contains("hsql")) {
+        } else if(jdbcURL.toLowerCase().contains("mariadb")) {
+            useMariaDB = true;
+        } else if(jdbcURL.toLowerCase().contains("hsql")) {
             useHSQL = true;
         }
 
         // SQL dialect
         if(useMySQL) {
             p.setProperty("hibernate.dialect","org.hibernate.dialect.MySQLDialect");
-        }
-        if(useHSQL) {
+        } else if(useMariaDB) {
+            p.setProperty("hibernate.dialect","org.hibernate.dialect.MariaDBDialect");
+        } else if(useHSQL) {
             p.setProperty("hibernate.dialect","org.hibernate.dialect.HSQLDialect");
         }
 
@@ -97,7 +100,7 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.connection.password", password);
 
         // JDBC connection pool (use the built-in) -->
-        p.setProperty("hibernate.connection.pool_size","1");
+        p.setProperty("hibernate.connection.pool_size","5");
 
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class","thread");
@@ -109,9 +112,10 @@ public class WikiHibernateUtil implements WikiConstants {
         p.setProperty("hibernate.show_sql","false");
 
         // Do only update schema on changes
-        if(useMySQL) {
+        if(useMySQL || useMariaDB) {
             p.setProperty("hibernate.hbm2ddl.auto","validate");
         }
+
         if(useHSQL) {
             p.setProperty("hibernate.hbm2ddl.auto","none");
         }
@@ -129,7 +133,6 @@ public class WikiHibernateUtil implements WikiConstants {
             p.setProperty("hibernate.c3p0.max_size","15");
             p.setProperty("hibernate.c3p0.max_statements","100");
             p.setProperty("hibernate.c3p0.timeout","1000");
-
         }
         return p;
     }

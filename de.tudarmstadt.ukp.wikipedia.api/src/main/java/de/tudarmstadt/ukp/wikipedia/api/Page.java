@@ -17,15 +17,12 @@
  */
 package de.tudarmstadt.ukp.wikipedia.api;
 
-import java.math.BigInteger;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.LongType;
-import org.hibernate.type.StringType;
+import org.hibernate.type.StandardBasicTypes;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
@@ -176,7 +173,7 @@ public class Page implements WikiConstants
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
 		hibernatePage = (de.tudarmstadt.ukp.wikipedia.api.hibernate.Page) session
-				.createQuery("from Page where pageId = :id").setParameter("id", pageID, IntegerType.INSTANCE).uniqueResult();
+				.createQuery("from Page where pageId = :id").setParameter("id", pageID, StandardBasicTypes.INTEGER).uniqueResult();
         session.getTransaction().commit();
 
         if (hibernatePage == null) {
@@ -204,7 +201,7 @@ public class Page implements WikiConstants
 		Integer pageId = (Integer) session
 				.createNativeQuery(
 						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1")
-				.setParameter("pagetitle", searchString, StringType.INSTANCE).uniqueResult();
+				.setParameter("pagetitle", searchString, StandardBasicTypes.STRING).uniqueResult();
 		session.getTransaction().commit();
 
         if (pageId == null) {
@@ -288,20 +285,20 @@ public class Page implements WikiConstants
 	 */
 	public int getNumberOfCategories()
 	{
-		BigInteger nrOfCategories = new BigInteger("0");
+		int nrOfCategories = 0;
 
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
 				.createNativeQuery("select count(pages) from page_categories where id = :pageid")
-				.setParameter("pageid", id, LongType.INSTANCE).uniqueResult();
+				.setParameter("pageid", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfCategories = (BigInteger) returnValue;
+			nrOfCategories = ((Long) returnValue).intValue();
 		}
-		return nrOfCategories.intValue();
+		return nrOfCategories;
 	}
 
 	/**
@@ -343,20 +340,20 @@ public class Page implements WikiConstants
 	 */
 	public int getNumberOfInlinks()
 	{
-		BigInteger nrOfInlinks = new BigInteger("0");
+		int nrOfInlinks = 0;
 
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
 				.createNativeQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
-				.setParameter("piid", id, LongType.INSTANCE).uniqueResult();
+				.setParameter("piid", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfInlinks = (BigInteger) returnValue;
+			nrOfInlinks = ((Long) returnValue).intValue();
 		}
-		return nrOfInlinks.intValue();
+		return nrOfInlinks;
 	}
 
 	/**
@@ -419,20 +416,20 @@ public class Page implements WikiConstants
 	 */
 	public int getNumberOfOutlinks()
 	{
-		BigInteger nrOfOutlinks = new BigInteger("0");
+		int nrOfOutlinks = 0;
 
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		Object returnValue = session
 				.createNativeQuery("select count(outLinks) from page_outlinks where id = :id")
-				.setParameter("id", id, LongType.INSTANCE).uniqueResult();
+				.setParameter("id", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfOutlinks = (BigInteger) returnValue;
+			nrOfOutlinks = ((Long) returnValue).intValue();
 		}
-		return nrOfOutlinks.intValue();
+		return nrOfOutlinks;
 	}
 
 	/**

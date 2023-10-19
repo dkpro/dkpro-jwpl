@@ -20,7 +20,9 @@ package de.tudarmstadt.ukp.wikipedia.timemachine.dump.version;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.tudarmstadt.ukp.wikipedia.timemachine.domain.Revision;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.sql.CategorylinksParser;
@@ -33,8 +35,6 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.hashing.IStringHashCode;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TimestampUtil;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
-import gnu.trove.map.hash.TIntIntHashMap;
-import gnu.trove.set.hash.TIntHashSet;
 
 /**
  * <i>Please be sure, that {@code hashCode(String)} of the provided HashAlgorithm type returns the
@@ -60,16 +60,16 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 	 * after revision parsing the map will be erased and the keys sorted in the
 	 * array list
 	 */
-	private TIntHashSet pageIdRevList;
+	private Set<Integer> pageIdRevList;
 
 	/**
 	 * caches the page id's of disambiguation pages.
 	 */
-	private TIntHashSet disambiguations;
+	private Set<Integer> disambiguations;
 	/**
 	 * maps text id's to the page id's.
 	 */
-	private TIntIntHashMap textIdPageIdMap;
+	private Map<Integer, Integer> textIdPageIdMap;
 	/**
 	 * maps page id's of pages to their names
 	 */
@@ -123,7 +123,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
 	@Override
 	public void freeAfterRevisonParsing() {
-		pageIdRevList = new TIntHashSet(pageIdRevMap.keySet().size());
+		pageIdRevList = new HashSet<>(pageIdRevMap.keySet().size());
 		for (Integer key : pageIdRevMap.keySet()) {
 			pageIdRevList.add(key);
 		}
@@ -151,7 +151,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 		 * filled in revisions
 		 */
 		pageIdRevMap = new HashMap<Integer, Long>();
-		textIdPageIdMap = new TIntIntHashMap();
+		textIdPageIdMap = new HashMap<>();
 
 		/**
 		 * filled in pages
@@ -165,7 +165,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 		/**
 		 * filled in categories
 		 */
-		disambiguations = new TIntHashSet();
+		disambiguations = new HashSet<>();
 	}
 
 	@SuppressWarnings("unchecked")

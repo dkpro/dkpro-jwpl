@@ -67,7 +67,7 @@
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.DumpVersionJDKIntKeyFactory (bean id="dumpVersionFactory")
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.DumpVersionJDKLongKeyFactory (bean id="dumpVersionFactory")
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.DumpVersionJDKStringKeyFactory (bean id="dumpVersionFactory")
-	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.DumpVersionTroveIntKey (bean id="dumpVersion" without factory) [default]
+	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.DumpVersionFastUtilIntKey (bean id="dumpVersion" without factory) [default]
 	de.tudarmstadt.ukp.wikipedia.timemachine.dump.version.OriginalDumpVersion (bean id="dumpVersion" without factory)
 	-->
 

@@ -17,12 +17,12 @@
  */
 package de.tudarmstadt.ukp.wikipedia.wikimachine.decompression;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.tools.bzip2.CBZip2InputStream;
 
 /**
  * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream
@@ -44,7 +44,7 @@ public class BZip2Decompressor implements IDecompressor {
 		 * /pkg/bzip2 /CBZip2InputStream.html
 		 */
 		inputStream.skip(2);
-		outputStream = new CBZip2InputStream(inputStream);
+		outputStream = new BZip2CompressorInputStream(inputStream);
 
 		return outputStream;
 

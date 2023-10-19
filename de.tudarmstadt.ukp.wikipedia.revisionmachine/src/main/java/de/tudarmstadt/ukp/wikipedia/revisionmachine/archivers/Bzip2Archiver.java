@@ -17,6 +17,10 @@
  */
 package de.tudarmstadt.ukp.wikipedia.revisionmachine.archivers;
 
+
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -26,8 +30,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import org.apache.tools.bzip2.CBZip2InputStream;
-import org.apache.tools.bzip2.CBZip2OutputStream;
 
 /**
  * Class provides basic bzip2 compression/decompression functionality
@@ -64,7 +66,7 @@ public class Bzip2Archiver
 			BufferedOutputStream bufStr = new BufferedOutputStream(fos);
 			// added bzip2 prefix
 			fos.write("BZ".getBytes());
-			CBZip2OutputStream bzip2 = new CBZip2OutputStream(bufStr);
+			BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr);
 
 			while (input.available() > 0) {
 				int size = COMPRESSION_CACHE;
@@ -111,7 +113,7 @@ public class Bzip2Archiver
 		// added bzip2 prefix
 		fos.write("BZ".getBytes());
 
-		CBZip2OutputStream bzip2 = new CBZip2OutputStream(bufStr);
+		BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr);
 		return bzip2;
 	}
 
@@ -138,7 +140,7 @@ public class Bzip2Archiver
 
 		BufferedInputStream bufferedStream = new BufferedInputStream(fileStream);
 
-		CBZip2InputStream input = new CBZip2InputStream(bufferedStream);
+		BZip2CompressorInputStream input = new BZip2CompressorInputStream(bufferedStream);
 
 		return new InputStreamReader(input, encoding);
 
@@ -169,7 +171,7 @@ public class Bzip2Archiver
 
 		BufferedInputStream buffStr = new BufferedInputStream(inputStr);
 
-		CBZip2InputStream input = new CBZip2InputStream(buffStr);
+		BZip2CompressorInputStream input = new BZip2CompressorInputStream(buffStr);
 
 		FileOutputStream outStr = new FileOutputStream(unarchived);
 
