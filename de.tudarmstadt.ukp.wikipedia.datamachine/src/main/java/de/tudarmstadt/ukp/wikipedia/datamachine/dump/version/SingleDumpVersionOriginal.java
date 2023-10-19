@@ -36,6 +36,9 @@ import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.RevisionParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.dump.xml.TextParser;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.Redirects;
 import de.tudarmstadt.ukp.wikipedia.wikimachine.util.TxtFileWriter;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Transforms a database from mediawiki format to JWPL format.<br>
@@ -71,9 +74,9 @@ public class SingleDumpVersionOriginal implements IDumpVersion {
 	// their page id's.
 	private Map<Integer, String> rPageIdNameMap;// maps page id's of redirects
 	// to their names.
-	private Set<Integer> disambiguations; // caches the page id's of
+	private IntSet disambiguations; // caches the page id's of
 	// disambiguation pages.
-	private Map<Integer, Integer> textIdPageIdMap;// maps text id's to the page
+	private Int2IntOpenHashMap textIdPageIdMap;// maps text id's to the page
 
 	// id's.
 
@@ -221,13 +224,13 @@ public class SingleDumpVersionOriginal implements IDumpVersion {
 
 	@Override
 	public void initialize(Timestamp timestamp) {
-		this.pPageIdNameMap = new HashMap<Integer, String>();
-		this.cPageIdNameMap = new HashMap<Integer, String>();
-		this.pNamePageIdMap = new HashMap<String, Integer>();
-		this.cNamePageIdMap = new HashMap<String, Integer>();
-		this.rPageIdNameMap = new HashMap<Integer, String>();
-		this.disambiguations = new HashSet<Integer>();
-		this.textIdPageIdMap = new HashMap<Integer, Integer>();
+		this.pPageIdNameMap = new HashMap<>();
+		this.cPageIdNameMap = new HashMap<>();
+		this.pNamePageIdMap = new HashMap<>();
+		this.cNamePageIdMap = new HashMap<>();
+		this.rPageIdNameMap = new HashMap<>();
+		this.disambiguations = new IntArraySet();
+		this.textIdPageIdMap = new Int2IntOpenHashMap();
 
 	}
 
@@ -240,8 +243,8 @@ public class SingleDumpVersionOriginal implements IDumpVersion {
 
 		cl_from = clParser.getClFrom();
 		cl_to = clParser.getClTo();
-		if (!cNamePageIdMap.containsKey(cl_to)) {// discard links with non
-			// registred targets
+		if (!cNamePageIdMap.containsKey(cl_to)) {
+			// discard links with non-registered targets
 			return;
 		}
 		// if the link source is a page then write the link in
