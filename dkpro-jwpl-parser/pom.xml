@@ -1,0 +1,79 @@
+<!--
+  Licensed to the Technische Universität Darmstadt under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The Technische Universität Darmstadt
+  licenses this file to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+		<groupId>org.dkpro.jwpl</groupId>
+		<artifactId>dkpro-jwpl</artifactId>
+		<version>2.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>dkpro-jwpl-parser</artifactId>
+  <name>MediaWiki Parser</name>
+  <description>A modular parser for MediaWiki markup.
+
+	As of June 2012, the parser module is no longer maintained.
+	Please use the SWEBLE parser (http://sweble.org/) for parsing MediaWiki markup. See the JWPL Google Code project page for further information.</description>
+
+  <dependencies>
+	 <dependency>
+		<groupId>org.dkpro.jwpl</groupId>
+		<artifactId>dkpro-jwpl-api</artifactId>
+	 </dependency>
+	 <dependency>
+		<groupId>commons-logging</groupId>
+		<artifactId>commons-logging</artifactId>
+	 </dependency>
+	  <dependency>
+		  <groupId>org.slf4j</groupId>
+		  <artifactId>slf4j-api</artifactId>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.apache.logging.log4j</groupId>
+		  <artifactId>log4j-slf4j-impl</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.apache.logging.log4j</groupId>
+		  <artifactId>log4j-core</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>junit</groupId>
+		  <artifactId>junit</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.hsqldb</groupId>
+		  <artifactId>hsqldb</artifactId>
+		  <scope>test</scope>
+	  </dependency>
+  </dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

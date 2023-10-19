@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Technische Universität Darmstadt under one
+  or more contributor license agreements. See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership. The Technische Universität Darmstadt
+  licenses this file to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans
+			 http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- APPLICATION CONTEXT TEMPLATE FOR DATA & TIME MACHINE -->
+	<!-- single variant
+		org.dkpro.jwpl.wikimachine.factory.SpringFactory
+	-->
+	<bean id="environmentFactory" class="org.dkpro.jwpl.wikimachine.factory.SpringFactory" >
+	</bean>
+
+	<!-- variants: use one or several loggers from the list
+		org.dkpro.jwpl.wikimachine.debug.FileMemoryLogger
+		org.dkpro.jwpl.wikimachine.debug.MailMemoryLogger
+		org.dkpro.jwpl.wikimachine.debug.Slf4JLogger
+	-->
+	<bean id="logger" class="org.dkpro.jwpl.wikimachine.debug.CompositeLogger" >
+		<constructor-arg>
+			<list>
+				<bean id="fileLogger" class="org.dkpro.jwpl.wikimachine.debug.FileMemoryLogger"/>
+				<bean id="slf4JLogger" class="org.dkpro.jwpl.wikimachine.debug.Slf4JLogger"/>
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.decompression.UniversalDecompressor [default]
+	org.dkpro.jwpl.wikimachine.decompression.BZip2Decompressor
+	org.dkpro.jwpl.wikimachine.decompression.GZipDecompressor
+	-->
+	<bean id="decompressor" class="org.dkpro.jwpl.wikimachine.decompression.UniversalDecompressor" >
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.datamachine.domain.DataMachineGenerator [datamachine]
+	org.dkpro.jwpl.timemachine.domain.TimeMachineGenerator [timemachine]
+	-->
+	<bean id="snapshotGenerator" class="org.dkpro.jwpl.datamachine.domain.DataMachineGenerator" >
+		<constructor-arg ref="environmentFactory" />
+	</bean>
+
+	<!-- single variant
+		org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor
+		TODO: maybe a multi-threaded dump version processor will be added
+		
+		step2Log, step2GC and step2Flush are settings used to find/ to aboid memory leaks
+		use property's value="0" to disable it 
+	-->
+	<bean id="dumpVersionProcessor" class="org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor" >
+		<constructor-arg ref="logger" />
+		<property name="step2Log" value="10000" />
+		<property name="step2GC" value="100000" />
+		<property name="step2Flush" value="100000" />
+	</bean>
+
+
+	<!-- variants [datamachine]
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKIntKeyFactory (bean id="dumpVersionFactory") [default]
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKLongKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKStringKeyFactory (bean id="dumpVersionFactory")
+	-->
+
+	<!-- variants [timemachine]
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKIntKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKLongKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKStringKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionFastUtilIntKey (bean id="dumpVersion" without factory) [default]
+	org.dkpro.jwpl.timemachine.dump.version.OriginalDumpVersion (bean id="dumpVersion" without factory)
+	-->
+
+	<!-- examples
+	
+	Factory Template:
+		
+	<bean id="dumpVersionFactory" class="factoryClass" />
+	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+	
+	Constructor Template:
+	
+	<bean id="dumpVersion" class="dumpVersionClass" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+	
+	-->
+	<bean id="dumpVersionFactory" class="org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKIntKeyFactory"/>
+	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+
+
+	<!-- variants [datamachine]
+	org.dkpro.jwpl.datamachine.dump.xml.BinaryDumpTableInputStream
+	-->
+	<!-- variants [timemachine]
+	org.dkpro.jwpl.timemachine.dump.xml.light.XMLDumpTableInputStream
+	org.dkpro.jwpl.timemachine.dump.xml.original.XMLDumpTableInputStream [default]
+	-->
+
+	<bean id="dumpTableInputStream" class="org.dkpro.jwpl.datamachine.dump.xml.BinaryDumpTableInputStream" scope="prototype">
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.dump.xml.PageParser [datamachine] & [timemachine]
+	-->
+	<bean id="pageParser" class="org.dkpro.jwpl.wikimachine.dump.xml.PageParser" >
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.datamachine.dump.xml.DataMachineRevisionParser [datamachine]
+	org.dkpro.jwpl.timemachine.dump.xml.TimeMachineRevisionParser [timemachine]
+	-->
+	<bean id="revisionParser" class="org.dkpro.jwpl.datamachine.dump.xml.DataMachineRevisionParser" >
+	</bean>
+
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.dump.xml.TextParser [datamachine] & [timemachine]
+	-->
+	<bean id="textParser" class="org.dkpro.jwpl.wikimachine.dump.xml.TextParser" >
+	</bean>
+
+</beans>
