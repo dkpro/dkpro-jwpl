@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+			 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			 xsi:schemaLocation="http://www.springframework.org/schema/beans
+			 http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- TIME MACHINE	-->
+	<!-- @autor ivan.galkin	-->
+
+	<!-- single variant
+		org.dkpro.jwpl.wikimachine.factory.SpringFactory
+	-->
+	<bean id="environmentFactory" class="org.dkpro.jwpl.wikimachine.factory.SpringFactory">
+	</bean>
+
+	<!-- variants: use one or several loggers from the list
+		org.dkpro.jwpl.wikimachine.debug.FileMemoryLogger
+		org.dkpro.jwpl.wikimachine.debug.MailMemoryLogger
+		org.dkpro.jwpl.wikimachine.debug.Slf4JLogger
+	-->
+	<bean id="logger" class="org.dkpro.jwpl.wikimachine.debug.CompositeLogger">
+		<constructor-arg>
+			<list>
+				<bean id="fileLogger" class="org.dkpro.jwpl.wikimachine.debug.FileMemoryLogger" />
+				<bean id="slf4JLogger" class="org.dkpro.jwpl.wikimachine.debug.Slf4JLogger" />
+			</list>
+		</constructor-arg>
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.decompression.UniversalDecompressor [default]
+	org.dkpro.jwpl.wikimachine.decompression.BZip2Decompressor
+	org.dkpro.jwpl.wikimachine.decompression.GZipDecompressor
+	-->
+	<bean id="decompressor" class="org.dkpro.jwpl.wikimachine.decompression.UniversalDecompressor">
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.datamachine.domain.DataMachineGenerator [datamachine]
+	org.dkpro.jwpl.timemachine.domain.TimeMachineGenerator [timemachine]
+	-->
+	<bean id="snapshotGenerator" class="org.dkpro.jwpl.timemachine.domain.TimeMachineGenerator">
+		<constructor-arg ref="environmentFactory" />
+	</bean>
+
+	<!-- single variant
+		org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor
+		TODO: maybe a multi-threaded dump version processor will be added
+		
+		step2Log, step2GC and step2Flush are settings used to find/ to avoid memory leaks
+		use property's value="0" to disable it 
+	-->
+	<bean id="dumpVersionProcessor" class="org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor">
+		<constructor-arg ref="logger" />
+		<property name="step2Log" value="10000" />
+		<property name="step2GC" value="1000000" />
+		<property name="step2Flush" value="100000" />
+	</bean>
+
+	<!-- variants [datamachine]
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKIntKeyFactory (bean id="dumpVersionFactory") [default]
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKLongKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.datamachine.dump.version.SingleDumpVersionJDKStringKeyFactory (bean id="dumpVersionFactory")
+	-->
+
+	<!-- variants [timemachine]
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKIntKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKLongKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionJDKStringKeyFactory (bean id="dumpVersionFactory")
+	org.dkpro.jwpl.timemachine.dump.version.DumpVersionFastUtilIntKey (bean id="dumpVersion" without factory) [default]
+	org.dkpro.jwpl.timemachine.dump.version.OriginalDumpVersion (bean id="dumpVersion" without factory)
+	-->
+
+	<!-- examples
+	
+	Factory Template:
+		
+	<bean id="dumpVersionFactory" class="factoryClass"/>
+	<bean id="dumpVersion" factory-bean="dumpVersionFactory" factory-method="getDumpVersion" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+	
+	Constructor Template:
+	
+	<bean id="dumpVersion" class="dumpVersionClass" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+	
+	-->
+
+	<bean id="dumpVersion" class="org.dkpro.jwpl.timemachine.dump.version.DumpVersionFastUtilIntKey" scope="prototype">
+		<property name="logger">
+			<ref bean="logger" />
+		</property>
+	</bean>
+
+
+	<!-- variants [datamachine]
+	org.dkpro.jwpl.datamachine.dump.xml.BinaryDumpTableInputStream
+	-->
+	<!-- variants [timemachine]
+	org.dkpro.jwpl.timemachine.dump.xml.XMLDumpTableInputStream [more fast and robust, but few tested]
+	org.dkpro.jwpl.timemachine.dump.xml.original.XMLDumpTableInputStream [default]
+	-->
+
+	<bean id="dumpTableInputStream" class="org.dkpro.jwpl.timemachine.dump.xml.XMLDumpTableInputStream" scope="prototype">
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.dump.xml.PageParser [datamachine] & [timemachine]
+	-->
+	<bean id="pageParser" class="org.dkpro.jwpl.wikimachine.dump.xml.PageParser">
+	</bean>
+
+	<!-- variants 
+	org.dkpro.jwpl.datamachine.dump.xml.DataMachineRevisionParser [datamachine]
+	org.dkpro.jwpl.timemachine.dump.xml.TimeMachineRevisionParser [timemachine]
+	-->
+	<bean id="revisionParser" class="org.dkpro.jwpl.timemachine.dump.xml.TimeMachineRevisionParser">
+	</bean>
+
+
+	<!-- variants 
+	org.dkpro.jwpl.wikimachine.dump.xml.TextParser [datamachine] & [timemachine]
+	-->
+	<bean id="textParser" class="org.dkpro.jwpl.wikimachine.dump.xml.TextParser">
+	</bean>
+
+</beans>

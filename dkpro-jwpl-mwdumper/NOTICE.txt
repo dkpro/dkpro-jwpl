@@ -1,0 +1,44 @@
+Some classes in this module are taken from third parties and may
+be licensed differently, as indicated in the respective class
+headers.
+
+MediaWiki import/export processing tools
+http://www.mediawiki.org/wiki/Mwdumper
+
+dumper.mwdumper.org.dkpro.jwpl.Dumper,
+dumper.mwdumper.org.dkpro.jwpl.ProgressFilter,
+importer.mwdumper.org.dkpro.jwpl.Buffer,
+importer.mwdumper.org.dkpro.jwpl.Contributor,
+importer.mwdumper.org.dkpro.jwpl.DumpWriter,
+importer.mwdumper.org.dkpro.jwpl.ExactListFilter,
+importer.mwdumper.org.dkpro.jwpl.LatestFilter,
+importer.mwdumper.org.dkpro.jwpl.ListFilter,
+importer.mwdumper.org.dkpro.jwpl.MultiWriter,
+importer.mwdumper.org.dkpro.jwpl.NamespaceFilter,
+importer.mwdumper.org.dkpro.jwpl.NamespaceSet,
+importer.mwdumper.org.dkpro.jwpl.NotalkFilter,
+importer.mwdumper.org.dkpro.jwpl.Page,
+importer.mwdumper.org.dkpro.jwpl.PageFilter,
+importer.mwdumper.org.dkpro.jwpl.Revision,
+importer.mwdumper.org.dkpro.jwpl.Siteinfo,
+importer.mwdumper.org.dkpro.jwpl.SphinxWriter,
+importer.mwdumper.org.dkpro.jwpl.SqlLiteral,
+importer.mwdumper.org.dkpro.jwpl.SqlWriter,
+importer.mwdumper.org.dkpro.jwpl.SqlWriter14,
+importer.mwdumper.org.dkpro.jwpl.SqlWriter15,
+importer.mwdumper.org.dkpro.jwpl.Title,
+importer.mwdumper.org.dkpro.jwpl.TitleMatchFilter,
+importer.mwdumper.org.dkpro.jwpl.XmlDumpReader,
+importer.mwdumper.org.dkpro.jwpl.XmlDumpWriter,
+importer.mwdumper.org.dkpro.jwpl.TitleTest:
+Copyright 2005 by Brion Vibber
+
+******************************************************
+importer.mwdumper.org.dkpro.jwpl.AfterTimeStampFilter,
+importer.mwdumper.org.dkpro.jwpl.BeforeTimeStampFilter,
+importer.mwdumper.org.dkpro.jwpl.TimeStampFilter:
+Copyright 2006 by Aurimas Fischer
+
+******************************************************
+importer.mwdumper.org.dkpro.jwpl.RevisionListFilter:
+Copyright 2006 by Tim Starling
