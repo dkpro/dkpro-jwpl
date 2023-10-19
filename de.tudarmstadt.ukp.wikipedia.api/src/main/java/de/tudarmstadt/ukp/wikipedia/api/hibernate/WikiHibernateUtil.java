@@ -115,7 +115,8 @@ public class WikiHibernateUtil implements WikiConstants {
         if(useMySQL || useMariaDB) {
             p.setProperty("hibernate.hbm2ddl.auto","validate");
         }
-        if(useMySQL || useMariaDB) {
+
+        if(useHSQL) {
             p.setProperty("hibernate.hbm2ddl.auto","none");
         }
 
