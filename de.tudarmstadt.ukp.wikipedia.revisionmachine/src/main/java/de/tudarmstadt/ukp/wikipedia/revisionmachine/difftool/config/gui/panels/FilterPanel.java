@@ -102,7 +102,7 @@ public class FilterPanel
 			public void actionPerformed(ActionEvent arg0)
 			{
 				for (int i = 0; i < 22; i++) {
-					namespaces.getModel().setValueAt(Boolean.TRUE, i, 1);
+					namespaces.getModel().setValueAt(true, i, 1);
 				}
 
 			}
@@ -119,7 +119,7 @@ public class FilterPanel
 			public void actionPerformed(ActionEvent e)
 			{
 				for (int i = 0; i < 22; i++) {
-					namespaces.getModel().setValueAt(Boolean.FALSE, i, 1);
+					namespaces.getModel().setValueAt(false, i, 1);
 				}
 
 			}
@@ -175,11 +175,11 @@ public class FilterPanel
 			for (int j = 0; j < rows; j++) {
 				if (namespaces.contains((this.namespaces.getModel().getValueAt(
 						j, 2)))) {
-					this.namespaces.getModel().setValueAt(Boolean.TRUE, j,
+					this.namespaces.getModel().setValueAt(true, j,
 							1);
 				}
 				else {
-					this.namespaces.getModel().setValueAt(Boolean.FALSE,
+					this.namespaces.getModel().setValueAt(false,
 							j, 1);
 				}
 
@@ -198,28 +198,28 @@ public class FilterPanel
 	{
 		private final String[] columnNames = { "Namespace", "Allow", "#" };
 
-		private final Object[][] data = { { "main(0)", Boolean.FALSE, 0 },
-				{ "talk(1)", Boolean.FALSE, 1 },
-				{ "user(2)", Boolean.FALSE, 2 },
-				{ "user talk(3)", Boolean.FALSE, 3 },
-				{ "wikipedia(4)", Boolean.FALSE, 4 },
-				{ "wikipedia talk(5)", Boolean.FALSE, 5 },
-				{ "file(6)", Boolean.FALSE, 6 },
-				{ "file talk(7)", Boolean.FALSE, 7 },
-				{ "mediawiki(8)", Boolean.FALSE, 8 },
-				{ "mediawiki talk(9)", Boolean.FALSE, 9 },
-				{ "template(10)", Boolean.FALSE, 10 },
-				{ "template talk(11)", Boolean.FALSE, 11 },
-				{ "help(12)", Boolean.FALSE, 12 },
-				{ "help talk(13)", Boolean.FALSE, 13 },
-				{ "category(14)", Boolean.FALSE, 14 },
-				{ "category talk(15)", Boolean.FALSE, 15 },
-				{ "portal(100)", Boolean.FALSE, 100 },
-				{ "portal talk(101)", Boolean.FALSE, 101 },
-				{ "book(108)", Boolean.FALSE, 108 },
-				{ "book talk(109)", Boolean.FALSE, 109 },
-				{ "special(-1)", Boolean.FALSE, -1 },
-				{ "media(-2)", Boolean.FALSE, -2 }
+		private final Object[][] data = { { "main(0)", false, 0 },
+				{ "talk(1)", false, 1 },
+				{ "user(2)", false, 2 },
+				{ "user talk(3)", false, 3 },
+				{ "wikipedia(4)", false, 4 },
+				{ "wikipedia talk(5)", false, 5 },
+				{ "file(6)", false, 6 },
+				{ "file talk(7)", false, 7 },
+				{ "mediawiki(8)", false, 8 },
+				{ "mediawiki talk(9)", false, 9 },
+				{ "template(10)", false, 10 },
+				{ "template talk(11)", false, 11 },
+				{ "help(12)", false, 12 },
+				{ "help talk(13)", false, 13 },
+				{ "category(14)", false, 14 },
+				{ "category talk(15)", false, 15 },
+				{ "portal(100)", false, 100 },
+				{ "portal talk(101)", false, 101 },
+				{ "book(108)", false, 108 },
+				{ "book talk(109)", false, 109 },
+				{ "special(-1)", false, -1 },
+				{ "media(-2)", false, -2 }
 
 		};
 
