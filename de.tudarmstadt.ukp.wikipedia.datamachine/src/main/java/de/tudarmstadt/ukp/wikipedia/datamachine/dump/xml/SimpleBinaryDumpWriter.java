@@ -18,11 +18,15 @@
 package de.tudarmstadt.ukp.wikipedia.datamachine.dump.xml;
 
 import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.zip.GZIPOutputStream;
 
 import de.tudarmstadt.ukp.wikipedia.datamachine.domain.DataMachineFiles;
+import de.tudarmstadt.ukp.wikipedia.datamachine.file.DeleteFilesAtShutdown;
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.DumpWriter;
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Page;
 import de.tudarmstadt.ukp.wikipedia.mwdumper.importer.Revision;
@@ -41,24 +45,6 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 	private Page currentPage;
 	private Revision lastRevision;
 
-	protected void createUncompressed() throws IOException {
-		pageFile = new UTFDataOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedPage())));
-		revisionFile = new UTFDataOutputStream(
-				new BufferedOutputStream(new FileOutputStream(files.getGeneratedRevision())));
-		textFile = new UTFDataOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedText())));
-	}
-
-	protected void createCompressed() throws IOException {
-
-		pageFile = new UTFDataOutputStream(
-				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedPage()))));
-		revisionFile = new UTFDataOutputStream(
-				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedRevision()))));
-		textFile = new UTFDataOutputStream(
-				new GZIPOutputStream(new BufferedOutputStream(new FileOutputStream(files.getGeneratedText()))));
-
-	}
-
 	public SimpleBinaryDumpWriter(DataMachineFiles files) throws IOException {
 		this.files = files;
 		if (this.files.isCompressGeneratedFiles()) {
@@ -66,6 +52,41 @@ public class SimpleBinaryDumpWriter implements DumpWriter {
 		} else {
 			createUncompressed();
 		}
+	}
+
+	protected void createUncompressed() throws IOException {
+		pageFile = openUTFDataOutputStream(files.getGeneratedPage(), false);
+		revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), false);
+		textFile = openUTFDataOutputStream(files.getGeneratedText(), false);
+	}
+
+	protected void createCompressed() throws IOException {
+		pageFile = openUTFDataOutputStream(files.getGeneratedPage(), true);
+		revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), true);
+		textFile = openUTFDataOutputStream(files.getGeneratedText(), true);
+	}
+
+	private UTFDataOutputStream openUTFDataOutputStream(final String filePath, final boolean compressed) throws IOException {
+		UTFDataOutputStream utfDataOutputStream;
+		if(compressed) {
+			utfDataOutputStream = new UTFDataOutputStream(new GZIPOutputStream(openFileStreamAndRegisterDeletion(filePath)));
+		} else {
+			utfDataOutputStream = new UTFDataOutputStream(openFileStreamAndRegisterDeletion(filePath));
+		}
+		return utfDataOutputStream;
+	}
+
+	private BufferedOutputStream openFileStreamAndRegisterDeletion(final String filePath) throws IOException {
+		Path binaryOutputFilePath = Paths.get(filePath);
+		// JavaDoc says:
+		// "truncate and overwrite an existing file, or create the file if it doesn't initially exist"
+		OutputStream fileOutputStream = Files.newOutputStream(binaryOutputFilePath);
+
+		// Register a delete hook on JVM shutdown for this path
+		DeleteFilesAtShutdown.register(binaryOutputFilePath);
+
+		// Create a buffered version for this
+		return new BufferedOutputStream(fileOutputStream);
 	}
 
 	@Override
