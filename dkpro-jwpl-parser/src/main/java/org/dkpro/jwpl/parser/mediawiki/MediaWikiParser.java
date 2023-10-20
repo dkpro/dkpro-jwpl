@@ -28,16 +28,16 @@ public interface MediaWikiParser {
 	/**
 	 * Parses MediaWiki Source, given as parameter src,  and returns a ParsedPage.
 	 */
-	public ParsedPage parse(String src);
+  ParsedPage parse(String src);
 	
 	/**
 	 * Retruns information abour the configuration of the parser.
 	 */
-	public String configurationInfo();
+  String configurationInfo();
 	
 	/**
 	 * Retruns the String which is uses as line separator, usually it
 	 * will be "\n" or "\r\n"
 	 */
-	public String getLineSeparator();
+  String getLineSeparator();
 }

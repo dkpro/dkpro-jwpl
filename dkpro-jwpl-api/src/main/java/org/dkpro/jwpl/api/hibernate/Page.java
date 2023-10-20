@@ -31,15 +31,15 @@ public class Page {
     private String name;
     private String text;
     private boolean isDisambiguation;
-    private Set<Integer> inLinks = new HashSet<Integer>();
-    private Set<Integer> outLinks = new HashSet<Integer>();
-    private Set<Integer> categories = new HashSet<Integer>();
-    private Set<String> redirects = new HashSet<String>();
+    private Set<Integer> inLinks = new HashSet<>();
+    private Set<Integer> outLinks = new HashSet<>();
+    private Set<Integer> categories = new HashSet<>();
+    private Set<String> redirects = new HashSet<>();
 
     /** A no argument constructor as required by Hibernate. */
-    public Page () {};
+    public Page () {}
 
-    public long getId() {
+  public long getId() {
         return id;
     }
 

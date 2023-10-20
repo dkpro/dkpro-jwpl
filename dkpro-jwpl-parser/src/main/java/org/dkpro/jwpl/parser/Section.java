@@ -40,7 +40,7 @@ public abstract class Section extends ContentContainer {
 	private ContentElement title;
 	
 	public Section(ContentElement title, int level){
-		this.ccl = new ArrayList<Content>();
+		this.ccl = new ArrayList<>();
 		this.level = level;
 		this.title = title;
 		if( title!=null ) ccl.add( title );

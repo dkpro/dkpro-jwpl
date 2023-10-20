@@ -37,15 +37,15 @@ class PerformanceTest {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
     private final Set<Integer> pageIDs;
     private List<List<Integer>> randomIdList;
     private List<List<String>> randomTitleList;
 
     // determines how many sample pageCycles are run for averaging results
-    private int maxiCycles;
-    private int pageCycles;
+    private final int maxiCycles;
+    private final int pageCycles;
 
     PerformanceTest(Wikipedia pWiki, int maxiCycles, int pageCycles) throws WikiApiException {
         this.wiki = pWiki;
@@ -112,8 +112,8 @@ class PerformanceTest {
             for (int i=0; i<pageCycles; i++) {
 
                 Set<Integer> page = GraphUtilities.getRandomPageSubset(pageIDs, 1);
-                Iterator it = page.iterator();
-                int pageID = (Integer) it.next();
+                Iterator<Integer> it = page.iterator();
+                int pageID = it.next();
                 long id = wiki.__getPageHibernateId(pageID);
 
                 double startTime = System.currentTimeMillis();
@@ -172,7 +172,7 @@ class PerformanceTest {
      * certain number of pages in order to gain efficiency.
      * We get the same number of pages from a Wikipedia using
      * different buffer sizes and return the performance.
-     *
+     * <p>
      * For an unbuffered iterator set bufferSize to 1.
      */
     void loadPageAndIterate(int numberOfPages, int bufferSize, Wikipedia wiki) {

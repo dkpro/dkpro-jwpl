@@ -27,9 +27,9 @@ import java.util.List;
  */
 public class TableElement extends ContentContainer{
 	
-	private int col;
-	private int row;
-	private SectionContainer s;
+	private final int col;
+	private final int row;
+	private final SectionContainer s;
 	
 	public TableElement( SectionContainer s, int row, int col ){ 		
 		this.ccl = s.ccl;
@@ -64,6 +64,6 @@ public class TableElement extends ContentContainer{
 	public SectionContainer getSectionContainer(){ return s; }
 
 	public String toString(){
-		return "TABLE_DATA: \n"+  s.toString();
+		return "TABLE_DATA: \n"+ s;
 	}
 }

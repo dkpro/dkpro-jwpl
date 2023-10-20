@@ -30,25 +30,25 @@ public interface WikiConstants {
     /**
      * Shortcut for System.getProperty("line.separator").
      */
-    static final String LF = System.getProperty("line.separator");
+    String LF = System.getProperty("line.separator");
 
     /**
      * The prefix that is added to page titles of discussion pages
      * Has to be the same as in wikipedia.datamachine:SingleDumpVersionJDKGeneric
      */
-    static final String DISCUSSION_PREFIX = "Discussion:";
+    String DISCUSSION_PREFIX = "Discussion:";
 
     /**
      * Configuration file for the Sweble parser
      */
-    static final String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
+    String SWEBLE_CONFIG = "classpath:/org/sweble/wikitext/engine/SimpleWikiConfiguration.xml";
 
     /**
      * Enumerates the languages for which Wikipedia APIs are available.
      * A Wikipedia object can be created using one of these languages.
      */
     // Languages should be lowercase and match the corresponding snowball stemmer names.
-    public enum Language {
+    enum Language {
         abkhazian,
         afar,
         afrikaans,

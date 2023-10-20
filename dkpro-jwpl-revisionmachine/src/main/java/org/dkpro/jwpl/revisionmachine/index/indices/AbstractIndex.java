@@ -33,7 +33,7 @@ public abstract class AbstractIndex
 	protected StringBuilder buffer;
 
 	/** List of contained queries. */
-	private List<StringBuilder> bufferList;
+	private final List<StringBuilder> bufferList;
 
 	/** Insert Statement to use */
 	protected final String insertStatement;
@@ -47,7 +47,7 @@ public abstract class AbstractIndex
 	public AbstractIndex()
 	{
 
-		this.bufferList = new ArrayList<StringBuilder>();
+		this.bufferList = new ArrayList<>();
 		this.buffer = null;
 
 		//does not really matter here- should be big to speed up data file creation
@@ -70,7 +70,7 @@ public abstract class AbstractIndex
 			final long MAX_ALLOWED_PACKET)
 	{
 
-		this.bufferList = new ArrayList<StringBuilder>();
+		this.bufferList = new ArrayList<>();
 		this.buffer = null;
 
 		this.MAX_ALLOWED_PACKET = MAX_ALLOWED_PACKET;

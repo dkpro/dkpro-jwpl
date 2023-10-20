@@ -30,10 +30,10 @@ public class SQLEncoding
 {
 
 	/** UNCOMPRESSED Query */
-	private StringBuilder query;
+	private final StringBuilder query;
 
 	/** List of binary data */
-	private List<byte[]> list;
+	private final List<byte[]> list;
 
 	/** Size of binary data */
 	private int binaryDataSize;
@@ -44,7 +44,7 @@ public class SQLEncoding
 	public SQLEncoding()
 	{
 		this.query = new StringBuilder();
-		this.list = new ArrayList<byte[]>();
+		this.list = new ArrayList<>();
 		this.binaryDataSize = 0;
 	}
 
@@ -137,6 +137,6 @@ public class SQLEncoding
 
 		}
 
-		return "<" + list.size() + ">\r\n" + query.toString();
+		return "<" + list.size() + ">\r\n" + query;
 	}
 }

@@ -31,9 +31,9 @@ public class ApiUtilities {
      * TEXT - print a message with progress in percent.
      *
      */
-    public enum ProgressInfoMode { DOTS, TEXT };
+    public enum ProgressInfoMode { DOTS, TEXT }
 
-    /**
+  /**
      * Prints a progress counter.
      * @param counter Indicates the position in the task.
      * @param size Size of the overall task.

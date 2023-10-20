@@ -49,7 +49,7 @@ public class TextPair {
 	public TextPair(String before, String after) {
 		this.beforeText = normalize(before);
 		this.afterText = normalize(after);
-		setMetaData(new HashMap<String, String>());
+		setMetaData(new HashMap<>());
 	}
 
 	public String getBeforeText() {
@@ -156,7 +156,7 @@ public class TextPair {
 		StringBuilder deltas = new StringBuilder();
 		for(Delta delta:getPatch().getDeltas()){
 			if(delta.getType()==difftype){
-				deltas.append(delta.toString());
+				deltas.append(delta);
 				deltas.append(System.getProperty("line.separator"));
 			}
 		}
@@ -251,7 +251,7 @@ public class TextPair {
 		BreakIterator iterator = BreakIterator.getSentenceInstance(Locale.US);
 		iterator.setText(str);
 		int start = iterator.first();
-		List<String> sentences = new ArrayList<String>();
+		List<String> sentences = new ArrayList<>();
 		for (int end = iterator.next();
 			 end != BreakIterator.DONE;
 			 start = end, end = iterator.next()) {

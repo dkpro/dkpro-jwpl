@@ -17,7 +17,7 @@
  */
 package org.dkpro.jwpl.api.sweble;
 
-/**
+/*
  * Derived from the TextConverter class which was published in the
  * Sweble example project provided on
  * http://http://sweble.org by the Open Source Research Group,
@@ -119,7 +119,7 @@ public class PlainTextConverter extends AstVisitor<WtNode>
 
 	private boolean needSpace;
 	private boolean noWrap;
-	private boolean enumerateSections;
+	private final boolean enumerateSections;
 
 	private LinkedList<Integer> sections;
 
@@ -177,8 +177,8 @@ s	 */
 		needNewlines = 0;
 		needSpace = false;
 		noWrap = false;
-		sections = new LinkedList<Integer>();
-		rows = new ArrayList<List<String>>();
+		sections = new LinkedList<>();
+		rows = new ArrayList<>();
 		return super.before(node);
 	}
 
@@ -458,7 +458,7 @@ s	 */
 	{
 		if (currentRow == null)
 		{
-			currentRow = new ArrayList<String>();
+			currentRow = new ArrayList<>();
 			iterate(n);
 			if(currentRow.size() > 0)
 			{

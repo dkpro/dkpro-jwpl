@@ -44,23 +44,24 @@ public class Redirects {
 	 * @see [Bug 86]
 	 * @see <a href="http://en.wikipedia.org/wiki/Wikipedia:Redirect">Redirect</a>
 	 */
-	private static final List<String> redirectPatterns = new ArrayList<String>() {
-		private static final long serialVersionUID = 1L;
-		{
-			add("#REDIRECT"); // en
-			add("#WEITERLEITUNG"); // de
+	private static final List<String> redirectPatterns = new ArrayList<>() {
+    private static final long serialVersionUID = 1L;
 
-			// add("#AANSTUUR"); // af
-			// add("#SUUNA"); // et
-			// add("#REDIRECCIÓN"); // es, gl
-			// add("#PREUSMJERI"); // hr
-			// add("#ALIH "); // id, jv
-			// add("#RINVIA"); // it
-			// add("#OHJAUS"); // fi
-			// add("#OMDIRIGERING "); // sv
+    {
+      add("#REDIRECT"); // en
+      add("#WEITERLEITUNG"); // de
 
-		}
-	};
+      // add("#AANSTUUR"); // af
+      // add("#SUUNA"); // et
+      // add("#REDIRECCIÓN"); // es, gl
+      // add("#PREUSMJERI"); // hr
+      // add("#ALIH "); // id, jv
+      // add("#RINVIA"); // it
+      // add("#OHJAUS"); // fi
+      // add("#OMDIRIGERING "); // sv
+
+    }
+  };
 
 	/**
 	 * Check if given text starts with #REDIRECT, with case ignoring

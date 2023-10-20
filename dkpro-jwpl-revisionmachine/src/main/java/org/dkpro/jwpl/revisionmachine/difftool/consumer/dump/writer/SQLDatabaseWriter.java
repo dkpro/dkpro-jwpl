@@ -54,7 +54,7 @@ public class SQLDatabaseWriter
 	private Connection connection;
 
 	/** Reference to the logger */
-	protected Logger logger;
+	protected final Logger logger;
 
 	/** Reference to the sql encoder */
 	protected SQLEncoderInterface sqlEncoder;
@@ -98,13 +98,10 @@ public class SQLDatabaseWriter
 			writeHeader();
 
 		}
-		catch (ClassNotFoundException e) {
+		catch (ClassNotFoundException | SQLException e) {
 			throw new ConfigurationException(e);
 		}
-		catch (SQLException e) {
-			throw new ConfigurationException(e);
-		}
-	}
+  }
 
 	/**
 	 * This method will close the connection to the output.

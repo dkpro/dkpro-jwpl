@@ -39,25 +39,25 @@ public class PageQueryIterable implements Iterable<Page> {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private Wikipedia wiki;
-    private List<Integer> pageIdList;
+    private final Wikipedia wiki;
+    private final List<Integer> pageIdList;
 
     public PageQueryIterable(Wikipedia wiki, PageQuery query) throws WikiApiException {
 
         this.wiki = wiki;
-        this.pageIdList = new ArrayList<Integer>();
+        this.pageIdList = new ArrayList<>();
 
         // get a list with all pageIDs of the pages conforming with the query
         //TODO change this to a hibernate criteria query
         String hql = "select p.pageId from Page as p ";
-        List<String> conditions = new ArrayList<String>();
+        List<String> conditions = new ArrayList<>();
         if (query.onlyDisambiguationPages()) {
             conditions.add("p.isDisambiguation = 1");
         }
         if (query.onlyArticlePages()) {
             conditions.add("p.isDisambiguation = 0");
         }
-        if (query.getTitlePattern() != "") {
+        if (!"".equals(query.getTitlePattern())) {
             conditions.add("p.name like '" + query.getTitlePattern() + "'");
         }
 

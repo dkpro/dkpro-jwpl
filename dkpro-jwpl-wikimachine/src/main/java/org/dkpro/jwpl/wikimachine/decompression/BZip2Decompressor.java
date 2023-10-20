@@ -35,10 +35,10 @@ public class BZip2Decompressor implements IDecompressor {
 	@Override
 	public InputStream getInputStream(String fileName) throws IOException {
 		BufferedInputStream inputStream;
-		InputStream outputStream = null;
+		InputStream outputStream;
 
 		inputStream = new BufferedInputStream(new FileInputStream(fileName));
-		/**
+		/*
 		 * skip 2 first bytes (see the documentation of CBZip2InputStream) e.g.
 		 * here http://lucene.apache.org/tika/xref/org/apache/tika/parser
 		 * /pkg/bzip2 /CBZip2InputStream.html

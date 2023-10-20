@@ -197,24 +197,20 @@ public class DataFileArchiveWriter
 				}
 
 				if (!MODE_STATISTICAL_OUTPUT) {
-					System.out.println(task.toString());
+					System.out.println(task);
 				}
 
 			}
 			else {
-				System.out.println(task.toString());
+				System.out.println(task);
 			}
 
 		}
-		catch (EncodingException e) {
+		catch (EncodingException | DecodingException e) {
 			throw ErrorFactory.createSQLConsumerException(
 					ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
 		}
-		catch (DecodingException e) {
-			throw ErrorFactory.createSQLConsumerException(
-					ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
-		}
-	}
+  }
 
 	/**
 	 * Creates a new output file and writes the header information.

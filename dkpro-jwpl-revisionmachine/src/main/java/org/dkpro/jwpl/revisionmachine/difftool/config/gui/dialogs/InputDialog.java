@@ -19,8 +19,6 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.dialogs;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -78,7 +76,7 @@ public class InputDialog
 		private JButton searchButton;
 
 		private JLabel typeLabel;
-		private JComboBox typeChooser;
+		private JComboBox<InputType> typeChooser;
 
 		private JLabel startLabel;
 		private JTextField startPosition;
@@ -102,18 +100,13 @@ public class InputDialog
 			searchButton = new JButton("Search");
 			searchButton.setBounds(180, 10, 80, 25);
 
-			searchButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
+			searchButton.addActionListener(e -> {
 
-					JFileChooser fc = new JFileChooser();
-					if (fc.showOpenDialog(new JPanel()) == JFileChooser.APPROVE_OPTION) {
-						pathField.setText(fc.getSelectedFile().getPath());
-					}
-				}
-			});
+        JFileChooser fc = new JFileChooser();
+        if (fc.showOpenDialog(new JPanel()) == JFileChooser.APPROVE_OPTION) {
+          pathField.setText(fc.getSelectedFile().getPath());
+        }
+      });
 
 			this.add(searchButton);
 		}
@@ -143,7 +136,7 @@ public class InputDialog
 			typeLabel.setBounds(10, 80, 130, 25);
 			this.add(typeLabel);
 
-			typeChooser = new JComboBox();
+			typeChooser = new JComboBox<>();
 			typeChooser.setBounds(150, 80, 110, 25);
 
 			typeChooser.addItem(InputType.XML);
@@ -164,36 +157,24 @@ public class InputDialog
 		{
 			addButton = new JButton("Add");
 			addButton.setBounds(10, 170, 120, 25);
-			addButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
-					String path = pathField.getText();
-					if (path.length() == 0) {
-						return;
-					}
+			addButton.addActionListener(e -> {
+        String path = pathField.getText();
+        if (path.length() == 0) {
+          return;
+        }
 
-					InputType type = (InputType) typeChooser.getSelectedItem();
+        InputType type = (InputType) typeChooser.getSelectedItem();
 
-					controller.addArchive(new ArchiveDescription(type, path));
-					controller.repaint();
+        controller.addArchive(new ArchiveDescription(type, path));
+        controller.repaint();
 
-					close();
-				}
-			});
+        close();
+      });
 			this.add(addButton);
 
 			cancelButton = new JButton("Cancel");
 			cancelButton.setBounds(140, 170, 120, 25);
-			cancelButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
-					close();
-				}
-			});
+			cancelButton.addActionListener(e -> close());
 
 			this.add(cancelButton);
 		}

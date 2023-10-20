@@ -35,7 +35,7 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 
 public class ParsedPageTest extends BaseJWPLTest{
 
-    private static String LF = "\n";
+    private static final String LF = "\n";
 
     /**
      * Made this static so that following tests don't run if assumption fails.

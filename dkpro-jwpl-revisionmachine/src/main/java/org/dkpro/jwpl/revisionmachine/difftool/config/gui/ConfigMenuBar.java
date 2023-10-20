@@ -17,9 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -63,26 +60,12 @@ public class ConfigMenuBar
 		JMenu system = new JMenu("System");
 
 		JMenuItem importConfig = new JMenuItem("Import Configuration");
-		importConfig.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.loadConfiguration();
-			}
-		});
+		importConfig.addActionListener(e -> controller.loadConfiguration());
 
 		system.add(importConfig);
 
 		JMenuItem exportConfig = new JMenuItem("Export Configuration");
-		exportConfig.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.saveConfiguration();
-			}
-		});
+		exportConfig.addActionListener(e -> controller.saveConfiguration());
 
 		system.add(exportConfig);
 
@@ -90,28 +73,14 @@ public class ConfigMenuBar
 
 		JMenuItem defaultConfig = new JMenuItem(
 				"Reset to default parameters");
-		defaultConfig.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.defaultConfiguration();
-			}
-		});
+		defaultConfig.addActionListener(e -> controller.defaultConfiguration());
 
 		system.add(defaultConfig);
 
 		system.addSeparator();
 
 		JMenuItem systemClose = new JMenuItem("Close");
-		systemClose.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				System.exit(-1);
-			}
-		});
+		systemClose.addActionListener(e -> System.exit(-1));
 
 		system.add(systemClose);
 

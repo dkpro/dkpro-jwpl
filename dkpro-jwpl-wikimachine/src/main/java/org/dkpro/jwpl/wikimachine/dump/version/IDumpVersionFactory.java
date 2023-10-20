@@ -19,5 +19,5 @@ package org.dkpro.jwpl.wikimachine.dump.version;
 
 
 public interface IDumpVersionFactory {
-	public IDumpVersion getDumpVersion();
+	IDumpVersion getDumpVersion();
 }

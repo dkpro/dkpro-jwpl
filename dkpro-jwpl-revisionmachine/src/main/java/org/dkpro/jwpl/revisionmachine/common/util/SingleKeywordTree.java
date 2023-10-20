@@ -20,7 +20,7 @@ package org.dkpro.jwpl.revisionmachine.common.util;
 /**
  * This class represents a keyword tree and is used to process or to search a
  * character sequence.
- *
+ * <p>
  * This keyword tree can only be used for non overlapping keywords.
  *
  *
@@ -33,7 +33,7 @@ public class SingleKeywordTree<V>
 {
 
 	/** Reference to the root */
-	private LetterNode<V> root;
+	private final LetterNode<V> root;
 
 	/** Reference to the current node */
 	private LetterNode<V> current;
@@ -43,7 +43,7 @@ public class SingleKeywordTree<V>
 	 */
 	public SingleKeywordTree()
 	{
-		root = new LetterNode<V>();
+		root = new LetterNode<>();
 		reset();
 	}
 

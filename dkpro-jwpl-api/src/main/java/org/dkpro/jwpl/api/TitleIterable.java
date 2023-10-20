@@ -26,7 +26,7 @@ import java.util.Iterator;
  */
 public class TitleIterable implements Iterable<Title> {
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
     /**
      * The size of the title buffer.

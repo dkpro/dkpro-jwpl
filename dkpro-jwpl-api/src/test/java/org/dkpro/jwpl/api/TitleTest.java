@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -32,8 +33,8 @@ public class TitleTest {
 		assertEquals("Car", t.getEntity());
 		assertEquals("Car", t.getPlainTitle());
 		assertEquals("Car", t.getRawTitleText());
-		assertEquals(null,  t.getDisambiguationText());
-		assertEquals(null,  t.getSectionText());
+    assertNull(t.getDisambiguationText());
+    assertNull(t.getSectionText());
 		assertEquals("Car", t.getWikiStyleTitle());
 	}
 
@@ -45,7 +46,7 @@ public class TitleTest {
 		assertEquals("Car (automobile)", t.getPlainTitle());
 		assertEquals("Car_(automobile)", t.getRawTitleText());
 		assertEquals("automobile", t.getDisambiguationText());
-		assertEquals(null,  t.getSectionText());
+    assertNull(t.getSectionText());
 		assertEquals("Car_(automobile)", t.getWikiStyleTitle());
 	}
 
@@ -57,7 +58,7 @@ public class TitleTest {
 		assertEquals("Car (automobile)", t.getPlainTitle());
 		assertEquals("Car (automobile)", t.getRawTitleText());
 		assertEquals("automobile", t.getDisambiguationText());
-		assertEquals(null,  t.getSectionText());
+    assertNull(t.getSectionText());
 		assertEquals("Car_(automobile)", t.getWikiStyleTitle());
 	}
 
@@ -92,7 +93,7 @@ public class TitleTest {
         assertEquals("Car", t.getEntity());
         assertEquals("Car", t.getPlainTitle());
         assertEquals("Car#Introduction", t.getRawTitleText());
-        assertEquals(null, t.getDisambiguationText());
+      assertNull(t.getDisambiguationText());
         assertEquals("Introduction",  t.getSectionText());
         assertEquals("Car", t.getWikiStyleTitle());
     }
@@ -104,8 +105,8 @@ public class TitleTest {
 		assertEquals("401(k)", t.getEntity());
 		assertEquals("401(k)", t.getPlainTitle());
 		assertEquals("401(k)", t.getRawTitleText());
-		assertEquals(null, t.getDisambiguationText());
-		assertEquals(null,  t.getSectionText());
+    assertNull(t.getDisambiguationText());
+    assertNull(t.getSectionText());
 		assertEquals("401(k)", t.getWikiStyleTitle());
 	}
 
@@ -117,7 +118,7 @@ public class TitleTest {
 		assertEquals("Ytterbium(III) chloride (data page)", t.getPlainTitle());
 		assertEquals("Ytterbium(III)_chloride_(data_page)", t.getRawTitleText());
 		assertEquals("data page", t.getDisambiguationText());
-		assertEquals(null,  t.getSectionText());
+    assertNull(t.getSectionText());
 		assertEquals("Ytterbium(III)_chloride_(data_page)", t.getWikiStyleTitle());
 	}
 

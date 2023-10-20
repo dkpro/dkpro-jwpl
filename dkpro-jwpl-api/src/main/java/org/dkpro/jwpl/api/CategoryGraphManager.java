@@ -54,7 +54,7 @@ public class CategoryGraphManager {
 
     public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds, boolean serialize) throws WikiApiException {
         if (catGraphMap == null) {
-            catGraphMap = new HashMap<String,CategoryGraph>();
+            catGraphMap = new HashMap<>();
         }
 
         String wikiID = wiki.getWikipediaId();
@@ -102,9 +102,7 @@ public class CategoryGraphManager {
              try {
                  logger.info("Loading category graph from " + defaultSerializedGraphLocation);
                  return new CategoryGraph(wiki, GraphSerialization.loadGraph(defaultSerializedGraphLocation));
-             } catch (IOException e) {
-                 throw new WikiApiException(e);
-             } catch (ClassNotFoundException e) {
+             } catch (IOException | ClassNotFoundException e) {
                  throw new WikiApiException(e);
              }
          }

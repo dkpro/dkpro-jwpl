@@ -38,10 +38,10 @@ public class ChronoIndexData
 	private int index;
 
 	/** Revision counter */
-	private int revisionCounter;
+	private final int revisionCounter;
 
 	/** Timestamp value */
-	private long time;
+	private final long time;
 
 	/**
 	 * (Constructor) Creates a new ChronoInfo object.

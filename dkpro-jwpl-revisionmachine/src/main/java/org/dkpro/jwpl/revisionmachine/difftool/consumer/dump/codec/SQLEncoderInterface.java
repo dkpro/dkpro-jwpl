@@ -37,26 +37,26 @@ public interface SQLEncoderInterface
 
 	/**
 	 * Returns the tables for textual output.
-	 *
+	 * <p>
 	 * Each Array entry will contain a single sql command.
 	 *
 	 * @return sql command to create the tables
 	 */
-	public String[] getTable();
+  String[] getTable();
 
 	/**
 	 * Returns the tables for binary output.
-	 *
+	 * <p>
 	 * Each Array entry will contain a single sql command.
 	 *
 	 * @return sql command to create the tables
 	 */
-	public String[] getBinaryTable();
+  String[] getBinaryTable();
 
 
 	/**
 	 * Returns the binary encoding of the given DiffTask.
-	 *
+	 * <p>
 	 * Each Array entry will contain a single sql command.
 	 *
 	 * @param task
@@ -81,13 +81,13 @@ public interface SQLEncoderInterface
 	 *             if the verification process fails
 	 *
 	 */
-	public SQLEncoding[] binaryTask(final Task<Diff> task)
+  SQLEncoding[] binaryTask(final Task<Diff> task)
 		throws ConfigurationException, UnsupportedEncodingException,
 		DecodingException, EncodingException, SQLConsumerException;
 
 	/**
 	 * Returns the textual encoding of the given DiffTask.
-	 *
+	 * <p>
 	 * Each Array entry will contain a single sql command.
 	 *
 	 * @param task
@@ -112,7 +112,7 @@ public interface SQLEncoderInterface
 	 *             if the verification process fails
 	 *
 	 */
-	public SQLEncoding[] encodeTask(final Task<Diff> task)
+  SQLEncoding[] encodeTask(final Task<Diff> task)
 		throws ConfigurationException, UnsupportedEncodingException,
 		DecodingException, EncodingException, SQLConsumerException;
 

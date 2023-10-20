@@ -26,7 +26,7 @@ import java.util.Iterator;
  */
 public class CategoryIterable implements Iterable<Category> {
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
     /**
      * The size of the page buffer.

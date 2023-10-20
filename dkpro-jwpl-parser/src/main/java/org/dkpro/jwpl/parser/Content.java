@@ -28,7 +28,7 @@ import java.util.List;
  */
 public interface Content{
 	
-	public enum FormatType {
+	enum FormatType {
 			/** Bold Text */	
 			BOLD,
             /** Italic Text */
@@ -39,84 +39,84 @@ public interface Content{
             NOWIKI,
             /** The begin and end position of an unknown Tag defined by &lt; and &gt; */
 			TAG,
-		};
-	
-	/**
+		}
+
+  /**
 	 * Returns the Text of the Element
 	 */
-	public String getText();
+  String getText();
 	
 	/**
 	 * Content.getText().length() == Content.length()
 	 */
-	public int length();
+  int length();
 	
 	/**
 	 * Returns true, if there is no content in the element.
 	 */
-	public boolean empty();
+  boolean empty();
 
 	/**
 	 * returns the Format Spans of the Specified Type.
 	 */
-	public List<Span> getFormatSpans(FormatType t);
+  List<Span> getFormatSpans(FormatType t);
 	
 	/**
 	 * returns the Format Spans of the Specified Type, in the Range from start to end.
 	 */
-	public List<Span> getFormatSpans(FormatType t, int start, int end );
+  List<Span> getFormatSpans(FormatType t, int start, int end);
 	
 	/**
 	 * returns the Format Spans of the Specified Type, in the Range of s.
 	 */
-	public List<Span> getFormatSpans(FormatType t, Span s);
+  List<Span> getFormatSpans(FormatType t, Span s);
 	
 	/**
 	 * returns the Formats uses in this element.
 	 */
-	public List<FormatType> getFormats();
+  List<FormatType> getFormats();
 	
 	/**
 	 * returns the Formats uses in this element, in the Range from start to end.
 	 */
-	public List<FormatType> getFormats(int start, int end);
+  List<FormatType> getFormats(int start, int end);
 	/**
 	 * returns the Formats uses in this element, in the Range of s.
 	 */
-	public List<FormatType> getFormats(Span s);
+  List<FormatType> getFormats(Span s);
 	
 	/**
 	 * returns all Links of this element.
 	 */
-	public List<Link> getLinks();
+  List<Link> getLinks();
 	
 	/**
 	 * returns all Links of this element of the specified type.
 	 */
-	public List<Link> getLinks( Link.type t );
+  List<Link> getLinks(Link.type t);
 	
 	/**
 	 * returns all Links of this element of the specified type, in the Range from start to end.
 	 */
-	public List<Link> getLinks( Link.type t, int start, int end);
+  List<Link> getLinks(Link.type t, int start, int end);
 	
 	/**
 	 * returns all Links of this element of the specified type, in the Range of s
 	 */
-	public List<Link> getLinks( Link.type t, Span s);
+  List<Link> getLinks(Link.type t, Span s);
 	
 	/**
 	 * returns all Templates.
 	 */
-	public List<Template> getTemplates();
+  List<Template> getTemplates();
 	
 	/**
 	 * returns all Templates, in the Range from start to end.
 	 */
-	public List<Template> getTemplates(int start, int end);
+  List<Template> getTemplates(int start, int end);
 	
 	/**
 	 * returns all Templates, in the Range of s.
 	 */
-	public List<Template> getTemplates(Span s);	
+  List<Template> getTemplates(Span s);
 }

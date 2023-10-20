@@ -44,14 +44,14 @@ public class SectionContent extends Section{
 	}
 	
 	private void init(){
-		paragraphs = new ArrayList<Paragraph>();
-		tables = new ArrayList<Table>();
-		nestedLists = new ArrayList<NestedListContainer>();
-		definitionLists = new ArrayList<DefinitionList>();
+		paragraphs = new ArrayList<>();
+		tables = new ArrayList<>();
+		nestedLists = new ArrayList<>();
+		definitionLists = new ArrayList<>();
 	}
 	
 	public List<Content> getContentList(){
-		return new ArrayList<Content>( ccl );
+		return new ArrayList<>(ccl);
 	}
 	
 	public int nrOfParagraphs(){ return paragraphs.size(); }
@@ -72,7 +72,7 @@ public class SectionContent extends Section{
 	}
 	
 	public List<Paragraph> getParagraphs(){
-		return new ArrayList<Paragraph>( paragraphs );
+		return new ArrayList<>(paragraphs);
 	}
 	
 	public int nrOfTables(){
@@ -95,7 +95,7 @@ public class SectionContent extends Section{
 	}
 	
 	public List<Table> getTables(){
-		return new ArrayList<Table>( tables );
+		return new ArrayList<>(tables);
 	}
 	
 	public int nrOfNestedLists(){
@@ -118,7 +118,7 @@ public class SectionContent extends Section{
 	}
 	
 	public List<NestedListContainer> getNestedLists(){
-		return new ArrayList<NestedListContainer>( nestedLists );
+		return new ArrayList<>(nestedLists);
 	}
 	
 	public int nrOfDefinitionLists(){
@@ -140,7 +140,7 @@ public class SectionContent extends Section{
 		else return null;
 	}
 	
-	public List<DefinitionList> getDefinitionLists(){ return new ArrayList<DefinitionList>( definitionLists ); }
+	public List<DefinitionList> getDefinitionLists(){ return new ArrayList<>(definitionLists); }
 	
 	public String toString(){
 		StringBuilder result = new StringBuilder();

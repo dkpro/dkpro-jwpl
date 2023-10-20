@@ -31,5 +31,5 @@ public interface ISizeable
 	 *
 	 * @return size estimation in byte
 	 */
-	public long byteSize();
+  long byteSize();
 }

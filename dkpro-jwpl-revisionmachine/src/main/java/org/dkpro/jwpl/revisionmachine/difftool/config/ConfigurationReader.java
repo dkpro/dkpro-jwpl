@@ -296,7 +296,7 @@ public class ConfigurationReader
 		Node nnode;
 		final NodeList list = node.getChildNodes();
 		final int length = list.getLength();
-		final Set<Integer> namespaces = new HashSet<Integer>();
+		final Set<Integer> namespaces = new HashSet<>();
 
 		for (int i = 0; i < length; i++) {
 			nnode = list.item(i);

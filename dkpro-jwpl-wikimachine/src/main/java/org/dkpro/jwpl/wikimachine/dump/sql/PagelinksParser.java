@@ -23,7 +23,7 @@ import java.io.StreamTokenizer;
 
 /**
  * A Parser for the sql file that defines the table pagelinks.
- *
+ * <p>
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  *
  *

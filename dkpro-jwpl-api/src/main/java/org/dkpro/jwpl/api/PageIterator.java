@@ -24,13 +24,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import jakarta.persistence.TypedQuery;
 import org.hibernate.Session;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.persistence.Query;
 
 /**
  * An iterator over {@link Page} objects.
@@ -78,15 +77,15 @@ public class PageIterator implements Iterator<Page> {
 		private int bufferOffset; 	// the offset in the buffer
 		private long lastPage;// the overall offset in the data
 
-		private List<String> pageIds = new LinkedList<String>(); // a set of ids, if a specific list of articles is supposed to be read
-		private List<String> pageTitles = new LinkedList<String>(); // a set of titles, if a specific list of articles is supposed to be read
-		boolean loadFromList;
+		private List<String> pageIds = new LinkedList<>(); // a set of ids, if a specific list of articles is supposed to be read
+		private List<String> pageTitles = new LinkedList<>(); // a set of titles, if a specific list of articles is supposed to be read
+		final boolean loadFromList;
 
 		public PageBuffer(int bufferSize, Wikipedia wiki, boolean onlyArticles){
 			this.maxBufferSize = bufferSize;
 			this.wiki = wiki;
 			this.onlyArticles = onlyArticles;
-			this.buffer = new ArrayList<Page>();
+			this.buffer = new ArrayList<>();
 			this.bufferFillSize = 0;
 			this.bufferOffset = 0;
 			this.lastPage = 0;
@@ -97,13 +96,13 @@ public class PageIterator implements Iterator<Page> {
 		public PageBuffer(int bufferSize, Wikipedia wiki, Set<String> ids, Set<String> titles){
 			this.maxBufferSize = bufferSize;
 			this.wiki = wiki;
-			this.buffer = new ArrayList<Page>();
+			this.buffer = new ArrayList<>();
 			this.onlyArticles = false;
 			this.bufferFillSize = 0;
 			this.bufferOffset = 0;
 			this.lastPage = 0;
-			this.pageIds=new LinkedList<String>(ids);
-			this.pageTitles=new LinkedList<String>(titles);
+			this.pageIds= new LinkedList<>(ids);
+			this.pageTitles= new LinkedList<>(titles);
 			this.loadFromList=true;
 		}
 
@@ -159,30 +158,30 @@ public class PageIterator implements Iterator<Page> {
 		private boolean fillBuffer() {
 
 			//decide whether to load from list or retrieve all available articles
-			if(loadFromList){
-		        // clear the old buffer and all variables regarding the state of the buffer
-		        buffer.clear();
-		        bufferOffset = 0;
-		        bufferFillSize = 0;
+			if (loadFromList){
+				// clear the old buffer and all variables regarding the state of the buffer
+				buffer.clear();
+				bufferOffset = 0;
+				bufferFillSize = 0;
 
 				//load pages
-		        if(pageIds.isEmpty()&&pageTitles.isEmpty()){
-		        	return false;
-		        }
+				if(pageIds.isEmpty()&&pageTitles.isEmpty()){
+					return false;
+				}
 
-		        while(bufferFillSize<=maxBufferSize&&!pageIds.isEmpty()){
+				while(bufferFillSize<=maxBufferSize&&!pageIds.isEmpty()){
 					String id = pageIds.remove(0);
-		        	if(id!=null&&!id.isEmpty()){
-						try{
+					if(id!=null&&!id.isEmpty()){
+						try {
 							buffer.add(wiki.getPage(Integer.parseInt(id)));
-				        	bufferFillSize++;
-						}catch(WikiApiException e){
+									bufferFillSize++;
+						} catch (WikiApiException e){
 							logger.warn("Missing article with id "+id);
 						}
 					}
 				}
-		        while(bufferFillSize<=maxBufferSize&&!pageTitles.isEmpty()){
-		        	String title = pageTitles.remove(0);
+				while(bufferFillSize<=maxBufferSize&&!pageTitles.isEmpty()){
+					String title = pageTitles.remove(0);
 					if(title!=null&&!title.isEmpty()){
 						try{
 							buffer.add(wiki.getPage(title));
@@ -194,66 +193,67 @@ public class PageIterator implements Iterator<Page> {
 				}
 
 				if (buffer.size() > 0) {
-		        	bufferFillSize = buffer.size();
-		        	return true;
-		        }
-		        else {
-		        	return false;
-		        }
-			}else{
+					bufferFillSize = buffer.size();
+					return true;
+				}
+				else {
+					return false;
+				}
+			} else{
 				Session session = this.wiki.__getHibernateSession();
-		        session.beginTransaction();
-		        List returnValues = null;
-				Query query;
-		        if (onlyArticles) {
-					query = session.createQuery("SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId");
+				session.beginTransaction();
+				List<org.dkpro.jwpl.api.hibernate.Page> returnValues;
+				TypedQuery<org.dkpro.jwpl.api.hibernate.Page> query;
+				String sql;
+				if (onlyArticles) {
+					sql = "SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId";
+					query = session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Page.class);
 					query.setParameter("isDisambiguation", false);
 					query.setParameter("pageId", lastPage);
-		        }
-		        else {
-					query = session.createQuery("SELECT p FROM Page p WHERE p.id > :pageId");
+				}
+				else {
+					sql = "SELECT p FROM Page p WHERE p.id > :pageId";
+					query = session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Page.class);
 					query.setParameter("pageId", lastPage);
-		        }
+				}
 				query.setMaxResults(maxBufferSize);
 				returnValues = query.getResultList();
-		        session.getTransaction().commit();
+				session.getTransaction().commit();
 
-		        // clear the old buffer and all variables regarding the state of the buffer
-		        buffer.clear();
-		        bufferOffset = 0;
-		        bufferFillSize = 0;
+				// clear the old buffer and all variables regarding the state of the buffer
+				buffer.clear();
+				bufferOffset = 0;
+				bufferFillSize = 0;
 
-		        Page apiPage;
-		        for(Object o : returnValues){
-		        	if(o==null) {
-		        		return false;
-		        	} else {
-		        		org.dkpro.jwpl.api.hibernate.Page hibernatePage = (org.dkpro.jwpl.api.hibernate.Page) o;
-		        		long id = hibernatePage.getId();
-		        		try {
-		        			apiPage = new Page(this.wiki, id, hibernatePage);
-			                if (this.onlyArticles) {
-			                    if (!apiPage.isRedirect()) {
-			                        buffer.add(apiPage);
-			                    }
-			                }
-			                else {
-			                	buffer.add(apiPage);
-			                }
-			            } catch (WikiApiException e) {
-			                logger.error("Page with hibernateID " + id + " not found.");
-			                e.printStackTrace();
-			            }
-			            lastPage = id;
-		        	}
-		        }
-		        if (buffer.size() > 0) {
-		        	bufferFillSize = buffer.size();
-		        	return true;
-		        }
-		        else {
-		        	return false;
-		        }
+				Page apiPage;
+				for(org.dkpro.jwpl.api.hibernate.Page o : returnValues){
+					if(o==null) {
+						return false;
+					} else {
+						long id = o.getId();
+						try {
+							apiPage = new Page(this.wiki, id, o);
+									if (this.onlyArticles) {
+											if (!apiPage.isRedirect()) {
+													buffer.add(apiPage);
+											}
+									}
+									else {
+										buffer.add(apiPage);
+									}
+							} catch (WikiApiException e) {
+									logger.error("Page with hibernateID " + id + " not found.");
+							}
+							lastPage = id;
+					}
+				}
+				if (buffer.size() > 0) {
+					bufferFillSize = buffer.size();
+					return true;
+				}
+				else {
+					return false;
+				}
 			}
 		} // fillBuffer
 

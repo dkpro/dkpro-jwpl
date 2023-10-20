@@ -35,16 +35,16 @@ public class Logger
 {
 
 	/** Name of the logger */
-	private String consumerName;
+	private final String consumerName;
 
 	/** Reference to level of the logging */
-	private Level logLevel;
+	private final Level logLevel;
 
 	/** Type of the logger */
-	private LoggerType type;
+	private final LoggerType type;
 
 	/** Reference to the output writer */
-	private FileWriter writer;
+	private final FileWriter writer;
 
 	/**
 	 * Creates a new logger.
@@ -149,7 +149,7 @@ public class Logger
 	/**
 	 * The occurred error with the related log level and message has to be given
 	 * to this method.
-	 *
+	 * <p>
 	 * This method will verify if the message should be logged or not.
 	 *
 	 * @param level
@@ -182,7 +182,7 @@ public class Logger
 	/**
 	 * The occurred exception with the related log level and message has to be
 	 * given to this method.
-	 *
+	 * <p>
 	 * This method will verify if the message should be logged or not.
 	 *
 	 * @param level
@@ -217,7 +217,7 @@ public class Logger
 	/**
 	 * This method will be called with a message and the related log level. It
 	 * be verified if the message should be logged or not.
-	 *
+	 * <p>
 	 * The format of the logged message is: \t consumerName [ Type of Logger ]
 	 * \t message \r\n
 	 *

@@ -31,7 +31,7 @@ public final class Buffer {
 
 	private Buffer() {}
 
-	private static final IdentityHashMap BUFFERS = new IdentityHashMap();
+	private static final IdentityHashMap<Thread, char[]> BUFFERS = new IdentityHashMap<>();
 
 	private static Thread lastThread;
 	private static char[] lastBuffer;
@@ -44,7 +44,7 @@ public final class Buffer {
 			buffer = lastBuffer;
 		} else {
 			lastThread = thread;
-			buffer = lastBuffer = (char[]) BUFFERS.get(thread);
+			buffer = lastBuffer = BUFFERS.get(thread);
 		}
 
 		if (buffer == null) {
@@ -54,15 +54,7 @@ public final class Buffer {
 			int newsize = buffer.length * 2;
 			if (newsize < capacity)
 				newsize = capacity;
-			/*
-			// Debug!
-			System.err.println("** Growing buffer to " + newsize);
-			try {
-				throw new RuntimeException("foo");
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-			}
-			*/
+
 			buffer = lastBuffer = new char[newsize];
 			BUFFERS.put(thread, buffer);
 		}

@@ -23,10 +23,10 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
 public abstract class AbstractSnapshotGenerator implements ISnapshotGenerator {
 	protected Configuration configuration = null;
-	protected IDecompressor decompressor = null;
-	protected ILogger logger = null;
-	protected DumpVersionProcessor dumpVersionProcessor = null;
-	protected IEnvironmentFactory environmentFactory = null;
+	protected final IDecompressor decompressor;
+	protected final ILogger logger;
+	protected final DumpVersionProcessor dumpVersionProcessor;
+	protected final IEnvironmentFactory environmentFactory;
 
 	public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory) {
 		this.decompressor = environmentFactory.getDecompressor();

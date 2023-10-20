@@ -36,7 +36,7 @@ import org.slf4j.event.Level;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the logging.
  *

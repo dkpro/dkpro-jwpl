@@ -395,14 +395,11 @@ public class SingleDumpVersionOriginal implements IDumpVersion {
 
 	@Override
 	public void writeMetaData() throws IOException {
-		TxtFileWriter metaData = new TxtFileWriter(outputDir + File.separator
-				+ "MetaData.txt");
+		TxtFileWriter metaData = new TxtFileWriter(outputDir + File.separator + "MetaData.txt");
 		// ID,LANGUAGE,DISAMBIGUATION_CATEGORY,MAIN_CATEGORY,nrOfPages,nrOfRedirects,nrOfDisambiguationPages,nrOfCategories
 		metaData.addRow("null", language, disambiguationsCategory,
-				mainCategory, nrOfPages, nrOfRedirects, nrOfDisambiguations,
-				nrOfCategories);
+				mainCategory, nrOfPages, nrOfRedirects, nrOfDisambiguations, nrOfCategories);
 		metaData.export();
-
 	}
 
 	@Override

@@ -34,9 +34,9 @@ public class PageQueryIterator implements Iterator<Page> {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
     private int iterPosition;
-    private List<Integer> pageIDs;
+    private final List<Integer> pageIDs;
 
     public PageQueryIterator(Wikipedia wiki, List<Integer> pPageIDs) {
         this.wiki = wiki;

@@ -17,12 +17,10 @@
  */
 package org.dkpro.jwpl.util.templates.parser;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import jakarta.xml.bind.JAXBException;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.EngineException;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
@@ -48,7 +46,7 @@ public class ParseUtils
 	 * @param revision the revision id
 	 * @return list of ExtractedSections
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException {
+	public static List<ExtractedSection> getSections(String text, String title, long revision) throws LinkTargetException, EngineException {
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(), text, title, revision);
 	}
 
@@ -62,7 +60,7 @@ public class ParseUtils
 	 * @return list of ExtractedSections
 	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	public static List<ExtractedSection> getSections(String text, String title, long revision, List<String> templatesToMark) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
+	public static List<ExtractedSection> getSections(String text, String title, long revision, List<String> templatesToMark) throws LinkTargetException, EngineException {
 		return (List<ExtractedSection>) parsePage(new SectionExtractor(templatesToMark), text, title, revision);
 	}
 
@@ -75,7 +73,7 @@ public class ParseUtils
 	 * @return list of template names
 	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	public static List<String> getTemplateNames(String text, String title) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
+	public static List<String> getTemplateNames(String text, String title) throws LinkTargetException, EngineException {
 		return (List<String>) parsePage(new TemplateNameExtractor(), text, title, -1);
 	}
 
@@ -88,7 +86,7 @@ public class ParseUtils
 	 *         type of the go() method of your visitor.
 	 * @throws EngineException if the wiki page could not be compiled by the parser
 	 */
-	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException{
+	private static Object parsePage(AstVisitor v, String text, String title, long revision) throws LinkTargetException, EngineException {
 		// Use the provided visitor to parse the page
 		return v.go(getCompiledPage(text, title, revision).getPage());
 	}
@@ -100,11 +98,8 @@ public class ParseUtils
 	 * @return the parsed page
 	 * @throws LinkTargetException
 	 * @throws EngineException if the wiki page could not be compiled by the parser
-	 * @throws JAXBException
-	 * @throws FileNotFoundException
 	 */
-	private static EngProcessedPage getCompiledPage(String text, String title, long revision) throws LinkTargetException, EngineException, FileNotFoundException, JAXBException
-	{
+	private static EngProcessedPage getCompiledPage(String text, String title, long revision) throws LinkTargetException, EngineException {
 		WikiConfig config = DefaultConfigEnWp.generate();
 
 		PageTitle pageTitle = PageTitle.make(config, title);

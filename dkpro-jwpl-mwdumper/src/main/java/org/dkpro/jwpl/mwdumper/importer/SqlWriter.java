@@ -102,12 +102,12 @@ public abstract class SqlWriter implements DumpWriter {
 		}
 	}
 
-	private SqlStream stream;
+	private final SqlStream stream;
 	private String tablePrefix = "";
 	
 	protected static final Integer ONE = 1;
 	protected static final Integer ZERO = 0;
-	protected Traits traits;
+	protected final Traits traits;
 	
 	public SqlWriter(Traits tr, SqlStream output) {
 		stream = output;
@@ -151,8 +151,8 @@ public abstract class SqlWriter implements DumpWriter {
 		stream.writeComment("-- Case: " + commentSafe(info.Case));
 		stream.writeComment("--");
 		stream.writeComment("-- Namespaces:");
-		for (Iterator i = info.Namespaces.orderedEntries(); i.hasNext();) {
-			Map.Entry e = (Map.Entry)i.next();
+		for (Iterator<Map.Entry<Integer, String>> i = info.Namespaces.orderedEntries(); i.hasNext();) {
+			Map.Entry<Integer, String> e = i.next();
 			stream.writeComment("-- " + e.getKey() + ": " + e.getValue());
 		}
 		stream.writeComment("");
@@ -164,17 +164,15 @@ public abstract class SqlWriter implements DumpWriter {
 	
 	public abstract void writeRevision(Revision revision) throws IOException;
 	
-	
-	
 	protected String commentSafe(String text) {
-		// TODO
 		return text;
 	}
 	
-	private HashMap insertBuffers = new HashMap();
+	private final Map<CharSequence, StringBuffer> insertBuffers = new HashMap<>();
 	private static final int blockSize = 1024 * 512; // default 512k inserts
+	
 	protected void bufferInsertRow(String table, Object[][] row) throws IOException {
-		StringBuffer sql = (StringBuffer)insertBuffers.get(table);
+		StringBuffer sql = insertBuffers.get(table);
 		if (sql != null) {
 			if (traits.supportsMultiRowInsert() && (sql.length() < blockSize)) {
 				sql.append(',');
@@ -192,15 +190,14 @@ public abstract class SqlWriter implements DumpWriter {
 	}
 	
 	protected void flushInsertBuffer(String table) throws IOException {
-		stream.writeStatement((CharSequence)insertBuffers.get(table));
+		stream.writeStatement(insertBuffers.get(table));
 		insertBuffers.remove(table);
 	}
 	
 	protected void flushInsertBuffers() throws IOException {
-		Iterator iter = insertBuffers.values().iterator();
-		while (iter.hasNext()) {
-			stream.writeStatement((CharSequence)iter.next());
-		}
+    for (StringBuffer stringBuffer : insertBuffers.values()) {
+      stream.writeStatement(stringBuffer);
+    }
 		insertBuffers.clear();
 	}
 	
@@ -348,7 +345,7 @@ public abstract class SqlWriter implements DumpWriter {
 		return new GregorianCalendar(utc);
 	}
 
-	int commitInterval = 1000; // Commit a transaction every n pages
+	final int commitInterval = 1000; // Commit a transaction every n pages
 	int pageCount = 0;
 	protected void checkpoint() throws IOException {
 		pageCount++;

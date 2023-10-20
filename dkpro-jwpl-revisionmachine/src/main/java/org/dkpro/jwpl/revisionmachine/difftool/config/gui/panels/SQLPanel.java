@@ -17,9 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
@@ -37,7 +34,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.OutputType;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the database output.
  *
@@ -88,17 +85,12 @@ public class SQLPanel
 				"Activate Database Output");
 		enableSQLDatabaseConnection.setBounds(10, 10, 200, 25);
 
-		enableSQLDatabaseConnection.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				boolean flag = !controller.isEnableSQLDatabaseOutput();
-				controller.setEnableSQLDatabaseOutput(flag);
+		enableSQLDatabaseConnection.addActionListener(e -> {
+      boolean flag = !controller.isEnableSQLDatabaseOutput();
+      controller.setEnableSQLDatabaseOutput(flag);
 
-				validateSQLFields();
-			}
-		});
+      validateSQLFields();
+    });
 
 		this.add(enableSQLDatabaseConnection);
 
@@ -145,18 +137,13 @@ public class SQLPanel
 		enableZipEncodingCheckBox = new JCheckBox("Activate Zip Encoding");
 		enableZipEncodingCheckBox.setBounds(10, 160, 200, 25);
 
-		enableZipEncodingCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		enableZipEncodingCheckBox.addActionListener(e -> {
 
-				boolean flag = !controller.isZipCompressionEnabled();
-				controller.setEnableZipCompression(flag);
+      boolean flag = !controller.isZipCompressionEnabled();
+      controller.setEnableZipCompression(flag);
 
-				validateSettings();
-			}
-		});
+      validateSettings();
+    });
 
 		this.add(enableZipEncodingCheckBox);
 	}
@@ -311,7 +298,7 @@ public class SQLPanel
 
 		if (controller.isEnableSQLDatabaseOutput()) {
 
-			String database = new String(), user = new String(), password = new String(), host = new String();
+			String database, user, password, host;
 
 			host = sqlHostField.getText();
 			if (host.length() == 0) {

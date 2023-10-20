@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.revisionmachine.difftool;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
@@ -29,7 +28,6 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
-import org.dkpro.jwpl.revisionmachine.common.exceptions.TimeoutException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.common.logging.LoggerType;
 import org.dkpro.jwpl.revisionmachine.common.logging.LoggingFactory;
@@ -114,7 +112,7 @@ public class DiffToolThread
 	{
 
 		/** Reference to the (dump) output writer */
-		private WriterInterface dumpWriter;
+		private final WriterInterface dumpWriter;
 
 		/** Configuration Parameter - Output mode */
 		private final OutputType MODE_OUTPUT;
@@ -249,13 +247,10 @@ public class DiffToolThread
 
 				// Critical Exceptions
 			}
-			catch (ConfigurationException e) {
+			catch (ConfigurationException | IOException e) {
 				throw new RuntimeException(e);
 			}
-			catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+    }
 
 
 	}
@@ -269,9 +264,9 @@ public class DiffToolThread
 
 		try {
 			ArchiveManager archives = new ArchiveManager();
-			ArticleReaderInterface articleReader = null;
+			ArticleReaderInterface articleReader;
 			ArchiveDescription description = null;
-			Task<Revision> task = null;
+			Task<Revision> task;
 			DiffCalculatorInterface diffCalc;
 
 			if (MODE_STATISTICAL_OUTPUT) {
@@ -364,22 +359,6 @@ public class DiffToolThread
 			ArticleConsumerLogMessages.logNoMoreArchives(logger);
 
 			// Critical Exceptions
-		}
-		catch (ConfigurationException e) {
-			DiffToolLogMessages.logException(logger, e);
-			throw new RuntimeException(e);
-		}
-		catch (UnsupportedEncodingException e) {
-			DiffToolLogMessages.logException(logger, e);
-			throw new RuntimeException(e);
-		}
-		catch (IOException e) {
-			DiffToolLogMessages.logException(logger, e);
-			throw new RuntimeException(e);
-		}
-		catch (TimeoutException e) {
-			DiffToolLogMessages.logException(logger, e);
-			throw new RuntimeException(e);
 		}
 		catch (Exception e) {
 			DiffToolLogMessages.logException(logger, e);

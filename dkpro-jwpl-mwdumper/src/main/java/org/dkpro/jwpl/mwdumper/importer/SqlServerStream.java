@@ -24,7 +24,7 @@ import java.sql.SQLWarning;
 import java.sql.Statement;
 
 public class SqlServerStream implements SqlStream {
-	private Connection connection;
+	private final Connection connection;
 	
 	public SqlServerStream(Connection conn) {
 		connection = conn; // TODO

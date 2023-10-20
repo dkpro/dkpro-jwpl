@@ -87,7 +87,7 @@ public class BlockManagement
 		this.diff = new Diff();
 		this.codecData = new RevisionCodecData();
 
-		this.bufferMap = new HashMap<Integer, String>();
+		this.bufferMap = new HashMap<>();
 		this.version = new StringBuilder();
 
 		DiffBlock curA = null, curB = null;

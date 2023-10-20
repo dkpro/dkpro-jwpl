@@ -35,7 +35,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
 
 /**
  * This factory class contains methods to access a input medium.
- *
+ * <p>
  * TODO: Add support for alternative commandlines
  *
  *
@@ -102,8 +102,7 @@ public class InputFactory
 
 		try {
 			Runtime runtime = Runtime.getRuntime();
-			Process p = runtime.exec(PATH_PROGRAM_7ZIP + " e " + archivePath
-					+ " -so");
+			Process p = runtime.exec(PATH_PROGRAM_7ZIP + " e " + archivePath + " -so");
 
 			return new InputStreamReader(p.getInputStream(), WIKIPEDIA_ENCODING);
 
@@ -177,7 +176,7 @@ public class InputFactory
 			final ArchiveDescription archive)
 		throws ConfigurationException, ArticleReaderException
 	{
-		Reader reader = null;
+		Reader reader;
 
 		switch (archive.getType()) {
 		case XML:
@@ -218,7 +217,7 @@ public class InputFactory
 			final ArchiveDescription archive, final ArticleFilter checker)
 		throws ConfigurationException, ArticleReaderException
 	{
-		Reader reader = null;
+		Reader reader;
 
 		//TODO add support for (compressed) XMLdumps that are stored in multiple archives
 		switch (archive.getType()) {

@@ -92,12 +92,12 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	protected static final String CONTRIBUTOR = "contributor";
 	protected static final String REVISION = "revision";
 
-	private InputStream input;
-	private DumpWriter writer;
+	private final InputStream input;
+	private final DumpWriter writer;
 
 	private char[] buffer;
 	private int len;
-	private boolean hasContent = false;
+	private boolean hasContent;
 	private boolean deleted = false;
 
 	private Siteinfo siteinfo;
@@ -110,11 +110,11 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	private boolean abortFlag;
 	private boolean errorState = false;
 
-	protected Map<String, String> startElements = new HashMap<String, String>(64);
-	protected Map<String, String> endElements = new HashMap<String, String>(64);
+	protected final Map<String, String> startElements = new HashMap<>(64);
+	protected final Map<String, String> endElements = new HashMap<>(64);
 
-	private Map<String, String> forbiddenIdStartElements = new HashMap<String, String>(64);
-	private Map<String, String> forbiddenIdEndElements = new HashMap<String, String>(64);
+	private final Map<String, String> forbiddenIdStartElements = new HashMap<>(64);
+	private final Map<String, String> forbiddenIdEndElements = new HashMap<>(64);
 
 	/**
 	 * Fill {@link #forbiddenIdStartElements}
@@ -211,7 +211,7 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 	/**
 	 * Request that the dump processing be aborted. At the next element, an
 	 * exception will be thrown to stop the XML parser.
-	 *
+	 * <p>
 	 * TODO Investigate: Is setting a bool thread-safe? It should be atomic...
 	 */
 	public void abort() {
@@ -399,7 +399,6 @@ public abstract class AbstractXmlDumpReader extends DefaultHandler {
 
 	// ----------
 
-	@SuppressWarnings("unchecked")
 	private void threadAttribute(String attrib) throws IOException {
 		if (attrib.equals("ThreadPage")) {
 			page.DiscussionThreadingInfo.put(attrib, new Title(

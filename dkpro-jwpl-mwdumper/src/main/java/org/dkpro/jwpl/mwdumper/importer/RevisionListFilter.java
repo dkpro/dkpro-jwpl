@@ -35,8 +35,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class RevisionListFilter implements DumpWriter {
-	DumpWriter sink;
-	protected Set<String> revIds;
+	final DumpWriter sink;
+	protected final Set<String> revIds;
 	protected Page currentPage;
 	protected boolean pageWritten;
 	

@@ -28,12 +28,12 @@ import java.util.List;
  */
 public class Table extends ContentContainer{
 	
-	private List<TableElement> tableElements;
+	private final List<TableElement> tableElements;
 	private ContentElement title;
 	
 	public Table(){
-		ccl = new ArrayList<Content>();
-		tableElements = new ArrayList<TableElement>();
+		ccl = new ArrayList<>();
+		tableElements = new ArrayList<>();
 	}
 		
 	public String toString(){
@@ -78,7 +78,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public List<Content> getContentList(){
-		return new ArrayList<Content>( ccl );
+		return new ArrayList<>(ccl);
 	}
 	
 	public int nrOfParagraphs(){
@@ -88,7 +88,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public Paragraph getParagraph(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( TableElement td: tableElements ){
 			nr = td.nrOfParagraphs();
@@ -99,7 +99,7 @@ public class Table extends ContentContainer{
 	}
 		
 	public List<Paragraph> getParagraphs(){
-		List<Paragraph> result = new ArrayList<Paragraph>();
+		List<Paragraph> result = new ArrayList<>();
 		for( TableElement td: tableElements ) result.addAll( td.getParagraphs() );
 		return result;
 	}
@@ -111,7 +111,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public Table getTable(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( TableElement td: tableElements ){
 			nr = td.nrOfTables();
@@ -122,7 +122,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public List<Table> getTables(){
-		List<Table> result = new ArrayList<Table>();
+		List<Table> result = new ArrayList<>();
 		for( TableElement td: tableElements ) result.addAll( td.getTables() );
 		return result;
 	}
@@ -134,7 +134,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public NestedList getNestedList(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( TableElement td: tableElements ){
 			nr = td.nrOfNestedLists();
@@ -145,7 +145,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public List<NestedList> getNestedLists(){
-		List<NestedList> result = new ArrayList<NestedList>();
+		List<NestedList> result = new ArrayList<>();
 		for( TableElement td: tableElements ) result.addAll( td.getNestedLists() );
 		return result;
 	}
@@ -157,7 +157,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public DefinitionList getDefinitionList(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( TableElement td: tableElements ){
 			nr = td.nrOfDefinitionLists();
@@ -168,7 +168,7 @@ public class Table extends ContentContainer{
 	}
 	
 	public List<DefinitionList> getDefinitionLists(){
-		List<DefinitionList> result = new ArrayList<DefinitionList>();
+		List<DefinitionList> result = new ArrayList<>();
 		for( TableElement td: tableElements ) result.addAll( td.getDefinitionLists() );
 		return result;
 	}

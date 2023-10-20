@@ -80,7 +80,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Span> getFormatSpans(FormatType t){
-		List<Span> result = new ArrayList<Span>();	
+		List<Span> result = new ArrayList<>();
 		int offset = 0;	
 		for( Content c: ccl ){
 			for( Span b : c.getFormatSpans(t) )
@@ -96,7 +96,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Span> getFormatSpans(FormatType t, Span s){
-		List<Span> result = new ArrayList<Span>();
+		List<Span> result = new ArrayList<>();
 		
 		Span a = new Span( -1, -1 );
 
@@ -144,7 +144,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 				if( bold && italic && tag && math && nowiki )break;
 			}
 			
-			List<FormatType> result = new ArrayList<FormatType>();
+			List<FormatType> result = new ArrayList<>();
 			if(bold) result.add(FormatType.BOLD);
 			if(italic) result.add(FormatType.ITALIC);
 			if(tag) result.add( FormatType.TAG );
@@ -193,7 +193,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 			if( bold&&italic )break;
 		}
 		
-		List<FormatType> result = new ArrayList<FormatType>();
+		List<FormatType> result = new ArrayList<>();
 		if(bold) result.add(FormatType.BOLD);
 		if(italic) result.add(FormatType.ITALIC);
 		if(tag) result.add( FormatType.TAG );
@@ -203,7 +203,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Link> getLinks( Link.type linkType ){
-		List<Link> result= new ArrayList<Link>();
+		List<Link> result= new ArrayList<>();
 		for( Content c: ccl ) result.addAll( c.getLinks( linkType ));
 		return result;
 	}
@@ -213,7 +213,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Link> getLinks( Link.type linkType, Span s){
-		List<Link> result = new ArrayList<Link>();
+		List<Link> result = new ArrayList<>();
 		
 		Span a = new Span( -1, -1 );
 
@@ -228,14 +228,14 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Link> getLinks(){
-		List<Link> result = new ArrayList<Link>();
+		List<Link> result = new ArrayList<>();
 		for( Content c: ccl )
 			result.addAll( c.getLinks() );
 		return result;
 	}
 	
 	public List<Template> getTemplates(){
-		List<Template> result = new ArrayList<Template>();
+		List<Template> result = new ArrayList<>();
 		for( Content cc: ccl )
 			result.addAll( cc.getTemplates() );
 		return result;
@@ -246,7 +246,7 @@ public abstract class ContentContainer extends ParsedPageObject implements Conte
 	}
 	
 	public List<Template> getTemplates(Span s){
-		List<Template> result = new ArrayList<Template>();
+		List<Template> result = new ArrayList<>();
 		
 		Span a = new Span( -1, -1 );
 

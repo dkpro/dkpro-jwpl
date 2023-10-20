@@ -25,7 +25,7 @@ import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for Consumers.
- *
+ * <p>
  * TODO: This file should be replaced with resource files.
  *
  */

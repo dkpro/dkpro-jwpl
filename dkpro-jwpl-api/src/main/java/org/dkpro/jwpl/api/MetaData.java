@@ -25,11 +25,10 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 /**
  * Provides access to meta data about a certain instance of Wikipedia.
  */
-public class MetaData implements WikiConstants
-{
+public class MetaData implements WikiConstants {
 	// private MetaDataDAO metaDAO;
-	private org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
-	private Wikipedia wiki;
+	private final org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
+	private final Wikipedia wiki;
 
 	/**
 	 * Creates a meta data object.
@@ -40,12 +39,12 @@ public class MetaData implements WikiConstants
 		// this.metaDAO = new MetaDataDAO(wiki);
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
-		hibernateMetaData = (org.dkpro.jwpl.api.hibernate.MetaData) session
-				.createQuery("from MetaData").uniqueResult();
+		hibernateMetaData =  session.createQuery("from MetaData",
+						org.dkpro.jwpl.api.hibernate.MetaData.class).uniqueResult();
 		session.getTransaction().commit();
-	};
+	}
 
-	/**
+  /**
 	 * @return The id of the {@link MetaData} object.
 	 */
 	/*

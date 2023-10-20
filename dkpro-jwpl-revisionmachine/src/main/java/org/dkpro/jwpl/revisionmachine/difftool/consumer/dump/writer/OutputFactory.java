@@ -59,8 +59,7 @@ public class OutputFactory
 
 		try {
 			Runtime runtime = Runtime.getRuntime();
-			Process p = runtime.exec(PATH_PROGRAM_7ZIP + " a -t7z -si "
-					+ archivePath);
+			Process p = runtime.exec(PATH_PROGRAM_7ZIP + " a -t7z -si " + archivePath);
 			return p.getOutputStream();
 
 		}

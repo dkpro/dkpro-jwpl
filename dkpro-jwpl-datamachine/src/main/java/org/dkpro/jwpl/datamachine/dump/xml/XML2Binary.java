@@ -38,7 +38,7 @@ public class XML2Binary {
 	 */
 	private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
 
-	private static boolean USE_MODIFED_PARSER = true;
+	private static final boolean USE_MODIFED_PARSER = true;
 
 	public XML2Binary(InputStream iStream, DataMachineFiles files)
 			throws IOException {

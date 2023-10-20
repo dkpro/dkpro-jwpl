@@ -219,7 +219,7 @@ public class DiffCalculator
 	private void init(final Task<Revision> task)
 	{
 		this.partCounter++;
-		this.result = new Task<Diff>(task.getHeader(), partCounter);
+		this.result = new Task<>(task.getHeader(), partCounter);
 	}
 
 	/**
@@ -500,7 +500,7 @@ public class DiffCalculator
 									.createDiffException(
 											ErrorKeys.DIFFTOOL_DIFFCONSUMER_DIFF_VERIFICATION_FAILED,
 											"Reconstruction of "
-													+ task.toString()
+													+ task
 													+ " failed at revision "
 													+ revisionCounter + ".");
 						}
@@ -516,7 +516,7 @@ public class DiffCalculator
 						throw ErrorFactory
 								.createDiffException(
 										ErrorKeys.DIFFTOOL_DIFFCONSUMER_DIFF_VERIFICATION_FAILED,
-										"Reconstruction of " + task.toString()
+										"Reconstruction of " + task
 												+ " failed at revision "
 												+ revisionCounter + ".", e);
 					}
@@ -544,8 +544,8 @@ public class DiffCalculator
 	{
 
 		blockCount = 0;
-		queueA = new ArrayList<DiffBlock>();
-		queueB = new ArrayList<DiffBlock>();
+		queueA = new ArrayList<>();
+		queueB = new ArrayList<>();
 
 		revABlocked = new boolean[revA.length];
 		revBBlocked = new boolean[revB.length];
@@ -614,8 +614,7 @@ public class DiffCalculator
 			if (!revABlocked[i]) {
 				j = i;
 				while (i + 1 <= revAEndIndex && !revABlocked[++i]) {
-					;
-				}
+        }
 
 				if (i + 1 > revAEndIndex) {
 					i++;
@@ -629,8 +628,7 @@ public class DiffCalculator
 			if (!revBBlocked[i]) {
 				j = i;
 				while (i + 1 <= revBEndIndex && !revBBlocked[++i]) {
-					;
-				}
+        }
 
 				if (i + 1 > revBEndIndex) {
 					i++;
@@ -659,20 +657,16 @@ public class DiffCalculator
 	private void scan(final char[] input, final int start, final int end)
 	{
 
-		this.positions = new HashMap<Character, ArrayList<Integer>>();
+		this.positions = new HashMap<>();
 		ArrayList<Integer> list;
 
 		char c;
 		for (int i = start; i < end; i++) {
 			c = input[i];
 
-			list = positions.get(c);
-			if (list == null) {
-				list = new ArrayList<Integer>();
-				positions.put(c, list);
-			}
+      list = positions.computeIfAbsent(c, k -> new ArrayList<>());
 
-			list.add(i);
+      list.add(i);
 		}
 	}
 

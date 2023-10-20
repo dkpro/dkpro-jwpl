@@ -121,7 +121,7 @@ public class Task<D>
 		this.partCounter = taskPartCounter;
 		this.taskType = TaskTypes.TASK_FULL;
 
-		this.container = new ArrayList<D>();
+		this.container = new ArrayList<>();
 	}
 
 	/*
@@ -174,7 +174,7 @@ public class Task<D>
 
 	/**
 	 * Returns the data at the specified index.
-	 *
+	 * <p>
 	 * The index will not be check whether it is out of range or not. If you do
 	 * not know the appropriate index call the size() method before calling this
 	 * method.
@@ -210,7 +210,7 @@ public class Task<D>
 
 	/**
 	 * Returns the size estimation of this task in bytes.
-	 *
+	 * <p>
 	 * The size can only be estimated if the data contains the ISizeable
 	 * interface.
 	 *

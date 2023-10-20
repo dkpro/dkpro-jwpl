@@ -111,7 +111,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 
 	@Test
 	public void lazyLoadingTest() {
-		ArrayList<String> texts = new ArrayList<String>();
+		ArrayList<String> texts = new ArrayList<>();
 		int i = 0;
 
 		while (revisionIterator.hasNext() && i < 500) {
@@ -122,7 +122,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 		}
         assertEquals(GLOBAL_REVISION_COUNT, i);
 
-		ArrayList<String> lazyLoadedTexts = new ArrayList<String>();
+		ArrayList<String> lazyLoadedTexts = new ArrayList<>();
 		i = 0;
 
 		//create new iterator with lazy loading
@@ -141,7 +141,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 
 		for (int j = 0; j < texts.size(); j++) {
 			if(!texts.get(j).equals(lazyLoadedTexts.get(j))){
-				assertFalse(true);
+        fail();
 			}
 		}
 		//close iterator

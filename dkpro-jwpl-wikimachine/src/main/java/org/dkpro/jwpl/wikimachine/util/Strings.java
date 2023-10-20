@@ -17,7 +17,6 @@
  */
 package org.dkpro.jwpl.wikimachine.util;
 
-
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.regex.Matcher;
@@ -25,7 +24,6 @@ import java.util.regex.Pattern;
 
 /**
  * Utilities for Strings.
- *
  */
 public abstract class Strings {
 
@@ -44,13 +42,14 @@ public abstract class Strings {
 	public static boolean matches(String str, String regex) {
 		return Pattern.compile(regex).matcher(str).matches();
 	}
+
 	public static boolean endsWithRegex(String str, String regex) {
 		return matches(str, "(.)*" + regex);
 	}
-	@SuppressWarnings("unchecked")
-	public static String join(Collection c, String delimiter) {
+
+	public static String join(Collection<?> c, String delimiter) {
 		StringBuffer buffer = new StringBuffer();
-		Iterator iter = c.iterator();
+		Iterator<?> iter = c.iterator();
 		while (iter.hasNext()) {
 			buffer.append(iter.next());
 			if (iter.hasNext()) {
@@ -182,13 +181,11 @@ public abstract class Strings {
 		if (times == 0)
 			return "";
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < times; i++) {
-			sb.append(s);
-		}
+    sb.append(String.valueOf(s).repeat(Math.max(0, times)));
 		return sb.toString();
 	}
 	public static String join(Object[] elements, String glue) {
-		return (join(java.util.Arrays.asList(elements), glue));
+		return join(java.util.Arrays.asList(elements), glue);
 	}
 
 }

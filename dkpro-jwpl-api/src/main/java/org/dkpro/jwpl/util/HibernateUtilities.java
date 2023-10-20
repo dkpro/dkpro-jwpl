@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.util;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import org.dkpro.jwpl.api.WikiConstants;
@@ -29,7 +28,7 @@ import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 
 public class HibernateUtilities implements WikiConstants {
 
-    private DatabaseConfiguration dbConfig;
+    private final DatabaseConfiguration dbConfig;
 
     public HibernateUtilities(Language pLanguage, DatabaseConfiguration dbConfig) {
         this.dbConfig = dbConfig;
@@ -40,15 +39,14 @@ public class HibernateUtilities implements WikiConstants {
      * @return A mapping of pageIDs to hibernate IDs.
      */
     public Map<Integer, Long> getIdMappingPages() {
-        Map<Integer, Long> idMapping = new HashMap<Integer, Long>();
+        Map<Integer, Long> idMapping = new HashMap<>();
 
         Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
         session.beginTransaction();
-        Iterator results = session.createQuery("select page.id, page.pageId from Page as page").list().iterator();
-        while (results.hasNext()) {
-            Object[] row = (Object[]) results.next();
-            // put (pageID, id)
-            idMapping.put((Integer) row[1], (Long) row[0]);
+        for (Object o : session.createQuery("select page.id, page.pageId from Page as page").list()) {
+          Object[] row = (Object[]) o;
+          // put (pageID, id)
+          idMapping.put((Integer) row[1], (Long) row[0]);
         }
         session.getTransaction().commit();
         return idMapping;
@@ -59,15 +57,14 @@ public class HibernateUtilities implements WikiConstants {
      * @return A mapping of pageIDs to hibernate IDs.
      */
     public Map<Integer, Long> getIdMappingCategories() {
-        Map<Integer, Long> idMapping = new HashMap<Integer, Long>();
+        Map<Integer, Long> idMapping = new HashMap<>();
 
         Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
         session.beginTransaction();
-        Iterator results = session.createQuery("select cat.id, cat.pageId from Category as cat").list().iterator();
-        while (results.hasNext()) {
-            Object[] row = (Object[]) results.next();
-            // put (pageID, id)
-            idMapping.put((Integer) row[1], (Long) row[0]);
+        for (Object o : session.createQuery("select cat.id, cat.pageId from Category as cat").list()) {
+          Object[] row = (Object[]) o;
+          // put (pageID, id)
+          idMapping.put((Integer) row[1], (Long) row[0]);
         }
         session.getTransaction().commit();
         return idMapping;

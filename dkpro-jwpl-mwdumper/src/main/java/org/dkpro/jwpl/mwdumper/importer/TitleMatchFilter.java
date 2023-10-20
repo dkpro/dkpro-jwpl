@@ -28,7 +28,7 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.util.regex.Pattern;
 
 public class TitleMatchFilter extends PageFilter {
-	Pattern regex;
+	final Pattern regex;
 	
 	public TitleMatchFilter(DumpWriter sink, String regexString) {
 		super(sink);

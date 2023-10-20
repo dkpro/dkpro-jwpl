@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.datamachine.dump.version;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,9 +56,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 	@SuppressWarnings("unchecked")
 	public SingleDumpVersionJDKGeneric(Class<HashAlgorithm> hashAlgorithmClass)
-			throws InstantiationException, IllegalAccessException {
+					throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
-		hashAlgorithm = hashAlgorithmClass.newInstance();
+		hashAlgorithm = hashAlgorithmClass.getDeclaredConstructor().newInstance();
 		@SuppressWarnings("unused")
 		KeyType hashAlgorithmResult = (KeyType) hashAlgorithm.hashCode("test");
 	}
@@ -106,13 +107,13 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
 	@Override
 	public void initialize(Timestamp timestamp) {
-		pPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		pPageIdNameMap = new HashMap<>(1_000_000);
 		cPageIdNameMap = new HashSet<>(1_000_000);
-		pNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
-		cNamePageIdMap = new HashMap<KeyType, Integer>(1_000_000);
-		rPageIdNameMap = new HashMap<Integer, String>(1_000_000);
+		pNamePageIdMap = new HashMap<>(1_000_000);
+		cNamePageIdMap = new HashMap<>(1_000_000);
+		rPageIdNameMap = new HashMap<>(1_000_000);
 		disambiguations = new HashSet<>(1_000_000);
-		textIdPageIdMap = new HashMap<Integer, Integer>(1_000_000);
+		textIdPageIdMap = new HashMap<>(1_000_000);
 	}
 
 	@SuppressWarnings("unchecked")

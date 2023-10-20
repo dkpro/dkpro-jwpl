@@ -20,6 +20,7 @@ package org.dkpro.jwpl.wikimachine.util;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * This is a inverse class of {@link UTFDataOutputStream} witch goal is to
@@ -72,7 +73,7 @@ public class UTFDataInputStream extends DataInputStream {
 	public String readUTFAsArray() throws IOException {
 		byte[] buffer = new byte[super.readInt()];
 		super.read(buffer, 0, buffer.length);
-		return new String(buffer, "UTF-8");
+		return new String(buffer, StandardCharsets.UTF_8);
 	}
 
 }

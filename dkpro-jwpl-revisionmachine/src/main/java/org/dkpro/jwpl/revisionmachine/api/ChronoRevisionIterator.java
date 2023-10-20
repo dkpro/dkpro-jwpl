@@ -38,7 +38,7 @@ public class ChronoRevisionIterator
 	private final RevisionAPIConfiguration config;
 
 	/** Reference to the database connection */
-	private Connection connection;
+	private final Connection connection;
 
 	/** Reference to the currently used result set */
 	private ResultSet resultArticles;
@@ -68,7 +68,7 @@ public class ChronoRevisionIterator
 	 * ID of the current article (Should be 0 to enable an iteration over all
 	 * article)
 	 */
-	private int currentArticleID = 0;
+	private int currentArticleID;
 
 	/** ID of the last article to retrieve */
 	private int lastArticleID;
@@ -106,13 +106,10 @@ public class ChronoRevisionIterator
 					config.getUser(), config.getPassword());
 
 		}
-		catch (SQLException e) {
+		catch (SQLException | ClassNotFoundException e) {
 			throw new WikiApiException(e);
 		}
-		catch (ClassNotFoundException e) {
-			throw new WikiApiException(e);
-		}
-	}
+  }
 
 	/**
 	 * (Constructor) Creates a new ChronoRevisionIterator
@@ -194,75 +191,57 @@ public class ChronoRevisionIterator
 			this.maxRevision = Integer.parseInt(revisionCounters.substring(
 					index + 1, revisionCounters.length()));
 
-			Statement statement = null;
-			ResultSet result = null;
+      try (Statement statement = this.connection.createStatement(); ResultSet result = statement.executeQuery("SELECT Mapping "
+              + "FROM index_chronological " + "WHERE ArticleID="
+              + currentArticleID + " LIMIT 1")) {
 
-			try {
-				statement = this.connection.createStatement();
-				result = statement.executeQuery("SELECT Mapping "
-						+ "FROM index_chronological " + "WHERE ArticleID="
-						+ currentArticleID + " LIMIT 1");
+        if (result.next()) {
 
-				if (result.next()) {
+          this.modus = ITERATE_WITH_MAPPING;
 
-					this.modus = ITERATE_WITH_MAPPING;
+          this.chronoIterator = new ChronoIterator(config,
+                  connection, result.getString(1), fullRevisionPKs,
+                  revisionCounters);
 
-					this.chronoIterator = new ChronoIterator(config,
-							connection, result.getString(1), fullRevisionPKs,
-							revisionCounters);
+          if (this.chronoIterator.hasNext()) {
+            return this.chronoIterator.next();
+          } else {
+            throw new RuntimeException("cIt Revision query failed");
+          }
 
-					if (this.chronoIterator.hasNext()) {
-						return this.chronoIterator.next();
-					}
-					else {
-						throw new RuntimeException("cIt Revision query failed");
-					}
+          /*
+           * this.revisionIndex = 1;
+           *
+           * revisionEncoder = new RevisionApi(config, connection);
+           * return revisionEncoder.getRevision(currentArticleID,
+           * revisionIndex);
+           */
 
-					/*
-					 * this.revisionIndex = 1;
-					 *
-					 * revisionEncoder = new RevisionApi(config, connection);
-					 * return revisionEncoder.getRevision(currentArticleID,
-					 * revisionIndex);
-					 */
+        } else {
 
-				}
-				else {
+          this.modus = ITERATE_WITHOUT_MAPPING;
 
-					this.modus = ITERATE_WITHOUT_MAPPING;
+          index = fullRevisionPKs.indexOf(' ');
+          if (index == -1) {
+            index = fullRevisionPKs.length();
+          }
 
-					index = fullRevisionPKs.indexOf(' ');
-					if (index == -1) {
-						index = fullRevisionPKs.length();
-					}
+          int currentPK = Integer.parseInt(fullRevisionPKs.substring(
+                  0, index));
 
-					int currentPK = Integer.parseInt(fullRevisionPKs.substring(
-							0, index));
+          // TODO CHECK! -2 instead of -1 gets rid of the extra
+          //				resivsion from the next article
+          this.revisionIterator = new RevisionIterator(config,
+                  currentPK, currentPK + maxRevision - 2,
+                  connection);
 
-					// TODO CHECK! -2 instead of -1 gets rid of the extra
-					//				resivsion from the next article
-					this.revisionIterator = new RevisionIterator(config,
-							currentPK, currentPK + maxRevision - 2,
-							connection);
-
-					if (revisionIterator.hasNext()) {
-						return revisionIterator.next();
-					}
-					else {
-						throw new RuntimeException("Revision query failed");
-					}
-				}
-			}
-			finally {
-
-				if (statement != null) {
-					statement.close();
-				}
-				if (result != null) {
-					result.close();
-				}
-
-			}
+          if (revisionIterator.hasNext()) {
+            return revisionIterator.next();
+          } else {
+            throw new RuntimeException("Revision query failed");
+          }
+        }
+      }
 
 		}
 		catch (WikiApiException e) {
@@ -421,7 +400,7 @@ public class ChronoRevisionIterator
 					System.out.println(it.chronoIterator.getStorageSize());
 				}
 				if (rev != null) {
-					System.out.println(rev.toString());
+					System.out.println(rev);
 				}
 				System.out.println(Time.toClock(now) + "\t" + (now - last)
 						+ "\tREBUILDING " + count);

@@ -83,7 +83,7 @@ public class ConfigGUI
 
 	/**
 	 * ConfigurationTool - Main Method
-	 *
+	 * <p>
 	 * Starts the ConfigurationTool GUI
 	 *
 	 * @param args

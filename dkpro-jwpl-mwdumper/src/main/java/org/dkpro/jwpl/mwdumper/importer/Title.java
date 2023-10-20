@@ -26,10 +26,10 @@
 package org.dkpro.jwpl.mwdumper.importer;
 
 public class Title {
-	public Integer Namespace;
-	public String Text;
+	public final Integer Namespace;
+	public final String Text;
 	
-	private NamespaceSet namespaces;
+	private final NamespaceSet namespaces;
 	
 	public Title(Integer namespaceKey, String text, NamespaceSet namespaces) {
 		this.namespaces = namespaces;

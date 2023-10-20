@@ -39,7 +39,7 @@ public class ParsedPage{
 	/**
 	 * Constructor for a blank ParsedPage.<br>
      * Only needed, if you want to create a Wikipedia article from scratch.
-     *
+     * <p>
      * Creating a ParsedPage from a Wikipedia article requires to create a parser object first.
      *
 	 */
@@ -102,7 +102,7 @@ public class ParsedPage{
 	 */
 	public List<Link> getCategories(){
 		if (categories == null) {
-            return new ArrayList<Link>();
+            return new ArrayList<>();
 		}
 
 		return categories.getLinks();

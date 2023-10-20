@@ -45,14 +45,11 @@ public class StringHashCodeJBoss
             dataOut.writeUTF(string);
             dataOut.flush();
         }
-        catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        catch (IOException e) {
+        catch (NoSuchAlgorithmException | IOException e) {
             throw new RuntimeException(e);
         }
 
-        byte digest[] = messageDigest.digest();
+      byte[] digest = messageDigest.digest();
         long hash = 0;
         int i = digest.length > 8 ? 8 : digest.length;
         while (i-- > 0) {

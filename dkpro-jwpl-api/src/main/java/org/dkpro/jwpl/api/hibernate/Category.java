@@ -24,15 +24,15 @@ public class Category {
     private long id;
     private int pageId;
     private String name;
-    private Set<Integer> inLinks  = new HashSet<Integer>();
-    private Set<Integer> outLinks = new HashSet<Integer>();
-    private Set<Integer> pages    = new HashSet<Integer>();
+    private Set<Integer> inLinks  = new HashSet<>();
+    private Set<Integer> outLinks = new HashSet<>();
+    private Set<Integer> pages    = new HashSet<>();
 
     /** A no argument constructor as required by Hibernate. */
-    public Category () {};
+    public Category () {}
 
 
-    public long getId() {
+  public long getId() {
         return id;
     }
 

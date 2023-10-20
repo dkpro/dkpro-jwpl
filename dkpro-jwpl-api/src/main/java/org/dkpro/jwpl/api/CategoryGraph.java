@@ -62,7 +62,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    static final long serialVersionUID = 1l;
+    static final long serialVersionUID = 1L;
 
     // the wikipedia object
     private Wikipedia wiki;
@@ -84,11 +84,11 @@ public class CategoryGraph implements WikiConstants, Serializable {
     // A map holding the (recursive) number of hyponyms for each node.
     // Recursive means that the hyponyms of hyponyms are also taken into account.
     private Map<Integer, Integer> hyponymCountMap = null;
-    private String hyponymCountMapFilename = "hypoCountMap";
+    private final String hyponymCountMapFilename = "hypoCountMap";
 
     // a mapping from all nodes to a list of nodes on the path to the root
     private Map<Integer, List<Integer>> rootPathMap = null;
-    private String rootPathMapFilename = "rootPathMap";
+    private final String rootPathMapFilename = "rootPathMap";
 
     private double averageShortestPathLength = Double.NEGATIVE_INFINITY;
     private double diameter                  = Double.NEGATIVE_INFINITY;
@@ -114,9 +114,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
     public CategoryGraph(Wikipedia pWiki, File location) throws WikiApiException{
         try {
             constructCategoryGraph(pWiki, GraphSerialization.loadGraph(location));
-        } catch (IOException e) {
-            throw new WikiApiException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException e) {
             throw new WikiApiException(e);
         }
     }
@@ -147,7 +145,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, Iterable<Category> categories) throws WikiApiException {
-        Set<Integer> pageIDs = new HashSet<Integer>();
+        Set<Integer> pageIDs = new HashSet<>();
         while (categories.iterator().hasNext()) {
             pageIDs.add(categories.iterator().next().getPageId());
         }
@@ -162,7 +160,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @throws WikiApiException Thrown if errors occurred.
      */
     public CategoryGraph(Wikipedia pWiki, Iterable<Category> categories, List<String> filterList) throws WikiApiException {
-        Set<Integer> pageIDs = new HashSet<Integer>();
+        Set<Integer> pageIDs = new HashSet<>();
         while (categories.iterator().hasNext()) {
             pageIDs.add(categories.iterator().next().getPageId());
         }
@@ -188,18 +186,18 @@ public class CategoryGraph implements WikiConstants, Serializable {
         this.graph = pGraph;
         this.numberOfNodes = this.graph.vertexSet().size();
         this.numberOfEdges = this.graph.edgeSet().size();
-        this.undirectedGraph = new AsUndirectedGraph<Integer, DefaultEdge>(this.graph);
+        this.undirectedGraph = new AsUndirectedGraph<>(this.graph);
     }
 
     private void constructCategoryGraph(Wikipedia pWiki, Set<Integer> pPageIDs, List<String> filterList) throws WikiApiException {
         // create the graph as a directed Graph
         // algorithms that need to be called on a undirected graph or should ignore direction
         //   can be called on an AsUndirectedGraph view of the directed graph
-        graph = new DefaultDirectedGraph<Integer, DefaultEdge>(DefaultEdge.class);
+        graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         wiki = pWiki;
 
-        degreeDistribution = new HashMap<Integer,Integer>();
+        degreeDistribution = new HashMap<>();
 
         for (int pageID : pPageIDs) {
             if (filterList != null) {
@@ -286,7 +284,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
         logger.info("Graph contains cycles: " + cycleHandler.containsCycle());
 
         this.numberOfEdges = this.graph.edgeSet().size();
-        this.undirectedGraph = new AsUndirectedGraph<Integer, DefaultEdge>(this.graph);
+        this.undirectedGraph = new AsUndirectedGraph<>(this.graph);
 
     }
 
@@ -581,8 +579,8 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @throws WikiApiException Thrown if errors occurred.
      */
     private List<Integer> getPathToRoot(int root, int node) throws WikiApiException {
-        List<Integer> pathToRoot = new LinkedList<Integer>();
-        List<Integer> shortestPath = new ArrayList<Integer>();
+        List<Integer> pathToRoot = new LinkedList<>();
+        List<Integer> shortestPath = new ArrayList<>();
 
         expandPath(root, node, pathToRoot, shortestPath);
 
@@ -637,7 +635,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
                 logger.warn("Source node equals current node.");
                 System.exit(1);
             }
-            List<Integer> savedPath = new LinkedList<Integer>(currentPath);
+            List<Integer> savedPath = new LinkedList<>(currentPath);
             expandPath(root, sourceNode, currentPath, shortestPath);
             currentPath.clear();
             currentPath.addAll(savedPath);
@@ -660,7 +658,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
             }
 
             // get the path from root node to node 1
-            GraphPath edgeList = DijkstraShortestPath.findPathBetween(undirectedGraph, node1.getPageId(), node2.getPageId());
+            GraphPath<Integer, DefaultEdge> edgeList = DijkstraShortestPath.findPathBetween(undirectedGraph, node1.getPageId(), node2.getPageId());
             if (edgeList == null) {
                 return -1;
             }
@@ -680,7 +678,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * The path from each category to the root is stored in the rootPathMap.
      * We can use this information to speed up computation dramatically.
      * However, we might miss some shortest path to a node if there are multiple paths to the root.
-     *
+     * <p>
      * It is very similar to finding the LCS.
      * If there is no LCS, than there also is no path.
      * If one of the nodes is on the path to the root, than we already know the distance.
@@ -805,26 +803,25 @@ public class CategoryGraph implements WikiConstants, Serializable {
         }
 
         File hyponymCountMapSerializedFile = new File(wiki.getWikipediaId() + "_" + hyponymCountMapFilename);
-        hyponymCountMap = new HashMap<Integer,Integer>();
+        hyponymCountMap = new HashMap<>();
 
         if (hyponymCountMapSerializedFile.exists()) {
             logger.info("Loading saved hyponymyCountMap ...");
-            hyponymCountMap = this.deserializeMap(hyponymCountMapSerializedFile);
+            hyponymCountMap = (Map<Integer, Integer>) this.deserializeMap(hyponymCountMapSerializedFile);
             logger.info("Done loading saved hyponymyCountMap");
             return;
         }
 
         // a queue holding the nodes to process
-        List<Integer> queue = new ArrayList<Integer>();
 
         // In the category graph a node may have more than one father.
         // Thus, we check whether a node was already visited.
         // Then, it is not expanded again.
-        Set<Integer> visited = new HashSet<Integer>();
+        Set<Integer> visited = new HashSet<>();
 
         // initialize the queue with all leaf nodes
         Set<Integer> leafNodes = this.__getLeafNodes();
-        queue.addAll(leafNodes);
+        List<Integer> queue = new ArrayList<>(leafNodes);
 
         logger.info(leafNodes.size() + " leaf nodes.");
 
@@ -915,7 +912,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @throws WikiApiException
      */
     protected Set<Integer> __getLeafNodes() throws WikiApiException {
-        Set<Integer> leafNodes = new HashSet<Integer>();
+        Set<Integer> leafNodes = new HashSet<>();
         for (int node : graph.vertexSet()) {
             if (getOutDegree(node) == 0) {
                 leafNodes.add(node);
@@ -985,16 +982,16 @@ public class CategoryGraph implements WikiConstants, Serializable {
         // try to load rootPathMap from precomputed file
         if (rootPathFile.exists()) {
             logger.info("Loading saved rootPathMap ...");
-            rootPathMap = deserializeMap(rootPathFile);
+            rootPathMap = (Map<Integer, List<Integer>>) deserializeMap(rootPathFile);
             logger.info("Done loading saved rootPathMap");
             return;
         }
 
         logger.info("Computing rootPathMap");
-        rootPathMap = new HashMap<Integer,List<Integer>>();
+        rootPathMap = new HashMap<>();
 
         // a queue holding the nodes to process
-        List<Integer> queue = new ArrayList<Integer>();
+        List<Integer> queue = new ArrayList<>();
 
         // initialize the queue with all leaf nodes
         Set<Integer> leafNodes = this.__getLeafNodes();
@@ -1061,7 +1058,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
             // if there is no path => skip
             if (nodesOnPath == null) {
-                getRootPathMap().put(currentNode, new ArrayList<Integer>());
+                getRootPathMap().put(currentNode, new ArrayList<>());
                 continue;
             }
 
@@ -1084,7 +1081,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
                 }
                 // insert path
                 else {
-                    getRootPathMap().put(nodeOnPath, new ArrayList<Integer>(nodesOnPath.subList(i, nodesOnPath.size())));
+                    getRootPathMap().put(nodeOnPath, new ArrayList<>(nodesOnPath.subList(i, nodesOnPath.size())));
                 }
                 i++;
             }
@@ -1113,7 +1110,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     protected Set<Integer> __getChildren(int pageID) {
         Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(pageID);
-        Set<Integer> outLinks = new HashSet<Integer>();
+        Set<Integer> outLinks = new HashSet<>();
         for (DefaultEdge edge : outgoingEdges) {
             outLinks.add(graph.getEdgeTarget(edge));
         }
@@ -1126,7 +1123,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     protected Set<Integer> __getParents(int pageID) {
         Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(pageID);
-        Set<Integer> inLinks = new HashSet<Integer>();
+        Set<Integer> inLinks = new HashSet<>();
         for (DefaultEdge edge : incomingEdges) {
             inLinks.add(graph.getEdgeSource(edge));
         }
@@ -1137,7 +1134,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * @return Returns the largest connected component as a new graph. If the base graph already is connected, it simply returns the whole graph.
      */
     public CategoryGraph getLargestConnectedComponent() throws WikiApiException {
-        ConnectivityInspector connectInspect = new ConnectivityInspector<Integer, DefaultEdge>(graph);
+        ConnectivityInspector<Integer, DefaultEdge> connectInspect = new ConnectivityInspector<>(graph);
 
         // if the graph is connected, simply return the whole graph
         if (connectInspect.isConnected()) {
@@ -1151,7 +1148,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
         int i = 0;
         int maxSize = 0;
-        Set<Integer> largestComponent = new HashSet<Integer>();
+        Set<Integer> largestComponent = new HashSet<>();
         for (Set<Integer> connectedComponent : connectedComponentList) {
             i++;
             if (connectedComponent.size() > maxSize) {
@@ -1301,7 +1298,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
      */
     protected Set<Integer> getNeighbors(int node) {
 
-        Set<Integer> neighbors = new HashSet<Integer>();
+        Set<Integer> neighbors = new HashSet<>();
         Set<DefaultEdge> edges = undirectedGraph.edgesOf(node);
         for (DefaultEdge edge : edges) {
             if (undirectedGraph.getEdgeSource(edge) != node) {
@@ -1344,7 +1341,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
 
         // a hashset of the nodes which have been the start node of the computation process
         // for such nodes all path lengths have beeen already computed
-        Set<Integer> wasSource = new HashSet<Integer>();
+        Set<Integer> wasSource = new HashSet<>();
 
         int progress = 0;
         for (int node : nodes) {
@@ -1470,10 +1467,10 @@ public class CategoryGraph implements WikiConstants, Serializable {
     private double[] computeShortestPathLenghts(int pStartNode, double pShortestPathLengthSum, double pMaxPathLength, Set<Integer> pWasSource) {
 
         // a set of nodes that have already been expanded -> algorithm should expand nodes monotonically and not go back
-        Set<Integer> alreadyExpanded = new HashSet<Integer>();
+        Set<Integer> alreadyExpanded = new HashSet<>();
 
         // a queue holding the newly discovered nodes with their distance to the start node
-        List<int[]> queue = new ArrayList<int[]>();
+        List<int[]> queue = new ArrayList<>();
 
         // initialize queue with start node
         int[] innerList = new int[2];
@@ -1521,7 +1518,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
                 }
             }
         }
-        double returnArray[] = {pShortestPathLengthSum, pMaxPathLength};
+        double[] returnArray = {pShortestPathLengthSum, pMaxPathLength};
         return returnArray;
     }
 
@@ -1587,7 +1584,7 @@ public class CategoryGraph implements WikiConstants, Serializable {
             return 0.0;
         }
         double maxPathLength = 0.0;
-        double[] returnValues = computeShortestPathLenghts(root.getPageId(), 0.0, maxPathLength, new HashSet<Integer>());
+        double[] returnValues = computeShortestPathLenghts(root.getPageId(), 0.0, maxPathLength, new HashSet<>());
         maxPathLength         = returnValues[1];
         return maxPathLength;
     }
@@ -1595,7 +1592,6 @@ public class CategoryGraph implements WikiConstants, Serializable {
     public String getGraphInfo() {
         StringBuffer sb = new StringBuffer(1000);
         Map<Integer,Integer> degreeDistribution = getDegreeDistribution();
-
 
         sb.append("Number of Nodes:     " + getNumberOfNodes() + LF);
         sb.append("Number of Edges:     " + getNumberOfEdges() + LF);
@@ -1652,10 +1648,10 @@ public class CategoryGraph implements WikiConstants, Serializable {
      * Deserialize a map
      * @param file The file with the map.
      */
-    private Map deserializeMap(File file) {
-        Map<?,?> map;
+    private Map<?,?> deserializeMap(File file) {
+        Map<?, ?> map;
         try(ObjectInputStream is = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-            map = (Map<?,?>) is.readObject();
+            map = (Map<?, ?>) is.readObject();
         } catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
             return null;
@@ -1663,12 +1659,12 @@ public class CategoryGraph implements WikiConstants, Serializable {
         return map;
     }
 
-    // TODO should be refactored a bit.
     /**
      * Serializes the graph to the given destination.
      * @param destination The destination to which should be saved.
      * @throws WikiApiException Thrown if errors occurred.
      */
+    // TODO should be refactored a bit.
     public void saveGraph(String destination) throws WikiApiException {
         try {
             GraphSerialization.saveGraph(graph, destination);

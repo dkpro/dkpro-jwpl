@@ -27,10 +27,10 @@ import java.util.Iterator;
 public class PageIterable implements Iterable<Page> {
 
     /** The Wikipedia object */
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
     /** Whether only articles are retrieved (or also disambiguation pages) */
-    private boolean onlyArticles;
+    private final boolean onlyArticles;
 
     /**
      * The size of the page buffer.

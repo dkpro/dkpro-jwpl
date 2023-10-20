@@ -218,7 +218,7 @@ public class SQLEncoder
 		int articleId = task.getHeader().getArticleId();
 		Diff diff;
 
-		ArrayList<SQLEncoding> list = new ArrayList<SQLEncoding>();
+		ArrayList<SQLEncoding> list = new ArrayList<>();
 
 		SQLEncoding revisionsEncoding = new SQLEncoding();
 		SQLEncoding usersEncoding = new SQLEncoding();
@@ -226,7 +226,7 @@ public class SQLEncoder
 		usersEncoding.append("INSERT INTO users VALUES");
 
 		byte[] tempBinaryData;
-		String tempData = new String();
+		String tempData;
 
 		int size = task.size();
 		for (int i = 0; i < size; i++) {
@@ -341,12 +341,12 @@ public class SQLEncoder
 		int articleId = task.getHeader().getArticleId();
 		Diff diff;
 
-		ArrayList<SQLEncoding> list = new ArrayList<SQLEncoding>();
+		ArrayList<SQLEncoding> list = new ArrayList<>();
 
 		SQLEncoding revisionEncoding = new SQLEncoding();
 		revisionEncoding.append("INSERT INTO revisions VALUES");
 
-		String tempData = new String();
+		String tempData;
 
 		int size = task.size();
 		for (int i = 0; i < size; i++) {

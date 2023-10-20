@@ -32,7 +32,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.PanelKeys;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the diff calculation.
  *

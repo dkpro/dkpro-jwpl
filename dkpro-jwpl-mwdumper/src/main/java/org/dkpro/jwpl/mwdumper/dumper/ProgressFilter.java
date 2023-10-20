@@ -36,9 +36,9 @@ import org.dkpro.jwpl.mwdumper.importer.Revision;
 public class ProgressFilter extends PageFilter {
 	int pages = 0;
 	int revisions = 0;
-	int interval = 1000;
-	MessageFormat format = new MessageFormat("{0} pages ({1}/sec), {2} revs ({3}/sec)");
-	long start = System.currentTimeMillis();
+	final int interval;
+	final MessageFormat format = new MessageFormat("{0} pages ({1}/sec), {2} revs ({3}/sec)");
+	final long start = System.currentTimeMillis();
 	
 	public ProgressFilter(DumpWriter sink, int interval) {
 		super(sink);

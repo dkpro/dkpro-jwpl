@@ -31,7 +31,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 /**
  *
  * This class contains all revision data.
- *
+ * <p>
  * The revision text is loaded upon first access (lazy loading).
  * When serializing a Revision, the revisionText will be loaded first.
  *
@@ -313,7 +313,7 @@ public class Revision
 
 	/**
 	 * Sets the timestamp information.
-	 *
+	 * <p>
 	 * The input is expected to be the wikipedia version of the timestamp as
 	 * String (YYYY-MM-DDThh-mm-ssZ). T and Z will be replaced with spaces.
 	 *

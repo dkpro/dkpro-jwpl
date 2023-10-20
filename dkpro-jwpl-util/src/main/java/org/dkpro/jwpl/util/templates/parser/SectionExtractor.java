@@ -109,8 +109,8 @@ public class SectionExtractor extends AstVisitor<WtNode>
 	protected WtNode before(WtNode node)
 	{
 		// This method is called by go() before visitation starts
-		sections = new ArrayList<ExtractedSection>();
-		curTpls = new ArrayList<String>();
+		sections = new ArrayList<>();
+		curTpls = new ArrayList<>();
 		return super.before(node);
 	}
 
@@ -166,7 +166,7 @@ public class SectionExtractor extends AstVisitor<WtNode>
 				return;
 			}else{
 				String curLinkTitle="";
-				for(AstNode n:link.getTitle()){
+				for(AstNode n: link.getTitle()){
 					if(n instanceof AstText){
 						curLinkTitle = ((AstText)n).getContent().trim();
 					}
@@ -260,7 +260,7 @@ public class SectionExtractor extends AstVisitor<WtNode>
 
 		sections.add(new ExtractedSection(title,bodyBuilder.toString().trim(),curTpls));
 		bodyBuilder=new StringBuilder();
-		curTpls = new ArrayList<String>();
+		curTpls = new ArrayList<>();
 	}
 
 	/**
@@ -288,7 +288,7 @@ public class SectionExtractor extends AstVisitor<WtNode>
 	{
 		private String title;
 		private String body;
-		private List<String> templates = new ArrayList<String>();
+		private List<String> templates;
 
 		public ExtractedSection(String title, String body, List<String> templates){
 			this.title=title;

@@ -58,7 +58,7 @@ public enum DiffAction implements Serializable
 					 */;
 
 	/** byte constant */
-	private byte code;
+	private final byte code;
 
 	/**
 	 * Creates a DiffAction.
@@ -66,7 +66,7 @@ public enum DiffAction implements Serializable
 	 * @param code
 	 *            byte constant
 	 */
-	private DiffAction(final byte code)
+  DiffAction(final byte code)
 	{
 		this.code = code;
 	}

@@ -57,8 +57,8 @@ public class ConfigSettings
 	 */
 	public ConfigSettings()
 	{
-		this.parameterMap = new HashMap<ConfigurationKeys, Object>();
-		this.archives = new ArrayList<ArchiveDescription>();
+		this.parameterMap = new HashMap<>();
+		this.archives = new ArrayList<>();
 	}
 
 	/**
@@ -70,8 +70,8 @@ public class ConfigSettings
 	public ConfigSettings(final ConfigEnum type)
 	{
 		this.type = type;
-		this.parameterMap = new HashMap<ConfigurationKeys, Object>();
-		this.archives = new ArrayList<ArchiveDescription>();
+		this.parameterMap = new HashMap<>();
+		this.archives = new ArrayList<>();
 	}
 
 	/**
@@ -183,11 +183,11 @@ public class ConfigSettings
 
 		setConfigParameter(ConfigurationKeys.COUNTER_FULL_REVISION, 1000);
 
-		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS, 5000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS, 5000000L);
 
-		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS, 1000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS, 1000000L);
 
-		setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, 1000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, 1000000L);
 
 		setConfigParameter(ConfigurationKeys.MODE_SURROGATES, SurrogateModes.DISCARD_REVISION);
 
@@ -199,7 +199,7 @@ public class ConfigSettings
 
 		setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, true);
 
-		setConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE, 1000000000l);
+		setConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE, 1000000000L);
 
 		setConfigParameter(ConfigurationKeys.LOGGING_PATH_DIFFTOOL, "logs");
 
@@ -213,7 +213,7 @@ public class ConfigSettings
 
 		setConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT, false);
 
-		Set<Integer> defaultNamespaces = new HashSet<Integer>();
+		Set<Integer> defaultNamespaces = new HashSet<>();
 		defaultNamespaces.add(0);
 		defaultNamespaces.add(1);
 		setConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP, defaultNamespaces);

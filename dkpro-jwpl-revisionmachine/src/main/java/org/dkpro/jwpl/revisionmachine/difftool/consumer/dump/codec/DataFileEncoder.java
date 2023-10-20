@@ -123,9 +123,9 @@ public class DataFileEncoder
 		int articleId = task.getHeader().getArticleId();
 		Diff diff;
 
-		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<String> list = new ArrayList<>();
 
-		String tempData = new String();
+		String tempData;
 
 		int size = task.size();
 		for (int i = 0; i < size; i++) {

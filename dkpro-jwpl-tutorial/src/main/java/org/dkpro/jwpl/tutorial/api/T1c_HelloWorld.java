@@ -26,10 +26,10 @@ import org.dkpro.jwpl.api.exception.WikiInitializationException;
 
 /**
  * Tutorial 1c
- *
+ * <p>
  * Get the text of a wikipedia article.
  * The text will be formatted with MediaWiki markup.
- *
+ * <p>
  * Handle exceptions.
  *
  *

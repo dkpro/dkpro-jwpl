@@ -29,13 +29,13 @@ public class ArchiveDescription
 {
 
 	/** Path to the archive */
-	private String path;
+	private final String path;
 
 	/** Start position */
 	private long startPosition;
 
 	/** InputType */
-	private InputType type;
+	private final InputType type;
 
 	/**
 	 * (Constructor) Creates a new ArchiveDescription

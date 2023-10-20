@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 public class DbUtilities {
 
-    private Connection conn;
+    private final Connection conn;
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

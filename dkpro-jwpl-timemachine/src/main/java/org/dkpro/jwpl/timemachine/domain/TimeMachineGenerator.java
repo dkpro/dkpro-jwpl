@@ -46,7 +46,7 @@ import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
  */
 public class TimeMachineGenerator extends AbstractSnapshotGenerator {
 
-	private IDumpVersion versions[] = null;
+	private IDumpVersion[] versions = null;
 	private TimeMachineFiles initialFiles = null;
 
 	public TimeMachineGenerator(IEnvironmentFactory environmentFactory) {

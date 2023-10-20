@@ -60,12 +60,12 @@ public class UniversalDecompressor implements IDecompressor {
 	/**
 	 * Archive extensions which are supported by external utilities
 	 */
-	private HashMap<String, String> externalSupport;
+	private final HashMap<String, String> externalSupport;
 
 	/**
 	 * Archive extensions which are supported by <code>ReaderFactory</code>
 	 */
-	private HashMap<String, IDecompressor> internalSupport;
+	private final HashMap<String, IDecompressor> internalSupport;
 
 	/**
 	 * Check if the file extension is supported by the external utility
@@ -92,11 +92,11 @@ public class UniversalDecompressor implements IDecompressor {
 	 * Don't let anyone instantiate this class - set the constructor to private
 	 */
 	public UniversalDecompressor() {
-		internalSupport = new HashMap<String, IDecompressor>();
+		internalSupport = new HashMap<>();
 		internalSupport.put("bz2", new BZip2Decompressor());
 		internalSupport.put("gz", new GZipDecompressor());
 
-		externalSupport = new HashMap<String, String>();
+		externalSupport = new HashMap<>();
 		loadExternal();
 	}
 
@@ -157,8 +157,7 @@ public class UniversalDecompressor implements IDecompressor {
 		InputStream result = null;
 		try {
 			String extension = getExtension(fileName);
-			String command = externalSupport.get(extension).replace(
-					FILEPLACEHOLDER, fileName);
+			String command = externalSupport.get(extension).replace(FILEPLACEHOLDER, fileName);
 			Process externalProcess = Runtime.getRuntime().exec(command);
 			result = externalProcess.getInputStream();
 		} catch (IOException ignore) {

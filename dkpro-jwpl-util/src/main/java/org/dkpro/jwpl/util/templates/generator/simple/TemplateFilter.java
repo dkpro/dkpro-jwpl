@@ -27,10 +27,10 @@ import java.util.HashSet;
  */
 public class TemplateFilter
 {
-	private HashSet<String> whiteList = new HashSet<String>();
-	private HashSet<String> whitePrefixList = new HashSet<String>();
-	private HashSet<String> blackList = new HashSet<String>();
-	private HashSet<String> blackPrefixList = new HashSet<String>();
+	private final HashSet<String> whiteList;
+	private final HashSet<String> whitePrefixList;
+	private final HashSet<String> blackList;
+	private final HashSet<String> blackPrefixList;
 
 	/**
 	 * Init template filter with different lists

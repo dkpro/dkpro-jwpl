@@ -35,7 +35,7 @@ public final class SerializableDirectedGraph implements Serializable {
      */
     private static final long serialVersionUID = -8298189410676038723L;
 
-    private DefaultDirectedGraph<Integer,DefaultEdge> graph;
+    private final DefaultDirectedGraph<Integer,DefaultEdge> graph;
 
     /**
      * This Constructor is intended to be used before the serialization of the <br>

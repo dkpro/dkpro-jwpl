@@ -172,8 +172,8 @@ public class Page implements WikiConstants
 	{
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-		hibernatePage = (org.dkpro.jwpl.api.hibernate.Page) session
-				.createQuery("from Page where pageId = :id").setParameter("id", pageID, StandardBasicTypes.INTEGER).uniqueResult();
+				hibernatePage = session.createQuery("from Page where pageId = :id", org.dkpro.jwpl.api.hibernate.Page.class)
+						.setParameter("id", pageID, StandardBasicTypes.INTEGER).uniqueResult();
         session.getTransaction().commit();
 
         if (hibernatePage == null) {
@@ -198,9 +198,8 @@ public class Page implements WikiConstants
 		Session session;
 		session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
-		Integer pageId = (Integer) session
-				.createNativeQuery(
-						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1")
+		Integer pageId = session.createNativeQuery(
+						"select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1", Integer.class)
 				.setParameter("pagetitle", searchString, StandardBasicTypes.STRING).uniqueResult();
 		session.getTransaction().commit();
 
@@ -266,10 +265,10 @@ public class Page implements WikiConstants
 		Session session = this.wiki.__getHibernateSession();
 		session.beginTransaction();
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-		Set<Integer> tmp = new UnmodifiableArraySet<Integer>(hibernatePage.getCategories());
+		Set<Integer> tmp = new UnmodifiableArraySet<>(hibernatePage.getCategories());
 		session.getTransaction().commit();
 
-		Set<Category> categories = new HashSet<Category>();
+		Set<Category> categories = new HashSet<>();
 		for (int pageID : tmp) {
 			categories.add(wiki.getCategory(pageID));
 		}
@@ -290,13 +289,14 @@ public class Page implements WikiConstants
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		Object returnValue = session
-				.createNativeQuery("select count(pages) from page_categories where id = :pageid")
+		String sql = "select count(pages) from page_categories where id = :pageid";
+		Long returnValue = session
+				.createNativeQuery(sql, Long.class)
 				.setParameter("pageid", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfCategories = ((Long) returnValue).intValue();
+			nrOfCategories = returnValue.intValue();
 		}
 		return nrOfCategories;
 	}
@@ -314,10 +314,10 @@ public class Page implements WikiConstants
 		session.beginTransaction();
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		// Have to copy links here since getPage later will close the session.
-		Set<Integer> pageIDs = new UnmodifiableArraySet<Integer>(hibernatePage.getInLinks());
+		Set<Integer> pageIDs = new UnmodifiableArraySet<>(hibernatePage.getInLinks());
 		session.getTransaction().commit();
 
-		Set<Page> pages = new HashSet<Page>();
+		Set<Page> pages = new HashSet<>();
 		for (int pageID : pageIDs) {
 			try {
 				pages.add(wiki.getPage(pageID));
@@ -345,13 +345,13 @@ public class Page implements WikiConstants
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		Object returnValue = session
-				.createNativeQuery("select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid")
+		String sql = "select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid";
+		Long returnValue = session.createNativeQuery(sql, Long.class)
 				.setParameter("piid", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfInlinks = ((Long) returnValue).intValue();
+			nrOfInlinks = returnValue.intValue();
 		}
 		return nrOfInlinks;
 	}
@@ -364,7 +364,7 @@ public class Page implements WikiConstants
 	 */
 	public Set<Integer> getInlinkIDs()
 	{
-		Set<Integer> tmpSet = new HashSet<Integer>();
+		Set<Integer> tmpSet = new HashSet<>();
 
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
@@ -392,10 +392,10 @@ public class Page implements WikiConstants
 //		session.lock(hibernatePage, LockMode.NONE);
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 		// Have to copy links here since getPage later will close the session.
-		Set<Integer> tmpSet = new UnmodifiableArraySet<Integer>(hibernatePage.getOutLinks());
+		Set<Integer> tmpSet = new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
 		session.getTransaction().commit();
 
-		Set<Page> pages = new HashSet<Page>();
+		Set<Page> pages = new HashSet<>();
 		for (int pageID : tmpSet) {
 			try {
 				pages.add(wiki.getPage(pageID));
@@ -421,13 +421,13 @@ public class Page implements WikiConstants
 		long id = __getId();
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
-		Object returnValue = session
-				.createNativeQuery("select count(outLinks) from page_outlinks where id = :id")
+		String sql = "select count(outLinks) from page_outlinks where id = :id";
+		Long returnValue = session.createNativeQuery(sql, Long.class)
 				.setParameter("id", id, StandardBasicTypes.LONG).uniqueResult();
 		session.getTransaction().commit();
 
 		if (returnValue != null) {
-			nrOfOutlinks = ((Long) returnValue).intValue();
+			nrOfOutlinks = returnValue.intValue();
 		}
 		return nrOfOutlinks;
 	}
@@ -440,7 +440,7 @@ public class Page implements WikiConstants
 	 */
 	public Set<Integer> getOutlinkIDs()
 	{
-		Set<Integer> tmpSet = new HashSet<Integer>();
+		Set<Integer> tmpSet = new HashSet<>();
 
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
@@ -475,7 +475,7 @@ public class Page implements WikiConstants
 		Session session = wiki.__getHibernateSession();
 		session.beginTransaction();
 		session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-		Set<String> tmpSet = new HashSet<String>(hibernatePage.getRedirects());
+		Set<String> tmpSet = new HashSet<>(hibernatePage.getRedirects());
 		session.getTransaction().commit();
 		return tmpSet;
 	}

@@ -37,26 +37,26 @@ public class CategoryDescendantsIterator implements Iterator<Category> {
 
     private final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
-    private CategoryBuffer buffer;
+    private final CategoryBuffer buffer;
 
     /** Contains all category ids that have not been expanded, yet. */
-    private Set<Integer> notExpandedCategories;
+    private final Set<Integer> notExpandedCategories;
 
     /** As we do not inspect the whole graph at once now, we need a way to check whether a node was already expanded, to avoid infinite loops. */
-    private Set<Integer> expandedCategoryIds;
+    private final Set<Integer> expandedCategoryIds;
 
     public CategoryDescendantsIterator(Wikipedia wiki, int bufferSize, Category startCategory) {
         this.wiki = wiki;
         buffer = new CategoryBuffer(bufferSize);
-        notExpandedCategories = new HashSet<Integer>();
+        notExpandedCategories = new HashSet<>();
         // initialize with children of start category
         for (Category catItem : startCategory.getChildren()) {
             notExpandedCategories.add(catItem.getPageId());
         }
 
-        expandedCategoryIds = new HashSet<Integer>();
+        expandedCategoryIds = new HashSet<>();
     }
 
     public boolean hasNext(){
@@ -78,15 +78,15 @@ public class CategoryDescendantsIterator implements Iterator<Category> {
      */
     class CategoryBuffer{
 
-        private List<Category> buffer;
-        private int maxBufferSize;  // the number of pages to be buffered after a query to the database.
+        private final List<Category> buffer;
+        private final int maxBufferSize;  // the number of pages to be buffered after a query to the database.
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset;   // the offset in the buffer
         private int dataOffset;     // the overall offset in the data
 
         public CategoryBuffer(int bufferSize){
             this.maxBufferSize = bufferSize;
-            this.buffer = new ArrayList<Category>();
+            this.buffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
             this.dataOffset = 0;
@@ -142,7 +142,7 @@ public class CategoryDescendantsIterator implements Iterator<Category> {
             bufferOffset = 0;
             bufferFillSize = 0;
 
-            List<Integer> queue = new LinkedList<Integer>();
+            List<Integer> queue = new LinkedList<>();
 
             // add not expanded categories to queue
             queue.addAll(notExpandedCategories);

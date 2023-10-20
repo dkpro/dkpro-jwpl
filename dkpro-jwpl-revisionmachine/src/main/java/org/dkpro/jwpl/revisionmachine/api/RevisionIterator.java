@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Part of the JWPL Revision API
- *
+ * <p>
  * This class represents the interface to iterate through multiple revisions.
  *
  */
@@ -472,7 +472,7 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
 			if (count++ % 10000 == 0) {
 
 				if (rev != null) {
-					System.out.println(rev.toString());
+					System.out.println(rev);
 				}
 			}
 		}

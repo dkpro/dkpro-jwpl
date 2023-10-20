@@ -31,7 +31,7 @@ public class LoggingFactory
 {
 
 	/** Reference Map Consumer(-Name) -> Logger */
-	private static HashMap<String, Logger> consumerLoggingIndex;
+	private static final HashMap<String, Logger> consumerLoggingIndex;
 
 	/** Name for the DiffTool Output Logger */
 	public final static String NAME_ARTICLE_OUTPUT_LOGGER = "DiffToolOutput";
@@ -39,9 +39,9 @@ public class LoggingFactory
 	/** Name for the DiffTool Error Logger */
 	public final static String NAME_ERROR_LOGGER = "DiffToolErrors";
 
-	/** Creates the static logging factory components */
+	/* Creates the static logging factory components */
 	static {
-		consumerLoggingIndex = new HashMap<String, Logger>();
+		consumerLoggingIndex = new HashMap<>();
 
 		try {
 			createLogger(LoggerType.DIFF_TOOL_ERROR, NAME_ERROR_LOGGER);
@@ -67,8 +67,7 @@ public class LoggingFactory
 	 *
 	 * @throws LoggingException
 	 */
-	public static Logger createLogger(final LoggerType type,
-			final String consumerName)
+	public static Logger createLogger(final LoggerType type, final String consumerName)
 		throws LoggingException
 	{
 

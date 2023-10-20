@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.Map.Entry;
 
 import org.hibernate.Session;
-import org.hibernate.query.Query;
+import org.hibernate.type.StandardBasicTypes;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
@@ -30,7 +30,6 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.util.distance.LevenshteinStringDistance;
-import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -66,7 +65,7 @@ public class Wikipedia implements WikiConstants {
     private final MetaData metaData;
 
     // Note: This should only be accessed internally.
-    private WikiConfig wikiConfig;
+    private final WikiConfig wikiConfig;
 
     /**
      * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig parameter.
@@ -80,8 +79,8 @@ public class Wikipedia implements WikiConstants {
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
 
-        this.idMapPages      = new HashMap<Integer,Long>();
-        this.idMapCategories = new HashMap<Integer,Long>();
+        this.idMapPages      = new HashMap<>();
+        this.idMapCategories = new HashMap<>();
 
         this.metaData = new MetaData(this);
         this.wikiConfig = this.language.getWikiconfig();
@@ -102,7 +101,7 @@ public class Wikipedia implements WikiConstants {
      * If the title is a redirect, the corresponding page is returned.<br>
      * If the title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia article title starts with an uppercase letter.
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia article titles.
-     *
+     * <p>
      * For example, the article "Steam boat" could be queried with
      * - "Steam boat"
      * - "steam boat"
@@ -143,9 +142,9 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly parsed.
      */
     public Set<Page> getPages(String title) throws WikiApiException  {
-        Set<Integer> ids = new HashSet<Integer>(getPageIdsCaseInsensitive(title));
+        Set<Integer> ids = new HashSet<>(getPageIdsCaseInsensitive(title));
 
-        Set<Page> pages = new HashSet<Page>();
+        Set<Page> pages = new HashSet<>();
         for (Integer id : ids) {
             pages.add(new Page(this, id));
         }
@@ -171,17 +170,18 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException Thrown if errors occurred.
      */
     public Title getTitle(int pageId) throws WikiApiException {
-    	Session session = this.__getHibernateSession();
+    	  Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createNativeQuery(
-            "select p.name from PageMapLine as p where p.pageId= :pId").setParameter("pId", pageId, StandardBasicTypes.INTEGER).uniqueResult();
+        String sql = "select p.name from PageMapLine as p where p.pageId= :pId";
+        String returnValue = session.createNativeQuery(sql, String.class)
+                .setParameter("pId", pageId, StandardBasicTypes.INTEGER)
+                .uniqueResult();
         session.getTransaction().commit();
 
-        String title = (String)returnValue;
-        if(title==null){
+        if(returnValue == null){
         	throw new WikiPageNotFoundException();
         }
-        return new Title(title);
+        return new Title(returnValue);
     }
 
     /**
@@ -193,19 +193,21 @@ public class Wikipedia implements WikiConstants {
      * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIds(String title) throws WikiApiException {
-    	Session session = this.__getHibernateSession();
+    	  Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Iterator results = session.createQuery(
-        "select p.pageID from PageMapLine as p where p.name = :pName").setParameter("pName", title, StandardBasicTypes.STRING).list().iterator();
+        String sql = "select p.pageID from PageMapLine as p where p.name = :pName";
+        Iterator<Integer> results = session.createQuery(sql, Integer.class)
+                .setParameter("pName", title, StandardBasicTypes.STRING)
+                .list().iterator();
 
         session.getTransaction().commit();
 
         if(!results.hasNext()){
         	throw new WikiPageNotFoundException();
         }
-        List<Integer> resultList = new LinkedList<Integer>();
+        List<Integer> resultList = new LinkedList<>();
         while(results.hasNext()){
-        	resultList.add((Integer)results.next());
+        	resultList.add(results.next());
         }
         return resultList;
     }
@@ -224,17 +226,19 @@ public class Wikipedia implements WikiConstants {
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Iterator results = session.createQuery(
-        "select p.pageID from PageMapLine as p where lower(p.name) = :pName").setParameter("pName", title, StandardBasicTypes.STRING).list().iterator();
+        String sql = "select p.pageID from PageMapLine as p where lower(p.name) = :pName";
+        Iterator<Integer> results = session.createQuery(sql, Integer.class)
+                .setParameter("pName", title, StandardBasicTypes.STRING)
+                .list().iterator();
 
         session.getTransaction().commit();
 
         if(!results.hasNext()){
             throw new WikiPageNotFoundException();
         }
-        List<Integer> resultList = new LinkedList<Integer>();
+        List<Integer> resultList = new LinkedList<>();
         while(results.hasNext()){
-            resultList.add((Integer)results.next());
+            resultList.add(results.next());
         }
         return resultList;
     }
@@ -355,31 +359,30 @@ public class Wikipedia implements WikiConstants {
      */
     public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException{
         String articleTitle = articlePage.getTitle().getWikiStyleTitle();
-    	if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
-    		articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
-    	}
+        if(!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)){
+        articleTitle=WikiConstants.DISCUSSION_PREFIX+articleTitle;
+        }
 
-    	Session session = this.__getHibernateSession();
+        Session session = this.__getHibernateSession();
         session.beginTransaction();
 
-        List<Page> discussionArchives = new LinkedList<Page>();
+        List<Page> discussionArchives = new LinkedList<>();
 
-        Query query = session.createQuery("SELECT pageID FROM PageMapLine where name like :name");
-        query.setParameter("name", articleTitle+"/%", StandardBasicTypes.STRING);
-        Iterator results = query.list().iterator();
+        String sql = "SELECT pageID FROM PageMapLine where name like :name";
+        Iterator<Integer> results = session.createQuery(sql, Integer.class)
+                .setParameter("name", articleTitle+"/%", StandardBasicTypes.STRING)
+                .list().iterator();
 
         session.getTransaction().commit();
 
         while (results.hasNext()) {
-            int pageID = (Integer) results.next();
+            int pageID = results.next();
             discussionArchives.add(getPage(pageID));
         }
-
         return discussionArchives;
-
     }
 
-//// I do not want to make this public at the moment (TZ, March, 2007)
+    //// I do not want to make this public at the moment (TZ, March, 2007)
     /**
      * Gets the pages or redirects with a name similar to the pattern.
      * Calling this method is quite costly, as similarity is computed for all names.
@@ -394,19 +397,17 @@ public class Wikipedia implements WikiConstants {
 
         // a mapping of the most similar pages and their similarity values
         // It is returned by this method.
-        Map<Page, Double> pageMap = new HashMap<Page, Double>();
+        Map<Page, Double> pageMap = new HashMap<>();
 
         // holds a mapping of the best distance values to page IDs
-        Map<Integer, Double> distanceMap = new HashMap<Integer, Double>();
+        Map<Integer, Double> distanceMap = new HashMap<>();
 
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Iterator results = session.createQuery("select pml.pageID, pml.name from PageMapLine as pml").list().iterator();
-        while (results.hasNext()) {
-            Object[] row = (Object[]) results.next();
+        for (Object o : session.createQuery("select pml.pageID, pml.name from PageMapLine as pml").list()) {
+            Object[] row = (Object[]) o;
             int pageID = (Integer) row[0];
             String pageName = (String) row[1];
-
 
             // this returns a similarity - if we want to use it, we have to change the semantics the ordering of the results
             //            double distance = new Levenshtein().getSimilarity(pageName, pPattern);
@@ -416,17 +417,15 @@ public class Wikipedia implements WikiConstants {
 
             // if there are more than "pSize" entries in the map remove the last one (it has the biggest distance)
             if (distanceMap.size() > pSize) {
-                Set <Map.Entry<Integer,Double>> valueSortedSet = new TreeSet <Map.Entry<Integer,Double>> (new ValueComparator());
-                valueSortedSet.addAll(distanceMap.entrySet());
-                Iterator it = valueSortedSet.iterator();
-                // remove the first element
-                if  (it.hasNext() ) {
-                    // get the id of this entry and remove it in the distanceMap
-                    Map.Entry entry = (Map.Entry)it.next();
-                    distanceMap.remove(entry.getKey());
-                }
+              Set<Entry<Integer, Double>> valueSortedSet = new TreeSet<>(new ValueComparator());
+              valueSortedSet.addAll(distanceMap.entrySet());
+              Iterator<Entry<Integer, Double>> it = valueSortedSet.iterator();
+              // remove the first element
+              if (it.hasNext()) {
+                // get the id of this entry and remove it in the distanceMap
+                distanceMap.remove(it.next().getKey());
+              }
             }
-
         }
         session.getTransaction().commit();
 
@@ -449,7 +448,7 @@ public class Wikipedia implements WikiConstants {
      * Gets the category for a given title.
      * If the {@link Category} title start with a lowercase letter it converts it to an uppercase letter, as each Wikipedia category title starts with an uppercase letter.
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia category titles.
-     *
+     * <p>
      * For example, the (possible) category "Famous steamboats" could be queried with
      * - "Famous steamboats"
      * - "Famous_steamboats"
@@ -511,7 +510,7 @@ public class Wikipedia implements WikiConstants {
                 .setParameter("pageTitle", pageTitle).list();
         session.getTransaction().commit();
 
-        Set<Category> categorySet = new HashSet<Category>(categoryHibernateIds.size());
+        Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
         for (int hibernateId : categoryHibernateIds) {
             try {
                 categorySet.add(new Category(this, hibernateId));
@@ -545,7 +544,7 @@ public class Wikipedia implements WikiConstants {
         session.beginTransaction();
         List<Integer> idList = session.createQuery(
                 "select cat.pageId from Category as cat", Integer.class).list();
-        Set<Integer> categorySet = new HashSet<Integer>(idList);
+        Set<Integer> categorySet = new HashSet<>(idList);
         session.getTransaction().commit();
 
         return categorySet;
@@ -576,7 +575,7 @@ public class Wikipedia implements WikiConstants {
      * Protected method that is much faster than the public version, but exposes too much implementation details.
      * Get a set with all {@code pageIDs}. Returning all page objects is much too expensive.
      * Does not include redirects, as they are only pointers to real pages.
-     *
+     * <p>
      * As ids can be useful for several application (e.g. in combination with
      * the RevisionMachine, they have been made publicly available via
      * {@link #getPageIds()}.
@@ -588,7 +587,7 @@ public class Wikipedia implements WikiConstants {
         session.beginTransaction();
         List<Integer> idList = session.createQuery(
             "select page.pageId from Page as page", Integer.class).list();
-        Set<Integer> pageSet = new HashSet<Integer>(idList);
+        Set<Integer> pageSet = new HashSet<>(idList);
         session.getTransaction().commit();
 
         return pageSet;
@@ -648,19 +647,18 @@ public class Wikipedia implements WikiConstants {
      */
     public boolean existsPage(String title) {
 
-        if (title == null || title.length() == 0) {
+        if (title == null || title.isEmpty()) {
             return false;
         }
-
         Title t;
         try {
-			t = new Title(title);
-		} catch (WikiTitleParsingException e) {
-			return false;
-		}
-		String encodedTitle = t.getWikiStyleTitle();
+          t = new Title(title);
+        } catch (WikiTitleParsingException e) {
+          return false;
+        }
+		    String encodedTitle = t.getWikiStyleTitle();
 
-    	Session session = this.__getHibernateSession();
+    	  Session session = this.__getHibernateSession();
         session.beginTransaction();
         String query = "select p.id from PageMapLine as p where p.name = :pName";
         if(dbConfig.supportsCollation()) {
@@ -721,13 +719,13 @@ public class Wikipedia implements WikiConstants {
         // It may not be in the cahe or may not exist at all.
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object retObjectPage = session.createQuery(
-                "select page.id from Page as page where page.pageId = :pageId")
+        String sql = "select page.id from Page as page where page.pageId = :pageId";
+        Long retObjectPage = session.createQuery(sql, Long.class)
                 .setParameter("pageId", pageID, StandardBasicTypes.INTEGER)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
-            hibernateID = (Long) retObjectPage;
+            hibernateID = retObjectPage;
             // add it to the cache
             idMapPages.put(pageID, hibernateID);
             return hibernateID;
@@ -755,13 +753,13 @@ public class Wikipedia implements WikiConstants {
         // It may not be in the cahe or may not exist at all.
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        Object retObjectPage = session.createQuery(
-                "select cat.id from Category as cat where cat.pageId = :pageId")
+        String sql = "select cat.id from Category as cat where cat.pageId = :pageId";
+        Long retObjectPage = session.createQuery(sql, Long.class)
                 .setParameter("pageId", pageID, StandardBasicTypes.INTEGER)
                 .uniqueResult();
         session.getTransaction().commit();
         if (retObjectPage != null) {
-            hibernateID = (Long) retObjectPage;
+            hibernateID = retObjectPage;
             // add it to the cache
             idMapCategories.put(pageID, hibernateID);
         }
@@ -809,20 +807,8 @@ public class Wikipedia implements WikiConstants {
 
 class ValueComparator implements Comparator<Map.Entry<Integer,Double>> {
 
-    @Override
+  @Override
 	public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
-
-        double c1 = e1.getValue();
-        double c2 = e2.getValue();
-
-        if (c1 < c2) {
-            return 1;
-        }
-        else if (c1 > c2) {
-            return -1;
-        }
-        else {
-            return 0;
-        }
-    }
+        return Double.compare(e2.getValue(), e1.getValue());
+  }
 }

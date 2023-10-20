@@ -30,8 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class TimeStampFilter implements DumpWriter {
-	DumpWriter sink;
-	protected Calendar filterTimeStamp;
+	final DumpWriter sink;
+	protected final Calendar filterTimeStamp;
 	protected Page currentPage;
 	protected boolean pageWritten;
 

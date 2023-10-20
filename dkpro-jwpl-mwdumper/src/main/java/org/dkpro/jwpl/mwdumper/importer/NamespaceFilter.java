@@ -29,8 +29,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NamespaceFilter extends PageFilter {
-	boolean invert;
-	Map<Integer, String> matches;
+	final boolean invert;
+	final Map<Integer, String> matches;
 	
 	public NamespaceFilter(DumpWriter sink, String configString) {
 		super(sink);

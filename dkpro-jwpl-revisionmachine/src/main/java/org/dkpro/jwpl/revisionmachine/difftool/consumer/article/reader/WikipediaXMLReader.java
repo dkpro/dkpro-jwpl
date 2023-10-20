@@ -144,7 +144,7 @@ public class WikipediaXMLReader
 	 */
 	private void initXMLKeys()
 	{
-		this.keywords = new SingleKeywordTree<WikipediaXMLKeys>();
+		this.keywords = new SingleKeywordTree<>();
 
 		keywords.addKeyword(WikipediaXMLKeys.KEY_START_PAGE.getKeyword(),
 				WikipediaXMLKeys.KEY_START_PAGE);
@@ -199,7 +199,7 @@ public class WikipediaXMLReader
 	 * in order to initialize the ArticleFilter
 	 */
 	private void initNamespaces(){
-		Map<Integer, String> namespaceMap = new HashMap<Integer,String>();
+		Map<Integer, String> namespaceMap = new HashMap<>();
 		try{
 			int b = read();
 
@@ -240,8 +240,7 @@ public class WikipediaXMLReader
 								}
 							}
 
-					    buffer = null;
-						articleFilter.initializeNamespaces(namespaceMap);
+							articleFilter.initializeNamespaces(namespaceMap);
 						return; //init done
 
 					}
@@ -253,9 +252,7 @@ public class WikipediaXMLReader
 			}
 		}catch(IOException e){
 			System.err.println("Error reading namespaces from xml dump.");
-		}catch(ParserConfigurationException e){
-			System.err.println("Error parsing namespace data.");
-		}catch(SAXException e){
+		}catch(ParserConfigurationException | SAXException e){
 			System.err.println("Error parsing namespace data.");
 		}
 	}
@@ -532,7 +529,6 @@ public class WikipediaXMLReader
 
 				case KEY_END_REVISION:
 					this.keywords.reset();
-					buffer = null;
 					return revision;
 
 				//the following cases are handeled in readContributor()
@@ -663,8 +659,8 @@ public class WikipediaXMLReader
 				this.taskPartCounter++;
 			}
 
-			Task<Revision> task = new Task<Revision>(this.taskHeader,
-					this.taskPartCounter);
+			Task<Revision> task = new Task<>(this.taskHeader,
+              this.taskPartCounter);
 			task.add(readRevision());
 
 			int r = read();

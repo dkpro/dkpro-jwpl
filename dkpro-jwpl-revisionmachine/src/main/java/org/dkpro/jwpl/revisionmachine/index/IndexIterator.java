@@ -41,7 +41,7 @@ public class IndexIterator
 {
 
 	/** Reference to the database connection */
-	private Connection connection;
+	private final Connection connection;
 
 	/** Reference to the ResultSet */
 	private ResultSet result;
@@ -84,13 +84,10 @@ public class IndexIterator
 					config.getUser(), config.getPassword());
 
 		}
-		catch (SQLException e) {
+		catch (SQLException | ClassNotFoundException e) {
 			throw new WikiApiException(e);
 		}
-		catch (ClassNotFoundException e) {
-			throw new WikiApiException(e);
-		}
-	}
+  }
 
 	/**
 	 * Queries the database for more revision information.

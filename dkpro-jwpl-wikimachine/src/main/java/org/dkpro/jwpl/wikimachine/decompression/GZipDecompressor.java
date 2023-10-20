@@ -32,7 +32,7 @@ public class GZipDecompressor implements IDecompressor {
 
 	@Override
 	public InputStream getInputStream(String fileName) throws IOException {
-		InputStream inputStream = null;
+		InputStream inputStream;
 
 		inputStream = new GZIPInputStream(new FileInputStream(fileName));
 

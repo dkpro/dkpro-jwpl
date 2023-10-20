@@ -40,7 +40,7 @@ public class Configuration {
 	private String mainCategory;
 	private String disambiguationCategory;
 
-	protected ILogger logger;
+	protected final ILogger logger;
 
 	public Configuration(ILogger logger) {
 		this.logger = logger;

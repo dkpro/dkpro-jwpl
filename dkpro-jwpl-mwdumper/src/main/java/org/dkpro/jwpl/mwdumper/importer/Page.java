@@ -30,12 +30,12 @@ import java.util.Hashtable;
 public class Page {
 	public Title Title;
 	public int Id;
-	public Hashtable DiscussionThreadingInfo;
+	public final Hashtable<String, Object> DiscussionThreadingInfo;
 	public String Restrictions;
 	
 	public Page() {
 		// <restrictions> is optional...
 		Restrictions = "";
-		DiscussionThreadingInfo = new Hashtable();
+		DiscussionThreadingInfo = new Hashtable<>();
 	}
 }

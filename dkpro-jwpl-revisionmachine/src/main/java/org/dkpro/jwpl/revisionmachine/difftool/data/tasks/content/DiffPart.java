@@ -38,7 +38,7 @@ public class DiffPart implements Serializable
 	private int length;
 
 	/** DiffAction value */
-	private DiffAction action;
+	private final DiffAction action;
 
 	/** Textual information */
 	private String text;

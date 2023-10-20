@@ -31,7 +31,7 @@ public class GraphUtilities {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     public static Set<Integer> getRandomPageSubset(Iterable<Page> pages, int pResultSetSize) {
-        Set<Integer> pageIDs = new HashSet<Integer>();
+        Set<Integer> pageIDs = new HashSet<>();
         while (pages.iterator().hasNext()) {
             pageIDs.add(pages.iterator().next().getPageId());
         }
@@ -45,7 +45,7 @@ public class GraphUtilities {
      */
     public static Set<Integer> getRandomPageSubset(Set<Integer> pPageIDs, int pResultSetSize) {
 
-        Set<Integer> uniqueRandomSet = new HashSet<Integer>();
+        Set<Integer> uniqueRandomSet = new HashSet<>();
 
         if (pPageIDs.size() < pResultSetSize) {
             logger.warn("Requested subset size is larger than the original page set size.");

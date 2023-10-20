@@ -48,7 +48,7 @@ public class FileMemoryLogger extends AbstractLogger {
 		return format.format(new Date());
 	}
 
-	private PrintStream output = null;
+	private PrintStream output;
 
 	public FileMemoryLogger() {
 

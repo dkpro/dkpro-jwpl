@@ -106,7 +106,7 @@ public enum WikipediaXMLKeys
 	 * @param keyword
 	 *            keyword
 	 */
-	private WikipediaXMLKeys(final String keyword)
+  WikipediaXMLKeys(final String keyword)
 	{
 		this.keyword = keyword;
 	}

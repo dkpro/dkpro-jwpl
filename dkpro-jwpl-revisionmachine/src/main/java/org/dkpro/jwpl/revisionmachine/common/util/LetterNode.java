@@ -32,13 +32,13 @@ public class LetterNode<V>
 {
 
 	/** Alphabetic index of successor nodes */
-	private HashMap<Character, LetterNode<V>> nodes;
+	private final HashMap<Character, LetterNode<V>> nodes;
 
 	/** Flag, whether this node contains a valid key or not */
 	private boolean isKeyword;
 
 	/** Contained keyword */
-	private String word;
+	private final String word;
 
 	/** Contained value - related to the keyword */
 	private V value;
@@ -48,7 +48,7 @@ public class LetterNode<V>
 	 */
 	public LetterNode()
 	{
-		this.nodes = new HashMap<Character, LetterNode<V>>();
+		this.nodes = new HashMap<>();
 		this.isKeyword = false;
 		this.word = "";
 	}
@@ -61,7 +61,7 @@ public class LetterNode<V>
 	 */
 	public LetterNode(final String word)
 	{
-		this.nodes = new HashMap<Character, LetterNode<V>>();
+		this.nodes = new HashMap<>();
 		this.isKeyword = false;
 		this.word = word;
 	}
@@ -81,7 +81,7 @@ public class LetterNode<V>
 
 		LetterNode<V> node = get(c);
 		if (node == null) {
-			node = new LetterNode<V>(this.word + c);
+			node = new LetterNode<>(this.word + c);
 		}
 		this.nodes.put(c, node);
 

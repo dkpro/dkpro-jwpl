@@ -27,7 +27,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
 
 /**
  * ArchiveRegistry of the ConfigurationTool.
- *
+ * <p>
  * Contains all input archives and represents the table model to display the
  * archives in the InputPanel.
  *
@@ -52,7 +52,7 @@ public class ArchiveRegistry
 	{
 		this.columnNames = new String[] { "Input Type", "Start Position",
 				"Path" };
-		this.archives = new ArrayList<ArchiveDescription>();
+		this.archives = new ArrayList<>();
 	}
 
 	/**

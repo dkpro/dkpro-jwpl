@@ -32,7 +32,7 @@ public interface ArticleReaderInterface
 
 	/**
 	 * Determines whether another task is available or not.
-	 *
+	 * <p>
 	 * This method has to be called before calling the next() method.
 	 *
 	 * @return TRUE | FALSE
@@ -56,7 +56,7 @@ public interface ArticleReaderInterface
 
 	/**
 	 * Resets the task processing status of the ArticleReader.
-	 *
+	 * <p>
 	 * This method has to be called if the hasNext() or next() methods throw an
 	 * exception.
 	 */

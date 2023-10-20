@@ -24,7 +24,7 @@ package org.dkpro.jwpl.wikimachine.debug;
  */
 public class CompositeLogger implements ILogger {
 
-	private ILogger loggers[];
+	private final ILogger[] loggers;
 
 	public CompositeLogger(ILogger[] initLoggers) {
 		loggers = (initLoggers != null) ? initLoggers : new ILogger[0];

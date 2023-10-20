@@ -91,11 +91,11 @@ public class CategoryTest extends BaseJWPLTest {
 			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
 			assertNotNull(cat);
             //test the parents
-            List<Integer> expectedPageIds = new ArrayList<Integer>();
+            List<Integer> expectedPageIds = new ArrayList<>();
             expectedPageIds.add(5);
             expectedPageIds.add(6);
 
-            List<Integer> isIds = new ArrayList<Integer>();
+            List<Integer> isIds = new ArrayList<>();
             for(Category parent : cat.getParents()) {
                 isIds.add(parent.getPageId());
             }
@@ -129,7 +129,7 @@ public class CategoryTest extends BaseJWPLTest {
             cat = wiki.getCategory("UKP");
 			assertNotNull(cat);
             //test the descendants
-            List<Integer> expectedPageIds = new ArrayList<Integer>();
+            List<Integer> expectedPageIds = new ArrayList<>();
             expectedPageIds.add(7);
             expectedPageIds.add(8);
             expectedPageIds.add(9);
@@ -139,7 +139,7 @@ public class CategoryTest extends BaseJWPLTest {
             expectedPageIds.add(13);
             expectedPageIds.add(14);
             expectedPageIds.add(15);
-            List<Integer> isIds = new ArrayList<Integer>();
+            List<Integer> isIds = new ArrayList<>();
             for(Category descendant : cat.getDescendants()) {
                 isIds.add(descendant.getPageId());
             }
@@ -157,10 +157,9 @@ public class CategoryTest extends BaseJWPLTest {
 		try {
 			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat);
-            List<Integer> expectedPageIds = new ArrayList<Integer>();
-            List<Integer> isIds = new ArrayList<Integer>();
+            List<Integer> expectedPageIds = new ArrayList<>();
+            List<Integer> isIds = new ArrayList<>();
             //test the children
-            expectedPageIds.clear();
             expectedPageIds.add(13);
             expectedPageIds.add(12);
             expectedPageIds.add(15);
@@ -197,10 +196,10 @@ public class CategoryTest extends BaseJWPLTest {
 		try {
 			cat = wiki.getCategory("UKP");
             assertNotNull(cat);
-            List<Integer> expectedPageIds = new ArrayList<Integer>();
+            List<Integer> expectedPageIds = new ArrayList<>();
             expectedPageIds.add(1010);
             expectedPageIds.add(1041);
-            List<Integer> isIds = new ArrayList<Integer>();
+            List<Integer> isIds = new ArrayList<>();
             try {
                 Set<Page> pages = cat.getArticles();
                 assertNotNull(pages);
@@ -337,10 +336,9 @@ public class CategoryTest extends BaseJWPLTest {
         try {
             cat = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat);
-            Set<Integer> expectedPageIds = new HashSet<Integer>();
-            Set<Integer> isIds = new HashSet<Integer>();
+            Set<Integer> expectedPageIds = new HashSet<>();
+            Set<Integer> isIds = new HashSet<>();
             //test the children
-            expectedPageIds.clear();
             expectedPageIds.add(7);
             expectedPageIds.add(8);
             expectedPageIds.add(9);
@@ -366,7 +364,7 @@ public class CategoryTest extends BaseJWPLTest {
             cat2 = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat2);
 
-            List<Category> categories = new ArrayList<Category>();
+            List<Category> categories = new ArrayList<>();
             categories.add(cat1);
             categories.add(cat2);
             categories.sort(new CategoryTitleComparator());
@@ -390,7 +388,7 @@ public class CategoryTest extends BaseJWPLTest {
             cat2 = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat2);
 
-            List<Category> categories = new ArrayList<Category>();
+            List<Category> categories = new ArrayList<>();
             categories.add(cat1);
             categories.add(cat2);
             categories.sort(new CategoryTitleComparator());

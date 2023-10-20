@@ -210,27 +210,22 @@ public class SQLFileWriter
 				}
 
 				if (!MODE_STATISTICAL_OUTPUT) {
-					System.out.println(task.toString());
+					System.out.println(task);
 				}
 
 			}
 			else {
-				System.out.println(task.toString());
+				System.out.println(task);
 			}
 
 		}
-		catch (DecodingException e) {
+		catch (DecodingException | EncodingException e) {
 
 			throw ErrorFactory.createSQLConsumerException(
 					ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
 
 		}
-		catch (EncodingException e) {
-
-			throw ErrorFactory.createSQLConsumerException(
-					ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
-		}
-	}
+  }
 
 	/**
 	 * Creates a new output file and writes the header information.
@@ -259,11 +254,8 @@ public class SQLFileWriter
 		this.writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
 		        new FileOutputStream(filePath)), WIKIPEDIA_ENCODING));
 
-;
 
-
-
-		String[] revTable = this.sqlEncoder.getTable();
+    String[] revTable = this.sqlEncoder.getTable();
 
 		for (String sTable : revTable) {
 			this.writer.write(sTable + "\r\n");

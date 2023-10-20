@@ -17,8 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -40,7 +38,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.OutputType;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the file output.
  *
@@ -106,18 +104,13 @@ public class OutputPanel
 		enableZipEncodingCompression = new JCheckBox("Activate Zip Encoding");
 		enableZipEncodingCompression.setBounds(120, 50, 150, 25);
 
-		enableZipEncodingCompression.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		enableZipEncodingCompression.addActionListener(e -> {
 
-				boolean flag = !controller.isZipCompressionEnabled();
-				controller.setEnableZipCompression(flag);
+      boolean flag = !controller.isZipCompressionEnabled();
+      controller.setEnableZipCompression(flag);
 
-				validate();
-			}
-		});
+      validate();
+    });
 
 		this.add(enableZipEncodingCompression);
 
@@ -129,77 +122,57 @@ public class OutputPanel
 		disableOutputCompression.setBounds(120, 110, 250, 20);
 		this.add(disableOutputCompression);
 
-		disableOutputCompression.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		disableOutputCompression.addActionListener(e -> {
 
-				OutputCompressionEnum oce = controller.getOutputCompression();
-				if (oce != OutputCompressionEnum.None) {
-					controller.setOutputCompression(OutputCompressionEnum.None);
-				}
+      OutputCompressionEnum oce = controller.getOutputCompression();
+      if (oce != OutputCompressionEnum.None) {
+        controller.setOutputCompression(OutputCompressionEnum.None);
+      }
 
-				validate();
-			}
-		});
+      validate();
+    });
 
 		enable7ZipOutputCompression = new JRadioButton("7Zip Compression");
 		enable7ZipOutputCompression.setBounds(120, 130, 250, 20);
 		this.add(enable7ZipOutputCompression);
 
-		enable7ZipOutputCompression.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		enable7ZipOutputCompression.addActionListener(e -> {
 
-				OutputCompressionEnum oce = controller.getOutputCompression();
-				if (oce != OutputCompressionEnum.SevenZip) {
-					controller
-							.setOutputCompression(OutputCompressionEnum.SevenZip);
-				}
+      OutputCompressionEnum oce = controller.getOutputCompression();
+      if (oce != OutputCompressionEnum.SevenZip) {
+        controller
+            .setOutputCompression(OutputCompressionEnum.SevenZip);
+      }
 
-				validate();
-			}
-		});
+      validate();
+    });
 
 		enableBZip2OutputCompression = new JRadioButton("BZip2 Compression");
 		enableBZip2OutputCompression.setBounds(120, 150, 250, 20);
 		this.add(enableBZip2OutputCompression);
 
-		enableBZip2OutputCompression.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		enableBZip2OutputCompression.addActionListener(e -> {
 
-				OutputCompressionEnum oce = controller.getOutputCompression();
-				if (oce != OutputCompressionEnum.BZip2) {
-					controller
-							.setOutputCompression(OutputCompressionEnum.BZip2);
-				}
+      OutputCompressionEnum oce = controller.getOutputCompression();
+      if (oce != OutputCompressionEnum.BZip2) {
+        controller
+            .setOutputCompression(OutputCompressionEnum.BZip2);
+      }
 
-				validate();
-			}
-		});
+      validate();
+    });
 
 
 		activateDataFileOutput = new JCheckBox("DataFile Output");
 		activateDataFileOutput.setBounds(120, 50, 170, 25);
 		activateDataFileOutput.setVisible(true);
-		activateDataFileOutput.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		activateDataFileOutput.addActionListener(e -> {
 
-				boolean flag = !controller.isEnableDataFileOutput();
-				controller.setEnableDataFileOutput(flag);
+      boolean flag = !controller.isEnableDataFileOutput();
+      controller.setEnableDataFileOutput(flag);
 
-				validate();
-			}
-		});
+      validate();
+    });
 		this.add(activateDataFileOutput);
 
 	}
@@ -221,19 +194,14 @@ public class OutputPanel
 		outputSizeLimitField.setBounds(170, 230, 200, 25);
 		this.add(outputSizeLimitField);
 
-		enableMultipleOutputFiles.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		enableMultipleOutputFiles.addActionListener(e -> {
 
-				boolean flag = !controller.isMultipleOutputFiles();
-				controller.setMultipleOutputFiles(flag);
+      boolean flag = !controller.isMultipleOutputFiles();
+      controller.setMultipleOutputFiles(flag);
 
-				outputSizeLimitLabel.setEnabled(flag);
-				outputSizeLimitField.setEnabled(flag);
-			}
-		});
+      outputSizeLimitLabel.setEnabled(flag);
+      outputSizeLimitField.setEnabled(flag);
+    });
 	}
 
 	// --------------------------------------------------------------------------//

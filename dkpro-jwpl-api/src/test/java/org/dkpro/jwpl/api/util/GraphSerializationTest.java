@@ -46,7 +46,7 @@ import junit.textui.TestRunner;
  */
 public class GraphSerializationTest extends BaseJWPLTest {
 
-    String serializationFileName = "testCategoryGraph.ser";
+    final String serializationFileName = "testCategoryGraph.ser";
 
 
     private static Wikipedia wiki;

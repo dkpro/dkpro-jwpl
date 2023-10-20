@@ -22,6 +22,6 @@ public interface ParserConstants {
     /**
      * Shortcut for System.getProperty("line.separator").
      */
-    public static final String LF = System.getProperty("line.separator");
+    String LF = System.getProperty("line.separator");
 
 }

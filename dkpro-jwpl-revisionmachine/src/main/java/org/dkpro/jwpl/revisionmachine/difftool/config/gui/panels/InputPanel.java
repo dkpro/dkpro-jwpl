@@ -17,9 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -45,7 +42,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.archive.InputType;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the input data.
  *
@@ -59,7 +56,7 @@ public class InputPanel
 
 	/**
 	 * Subpanel of the InputPanel
-	 *
+	 * <p>
 	 * Contains the settings related to the surrogate mode
 	 *
 	 *
@@ -101,20 +98,15 @@ public class InputPanel
 			discardSurrogatesRevisionRadioButton.setBounds(10, 90, 120, 25);
 
 			discardSurrogatesRevisionRadioButton
-					.addActionListener(new ActionListener()
-					{
-						@Override
-						public void actionPerformed(final ActionEvent e)
-						{
+					.addActionListener(e -> {
 
-							if (controller.getSurrogates() != SurrogateModes.DISCARD_REVISION) {
-								controller
-										.setSurrogates(SurrogateModes.DISCARD_REVISION);
-							}
+            if (controller.getSurrogates() != SurrogateModes.DISCARD_REVISION) {
+              controller
+                  .setSurrogates(SurrogateModes.DISCARD_REVISION);
+            }
 
-							validateSurrogateSettings();
-						}
-					});
+            validateSurrogateSettings();
+          });
 
 			// pre-activate default mode
 			discardSurrogatesRevisionRadioButton.setSelected(true);
@@ -128,19 +120,14 @@ public class InputPanel
 			replaceSurrogatesRadioButton = new JRadioButton("Replace them");
 			replaceSurrogatesRadioButton.setBounds(10, 40, 120, 25);
 
-			replaceSurrogatesRadioButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
+			replaceSurrogatesRadioButton.addActionListener(e -> {
 
-					if (controller.getSurrogates() != SurrogateModes.REPLACE) {
-						controller.setSurrogates(SurrogateModes.REPLACE);
-					}
+        if (controller.getSurrogates() != SurrogateModes.REPLACE) {
+          controller.setSurrogates(SurrogateModes.REPLACE);
+        }
 
-					validateSurrogateSettings();
-				}
-			});
+        validateSurrogateSettings();
+      });
 			this.add(replaceSurrogatesRadioButton);
 
 			/*
@@ -150,19 +137,14 @@ public class InputPanel
 			faultySurrogatesRadioButton = new JRadioButton("Throw an error");
 			faultySurrogatesRadioButton.setBounds(10, 65, 120, 25);
 
-			faultySurrogatesRadioButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
+			faultySurrogatesRadioButton.addActionListener(e -> {
 
-					if (controller.getSurrogates() != SurrogateModes.THROW_ERROR) {
-						controller.setSurrogates(SurrogateModes.THROW_ERROR);
-					}
+        if (controller.getSurrogates() != SurrogateModes.THROW_ERROR) {
+          controller.setSurrogates(SurrogateModes.THROW_ERROR);
+        }
 
-					validateSurrogateSettings();
-				}
-			});
+        validateSurrogateSettings();
+      });
 			this.add(faultySurrogatesRadioButton);
 
 			/*
@@ -174,20 +156,15 @@ public class InputPanel
 			discardSurrogatesArticleRadioButton.setBounds(10, 115, 120, 25);
 
 			discardSurrogatesArticleRadioButton
-					.addActionListener(new ActionListener()
-					{
-						@Override
-						public void actionPerformed(final ActionEvent e)
-						{
+					.addActionListener(e -> {
 
-							if (controller.getSurrogates() != SurrogateModes.DISCARD_REST) {
-								controller
-										.setSurrogates(SurrogateModes.DISCARD_REST);
-							}
+            if (controller.getSurrogates() != SurrogateModes.DISCARD_REST) {
+              controller
+                  .setSurrogates(SurrogateModes.DISCARD_REST);
+            }
 
-							validateSurrogateSettings();
-						}
-					});
+            validateSurrogateSettings();
+          });
 			this.add(discardSurrogatesArticleRadioButton);
 
 		}
@@ -340,33 +317,23 @@ public class InputPanel
 		addArchiveButton = new JButton("Add");
 		addArchiveButton.setBounds(445, 20, 100, 25);
 
-		addArchiveButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		addArchiveButton.addActionListener(e -> {
 
-				new InputDialog(controller).setVisible(true);
-				repaint();
-			}
-		});
+      new InputDialog(controller).setVisible(true);
+      repaint();
+    });
 
 		this.add(addArchiveButton);
 
 		removeArchiveButton = new JButton("Remove");
 		removeArchiveButton.setBounds(445, 50, 100, 25);
 
-		removeArchiveButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		removeArchiveButton.addActionListener(e -> {
 
-				controller.removeArchive(archiveTable.getSelectedRow());
-				archiveTable.revalidate();
-				repaint();
-			}
-		});
+      controller.removeArchive(archiveTable.getSelectedRow());
+      archiveTable.revalidate();
+      repaint();
+    });
 
 		this.add(removeArchiveButton);
 	}

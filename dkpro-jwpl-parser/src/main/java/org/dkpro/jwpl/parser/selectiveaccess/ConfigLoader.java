@@ -27,7 +27,7 @@ import org.dkpro.jwpl.parser.selectiveaccess.SelectiveAccessHandler.CIT;
 import org.dkpro.jwpl.parser.selectiveaccess.SelectiveAccessHandler.SIT;
 
 class ConfigLoader extends DefaultHandler{
-	SelectiveAccessHandler sah;
+	final SelectiveAccessHandler sah;
 	
 	private EnumMap<CIT, Boolean> citm;
 	private EnumMap<SIT, EnumMap<CIT, Boolean>> sitm;
@@ -49,7 +49,7 @@ class ConfigLoader extends DefaultHandler{
 			);
 		}
 		else if( localName.equalsIgnoreCase("section") ){
-			sitm = new EnumMap<SIT, EnumMap<CIT, Boolean>>( SIT.class );
+			sitm = new EnumMap<>(SIT.class);
 			secatt = att;
 		}
 		else if( localName.equalsIgnoreCase( SIT.SUBS.toString() ) ){
@@ -100,7 +100,7 @@ class ConfigLoader extends DefaultHandler{
 						name.startsWith( SelectiveAccessHandler.SectionType.USER_SECTION.toString()) )
 					sectionHandling.put( name, sitm );
 				else
-					sectionHandling.put( SelectiveAccessHandler.SectionType.USER_SECTION.toString()+name, sitm );
+					sectionHandling.put( SelectiveAccessHandler.SectionType.USER_SECTION +name, sitm );
 			else
 				sah.setDefaultSectionHandling( sitm );
 			

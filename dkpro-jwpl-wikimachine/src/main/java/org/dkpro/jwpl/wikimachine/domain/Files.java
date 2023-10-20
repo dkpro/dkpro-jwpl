@@ -121,8 +121,7 @@ public class Files {
 	}
 
 	public String getOutputMetadata() {
-		;
-		return getOutputPath(OUTPUT_METADATA);
+    return getOutputPath(OUTPUT_METADATA);
 	}
 
 	public boolean checkAll() {

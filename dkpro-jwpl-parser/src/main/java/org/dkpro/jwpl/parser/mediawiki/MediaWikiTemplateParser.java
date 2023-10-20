@@ -34,11 +34,11 @@ public interface MediaWikiTemplateParser {
 	 * If you are interested how this works, you shoud read the documentation
 	 * of ResolvedTemplate.
 	 */
-	public ResolvedTemplate parseTemplate(Template t, ParsedPage pp);
+  ResolvedTemplate parseTemplate(Template t, ParsedPage pp);
 	
 	/**
 	 * Returns some information about what the TemplateParser does am how
 	 * it is configurated.
 	 */
-	public String configurationInfo();
+  String configurationInfo();
 }

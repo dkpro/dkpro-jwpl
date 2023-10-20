@@ -26,12 +26,12 @@ import java.util.List;
  */
 public class NestedListContainer extends ContentContainer implements NestedList{
 	
-	private List<NestedList> lists;
-	private boolean numbered;
+	private final List<NestedList> lists;
+	private final boolean numbered;
 	
 	public NestedListContainer(boolean numbered){
-		this.ccl = new ArrayList<Content>();
-		this.lists = new ArrayList<NestedList>();
+		this.ccl = new ArrayList<>();
+		this.lists = new ArrayList<>();
 		this.numbered = numbered;
 	}
 	
@@ -59,7 +59,7 @@ public class NestedListContainer extends ContentContainer implements NestedList{
 	}
 	
 	public List<NestedList> getNestedLists(){
-		return new ArrayList<NestedList>( lists );
+		return new ArrayList<>(lists);
 	}
 		
 	public String toString(){

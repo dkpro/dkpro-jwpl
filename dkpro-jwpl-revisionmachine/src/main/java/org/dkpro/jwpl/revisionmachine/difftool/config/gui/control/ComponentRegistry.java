@@ -44,7 +44,7 @@ public class ComponentRegistry
 	 */
 	public ComponentRegistry()
 	{
-		this.map = new HashMap<PanelKeys, AbstractPanel>();
+		this.map = new HashMap<>();
 	}
 
 	/**

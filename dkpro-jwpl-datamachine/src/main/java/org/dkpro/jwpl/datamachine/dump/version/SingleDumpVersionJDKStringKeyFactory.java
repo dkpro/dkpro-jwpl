@@ -26,7 +26,7 @@ public class SingleDumpVersionJDKStringKeyFactory implements
 
 	@Override
 	public IDumpVersion getDumpVersion() {
-		IDumpVersion dumpVersion = null;
+		IDumpVersion dumpVersion;
 		try {
 			dumpVersion = new SingleDumpVersionJDKGeneric<String, StringHashCodeDisabled>(
 					StringHashCodeDisabled.class);
