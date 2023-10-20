@@ -14,32 +14,26 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-name: Java CI
+name: Stale Issues
 
-on: [push, pull_request]
+permissions:
+  contents: read
+  # contents: write # only for delete-branch option
+  issues: write
+  pull-requests: write
+
+on:
+  workflow_dispatch: { }
+  schedule:
+    # every day 5min after midnight, UTC.
+    - cron: "5 0 * * *"
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        java: [ 11, 17, 21 ]
-        experimental: [false]
-
+  stale:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/cache@v3
+      - name: Close Stale Issues
+        uses: actions/stale@v8
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-      - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: ${{ matrix.java }}
-      - name: Build with Maven
-        run: mvn -V clean package --no-transfer-progress
+          # default is 60
+          days-before-stale: 90
