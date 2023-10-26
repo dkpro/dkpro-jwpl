@@ -27,13 +27,13 @@ public class ConfigItem
 {
 
 	/** Type of message */
-	private ConfigItemTypes type;
+	private final ConfigItemTypes type;
 
 	/** Type of error */
-	private ConfigErrorKeys key;
+	private final ConfigErrorKeys key;
 
 	/** Message */
-	private String message;
+	private final String message;
 
 	/**
 	 * (Constructor) Creates a new ConfigItem

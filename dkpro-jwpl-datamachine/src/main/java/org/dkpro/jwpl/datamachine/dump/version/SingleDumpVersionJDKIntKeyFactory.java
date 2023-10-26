@@ -25,7 +25,7 @@ public class SingleDumpVersionJDKIntKeyFactory implements IDumpVersionFactory {
 
 	@Override
 	public IDumpVersion getDumpVersion() {
-		IDumpVersion dumpVersion = null;
+		IDumpVersion dumpVersion;
 		try {
 			dumpVersion = new SingleDumpVersionJDKGeneric<Integer, StringHashCodeJDK>(
 					StringHashCodeJDK.class);

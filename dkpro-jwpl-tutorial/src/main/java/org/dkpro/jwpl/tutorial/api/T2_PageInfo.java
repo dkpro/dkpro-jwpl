@@ -27,7 +27,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 2
- *
+ * <p>
  * A page provides a number of informative methods.
  *
  *

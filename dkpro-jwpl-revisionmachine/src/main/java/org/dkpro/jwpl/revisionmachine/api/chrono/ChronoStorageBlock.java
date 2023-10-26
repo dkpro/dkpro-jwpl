@@ -21,15 +21,15 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 
 /**
  * This class represents an object in the chrono storage space.
- *
+ * <p>
  * A node contains multiple links: - Reference to the chrono full revision
- *
+ * <p>
  * - links to the previous and next index block an index reference describes the
  * chronological order
- *
+ * <p>
  * - links to the previous and next counter block an counter reference describes
  * the normal order
- *
+ * <p>
  *
  * 1
  */
@@ -37,13 +37,13 @@ public class ChronoStorageBlock
 {
 
 	/** Reference to the chrono full revision */
-	private ChronoFullRevision cfr;
+	private final ChronoFullRevision cfr;
 
 	/** Index of the revision */
-	private int revisionIndex;
+	private final int revisionIndex;
 
 	/** Revision */
-	private Revision rev;
+	private final Revision rev;
 
 	/** Flag, indicating whether the revision was already returned or not */
 	private boolean delivered;

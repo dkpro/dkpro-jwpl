@@ -57,7 +57,7 @@ public interface DiffCalculatorInterface
 	 *             if the CharacterSet defined in the configuration is not
 	 *             supported by JAVA.
 	 */
-	public void process(final Task<Revision> task)
+  void process(final Task<Revision> task)
 		throws DiffException, TimeoutException, UnsupportedEncodingException;
 
 	/**
@@ -66,7 +66,7 @@ public interface DiffCalculatorInterface
 	 *
 	 * This method has to be called if the process method throws an exception.
 	 */
-	public void reset();
+  void reset();
 	
 	
 	/**
@@ -74,6 +74,6 @@ public interface DiffCalculatorInterface
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public void closeTransmitter() throws IOException, SQLException;
+  void closeTransmitter() throws IOException, SQLException;
 
 }

@@ -27,7 +27,7 @@ public class Revision {
 	 * Calendar.getInstance().set(2000,0,1) out relative time zero to saving
 	 * memory
 	 */
-	private static final Long TIME_ZERO = 946724195435l;
+	private static final Long TIME_ZERO = 946724195435L;
 	/**
 	 * We measure the time not from 1th January 1900 but from 1th January 2000
 	 */
@@ -76,7 +76,7 @@ public class Revision {
 	 * @return time stamp
 	 */
 	public static int getTimestamp(long revision) {
-		return (int) (revision & 0x00000000FFFFFFFFl);
+		return (int) (revision & 0x00000000FFFFFFFFL);
 	}
 
 	/**

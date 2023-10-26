@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * This is the Simple implementation of the Content Inteface, and is used
  * for nearly all content containing classes...
- *
+ * <p>
  * Be aware, that all retured Spans refer to the String returned by getText()<br>
  *
  */
@@ -40,13 +40,13 @@ public class ContentElement extends ParsedPageObject implements Content {
 	
 	public ContentElement(){
 		text = "";
-		links = new ArrayList<Link>();
-		templates = new ArrayList<Template>();
-		boldSpans = new ArrayList<Span>();
-		italicSpans = new ArrayList<Span>();
-		tags = new ArrayList<Span>();
-		mathSpans = new ArrayList<Span>();
-		noWikiSpans = new ArrayList<Span>();
+		links = new ArrayList<>();
+		templates = new ArrayList<>();
+		boldSpans = new ArrayList<>();
+		italicSpans = new ArrayList<>();
+		tags = new ArrayList<>();
+		mathSpans = new ArrayList<>();
+		noWikiSpans = new ArrayList<>();
 	}
 	
 	/**
@@ -144,7 +144,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns all the Spans of the Format type t in the Range of the Span s
 	 */
 	public List<Span> getFormatSpans(FormatType t, Span s){
-		List<Span> result = new ArrayList<Span>();
+		List<Span> result = new ArrayList<>();
 		for( Span s2: getFormatSpans(t) )
 			if( s2.hits(s) )result.add( s2 );
 		return result;
@@ -154,7 +154,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns the Formats wich are used in this ContentElement in a List.
 	 */
 	public List<FormatType> getFormats(){
-		List<FormatType> ftl= new ArrayList<FormatType>();
+		List<FormatType> ftl= new ArrayList<>();
 		if( boldSpans.size() != 0 ) ftl.add(FormatType.BOLD);
 		if( italicSpans.size() != 0) ftl.add(FormatType.ITALIC);
 		if( tags.size() != 0 ) ftl.add( FormatType.TAG );
@@ -174,7 +174,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns the Formats wich are used in this ContentElement, in the Range of the Span s, in a List.
 	 */
 	public List<FormatType> getFormats(Span s){
-		List<FormatType> result= new ArrayList<FormatType>();
+		List<FormatType> result= new ArrayList<>();
 		for(Span s2: boldSpans)
 			if( s.hits(s2) ){
 				result.add( FormatType.BOLD );
@@ -208,7 +208,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns a List of the Links of this ContentElement of the Specified Link.type t
 	 */
 	public List<Link> getLinks( Link.type t ){
-		List<Link> result = new ArrayList<Link>();
+		List<Link> result = new ArrayList<>();
 		for( Link l: links )
 			if( l.getType()==t )result.add(l);
 		return result;
@@ -218,7 +218,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns a List of the Links of this ContentElement of the Specified Link.type t in the Range of s
 	 */
 	public List<Link> getLinks( Link.type t, Span s){
-		List<Link> result = new ArrayList<Link>();
+		List<Link> result = new ArrayList<>();
 		for( Link l: links)
 			if( l.getType()==t && l.getPos().hits(s) ) result.add(l);	
 		return result;
@@ -256,7 +256,7 @@ public class ContentElement extends ParsedPageObject implements Content {
 	 * Returns a List of the Templates of this ContentElement in the Range of s
 	 */
 	public List<Template> getTemplates(Span s){
-		List<Template> result = new ArrayList<Template>();
+		List<Template> result = new ArrayList<>();
 		for( Template t: templates)
 			if( t.getPos().hits( s ) ) result.add( t );
 		return result;

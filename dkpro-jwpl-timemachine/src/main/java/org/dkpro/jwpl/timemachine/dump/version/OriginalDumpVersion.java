@@ -57,25 +57,25 @@ public class OriginalDumpVersion implements IDumpVersion {
 	// private Map<Integer, Revision> pageIdRevMap; // maps page id's to
 	// Revision
 	// objects
-	private Set<Integer> disambiguations; // caches the page id's of
+	private final Set<Integer> disambiguations; // caches the page id's of
 	// disambiguation pages.
-	private Map<Integer, Integer> textIdPageIdMap;// maps text id's to the page
+	private final Map<Integer, Integer> textIdPageIdMap;// maps text id's to the page
 	// id's.
-	private Map<Integer, String> pPageIdNameMap;// maps page id's of pages to
+	private final Map<Integer, String> pPageIdNameMap;// maps page id's of pages to
 	// their names
-	private Map<Integer, String> cPageIdNameMap;// maps page id's of categories
+	private final Map<Integer, String> cPageIdNameMap;// maps page id's of categories
 	// to their names
-	private Map<String, Integer> pNamePageIdMap;// maps names of pages to their
+	private final Map<String, Integer> pNamePageIdMap;// maps names of pages to their
 	// page id's.
-	private Map<String, Integer> cNamePageIdMap;// maps names of categories to
+	private final Map<String, Integer> cNamePageIdMap;// maps names of categories to
 	// their page id's.
-	private Map<Integer, String> rPageIdNameMap;// maps page id's of redirects
+	private final Map<Integer, String> rPageIdNameMap;// maps page id's of redirects
 
 	// to their names.
 
 	// XXX ivan.galkin
 	private Files versionFiles;
-	private Map<Integer, Long> pageIdRevMap;
+	private final Map<Integer, Long> pageIdRevMap;
 	private boolean skipCategory = true;
 	private boolean skipPage = true;
 
@@ -88,14 +88,14 @@ public class OriginalDumpVersion implements IDumpVersion {
 		// XXX ivan.galkin
 		// this.timestamp = timestamp;
 		// pageIdRevMap = new HashMap<Integer, Revision>();
-		pageIdRevMap = new HashMap<Integer, Long>();
-		disambiguations = new HashSet<Integer>();
-		textIdPageIdMap = new HashMap<Integer, Integer>();
-		pPageIdNameMap = new HashMap<Integer, String>();
-		cPageIdNameMap = new HashMap<Integer, String>();
-		pNamePageIdMap = new HashMap<String, Integer>();
-		cNamePageIdMap = new HashMap<String, Integer>();
-		rPageIdNameMap = new HashMap<Integer, String>();
+		pageIdRevMap = new HashMap<>();
+		disambiguations = new HashSet<>();
+		textIdPageIdMap = new HashMap<>();
+		pPageIdNameMap = new HashMap<>();
+		cPageIdNameMap = new HashMap<>();
+		pNamePageIdMap = new HashMap<>();
+		cNamePageIdMap = new HashMap<>();
+		rPageIdNameMap = new HashMap<>();
 
 	}
 

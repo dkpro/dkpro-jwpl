@@ -26,8 +26,8 @@ import java.util.Iterator;
  */
 public class CategoryDescendantsIterable implements Iterable<Category> {
 
-    private Wikipedia wiki;
-    private Category startCategory;
+    private final Wikipedia wiki;
+    private final Category startCategory;
 
     /**
      * The size of the page buffer.

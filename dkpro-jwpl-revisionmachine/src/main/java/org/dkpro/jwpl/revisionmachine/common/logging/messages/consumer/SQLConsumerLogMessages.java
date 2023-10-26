@@ -26,7 +26,7 @@ import org.slf4j.event.Level;
 
 /**
  * This class contains the english localized log messages for SQLConsumers.
- *
+ * <p>
  * TODO: This file should be replaced with resource files.
  *
  */
@@ -83,7 +83,7 @@ public class SQLConsumerLogMessages
 
 		if (task != null) {
 			logger.logError(Level.WARN, "Error while reading a task: "
-					+ task.toString(), e);
+					+ task, e);
 		}
 		else {
 			logger.logError(Level.WARN,

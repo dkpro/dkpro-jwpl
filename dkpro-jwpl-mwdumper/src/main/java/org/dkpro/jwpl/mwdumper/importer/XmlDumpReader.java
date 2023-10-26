@@ -48,7 +48,7 @@ public class XmlDumpReader  extends DefaultHandler {
 	
 	private char[] buffer;
 	private int len;
-	private boolean hasContent = false;
+	private boolean hasContent;
 	private boolean deleted = false;
 	
 	Siteinfo siteinfo;
@@ -88,12 +88,10 @@ public class XmlDumpReader  extends DefaultHandler {
 			SAXParser parser = factory.newSAXParser();
 	
 			parser.parse(input, this);
-		} catch (ParserConfigurationException e) {
-			throw (IOException)new IOException(e.getMessage()).initCause(e);
-		} catch (SAXException e) {
+		} catch (ParserConfigurationException | SAXException e) {
 			throw (IOException)new IOException(e.getMessage()).initCause(e);
 		}
-		writer.close();
+    writer.close();
 	}
 	
 	/**
@@ -108,8 +106,8 @@ public class XmlDumpReader  extends DefaultHandler {
 	// --------------------------
 	// SAX handler interface methods:
 	
-	private static final Map startElements = new HashMap(64);
-	private static final Map endElements = new HashMap(64);
+	private static final Map<String, String> startElements = new HashMap<>(64);
+	private static final Map<String, String> endElements = new HashMap<>(64);
 	static {
 		startElements.put("revision","revision");
 		startElements.put("contributor","contributor");
@@ -165,7 +163,7 @@ public class XmlDumpReader  extends DefaultHandler {
 		deleted = (d!=null && d.equals("deleted"));
 		
 		try {
-			qName = (String)startElements.get(qName);
+			qName = startElements.get(qName);
 			if (qName == null)
 				return;
 			// frequent tags:
@@ -198,7 +196,7 @@ public class XmlDumpReader  extends DefaultHandler {
 	
 	public void endElement(String uri, String localname, String qName) throws SAXException {
 		try {
-			qName = (String)endElements.get(qName);
+			qName = endElements.get(qName);
 			if (qName == null)
 				return;
 			// frequent tags:

@@ -34,7 +34,7 @@ public class BitReader
 	private int inputIndex;
 
 	/** Byte input array */
-	private byte[] input;
+	private final byte[] input;
 
 	/** Buffer used to store a single byte */
 	private int buffer;
@@ -83,7 +83,7 @@ public class BitReader
 
 	/**
 	 * Reads the next length-bits from the input.
-	 *
+	 * <p>
 	 * The maximum value of bits that could be read is 31. (Maximum value of a
 	 * positive number that could be stored in an integer without any
 	 * conversion.)

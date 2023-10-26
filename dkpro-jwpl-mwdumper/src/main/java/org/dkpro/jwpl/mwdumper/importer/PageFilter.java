@@ -28,7 +28,7 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public abstract class PageFilter implements DumpWriter {
-	DumpWriter sink;
+	final DumpWriter sink;
 	boolean showThisPage;
 	
 	public PageFilter(DumpWriter sink) {

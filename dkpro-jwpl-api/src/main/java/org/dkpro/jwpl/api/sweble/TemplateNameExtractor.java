@@ -17,7 +17,7 @@
  */
 package org.dkpro.jwpl.api.sweble;
 
-/**
+/*
  * Derived from the TextConverter class which was published in the
  * Sweble example project provided on
  * http://http://sweble.org by the Open Source Research Group,
@@ -39,7 +39,6 @@ import org.sweble.wikitext.parser.nodes.WtTemplate;
 
 /**
  * A visitor that extracts template names (no parameters) from an article AST.
- *
  */
 public class TemplateNameExtractor extends AstVisitor<WtNode>
 {
@@ -76,7 +75,7 @@ public class TemplateNameExtractor extends AstVisitor<WtNode>
 	protected WtNode before(WtNode node)
 	{
 		// This method is called by go() before visitation starts
-		templates = new LinkedList<String>();
+		templates = new LinkedList<>();
 		return super.before(node);
 	}
 
@@ -95,7 +94,7 @@ public class TemplateNameExtractor extends AstVisitor<WtNode>
 
 	public void visit(WtTemplate tmpl) throws IOException
 	{
-		for(AstNode n:tmpl.getName()){
+		for(AstNode n: tmpl.getName()){
 			if(n instanceof AstText){
 				add(((AstText)n).getContent());
 			}

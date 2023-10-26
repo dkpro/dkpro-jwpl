@@ -28,14 +28,13 @@ public class CommonUtilities {
      * @param s Must not be {@code null}.
      * @return The resulting String of the contents of {@code s}.
      */
-    public static String getSetContents(Set s) {
-        StringBuffer sb = new StringBuffer(1000);
-
+    public static String getSetContents(Set<?> s) {
         Object[] sortedArray = s.toArray();
         Arrays.sort(sortedArray);
 
         int counter = 0;
         int elementsPerRow = 10;
+        StringBuffer sb = new StringBuffer(1000);
         for (Object element : sortedArray) {
             sb.append(element.toString() + " ");
             counter++;
@@ -52,11 +51,11 @@ public class CommonUtilities {
      * @param m Must not be {@code null}.
      * @return The resulting String of the contents of {@code m}.
      */
-    public static String getMapContents(Map m) {
-        StringBuffer sb = new StringBuffer(1000);
+    public static String getMapContents(Map<?,?> m) {
         Object[] sortedArray = m.keySet().toArray();
         Arrays.sort(sortedArray);
 
+        StringBuffer sb = new StringBuffer(1000);
         for (Object element : sortedArray) {
             sb.append(element.toString() + " - " + m.get(element) + System.getProperty("line.separator"));
         }

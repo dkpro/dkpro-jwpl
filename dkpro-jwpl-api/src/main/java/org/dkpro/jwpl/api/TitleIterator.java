@@ -31,9 +31,7 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
  */
 public class TitleIterator implements Iterator<Title> {
 
-//    private final static Logger logger = Logger.getLogger(TitleIterator.class);
-
-    private TitleBuffer buffer;
+    private final TitleBuffer buffer;
 
     public TitleIterator(Wikipedia wiki, int bufferSize) {
         buffer = new TitleBuffer(bufferSize, wiki);
@@ -58,10 +56,10 @@ public class TitleIterator implements Iterator<Title> {
      */
     class TitleBuffer {
 
-        private Wikipedia wiki;
+        private final Wikipedia wiki;
 
-        private List<String> titleStringBuffer;
-        private int maxBufferSize;  // the number of pages to be buffered after a query to the database.
+        private final List<String> titleStringBuffer;
+        private final int maxBufferSize;  // the number of pages to be buffered after a query to the database.
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset;   // the offset in the buffer
         private int dataOffset;     // the overall offset in the data
@@ -69,7 +67,7 @@ public class TitleIterator implements Iterator<Title> {
         public TitleBuffer(int bufferSize, Wikipedia wiki){
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
-            this.titleStringBuffer = new ArrayList<String>();
+            this.titleStringBuffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
             this.dataOffset = 0;
@@ -125,8 +123,8 @@ public class TitleIterator implements Iterator<Title> {
 
             Session session = this.wiki.__getHibernateSession();
             session.beginTransaction();
-            List returnList = session.createNativeQuery(
-            "select p.name from PageMapLine as p")
+            final String sql = "select p.name from PageMapLine as p";
+            List<String> returnList = session.createNativeQuery(sql, String.class)
                 .setFirstResult(dataOffset)
                 .setMaxResults(maxBufferSize)
                 .setFetchSize(maxBufferSize)

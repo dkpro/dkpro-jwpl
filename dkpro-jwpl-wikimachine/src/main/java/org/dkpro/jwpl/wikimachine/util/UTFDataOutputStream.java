@@ -20,6 +20,7 @@ package org.dkpro.jwpl.wikimachine.util;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -84,7 +85,7 @@ public class UTFDataOutputStream extends DataOutputStream {
 	 * @throws IOException
 	 */
 	public void writeUTFAsArray(String str) throws IOException {
-		byte[] buffer = str.getBytes("UTF-8");
+		byte[] buffer = str.getBytes(StandardCharsets.UTF_8);
 		super.writeInt(buffer.length);
 		super.write(buffer, 0, buffer.length);
 	}

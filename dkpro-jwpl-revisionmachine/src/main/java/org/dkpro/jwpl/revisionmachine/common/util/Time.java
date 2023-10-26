@@ -19,7 +19,7 @@ package org.dkpro.jwpl.revisionmachine.common.util;
 
 /**
  * This class transform milliseconds to a clock representation.
- *
+ * <p>
  * A clock representation describes the time (HH:MM:SS:sss) and is used for
  * measuring the processing times.
  *
@@ -30,22 +30,22 @@ public class Time
 {
 
 	/** Weeks */
-	private short weeks;
+	private final short weeks;
 
 	/** Days */
-	private short days;
+	private final short days;
 
 	/** Hours */
-	private short hours;
+	private final short hours;
 
 	/** Minutes */
-	private short minutes;
+	private final short minutes;
 
 	/** Seconds */
-	private short seconds;
+	private final short seconds;
 
 	/** Milliseconds */
-	private short milliseconds;
+	private final short milliseconds;
 
 	/**
 	 * (Constructor) Creates a new time information transforming the millisecond
@@ -104,7 +104,6 @@ public class Time
 			s.append(this.seconds + " Sekunden ");
 		}
 		if (this.milliseconds != 0 || appended) {
-			appended = true;
 			s.append(this.milliseconds + " Milisekunden");
 		}
 

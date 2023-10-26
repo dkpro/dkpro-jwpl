@@ -74,7 +74,7 @@ public class Diff
 	 */
 	public Diff()
 	{
-		this.parts = new ArrayList<DiffPart>();
+		this.parts = new ArrayList<>();
 	}
 
 	/**
@@ -115,7 +115,7 @@ public class Diff
 	public String buildRevision(final String previousRevision)
 	{
 
-		HashMap<String, String> bufferMap = new HashMap<String, String>();
+		HashMap<String, String> bufferMap = new HashMap<>();
 
 		StringBuilder output = new StringBuilder();
 		if (previousRevision != null) {

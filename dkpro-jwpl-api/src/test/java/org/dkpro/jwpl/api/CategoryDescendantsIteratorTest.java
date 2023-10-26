@@ -19,7 +19,6 @@ package org.dkpro.jwpl.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +63,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         }
 
 
-        List<Integer> expectedPageIds = new ArrayList<Integer>();
+        List<Integer> expectedPageIds = new ArrayList<>();
         expectedPageIds.add(7);
         expectedPageIds.add(8);
         expectedPageIds.add(9);
@@ -75,7 +74,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         expectedPageIds.add(14);
         expectedPageIds.add(15);
 
-        List<Integer> isIds = new ArrayList<Integer>();
+        List<Integer> isIds = new ArrayList<>();
         for(Category descendant : cat.getDescendants()) {
             isIds.add(descendant.getPageId());
         }
@@ -99,7 +98,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         }
 
 
-        List<Integer> expectedPageIds = new ArrayList<Integer>();
+        List<Integer> expectedPageIds = new ArrayList<>();
         expectedPageIds.add(7);
         expectedPageIds.add(8);
         expectedPageIds.add(9);
@@ -111,7 +110,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         expectedPageIds.add(15);
 
 		for (int bufferSize=1;bufferSize<=100;bufferSize+=5) {
-            List<Integer> isIds = new ArrayList<Integer>();
+            List<Integer> isIds = new ArrayList<>();
             for(Category descendant : cat.getDescendants(bufferSize)) {
                 isIds.add(descendant.getPageId());
             }

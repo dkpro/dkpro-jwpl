@@ -20,12 +20,13 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 public class SqlFileStream implements SqlStream {
-	protected PrintStream stream;
+	protected final PrintStream stream;
 	
 	public SqlFileStream(OutputStream output) throws IOException {
-		this.stream = new PrintStream(output, false, "UTF-8");
+		this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
 	}
 	
 	public void writeComment(CharSequence sql) {

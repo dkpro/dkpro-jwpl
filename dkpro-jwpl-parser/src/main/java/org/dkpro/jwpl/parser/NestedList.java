@@ -27,5 +27,5 @@ package org.dkpro.jwpl.parser;
  *
  */
 public interface NestedList extends Content {
-	public SrcSpan getSrcSpan();
+	SrcSpan getSrcSpan();
 }

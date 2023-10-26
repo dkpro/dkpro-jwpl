@@ -125,13 +125,13 @@ public class DumpVersionFastUtilIntKey extends AbstractDumpVersion {
 	public void initialize(Timestamp timestamp) {
 		this.timestamp = Revision.compressTime(timestamp.getTime());
 
-		/**
+		/*
 		 * filled in revisions
 		 */
 		pageIdRevMap = new HashMap<>();
 		textIdPageIdMap = new Int2IntOpenHashMap();
 
-		/**
+		/*
 		 * filled in pages
 		 */
 		pPageIdNameMap = new HashMap<>();
@@ -140,7 +140,7 @@ public class DumpVersionFastUtilIntKey extends AbstractDumpVersion {
 		cNamePageIdMap =  new Int2IntOpenHashMap();
 		rPageIdNameMap = new HashMap<>();
 
-		/**
+		/*
 		 * filled in categories
 		 */
 		disambiguations = new IntArraySet();

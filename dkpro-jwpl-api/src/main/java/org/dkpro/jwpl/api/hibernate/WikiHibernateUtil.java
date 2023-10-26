@@ -29,7 +29,7 @@ import org.hibernate.cfg.Configuration;
 
 public class WikiHibernateUtil implements WikiConstants {
 
-    private static Map<String, SessionFactory> sessionFactoryMap = new HashMap<String, SessionFactory>();
+    private static final Map<String, SessionFactory> sessionFactoryMap = new HashMap<>();
 
     public static SessionFactory getSessionFactory(DatabaseConfiguration config) {
 

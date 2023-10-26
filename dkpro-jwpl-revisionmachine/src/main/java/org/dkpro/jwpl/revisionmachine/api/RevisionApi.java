@@ -110,7 +110,7 @@ public class RevisionApi extends AbstractRevisionService
                 throw new IllegalArgumentException("minNumberRevisions needs to be >= 0");
             }
 
-            PreparedStatement statement = null;
+            PreparedStatement statement;
 
             // check whether the field has already been added
             statement = this.connection
@@ -135,7 +135,7 @@ public class RevisionApi extends AbstractRevisionService
             }
 
             ResultSet result = null;
-            HashSet<Integer> articles = new HashSet<Integer>();
+            HashSet<Integer> articles = new HashSet<>();
 
             // make query
             try {
@@ -302,7 +302,7 @@ public class RevisionApi extends AbstractRevisionService
      *
      * @param articleID
      *            ID of the article
-     * @return number of revisions
+     * @return List of revisions by each corresponding {@link Timestamp}.
      *
      * @throws WikiApiException
      *             if an error occurs
@@ -310,7 +310,7 @@ public class RevisionApi extends AbstractRevisionService
     public List<Timestamp> getRevisionTimestampsBetweenTimestamps(int articleID, final Timestamp from, final Timestamp to)
         throws WikiApiException
     {
-        List<Timestamp> timestamps = new LinkedList<Timestamp>();
+        List<Timestamp> timestamps = new LinkedList<>();
 
         try {
             PreparedStatement statement = null;
@@ -363,8 +363,8 @@ public class RevisionApi extends AbstractRevisionService
      * Returns the timestamps of all revisions that have been made before the given revision.
      *
      * @param revisionId
-     *            ID of the article
-     * @return number of revisions
+     *            ID of the revision
+     * @return List of revisions by each corresponding {@link Timestamp}.
      *
      * @throws WikiApiException
      *             if an error occurs
@@ -372,7 +372,7 @@ public class RevisionApi extends AbstractRevisionService
     public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId)
         throws WikiApiException
     {
-        List<Timestamp> timestamps = new LinkedList<Timestamp>();
+        List<Timestamp> timestamps = new LinkedList<>();
 
         int articleID = getPageIdForRevisionId(revisionId); // TODO do this in the SQL query
         Timestamp ts = getRevision(revisionId).getTimeStamp(); // TODO do this in the SQL query
@@ -440,7 +440,7 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        List<Timestamp> timestamps = new LinkedList<Timestamp>();
+        List<Timestamp> timestamps = new LinkedList<>();
 
         try {
             if (articleID < 1) {
@@ -769,7 +769,7 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        Map<String, Timestamp> authorTSMap = new HashMap<String, Timestamp>();
+        Map<String, Timestamp> authorTSMap = new HashMap<>();
 
         try {
             if (articleID < 1) {
@@ -870,7 +870,7 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        List<String> groups = new LinkedList<String>();
+        List<String> groups = new LinkedList<>();
 
         try {
             if (userID < 1) {
@@ -923,11 +923,11 @@ public class RevisionApi extends AbstractRevisionService
     }
 
     /**
-     * Returns the revisionids of all revisions created by given user
+     * Returns the revisionIds of all revisions created by given user
      *
      * @param userid
      *            id of the user (NOT USER NAME)
-     * @return list of revision ids
+     * @return Map of revision ids
      *
      * @throws WikiApiException
      *             if an error occurs
@@ -936,7 +936,7 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        Map<Integer, List<Integer>> revIds = new HashMap<Integer, List<Integer>>();
+        Map<Integer, List<Integer>> revIds = new HashMap<>();
 
         try {
             if (userid < 1) {
@@ -969,7 +969,7 @@ public class RevisionApi extends AbstractRevisionService
                         revIds.get(artId).add(revId);
                     }
                     else {
-                        List<Integer> revList = new ArrayList<Integer>();
+                        List<Integer> revList = new ArrayList<>();
                         revList.add(revId);
                         revIds.put(artId, revList);
                     }
@@ -996,11 +996,11 @@ public class RevisionApi extends AbstractRevisionService
     }
 
     /**
-     * Returns the revisionids of all revisions created by given user
+     * Returns the revisionIds of all revisions created by given user
      *
      * @param username
      *            name of the user (NOT USER ID)
-     * @return list of revision ids
+     * @return Map of revision ids
      *
      * @throws WikiApiException
      *             if an error occurs
@@ -1009,10 +1009,10 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        Map<Integer, List<Integer>> revIds = new HashMap<Integer, List<Integer>>();
+        Map<Integer, List<Integer>> revIds = new HashMap<>();
 
         try {
-            if (username.isEmpty() || username == null) {
+            if (username == null || username.isEmpty()) {
                 throw new IllegalArgumentException();
             }
 
@@ -1043,7 +1043,7 @@ public class RevisionApi extends AbstractRevisionService
                         revIds.get(artId).add(revId);
                     }
                     else {
-                        List<Integer> revList = new ArrayList<Integer>();
+                        List<Integer> revList = new ArrayList<>();
                         revList.add(revId);
                         revIds.put(artId, revList);
                     }
@@ -1088,7 +1088,7 @@ public class RevisionApi extends AbstractRevisionService
         throws WikiApiException
     {
 
-        Map<Timestamp, Collection<DiffPart>> tsDiffPartsMap = new HashMap<Timestamp, Collection<DiffPart>>();
+        Map<Timestamp, Collection<DiffPart>> tsDiffPartsMap = new HashMap<>();
 
         try {
             if (articleID < 1) {
@@ -1109,8 +1109,7 @@ public class RevisionApi extends AbstractRevisionService
 
                 statement = connection.prepareStatement("SELECT Timestamp, Revision "
                         + "FROM revisions WHERE ArticleID=?");
-                ;
-                statement.setInt(1, articleID);
+              statement.setInt(1, articleID);
                 result = statement.executeQuery();
 
                 if (result == null) {
@@ -1130,7 +1129,7 @@ public class RevisionApi extends AbstractRevisionService
                     Diff diff = decoder.decode();
 
                     // Get DiffParts from Diff Object
-                    Collection<DiffPart> parts = new LinkedList<DiffPart>();
+                    Collection<DiffPart> parts = new LinkedList<>();
                     Iterator<DiffPart> it = diff.iterator();
                     while (it.hasNext()) {
                         parts.add(it.next());
@@ -1275,8 +1274,8 @@ public class RevisionApi extends AbstractRevisionService
                 throw new IllegalArgumentException();
             }
 
-            int fullRevPK = -1;
-            int limit = 1;
+            int fullRevPK;
+            int limit;
 
             PreparedStatement statement = null;
             ResultSet result = null;
@@ -1337,7 +1336,7 @@ public class RevisionApi extends AbstractRevisionService
                 throw new IllegalArgumentException();
             }
 
-            int pageId = -1;
+            int pageId;
 
             PreparedStatement statement = null;
             ResultSet result = null;
@@ -1472,7 +1471,7 @@ public class RevisionApi extends AbstractRevisionService
                 throw new IllegalArgumentException();
             }
 
-            int firstPK = -1, lastPK = -1;
+            int firstPK, lastPK;
             try {
                 statement = this.connection
                         .prepareStatement("SELECT FullRevisionPKs, RevisionCounter,"
@@ -1724,8 +1723,8 @@ public class RevisionApi extends AbstractRevisionService
     {
 
         try {
-            int fullRevPK = -1;
-            int limit = 1;
+            int fullRevPK;
+            int limit;
 
             String fullRev = null;
 
@@ -1792,8 +1791,8 @@ public class RevisionApi extends AbstractRevisionService
             PreparedStatement statement = null;
             ResultSet result = null;
 
-            int fullRevPK = -1;
-            int limit = 1;
+            int fullRevPK;
+            int limit;
             try {
                 statement = this.connection.prepareStatement("SELECT FullRevisionPK, RevisionPK "
                         + "FROM index_revisionID " + "WHERE revisionID=? LIMIT 1");
@@ -1850,7 +1849,7 @@ public class RevisionApi extends AbstractRevisionService
                     previousRevision = currentRevision;
                 }
 
-                Collection<DiffPart> parts = new LinkedList<DiffPart>();
+                Collection<DiffPart> parts = new LinkedList<>();
                 Iterator<DiffPart> it = diff.iterator();
                 while (it.hasNext()) {
                     parts.add(it.next());
@@ -1889,111 +1888,8 @@ public class RevisionApi extends AbstractRevisionService
      *
      * @throws SQLException
      *             if an error occurs while retrieving data from the sql database.
-     * @throws IOException
-     *             if an error occurs while reading the content stream
-     * @throws DecodingException
-     *             if an error occurs while decoding the content of the revision
-     * @throws WikiPageNotFoundException
-     *             if the revision was not found
      */
-    // private Revision buildRevision(final int fullRevPK, final int limit)
-    // throws SQLException, IOException, DecodingException,
-    // WikiPageNotFoundException
-    // {
-    //
-    // PreparedStatement statement = null;
-    // ResultSet result = null;
-    // // System.out.println("buildRevision -- PK: " + fullRevPK + "\tLimit: "
-    // // + limit);
-    // try {
-    // statement = this.connection
-    // .prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-    // + "FROM revisions "
-    // + "WHERE PrimaryKey >= ? LIMIT " + limit);
-    // statement.setInt(1, fullRevPK);
-    // result = statement.executeQuery();
-    //
-    // String previousRevision = null, currentRevision = null;
-    //
-    // Diff diff;
-    // RevisionDecoder decoder;
-    // Revision revision = null;
-    //
-    // boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
-    //
-    // while (result.next()) {
-    //
-    // decoder = new RevisionDecoder(config.getCharacterSet());
-    //
-    // if (binaryData) {
-    // decoder.setInput(result.getBinaryStream(1), true);
-    // }
-    // else {
-    // decoder.setInput(result.getString(1));
-    // }
-    //
-    // diff = decoder.decode();
-    // currentRevision = diff.buildRevision(previousRevision);
-    //
-    // previousRevision = currentRevision;
-    //
-    // revision = new Revision(result.getInt(3), this);
-    // revision.setRevisionText(currentRevision);
-    // revision.setPrimaryKey(result.getInt(2));
-    // revision.setRevisionID(result.getInt(4));
-    // revision.setArticleID(result.getInt(5));
-    // revision.setTimeStamp(new Timestamp(result.getLong(6)));
-    // revision.setComment(result.getString(7));
-    // revision.setMinor(result.getBoolean(8));
-    // revision.setContributorName(result.getString(9));
-    //
-    // //we should not use getInt(), because result may be null
-    // String contribIdString = result.getString(10);
-    // Integer contributorId=contribIdString==null?null:Integer.parseInt(contribIdString);
-    // revision.setContributorId(contributorId);
-    //
-    // revision.setContributorIsRegistered(result.getBoolean(11));
-    // Collection<DiffPart> parts = new LinkedList<DiffPart>();
-    // Iterator<DiffPart> it = diff.iterator();
-    // while (it.hasNext()) {
-    // parts.add(it.next());
-    // }
-    // revision.setParts(parts);
-    // }
-    //
-    // return revision;
-    //
-    // }
-    // finally {
-    // if (statement != null) {
-    // statement.close();
-    // }
-    // if (result != null) {
-    // result.close();
-    // }
-    // }
-    // }
-
-    /**
-     * This method queries and builds the specified revision.
-     *
-     * @param fullRevPK
-     *            PK of the full revision
-     * @param limit
-     *            number of revision to query
-     * @return Revision
-     *
-     * @throws SQLException
-     *             if an error occurs while retrieving data from the sql database.
-     * @throws IOException
-     *             if an error occurs while reading the content stream
-     * @throws DecodingException
-     *             if an error occurs while decoding the content of the revision
-     * @throws WikiPageNotFoundException
-     *             if the revision was not found
-     */
-    private Revision buildRevisionMetaData(final int fullRevPK, final int limit)
-        throws SQLException
+    private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException
     {
 
         PreparedStatement statement = null;
@@ -2079,52 +1975,39 @@ public class RevisionApi extends AbstractRevisionService
         throws SQLException
     {
 
-        PreparedStatement statement = null;
-        ResultSet result = null;
-        try {
-            statement = this.connection.prepareStatement("SHOW INDEX FROM " + table
-                    + " WHERE Key_name!= 'PRIMARY'");
-            result = statement.executeQuery();
+      try (PreparedStatement statement = this.connection.prepareStatement("SHOW INDEX FROM " + table
+              + " WHERE Key_name!= 'PRIMARY'"); ResultSet result = statement.executeQuery()) {
 
-            // Check if an index exists (because otherwise the query would
-            // be awfully slow. Note that the existence of ANY index will
-            // suffice - we might want to check for a specific index.
-            if (result == null || !result.next()) {
-                return false;
-            }
-
-            /*
-             * SOME INDEX EXISTS! We can now check for the existence of a specific index
-             */
-            if (indexName != null) {
-                // go back to first result
-
-                result.first();
-                // check all existing indexes for the specific index name
-                boolean specificIndexExists = false;
-                while (result.next()) {
-                    if (result.getString(3).equals(indexName)) {
-                        specificIndexExists = true;
-                    }
-                }
-                return specificIndexExists ? true : false;
-
-            }
-            else {
-                // we have an index, but don't want to check for an index with
-                // a specific name
-
-                return true;
-            }
+        // Check if an index exists (because otherwise the query would
+        // be awfully slow. Note that the existence of ANY index will
+        // suffice - we might want to check for a specific index.
+        if (result == null || !result.next()) {
+          return false;
         }
-        finally {
-            if (statement != null) {
-                statement.close();
+
+        /*
+         * SOME INDEX EXISTS! We can now check for the existence of a specific index
+         */
+        if (indexName != null) {
+          // go back to first result
+
+          result.first();
+          // check all existing indexes for the specific index name
+          boolean specificIndexExists = false;
+          while (result.next()) {
+            if (result.getString(3).equals(indexName)) {
+              specificIndexExists = true;
             }
-            if (result != null) {
-                result.close();
-            }
+          }
+          return specificIndexExists ? true : false;
+
+        } else {
+          // we have an index, but don't want to check for an index with
+          // a specific name
+
+          return true;
         }
+      }
 
     }
 
@@ -2142,32 +2025,20 @@ public class RevisionApi extends AbstractRevisionService
         throws SQLException
     {
 
-        PreparedStatement statement = null;
-        ResultSet result = null;
-        try {
-            statement = this.connection.prepareStatement("SHOW TABLES;");
-            result = statement.executeQuery();
+      try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;"); ResultSet result = statement.executeQuery()) {
 
-            if (result == null) {
-                return false;
-            }
-            boolean found = false;
-            while (result.next()) {
-                if (table.equalsIgnoreCase(result.getString(1))) {
-                    found = true;
-                }
-            }
-            return found;
+        if (result == null) {
+          return false;
+        }
+        boolean found = false;
+        while (result.next()) {
+          if (table.equalsIgnoreCase(result.getString(1))) {
+            found = true;
+          }
+        }
+        return found;
 
-        }
-        finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (result != null) {
-                result.close();
-            }
-        }
+      }
 
     }
 

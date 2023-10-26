@@ -39,11 +39,11 @@ public class WikipediaTemplateInfoDumpWriter
 {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-	private Map<String, Integer> tplNameToTplId;
-	private String outputPath;
-	private String charset;
+	private final Map<String, Integer> tplNameToTplId;
+	private final String outputPath;
+	private final String charset;
 
-	private boolean tableExists;
+	private final boolean tableExists;
 
 	public WikipediaTemplateInfoDumpWriter(String outputPath, String charset,
 			Map<String, Integer> tplNameToTplId, boolean tableExists)

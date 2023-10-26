@@ -42,9 +42,9 @@ public class StringUtils {
 	 *            String that is introduced between two joined elements.
 	 * @return The joined string.
 	 */
-	public static String join(Collection c, String delimiter) {
+	public static String join(Collection<?> c, String delimiter) {
 		buffer.setLength(0);
-		Iterator iter = c.iterator();
+		Iterator<?> iter = c.iterator();
 		while (iter.hasNext()) {
 			buffer.append(iter.next());
 			if (iter.hasNext()) {

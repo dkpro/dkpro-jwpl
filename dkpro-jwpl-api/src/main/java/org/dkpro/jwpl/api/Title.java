@@ -25,17 +25,17 @@ import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a Wikipedia page title.
- *
+ * <p>
  * Title parsing regexp fixed with the help of many UKP colleagues and Samy Ateia.
  *
  */
 public class Title {
 
-    private String wikiStyleTitle;
-    private String plainTitle;
-    private String entity;
-    private String disambiguationText;
-    private String rawTitleText;
+    private final String wikiStyleTitle;
+    private final String plainTitle;
+    private final String entity;
+    private final String disambiguationText;
+    private final String rawTitleText;
     private final String sectionText;
 
     /**
@@ -67,7 +67,7 @@ public class Title {
         // - "automobile"
         // - "Introduction"
 
-        String titlePart = null;
+        String titlePart;
         String sectionPart = null;
         if (rawTitleText.contains("#")) {
             titlePart = rawTitleText.substring(0, rawTitleText.lastIndexOf("#"));
@@ -109,7 +109,7 @@ public class Title {
 
     /**
      * Encodes a plain title string to wiki-style.
-     *
+     * <p>
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
      *
@@ -122,7 +122,7 @@ public class Title {
 
     /**
      * Decodes a wiki-style title string to plain text.
-     *
+     * <p>
      * Page titles in Wikipedia are encoded in a way that URLs containing the title are valid.
      * Title strings entered by users normally do not conform to this wiki-style encoding.
      *

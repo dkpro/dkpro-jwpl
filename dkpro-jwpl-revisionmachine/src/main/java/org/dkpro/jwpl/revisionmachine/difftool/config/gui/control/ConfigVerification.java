@@ -51,7 +51,7 @@ public class ConfigVerification
 	 */
 	public ConfigVerification()
 	{
-		this.list = new ArrayList<ConfigItem>();
+		this.list = new ArrayList<>();
 		this.failed = false;
 
 		this.columnNames = new String[] { "Type", "Error", "Message" };

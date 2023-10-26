@@ -43,7 +43,7 @@ public class SpanManager implements CharSequence {
 	 */
 	public SpanManager(String src){
 		sb  = new StringBuilder(src);
-		managedLists = new ArrayList< List<Span> >();
+		managedLists = new ArrayList<>();
 		calculateSrcPositions = false;
 	}
 	
@@ -55,7 +55,7 @@ public class SpanManager implements CharSequence {
 	public void enableSrcPosCalculation(){
 		calculateSrcPositions = true;
 		final int len = sb.length();
-		ib = new ArrayList<Integer>(len);
+		ib = new ArrayList<>(len);
 		for( int i=0; i<len; i++) ib.add( i );
 	}
 	
@@ -223,7 +223,7 @@ public class SpanManager implements CharSequence {
 		result.append("\n-=SPANMANAGER=----------------------------------------------------------------\n");
 				
 		result.append("TEXT:");
-		result.append( "\""+ sb.toString() + "\"");
+		result.append( "\""+ sb + "\"");
 		result.append("\n");		
 			
 		result.append("\nMANAGED SPAN LISTS:");

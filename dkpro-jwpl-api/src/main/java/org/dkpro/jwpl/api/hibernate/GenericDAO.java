@@ -40,7 +40,7 @@ public abstract class GenericDAO<T> {
 
     private final String entityClass;
 
-    GenericDAO(Wikipedia wiki, Class entityClass) {
+    GenericDAO(Wikipedia wiki, Class<?> entityClass) {
         this.wiki = wiki;
         this.entityClass = entityClass.getName();
         this.sessionFactory = initializeSessionFactory();
@@ -75,10 +75,10 @@ public abstract class GenericDAO<T> {
 
     public void delete(T persistentInstance) {
         try {
-            getSession().delete(persistentInstance);
+            getSession().remove(persistentInstance);
             logger.trace("delete successful");
         } catch (RuntimeException re) {
-            logger.error("Failed deleting " + entityClass + " instance", re);
+            logger.error("Failed deleting {} instance", entityClass, re);
             throw re;
         }
     }

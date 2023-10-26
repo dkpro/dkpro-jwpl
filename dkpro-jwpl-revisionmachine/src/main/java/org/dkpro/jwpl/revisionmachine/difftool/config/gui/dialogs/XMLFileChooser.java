@@ -46,9 +46,9 @@ public class XMLFileChooser
 			public String getDescription()
 			{
 				return ".xml";
-			};
+			}
 
-			@Override
+      @Override
 			public boolean accept(final File f)
 			{
 

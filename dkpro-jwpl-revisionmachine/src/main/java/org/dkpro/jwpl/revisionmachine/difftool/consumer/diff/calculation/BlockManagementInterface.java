@@ -47,8 +47,8 @@ public interface BlockManagementInterface
 	 * @throws UnsupportedEncodingException
 	 *             if the character encoding is unsupported
 	 */
-	public Diff manage(final char[] revA, final char[] revB,
-			final ArrayList<DiffBlock> queueA, final ArrayList<DiffBlock> queueB)
+  Diff manage(final char[] revA, final char[] revB,
+              final ArrayList<DiffBlock> queueA, final ArrayList<DiffBlock> queueB)
 		throws UnsupportedEncodingException;
 
 }

@@ -189,7 +189,7 @@ public final class ArticleConsumerLogMessages
 
 		if (task != null) {
 			logger.logException(Level.ERROR, "Error while reading a task: "
-					+ task.toString(), e);
+					+ task, e);
 		}
 		else {
 			logger.logException(Level.ERROR,
@@ -213,7 +213,7 @@ public final class ArticleConsumerLogMessages
 
 		if (task != null) {
 			logger.logError(Level.WARN, "Error while reading a task: "
-					+ task.toString(), e);
+					+ task, e);
 		}
 		else {
 			logger.logError(Level.WARN,

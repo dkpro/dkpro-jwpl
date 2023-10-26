@@ -28,21 +28,21 @@ import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
 public interface IEnvironmentFactory {
-	public ILogger getLogger();
+	ILogger getLogger();
 
-	public IDecompressor getDecompressor();
+	IDecompressor getDecompressor();
 
-	public ISnapshotGenerator getSnapshotGenerator();
+	ISnapshotGenerator getSnapshotGenerator();
 
-	public DumpVersionProcessor getDumpVersionProcessor();
+	DumpVersionProcessor getDumpVersionProcessor();
 
-	public IDumpVersion getDumpVersion();
+	IDumpVersion getDumpVersion();
 
-	public DumpTableInputStream getDumpTableInputStream();
+	DumpTableInputStream getDumpTableInputStream();
 
-	public PageParser getPageParser();
+	PageParser getPageParser();
 
-	public RevisionParser getRevisionParser();
+	RevisionParser getRevisionParser();
 
-	public TextParser getTextParser();
+	TextParser getTextParser();
 }

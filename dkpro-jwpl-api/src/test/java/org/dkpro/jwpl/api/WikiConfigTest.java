@@ -20,7 +20,7 @@ package org.dkpro.jwpl.api;
 import org.junit.Test;
 import org.sweble.wikitext.engine.config.WikiConfig;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class WikiConfigTest {
 
@@ -31,9 +31,9 @@ public class WikiConfigTest {
         WikiConfig testConf = WikiConstants.Language._test.getWikiconfig();
         WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
         // assertion block
-        assertTrue(portugueseConf.getContentLanguage() == "pt");
-        assertTrue(englishConf.getContentLanguage() == "en");
-        assertTrue(testConf.getContentLanguage() == "en");
-        assertTrue(frenchConf.getContentLanguage() == "fr");
+      assertSame("pt", portugueseConf.getContentLanguage());
+      assertSame("en", englishConf.getContentLanguage());
+      assertSame("en", testConf.getContentLanguage());
+      assertSame("fr", frenchConf.getContentLanguage());
     }
 }

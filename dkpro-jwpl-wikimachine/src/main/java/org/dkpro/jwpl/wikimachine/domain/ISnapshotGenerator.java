@@ -18,9 +18,9 @@
 package org.dkpro.jwpl.wikimachine.domain;
 
 public interface ISnapshotGenerator {
-	public void setFiles(Files files);
+	void setFiles(Files files);
 
-	public void setConfiguration(Configuration configuration);
+	void setConfiguration(Configuration configuration);
 
-	public abstract void start() throws Exception;
+	void start() throws Exception;
 }

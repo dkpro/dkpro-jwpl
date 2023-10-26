@@ -27,7 +27,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigVerifica
 
 /**
  * AbstractPanel Super panel class of the KonfigurationTool
- *
+ * <p>
  * All panels (which contain configuration parameters) will inherit from this
  * class.
  *
@@ -40,7 +40,7 @@ public abstract class AbstractPanel
 {
 
 	/** Reference to the controller */
-	protected ConfigController controller;
+	protected final ConfigController controller;
 
 	/**
 	 * (Constructor) Creates an AbstractPanel object.

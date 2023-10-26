@@ -65,18 +65,18 @@ public class MediaWikiParserFactory {
         	initEnglishVariables();
         }else
         {
-        	logger.warn("No language specific parser for '{}' available. Using default values.", language.toString());
+        	logger.warn("No language specific parser for '{}' available. Using default values.", language);
         }
 	}
 
 	private void initVariables(){
         lineSeparator = "LF";
 		parserClass = ModularParser.class;
-		imageIdentifers = new ArrayList<String>();
-		categoryIdentifers = new ArrayList<String>();
-		languageIdentifers = new ArrayList<String>();
-		deleteTemplates = new ArrayList<String>();
-		parseTemplates = new ArrayList<String>();
+		imageIdentifers = new ArrayList<>();
+		categoryIdentifers = new ArrayList<>();
+		languageIdentifers = new ArrayList<>();
+		deleteTemplates = new ArrayList<>();
+		parseTemplates = new ArrayList<>();
 		showImageText = false;
 		deleteTags = true;
 		showMathTagContent = true;

@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.util.revisions;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -75,13 +74,7 @@ public class RevisionUtils {
 		List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discussion.getPageId());
 
 		// sort in reverse order - newest first
-		Collections.sort(discussionTs, new Comparator<Timestamp>()
-		{
-			public int compare(Timestamp ts1, Timestamp ts2)
-			{
-				return ts2.compareTo(ts1);
-			}
-		});
+		discussionTs.sort(Comparator.reverseOrder());
 
 		//find first timestamp equal to or before the article revision timestamp
 		for(Timestamp curDiscTime:discussionTs){
@@ -102,7 +95,7 @@ public class RevisionUtils {
 	 * @return the revisions of the talk page archives that were available at the time of the article revision
 	 */
 	public List<Revision> getDiscussionArchiveRevisionsForArticleRevision(int revisionId) throws WikiApiException, WikiPageNotFoundException{
-		List<Revision> result = new LinkedList<Revision>();
+		List<Revision> result = new LinkedList<>();
 
 		//get article revision
 		Revision rev = revApi.getRevision(revisionId);
@@ -119,13 +112,7 @@ public class RevisionUtils {
 			List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discArchive.getPageId());
 
 			// sort in reverse order - newest first
-			Collections.sort(discussionTs, new Comparator<Timestamp>()
-			{
-				public int compare(Timestamp ts1, Timestamp ts2)
-				{
-					return ts2.compareTo(ts1);
-				}
-			});
+			discussionTs.sort(Comparator.reverseOrder());
 
 			//find first timestamp equal to or before the article revision timestamp
 			for(Timestamp curDiscTime:discussionTs){

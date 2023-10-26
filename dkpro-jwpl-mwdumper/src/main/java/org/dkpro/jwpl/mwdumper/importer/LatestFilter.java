@@ -28,7 +28,7 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public class LatestFilter implements DumpWriter {
-	DumpWriter sink;
+	final DumpWriter sink;
 	Revision lastRevision;
 	
 	public LatestFilter(DumpWriter sink) {

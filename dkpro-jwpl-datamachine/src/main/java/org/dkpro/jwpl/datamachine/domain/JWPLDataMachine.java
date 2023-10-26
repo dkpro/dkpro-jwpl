@@ -64,8 +64,8 @@ public class JWPLDataMachine {
 					generator.start();
 
 					logger.log("End of the application. Working time = "
-							+ String.valueOf(System.currentTimeMillis()
-									- startTime) + " ms");
+							+ (System.currentTimeMillis()
+                  - startTime) + " ms");
 				} catch (Exception e) {
 					logger.log(e);
 				}

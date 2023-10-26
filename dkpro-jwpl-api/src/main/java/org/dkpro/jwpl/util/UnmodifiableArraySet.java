@@ -25,7 +25,7 @@ import java.util.Set;
 public class UnmodifiableArraySet<E>
 	implements Set<E>
 {
-	private Object[] data;
+	private final Object[] data;
 
 	public UnmodifiableArraySet(E[] aData)
 	{

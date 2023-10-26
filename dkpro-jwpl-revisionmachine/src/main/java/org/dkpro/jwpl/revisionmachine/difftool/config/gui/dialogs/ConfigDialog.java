@@ -19,8 +19,6 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.dialogs;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -82,42 +80,30 @@ public class ConfigDialog
 
 			returnButton = new JButton("Return");
 			returnButton.setBounds(105, 195, 120, 25);
-			returnButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
-					close();
-				}
-			});
+			returnButton.addActionListener(e -> close());
 
 			this.add(returnButton);
 
 			saveButton = new JButton("Save");
 			saveButton.setBounds(235, 195, 120, 25);
-			saveButton.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(final ActionEvent e)
-				{
+			saveButton.addActionListener(e -> {
 
-					XMLFileChooser fc = new XMLFileChooser();
-					if (fc.showSaveDialog(new JPanel()) == XMLFileChooser.APPROVE_OPTION) {
+        XMLFileChooser fc = new XMLFileChooser();
+        if (fc.showSaveDialog(new JPanel()) == XMLFileChooser.APPROVE_OPTION) {
 
-						String path = fc.getSelectedFile().getPath();
-						if (path.indexOf('.') == -1) {
-							path += ".xml";
-						}
+          String path = fc.getSelectedFile().getPath();
+          if (path.indexOf('.') == -1) {
+            path += ".xml";
+          }
 
-						if (controller.saveConfiguration(path)) {
-							System.out.println("SAVE CONFIG SUCCESSFULL");
-						}
-						else {
-							System.out.println("SAVE CONFIG FAILED");
-						}
-					}
-				}
-			});
+          if (controller.saveConfiguration(path)) {
+            System.out.println("SAVE CONFIG SUCCESSFULL");
+          }
+          else {
+            System.out.println("SAVE CONFIG FAILED");
+          }
+        }
+      });
 
 			this.add(saveButton);
 		}

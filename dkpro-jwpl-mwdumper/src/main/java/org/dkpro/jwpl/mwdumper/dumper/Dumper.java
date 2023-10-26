@@ -88,7 +88,6 @@ import org.dkpro.jwpl.mwdumper.importer.TitleMatchFilter;
 import org.dkpro.jwpl.mwdumper.importer.XmlDumpReader;
 import org.dkpro.jwpl.mwdumper.importer.XmlDumpWriter;
 
-
 class Dumper {
 	public static void main(String[] args) throws IOException, ParseException {
 		InputStream input = null;
@@ -167,7 +166,7 @@ class Dumper {
 		if (!arg.startsWith("--"))
 			return null;
 		
-		String opt = "";
+		String opt;
 		String val = "";
 		String param = "";
 		
@@ -234,18 +233,17 @@ class Dumper {
 
 	private static OutputWrapper connectMySql(String param) throws IOException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			Class.forName("com.mysql.jdbc.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:mysql:" + param);
 			return new OutputWrapper(conn);
 		} catch (Exception e) {
-			//e.printStackTrace();
-			throw (IOException)new IOException(e.getMessage()).initCause(e);
+			throw (IOException) new IOException(e.getMessage()).initCause(e);
 		}
 	}
 	
 	private static OutputWrapper connectPostgres(String param) throws IOException {
 		try {
-			Class.forName("org.postgresql.Driver").newInstance();
+			Class.forName("org.postgresql.Driver");
 			Connection conn = DriverManager.getConnection("jdbc:postgresql:" + param);
 			return new OutputWrapper(conn);
 		} catch (Exception e) {

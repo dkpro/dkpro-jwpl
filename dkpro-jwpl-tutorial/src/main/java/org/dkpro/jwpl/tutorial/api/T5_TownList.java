@@ -31,10 +31,10 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 5
- *
+ * <p>
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
- *
+ * <p>
  * If we get all pages assigned to categories in the sub-tree under the category for "Towns in Germany",
  *   we can get a quite long list of towns in Germany.
  *
@@ -65,7 +65,7 @@ public class T5_TownList implements WikiConstants {
         }
 
         // Add the pages categorized under "Towns in Germany".
-        Set<String> towns = new TreeSet<String>();
+        Set<String> towns = new TreeSet<>();
         for (Page p : topCat.getArticles()) {
             towns.add(p.getTitle().getPlainTitle());
         }

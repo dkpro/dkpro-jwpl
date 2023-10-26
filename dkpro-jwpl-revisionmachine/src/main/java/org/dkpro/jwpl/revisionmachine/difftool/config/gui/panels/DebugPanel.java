@@ -17,8 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.BorderFactory;
@@ -37,7 +35,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.PanelKeys;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the debug purposes.
  *
@@ -81,36 +79,26 @@ public class DebugPanel
 		verifyDiffCheckBox = new JCheckBox("Activate Diff Verification");
 		verifyDiffCheckBox.setBounds(10, 10, 200, 25);
 
-		verifyDiffCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		verifyDiffCheckBox.addActionListener(e -> {
 
-				boolean flag = !controller.isDiffVerificationEnabled();
-				controller.setEnableDiffVerification(flag);
+      boolean flag = !controller.isDiffVerificationEnabled();
+      controller.setEnableDiffVerification(flag);
 
-				validateDebugSettings();
-			}
-		});
+      validateDebugSettings();
+    });
 
 		this.add(verifyDiffCheckBox);
 
 		verifyEncodingCheckBox = new JCheckBox("Activate Encoding Verification");
 		verifyEncodingCheckBox.setBounds(10, 40, 200, 25);
 
-		verifyEncodingCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		verifyEncodingCheckBox.addActionListener(e -> {
 
-				boolean flag = !controller.isEncodingVerificationEnabled();
-				controller.setEnableEncodingVerification(flag);
+      boolean flag = !controller.isEncodingVerificationEnabled();
+      controller.setEnableEncodingVerification(flag);
 
-				validateDebugSettings();
-			}
-		});
+      validateDebugSettings();
+    });
 
 		this.add(verifyEncodingCheckBox);
 	}
@@ -121,16 +109,11 @@ public class DebugPanel
 				"Activate Article Information Output");
 		statsOutputCheckBox.setBounds(10, 80, 250, 25);
 
-		statsOutputCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		statsOutputCheckBox.addActionListener(e -> {
 
-				boolean flag = !controller.isStatsOutputEnabled();
-				controller.setEnableStatsOutput(flag);
-			}
-		});
+      boolean flag = !controller.isStatsOutputEnabled();
+      controller.setEnableStatsOutput(flag);
+    });
 
 		this.add(statsOutputCheckBox);
 	}
@@ -142,18 +125,13 @@ public class DebugPanel
 		debugOuputCheckBox.setBounds(10, 120, 200, 25);
 		this.add(debugOuputCheckBox);
 
-		debugOuputCheckBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		debugOuputCheckBox.addActionListener(e -> {
 
-				boolean flag = !controller.isDebugOutputEnabled();
-				controller.setEnableDebugOutput(flag);
+      boolean flag = !controller.isDebugOutputEnabled();
+      controller.setEnableDebugOutput(flag);
 
-				validateDebugSettings();
-			}
-		});
+      validateDebugSettings();
+    });
 
 		debugOutputLabel = new JLabel("Debug Folder: ");
 		debugOutputLabel.setBorder(BorderFactory.createRaisedBevelBorder());

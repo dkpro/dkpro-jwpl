@@ -28,25 +28,25 @@ public class DiffBlock
 {
 
 	/** Block ID */
-	private int id;
+	private final int id;
 
 	/** Start position in revision A */
-	private int revAStart;
+	private final int revAStart;
 
 	/** End position in revision A */
-	private int revAEnd;
+	private final int revAEnd;
 
 	/** Start position in revision B */
-	private int revBStart;
+	private final int revBStart;
 
 	/** End position in revision B */
-	private int revBEnd;
+	private final int revBEnd;
 
 	/**
 	 * Flag, indicating the sorting order TRUE sorting after the start position
 	 * of revision A FALSE sorting after the start position of revision B
 	 */
-	private boolean ab;
+	private final boolean ab;
 
 	/**
 	 * (DiffBlock) Creates a new DiffBlock.

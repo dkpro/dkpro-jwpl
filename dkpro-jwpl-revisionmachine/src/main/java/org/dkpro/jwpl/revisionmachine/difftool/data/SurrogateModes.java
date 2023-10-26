@@ -19,7 +19,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.data;
 
 /**
  * This Enumerator lists the different method of how to handle surrogates.
- *
+ * <p>
  * TODO: The surrogate mode implementations need a work over.
  * TODO Add documentation for surrogates
  */

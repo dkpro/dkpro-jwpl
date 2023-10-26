@@ -32,7 +32,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
  * ChronoIterator Iterates articles in chronological order.
- *
+ * <p>
  *
  * 1
  */
@@ -101,15 +101,15 @@ public class ChronoIterator
 		this.maxRevision = Integer.parseInt(revisionCounters.substring(
 				index + 1, revisionCounters.length()));
 
-		Map<Integer, Integer> reverseMappingStorage = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> reverseMappingStorage = new HashMap<>();
 
-		this.mappingStorage = new HashMap<Integer, Integer>();
-		this.fullRevStorage = new HashMap<Integer, ChronoFullRevision>();
+		this.mappingStorage = new HashMap<>();
+		this.fullRevStorage = new HashMap<>();
 
-		ChronoFullRevision previous = null, current = null, firstCFR = null;
+		ChronoFullRevision previous = null, current, firstCFR = null;
 
-		int length = 0;
-		int revC = -1, mapC = -1;
+		int length;
+		int revC, mapC;
 
 		int max = mapping.length();
 		length = 0;
@@ -136,7 +136,7 @@ public class ChronoIterator
 
 		length = 0;
 		max = revisionCounters.length();
-		int fullRevPK = 0, lengthFR = 0;
+		int fullRevPK, lengthFR = 0;
 
 		// Creates the full revision blocks for each full revision
 		while (length < max) {
@@ -253,121 +253,102 @@ public class ChronoIterator
 
 		}
 
-		Statement statement = null;
-		ResultSet result = null;
-		revision = null;
+    revision = null;
 
-		try {
-			statement = this.connection.createStatement();
+    try (Statement statement = this.connection.createStatement(); ResultSet result = statement
+            .executeQuery("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp "
+                    + "FROM revisions "
+                    + "WHERE PrimaryKey >= "
+                    + queryPK + " LIMIT " + limit)) {
 
-			// Retrieve encoded revisions
-			result = statement
-					.executeQuery("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp "
-							+ "FROM revisions "
-							+ "WHERE PrimaryKey >= "
-							+ queryPK + " LIMIT " + limit);
+      // Retrieve encoded revisions
 
-			String currentRevision = null;
+      String currentRevision;
 
-			Diff diff;
-			RevisionDecoder decoder;
+      Diff diff;
+      RevisionDecoder decoder;
 
-			boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+      boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
 
-			while (result.next()) {
+      while (result.next()) {
 
-				decoder = new RevisionDecoder(config.getCharacterSet());
+        decoder = new RevisionDecoder(config.getCharacterSet());
 
-				// binary or base64 encoded
-				if (binaryData) {
-					decoder.setInput(result.getBinaryStream(1), true);
-				}
-				else {
-					decoder.setInput(result.getString(1));
-				}
+        // binary or base64 encoded
+        if (binaryData) {
+          decoder.setInput(result.getBinaryStream(1), true);
+        } else {
+          decoder.setInput(result.getString(1));
+        }
 
-				// Decode and rebuild
-				diff = decoder.decode();
-				if (previousRevisionCounter != -1) {
+        // Decode and rebuild
+        diff = decoder.decode();
+        if (previousRevisionCounter != -1) {
 
-					if (previousRevisionCounter + 1 != result.getInt(3)) {
+          if (previousRevisionCounter + 1 != result.getInt(3)) {
 
-						System.err.println("Reconstruction data invalid - "
-								+ "\r\n\t" + "Expected "
-								+ (previousRevisionCounter + 1)
-								+ " instead of " + result.getInt(3));
+            System.err.println("Reconstruction data invalid - "
+                    + "\r\n\t" + "Expected "
+                    + (previousRevisionCounter + 1)
+                    + " instead of " + result.getInt(3));
 
-						return null;
-					}
+            return null;
+          }
 
-				}
-				else {
+        } else {
 
-					if (cfr.getStartRC() != result.getInt(3)) {
+          if (cfr.getStartRC() != result.getInt(3)) {
 
-						System.err.println("Reconstruction data invalid - "
-								+ "\r\n\t" + "Expected " + (cfr.getStartRC())
-								+ " instead of " + result.getInt(3));
+            System.err.println("Reconstruction data invalid - "
+                    + "\r\n\t" + "Expected " + (cfr.getStartRC())
+                    + " instead of " + result.getInt(3));
 
-						return null;
-					}
+            return null;
+          }
 
-				}
+        }
 
-				try {
-					currentRevision = diff.buildRevision(previousRevision);
+        try {
+          currentRevision = diff.buildRevision(previousRevision);
 
-					revision = new Revision(result.getInt(3));
-					revision.setRevisionText(currentRevision);
-					revision.setPrimaryKey(result.getInt(2));
-					revision.setRevisionID(result.getInt(4));
-					revision.setArticleID(result.getInt(5));
-					revision.setTimeStamp(new Timestamp(result.getLong(6)));
+          revision = new Revision(result.getInt(3));
+          revision.setRevisionText(currentRevision);
+          revision.setPrimaryKey(result.getInt(2));
+          revision.setRevisionID(result.getInt(4));
+          revision.setArticleID(result.getInt(5));
+          revision.setTimeStamp(new Timestamp(result.getLong(6)));
 
-					previousRevision = currentRevision;
-					previousRevisionCounter = revision.getRevisionCounter();
+          previousRevision = currentRevision;
+          previousRevisionCounter = revision.getRevisionCounter();
 
-				}
-				catch (Exception e) {
+        } catch (Exception e) {
 
-					System.err.println("Reconstruction failed while retrieving"
-							+ " data to reconstruct <" + revisionIndex + ">"
-							+ "\r\n\t" + "[ArticleId " + result.getInt(5)
-							+ ", RevisionId " + result.getInt(4)
-							+ ", RevisionCounter " + result.getInt(3) + "]");
-
-					previousRevision = null;
-					revision = null;
+          System.err.println("Reconstruction failed while retrieving"
+                  + " data to reconstruct <" + revisionIndex + ">"
+                  + "\r\n\t" + "[ArticleId " + result.getInt(5)
+                  + ", RevisionId " + result.getInt(4)
+                  + ", RevisionCounter " + result.getInt(3) + "]");
 
 					return null;
-				}
+        }
 
-				// Add the reconstructed revision to the storage
-				if (revision != null) {
-					chronoStorage.add(revision);
-				}
-			}
+        // Add the reconstructed revision to the storage
+        if (revision != null) {
+          chronoStorage.add(revision);
+        }
+      }
 
-			// Ensure that the correct revision is on top of the storage
-			if (chronoStorage.isTop(revisionIndex)) {
+      // Ensure that the correct revision is on top of the storage
+      if (chronoStorage.isTop(revisionIndex)) {
 
-				chronoStorage.remove();
-				return revision;
+        chronoStorage.remove();
+        return revision;
 
-			}
-			else {
-				return null;
-			}
+      } else {
+        return null;
+      }
 
-		}
-		finally {
-			if (statement != null) {
-				statement.close();
-			}
-			if (result != null) {
-				result.close();
-			}
-		}
+    }
 	}
 
 	/**

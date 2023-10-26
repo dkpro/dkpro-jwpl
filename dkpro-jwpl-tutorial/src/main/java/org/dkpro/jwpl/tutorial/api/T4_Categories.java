@@ -27,7 +27,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 4
- *
+ * <p>
  * Wikipedia categories are used as a kind of semantic tag for pages.
  * They are organized in a thesaurus like structure.
  *

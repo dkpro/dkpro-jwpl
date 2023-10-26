@@ -36,7 +36,7 @@ public class CategoryIterator implements Iterator<Category> {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private CategoryBuffer buffer;
+    private final CategoryBuffer buffer;
 
     public CategoryIterator(Wikipedia wiki, int bufferSize) {
         buffer = new CategoryBuffer(bufferSize, wiki);
@@ -61,10 +61,10 @@ public class CategoryIterator implements Iterator<Category> {
      */
     class CategoryBuffer{
 
-        private Wikipedia wiki;
+        private final Wikipedia wiki;
 
-        private List<Category> buffer;
-        private int maxBufferSize;  // the number of pages to be buffered after a query to the database.
+        private final List<Category> buffer;
+        private final int maxBufferSize;  // the number of pages to be buffered after a query to the database.
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset;   // the offset in the buffer
         private int dataOffset;     // the overall offset in the data
@@ -72,7 +72,7 @@ public class CategoryIterator implements Iterator<Category> {
         public CategoryBuffer(int bufferSize, Wikipedia wiki){
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
-            this.buffer = new ArrayList<Category>();
+            this.buffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
             this.dataOffset = 0;
@@ -123,7 +123,9 @@ public class CategoryIterator implements Iterator<Category> {
 
             Session session = this.wiki.__getHibernateSession();
             session.beginTransaction();
-            List returnValues = session.createQuery("SELECT c FROM Category c")
+            final String sql = "SELECT c FROM Category c";
+            List<org.dkpro.jwpl.api.hibernate.Category> returnValues =
+                    session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
                 .setFirstResult(dataOffset)
                 .setMaxResults(maxBufferSize)
                 .setFetchSize(maxBufferSize)
@@ -136,18 +138,16 @@ public class CategoryIterator implements Iterator<Category> {
             bufferFillSize = 0;
 
             Category apiCategory;
-            for(Object o : returnValues){
+            for(org.dkpro.jwpl.api.hibernate.Category o : returnValues){
                 if(o==null) {
                     return false;
                 } else {
-                    org.dkpro.jwpl.api.hibernate.Category hibernateCategory = (org.dkpro.jwpl.api.hibernate.Category) o;
-                    long id = hibernateCategory.getId();
+                    long id = o.getId();
                     try {
                         apiCategory= new Category(this.wiki, id);
                         buffer.add(apiCategory);
                     } catch (WikiApiException e) {
-                        logger.error("Page with hibernateID " + id + " not found.");
-                        e.printStackTrace();
+                        logger.error("Page with hibernateID {} not found.", id, e);
                     }
                 }
             }

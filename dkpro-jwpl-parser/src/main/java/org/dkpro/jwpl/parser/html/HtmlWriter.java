@@ -192,7 +192,7 @@ public class HtmlWriter {
 			List<Content> ccl = s.getContentList();
 			for( int i=(s.getTitleElement()!=null?1:0); i<ccl.size(); i++  ){
 				Content c = ccl.get(i);
-				Class cc = c.getClass();
+				Class<? extends Content> cc = c.getClass();
 				if( cc == Paragraph.class ) {
 					result.append( paragraphToHtml( (Paragraph)c ) );
 				}

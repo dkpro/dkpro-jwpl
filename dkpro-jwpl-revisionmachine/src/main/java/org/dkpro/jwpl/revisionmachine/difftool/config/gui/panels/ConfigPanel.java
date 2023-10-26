@@ -17,9 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
 import javax.swing.JTabbedPane;
 
@@ -93,15 +90,10 @@ public class ConfigPanel
 		importButton = new JButton("Import");
 		importButton.setBounds(5, 310, 190, 25);
 
-		importButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.loadConfiguration();
-				repaint();
-			}
-		});
+		importButton.addActionListener(e -> {
+      controller.loadConfiguration();
+      repaint();
+    });
 
 		this.add(importButton);
 
@@ -113,15 +105,10 @@ public class ConfigPanel
 		verifyButton = new JButton("Verify Settings");
 		verifyButton.setBounds(200, 310, 190, 25);
 
-		verifyButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.createConfigurationXML();
-				repaint();
-			}
-		});
+		verifyButton.addActionListener(e -> {
+      controller.createConfigurationXML();
+      repaint();
+    });
 
 		this.add(verifyButton);
 	}
@@ -132,15 +119,10 @@ public class ConfigPanel
 		exportButton = new JButton("Export");
 		exportButton.setBounds(395, 310, 190, 25);
 
-		exportButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				controller.saveConfiguration();
-				repaint();
-			}
-		});
+		exportButton.addActionListener(e -> {
+      controller.saveConfiguration();
+      repaint();
+    });
 
 		this.add(exportButton);
 	}

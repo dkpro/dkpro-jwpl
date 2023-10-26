@@ -24,7 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -68,7 +67,7 @@ public class Tools {
 		return new BufferedOutputStream(System.out, OUT_BUF_SZ);
 	}
 
-	static OutputStream createBZip2File(String param) throws IOException, FileNotFoundException {
+	static OutputStream createBZip2File(String param) throws IOException {
 		OutputStream outfile = createOutputFile(param);
 		// bzip2 expects a two-byte 'BZ' signature header
 		outfile.write('B');
@@ -76,7 +75,7 @@ public class Tools {
 		return new BZip2CompressorOutputStream(outfile);
 	}
 
-	static OutputStream createOutputFile(String param) throws IOException, FileNotFoundException {
+	static OutputStream createOutputFile(String param) throws IOException {
 		File file = new File(param);
 		file.createNewFile();
 		return new BufferedOutputStream(new FileOutputStream(file), OUT_BUF_SZ);

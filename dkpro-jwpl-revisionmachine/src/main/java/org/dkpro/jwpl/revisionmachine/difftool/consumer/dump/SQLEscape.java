@@ -20,7 +20,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump;
 /**
  * The single method {@link SQLEscape#escape(String)} removes all unwished escape
  * characters from a string to make is UNCOMPRESSED conform. Maybe not thread-save.
- *
+ * <p>
  * Copied from the WikiMachine to avoid having to add dependency.
  */
 public class SQLEscape {

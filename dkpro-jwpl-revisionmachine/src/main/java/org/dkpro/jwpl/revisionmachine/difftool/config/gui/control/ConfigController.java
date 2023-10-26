@@ -155,7 +155,7 @@ public class ConfigController
 
 	/**
 	 * Applies the configuration file.
-	 *
+	 * <p>
 	 * The input settings will be ignored if a default configuration was used.
 	 */
 	private void applyConfig()
@@ -479,7 +479,7 @@ public class ConfigController
 
 	/**
 	 * Enables or disables the 7Zip support.
-	 *
+	 * <p>
 	 * If the support is disabled the and the OutputCompression Mode was 7Zip
 	 * the Mode will be reseted to None.
 	 *

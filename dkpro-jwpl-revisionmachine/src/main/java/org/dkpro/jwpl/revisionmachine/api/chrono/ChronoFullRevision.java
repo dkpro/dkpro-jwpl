@@ -32,19 +32,19 @@ public class ChronoFullRevision
 {
 
 	/** PrimaryKey of the full revision */
-	private int fullRevisionPK;
+	private final int fullRevisionPK;
 
 	/** First revision counter / revision counter of the full revision */
-	private int startRC;
+	private final int startRC;
 
 	/** Last revision counter based on the full revision */
-	private int endRC;
+	private final int endRC;
 
 	/** Reference to the chrono storage block */
 	private ChronoStorageBlock first;
 
 	/** Set containing the IDs of revisions that could be reconstructed */
-	private Set<Integer> set;
+	private final Set<Integer> set;
 
 	/** Link to the next full revision */
 	private ChronoFullRevision next;
@@ -75,7 +75,7 @@ public class ChronoFullRevision
 
 		this.size = 0;
 
-		this.set = new HashSet<Integer>();
+		this.set = new HashSet<>();
 		for (int i = startRC; i <= endRC; i++) {
 			this.set.add(i);
 		}
@@ -189,21 +189,6 @@ public class ChronoFullRevision
 			clean(0, 0);
 		}
 	}
-
-	/**
-	 * Removes all revision counter information starting with the specified
-	 * revision.
-	 *
-	 * @param invalidRevisionCounter
-	 *            invalid revision counter
-	 *
-	 *            public void unavailable(final int invalidRevisionCounter) {
-	 *
-	 *            for (int i = invalidRevisionCounter; i <= this.endRC; i++) {
-	 *            this.set.remove(i); }
-	 *
-	 *            if (this.set.isEmpty()) { clean(0, 0); } }
-	 */
 
 	/**
 	 * Returns whether more revisions can be reconstructed by the use of this

@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This is a parser for MediaWiki Source.
- * 
+ * <p>
  * It exist a {@link MediaWikiParserFactory}, to get an instance of this Parser.<br>
  *
  */
@@ -246,7 +246,7 @@ public class ModularParser implements MediaWikiParser,
 	 */
 	private List<String> listToLowerCase(List<String> l)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		for (String s : l)
 		{
 			result.add(s.toLowerCase());
@@ -403,7 +403,7 @@ public class ModularParser implements MediaWikiParser,
 
 		// Creating a list of Line Spans to work with lines in the following
 		// functions
-		LinkedList<Span> lineSpans = new LinkedList<Span>();
+		LinkedList<Span> lineSpans = new LinkedList<>();
 		getLineSpans(sm, lineSpans);
 
 		// Removing the Category Links from the Links list, and crating an
@@ -495,7 +495,7 @@ public class ModularParser implements MediaWikiParser,
 	{
 		ContentElement result = new ContentElement();
 		StringBuilder text = new StringBuilder();
-		List<Link> localLinks = new ArrayList<Link>();
+		List<Link> localLinks = new ArrayList<>();
 
 		for (int i = links.size() - 1; i >= 0; i--)
 		{
@@ -562,7 +562,7 @@ public class ModularParser implements MediaWikiParser,
 			ContentElementParsingParameters cepp, LinkedList<Span> lineSpans)
 	{
 
-		List<SectionContent> contentSections = new ArrayList<SectionContent>();
+		List<SectionContent> contentSections = new ArrayList<>();
 
 		SectionContent sc = new SectionContent(1);
 
@@ -957,7 +957,7 @@ public class ModularParser implements MediaWikiParser,
 		sm.manageList(resolvedTemplateSpans);
 
 		int pos = -2;
-		Stack<Integer> templateOpenTags = new Stack<Integer>();
+		Stack<Integer> templateOpenTags = new Stack<>();
 		while ((pos = sm.indexOf("{{", pos + 2)) != -1)
 		{
 			if (sm.length() > pos + 3 && sm.charAt(pos + 2) == '{'
@@ -991,7 +991,7 @@ public class ModularParser implements MediaWikiParser,
 			else
 			{
 				templateNameEnd = templateCloseTag;
-				templateOptions = new ArrayList<String>();
+				templateOptions = new ArrayList<>();
 			}
 
 			Span ts = new Span(templateOpenTag, templateCloseTag + 2);
@@ -1094,7 +1094,7 @@ public class ModularParser implements MediaWikiParser,
 		int col = -1;
 		int row = 0;
 		int subTables = 0;
-		LinkedList<Span> tableDataSpans = new LinkedList<Span>();
+		LinkedList<Span> tableDataSpans = new LinkedList<>();
 		sm.manageList(tableDataSpans);
 
 		if (calculateSrcSpans)
@@ -1235,7 +1235,7 @@ public class ModularParser implements MediaWikiParser,
 					.getStart()), -1));
 		}
 
-		LinkedList<Span> nestedListSpans = new LinkedList<Span>();
+		LinkedList<Span> nestedListSpans = new LinkedList<>();
 		while (!lineSpans.isEmpty())
 		{
 			Span s = lineSpans.getFirst();
@@ -1279,7 +1279,7 @@ public class ModularParser implements MediaWikiParser,
 	private DefinitionList buildDefinitionList(SpanManager sm,
 			ContentElementParsingParameters cepp, LinkedList<Span> lineSpans)
 	{
-		List<ContentElement> content = new ArrayList<ContentElement>();
+		List<ContentElement> content = new ArrayList<>();
 
 		Span s = lineSpans.removeFirst();
 
@@ -1325,7 +1325,7 @@ public class ModularParser implements MediaWikiParser,
 			lineType paragraphType)
 	{
 
-		LinkedList<Span> paragraphSpans = new LinkedList<Span>();
+		LinkedList<Span> paragraphSpans = new LinkedList<>();
 		Paragraph result = new Paragraph();
 		Span s = lineSpans.removeFirst();
 		paragraphSpans.add(s);
@@ -1374,7 +1374,7 @@ public class ModularParser implements MediaWikiParser,
 	private List<String> tokenize(SpanManager sm, int start, int end,
 			String delim)
 	{
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 
 		if (start > end)
 		{
@@ -1528,7 +1528,7 @@ public class ModularParser implements MediaWikiParser,
 		sm.manageList(linkSpans);
 
 		int pos = -1;
-		Stack<Integer> linkOpenTags = new Stack<Integer>();
+		Stack<Integer> linkOpenTags = new Stack<>();
 		while ((pos = sm.indexOf("[[", pos + 1)) != -1)
 		{
 			linkOpenTags.push(pos);
@@ -1566,7 +1566,7 @@ public class ModularParser implements MediaWikiParser,
 			}
 
 			// is is a regular link ?
-			if (linkTarget.indexOf(lineSeparator) != -1)
+			if (linkTarget.contains(lineSeparator))
 			{
 				continue;
 			}
@@ -1768,7 +1768,7 @@ public class ModularParser implements MediaWikiParser,
 
 		parseImagesAndInternalLinks(sm, cepp.linkSpans, cepp.links);
 
-		LinkedList<Span> lineSpans = new LinkedList<Span>();
+		LinkedList<Span> lineSpans = new LinkedList<>();
 		getLineSpans(sm, lineSpans);
 		sm.removeManagedList(lineSpans);
 		return (parseContentElement(sm, cepp, lineSpans, new ContentElement()));
@@ -1780,7 +1780,7 @@ public class ModularParser implements MediaWikiParser,
 	private ContentElement parseContentElement(SpanManager sm,
 			ContentElementParsingParameters cepp, Span lineSpan)
 	{
-		LinkedList<Span> lineSpans = new LinkedList<Span>();
+		LinkedList<Span> lineSpans = new LinkedList<>();
 		lineSpans.add(lineSpan);
 		return parseContentElement(sm, cepp, lineSpans, new ContentElement());
 	}
@@ -1793,7 +1793,7 @@ public class ModularParser implements MediaWikiParser,
 			ContentElementParsingParameters cepp, Span lineSpan,
 			ContentElement result)
 	{
-		LinkedList<Span> lineSpans = new LinkedList<Span>();
+		LinkedList<Span> lineSpans = new LinkedList<>();
 		lineSpans.add(lineSpan);
 		return parseContentElement(sm, cepp, lineSpans, result);
 	}
@@ -1807,15 +1807,15 @@ public class ModularParser implements MediaWikiParser,
 			ContentElement result)
 	{
 
-		List<Link> localLinks = new ArrayList<Link>();
-		List<Template> localTemplates = new ArrayList<Template>();
+		List<Link> localLinks = new ArrayList<>();
+		List<Template> localTemplates = new ArrayList<>();
 
-		List<Span> boldSpans = new ArrayList<Span>();
-		List<Span> italicSpans = new ArrayList<Span>();
+		List<Span> boldSpans = new ArrayList<>();
+		List<Span> italicSpans = new ArrayList<>();
 		sm.manageList(boldSpans);
 		sm.manageList(italicSpans);
 
-		List<Span> managedSpans = new ArrayList<Span>();
+		List<Span> managedSpans = new ArrayList<>();
 		sm.manageList(managedSpans);
 
 		Span contentElementRange = new Span(lineSpans.getFirst().getStart(),
@@ -1894,7 +1894,7 @@ public class ModularParser implements MediaWikiParser,
 				{
 					managedSpans.add(ts);
 
-					Class parsedObjectClass = parsedObject.getClass();
+					Class<?> parsedObjectClass = parsedObject.getClass();
 					if (parsedObjectClass == Template.class)
 					{
 						localTemplates.add((Template) parsedObject);
@@ -1918,7 +1918,7 @@ public class ModularParser implements MediaWikiParser,
 
 		// HTML/XML Tags
 		i = 0;
-		List<Span> tags = new ArrayList<Span>();
+		List<Span> tags = new ArrayList<>();
 		while (i < cepp.tagSpans.size())
 		{
 			Span s = cepp.tagSpans.get(i);
@@ -1943,7 +1943,7 @@ public class ModularParser implements MediaWikiParser,
 
 		// noWiki
 		i = 0;
-		List<Span> localNoWikiSpans = new ArrayList<Span>();
+		List<Span> localNoWikiSpans = new ArrayList<>();
 		while (i < cepp.noWikiSpans.size())
 		{
 			Span s = cepp.noWikiSpans.get(i);
@@ -1962,7 +1962,7 @@ public class ModularParser implements MediaWikiParser,
 
 		// MATH Tags
 		i = 0;
-		List<Span> mathSpans = new ArrayList<Span>();
+		List<Span> mathSpans = new ArrayList<>();
 		while (i < cepp.mathSpans.size())
 		{
 			Span s = cepp.mathSpans.get(i);
@@ -2027,7 +2027,7 @@ public class ModularParser implements MediaWikiParser,
 	 */
 	private static List<Link> sortLinks(List<Link> links)
 	{
-		List<Link> result = new ArrayList<Link>();
+		List<Link> result = new ArrayList<>();
 		for (Link l : links)
 		{
 			int pos = 0;
@@ -2047,7 +2047,7 @@ public class ModularParser implements MediaWikiParser,
 	 */
 	private static List<Template> sortTemplates(List<Template> templates)
 	{
-		List<Template> result = new ArrayList<Template>();
+		List<Template> result = new ArrayList<>();
 		for (Template t : templates)
 		{
 			int pos = 0;
@@ -2077,7 +2077,7 @@ public class ModularParser implements MediaWikiParser,
 
 			// get the Text from the paragraph
 			SpanManager ptext = new SpanManager(p.getText());
-			List<Span> delete = new ArrayList<Span>();
+			List<Span> delete = new ArrayList<>();
 			ptext.manageList(delete);
 
 			// getting the spans to remove from the text, for templates
@@ -2137,27 +2137,27 @@ public class ModularParser implements MediaWikiParser,
 	 */
 	class ContentElementParsingParameters
 	{
-		List<Span> noWikiSpans;
-		List<String> noWikiStrings;
-		List<Span> linkSpans;
-		List<Link> links;
-		List<Span> templateSpans;
-		List<ResolvedTemplate> templates;
-		List<Span> tagSpans;
-		List<Span> mathSpans;
-		List<String> mathStrings;
+		final List<Span> noWikiSpans;
+		final List<String> noWikiStrings;
+		final List<Span> linkSpans;
+		final List<Link> links;
+		final List<Span> templateSpans;
+		final List<ResolvedTemplate> templates;
+		final List<Span> tagSpans;
+		final List<Span> mathSpans;
+		final List<String> mathStrings;
 
 		ContentElementParsingParameters()
 		{
-			noWikiSpans = new ArrayList<Span>();
-			noWikiStrings = new ArrayList<String>();
-			linkSpans = new ArrayList<Span>();
-			links = new ArrayList<Link>();
-			templateSpans = new ArrayList<Span>();
-			templates = new ArrayList<ResolvedTemplate>();
-			tagSpans = new ArrayList<Span>();
-			mathSpans = new ArrayList<Span>();
-			mathStrings = new ArrayList<String>();
+			noWikiSpans = new ArrayList<>();
+			noWikiStrings = new ArrayList<>();
+			linkSpans = new ArrayList<>();
+			links = new ArrayList<>();
+			templateSpans = new ArrayList<>();
+			templates = new ArrayList<>();
+			tagSpans = new ArrayList<>();
+			mathSpans = new ArrayList<>();
+			mathStrings = new ArrayList<>();
 		}
 	}
 }

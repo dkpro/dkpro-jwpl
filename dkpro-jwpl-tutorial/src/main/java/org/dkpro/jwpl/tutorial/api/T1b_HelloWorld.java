@@ -25,10 +25,10 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 
 /**
  * Tutorial 1b
- *
+ * <p>
  * Get the text of a wikipedia article.
  * The text will be formatted with MediaWiki markup.
- *
+ * <p>
  * If you do not care about exception handling, but want to avoid crashes on every page that does not exist.
  *
  *

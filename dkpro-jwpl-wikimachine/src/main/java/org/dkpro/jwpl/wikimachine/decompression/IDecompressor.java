@@ -28,5 +28,5 @@ import java.io.InputStream;
  */
 public interface IDecompressor {
 
-	public InputStream getInputStream(String fileName) throws IOException;
+	InputStream getInputStream(String fileName) throws IOException;
 }

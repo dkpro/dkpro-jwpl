@@ -55,16 +55,16 @@ import org.slf4j.LoggerFactory;
 public class WikipediaTemplateInfoGenerator
 {
 	private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-	private MediaWikiParser parser;
+	private final MediaWikiParser parser;
 	private Wikipedia wiki;
 
 	private final DatabaseConfiguration dbConf;
 
 	private final int pageBuffer;
 
-	private final Map<String, Set<Integer>> TPLNAME_TO_REVISIONIDS = new HashMap<String, Set<Integer>>();
-	private final Map<String, Set<Integer>> TPLNAME_TO_PAGEIDS = new HashMap<String, Set<Integer>>();
-	private final Map<String, Integer> tplNameToTplId = new HashMap<String, Integer>();
+	private final Map<String, Set<Integer>> TPLNAME_TO_REVISIONIDS = new HashMap<>();
+	private final Map<String, Set<Integer>> TPLNAME_TO_PAGEIDS = new HashMap<>();
+	private final Map<String, Integer> tplNameToTplId = new HashMap<>();
 
 	private final String charset;
 	// private final long maxAllowedPacket;
@@ -72,15 +72,15 @@ public class WikipediaTemplateInfoGenerator
 
 	private final int VERBOSITY = 500;
 
-	private TemplateFilter pageFilter;
+	private final TemplateFilter pageFilter;
 
-	private TemplateFilter revisionFilter;
+	private final TemplateFilter revisionFilter;
 
 	private boolean revisionTableExists;
 
 	private boolean pageTableExists;
 
-	private GeneratorMode mode;
+	private final GeneratorMode mode;
 
 	public WikipediaTemplateInfoGenerator(DatabaseConfiguration dbc, int pageBuffer,
 			String charset, String outputPath, long maxAllowedPacket,
@@ -142,7 +142,7 @@ public class WikipediaTemplateInfoGenerator
 				}
 				else {
 					// add new list with page id of current page
-					Set<Integer> newIdList = new HashSet<Integer>();
+					Set<Integer> newIdList = new HashSet<>();
 					newIdList.add(id);
 					mapToFill.put(name, newIdList);
 				}
@@ -293,7 +293,7 @@ public class WikipediaTemplateInfoGenerator
 		////////////////////
 
 		logger.info("Generating template indices ...");
-		boolean tableWithTemplatesExists = false;
+		boolean tableWithTemplatesExists;
 
 		tableWithTemplatesExists = true;
 
@@ -357,7 +357,7 @@ public class WikipediaTemplateInfoGenerator
 	 */
 	private Set<String> getTemplateNames(String pageText)
 	{
-		Set<String> names = new HashSet<String>();
+		Set<String> names = new HashSet<>();
 		if (!pageText.isEmpty()) {
 			try {
 				ParsedPage pp = parser.parse(pageText);

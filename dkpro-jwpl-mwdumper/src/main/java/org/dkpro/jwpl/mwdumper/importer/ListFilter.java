@@ -30,16 +30,18 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Map;
 
 public class ListFilter extends PageFilter {
-	protected HashMap list;
+	protected final Map<String, String> list;
 	
 	public ListFilter(DumpWriter sink, String sourceFileName) throws IOException {
 		super(sink);
-		list = new HashMap();
+		list = new HashMap<>();
 		BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
-			new FileInputStream(sourceFileName)), "utf-8"));
+			new FileInputStream(sourceFileName)), StandardCharsets.UTF_8));
 		String line = input.readLine();
 		while (line != null) {
 			if (!line.startsWith("#")) {

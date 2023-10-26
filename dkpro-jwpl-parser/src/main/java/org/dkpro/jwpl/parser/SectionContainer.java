@@ -30,16 +30,16 @@ import java.util.List;
  */
 public class SectionContainer extends Section {
 	
-	private List<Section> sections;
+	private final List<Section> sections;
 	
 	public SectionContainer(int level){
 		super( null, level );
-		sections = new ArrayList<Section>();
+		sections = new ArrayList<>();
 	}
 	
 	public SectionContainer(ContentElement title, int level){
 		super( title, level );
-		sections = new ArrayList<Section>();
+		sections = new ArrayList<>();
 	}
 	
 	/**
@@ -77,14 +77,14 @@ public class SectionContainer extends Section {
 	 * Returns a List of all SubSections of the next level.
 	 */
 	public List<Section> getSubSections(){
-		return new ArrayList<Section>( sections );
+		return new ArrayList<>(sections);
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.tud.ukp.wikipedia.api.pageparser.Section#getContentList()
 	 */
 	public List<Content> getContentList(){
-		return new ArrayList<Content>( ccl );
+		return new ArrayList<>(ccl);
 	}
 	
 	public int nrOfParagraphs(){
@@ -94,7 +94,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public Paragraph getParagraph(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( Section s: sections ){
 			nr = s.nrOfParagraphs();
@@ -105,7 +105,7 @@ public class SectionContainer extends Section {
 	}
 		
 	public List<Paragraph> getParagraphs(){
-		List<Paragraph> result = new ArrayList<Paragraph>();
+		List<Paragraph> result = new ArrayList<>();
 		for( Section s: sections ) result.addAll( s.getParagraphs() );
 		return result;
 	}
@@ -117,7 +117,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public Table getTable(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( Section s: sections ){
 			nr = s.nrOfTables();
@@ -128,7 +128,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public List<Table> getTables(){
-		List<Table> result = new ArrayList<Table>();
+		List<Table> result = new ArrayList<>();
 		for( Section s: sections ) result.addAll( s.getTables() );
 		return result;
 	}
@@ -140,7 +140,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public NestedListContainer getNestedList(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( Section s: sections ){
 			nr = s.nrOfNestedLists();
@@ -151,7 +151,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public List<NestedListContainer> getNestedLists(){
-		List<NestedListContainer> result = new ArrayList<NestedListContainer>();
+		List<NestedListContainer> result = new ArrayList<>();
 		for( Section s: sections ) result.addAll( s.getNestedLists() );
 		return result;
 	}
@@ -163,7 +163,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public DefinitionList getDefinitionList(int i){
-		int nr = 0;
+		int nr;
 		int offset = 0;
 		for( Section s: sections ){
 			nr = s.nrOfDefinitionLists();
@@ -174,7 +174,7 @@ public class SectionContainer extends Section {
 	}
 	
 	public List<DefinitionList> getDefinitionLists(){
-		List<DefinitionList> result = new ArrayList<DefinitionList>();
+		List<DefinitionList> result = new ArrayList<>();
 		for( Section s: sections ) result.addAll( s.getDefinitionLists() );
 		return result;
 	}

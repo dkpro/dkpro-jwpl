@@ -36,10 +36,10 @@ public class RevisionPair implements Serializable{
 
 	private static final long serialVersionUID = -428550315195347191L;
 
-	private Revision before;
-	private Revision after;
-	private String template;
-	private RevisionPairType revPairType;
+	private final Revision before;
+	private final Revision after;
+	private final String template;
+	private final RevisionPairType revPairType;
 
 	public RevisionPair(Revision before, Revision after, String template,
 			RevisionPairType revPairType) {
@@ -80,14 +80,14 @@ public class RevisionPair implements Serializable{
 	/**
 	 * Returns the text "around the given template" and returns the corresponding
 	 * text in the other pair part of the RevisionPair.
-	 *
+	 * <p>
 	 * Currently, this is done section-based. On TextPairPart contains a section
 	 * with a template and the other contains the corresponding section
 	 * after the template has been deleted (in deleteTemplate mode) or before
 	 * it has been added (in addTemplate mode).
-	 *
+	 * <p>
 	 * Note that this only makes sense for inline- or section-templates.
-	 *
+	 * <p>
 	 * The section-matching is currently done simply by matching section titles.
 	 * If the title has changed, no match will be found.
 	 *
@@ -97,12 +97,12 @@ public class RevisionPair implements Serializable{
 	 *         after-revision
 	 */
 	public List<TextPair> getInlineTextPairs(boolean markTemplates) {
-		List<TextPair> pairList = new ArrayList<TextPair>();
+		List<TextPair> pairList = new ArrayList<>();
 
 		try {
 			//extract sections
-			List<ExtractedSection> beforeSections=null;
-			List<ExtractedSection> afterSections=null;
+			List<ExtractedSection> beforeSections;
+			List<ExtractedSection> afterSections;
 			if(markTemplates){
 				//add inline marker for the template
 				beforeSections = ParseUtils.getSections(before.getRevisionText(), before.getRevisionID() + "",before.getRevisionID(), Arrays.asList(new String[]{template}));

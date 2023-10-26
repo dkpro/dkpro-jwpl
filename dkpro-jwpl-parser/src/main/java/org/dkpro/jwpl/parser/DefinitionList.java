@@ -26,16 +26,16 @@ import java.util.List;
 public class DefinitionList extends ContentContainer{
 	
 	private ContentElement definedTerm;
-	private List<ContentElement> definitions;
+	private final List<ContentElement> definitions;
 	
 	public DefinitionList(){
-		this.ccl = new ArrayList<Content>();
+		this.ccl = new ArrayList<>();
 		this.definedTerm = null;
-		this.definitions = new ArrayList<ContentElement>();
+		this.definitions = new ArrayList<>();
 	}
 	
 	public DefinitionList( ContentElement definedTerm, List<ContentElement> definitions){
-		this.ccl = new ArrayList<Content>();
+		this.ccl = new ArrayList<>();
 		this.definedTerm = definedTerm;
 		this.definitions = definitions;
 		ccl.add( definedTerm );
@@ -46,8 +46,8 @@ public class DefinitionList extends ContentContainer{
 	 * content = definedTerm[+definition]*
 	 */
 	public DefinitionList( List<ContentElement> content ){
-		this.ccl = new ArrayList<Content>( content );
-		this.definitions = new ArrayList<ContentElement>();
+		this.ccl = new ArrayList<>(content);
+		this.definitions = new ArrayList<>();
 		
 		if( content.size()>0 ){
 			this.definedTerm = content.get(0);
@@ -107,6 +107,6 @@ public class DefinitionList extends ContentContainer{
 	}
 	
 	public List<ContentElement> getDefinitions(){
-		return new ArrayList<ContentElement>( definitions );
+		return new ArrayList<>(definitions);
 	}
 }

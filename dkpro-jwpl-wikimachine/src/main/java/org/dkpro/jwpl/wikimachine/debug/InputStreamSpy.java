@@ -23,8 +23,8 @@ import java.io.OutputStream;
 
 public class InputStreamSpy extends InputStream {
 
-	private InputStream iStream;
-	private OutputStream oStream;
+	private final InputStream iStream;
+	private final OutputStream oStream;
 	
 	public InputStreamSpy(InputStream iStream, OutputStream oStream){
 		this.iStream = iStream;

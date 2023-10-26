@@ -20,7 +20,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.data.codec;
 /**
  * The RevisionCodecData class contains all necessary information to encode the
  * diff information.
- *
+ * <p>
  * Block C 3bit operation value Block S start position Block E length (end
  * position = start position + length) Block B block id Block L length of the t
  * block Block T block containing L bytes data

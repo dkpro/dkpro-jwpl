@@ -42,19 +42,19 @@ public class ChronoStorage
 	private ChronoStorageBlock last;
 
 	/** Map containing the chrono storage block and their index keys */
-	private Map<Integer, ChronoStorageBlock> storage;
+	private final Map<Integer, ChronoStorageBlock> storage;
 
 	/** Reverse mapping */
-	private Map<Integer, Integer> mapping;
+	private final Map<Integer, Integer> mapping;
 
 	/**
 	 * Map containing reference to the chrono full revisions (Mapping of
 	 * revision counter and their full revision blocks)
 	 */
-	private Map<Integer, ChronoFullRevision> fullRevStorage;
+	private final Map<Integer, ChronoFullRevision> fullRevStorage;
 
 	/** Reference to the first chrono full revision */
-	private ChronoFullRevision firstCFR;
+	private final ChronoFullRevision firstCFR;
 
 	/** Size of the chrono storage */
 	private long size;
@@ -84,7 +84,7 @@ public class ChronoStorage
 		this.revisionIndex = 0;
 		this.last = null;
 		this.first = null;
-		this.storage = new HashMap<Integer, ChronoStorageBlock>();
+		this.storage = new HashMap<>();
 
 		this.mapping = mapping;
 		this.fullRevStorage = fullRevStorage;

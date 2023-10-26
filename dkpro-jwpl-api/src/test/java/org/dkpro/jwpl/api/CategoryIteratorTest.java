@@ -50,13 +50,9 @@ public class CategoryIteratorTest extends BaseJWPLTest {
 	public void test_categoryIteratorTest() {
 		int nrOfPages = 0;
 
-		Iterator<Category> catIter = wiki.getCategories().iterator();
-
-		while (catIter.hasNext()) {
-			@SuppressWarnings("unused")
-			Category c = catIter.next();
-			nrOfPages++;
-		}
+    for (Category c : wiki.getCategories()) {
+      nrOfPages++;
+    }
 		assertEquals("Number of categories == 17", 17, nrOfPages);
 
 	}

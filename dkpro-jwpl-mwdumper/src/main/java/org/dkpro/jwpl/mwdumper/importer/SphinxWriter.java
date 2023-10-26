@@ -33,8 +33,8 @@ import java.util.Calendar;
  * Generates XML stream suitable for the Sphinx search engine's xmlpipe input.
  */
 public class SphinxWriter implements DumpWriter {
-	protected OutputStream stream;
-	protected XmlWriter writer;
+	protected final OutputStream stream;
+	protected final XmlWriter writer;
 	protected Page _page;
 	protected Revision _rev;
 	

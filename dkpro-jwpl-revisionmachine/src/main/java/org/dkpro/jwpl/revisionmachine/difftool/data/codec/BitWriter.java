@@ -34,7 +34,7 @@ public class BitWriter
 {
 
 	/** Output buffer */
-	private ByteArrayOutputStream stream;
+	private final ByteArrayOutputStream stream;
 
 	/** Buffer to store the bits */
 	private int buffer;

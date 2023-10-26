@@ -40,7 +40,7 @@ public class T6_HelperMethods {
         // Create a new German wikipedia.
         Wikipedia wiki = new Wikipedia(dbConfig);
 
-        Set<String> uniqueArticleTitles = new TreeSet<String>();
+        Set<String> uniqueArticleTitles = new TreeSet<>();
         for (Title title : wiki.getTitles()) {
             uniqueArticleTitles.add(title.getPlainTitle());
         }

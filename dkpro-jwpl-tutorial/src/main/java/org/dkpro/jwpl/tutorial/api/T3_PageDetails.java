@@ -28,7 +28,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 
 /**
  * Tutorial 3
- *
+ * <p>
  * Even more things to do with a Wikipedia page.
  *
  *

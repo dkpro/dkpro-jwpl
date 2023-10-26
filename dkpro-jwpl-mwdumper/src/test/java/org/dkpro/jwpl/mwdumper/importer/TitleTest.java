@@ -64,9 +64,9 @@ public class TitleTest extends TestCase {
 	}
 
 	private class TestItem {
-		public int ns;
-		public String text;
-		public String prefixed;
+		public final int ns;
+		public final String text;
+		public final String prefixed;
 		TestItem(int ns, String text, String prefixed) {
 			this.ns = ns;
 			this.text = text;
@@ -78,7 +78,7 @@ public class TitleTest extends TestCase {
 		}
 	}
 
-	TestItem[] tests = {
+	final TestItem[] tests = {
 		new TestItem(0, "Page title", "Page title"),
 		new TestItem(1, "Page title", "Talk:Page title"),
 		new TestItem(-1, "Recentchanges", "Special:Recentchanges"),

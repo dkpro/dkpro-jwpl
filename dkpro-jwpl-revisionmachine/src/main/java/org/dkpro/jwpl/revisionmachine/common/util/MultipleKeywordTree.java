@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * This class represents a keyword tree and is used to process or to search a
  * character sequence.
- *
+ * <p>
  * This keyword tree can be used for overlapping keywords.
  *
  *
@@ -36,22 +36,22 @@ public class MultipleKeywordTree<V>
 {
 
 	/** Reference to the root */
-	private LetterNode<V> root;
+	private final LetterNode<V> root;
 
 	/** List of current nodes */
 	private List<LetterNode<V>> currentList;
 
 	/** List of successor nodes */
-	private List<LetterNode<V>> hits;
+	private final List<LetterNode<V>> hits;
 
 	/**
 	 * (Constructor) Creates an empty MultipleKeywordTree object.
 	 */
 	public MultipleKeywordTree()
 	{
-		root = new LetterNode<V>();
-		this.currentList = new ArrayList<LetterNode<V>>();
-		this.hits = new ArrayList<LetterNode<V>>();
+		root = new LetterNode<>();
+		this.currentList = new ArrayList<>();
+		this.hits = new ArrayList<>();
 		this.currentList.add(root);
 		reset();
 	}
@@ -72,7 +72,7 @@ public class MultipleKeywordTree<V>
 	/**
 	 * Checks whether the character is related to one of the current nodes (the
 	 * root node is always a current node).
-	 *
+	 * <p>
 	 * After the comparison the list of current nodes will be replaced.
 	 *
 	 * @param c
@@ -82,7 +82,7 @@ public class MultipleKeywordTree<V>
 	public boolean check(final char c)
 	{
 
-		List<LetterNode<V>> newList = new ArrayList<LetterNode<V>>();
+		List<LetterNode<V>> newList = new ArrayList<>();
 		newList.add(root);
 
 		LetterNode<V> current;

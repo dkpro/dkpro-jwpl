@@ -19,6 +19,7 @@ package org.dkpro.jwpl.wikimachine.factory;
 
 import java.io.File;
 
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
@@ -58,17 +59,16 @@ public class SpringFactory implements IEnvironmentFactory {
 
 	private static final String DUMPTABLEINPUTSTREAM_BEAN = "dumpTableInputStream";
 
-	private static XmlBeanFactory factory = getBeanFactory();
+	private static final BeanFactory factory = getBeanFactory();
 
 	private static final SpringFactory instance = new SpringFactory();
 
-	private static XmlBeanFactory getBeanFactory() {
+	private static BeanFactory getBeanFactory() {
 		File outerContextFile = new File(OUTER_APPLICATION_CONTEXT);
 		boolean outerContextFileProper = outerContextFile.exists()
 				&& outerContextFile.isFile() && outerContextFile.canRead();
-		Resource res = (outerContextFileProper) ? new FileSystemResource(
-				outerContextFile) : new ClassPathResource(
-				INNER_APPLICATION_CONTEXT);
+		Resource res = (outerContextFileProper) ? new FileSystemResource(outerContextFile) :
+						new ClassPathResource(INNER_APPLICATION_CONTEXT);
 		return new XmlBeanFactory(res);
 	}
 
@@ -95,23 +95,28 @@ public class SpringFactory implements IEnvironmentFactory {
 				.getBean(DUMPVERSIONPROCESSOR_BEAN);
 	}
 
+	@Override
 	public IDumpVersion getDumpVersion() {
 		return (IDumpVersion) factory.getBean(DUMPVERSION_BEAN);
 	}
 
+	@Override
 	public DumpTableInputStream getDumpTableInputStream() {
 		return (DumpTableInputStream) factory
 				.getBean(DUMPTABLEINPUTSTREAM_BEAN);
 	}
 
+	@Override
 	public PageParser getPageParser() {
 		return (PageParser) factory.getBean(PAGEPARSER_BEAN);
 	}
 
+	@Override
 	public RevisionParser getRevisionParser() {
 		return (RevisionParser) factory.getBean(REVISIONPARSER_BEAN);
 	}
 
+	@Override
 	public TextParser getTextParser() {
 		return (TextParser) factory.getBean(TEXTPARSER_BEAN);
 	}

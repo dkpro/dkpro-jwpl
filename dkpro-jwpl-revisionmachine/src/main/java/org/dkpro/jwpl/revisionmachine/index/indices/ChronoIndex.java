@@ -84,7 +84,7 @@ public class ChronoIndex
 			}
 
 			this.articleID = articleID;
-			this.list = new ArrayList<ChronoIndexData>();
+			this.list = new ArrayList<>();
 		}
 
 		this.list.add(new ChronoIndexData(timestamp, revisionCounter));
@@ -149,8 +149,8 @@ public class ChronoIndex
 			if (mapping.length() > 0) {
 
 				boolean sql = !insertStatement.isEmpty();
-				String val = (sql?"(":"") + articleID + (sql?",'":",\"") + mapping.toString()
-						+ (sql?"','":"\",\"") + reverseMapping.toString() +(sql?"')":"\"");
+				String val = (sql?"(":"") + articleID + (sql?",'":",\"") + mapping
+						+ (sql?"','":"\",\"") + reverseMapping +(sql?"')":"\"");
 
 				if (buffer.length() + val.length() >= MAX_ALLOWED_PACKET) {
 					storeBuffer();

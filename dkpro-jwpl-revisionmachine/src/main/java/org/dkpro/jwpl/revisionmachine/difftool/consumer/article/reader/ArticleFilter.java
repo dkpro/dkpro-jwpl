@@ -46,7 +46,7 @@ public class ArticleFilter
 
 	private Set<String> prefixesToReject;
 
-	private Collection<Integer> allowedNamespaces;
+	private final Collection<Integer> allowedNamespaces;
 
 	private boolean excludeMainNamespace;
 
@@ -119,8 +119,8 @@ public class ArticleFilter
 					.println("Cannot use whitespace filter without initializing the namespace-prefix map for the current Wikipedia language version. DISABLING FILTER.");
 		}
 		else {
-			prefixesToAllow = new HashSet<String>();
-			prefixesToReject = new HashSet<String>();
+			prefixesToAllow = new HashSet<>();
+			prefixesToReject = new HashSet<>();
 
 			for (Entry<Integer, String> namespace : namespaceMap.entrySet()) {
 				if (allowedNamespaces.contains(namespace.getKey())) {

@@ -68,7 +68,7 @@ public class SrcPosRangeChecker {
 	}
 	
 	private static void checkRange( SectionContent s ){
-		List<SrcSpan> eil = new ArrayList<SrcSpan>();
+		List<SrcSpan> eil = new ArrayList<>();
 		
 		if( s.getTitleElement()!= null ){
 			checkRange( s.getTitleElement() );
@@ -112,7 +112,7 @@ public class SrcPosRangeChecker {
 	}
 
 	private static void checkRange( Table t ){
-		List<SrcSpan> eil = new ArrayList<SrcSpan>();	
+		List<SrcSpan> eil = new ArrayList<>();
 		
 		for( int i=0; i<t.nrOfTableElements(); i++){
 			TableElement te = t.getTableElement(i);
@@ -124,7 +124,7 @@ public class SrcPosRangeChecker {
 	}
 	
 	private static void checkRange( TableElement te ){
-		List<SrcSpan> eil = new ArrayList<SrcSpan>();
+		List<SrcSpan> eil = new ArrayList<>();
 		
 		for( Section s: te.getSubSections() ){
 			if( s.getClass() == SectionContent.class )
@@ -137,7 +137,7 @@ public class SrcPosRangeChecker {
 	}
 	
 	private static void checkRange( ContentElement ce ){
-		List<SrcSpan> eil = new ArrayList<SrcSpan>();	
+		List<SrcSpan> eil = new ArrayList<>();
 		for( Span s: ce.getFormatSpans( FormatType.BOLD ) ) eil.add( s.getSrcSpan() );
 		for( Span s: ce.getFormatSpans( FormatType.ITALIC ) ) eil.add( s.getSrcSpan() );
 		for( Span s: ce.getFormatSpans( FormatType.MATH ) ) eil.add( s.getSrcSpan() );

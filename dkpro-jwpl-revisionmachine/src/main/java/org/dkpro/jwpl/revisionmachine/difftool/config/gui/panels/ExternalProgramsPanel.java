@@ -17,9 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -39,7 +36,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.PanelKeys;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the use of external programs.
  *
@@ -105,34 +102,24 @@ public class ExternalProgramsPanel
 		sevenZipSearchButton = new JButton("Search");
 		sevenZipSearchButton.setBounds(480, 45, 80, 25);
 
-		sevenZipSearchButton.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
+		sevenZipSearchButton.addActionListener(e -> {
 
-				JFileChooser fc = new JFileChooser();
-				if (fc.showOpenDialog(new JPanel()) == JFileChooser.APPROVE_OPTION) {
-					sevenZipPathField.setText(fc.getSelectedFile().getPath());
-				}
-			}
-		});
+      JFileChooser fc = new JFileChooser();
+      if (fc.showOpenDialog(new JPanel()) == JFileChooser.APPROVE_OPTION) {
+        sevenZipPathField.setText(fc.getSelectedFile().getPath());
+      }
+    });
 
 		this.add(sevenZipSearchButton);
 
-		sevenZipEnableBox.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
-			{
-				boolean flag = !controller.is7ZipEnabled();
-				controller.setEnable7Zip(flag);
+		sevenZipEnableBox.addActionListener(e -> {
+      boolean flag = !controller.is7ZipEnabled();
+      controller.setEnable7Zip(flag);
 
-				sevenZipLabel.setEnabled(flag);
-				sevenZipPathField.setEnabled(flag);
-				sevenZipSearchButton.setEnabled(flag);
-			}
-		});
+      sevenZipLabel.setEnabled(flag);
+      sevenZipPathField.setEnabled(flag);
+      sevenZipSearchButton.setEnabled(flag);
+    });
 
 	}
 

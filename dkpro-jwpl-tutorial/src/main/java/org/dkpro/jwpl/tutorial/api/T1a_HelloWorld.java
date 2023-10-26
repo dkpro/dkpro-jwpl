@@ -25,10 +25,10 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 
 /**
  * Tutorial 1a
- *
+ * <p>
  * Get the text of a wikipedia article.
  * The text will be formatted with MediaWiki markup.
- *
+ * <p>
  * Throws an exception, if no page with the given title exists.
  *
  *

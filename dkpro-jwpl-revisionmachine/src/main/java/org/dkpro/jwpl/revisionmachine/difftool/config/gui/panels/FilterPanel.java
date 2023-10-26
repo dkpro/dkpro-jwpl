@@ -18,8 +18,6 @@
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Set;
 
 import javax.swing.JButton;
@@ -36,7 +34,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.PanelKeys;
 
 /**
  * Panel class of the ConfigurationTool
- *
+ * <p>
  * This panel contains all components for setting configuration parameters
  * related to the filtering.
  */
@@ -95,35 +93,23 @@ public class FilterPanel
 	private void initButtons()
 	{
 		JButton selectAll = new JButton("Select all");
-		selectAll.addActionListener(new ActionListener()
-		{
+		selectAll.addActionListener(arg0 -> {
+      for (int i = 0; i < 22; i++) {
+        namespaces.getModel().setValueAt(true, i, 1);
+      }
 
-			@Override
-			public void actionPerformed(ActionEvent arg0)
-			{
-				for (int i = 0; i < 22; i++) {
-					namespaces.getModel().setValueAt(true, i, 1);
-				}
-
-			}
-		});
+    });
 		selectAll.setBounds(380, 10, 120, 25);
 		this.add(selectAll);
 
 		JButton unselectAll = new JButton("Unselect all");
 
-		unselectAll.addActionListener(new ActionListener()
-		{
+		unselectAll.addActionListener(e -> {
+      for (int i = 0; i < 22; i++) {
+        namespaces.getModel().setValueAt(false, i, 1);
+      }
 
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				for (int i = 0; i < 22; i++) {
-					namespaces.getModel().setValueAt(false, i, 1);
-				}
-
-			}
-		});
+    });
 
 		unselectAll.setBounds(380, 40, 120, 25);
 		this.add(unselectAll);

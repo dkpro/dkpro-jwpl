@@ -20,7 +20,7 @@ package org.dkpro.jwpl.util.distance;
 public class LevenshteinStringDistance implements StringDistance {
 
     public double distance(String s, String t) {
-        int d[][]; // matrix
+        int[][] d; // matrix
         int n; // length of s
         int m; // length of t
         int i; // iterates through s

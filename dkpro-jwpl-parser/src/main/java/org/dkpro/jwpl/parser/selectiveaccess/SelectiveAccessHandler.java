@@ -48,13 +48,13 @@ import org.dkpro.jwpl.parser.Table;
  */
 public class SelectiveAccessHandler {
 
-	enum CIT{ TEXT, BOLD, ITALIC, LINK };
+	enum CIT{ TEXT, BOLD, ITALIC, LINK }
 
-	enum SIT{ SUBS, TITLE, TABLE, DEFLIST, NESTLIST, PARA };
-	
-	protected enum SectionType{ DEFAULT_SECTION, SECTION_LEVEL, USER_SECTION };
-	
-	private EnumMap<CIT, Boolean> firstParagraphHandling;
+  enum SIT{ SUBS, TITLE, TABLE, DEFLIST, NESTLIST, PARA }
+
+  protected enum SectionType{ DEFAULT_SECTION, SECTION_LEVEL, USER_SECTION }
+
+  private EnumMap<CIT, Boolean> firstParagraphHandling;
 	private EnumMap<CIT, Boolean> pageHandling;
 	private Map<String, EnumMap<SIT, EnumMap<CIT, Boolean>> > sectionHandling;
 	private int levelModifier = 0;
@@ -74,7 +74,7 @@ public class SelectiveAccessHandler {
 	}
 	
 	public static EnumMap<CIT, Boolean> buildCITMap( boolean text, boolean bold, boolean italic, boolean link ){
-		EnumMap<CIT, Boolean> result = new EnumMap<CIT, Boolean>( CIT.class );
+		EnumMap<CIT, Boolean> result = new EnumMap<>(CIT.class);
 		result.put( CIT.TEXT, text );
 		result.put( CIT.BOLD, bold );
 		result.put( CIT.ITALIC, italic );
@@ -83,7 +83,7 @@ public class SelectiveAccessHandler {
 	}
 	
 	public static EnumMap<SIT, EnumMap<CIT, Boolean>> buildSITMap( EnumMap<CIT, Boolean> subs, EnumMap<CIT, Boolean> title, EnumMap<CIT, Boolean> table, EnumMap<CIT, Boolean> deflist, EnumMap<CIT, Boolean> nestedlist, EnumMap<CIT, Boolean> paragraph ){
-		EnumMap<SIT, EnumMap<CIT, Boolean>> result = new EnumMap<SIT, EnumMap<CIT, Boolean>>( SIT.class );
+		EnumMap<SIT, EnumMap<CIT, Boolean>> result = new EnumMap<>(SIT.class);
 		result.put( SIT.SUBS, subs );
 		result.put( SIT.TITLE, title );
 		result.put( SIT.TABLE, table );
@@ -132,7 +132,7 @@ public class SelectiveAccessHandler {
 	 * adds section handling for a specila section name...
 	 */
 	public void addSectionHandling( String name, EnumMap<SIT, EnumMap<CIT, Boolean>> sh ){
-		sectionHandling.put( SectionType.USER_SECTION.toString() + name.toUpperCase(), sh);
+		sectionHandling.put( SectionType.USER_SECTION + name.toUpperCase(), sh);
 	}
 	
 	/**
@@ -148,7 +148,7 @@ public class SelectiveAccessHandler {
 	public String getSelectionInfo(){
 		StringBuilder result = new StringBuilder();
 		
-		result.append( "SelectionInfo: "+this.getClass().toString() +"\n" );
+		result.append( "SelectionInfo: "+ this.getClass() +"\n" );
 		result.append( "Page:"+ CITInfo( pageHandling )+"\n" );
 		result.append( "FirstParagraph:" +CITInfo( firstParagraphHandling )+"\n");
 		for( String key: sectionHandling.keySet() ){
@@ -266,7 +266,7 @@ public class SelectiveAccessHandler {
 	private void handleSection( Section s, StringBuilder sb ){
 		EnumMap<SIT, EnumMap<CIT, Boolean>> hp = null;
 		
-		if( s.getTitle()!= null ) hp = sectionHandling.get( SectionType.USER_SECTION.toString()+s.getTitle().toUpperCase() );
+		if( s.getTitle()!= null ) hp = sectionHandling.get( SectionType.USER_SECTION +s.getTitle().toUpperCase() );
 		if( hp == null ) hp = sectionHandling.get(SectionType.SECTION_LEVEL.toString()+(s.getLevel()-levelModifier));
 		if( hp == null ) hp = sectionHandling.get(SectionType.DEFAULT_SECTION.toString());
 		if( hp == null ){
@@ -340,7 +340,7 @@ public class SelectiveAccessHandler {
 	private void loadConfig(){
 		firstParagraphHandling = null;
 		pageHandling = null;
-		sectionHandling = new HashMap<String, EnumMap<SIT, EnumMap<CIT, Boolean>> >();
+		sectionHandling = new HashMap<>();
 		setDefaultSectionHandling( buildSITMap( buildCITMap( false, false, false, false ), null, null, null, null, null ) );
 	}
 	
@@ -349,7 +349,7 @@ public class SelectiveAccessHandler {
 	 */
 	public void loadConfig( String XMLFile ){
 		try{
-			sectionHandling = new HashMap<String, EnumMap<SIT, EnumMap<CIT, Boolean>> >();
+			sectionHandling = new HashMap<>();
 			SAXParserFactory factory = SAXParserFactory.newInstance();
 		    factory.setNamespaceAware(true);
 		    SAXParser sp = factory.newSAXParser();
@@ -377,7 +377,7 @@ public class SelectiveAccessHandler {
 		for( SIT key: sem.keySet() ){
 			result.append( "<"+key.toString()+">");
 			result.append( XMLCIT( sem.get( key ) ) );
-			result.append( "</"+key.toString()+">\n");
+			result.append( "</"+ key +">\n");
 		}
 		return result.toString();
 	}

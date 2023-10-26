@@ -67,7 +67,7 @@ public class Indexer
 	private ArticleIndexData info;
 
 	/** List of article index information related to the currently used article */
-	private List<ArticleIndexData> infoList;
+	private final List<ArticleIndexData> infoList;
 
 	/** Reference to the article index */
 	private ArticleIndex articleIndex=null;
@@ -116,7 +116,7 @@ public class Indexer
 			break;
 		}
 
-		this.infoList = new ArrayList<ArticleIndexData>();
+		this.infoList = new ArrayList<>();
 
 		switch (config.getOutputType()) {
 		case DATABASE:
@@ -177,15 +177,11 @@ public class Indexer
 							infoList);
 					send();
 				}
-				catch (SQLException sql) {
+				catch (SQLException | IOException sql) {
 					sql.printStackTrace();
 					throw new WikiApiException(sql);
 				}
-				catch (IOException sql) {
-					sql.printStackTrace();
-					throw new WikiApiException(sql);
-				}
-			}
+      }
 
 			if (revisionCounter != 1) {
 				System.err.println("WARNING : ArticleID (" + articleID
@@ -272,13 +268,9 @@ public class Indexer
 			}
 
 		}
-		catch (SQLException sql) {
+		catch (SQLException | IOException sql) {
 			sql.printStackTrace();
 			throw new WikiApiException(sql);
 		}
-		catch (IOException sql) {
-			sql.printStackTrace();
-			throw new WikiApiException(sql);
-		}
-	}
+  }
 }

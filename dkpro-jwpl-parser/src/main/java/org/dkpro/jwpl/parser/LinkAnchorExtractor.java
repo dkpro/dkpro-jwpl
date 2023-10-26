@@ -32,7 +32,7 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 public class LinkAnchorExtractor
 {
 
-	private MediaWikiParser parser;
+	private final MediaWikiParser parser;
 
 	public LinkAnchorExtractor(){
         MediaWikiParserFactory pf = new MediaWikiParserFactory(Language.english);
@@ -59,7 +59,7 @@ public class LinkAnchorExtractor
 	public Set<String> getInlinkAnchors(Page page)
 		throws WikiTitleParsingException
 	{
-		Set<String> inAnchors = new HashSet<String>();
+		Set<String> inAnchors = new HashSet<>();
 		for (Page p : page.getInlinks()) {
 			ParsedPage pp = parser.parse(p.getText());
 			if (pp == null) {
@@ -90,7 +90,7 @@ public class LinkAnchorExtractor
 	public Map<String, Set<String>> getOutlinkAnchors(Page page)
 		throws WikiTitleParsingException
 	{
-		Map<String, Set<String>> outAnchors = new HashMap<String, Set<String>>();
+		Map<String, Set<String>> outAnchors = new HashMap<>();
 		ParsedPage pp = parser.parse(page.getText());
 		if (pp == null) {
 			return outAnchors;
@@ -113,7 +113,7 @@ public class LinkAnchorExtractor
 						anchors = outAnchors.get(targetTitle);
 					}
 					else {
-						anchors = new HashSet<String>();
+						anchors = new HashSet<>();
 					}
 					anchors.add(anchorText);
 					outAnchors.put(targetTitle, anchors);

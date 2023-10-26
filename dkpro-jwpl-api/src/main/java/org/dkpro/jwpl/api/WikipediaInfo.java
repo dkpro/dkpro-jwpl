@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,8 +74,8 @@ public class WikipediaInfo {
         pages = pPages;
         averageFanOut = -1.0;   // lazy initialization => it is computed and stored when it is accessed
 
-        degreeDistribution = new HashMap<Integer,Integer>();
-        categorizedArticleSet = new HashSet<Integer>();
+        degreeDistribution = new HashMap<>();
+        categorizedArticleSet = new HashSet<>();
 
         // get number of pages
         numberOfPages = 0;
@@ -96,7 +95,7 @@ public class WikipediaInfo {
      */
     private double computeAverageFanOut(Iterable<Page> pages) {
 
-        Set<Integer> pageIDs = new HashSet<Integer>();
+        Set<Integer> pageIDs = new HashSet<>();
         while (pages.iterator().hasNext()) {
             pageIDs.add(pages.iterator().next().getPageId());
         }
@@ -110,17 +109,15 @@ public class WikipediaInfo {
 
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Iterator results = session.createQuery("select page.outLinks, page.pageId from Page as page").list().iterator();
-        while (results.hasNext()) {
-            Object[] row = (Object[]) results.next();
+        for (Object o : session.createQuery("select page.outLinks, page.pageId from Page as page").list()) {
+            Object[] row = (Object[]) o;
             Set outLinks = (Set) row[0];
             Integer pageId = (Integer) row[1];
 
             // if the current page ID is in the desired result set => add outlink value
             if (pageIDs.contains(pageId)) {
-                fanOutCounter += outLinks.size();
+              fanOutCounter += outLinks.size();
             }
-
         }
         session.getTransaction().commit();
 
@@ -153,7 +150,7 @@ public class WikipediaInfo {
      * @throws WikiPageNotFoundException
      */
     private Map<Integer,Set<Integer>> getCategoryArticleMap(Wikipedia pWiki, Set<Integer> pNodes) throws WikiPageNotFoundException {
-        Map<Integer,Set<Integer>> categoryArticleMap = new HashMap<Integer,Set<Integer>>();
+        Map<Integer,Set<Integer>> categoryArticleMap = new HashMap<>();
 
         int progress = 0;
         for (int node : pNodes) {
@@ -162,7 +159,7 @@ public class WikipediaInfo {
 
             Category cat = pWiki.getCategory(node);
             if (cat != null) {
-                Set<Integer> pages = new HashSet<Integer>(cat.__getPages());
+                Set<Integer> pages = new HashSet<>(cat.__getPages());
                 categoryArticleMap.put(node, pages);
             }
             else {
@@ -214,7 +211,7 @@ public class WikipediaInfo {
      * @throws WikiPageNotFoundException
      */
     private int getArticlesWithOverlappingCategories(Wikipedia pWiki, CategoryGraph pGraph) throws WikiPageNotFoundException {
-        Set<Integer> overlappingArticles = new HashSet<Integer>();
+        Set<Integer> overlappingArticles = new HashSet<>();
 
         // iterate over all node pairs
         Set<Integer> nodes = pGraph.getGraph().vertexSet();
@@ -316,8 +313,8 @@ public class WikipediaInfo {
      * @throws WikiPageNotFoundException
      */
     private void iterateCategoriesGetArticles(Wikipedia pWiki, CategoryGraph catGraph) throws WikiPageNotFoundException {
-        Map<Integer,Integer> localDegreeDistribution = new HashMap<Integer,Integer>();
-        Set<Integer> localCategorizedArticleSet = new HashSet<Integer>();
+        Map<Integer,Integer> localDegreeDistribution = new HashMap<>();
+        Set<Integer> localCategorizedArticleSet = new HashSet<>();
         Set<Integer> categoryNodes = catGraph.getGraph().vertexSet();
         // iterate over all categories
         int progress = 0;
@@ -328,7 +325,7 @@ public class WikipediaInfo {
             // get the category
             Category cat = pWiki.getCategory(node);
             if (cat != null) {
-                Set<Integer> pages = new HashSet<Integer>(cat.__getPages());
+                Set<Integer> pages = new HashSet<>(cat.__getPages());
 
                 // update degree distribution map
                 int numberOfArticles = pages.size();
@@ -368,10 +365,10 @@ public class WikipediaInfo {
         int shortestPathLengthSum = 0;
 
         // a set of nodes that have already been expanded -> algorithm should expand nodes monotonically and not go back
-        Set<Integer> alreadyExpanded = new HashSet<Integer>();
+        Set<Integer> alreadyExpanded = new HashSet<>();
 
         // a queue holding the newly discovered nodes with their and their distance to the start node
-        List<int[]> queue = new ArrayList<int[]>();
+        List<int[]> queue = new ArrayList<>();
 
         // initialize queue with start node
         int[] innerList = new int[2];

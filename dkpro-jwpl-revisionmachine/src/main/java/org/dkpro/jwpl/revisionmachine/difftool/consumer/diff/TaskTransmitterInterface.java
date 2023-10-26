@@ -68,6 +68,6 @@ public interface TaskTransmitterInterface
 	 * @throws IOException
 	 * @throws SQLException
 	 */
-	public void close() throws IOException, SQLException;
+  void close() throws IOException, SQLException;
 
 }

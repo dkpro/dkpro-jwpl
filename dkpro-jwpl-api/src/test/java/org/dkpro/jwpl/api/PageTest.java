@@ -416,7 +416,7 @@ public class PageTest extends BaseJWPLTest {
 		Page page2 =  fetchPage(A_FAMOUS_PAGE);
 		assertNotNull(page2);
 
-		List<Page> pages = new ArrayList<Page>();
+		List<Page> pages = new ArrayList<>();
 		pages.add(page1);
 		pages.add(page2);
 		pages.sort(new PageTitleComparator());
@@ -433,7 +433,7 @@ public class PageTest extends BaseJWPLTest {
 		Page page2 = fetchPage("Unconnected_page");
 		assertNotNull(page2);
 
-		List<Page> pages = new ArrayList<Page>();
+		List<Page> pages = new ArrayList<>();
 		pages.add(page1);
 		pages.add(page2);
 		pages.sort(new PageTitleComparator());

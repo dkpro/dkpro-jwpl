@@ -31,7 +31,7 @@ public class ArchiveManager
 {
 
 	/** List of available archives */
-	private List<ArchiveDescription> archives;
+	private final List<ArchiveDescription> archives;
 
 	/**
 	 * (Constructor) Creates the ArchiveManager.

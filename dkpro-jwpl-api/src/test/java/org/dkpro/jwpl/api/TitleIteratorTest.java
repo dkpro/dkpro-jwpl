@@ -21,8 +21,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.Iterator;
-
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -51,12 +49,10 @@ public class TitleIteratorTest extends BaseJWPLTest{
         int nrOfTitles = 0;
 		Iterable<Title> iterable = wiki.getTitles();
 		assertNotNull(iterable);
-		Iterator<Title> titleIter = iterable.iterator();
-		while (titleIter.hasNext()) {
-			Title t = titleIter.next();
-			assertNotNull(t);
-			nrOfTitles++;
-		}
+    for (Title t : iterable) {
+      assertNotNull(t);
+      nrOfTitles++;
+    }
 		assertEquals("Number of titles == 39", 39, nrOfTitles);
 
 	}

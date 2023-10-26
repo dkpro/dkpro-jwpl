@@ -47,7 +47,7 @@ public interface RevisionEncoderInterface
 	 * @throws EncodingException
 	 *             if the encoding process fails
 	 */
-	public String encodeDiff(final RevisionCodecData codecData, final Diff diff)
+  String encodeDiff(final RevisionCodecData codecData, final Diff diff)
 		throws UnsupportedEncodingException, EncodingException;
 
 	/**
@@ -66,7 +66,7 @@ public interface RevisionEncoderInterface
 	 * @throws EncodingException
 	 *             if the encoding process fails
 	 */
-	public byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
+  byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
 		throws UnsupportedEncodingException, EncodingException;
 
 }

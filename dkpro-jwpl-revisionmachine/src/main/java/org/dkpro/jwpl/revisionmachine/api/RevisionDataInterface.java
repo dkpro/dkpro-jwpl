@@ -33,28 +33,28 @@ public interface RevisionDataInterface
 	 *
 	 * @return ID of the article
 	 */
-	public int getArticleID();
+  int getArticleID();
 
 	/**
 	 * Returns the ID of the revision.
 	 *
 	 * @return ID of the revision
 	 */
-	public int getRevisionID();
+  int getRevisionID();
 
 	/**
 	 * Returns the timestamp
 	 *
 	 * @return timestamp
 	 */
-	public Timestamp getTimeStamp();
+  Timestamp getTimeStamp();
 
 	/**
 	 * Returns the revision counter
 	 *
 	 * @return revision counter
 	 */
-	public int getRevisionCounter();
+  int getRevisionCounter();
 
 	/**
 	 * Returns the user comment for this revision
@@ -62,14 +62,14 @@ public interface RevisionDataInterface
 	 *
 	 * @return the user comment for this revision
 	 */
-	public String getComment();
+  String getComment();
 
 	/**
 	 * Returns true if revision is a minor revision.
 	 *
 	 * @return true if revision is a minor revision, false else
 	 */
-	public boolean isMinor();
+  boolean isMinor();
 
 	/**
 	 * Returns the contributorID of the revision contributor
@@ -77,20 +77,20 @@ public interface RevisionDataInterface
 	 *
 	 * @return the contributorID of the revision contributor or null, if user does not have an id (= is not registered)
 	 */
-	public Integer getContributorId();
+  Integer getContributorId();
 
 	/**
 	 * Returns the contributorName of the revision contributor
 	 *
 	 * @return the contributorName of the revision contributor
 	 */
-	public String getContributorName();
+  String getContributorName();
 
 	/**
 	 * Returns true, if the contributor is a registered user
 	 *
 	 * @return true, if the contributor is a registered user, false else
 	 */
-	public boolean contributorIsRegistered();
+  boolean contributorIsRegistered();
 
 }

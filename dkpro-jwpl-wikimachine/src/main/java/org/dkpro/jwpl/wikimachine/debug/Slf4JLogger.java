@@ -36,7 +36,7 @@ public class Slf4JLogger extends AbstractLogger {
             logger.info((String) message);
         } else {
             // Choosing a different level and pre-text here as this might not have been intended.
-            logger.warn("Logging (): {}", message.getClass(), message.toString());
+            logger.warn("Logging {}: {}", message.getClass(), message);
         }
     }
 }

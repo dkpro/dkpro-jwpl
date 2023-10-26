@@ -36,11 +36,12 @@ public class CycleHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    Wikipedia wiki;
-    CategoryGraph categoryGraph;
+    final Wikipedia wiki;
+    final CategoryGraph categoryGraph;
 
-    private enum Color {white, grey, black};
-    private Map<Integer, Color> colorMap;
+    private enum Color {white, grey, black}
+
+  private Map<Integer, Color> colorMap;
 
     /**
      * Creates a cycle handler object.
@@ -252,7 +253,7 @@ public class CycleHandler {
      * @throws WikiApiException Thrown if errors occurred.
      */
     public void removeCycles() throws WikiApiException {
-        DefaultEdge edge = null;
+        DefaultEdge edge;
         while ((edge = findCycle()) != null) {
             Category sourceCat = wiki.getCategory(categoryGraph.getGraph().getEdgeSource(edge));
             Category targetCat = wiki.getCategory(categoryGraph.getGraph().getEdgeTarget(edge));
@@ -264,7 +265,7 @@ public class CycleHandler {
     }
 
     private DefaultEdge findCycle() {
-        colorMap = new HashMap<Integer, Color>();
+        colorMap = new HashMap<>();
         // initialize all nodes with white
         for (int node : categoryGraph.getGraph().vertexSet()) {
             colorMap.put(node, Color.white);

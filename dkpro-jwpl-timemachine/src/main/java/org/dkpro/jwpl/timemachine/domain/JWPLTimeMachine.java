@@ -83,8 +83,8 @@ public class JWPLTimeMachine {
 						generator.start();
 
 						logger.log("End of the application. Working time = "
-								+ String.valueOf(System.currentTimeMillis()
-										- startTime) + " ms");
+								+ (System.currentTimeMillis()
+                    - startTime) + " ms");
 					}
 				}
 			}

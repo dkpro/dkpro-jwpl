@@ -67,7 +67,7 @@ public class NamespaceSet {
 		return prefix;
 	}
 	
-	public Iterator orderedEntries() {
+	public Iterator<Map.Entry<Integer, String>> orderedEntries() {
 		return bynumber.entrySet().iterator();
 	}
 }

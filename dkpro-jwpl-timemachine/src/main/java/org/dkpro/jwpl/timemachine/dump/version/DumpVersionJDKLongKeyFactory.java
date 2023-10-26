@@ -25,7 +25,7 @@ public class DumpVersionJDKLongKeyFactory implements IDumpVersionFactory {
 
 	@Override
 	public IDumpVersion getDumpVersion() {
-		IDumpVersion dumpVersion = null;
+		IDumpVersion dumpVersion;
 		try {
 			dumpVersion = new DumpVersionJDKGeneric<Long, StringHashCodeJBoss>(
 					StringHashCodeJBoss.class);

@@ -21,6 +21,7 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
@@ -34,7 +35,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformatio
 /**
  * The WikipediaXMLWriter writes xml representations of task objects to an
  * output file.
- *
+ * <p>
  * This class is used for debug purposes.
  *
  *
@@ -58,7 +59,7 @@ public class WikipediaXMLWriter
 		throws IOException
 	{
 		this.writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(path)),
-				"UTF-8");
+            StandardCharsets.UTF_8);
 	}
 
 	/**
@@ -92,7 +93,7 @@ public class WikipediaXMLWriter
 
 		int size = diff.size();
 		Diff d;
-		String previousRevision = null, currentRevision = null;
+		String previousRevision = null, currentRevision;
 
 		this.writer
 				.write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword() + "\r\n");
@@ -206,13 +207,13 @@ public class WikipediaXMLWriter
 			this.writer.write("\t\t<codecData>\r\n");
 
 			this.writer.write("\t\t\t<s>"
-					+ Integer.toString(codec.getBlocksizeS()) + "</s>\r\n");
+					+ codec.getBlocksizeS() + "</s>\r\n");
 			this.writer.write("\t\t\t<e>"
-					+ Integer.toString(codec.getBlocksizeE()) + "</e>\r\n");
+					+ codec.getBlocksizeE() + "</e>\r\n");
 			this.writer.write("\t\t\t<b>"
-					+ Integer.toString(codec.getBlocksizeB()) + "</b>\r\n");
+					+ codec.getBlocksizeB() + "</b>\r\n");
 			this.writer.write("\t\t\t<l>"
-					+ Integer.toString(codec.getBlocksizeL()) + "</l>\r\n");
+					+ codec.getBlocksizeL() + "</l>\r\n");
 
 			this.writer.write("\t\t</codecData>\r\n");
 
@@ -242,9 +243,9 @@ public class WikipediaXMLWriter
 				this.writer.write("\t\t\t\t<action>" + p.getAction()
 						+ "</action>\r\n");
 				this.writer.write("\t\t\t\t<start>"
-						+ Integer.toString(p.getStart()) + "</start>\r\n");
+						+ p.getStart() + "</start>\r\n");
 				this.writer.write("\t\t\t\t<end>"
-						+ Integer.toString(p.getEnd()) + "</end>\r\n");
+						+ p.getEnd() + "</end>\r\n");
 				if (p.getText() != null) {
 					this.writer
 							.write("\t\t\t\t<content xml:space=\"preserve\">"

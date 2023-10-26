@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 /**
  * A Parser for the sql file that defines the table categorylinks.
- *
+ * <p>
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  *
  *

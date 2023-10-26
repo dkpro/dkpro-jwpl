@@ -18,5 +18,5 @@
 package org.dkpro.jwpl.wikimachine.hashing;
 
 public interface IStringHashCode {
-	public Object hashCode(String string);
+	Object hashCode(String string);
 }

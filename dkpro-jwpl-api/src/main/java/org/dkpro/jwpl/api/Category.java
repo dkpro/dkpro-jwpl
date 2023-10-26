@@ -31,9 +31,9 @@ import org.hibernate.type.StandardBasicTypes;
 
 public class Category implements WikiConstants {
 
-    private CategoryDAO catDAO;
+    private final CategoryDAO catDAO;
     private org.dkpro.jwpl.api.hibernate.Category hibernateCategory;
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
 
     /**
@@ -105,13 +105,13 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
 
-        Object returnValue;
+        Integer returnValue;
 
         String query = "select cat.pageId from Category as cat where cat.name = :name";
         if(wiki.getDatabaseConfiguration().supportsCollation()) {
             query += Wikipedia.SQL_COLLATION;
         }
-        returnValue = session.createNativeQuery(query)
+        returnValue = session.createNativeQuery(query, Integer.class)
                 .setParameter("name", name, StandardBasicTypes.STRING)
                 .uniqueResult();
         session.getTransaction().commit();
@@ -122,8 +122,7 @@ public class Category implements WikiConstants {
             throw new WikiPageNotFoundException("No category with name " + name + " was found.");
         }
         else {
-            // now cast it into an integer
-            int pageID = (Integer) returnValue;
+            int pageID = returnValue;
             createCategory( pageID);
         }
     }
@@ -164,10 +163,10 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<Integer>(hibernateCategory.getInLinks());
+        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
         session.getTransaction().commit();
 
-        Set<Category> categories = new HashSet<Category>();
+        Set<Category> categories = new HashSet<>();
         for (int pageID : tmpSet) {
             categories.add(this.wiki.getCategory(pageID));
         }
@@ -184,13 +183,14 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createNativeQuery("select count(inLinks) from category_inlinks where id = :id")
+        String sql = "select count(inLinks) from category_inlinks where id = :id";
+        Long returnValue = session.createNativeQuery(sql, Long.class)
             .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfInlinks = ((Long) returnValue).intValue();
+            nrOfInlinks = returnValue.intValue();
         }
         return nrOfInlinks;
     }
@@ -202,7 +202,7 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<Integer>(hibernateCategory.getInLinks());
+        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
         session.getTransaction().commit();
         return tmpSet;
     }
@@ -214,10 +214,10 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<Integer>(hibernateCategory.getOutLinks());
+        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getOutLinks());
         session.getTransaction().commit();
 
-        Set<Category> categories = new HashSet<Category>();
+        Set<Category> categories = new HashSet<>();
         for (int pageID : tmpSet) {
             categories.add(this.wiki.getCategory(pageID));
         }
@@ -234,13 +234,14 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createNativeQuery("select count(outLinks) from category_outlinks where id = :id")
+        String sql = "select count(outLinks) from category_outlinks where id = :id";
+        Long returnValue = session.createNativeQuery(sql, Long.class)
             .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfOutlinks = ((Long) returnValue).intValue();
+            nrOfOutlinks = returnValue.intValue();
         }
         return nrOfOutlinks;
     }
@@ -252,7 +253,7 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<Integer>(hibernateCategory.getOutLinks());
+        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getOutLinks());
         session.getTransaction().commit();
         return tmpSet;
     }
@@ -277,7 +278,7 @@ public class Category implements WikiConstants {
      */
     public Set<Page> getArticles() throws WikiApiException {
         Set<Integer> tmpSet = getArticleIds();
-        Set<Page> pages = new HashSet<Page>();
+        Set<Page> pages = new HashSet<>();
         for (int pageID : tmpSet) {
             pages.add(this.wiki.getPage(pageID));
         }
@@ -291,7 +292,7 @@ public class Category implements WikiConstants {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
         session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<Integer>(hibernateCategory.getPages());
+        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getPages());
         session.getTransaction().commit();
 
         return tmpSet;
@@ -307,13 +308,14 @@ public class Category implements WikiConstants {
         long id = this.__getId();
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        Object returnValue = session.createNativeQuery("select count(pages) from category_pages where id = :id")
+        String sql = "select count(pages) from category_pages where id = :id";
+        Long returnValue = session.createNativeQuery(sql, Long.class)
             .setParameter("id", id, StandardBasicTypes.LONG)
             .uniqueResult();
         session.getTransaction().commit();
 
         if (returnValue != null) {
-            nrOfPages = ((Long) returnValue).intValue();
+            nrOfPages = returnValue.intValue();
         }
         return nrOfPages;
     }
@@ -352,7 +354,7 @@ public class Category implements WikiConstants {
      * @return Returns the siblings of this category or null, if there are none.
      */
     public Set<Category> getSiblings() {
-        Set<Category> siblings = new HashSet<Category>();
+        Set<Category> siblings = new HashSet<>();
 
         // add siblings
         for (Category parent : this.getParents()) {

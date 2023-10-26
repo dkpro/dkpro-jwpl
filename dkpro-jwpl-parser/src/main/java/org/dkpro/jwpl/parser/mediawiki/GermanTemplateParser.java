@@ -43,8 +43,8 @@ public class GermanTemplateParser implements MediaWikiTemplateParser {
 	private final String emptyLinkText = "[ ]";
 
 //	private MediaWikiContentElementParser parser;
-	private List<String> deleteTemplates;
-	private List<String> parseTemplates;
+	private final List<String> deleteTemplates;
+	private final List<String> parseTemplates;
 
 	public GermanTemplateParser(MediaWikiContentElementParser parser, List<String> deleteTemplates, List<String> parseTemplates){
 		this.deleteTemplates = deleteTemplates;

@@ -28,14 +28,14 @@ public class Link extends ParsedPageObject{
 	private final String target;
 	private final List<String> parameters;
 
-	public enum type {EXTERNAL, INTERNAL, AUDIO, VIDEO, IMAGE, UNKNOWN};
+	public enum type {EXTERNAL, INTERNAL, AUDIO, VIDEO, IMAGE, UNKNOWN}
 
-	public Link( Content home_cc, Span linkPos, String target, type t, List<String> parameters ){
+  public Link( Content home_cc, Span linkPos, String target, type t, List<String> parameters ){
 		this.home_cc = home_cc;
 		this.pos = linkPos;
 		this.target = target;
 		this.t = t;
-		this.parameters = (parameters==null?new ArrayList<String>():parameters);
+		this.parameters = (parameters==null? new ArrayList<>():parameters);
 	}
 
 	/**

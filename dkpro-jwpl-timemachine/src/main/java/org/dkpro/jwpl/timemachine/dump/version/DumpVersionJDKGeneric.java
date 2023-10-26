@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.timemachine.dump.version;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,13 +90,13 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 	 */
 	private Map<Integer, String> rPageIdNameMap;
 
-	private IStringHashCode hashAlgorithm;
+	private final IStringHashCode hashAlgorithm;
 
 	@SuppressWarnings("unchecked")
 	public DumpVersionJDKGeneric(Class<HashAlgorithm> hashAlgorithmClass)
-			throws InstantiationException, IllegalAccessException {
+			throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
-		hashAlgorithm = hashAlgorithmClass.newInstance();
+		hashAlgorithm = hashAlgorithmClass.getDeclaredConstructor().newInstance();
 		@SuppressWarnings("unused")
 		KeyType hashAlgorithmResult = (KeyType) hashAlgorithm.hashCode("test");
 	}
@@ -124,9 +125,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 	@Override
 	public void freeAfterRevisonParsing() {
 		pageIdRevList = new HashSet<>(pageIdRevMap.keySet().size());
-		for (Integer key : pageIdRevMap.keySet()) {
-			pageIdRevList.add(key);
-		}
+		pageIdRevList.addAll(pageIdRevMap.keySet());
 
 		pageIdRevMap.clear();
 	}
@@ -147,22 +146,22 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 	public void initialize(Timestamp timestamp) {
 		this.timestamp = Revision.compressTime(timestamp.getTime());
 
-		/**
+		/*
 		 * filled in revisions
 		 */
-		pageIdRevMap = new HashMap<Integer, Long>();
+		pageIdRevMap = new HashMap<>();
 		textIdPageIdMap = new HashMap<>();
 
-		/**
+		/*
 		 * filled in pages
 		 */
-		pPageIdNameMap = new HashMap<Integer, String>();
-		pNamePageIdMap = new HashMap<KeyType, Integer>();
+		pPageIdNameMap = new HashMap<>();
+		pNamePageIdMap = new HashMap<>();
 
-		cNamePageIdMap = new HashMap<KeyType, Integer>();
-		rPageIdNameMap = new HashMap<Integer, String>();
+		cNamePageIdMap = new HashMap<>();
+		rPageIdNameMap = new HashMap<>();
 
-		/**
+		/*
 		 * filled in categories
 		 */
 		disambiguations = new HashSet<>();

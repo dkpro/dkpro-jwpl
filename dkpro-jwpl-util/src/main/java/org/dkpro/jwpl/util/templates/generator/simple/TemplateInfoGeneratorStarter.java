@@ -204,15 +204,12 @@ public class TemplateInfoGeneratorStarter
 	/**
 	 * Loads a properties file from disk
 	 *
-	 * @param propsName
+	 * @param configFilePath
 	 *            path to the configuration file
 	 * @return Properties the properties object containing the configuration
 	 *         data
-	 * @throws IOException
-	 *             if an error occurs while accessing the configuration file
 	 */
-	private static Properties load(String configFilePath)
-	{
+	private static Properties load(String configFilePath) {
 		Properties props = new Properties();
 		BufferedInputStream fis = null;
 		try {
@@ -248,7 +245,7 @@ public class TemplateInfoGeneratorStarter
 	 */
 	public static HashSet<String> createSetFromProperty(String property)
 	{
-		HashSet<String> properties = new HashSet<String>();
+		HashSet<String> properties = new HashSet<>();
 
 		if (property != null && !property.equals("null")) {
 			// "([\\w]*)=([\\w]*);"

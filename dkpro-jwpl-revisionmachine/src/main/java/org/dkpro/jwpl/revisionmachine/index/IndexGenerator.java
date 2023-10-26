@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
@@ -152,11 +153,7 @@ public class IndexGenerator
 			String buffer=props.getProperty("buffer");
 			String maxAllowedPackets=props.getProperty("maxAllowedPackets");
 
-			if(charset!=null){
-				config.setCharacterSet(charset);
-			}else{
-				config.setCharacterSet("UTF-8");
-			}
+      config.setCharacterSet(Objects.requireNonNullElse(charset, "UTF-8"));
 
 			if(buffer!=null){
 				config.setBufferSize(Integer.parseInt(buffer));
@@ -187,8 +184,6 @@ public class IndexGenerator
 				config.setOutputPath(outfile.getParentFile().getPath());
 			}
 
-
-
 			try {
 				new IndexGenerator(config).generate();
 			}
@@ -203,15 +198,12 @@ public class IndexGenerator
 	/**
 	 * Load a properties file from the classpath
 	 *
-	 * @param propsName
+	 * @param configFilePath
 	 *            path to the configuration file
 	 * @return Properties the properties object containing the configuration
 	 *         data
-	 * @throws IOException
-	 *             if an error occurs while accessing the configuration file
 	 */
-	private static Properties load(String configFilePath)
-	{
+	private static Properties load(String configFilePath) {
 		Properties props = new Properties();
 		BufferedInputStream fis = null;
 		try {
