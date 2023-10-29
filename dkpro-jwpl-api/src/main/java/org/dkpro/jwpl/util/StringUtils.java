@@ -17,13 +17,10 @@
  */
 package org.dkpro.jwpl.util;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,38 +49,6 @@ public class StringUtils {
 			}
 		}
 		return buffer.toString();
-	}
-
-	public static String getFileContent(String filename, String encoding) {
-
-		// File file = new File(filename);
-		//
-		// InputStream is;
-		// String textContents = "";
-		// try {
-		// is = new FileInputStream(file);
-		// // as the whole file is read at once -> buffering not necessary
-		// // InputStream is = new BufferedInputStream(new
-		// FileInputStream(file));
-		// byte[] contents = new byte[(int) file.length()];
-		// is.read(contents);
-		// textContents = new String(contents, encoding);
-		// } catch (FileNotFoundException e) {
-		// logger.error("File " + file.getAbsolutePath() + " not found.");
-		// e.printStackTrace();
-		// } catch (IOException e) {
-		// logger.error("IO exception while reading file " +
-		// file.getAbsolutePath());
-		// e.printStackTrace();
-		// }
-		File file = new File(filename);
-		try {
-			return FileUtils.readFileToString(file, encoding);
-		} catch (IOException e) {
-			logger.error("Exception while reading file " + file.getAbsolutePath(), e);
-			return "";
-		}
-
 	}
 
 	/**

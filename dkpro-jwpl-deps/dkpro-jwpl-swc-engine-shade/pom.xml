@@ -36,11 +36,13 @@
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
             <version>3.2.2</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>1.4</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>de.fau.cs.osr.ptk</groupId>

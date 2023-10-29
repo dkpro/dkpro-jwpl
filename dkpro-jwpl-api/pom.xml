@@ -54,10 +54,6 @@
 			<artifactId>ptk-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.sweble.wikitext</groupId>
 			<artifactId>swc-parser-lazy</artifactId>
 		</dependency>
