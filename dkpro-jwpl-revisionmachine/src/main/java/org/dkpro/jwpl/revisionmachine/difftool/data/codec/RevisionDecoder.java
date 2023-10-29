@@ -21,10 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-
-import org.apache.commons.codec.binary.Base64;
 
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
@@ -499,8 +498,7 @@ public class RevisionDecoder
 	 *             if an error occurs while reading the stream
 	 */
 	public void setInput(final InputStream input, final boolean binary)
-		throws IOException
-	{
+		throws IOException {
 
 		if (!binary) {
 
@@ -518,12 +516,14 @@ public class RevisionDecoder
 				v = input.read();
 			}
 
+			Base64.Decoder decoder = Base64.getDecoder();
+
 			if (zipFlag) {
 				r = new BitReader(inflateInput(
-						Base64.decodeBase64(buffer.toString()), 0));
+								decoder.decode(buffer.toString()), 0));
 			}
 			else {
-				r = new BitReader(Base64.decodeBase64(buffer.toString()));
+				r = new BitReader(decoder.decode(buffer.toString()));
 			}
 		}
 		else {
@@ -570,17 +570,16 @@ public class RevisionDecoder
 	 * @throws DecodingException
 	 *             if the decoding fails
 	 */
-	public void setInput(final String input)
-		throws DecodingException
-	{
+	public void setInput(final String input) throws DecodingException {
 
 		boolean zipFlag = input.charAt(0) == '_';
+		Base64.Decoder decoder = Base64.getDecoder();
 		if (zipFlag) {
 			r = new BitReader(inflateInput(
-					Base64.decodeBase64(input.substring(1)), 0));
+							decoder.decode(input.substring(1)), 0));
 		}
 		else {
-			byte[] data = Base64.decodeBase64(input);
+			byte[] data = decoder.decode(input);
 			if (data == null) {
 
 				for (int i = 0; i < input.length(); i++) {

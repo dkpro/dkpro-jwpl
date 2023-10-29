@@ -19,10 +19,9 @@ package org.dkpro.jwpl.revisionmachine.difftool.data.codec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Base64;
 import java.util.Iterator;
 import java.util.zip.Deflater;
-
-import org.apache.commons.codec.binary.Base64;
 
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.EncodingException;
@@ -33,9 +32,6 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 
 /**
  * The RevisionApi class contains methods to encode the diff information.
- *
- *
- *
  */
 public class RevisionEncoder
 	implements RevisionEncoderInterface
@@ -278,11 +274,11 @@ public class RevisionEncoder
 	 */
 	@Override
 	public String encodeDiff(final RevisionCodecData codecData, final Diff diff)
-		throws UnsupportedEncodingException, EncodingException
-	{
+		throws UnsupportedEncodingException, EncodingException {
 
 		String sEncoding;
 		byte[] bData = encode(codecData, diff);
+		Base64.Encoder encoder = Base64.getEncoder();
 		if (MODE_ZIP_COMPRESSION) {
 
 			Deflater compresser = new Deflater();
@@ -302,14 +298,14 @@ public class RevisionEncoder
 			output = stream.toByteArray();
 
 			if (bData.length + 1 < output.length) {
-				sEncoding = Base64.encodeBase64String(bData);
+				sEncoding = encoder.encodeToString(bData);
 			}
 			else {
-				sEncoding = "_" + Base64.encodeBase64String(output);
+				sEncoding = "_" + encoder.encodeToString(output);
 			}
 		}
 		else {
-			sEncoding = Base64.encodeBase64String(bData);
+			sEncoding = encoder.encodeToString(bData);
 		}
 
 		return sEncoding;
