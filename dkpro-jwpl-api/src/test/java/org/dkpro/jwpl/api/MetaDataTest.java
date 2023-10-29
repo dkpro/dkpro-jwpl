@@ -18,17 +18,17 @@
 package org.dkpro.jwpl.api;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MetaDataTest extends BaseJWPLTest {
 
@@ -41,7 +41,7 @@ public class MetaDataTest extends BaseJWPLTest {
      * This could be changed back as soon as JUnit ignored tests after failed
      * assumptions
      */
-    @BeforeClass
+    @BeforeAll
     public static void setupWikipedia() {
         DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
@@ -52,12 +52,12 @@ public class MetaDataTest extends BaseJWPLTest {
         }
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         metaData = new MetaData(wiki);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         metaData = null;
     }

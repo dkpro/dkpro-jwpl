@@ -24,18 +24,22 @@ package org.dkpro.jwpl.mwdumper.importer;
  * $Id: TitleTest.java 11268 2005-10-10 06:57:30Z vibber $
  */
 
-import junit.framework.TestCase;
 
-public class TitleTest extends TestCase {
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class TitleTest {
 	NamespaceSet namespaces;
 
-	public static void main(String[] args) {
-		junit.textui.TestRunner.run(TitleTest.class);
-	}
-
-	@Override
-	protected void setUp() throws Exception {
-		super.setUp();
+	@BeforeEach
+	protected void setUp() {
 		namespaces = new NamespaceSet();
 		namespaces.add(-2, "Media");
 		namespaces.add(-1, "Special");
@@ -57,9 +61,8 @@ public class TitleTest extends TestCase {
 		namespaces.add(15, "Category talk");
 	}
 
-	@Override
-	protected void tearDown() throws Exception {
-		super.tearDown();
+	@AfterEach
+	protected void tearDown() {
 		namespaces = null;
 	}
 
@@ -90,52 +93,49 @@ public class TitleTest extends TestCase {
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.Title(int, String, NamespaceSet)'
 	 */
+	@Test
 	public void testTitleIntStringNamespaceSet() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.ns, test.text, namespaces);
-			assertEquals(test.toString(), test.prefixed, title.toString());
+		for (TestItem item : tests) {
+			Title title = new Title(item.ns, item.text, namespaces);
+			assertEquals(item.prefixed, title.toString(), item.toString());
 		}
 	}
 
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.Title(String, NamespaceSet)'
 	 */
+	@Test
 	public void testTitleStringNamespaceSet() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
-			assertEquals(test.toString(), test.ns, title.Namespace.intValue());
-			assertEquals(test.toString(), test.text, title.Text);
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
+			assertEquals(item.ns, title.Namespace.intValue(), item.toString());
+			assertEquals(item.text, title.Text, item.toString());
 		}
 	}
 
 	/*
-	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.ValidateTitleChars(String)'
-	 */
-	/*public void testValidateTitleChars() {
-	 // FIXME
-	}*/
-
-	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.toString()'
 	 */
+	@Test
 	public void testToString() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
-			assertEquals(test.toString(), test.prefixed, title.toString());
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
+			assertEquals(item.prefixed, title.toString(), item.toString());
 		}
 	}
 
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.isSpecial()'
 	 */
+	@Test
 	public void testIsSpecial() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
-			if (test.ns < 0) {
-				assertTrue(test.toString(), title.isSpecial());
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
+			if (item.ns < 0) {
+				assertTrue(title.isSpecial(), item.toString());
 			}
 			else {
-				assertFalse(test.toString(), title.isSpecial());
+				assertFalse(title.isSpecial(), item.toString());
 			}
 		}
 	}
@@ -143,17 +143,18 @@ public class TitleTest extends TestCase {
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.isTalk()'
 	 */
+	@Test
 	public void testIsTalk() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
 			if (title.isSpecial()) {
-				assertFalse(test.toString(), title.isTalk());
+				assertFalse(title.isTalk(), item.toString());
 			}
-			else if (test.ns % 2 == 0) {
-				assertFalse(test.toString(), title.isTalk());
+			else if (item.ns % 2 == 0) {
+				assertFalse(title.isTalk(), item.toString());
 			}
 			else {
-				assertTrue(test.toString(), title.isTalk());
+				assertTrue(title.isTalk(), item.toString());
 			}
 		}
 	}
@@ -161,17 +162,18 @@ public class TitleTest extends TestCase {
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.talkPage()'
 	 */
+	@Test
 	public void testTalkPage() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
 			if (title.isTalk()) {
-				assertEquals(test.toString(), title, title.talkPage());
+				assertEquals(title, title.talkPage(), item.toString());
 			}
 			else if (title.isSpecial()) {
-				assertNull(test.toString(), title.talkPage());
+				assertNull(title.talkPage(), item.toString());
 			}
 			else {
-				assertFalse(test.toString(), title.equals(title.talkPage()));
+				assertNotEquals(title, title.talkPage(), item.toString());
 			}
 		}
 	}
@@ -179,29 +181,31 @@ public class TitleTest extends TestCase {
 	/*
 	 * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.subjectPage()'
 	 */
+	@Test
 	public void testSubjectPage() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
 			if (title.isTalk()) {
-				assertNotSame(test.toString(), title, title.subjectPage());
+				assertNotEquals(title, title.subjectPage(), item.toString());
 			}
 			else {
-				assertSame(test.toString(), title, title.subjectPage());
+				assertEquals(title, title.subjectPage(), item.toString());
 			}
 		}
 	}
 
+	@Test
 	public void testTalkSubjectPage() {
-		for (TestItem test : tests) {
-			Title title = new Title(test.prefixed, namespaces);
+		for (TestItem item : tests) {
+			Title title = new Title(item.prefixed, namespaces);
 			if (title.isTalk()) {
-				assertEquals(test.toString(), title, title.subjectPage().talkPage());
+				assertEquals( title, title.subjectPage().talkPage(), item.toString());
 			}
 			else if (title.isSpecial()) {
-				assertNull(test.toString(), title.subjectPage().talkPage());
+				assertNull(title.subjectPage().talkPage(), item.toString());
 			}
 			else {
-				assertEquals(test.toString(), title, title.talkPage().subjectPage());
+				assertEquals(title, title.talkPage().subjectPage(), item.toString());
 			}
 		}
 	}

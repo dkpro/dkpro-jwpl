@@ -17,13 +17,13 @@
  */
 package org.dkpro.jwpl.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.Iterator;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CategoryIteratorTest extends BaseJWPLTest {
 
@@ -33,13 +33,13 @@ public class CategoryIteratorTest extends BaseJWPLTest {
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-    @BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
-            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
 		}
 	}
 
@@ -53,7 +53,7 @@ public class CategoryIteratorTest extends BaseJWPLTest {
     for (Category c : wiki.getCategories()) {
       nrOfPages++;
     }
-		assertEquals("Number of categories == 17", 17, nrOfPages);
+		assertEquals(17, nrOfPages, "Number of categories == 17");
 
 	}
 
@@ -71,7 +71,7 @@ public class CategoryIteratorTest extends BaseJWPLTest {
 				Category c = catIter.next();
 				nrOfPages++;
 			}
-			assertEquals("Number of categories == 17", 17, nrOfPages);
+			assertEquals(17, nrOfPages, "Number of categories == 17");
 		}
 	}
 }

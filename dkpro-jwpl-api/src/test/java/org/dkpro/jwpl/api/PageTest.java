@@ -17,11 +17,10 @@
  */
 package org.dkpro.jwpl.api;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
-import org.junit.*;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,11 +29,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class PageTest extends BaseJWPLTest {
 
@@ -54,10 +58,9 @@ public class PageTest extends BaseJWPLTest {
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
-		//DatabaseConfiguration db = obtainMySQLConfiguration();
 		try {
 			wiki = new Wikipedia(db);
 		} catch (Exception e) {
@@ -65,13 +68,13 @@ public class PageTest extends BaseJWPLTest {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		page = fetchPage(A_FAMOUS_PAGE);
 		assertNotNull(page);
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		page = null;
 	}
@@ -80,8 +83,8 @@ public class PageTest extends BaseJWPLTest {
 	public void testGetTitle() throws Exception {
 		Title t = page.getTitle();
 		assertNotNull(t);
-		assertEquals("testing the title", A_FAMOUS_PAGE, t.getPlainTitle());
-		assertEquals("testing the pageId", A_FAMOUS_PAGE_ID, page.getPageId());
+		assertEquals(A_FAMOUS_PAGE, t.getPlainTitle(), "testing the title");
+		assertEquals(A_FAMOUS_PAGE_ID, page.getPageId(), "testing the pageId");
 	}
 
 	@Test
@@ -92,8 +95,8 @@ public class PageTest extends BaseJWPLTest {
 		assertNotNull(p);
 		Title t = p.getTitle();
 		assertNotNull(t);
-		assertEquals("testing the title", title, p.getTitle().getRawTitleText());
-		assertEquals("testing the pageId", A_FAMOUS_PAGE_ID, p.getPageId());
+		assertEquals(title, p.getTitle().getRawTitleText(), "testing the title");
+		assertEquals(A_FAMOUS_PAGE_ID, p.getPageId(), "testing the pageId");
 	}
 
 	@Test

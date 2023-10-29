@@ -17,18 +17,20 @@
  */
 package org.dkpro.jwpl.api;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.util.*;
+import java.util.Properties;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class PerformanceIT implements WikiConstants {
 
@@ -40,7 +42,7 @@ public class PerformanceIT implements WikiConstants {
     // The system under test
     private static PerformanceTest pt;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupWikipedia() throws WikiApiException {
         Properties configuration = loadConfiguration();
         retrievedNumberOfPages = Integer.parseInt(configuration.getProperty("performance.pages.retrieved"));
@@ -84,7 +86,7 @@ public class PerformanceIT implements WikiConstants {
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
     }
 
-    @Before
+    @BeforeEach
     public void setup() throws WikiApiException {
 
     }

@@ -17,12 +17,12 @@
  */
 package org.dkpro.jwpl.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class TitleIteratorTest extends BaseJWPLTest{
 
@@ -32,7 +32,7 @@ public class TitleIteratorTest extends BaseJWPLTest{
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
@@ -46,14 +46,14 @@ public class TitleIteratorTest extends BaseJWPLTest{
 	@Test
 	public void test_titleIteratorTest() {
 
-        int nrOfTitles = 0;
+		int nrOfTitles = 0;
 		Iterable<Title> iterable = wiki.getTitles();
 		assertNotNull(iterable);
     for (Title t : iterable) {
       assertNotNull(t);
       nrOfTitles++;
     }
-		assertEquals("Number of titles == 39", 39, nrOfTitles);
+		assertEquals(39, nrOfTitles, "Number of titles == 39");
 
 	}
 }

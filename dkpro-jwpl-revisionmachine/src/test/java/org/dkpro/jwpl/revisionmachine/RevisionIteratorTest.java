@@ -17,11 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine;
 
-import static org.junit.Assert.*;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.api.Wikipedia;
@@ -29,10 +24,19 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class RevisionIteratorTest extends BaseJWPLTest {
 
@@ -51,7 +55,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration(
 				"wikiapi_simple_20090119_stripped", Language.simple_english);
@@ -66,7 +70,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 
 	}
 
-	@Before
+	@BeforeEach
 	public void setupInstanceUnderTest()
 	{
 		try {
@@ -77,7 +81,7 @@ public class RevisionIteratorTest extends BaseJWPLTest {
 		}
 	}
 
-	@After
+	@AfterEach
 	public void cleanUpInstanceUnderTest()
 	{
 		if(revisionIterator!=null) {
