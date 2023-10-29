@@ -38,6 +38,7 @@
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
     <spring.version>5.3.30</spring.version>
+    <commons.lang3.version>3.13.0</commons.lang3.version>
 
     <!-- DB specific dependency versions -->
     <hibernate.version>6.1.7.Final</hibernate.version>
@@ -170,6 +171,11 @@
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
         <version>1.24.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons.lang3.version}</version>
       </dependency>
       <dependency>
         <groupId>commons-logging</groupId>

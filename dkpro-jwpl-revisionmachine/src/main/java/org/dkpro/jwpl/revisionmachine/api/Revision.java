@@ -23,7 +23,7 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.ISizeable;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
@@ -229,7 +229,7 @@ public class Revision
 		if (this.revisionText == null) {
 			revisionApi.setRevisionTextAndParts(this);
 		}
-		return StringEscapeUtils.unescapeHtml(this.revisionText);
+		return StringEscapeUtils.unescapeHtml4(this.revisionText);
 	}
 
 	/**
