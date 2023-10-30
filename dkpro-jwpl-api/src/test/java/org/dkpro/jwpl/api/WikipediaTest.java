@@ -17,13 +17,10 @@
  */
 package org.dkpro.jwpl.api;
 
-
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +29,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class WikipediaTest extends BaseJWPLTest{
 
@@ -50,7 +56,7 @@ public class WikipediaTest extends BaseJWPLTest{
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
@@ -68,8 +74,8 @@ public class WikipediaTest extends BaseJWPLTest{
 	public void testGetPageByTitleVariations() {
 		getExistingPage(A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
 		getExistingPage("Exploring_the_Potential_of_Semantic_Relatedness_in_Information_Retrieval", A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
-      	getExistingPage("exploring the Potential of Semantic Relatedness in Information Retrieval", A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
-      	getExistingPage("exploring_the_Potential_of_Semantic_Relatedness_in_Information_Retrieval", A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
+		getExistingPage("exploring the Potential of Semantic Relatedness in Information Retrieval", A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
+		getExistingPage("exploring_the_Potential_of_Semantic_Relatedness_in_Information_Retrieval", A_FAMOUS_PAGE_CLEAN, A_FAMOUS_PAGE_ID);
 		getExistingPage("TK2", 105);
 		getNotExistingPage("TK2 ");
 		getNotExistingPage(" TK2");
@@ -380,7 +386,7 @@ public class WikipediaTest extends BaseJWPLTest{
 		} catch (WikiApiException e) {
 			exceptionThrown = true;
 		}
-		assertTrue("Testing the WikiApiException for non existing page: " + title, exceptionThrown);
+		assertTrue(exceptionThrown, "Testing the WikiApiException for non existing page: " + title);
 	}
 
     private void getExistingPage(String title, int pageId) {
@@ -392,15 +398,15 @@ public class WikipediaTest extends BaseJWPLTest{
 		try {
 			p = wiki.getPage(keyword);
 		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the page: '" + keyword + "'");
+			fail("A WikiApiException occurred while getting the page: '" + keyword + "'", e);
 		}
 
-		assertEquals("testing the pageId of '" + title + "'", pageId, p.getPageId());
+		assertEquals(pageId, p.getPageId(), "testing the pageId of '" + title + "'");
 
 		try {
-			assertEquals("testing the title of '" + title + "'", title.trim(), p.getTitle().toString());
+			assertEquals(title.trim(), p.getTitle().toString(), "testing the title of '" + title + "'");
 		} catch (WikiTitleParsingException e) {
-			fail("A WikiTitleParsingException occurred while getting the title of " + title);
+			fail("A WikiTitleParsingException occurred while getting the title of " + title, e);
 		}
 	}
 
@@ -421,9 +427,9 @@ public class WikipediaTest extends BaseJWPLTest{
 			assertEquals(A_FAMOUS_PAGE, title.getRawTitleText());
 			assertEquals(A_FAMOUS_PAGE_CLEAN, title.getPlainTitle());
 		} catch (WikiPageNotFoundException nfe) {
-			fail("Encountered WikiPageNotFoundException: " + nfe.getLocalizedMessage());
+			fail("Encountered WikiPageNotFoundException: " + nfe.getLocalizedMessage(), nfe);
 		} catch (WikiApiException ae) {
-			fail("Encountered WikiApiException: " + ae.getLocalizedMessage());
+			fail("Encountered WikiApiException: " + ae.getLocalizedMessage(), ae);
 		}
 	}
 

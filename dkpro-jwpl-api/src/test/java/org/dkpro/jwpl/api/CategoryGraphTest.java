@@ -17,17 +17,16 @@
  */
 package org.dkpro.jwpl.api;
 
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.dkpro.jwpl.api.exception.WikiApiException;
 
 import java.util.Map;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class CategoryGraphTest extends BaseJWPLTest{
 
@@ -39,7 +38,7 @@ public class CategoryGraphTest extends BaseJWPLTest{
      * This could be changed back as soon as JUnit ignored tests after failed
      * assumptions
      */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 

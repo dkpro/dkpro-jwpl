@@ -17,14 +17,14 @@
  */
 package org.dkpro.jwpl.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.util.Iterator;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class PageIteratorTest extends BaseJWPLTest {
 
@@ -34,7 +34,7 @@ public class PageIteratorTest extends BaseJWPLTest {
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration();
 		try {
@@ -61,7 +61,7 @@ public class PageIteratorTest extends BaseJWPLTest {
 			assertNotNull(p);
 			nrOfPages++;
 		}
-		assertEquals("Number of pages == 33", 33, nrOfPages);
+		assertEquals(33, nrOfPages, "Number of pages == 33");
 
 		while (articleIter.hasNext()) {
 			Page p = articleIter.next();
@@ -69,8 +69,8 @@ public class PageIteratorTest extends BaseJWPLTest {
 			nrOfArticles++;
 		}
 		
-		// Assuming 32 is the correct number now
-		assertEquals("Number of articles == 33", 33, nrOfArticles);
+		// Assuming 33 is the correct number now
+		assertEquals(33, nrOfArticles, "Number of articles == 33");
 
 	}
 
@@ -88,7 +88,7 @@ public class PageIteratorTest extends BaseJWPLTest {
 				Page p = pageIter.next();
 				nrOfPages++;
 			}
-			assertEquals("Number of pages == 33", 33, nrOfPages);
+			assertEquals(33, nrOfPages, "Number of pages == 33");
 		}
 	}
 }

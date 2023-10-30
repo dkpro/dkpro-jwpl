@@ -17,9 +17,12 @@
  */
 package org.dkpro.jwpl.revisionmachine;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
+import org.dkpro.jwpl.api.DatabaseConfiguration;
+import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.api.Wikipedia;
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.revisionmachine.api.Revision;
+import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -28,17 +31,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 
-import org.dkpro.jwpl.api.DatabaseConfiguration;
-import org.dkpro.jwpl.api.WikiConstants.Language;
-import org.dkpro.jwpl.api.Wikipedia;
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.revisionmachine.api.Revision;
-import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class RevisionApiTest extends BaseJWPLTest {
 
@@ -59,7 +60,7 @@ public class RevisionApiTest extends BaseJWPLTest {
 	 * This could be changed back as soon as JUnit ignored tests after failed
 	 * assumptions
 	 */
-	@BeforeClass
+	@BeforeAll
 	public static void setupWikipedia() {
 		DatabaseConfiguration db = obtainHSDLDBConfiguration(
 				"wikiapi_simple_20090119_stripped", Language.simple_english);
@@ -68,12 +69,11 @@ public class RevisionApiTest extends BaseJWPLTest {
 		} catch (Exception e) {
 			fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
 		}
-		Assert.assertNotNull(wiki);
+		assertNotNull(wiki);
 	}
 
-	@Before
-	public void setupInstanceUnderTest()
-	{
+	@BeforeEach
+	public void setupInstanceUnderTest() {
 		try {
 			revisionApi = new RevisionApi(wiki.getDatabaseConfiguration());
 			assertNotNull(revisionApi);
@@ -82,9 +82,8 @@ public class RevisionApiTest extends BaseJWPLTest {
 		}
 	}
 
-	@After
-	public void cleanUpInstanceUnderTest()
-	{
+	@AfterEach
+	public void cleanUpInstanceUnderTest() {
 		if(revisionApi!=null) {
 			try {
 				revisionApi.close();
@@ -95,8 +94,7 @@ public class RevisionApiTest extends BaseJWPLTest {
 	}
 
 	@Test
-	public void getRevisionByTimestampTest()
-	{
+	public void getRevisionByTimestampTest() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -113,14 +111,12 @@ public class RevisionApiTest extends BaseJWPLTest {
 			assertEquals(pageId, revision.getArticleID());
 		}
 		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 
 	@Test
-	public void getRevisionByRevisionId()
-	{
+	public void getRevisionByRevisionId() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -143,14 +139,12 @@ public class RevisionApiTest extends BaseJWPLTest {
 
 		}
 		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 
 	@Test
-	public void getRevisionByRevisionCounter()
-	{
+	public void getRevisionByRevisionCounter() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -173,14 +167,12 @@ public class RevisionApiTest extends BaseJWPLTest {
 
 		}
 		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 
 	@Test
-	public void articleIDTests()
-	{
+	public void articleIDTests() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -196,13 +188,13 @@ public class RevisionApiTest extends BaseJWPLTest {
 			assertEquals(382, nrOfRevisions);
 		}
 		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 
-	public void lastRevisionTest()
-	{
+	@Test
+	@Disabled
+	public void lastRevisionTest() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -212,18 +204,17 @@ public class RevisionApiTest extends BaseJWPLTest {
 
 			Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
 			Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
+			// FIXME the comparison shall hold - Check: flattened in one line vs. multiple lines
 			assertEquals(wiki.getPage(pageId).getText(), revision.getRevisionText());
 		}
 		catch (WikiApiException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 
 
 	@Test
-	public void lazyLoadingTest()
-	{
+	public void lazyLoadingTest() {
 		Calendar calendar = Calendar.getInstance();
 		calendar.set(2008, 10, 10, 10, 10, 10);
 
@@ -251,8 +242,7 @@ public class RevisionApiTest extends BaseJWPLTest {
 
 		} catch (WikiApiException | SecurityException | NoSuchFieldException |
 				 IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-			fail(e.getMessage());
+			fail(e.getMessage(), e);
 		}
 	}
 }

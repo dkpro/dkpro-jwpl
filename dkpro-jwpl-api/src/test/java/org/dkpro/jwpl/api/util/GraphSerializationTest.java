@@ -17,10 +17,6 @@
  */
 package org.dkpro.jwpl.api.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeNoException;
-
 import java.io.File;
 
 import org.dkpro.jwpl.api.BaseJWPLTest;
@@ -30,24 +26,22 @@ import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
-import junit.framework.JUnit4TestAdapter;
-import junit.textui.TestRunner;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests for the correctness of the Category graph construction and its serialization<br>
  * process.
- *
- *
  */
 public class GraphSerializationTest extends BaseJWPLTest {
 
     final String serializationFileName = "testCategoryGraph.ser";
-
 
     private static Wikipedia wiki;
 
@@ -57,7 +51,7 @@ public class GraphSerializationTest extends BaseJWPLTest {
      * This could be changed back as soon as JUnit ignored tests after failed
      * assumptions
      */
-    @BeforeClass
+    @BeforeAll
     public static void setupWikipedia() {
         DatabaseConfiguration db = obtainHSDLDBConfiguration();
         try {
@@ -68,13 +62,13 @@ public class GraphSerializationTest extends BaseJWPLTest {
     }
 
 
-    @Before
+    @BeforeEach
     public void cleanupBeforeTest() {
         File serializationFile = new File(serializationFileName);
         serializationFile.delete();
     }
 
-    @After
+    @AfterEach
     public void cleanupAfterTest() {
         File serializationFile = new File(serializationFileName);
         serializationFile.delete();
@@ -85,24 +79,19 @@ public class GraphSerializationTest extends BaseJWPLTest {
      * Creates a CategoryGraph object using the Wikipedia object as parameter.<br>
      * Tests the correctness of the constructed graph.
      */
-	@Test
-	public void testGraphSerialization()
-	{
-		try {
-			CategoryGraph sourceGraph = CategoryGraphManager
-					.getCategoryGraph(wiki);
-			testGraph(sourceGraph.getGraph());
-			sourceGraph.saveGraph(serializationFileName);
+    @Test
+    public void testGraphSerialization() {
+      assertDoesNotThrow(() -> {
+          CategoryGraph sourceGraph = CategoryGraphManager
+                  .getCategoryGraph(wiki);
+          testGraph(sourceGraph.getGraph());
+          sourceGraph.saveGraph(serializationFileName);
 
-			CategoryGraph loadedGraph = new CategoryGraph(wiki, new File(
-					serializationFileName));
-			testGraph(loadedGraph.getGraph());
-		}
-		catch (Exception e) {
-			assumeNoException(e);
-		}
-
-	}
+          CategoryGraph loadedGraph = new CategoryGraph(wiki, new File(
+                  serializationFileName));
+          testGraph(loadedGraph.getGraph());
+        });
+    }
 
     /**
      * Compares the given graph with the expected graph. Returns true only if both<br>
@@ -181,14 +170,6 @@ public class GraphSerializationTest extends BaseJWPLTest {
 
         //make sure there no supplemental edges
         assertEquals(17, graph.edgeSet().size());
-    }
-
-    public static junit.framework.Test suite(){
-        return new JUnit4TestAdapter(GraphSerializationTest.class);
-    }
-
-    public static void main (String[] a){
-        TestRunner.run(suite());
     }
 
 }

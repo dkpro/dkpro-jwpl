@@ -28,7 +28,7 @@ public abstract class BaseJWPLTest {
 
 	protected static Wikipedia wiki;
 
-	protected static final DatabaseConfiguration obtainHSDLDBConfiguration() {
+	protected static DatabaseConfiguration obtainHSDLDBConfiguration() {
 		DatabaseConfiguration db = new DatabaseConfiguration();
 		db.setDatabase("wikiapi_test");
 		db.setHost("localhost");
