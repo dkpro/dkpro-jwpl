@@ -29,13 +29,13 @@ import java.text.ParseException;
 
 public class AfterTimeStampFilter extends TimeStampFilter {
 
-	public AfterTimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException {
-		super(sink, timeStamp);
-	}
+  public AfterTimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException {
+    super(sink, timeStamp);
+  }
 
-	public void writeRevision(Revision revision) throws IOException {
-		if (revision.Timestamp.after(super.filterTimeStamp)) {
-			super.writeRevision(revision);
-		}
-	}
+  public void writeRevision(Revision revision) throws IOException {
+    if (revision.Timestamp.after(super.filterTimeStamp)) {
+      super.writeRevision(revision);
+    }
+  }
 }

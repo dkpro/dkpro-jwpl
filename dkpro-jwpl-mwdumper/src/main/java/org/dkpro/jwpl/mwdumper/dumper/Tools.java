@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,57 +31,55 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 
 public class Tools {
-	static final int IN_BUF_SZ = 1024 * 1024;
-	private static final int OUT_BUF_SZ = 1024 * 1024;
+  static final int IN_BUF_SZ = 1024 * 1024;
+  private static final int OUT_BUF_SZ = 1024 * 1024;
 
-	public static InputStream openInputFile(String arg) throws IOException {
-		if (arg.equals("-")) {
-			return openStandardInput();
-		}
-		InputStream infile = new BufferedInputStream(new FileInputStream(arg), IN_BUF_SZ);
-		if (arg.endsWith(".gz")) {
-			return new GZIPInputStream(infile);
-		}
-		else if (arg.endsWith(".bz2")) {
-			return openBZip2Stream(infile);
-		}
-		else {
-			return infile;
-		}
-	}
+  public static InputStream openInputFile(String arg) throws IOException {
+    if (arg.equals("-")) {
+      return openStandardInput();
+    }
+    InputStream infile = new BufferedInputStream(new FileInputStream(arg), IN_BUF_SZ);
+    if (arg.endsWith(".gz")) {
+      return new GZIPInputStream(infile);
+    } else if (arg.endsWith(".bz2")) {
+      return openBZip2Stream(infile);
+    } else {
+      return infile;
+    }
+  }
 
-	static InputStream openStandardInput() throws IOException {
-		return new BufferedInputStream(System.in, IN_BUF_SZ);
-	}
+  static InputStream openStandardInput() throws IOException {
+    return new BufferedInputStream(System.in, IN_BUF_SZ);
+  }
 
-	static InputStream openBZip2Stream(InputStream infile) throws IOException {
-		int first = infile.read();
-		int second = infile.read();
-		if (first != 'B' || second != 'Z') {
-			throw new IOException("Didn't find BZ file signature in .bz2 file");
-		}
-		return new BZip2CompressorInputStream(infile);
-	}
+  static InputStream openBZip2Stream(InputStream infile) throws IOException {
+    int first = infile.read();
+    int second = infile.read();
+    if (first != 'B' || second != 'Z') {
+      throw new IOException("Didn't find BZ file signature in .bz2 file");
+    }
+    return new BZip2CompressorInputStream(infile);
+  }
 
-	static OutputStream openStandardOutput() {
-		return new BufferedOutputStream(System.out, OUT_BUF_SZ);
-	}
+  static OutputStream openStandardOutput() {
+    return new BufferedOutputStream(System.out, OUT_BUF_SZ);
+  }
 
-	static OutputStream createBZip2File(String param) throws IOException {
-		OutputStream outfile = createOutputFile(param);
-		// bzip2 expects a two-byte 'BZ' signature header
-		outfile.write('B');
-		outfile.write('Z');
-		return new BZip2CompressorOutputStream(outfile);
-	}
+  static OutputStream createBZip2File(String param) throws IOException {
+    OutputStream outfile = createOutputFile(param);
+    // bzip2 expects a two-byte 'BZ' signature header
+    outfile.write('B');
+    outfile.write('Z');
+    return new BZip2CompressorOutputStream(outfile);
+  }
 
-	static OutputStream createOutputFile(String param) throws IOException {
-		File file = new File(param);
-		file.createNewFile();
-		return new BufferedOutputStream(new FileOutputStream(file), OUT_BUF_SZ);
-	}
+  static OutputStream createOutputFile(String param) throws IOException {
+    File file = new File(param);
+    file.createNewFile();
+    return new BufferedOutputStream(new FileOutputStream(file), OUT_BUF_SZ);
+  }
 
 
-	// ----------------
+  // ----------------
 
 }

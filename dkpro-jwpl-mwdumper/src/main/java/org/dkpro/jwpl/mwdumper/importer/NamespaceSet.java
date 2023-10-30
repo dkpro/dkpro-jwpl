@@ -31,43 +31,43 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class NamespaceSet {
-	private final Map<String, Integer> byname;
-	private final Map<Integer, String> bynumber;
-	
-	public NamespaceSet() {
-		byname = new HashMap<>();
-		bynumber = new LinkedHashMap<>();
-	}
-	
-	public void add(Integer index, String prefix) {
-		byname.put(prefix, index);
-		bynumber.put(index, prefix);
-	}
-	
-	public boolean hasPrefix(String prefix) {
-		return byname.containsKey(prefix);
-	}
-	
-	public boolean hasIndex(Integer index) {
-		return bynumber.containsKey(index);
-	}
-	
-	public String getPrefix(Integer index) {
-		return bynumber.get(index);
-	}
-	
-	public Integer getIndex(String prefix) {
-		return byname.get(prefix);
-	}
-	
-	public String getColonPrefix(Integer index) {
-		String prefix = getPrefix(index);
-		if (index != 0)
-			return prefix.concat(":");
-		return prefix;
-	}
-	
-	public Iterator<Map.Entry<Integer, String>> orderedEntries() {
-		return bynumber.entrySet().iterator();
-	}
+  private final Map<String, Integer> byname;
+  private final Map<Integer, String> bynumber;
+
+  public NamespaceSet() {
+    byname = new HashMap<>();
+    bynumber = new LinkedHashMap<>();
+  }
+
+  public void add(Integer index, String prefix) {
+    byname.put(prefix, index);
+    bynumber.put(index, prefix);
+  }
+
+  public boolean hasPrefix(String prefix) {
+    return byname.containsKey(prefix);
+  }
+
+  public boolean hasIndex(Integer index) {
+    return bynumber.containsKey(index);
+  }
+
+  public String getPrefix(Integer index) {
+    return bynumber.get(index);
+  }
+
+  public Integer getIndex(String prefix) {
+    return byname.get(prefix);
+  }
+
+  public String getColonPrefix(Integer index) {
+    String prefix = getPrefix(index);
+    if (index != 0)
+      return prefix.concat(":");
+    return prefix;
+  }
+
+  public Iterator<Map.Entry<Integer, String>> orderedEntries() {
+    return bynumber.entrySet().iterator();
+  }
 }

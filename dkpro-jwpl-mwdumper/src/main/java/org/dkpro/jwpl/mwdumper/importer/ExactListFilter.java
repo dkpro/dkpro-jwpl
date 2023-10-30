@@ -28,11 +28,11 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public class ExactListFilter extends ListFilter {
-	public ExactListFilter(DumpWriter sink, String sourceFileName) throws IOException {
-		super(sink, sourceFileName);
-	}
-	
-	protected boolean pass(Page page) {
-		return list.containsKey(page.Title.toString());
-	}
+  public ExactListFilter(DumpWriter sink, String sourceFileName) throws IOException {
+    super(sink, sourceFileName);
+  }
+
+  protected boolean pass(Page page) {
+    return list.containsKey(page.Title.toString());
+  }
 }

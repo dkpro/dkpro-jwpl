@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,165 +31,176 @@ import org.dkpro.jwpl.revisionmachine.common.util.Time;
  * This class represents the iteration in chronological order.
  */
 public class ChronoRevisionIterator
-	implements RevisionIteratorInterface
-{
+        implements RevisionIteratorInterface {
 
-	/** Reference to the configuration parameters */
-	private final RevisionAPIConfiguration config;
+  /**
+   * Reference to the configuration parameters
+   */
+  private final RevisionAPIConfiguration config;
 
-	/** Reference to the database connection */
-	private final Connection connection;
+  /**
+   * Reference to the database connection
+   */
+  private final Connection connection;
 
-	/** Reference to the currently used result set */
-	private ResultSet resultArticles;
+  /**
+   * Reference to the currently used result set
+   */
+  private ResultSet resultArticles;
 
-	/** Number of revisions of the current read article */
-	private int maxRevision;
+  /**
+   * Number of revisions of the current read article
+   */
+  private int maxRevision;
 
-	/** Reference to the Revision Iterator */
-	private RevisionIterator revisionIterator;
+  /**
+   * Reference to the Revision Iterator
+   */
+  private RevisionIterator revisionIterator;
 
-	/** Reference to the ChronoIterator */
-	private ChronoIterator chronoIterator;
+  /**
+   * Reference to the ChronoIterator
+   */
+  private ChronoIterator chronoIterator;
 
-	/** Retrieval mode */
-	private int modus;
+  /**
+   * Retrieval mode
+   */
+  private int modus;
 
-	/** Retrieval mode id - undefined */
-	private final static int INIT = 0;
+  /**
+   * Retrieval mode id - undefined
+   */
+  private final static int INIT = 0;
 
-	/** Retrieval mode id - article is in chronological order */
-	private final static int ITERATE_WITHOUT_MAPPING = 2;
+  /**
+   * Retrieval mode id - article is in chronological order
+   */
+  private final static int ITERATE_WITHOUT_MAPPING = 2;
 
-	/** Retrieval mode id - article is not in chronological order */
-	private final static int ITERATE_WITH_MAPPING = 1;
+  /**
+   * Retrieval mode id - article is not in chronological order
+   */
+  private final static int ITERATE_WITH_MAPPING = 1;
 
-	/**
-	 * ID of the current article (Should be 0 to enable an iteration over all
-	 * article)
-	 */
-	private int currentArticleID;
+  /**
+   * ID of the current article (Should be 0 to enable an iteration over all
+   * article)
+   */
+  private int currentArticleID;
 
-	/** ID of the last article to retrieve */
-	private int lastArticleID;
+  /**
+   * ID of the last article to retrieve
+   */
+  private int lastArticleID;
 
-	/** Parameter - buffer size */
-	private final int MAX_NUMBER_RESULTS;
+  /**
+   * Parameter - buffer size
+   */
+  private final int MAX_NUMBER_RESULTS;
 
-	/**
-	 * (Constructor) Creates a new ChronoRevisionIterator
-	 *
-	 * @param config
-	 *            Reference to the configuration parameters
-	 * @throws WikiApiException
-	 *             if an error occurs
-	 */
-	public ChronoRevisionIterator(final RevisionAPIConfiguration config)
-		throws WikiApiException
-	{
+  /**
+   * (Constructor) Creates a new ChronoRevisionIterator
+   *
+   * @param config Reference to the configuration parameters
+   * @throws WikiApiException if an error occurs
+   */
+  public ChronoRevisionIterator(final RevisionAPIConfiguration config)
+          throws WikiApiException {
 
-		this.config = config;
-		try {
-			this.MAX_NUMBER_RESULTS = config.getBufferSize();
+    this.config = config;
+    try {
+      this.MAX_NUMBER_RESULTS = config.getBufferSize();
 
-			this.resultArticles = null;
-			this.currentArticleID = 0;
-			this.lastArticleID = -1;
+      this.resultArticles = null;
+      this.currentArticleID = 0;
+      this.lastArticleID = -1;
 
-			reset();
+      reset();
 
-			String driverDB = "com.mysql.jdbc.Driver";
-			Class.forName(driverDB);
+      String driverDB = "com.mysql.jdbc.Driver";
+      Class.forName(driverDB);
 
-			this.connection = DriverManager.getConnection("jdbc:mysql://"
-					+ config.getHost() + "/" + config.getDatabase(),
-					config.getUser(), config.getPassword());
+      this.connection = DriverManager.getConnection("jdbc:mysql://"
+                      + config.getHost() + "/" + config.getDatabase(),
+              config.getUser(), config.getPassword());
 
-		}
-		catch (SQLException | ClassNotFoundException e) {
-			throw new WikiApiException(e);
-		}
+    } catch (SQLException | ClassNotFoundException e) {
+      throw new WikiApiException(e);
+    }
   }
 
-	/**
-	 * (Constructor) Creates a new ChronoRevisionIterator
-	 *
-	 * @param config
-	 *            Reference to the configuration parameters
-	 * @throws WikiApiException
-	 *             if an error occurs
-	 */
-	public ChronoRevisionIterator(final RevisionAPIConfiguration config,
-			final int firstArticleID, final int lastArticleID)
-		throws WikiApiException
-	{
+  /**
+   * (Constructor) Creates a new ChronoRevisionIterator
+   *
+   * @param config Reference to the configuration parameters
+   * @throws WikiApiException if an error occurs
+   */
+  public ChronoRevisionIterator(final RevisionAPIConfiguration config,
+                                final int firstArticleID, final int lastArticleID)
+          throws WikiApiException {
 
-		this(config);
+    this(config);
 
-		this.currentArticleID = firstArticleID - 1;
-		this.lastArticleID = lastArticleID;
-	}
+    this.currentArticleID = firstArticleID - 1;
+    this.lastArticleID = lastArticleID;
+  }
 
-	/**
-	 * Retrieves the next articles from the article index.
-	 *
-	 * @return whether the query contains results or not
-	 * @throws SQLException
-	 *             if an error occurs while executing the query
-	 */
-	private boolean queryArticle()
-		throws SQLException
-	{
+  /**
+   * Retrieves the next articles from the article index.
+   *
+   * @return whether the query contains results or not
+   * @throws SQLException if an error occurs while executing the query
+   */
+  private boolean queryArticle()
+          throws SQLException {
 
-		Statement statement = this.connection.createStatement();
+    Statement statement = this.connection.createStatement();
 
-		String query = "SELECT ArticleID, FullRevisionPKs, RevisionCounter "
-				+ "FROM index_articleID_rc_ts " + "WHERE articleID > "
-				+ this.currentArticleID + " LIMIT " + MAX_NUMBER_RESULTS;
+    String query = "SELECT ArticleID, FullRevisionPKs, RevisionCounter "
+            + "FROM index_articleID_rc_ts " + "WHERE articleID > "
+            + this.currentArticleID + " LIMIT " + MAX_NUMBER_RESULTS;
 
-		resultArticles = statement.executeQuery(query);
+    resultArticles = statement.executeQuery(query);
 
-		if (resultArticles.next()) {
+    if (resultArticles.next()) {
 
-			this.currentArticleID = resultArticles.getInt(1);
-			return (this.lastArticleID == -1)
-					|| (this.currentArticleID <= this.lastArticleID);
-		}
+      this.currentArticleID = resultArticles.getInt(1);
+      return (this.lastArticleID == -1)
+              || (this.currentArticleID <= this.lastArticleID);
+    }
 
-		return false;
-	}
+    return false;
+  }
 
-	/**
-	 * Resets the modus to INIT.
-	 */
-	private void reset()
-	{
-		this.modus = INIT;
-	}
+  /**
+   * Resets the modus to INIT.
+   */
+  private void reset() {
+    this.modus = INIT;
+  }
 
-	/**
-	 * Initiates the iteration over of a new article.
-	 *
-	 * @return First Revision
-	 * @throws WikiApiException
-	 *             if an error occurs
-	 */
-	private Revision init()
-		throws WikiApiException
-	{
+  /**
+   * Initiates the iteration over of a new article.
+   *
+   * @return First Revision
+   * @throws WikiApiException if an error occurs
+   */
+  private Revision init()
+          throws WikiApiException {
 
-		try {
-			currentArticleID = resultArticles.getInt(1);
-			String fullRevisionPKs = resultArticles.getString(2);
-			String revisionCounters = resultArticles.getString(3);
+    try {
+      currentArticleID = resultArticles.getInt(1);
+      String fullRevisionPKs = resultArticles.getString(2);
+      String revisionCounters = resultArticles.getString(3);
 
-			int index = revisionCounters.lastIndexOf(' ');
-			if (index == -1) {
-				throw new RuntimeException("Invalid revisioncounter content");
-			}
+      int index = revisionCounters.lastIndexOf(' ');
+      if (index == -1) {
+        throw new RuntimeException("Invalid revisioncounter content");
+      }
 
-			this.maxRevision = Integer.parseInt(revisionCounters.substring(
-					index + 1, revisionCounters.length()));
+      this.maxRevision = Integer.parseInt(revisionCounters.substring(
+              index + 1, revisionCounters.length()));
 
       try (Statement statement = this.connection.createStatement(); ResultSet result = statement.executeQuery("SELECT Mapping "
               + "FROM index_chronological " + "WHERE ArticleID="
@@ -243,171 +254,161 @@ public class ChronoRevisionIterator
         }
       }
 
-		}
-		catch (WikiApiException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new WikiApiException(e);
-		}
-	}
+    } catch (WikiApiException e) {
+      throw e;
+    } catch (Exception e) {
+      throw new WikiApiException(e);
+    }
+  }
 
-	/**
-	 * Returns the next revision.
-	 *
-	 * @return Revision
-	 */
-	public Revision next()
-	{
-		try {
-			switch (modus) {
-			case INIT:
-				return init();
+  /**
+   * Returns the next revision.
+   *
+   * @return Revision
+   */
+  public Revision next() {
+    try {
+      switch (modus) {
+        case INIT:
+          return init();
 
-			case ITERATE_WITH_MAPPING:
-				return chronoIterator.next();
+        case ITERATE_WITH_MAPPING:
+          return chronoIterator.next();
 
-				// revisionEncoder.getRevision(currentArticleID, revisionIndex);
+        // revisionEncoder.getRevision(currentArticleID, revisionIndex);
 
-			case ITERATE_WITHOUT_MAPPING:
-				return revisionIterator.next();
+        case ITERATE_WITHOUT_MAPPING:
+          return revisionIterator.next();
 
-			default:
-				throw new RuntimeException("Illegal mode");
-			}
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
+        default:
+          throw new RuntimeException("Illegal mode");
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	/**
-	 * Returns whether another revision is available or not.
-	 *
-	 * @return TRUE or FALSE
-	 */
-	public boolean hasNext()
-	{
+  /**
+   * Returns whether another revision is available or not.
+   *
+   * @return TRUE or FALSE
+   */
+  public boolean hasNext() {
 
-		try {
-			switch (modus) {
-			case INIT:
-				return queryArticle();
+    try {
+      switch (modus) {
+        case INIT:
+          return queryArticle();
 
-			case ITERATE_WITH_MAPPING:
-				if (chronoIterator.hasNext()) {
-					return true;
-				}
+        case ITERATE_WITH_MAPPING:
+          if (chronoIterator.hasNext()) {
+            return true;
+          }
 
-				reset();
+          reset();
 
-				if (resultArticles.next()) {
+          if (resultArticles.next()) {
 
-					this.currentArticleID = resultArticles.getInt(1);
-					return (this.lastArticleID == -1)
-							|| (this.currentArticleID <= this.lastArticleID);
-				}
+            this.currentArticleID = resultArticles.getInt(1);
+            return (this.lastArticleID == -1)
+                    || (this.currentArticleID <= this.lastArticleID);
+          }
 
-				resultArticles.close();
-				return queryArticle();
+          resultArticles.close();
+          return queryArticle();
 
-			case ITERATE_WITHOUT_MAPPING:
+        case ITERATE_WITHOUT_MAPPING:
 
-				if (revisionIterator.hasNext()) {
-					return true;
-				}
+          if (revisionIterator.hasNext()) {
+            return true;
+          }
 
-				reset();
+          reset();
 
-				if (resultArticles.next()) {
+          if (resultArticles.next()) {
 
-					this.currentArticleID = resultArticles.getInt(1);
-					return (this.lastArticleID == -1)
-							|| (this.currentArticleID <= this.lastArticleID);
-				}
+            this.currentArticleID = resultArticles.getInt(1);
+            return (this.lastArticleID == -1)
+                    || (this.currentArticleID <= this.lastArticleID);
+          }
 
-				resultArticles.close();
-				return queryArticle();
+          resultArticles.close();
+          return queryArticle();
 
-			default:
-				throw new RuntimeException("Illegal mode");
-			}
+        default:
+          throw new RuntimeException("Illegal mode");
+      }
 
-		}
-		catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	/**
-	 * This method is unsupported.
-	 *
-	 * @deprecated
-	 * @throws UnsupportedOperationException
-	 */
-	@Deprecated
-	public void remove()
-	{
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * This method is unsupported.
+   *
+   * @throws UnsupportedOperationException
+   * @deprecated
+   */
+  @Deprecated
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 
-	/**
-	 * This method closes the connection to the input component.
-	 *
-	 * @throws SQLException
-	 *             if an error occurs while closing the connection to the
-	 *             database.
-	 */
-	public void close()
-		throws SQLException
-	{
-		if (this.connection != null) {
-			this.connection.close();
-		}
-	}
+  /**
+   * This method closes the connection to the input component.
+   *
+   * @throws SQLException if an error occurs while closing the connection to the
+   *                      database.
+   */
+  public void close()
+          throws SQLException {
+    if (this.connection != null) {
+      this.connection.close();
+    }
+  }
 
-	public static void main(final String[] args)
-		throws Exception
-	{
+  public static void main(final String[] args)
+          throws Exception {
 
-		RevisionAPIConfiguration config = new RevisionAPIConfiguration();
+    RevisionAPIConfiguration config = new RevisionAPIConfiguration();
 
-		config.setHost("localhost");
-		config.setDatabase("en_wiki");
-		config.setUser("root");
-		config.setPassword("1234");
+    config.setHost("localhost");
+    config.setDatabase("en_wiki");
+    config.setUser("root");
+    config.setPassword("1234");
 
-		config.setCharacterSet("UTF-8");
-		config.setBufferSize(10000);
-		config.setMaxAllowedPacket(1024 * 1023);
-		config.setChronoStorageSpace(400 * 1024 * 1024);
+    config.setCharacterSet("UTF-8");
+    config.setBufferSize(10000);
+    config.setMaxAllowedPacket(1024 * 1023);
+    config.setChronoStorageSpace(400 * 1024 * 1024);
 
-		long count = 1;
-		long last = 0, now, start = System.currentTimeMillis();
+    long count = 1;
+    long last = 0, now, start = System.currentTimeMillis();
 
-		Revision rev;
-		ChronoRevisionIterator it = new ChronoRevisionIterator(config);
+    Revision rev;
+    ChronoRevisionIterator it = new ChronoRevisionIterator(config);
 
-		System.out.println(Time.toClock(System.currentTimeMillis() - start));
+    System.out.println(Time.toClock(System.currentTimeMillis() - start));
 
-		while (it.hasNext()) {
-			rev = it.next();
+    while (it.hasNext()) {
+      rev = it.next();
 
-			if (count++ % 1000 == 0) {
+      if (count++ % 1000 == 0) {
 
-				now = System.currentTimeMillis() - start;
-				if (it.chronoIterator != null) {
-					System.out.println(it.chronoIterator.getStorageSize());
-				}
-				if (rev != null) {
-					System.out.println(rev);
-				}
-				System.out.println(Time.toClock(now) + "\t" + (now - last)
-						+ "\tREBUILDING " + count);
-				last = now;
-			}
-		}
+        now = System.currentTimeMillis() - start;
+        if (it.chronoIterator != null) {
+          System.out.println(it.chronoIterator.getStorageSize());
+        }
+        if (rev != null) {
+          System.out.println(rev);
+        }
+        System.out.println(Time.toClock(now) + "\t" + (now - last)
+                + "\tREBUILDING " + count);
+        last = now;
+      }
+    }
 
-		System.out.println(Time.toClock(System.currentTimeMillis() - start));
-	}
+    System.out.println(Time.toClock(System.currentTimeMillis() - start));
+  }
 }

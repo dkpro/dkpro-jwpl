@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,158 +32,151 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 /**
  * Iterates over the database to retrieve the necessary information for the
  * index generation.
- *
- *
- *
  */
 public class IndexIterator
-	implements Iterator<Revision>
-{
+        implements Iterator<Revision> {
 
-	/** Reference to the database connection */
-	private final Connection connection;
+  /**
+   * Reference to the database connection
+   */
+  private final Connection connection;
 
-	/** Reference to the ResultSet */
-	private ResultSet result;
+  /**
+   * Reference to the ResultSet
+   */
+  private ResultSet result;
 
-	/** Reference to the statement */
-	private Statement statement;
+  /**
+   * Reference to the statement
+   */
+  private Statement statement;
 
-	/** Currently used primary kes */
-	private int primaryKey;
+  /**
+   * Currently used primary kes
+   */
+  private int primaryKey;
 
-	/** Configuration parameter - maximum size of a result set */
-	private final int MAX_NUMBER_RESULTS;
+  /**
+   * Configuration parameter - maximum size of a result set
+   */
+  private final int MAX_NUMBER_RESULTS;
 
-	/**
-	 * (Constructor) Creates the IndexIterator object.
-	 *
-	 * @param config
-	 *            Reference to the configuration
-	 *
-	 * @throws WikiApiException
-	 *             if an error occurs
-	 */
-	public IndexIterator(final RevisionAPIConfiguration config)
-		throws WikiApiException
-	{
+  /**
+   * (Constructor) Creates the IndexIterator object.
+   *
+   * @param config Reference to the configuration
+   * @throws WikiApiException if an error occurs
+   */
+  public IndexIterator(final RevisionAPIConfiguration config)
+          throws WikiApiException {
 
-		try {
-			this.primaryKey = -1;
+    try {
+      this.primaryKey = -1;
 
-			this.statement = null;
-			this.result = null;
+      this.statement = null;
+      this.result = null;
 
-			String driverDB = "com.mysql.jdbc.Driver";
-			Class.forName(driverDB);
+      String driverDB = "com.mysql.jdbc.Driver";
+      Class.forName(driverDB);
 
-			MAX_NUMBER_RESULTS = config.getBufferSize();
+      MAX_NUMBER_RESULTS = config.getBufferSize();
 
-			this.connection = DriverManager.getConnection("jdbc:mysql://"
-					+ config.getHost() + "/" + config.getDatabase(),
-					config.getUser(), config.getPassword());
+      this.connection = DriverManager.getConnection("jdbc:mysql://"
+                      + config.getHost() + "/" + config.getDatabase(),
+              config.getUser(), config.getPassword());
 
-		}
-		catch (SQLException | ClassNotFoundException e) {
-			throw new WikiApiException(e);
-		}
+    } catch (SQLException | ClassNotFoundException e) {
+      throw new WikiApiException(e);
+    }
   }
 
-	/**
-	 * Queries the database for more revision information.
-	 *
-	 * @return TRUE if the resultset contains elements FALSE otherwise
-	 *
-	 * @throws SQLException
-	 *             if an error occurs while accessing the database
-	 */
-	private boolean query()
-		throws SQLException
-	{
-		statement = this.connection.createStatement();
+  /**
+   * Queries the database for more revision information.
+   *
+   * @return TRUE if the resultset contains elements FALSE otherwise
+   * @throws SQLException if an error occurs while accessing the database
+   */
+  private boolean query()
+          throws SQLException {
+    statement = this.connection.createStatement();
 
-		String query = "SELECT PrimaryKey, RevisionCounter,"
-				+ " RevisionID, ArticleID, Timestamp, FullRevisionID "
-				+ "FROM revisions";
+    String query = "SELECT PrimaryKey, RevisionCounter,"
+            + " RevisionID, ArticleID, Timestamp, FullRevisionID "
+            + "FROM revisions";
 
-		if (primaryKey > 0) {
-			query += " WHERE PrimaryKey > " + primaryKey;
-		}
+    if (primaryKey > 0) {
+      query += " WHERE PrimaryKey > " + primaryKey;
+    }
 
-		if (MAX_NUMBER_RESULTS > 0) {
-			query += " LIMIT " + MAX_NUMBER_RESULTS;
-		}
+    if (MAX_NUMBER_RESULTS > 0) {
+      query += " LIMIT " + MAX_NUMBER_RESULTS;
+    }
 
-		result = statement.executeQuery(query);
-		return result.next();
-	}
+    result = statement.executeQuery(query);
+    return result.next();
+  }
 
-	/**
-	 * Returns the next revision information. (Does not contain the encoded
-	 * diff)
-	 *
-	 * @return Revision
-	 */
-	public Revision next()
-	{
-		try {
-			Revision revision = new Revision(result.getInt(2));
+  /**
+   * Returns the next revision information. (Does not contain the encoded
+   * diff)
+   *
+   * @return Revision
+   */
+  public Revision next() {
+    try {
+      Revision revision = new Revision(result.getInt(2));
 
-			this.primaryKey = result.getInt(1);
-			revision.setPrimaryKey(this.primaryKey);
+      this.primaryKey = result.getInt(1);
+      revision.setPrimaryKey(this.primaryKey);
 
-			revision.setRevisionID(result.getInt(3));
-			revision.setArticleID(result.getInt(4));
-			revision.setTimeStamp(new Timestamp(result.getLong(5)));
-			revision.setFullRevisionID(result.getInt(6));
+      revision.setRevisionID(result.getInt(3));
+      revision.setArticleID(result.getInt(4));
+      revision.setTimeStamp(new Timestamp(result.getLong(5)));
+      revision.setFullRevisionID(result.getInt(6));
 
-			return revision;
+      return revision;
 
-		}
-		catch (Exception e) {
+    } catch (Exception e) {
 
-			e.printStackTrace();
+      e.printStackTrace();
 
-			throw new RuntimeException(e);
-		}
-	}
+      throw new RuntimeException(e);
+    }
+  }
 
-	/**
-	 * Returns TRUE if another revision information is available.
-	 *
-	 * @return TRUE | FALSE
-	 */
-	public boolean hasNext()
-	{
-		try {
-			if (result != null && result.next()) {
-				return true;
-			}
+  /**
+   * Returns TRUE if another revision information is available.
+   *
+   * @return TRUE | FALSE
+   */
+  public boolean hasNext() {
+    try {
+      if (result != null && result.next()) {
+        return true;
+      }
 
-			if (this.statement != null) {
-				this.statement.close();
-			}
-			if (this.result != null) {
-				this.result.close();
-			}
+      if (this.statement != null) {
+        this.statement.close();
+      }
+      if (this.result != null) {
+        this.result.close();
+      }
 
-			return query();
+      return query();
 
-		}
-		catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-	/**
-	 * unsupported method
-	 *
-	 * @deprecated
-	 * @throws UnsupportedOperationException
-	 */
-	@Deprecated
-	public void remove()
-	{
-		throw new UnsupportedOperationException();
-	}
+  /**
+   * unsupported method
+   *
+   * @throws UnsupportedOperationException
+   * @deprecated
+   */
+  @Deprecated
+  public void remove() {
+    throw new UnsupportedOperationException();
+  }
 }

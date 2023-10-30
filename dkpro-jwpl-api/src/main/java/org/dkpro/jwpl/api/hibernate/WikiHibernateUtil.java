@@ -59,7 +59,7 @@ public class WikiHibernateUtil implements WikiConstants {
         String password = config.getPassword();
 
         /*
-         * Ensures explicit DMBS type specific configuration for hsqldb from junit tests context
+         * Ensures explicit DBMS type specific configuration for hsqldb from junit tests context
          */
         String jdbcURL  = config.getJdbcURL();
         String databaseDriverClass = config.getDatabaseDriver();

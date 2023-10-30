@@ -28,42 +28,42 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public class LatestFilter implements DumpWriter {
-	final DumpWriter sink;
-	Revision lastRevision;
-	
-	public LatestFilter(DumpWriter sink) {
-		this.sink = sink;
-	}
-	
-	public void close() throws IOException {
-		sink.close();
-	}
-	
-	public void writeStartWiki() throws IOException {
-		sink.writeStartWiki();
-	}
-	
-	public void writeEndWiki() throws IOException {
-		sink.writeEndWiki();
-	}
-	
-	public void writeSiteinfo(Siteinfo info) throws IOException {
-		sink.writeSiteinfo(info);
-	}
-	
-	public void writeStartPage(Page page) throws IOException {
-		sink.writeStartPage(page);
-	}
-	
-	public void writeEndPage() throws IOException {
-		if (lastRevision != null) {
-			sink.writeRevision(lastRevision);
-			lastRevision = null;
-		}
-		sink.writeEndPage();
-	}
-	
-	public void writeRevision(Revision revision) {
-		lastRevision = revision;
-	}
+  final DumpWriter sink;
+  Revision lastRevision;
+
+  public LatestFilter(DumpWriter sink) {
+    this.sink = sink;
+  }
+
+  public void close() throws IOException {
+    sink.close();
+  }
+
+  public void writeStartWiki() throws IOException {
+    sink.writeStartWiki();
+  }
+
+  public void writeEndWiki() throws IOException {
+    sink.writeEndWiki();
+  }
+
+  public void writeSiteinfo(Siteinfo info) throws IOException {
+    sink.writeSiteinfo(info);
+  }
+
+  public void writeStartPage(Page page) throws IOException {
+    sink.writeStartPage(page);
+  }
+
+  public void writeEndPage() throws IOException {
+    if (lastRevision != null) {
+      sink.writeRevision(lastRevision);
+      lastRevision = null;
+    }
+    sink.writeEndPage();
+  }
+
+  public void writeRevision(Revision revision) {
+    lastRevision = revision;
+  }
 }

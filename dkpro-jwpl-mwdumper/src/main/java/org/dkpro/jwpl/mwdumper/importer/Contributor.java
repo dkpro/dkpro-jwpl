@@ -26,17 +26,17 @@
 package org.dkpro.jwpl.mwdumper.importer;
 
 public class Contributor {
-	public String Username;
-	public int Id;
-	public boolean isIP = false;
+  public String Username;
+  public int Id;
+  public boolean isIP = false;
 
-	public Contributor() {
-		this(null, 0);
-	}
-	
-	public Contributor(String username, int id) {
-		Username = username;
-		Id = id;
-	}
-	
+  public Contributor() {
+    this(null, 0);
+  }
+
+  public Contributor(String username, int id) {
+    Username = username;
+    Id = id;
+  }
+
 }

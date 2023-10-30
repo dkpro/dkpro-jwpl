@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,18 +25,12 @@ import java.util.zip.GZIPInputStream;
 /**
  * GZip Decompressor (based on Singleton Design Pattern). Uses getInputStream to
  * set up the archive path and returns the InputStream to read from
- *
- *
  */
 public class GZipDecompressor implements IDecompressor {
 
-	@Override
-	public InputStream getInputStream(String fileName) throws IOException {
-		InputStream inputStream;
-
-		inputStream = new GZIPInputStream(new FileInputStream(fileName));
-
-		return inputStream;
-	}
+  @Override
+  public InputStream getInputStream(String fileName) throws IOException {
+    return new GZIPInputStream(new FileInputStream(fileName));
+  }
 
 }

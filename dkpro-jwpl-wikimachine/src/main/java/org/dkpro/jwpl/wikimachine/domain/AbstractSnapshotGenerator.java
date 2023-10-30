@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,29 +22,29 @@ import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
 public abstract class AbstractSnapshotGenerator implements ISnapshotGenerator {
-	protected Configuration configuration = null;
-	protected final IDecompressor decompressor;
-	protected final ILogger logger;
-	protected final DumpVersionProcessor dumpVersionProcessor;
-	protected final IEnvironmentFactory environmentFactory;
+  protected Configuration configuration = null;
+  protected final IDecompressor decompressor;
+  protected final ILogger logger;
+  protected final DumpVersionProcessor dumpVersionProcessor;
+  protected final IEnvironmentFactory environmentFactory;
 
-	public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory) {
-		this.decompressor = environmentFactory.getDecompressor();
-		this.logger = environmentFactory.getLogger();
-		this.dumpVersionProcessor = environmentFactory
-				.getDumpVersionProcessor();
+  public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory) {
+    this.decompressor = environmentFactory.getDecompressor();
+    this.logger = environmentFactory.getLogger();
+    this.dumpVersionProcessor = environmentFactory
+            .getDumpVersionProcessor();
 
-		this.environmentFactory = environmentFactory;
-	}
+    this.environmentFactory = environmentFactory;
+  }
 
-	@Override
-	public abstract void setFiles(Files files);
+  @Override
+  public abstract void setFiles(Files files);
 
-	@Override
-	public void setConfiguration(Configuration configuration) {
-		this.configuration = configuration;
-	}
+  @Override
+  public void setConfiguration(Configuration configuration) {
+    this.configuration = configuration;
+  }
 
-	@Override
-	public abstract void start() throws Exception;
+  @Override
+  public abstract void start() throws Exception;
 }

@@ -28,46 +28,46 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public abstract class PageFilter implements DumpWriter {
-	final DumpWriter sink;
-	boolean showThisPage;
-	
-	public PageFilter(DumpWriter sink) {
-		this.sink = sink;
-	}
-	
-	public void close() throws IOException {
-		sink.close();
-	}
-	
-	public void writeStartWiki() throws IOException {
-		sink.writeStartWiki();
-	}
-	
-	public void writeEndWiki() throws IOException {
-		sink.writeEndWiki();
-	}
-	
-	public void writeSiteinfo(Siteinfo info) throws IOException {
-		sink.writeSiteinfo(info);
-	}
-	
-	public void writeStartPage(Page page) throws IOException {
-		showThisPage = pass(page);
-		if (showThisPage)
-			sink.writeStartPage(page);
-	}
-	
-	public void writeEndPage() throws IOException {
-		if (showThisPage)
-			sink.writeEndPage();
-	}
-	
-	public void writeRevision(Revision revision) throws IOException {
-		if (showThisPage)
-			sink.writeRevision(revision);
-	}
-	
-	protected boolean pass(Page page) {
-		return true;
-	}
+  final DumpWriter sink;
+  boolean showThisPage;
+
+  public PageFilter(DumpWriter sink) {
+    this.sink = sink;
+  }
+
+  public void close() throws IOException {
+    sink.close();
+  }
+
+  public void writeStartWiki() throws IOException {
+    sink.writeStartWiki();
+  }
+
+  public void writeEndWiki() throws IOException {
+    sink.writeEndWiki();
+  }
+
+  public void writeSiteinfo(Siteinfo info) throws IOException {
+    sink.writeSiteinfo(info);
+  }
+
+  public void writeStartPage(Page page) throws IOException {
+    showThisPage = pass(page);
+    if (showThisPage)
+      sink.writeStartPage(page);
+  }
+
+  public void writeEndPage() throws IOException {
+    if (showThisPage)
+      sink.writeEndPage();
+  }
+
+  public void writeRevision(Revision revision) throws IOException {
+    if (showThisPage)
+      sink.writeRevision(revision);
+  }
+
+  protected boolean pass(Page page) {
+    return true;
+  }
 }

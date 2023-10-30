@@ -35,31 +35,31 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ListFilter extends PageFilter {
-	protected final Map<String, String> list;
-	
-	public ListFilter(DumpWriter sink, String sourceFileName) throws IOException {
-		super(sink);
-		list = new HashMap<>();
-		BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
-			new FileInputStream(sourceFileName)), StandardCharsets.UTF_8));
-		String line = input.readLine();
-		while (line != null) {
-			if (!line.startsWith("#")) {
-				String title = line.trim();
-				title = title.replace("_", " ");
-				if (title.startsWith(":"))
-					title = line.substring(1);
-				
-				if (title.length() > 0)
-					list.put(title, title);
-			}
-			line = input.readLine();
-		}
-		input.close();
-	}
-	
-	protected boolean pass(Page page) {
-		return list.containsKey(page.Title.subjectPage().toString())
-			|| list.containsKey(page.Title.talkPage().toString());
-	}
+  protected final Map<String, String> list;
+
+  public ListFilter(DumpWriter sink, String sourceFileName) throws IOException {
+    super(sink);
+    list = new HashMap<>();
+    BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
+            new FileInputStream(sourceFileName)), StandardCharsets.UTF_8));
+    String line = input.readLine();
+    while (line != null) {
+      if (!line.startsWith("#")) {
+        String title = line.trim();
+        title = title.replace("_", " ");
+        if (title.startsWith(":"))
+          title = line.substring(1);
+
+        if (title.length() > 0)
+          list.put(title, title);
+      }
+      line = input.readLine();
+    }
+    input.close();
+  }
+
+  protected boolean pass(Page page) {
+    return list.containsKey(page.Title.subjectPage().toString())
+            || list.containsKey(page.Title.talkPage().toString());
+  }
 }

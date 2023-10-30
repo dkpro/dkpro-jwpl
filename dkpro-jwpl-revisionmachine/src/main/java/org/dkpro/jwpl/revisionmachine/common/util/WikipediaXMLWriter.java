@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,363 +37,340 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformatio
  * output file.
  * <p>
  * This class is used for debug purposes.
- *
- *
- *
  */
-public class WikipediaXMLWriter
-{
+public class WikipediaXMLWriter {
 
-	/** Reference to the writer */
-	private final OutputStreamWriter writer;
+  /**
+   * Reference to the writer
+   */
+  private final OutputStreamWriter writer;
 
-	/**
-	 * (Constructor) Creates a WikipediaXMLWriter object.
-	 *
-	 * @param path
-	 *            path of the output file
-	 * @throws IOException
-	 *             if an error occurs while writing the output
-	 */
-	public WikipediaXMLWriter(final String path)
-		throws IOException
-	{
-		this.writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(path)),
+  /**
+   * (Constructor) Creates a WikipediaXMLWriter object.
+   *
+   * @param path path of the output file
+   * @throws IOException if an error occurs while writing the output
+   */
+  public WikipediaXMLWriter(final String path)
+          throws IOException {
+    this.writer = new OutputStreamWriter(new BufferedOutputStream(new FileOutputStream(path)),
             StandardCharsets.UTF_8);
-	}
+  }
 
-	/**
-	 * Writes the diff task to the output using wikipedia xml notation.
-	 *
-	 * @param diff
-	 *            Reference to a diff task
-	 * @throws IOException
-	 *             if an error occurs while writing the output
-	 */
-	public void writeDiff(final Task<Diff> diff)
-		throws IOException
-	{
-		writeDiff(diff, 0);
-	}
+  /**
+   * Writes the diff task to the output using wikipedia xml notation.
+   *
+   * @param diff Reference to a diff task
+   * @throws IOException if an error occurs while writing the output
+   */
+  public void writeDiff(final Task<Diff> diff)
+          throws IOException {
+    writeDiff(diff, 0);
+  }
 
-	/**
-	 * Writes a part of the diff task, starting with the given element, to the
-	 * output using wikipedia xml notation.
-	 *
-	 * @param diff
-	 *            Reference to a diff task
-	 * @param start
-	 *            Position of the start element
-	 * @throws IOException
-	 *             if an error occurs while writing the output
-	 */
-	public void writeDiff(final Task<Diff> diff, final int start)
-		throws IOException
-	{
+  /**
+   * Writes a part of the diff task, starting with the given element, to the
+   * output using wikipedia xml notation.
+   *
+   * @param diff  Reference to a diff task
+   * @param start Position of the start element
+   * @throws IOException if an error occurs while writing the output
+   */
+  public void writeDiff(final Task<Diff> diff, final int start)
+          throws IOException {
 
-		int size = diff.size();
-		Diff d;
-		String previousRevision = null, currentRevision;
+    int size = diff.size();
+    Diff d;
+    String previousRevision = null, currentRevision;
 
-		this.writer
-				.write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword() + "\r\n");
+    this.writer
+            .write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword() + "\r\n");
 
-		ArticleInformation header = diff.getHeader();
+    ArticleInformation header = diff.getHeader();
 
-		this.writer.write("\t" + WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
-		this.writer.write(header.getArticleName());
-		this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword() + "\r\n");
+    this.writer.write("\t" + WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
+    this.writer.write(header.getArticleName());
+    this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword() + "\r\n");
 
-		this.writer.write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
-		this.writer.write(Integer.toString(header.getArticleId()));
-		this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+    this.writer.write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+    this.writer.write(Integer.toString(header.getArticleId()));
+    this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
 
-		this.writer.write("\t<partCounter>");
-		this.writer.write(Integer.toString(diff.getPartCounter()));
-		this.writer.write("</partCounter>\r\n");
+    this.writer.write("\t<partCounter>");
+    this.writer.write(Integer.toString(diff.getPartCounter()));
+    this.writer.write("</partCounter>\r\n");
 
-		for (int i = start; i < size; i++) {
-			d = diff.get(i);
-			currentRevision = d.buildRevision(previousRevision);
+    for (int i = start; i < size; i++) {
+      d = diff.get(i);
+      currentRevision = d.buildRevision(previousRevision);
 
-			this.writer
-					.write("\t"
-							+ WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
-							+ "\r\n");
+      this.writer
+              .write("\t"
+                      + WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
+                      + "\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_ID.getKeyword());
-			this.writer.write(Integer.toString(d.getRevisionID()));
-			this.writer
-					.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+      this.writer.write(Integer.toString(d.getRevisionID()));
+      this.writer
+              .write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
 
-			this.writer.write("\t\t<revCount>");
-			this.writer.write(Integer.toString(d.getRevisionCounter()));
-			this.writer.write("</revCount>\r\n");
+      this.writer.write("\t\t<revCount>");
+      this.writer.write(Integer.toString(d.getRevisionCounter()));
+      this.writer.write("</revCount>\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
-			this.writer.write(d.getTimeStamp().toString());
-			this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
+      this.writer.write(d.getTimeStamp().toString());
+      this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
+              + "\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_TEXT.getKeyword());
-			if (currentRevision != null) {
-				this.writer.write(currentRevision);
-				previousRevision = currentRevision;
-			}
-			this.writer.write(WikipediaXMLKeys.KEY_END_TEXT.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_TEXT.getKeyword());
+      if (currentRevision != null) {
+        this.writer.write(currentRevision);
+        previousRevision = currentRevision;
+      }
+      this.writer.write(WikipediaXMLKeys.KEY_END_TEXT.getKeyword()
+              + "\r\n");
 
-			this.writer.write("\t"
-					+ WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
+      this.writer.write("\t"
+              + WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
 
-		}
+    }
 
-		this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword() + "\r\n");
-		this.writer.flush();
-	}
+    this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword() + "\r\n");
+    this.writer.flush();
+  }
 
-	/**
-	 * Writes the diff task to the output using an xml representation of the
-	 * diff information.
-	 *
-	 * @param diff
-	 *            Reference to a diff task
-	 * @throws IOException
-	 *             if an error occurs while writing the output
-	 */
-	public void writeDiffFile(final Task<Diff> diff)
-		throws IOException
-	{
+  /**
+   * Writes the diff task to the output using an xml representation of the
+   * diff information.
+   *
+   * @param diff Reference to a diff task
+   * @throws IOException if an error occurs while writing the output
+   */
+  public void writeDiffFile(final Task<Diff> diff)
+          throws IOException {
 
-		int partsCount;
-		int size = diff.size();
-		Diff d;
-		DiffPart p;
-		RevisionCodecData codec;
+    int partsCount;
+    int size = diff.size();
+    Diff d;
+    DiffPart p;
+    RevisionCodecData codec;
 
-		this.writer
-				.write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword() + "\r\n");
+    this.writer
+            .write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword() + "\r\n");
 
-		ArticleInformation header = diff.getHeader();
+    ArticleInformation header = diff.getHeader();
 
-		this.writer.write("\t" + WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
-		this.writer.write(header.getArticleName());
-		this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword() + "\r\n");
+    this.writer.write("\t" + WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
+    this.writer.write(header.getArticleName());
+    this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword() + "\r\n");
 
-		this.writer.write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
-		this.writer.write(Integer.toString(header.getArticleId()));
-		this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+    this.writer.write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+    this.writer.write(Integer.toString(header.getArticleId()));
+    this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
 
-		this.writer.write("\t<partCounter>");
-		this.writer.write(Integer.toString(diff.getPartCounter()));
-		this.writer.write("</partCounter>\r\n");
+    this.writer.write("\t<partCounter>");
+    this.writer.write(Integer.toString(diff.getPartCounter()));
+    this.writer.write("</partCounter>\r\n");
 
-		for (int i = 0; i < size; i++) {
-			d = diff.get(i);
+    for (int i = 0; i < size; i++) {
+      d = diff.get(i);
 
-			this.writer
-					.write("\t"
-							+ WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
-							+ "\r\n");
+      this.writer
+              .write("\t"
+                      + WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
+                      + "\r\n");
 
-			codec = d.getCodecData();
-			if (!codec.isConverted()) {
-				codec.totalSizeInBits();
-			}
+      codec = d.getCodecData();
+      if (!codec.isConverted()) {
+        codec.totalSizeInBits();
+      }
 
-			this.writer.write("\t\t<codecData>\r\n");
+      this.writer.write("\t\t<codecData>\r\n");
 
-			this.writer.write("\t\t\t<s>"
-					+ codec.getBlocksizeS() + "</s>\r\n");
-			this.writer.write("\t\t\t<e>"
-					+ codec.getBlocksizeE() + "</e>\r\n");
-			this.writer.write("\t\t\t<b>"
-					+ codec.getBlocksizeB() + "</b>\r\n");
-			this.writer.write("\t\t\t<l>"
-					+ codec.getBlocksizeL() + "</l>\r\n");
+      this.writer.write("\t\t\t<s>"
+              + codec.getBlocksizeS() + "</s>\r\n");
+      this.writer.write("\t\t\t<e>"
+              + codec.getBlocksizeE() + "</e>\r\n");
+      this.writer.write("\t\t\t<b>"
+              + codec.getBlocksizeB() + "</b>\r\n");
+      this.writer.write("\t\t\t<l>"
+              + codec.getBlocksizeL() + "</l>\r\n");
 
-			this.writer.write("\t\t</codecData>\r\n");
+      this.writer.write("\t\t</codecData>\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_ID.getKeyword());
-			this.writer.write(Integer.toString(d.getRevisionID()));
-			this.writer
-					.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+      this.writer.write(Integer.toString(d.getRevisionID()));
+      this.writer
+              .write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
 
-			this.writer.write("\t\t<revCount>");
-			this.writer.write(Integer.toString(d.getRevisionCounter()));
-			this.writer.write("</revCount>\r\n");
+      this.writer.write("\t\t<revCount>");
+      this.writer.write(Integer.toString(d.getRevisionCounter()));
+      this.writer.write("</revCount>\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
-			this.writer.write(d.getTimeStamp().toString());
-			this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
+      this.writer.write(d.getTimeStamp().toString());
+      this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
+              + "\r\n");
 
-			this.writer.write("\t\t<diff>\r\n");
-			partsCount = d.size();
-			for (int j = 0; j < partsCount; j++) {
+      this.writer.write("\t\t<diff>\r\n");
+      partsCount = d.size();
+      for (int j = 0; j < partsCount; j++) {
 
-				p = d.get(j);
-				this.writer.write("\t\t\t<diffPart>\r\n");
+        p = d.get(j);
+        this.writer.write("\t\t\t<diffPart>\r\n");
 
-				this.writer.write("\t\t\t\t<action>" + p.getAction()
-						+ "</action>\r\n");
-				this.writer.write("\t\t\t\t<start>"
-						+ p.getStart() + "</start>\r\n");
-				this.writer.write("\t\t\t\t<end>"
-						+ p.getEnd() + "</end>\r\n");
-				if (p.getText() != null) {
-					this.writer
-							.write("\t\t\t\t<content xml:space=\"preserve\">"
-									+ p.getText());
-					this.writer.write("</content>\r\n");
-				}
+        this.writer.write("\t\t\t\t<action>" + p.getAction()
+                + "</action>\r\n");
+        this.writer.write("\t\t\t\t<start>"
+                + p.getStart() + "</start>\r\n");
+        this.writer.write("\t\t\t\t<end>"
+                + p.getEnd() + "</end>\r\n");
+        if (p.getText() != null) {
+          this.writer
+                  .write("\t\t\t\t<content xml:space=\"preserve\">"
+                          + p.getText());
+          this.writer.write("</content>\r\n");
+        }
 
-				this.writer.write("\t\t\t</diffPart>\r\n");
-			}
+        this.writer.write("\t\t\t</diffPart>\r\n");
+      }
 
-			this.writer.write("\t\t</diff>\r\n");
-			this.writer.write("\t"
-					+ WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
-		}
+      this.writer.write("\t\t</diff>\r\n");
+      this.writer.write("\t"
+              + WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
+    }
 
-		this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword() + "\r\n");
-		this.writer.flush();
-	}
+    this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword() + "\r\n");
+    this.writer.flush();
+  }
 
-	/**
-	 * Writes the revision task to the output using wikipedia xml notation.
-	 *
-	 * @param task
-	 *            Reference to a revision task
-	 * @throws IOException
-	 *             if an error occurs while writing the output
-	 */
-	public void writeRevision(final Task<Revision> task)
-		throws IOException
-	{
+  /**
+   * Writes the revision task to the output using wikipedia xml notation.
+   *
+   * @param task Reference to a revision task
+   * @throws IOException if an error occurs while writing the output
+   */
+  public void writeRevision(final Task<Revision> task)
+          throws IOException {
 
-		if (task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST
-				|| task.getTaskType() == TaskTypes.TASK_FULL) {
+    if (task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST
+            || task.getTaskType() == TaskTypes.TASK_FULL) {
 
-			this.writer.write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword()
-					+ "\r\n");
+      this.writer.write(WikipediaXMLKeys.KEY_START_PAGE.getKeyword()
+              + "\r\n");
 
-			ArticleInformation header = task.getHeader();
+      ArticleInformation header = task.getHeader();
 
-			this.writer.write("\t"
-					+ WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
-			this.writer.write(header.getArticleName());
-			this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t"
+              + WikipediaXMLKeys.KEY_START_TITLE.getKeyword());
+      this.writer.write(header.getArticleName());
+      this.writer.write(WikipediaXMLKeys.KEY_END_TITLE.getKeyword()
+              + "\r\n");
 
-			this.writer
-					.write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
-			this.writer.write(Integer.toString(header.getArticleId()));
-			this.writer
-					.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
-		}
+      this.writer
+              .write("\t" + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+      this.writer.write(Integer.toString(header.getArticleId()));
+      this.writer
+              .write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+    }
 
-		Revision rev;
-		Iterator<Revision> revIt = task.iterator();
-		while (revIt.hasNext()) {
+    Revision rev;
+    Iterator<Revision> revIt = task.iterator();
+    while (revIt.hasNext()) {
 
-			this.writer
-					.write("\t"
-							+ WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
-							+ "\r\n");
-			rev = revIt.next();
+      this.writer
+              .write("\t"
+                      + WikipediaXMLKeys.KEY_START_REVISION.getKeyword()
+                      + "\r\n");
+      rev = revIt.next();
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_ID.getKeyword());
-			this.writer.write(Integer.toString(rev.getRevisionID()));
-			this.writer
-					.write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+      this.writer.write(Integer.toString(rev.getRevisionID()));
+      this.writer
+              .write(WikipediaXMLKeys.KEY_END_ID.getKeyword() + "\r\n");
 
-			this.writer.write("\t\t<revCount>");
-			this.writer.write(Integer.toString(rev.getRevisionCounter()));
-			this.writer.write("</revCount>\r\n");
+      this.writer.write("\t\t<revCount>");
+      this.writer.write(Integer.toString(rev.getRevisionCounter()));
+      this.writer.write("</revCount>\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
-			this.writer.write(rev.getTimeStamp().toString());
-			this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword());
+      this.writer.write(rev.getTimeStamp().toString());
+      this.writer.write(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
+              + "\r\n");
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_CONTRIBUTOR.getKeyword());
-			if(rev.contributorIsRegistered()){
-				this.writer.write("\t\t"
-						+ WikipediaXMLKeys.KEY_START_USERNAME.getKeyword());
-				this.writer.write(rev.getContributorName());
-				this.writer.write(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
-						+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_CONTRIBUTOR.getKeyword());
+      if (rev.contributorIsRegistered()) {
+        this.writer.write("\t\t"
+                + WikipediaXMLKeys.KEY_START_USERNAME.getKeyword());
+        this.writer.write(rev.getContributorName());
+        this.writer.write(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
+                + "\r\n");
 
-				this.writer.write("\t\t"
-						+ WikipediaXMLKeys.KEY_START_ID.getKeyword());
-				this.writer.write(rev.getContributorId());
-				this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword()
-						+ "\r\n");
-			}
-			else{
-				this.writer.write("\t\t"
-						+ WikipediaXMLKeys.KEY_START_IP.getKeyword());
-				this.writer.write(rev.getContributorName());
-				this.writer.write(WikipediaXMLKeys.KEY_END_IP.getKeyword()
-						+ "\r\n");
-			}
+        this.writer.write("\t\t"
+                + WikipediaXMLKeys.KEY_START_ID.getKeyword());
+        this.writer.write(rev.getContributorId());
+        this.writer.write(WikipediaXMLKeys.KEY_END_ID.getKeyword()
+                + "\r\n");
+      } else {
+        this.writer.write("\t\t"
+                + WikipediaXMLKeys.KEY_START_IP.getKeyword());
+        this.writer.write(rev.getContributorName());
+        this.writer.write(WikipediaXMLKeys.KEY_END_IP.getKeyword()
+                + "\r\n");
+      }
 
-			this.writer.write(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword()
-					+ "\r\n");
+      this.writer.write(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword()
+              + "\r\n");
 
-			if(rev.isMinor()){
-				this.writer.write("\t\t"+WikipediaXMLKeys.KEY_MINOR_FLAG.getKeyword()
-						+ "\r\n");
-			}
+      if (rev.isMinor()) {
+        this.writer.write("\t\t" + WikipediaXMLKeys.KEY_MINOR_FLAG.getKeyword()
+                + "\r\n");
+      }
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_COMMENT.getKeyword());
-			this.writer.write(rev.getComment());
-			this.writer.write(WikipediaXMLKeys.KEY_END_COMMENT.getKeyword()
-					+ "\r\n");
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_COMMENT.getKeyword());
+      this.writer.write(rev.getComment());
+      this.writer.write(WikipediaXMLKeys.KEY_END_COMMENT.getKeyword()
+              + "\r\n");
 
 
+      this.writer.write("\t\t"
+              + WikipediaXMLKeys.KEY_START_TEXT.getKeyword());
+      if (rev.getRevisionText() != null) {
+        this.writer.write(rev.getRevisionText());
+      }
+      this.writer.write(WikipediaXMLKeys.KEY_END_TEXT.getKeyword()
+              + "\r\n");
 
+      this.writer.write("\t"
+              + WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
+    }
 
-			this.writer.write("\t\t"
-					+ WikipediaXMLKeys.KEY_START_TEXT.getKeyword());
-			if (rev.getRevisionText() != null) {
-				this.writer.write(rev.getRevisionText());
-			}
-			this.writer.write(WikipediaXMLKeys.KEY_END_TEXT.getKeyword()
-					+ "\r\n");
+    if (task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST
+            || task.getTaskType() == TaskTypes.TASK_FULL) {
 
-			this.writer.write("\t"
-					+ WikipediaXMLKeys.KEY_END_REVISION.getKeyword() + "\r\n");
-		}
+      this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword()
+              + "\r\n");
+    }
+    this.writer.flush();
+  }
 
-		if (task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST
-				|| task.getTaskType() == TaskTypes.TASK_FULL) {
-
-			this.writer.write(WikipediaXMLKeys.KEY_END_PAGE.getKeyword()
-					+ "\r\n");
-		}
-		this.writer.flush();
-	}
-
-	/**
-	 * Closes the writer.
-	 *
-	 * @throws IOException
-	 *             if an error occurred while closing the writer
-	 */
-	public void close()
-		throws IOException
-	{
-		this.writer.close();
-	}
+  /**
+   * Closes the writer.
+   *
+   * @throws IOException if an error occurred while closing the writer
+   */
+  public void close()
+          throws IOException {
+    this.writer.close();
+  }
 }
