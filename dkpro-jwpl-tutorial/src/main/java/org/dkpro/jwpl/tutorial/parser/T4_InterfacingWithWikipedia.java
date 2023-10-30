@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,31 +34,31 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
  */
 public class T4_InterfacingWithWikipedia {
 
-	public static void main(String[] args) throws WikiApiException {
-		//db connection settings
-		DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-        dbConfig.setDatabase("DATABASE");
-        dbConfig.setHost("HOST");
-        dbConfig.setUser("USER");
-        dbConfig.setPassword("PASSWORD");
-        dbConfig.setLanguage(Language.english);
-		
-		//initialize a wiki
-		Wikipedia wiki = new Wikipedia(dbConfig);
-		
-		//get the page 'Dog'
-		Page p = wiki.getPage("Dog");
-		
-		//get a ParsedPage object
-		MediaWikiParserFactory pf = new MediaWikiParserFactory();
-		MediaWikiParser parser = pf.createParser();
-		ParsedPage pp = parser.parse(p.getText());
-	
-		//get the sections of the page
-		List<Section> sections = pp.getSections();
-		
-		for(Section section : sections) {
-            System.out.println(section.getTitle());
-        }
-	}
+  public static void main(String[] args) throws WikiApiException {
+    //db connection settings
+    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+    dbConfig.setDatabase("DATABASE");
+    dbConfig.setHost("HOST");
+    dbConfig.setUser("USER");
+    dbConfig.setPassword("PASSWORD");
+    dbConfig.setLanguage(Language.english);
+
+    //initialize a wiki
+    Wikipedia wiki = new Wikipedia(dbConfig);
+
+    //get the page 'Dog'
+    Page p = wiki.getPage("Dog");
+
+    //get a ParsedPage object
+    MediaWikiParserFactory pf = new MediaWikiParserFactory();
+    MediaWikiParser parser = pf.createParser();
+    ParsedPage pp = parser.parse(p.getText());
+
+    //get the sections of the page
+    List<Section> sections = pp.getSections();
+
+    for (Section section : sections) {
+      System.out.println(section.getTitle());
+    }
+  }
 }

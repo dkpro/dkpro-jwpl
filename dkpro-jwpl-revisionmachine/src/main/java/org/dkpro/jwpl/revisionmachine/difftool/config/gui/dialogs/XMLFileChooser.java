@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,49 +24,41 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * This object represents a xml file filter.
- *
- *
- *
  */
 @SuppressWarnings("serial")
 public class XMLFileChooser
-	extends JFileChooser
-{
+        extends JFileChooser {
 
-	/**
-	 * (Constructor) Creates an FileChooser with a xml file filter.
-	 */
-	public XMLFileChooser()
-	{
+  /**
+   * (Constructor) Creates an FileChooser with a xml file filter.
+   */
+  public XMLFileChooser() {
 
-		setFileFilter(new FileFilter()
-		{
-
-			@Override
-			public String getDescription()
-			{
-				return ".xml";
-			}
+    setFileFilter(new FileFilter() {
 
       @Override
-			public boolean accept(final File f)
-			{
+      public String getDescription() {
+        return ".xml";
+      }
 
-				// Always accept directories
-				if (f.isDirectory()) {
-					return true;
-				}
+      @Override
+      public boolean accept(final File f) {
 
-				int p = f.getName().indexOf(".");
+        // Always accept directories
+        if (f.isDirectory()) {
+          return true;
+        }
 
-				// Files need a ending
-				if (p == -1) {
-					return false;
-				}
+        int p = f.getName().indexOf(".");
 
-				// Verify the ending
-				return f.getName().substring(p).equals(".xml");
-			}
-		});
-	}
+        // Files need a ending
+        if (p == -1) {
+          return false;
+        }
+
+        // Verify the ending
+        return f.getName().substring(p).equals(".xml");
+      }
+    });
+  }
 }

@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,46 +23,46 @@ import java.io.OutputStream;
 
 public class InputStreamSpy extends InputStream {
 
-	private final InputStream iStream;
-	private final OutputStream oStream;
-	
-	public InputStreamSpy(InputStream iStream, OutputStream oStream){
-		this.iStream = iStream;
-		this.oStream = oStream;
-	}
-	
-	@Override
-	public int read() throws IOException {
-		int result = iStream.read();
-		oStream.write(result);
-		return result;		
-	}
-	
-	@Override
-	public int available() throws IOException {
-		return iStream.available();
-	}
+  private final InputStream iStream;
+  private final OutputStream oStream;
 
-	@Override
-	public void close() throws IOException {
-		iStream.close();
-		oStream.flush();
-	}
+  public InputStreamSpy(InputStream iStream, OutputStream oStream) {
+    this.iStream = iStream;
+    this.oStream = oStream;
+  }
 
-	@Override
-	public void mark(int readlimit) {
-		iStream.mark(readlimit);
-	}
+  @Override
+  public int read() throws IOException {
+    int result = iStream.read();
+    oStream.write(result);
+    return result;
+  }
 
-	@Override
-	public void reset() throws IOException {
-		iStream.reset();
-	}
+  @Override
+  public int available() throws IOException {
+    return iStream.available();
+  }
 
-	@Override
-	public boolean markSupported() {
-		return iStream.markSupported();
-	}
+  @Override
+  public void close() throws IOException {
+    iStream.close();
+    oStream.flush();
+  }
+
+  @Override
+  public void mark(int readlimit) {
+    iStream.mark(readlimit);
+  }
+
+  @Override
+  public void reset() throws IOException {
+    iStream.reset();
+  }
+
+  @Override
+  public boolean markSupported() {
+    return iStream.markSupported();
+  }
 
 
 }

@@ -35,61 +35,61 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class RevisionListFilter implements DumpWriter {
-	final DumpWriter sink;
-	protected final Set<String> revIds;
-	protected Page currentPage;
-	protected boolean pageWritten;
-	
-	public RevisionListFilter(DumpWriter sink, String sourceFileName) throws IOException {
-		this.sink = sink;
-		revIds = new TreeSet<>();
-		BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
-			new FileInputStream(sourceFileName)), StandardCharsets.UTF_8));
-		String line = input.readLine();
-		while (line != null) {
-			line = line.trim();
-			if (line.length() > 0 && !line.startsWith("#")) {
-				revIds.add(line);
-			}
-			line = input.readLine();
-		}
-		input.close();
-	}
-	
-	public void close() throws IOException {
-		sink.close();
-	}
-	
-	public void writeStartWiki() throws IOException {
-		sink.writeStartWiki();
-	}
-	
-	public void writeEndWiki() throws IOException {
-		sink.writeEndWiki();
-	}
-	
-	public void writeSiteinfo(Siteinfo info) throws IOException {
-		sink.writeSiteinfo(info);
-	}
-	
-	public void writeStartPage(Page page) throws IOException {
-		currentPage = page;
-		pageWritten = false;
-	}
-	
-	public void writeEndPage() throws IOException {
-		if (pageWritten) {
-			sink.writeEndPage();
-		}
-	}
-	
-	public void writeRevision(Revision revision) throws IOException {
-		if (revIds.contains(Integer.valueOf(revision.Id).toString())) {
-			if (!pageWritten) {
-				sink.writeStartPage(currentPage);
-				pageWritten = true;
-			}
-			sink.writeRevision(revision);
-		}
-	}
+  final DumpWriter sink;
+  protected final Set<String> revIds;
+  protected Page currentPage;
+  protected boolean pageWritten;
+
+  public RevisionListFilter(DumpWriter sink, String sourceFileName) throws IOException {
+    this.sink = sink;
+    revIds = new TreeSet<>();
+    BufferedReader input = new BufferedReader(new InputStreamReader(new BufferedInputStream(
+            new FileInputStream(sourceFileName)), StandardCharsets.UTF_8));
+    String line = input.readLine();
+    while (line != null) {
+      line = line.trim();
+      if (line.length() > 0 && !line.startsWith("#")) {
+        revIds.add(line);
+      }
+      line = input.readLine();
+    }
+    input.close();
+  }
+
+  public void close() throws IOException {
+    sink.close();
+  }
+
+  public void writeStartWiki() throws IOException {
+    sink.writeStartWiki();
+  }
+
+  public void writeEndWiki() throws IOException {
+    sink.writeEndWiki();
+  }
+
+  public void writeSiteinfo(Siteinfo info) throws IOException {
+    sink.writeSiteinfo(info);
+  }
+
+  public void writeStartPage(Page page) throws IOException {
+    currentPage = page;
+    pageWritten = false;
+  }
+
+  public void writeEndPage() throws IOException {
+    if (pageWritten) {
+      sink.writeEndPage();
+    }
+  }
+
+  public void writeRevision(Revision revision) throws IOException {
+    if (revIds.contains(Integer.valueOf(revision.Id).toString())) {
+      if (!pageWritten) {
+        sink.writeStartPage(currentPage);
+        pageWritten = true;
+      }
+      sink.writeRevision(revision);
+    }
+  }
 }

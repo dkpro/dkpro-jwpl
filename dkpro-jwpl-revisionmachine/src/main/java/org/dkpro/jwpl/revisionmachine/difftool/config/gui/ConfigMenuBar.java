@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,65 +25,60 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigControll
 
 /**
  * MenuBar of the ConfigurationTool
- *
- *
- *
  */
 @SuppressWarnings("serial")
 public class ConfigMenuBar
-	extends JMenuBar
-{
+        extends JMenuBar {
 
-	/** Reference to the controller */
-	private final ConfigController controller;
+  /**
+   * Reference to the controller
+   */
+  private final ConfigController controller;
 
-	/**
-	 * (Constructor) Create the ConfigMenuBar object.
-	 *
-	 * @param controller
-	 *            reference to the controller
-	 */
-	public ConfigMenuBar(final ConfigController controller)
-	{
+  /**
+   * (Constructor) Create the ConfigMenuBar object.
+   *
+   * @param controller reference to the controller
+   */
+  public ConfigMenuBar(final ConfigController controller) {
 
-		this.controller = controller;
+    this.controller = controller;
 
-		createSystemMenu();
-	}
+    createSystemMenu();
+  }
 
-	/**
-	 * Creates the System menu and its menu items.
-	 */
-	private void createSystemMenu()
-	{
+  /**
+   * Creates the System menu and its menu items.
+   */
+  private void createSystemMenu() {
 
-		JMenu system = new JMenu("System");
+    JMenu system = new JMenu("System");
 
-		JMenuItem importConfig = new JMenuItem("Import Configuration");
-		importConfig.addActionListener(e -> controller.loadConfiguration());
+    JMenuItem importConfig = new JMenuItem("Import Configuration");
+    importConfig.addActionListener(e -> controller.loadConfiguration());
 
-		system.add(importConfig);
+    system.add(importConfig);
 
-		JMenuItem exportConfig = new JMenuItem("Export Configuration");
-		exportConfig.addActionListener(e -> controller.saveConfiguration());
+    JMenuItem exportConfig = new JMenuItem("Export Configuration");
+    exportConfig.addActionListener(e -> controller.saveConfiguration());
 
-		system.add(exportConfig);
+    system.add(exportConfig);
 
-		system.addSeparator();
+    system.addSeparator();
 
-		JMenuItem defaultConfig = new JMenuItem(
-				"Reset to default parameters");
-		defaultConfig.addActionListener(e -> controller.defaultConfiguration());
+    JMenuItem defaultConfig = new JMenuItem(
+            "Reset to default parameters");
+    defaultConfig.addActionListener(e -> controller.defaultConfiguration());
 
-		system.add(defaultConfig);
+    system.add(defaultConfig);
 
-		system.addSeparator();
+    system.addSeparator();
 
-		JMenuItem systemClose = new JMenuItem("Close");
-		systemClose.addActionListener(e -> System.exit(-1));
+    JMenuItem systemClose = new JMenuItem("Close");
+    systemClose.addActionListener(e -> System.exit(-1));
 
-		system.add(systemClose);
+    system.add(systemClose);
 
-		this.add(system);
-	}
+    this.add(system);
+  }
 }

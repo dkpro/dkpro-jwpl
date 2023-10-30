@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,342 +24,327 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 
 /**
  * ChronoFullRevision
- *
- *
+ * <p>
+ * <p>
  * 1
  */
-public class ChronoFullRevision
-{
+public class ChronoFullRevision {
 
-	/** PrimaryKey of the full revision */
-	private final int fullRevisionPK;
+  /**
+   * PrimaryKey of the full revision
+   */
+  private final int fullRevisionPK;
 
-	/** First revision counter / revision counter of the full revision */
-	private final int startRC;
+  /**
+   * First revision counter / revision counter of the full revision
+   */
+  private final int startRC;
 
-	/** Last revision counter based on the full revision */
-	private final int endRC;
+  /**
+   * Last revision counter based on the full revision
+   */
+  private final int endRC;
 
-	/** Reference to the chrono storage block */
-	private ChronoStorageBlock first;
+  /**
+   * Reference to the chrono storage block
+   */
+  private ChronoStorageBlock first;
 
-	/** Set containing the IDs of revisions that could be reconstructed */
-	private final Set<Integer> set;
+  /**
+   * Set containing the IDs of revisions that could be reconstructed
+   */
+  private final Set<Integer> set;
 
-	/** Link to the next full revision */
-	private ChronoFullRevision next;
+  /**
+   * Link to the next full revision
+   */
+  private ChronoFullRevision next;
 
-	/** Link to the previous full revision */
-	private ChronoFullRevision prev;
+  /**
+   * Link to the previous full revision
+   */
+  private ChronoFullRevision prev;
 
-	/** Number of bytes contained in this object */
-	private long size;
+  /**
+   * Number of bytes contained in this object
+   */
+  private long size;
 
-	/**
-	 * (Constructor) Creates a new ChronoFullRevision object.
-	 *
-	 * @param fullRevisionPK
-	 *            primary key of a full revision
-	 * @param startRC
-	 *            revision counter of the full revision
-	 * @param endRC
-	 *            last revision counter based on the full revision
-	 */
-	public ChronoFullRevision(final int fullRevisionPK, final int startRC,
-			final int endRC)
-	{
+  /**
+   * (Constructor) Creates a new ChronoFullRevision object.
+   *
+   * @param fullRevisionPK primary key of a full revision
+   * @param startRC        revision counter of the full revision
+   * @param endRC          last revision counter based on the full revision
+   */
+  public ChronoFullRevision(final int fullRevisionPK, final int startRC,
+                            final int endRC) {
 
-		this.fullRevisionPK = fullRevisionPK;
-		this.startRC = startRC;
-		this.endRC = endRC;
+    this.fullRevisionPK = fullRevisionPK;
+    this.startRC = startRC;
+    this.endRC = endRC;
 
-		this.size = 0;
+    this.size = 0;
 
-		this.set = new HashSet<>();
-		for (int i = startRC; i <= endRC; i++) {
-			this.set.add(i);
-		}
-	}
+    this.set = new HashSet<>();
+    for (int i = startRC; i <= endRC; i++) {
+      this.set.add(i);
+    }
+  }
 
-	/**
-	 * Returns the reference to the ChronoStorageBlock.
-	 *
-	 * @return chrono storage block
-	 */
-	public ChronoStorageBlock getFirst()
-	{
-		return this.first;
-	}
+  /**
+   * Returns the reference to the ChronoStorageBlock.
+   *
+   * @return chrono storage block
+   */
+  public ChronoStorageBlock getFirst() {
+    return this.first;
+  }
 
-	/**
-	 * Sets the reference of the ChronoStorageBlock.
-	 *
-	 * @param block
-	 *            chrono storage block
-	 */
-	public void setFirst(final ChronoStorageBlock block)
-	{
-		this.first = block;
-	}
+  /**
+   * Sets the reference of the ChronoStorageBlock.
+   *
+   * @param block chrono storage block
+   */
+  public void setFirst(final ChronoStorageBlock block) {
+    this.first = block;
+  }
 
-	/**
-	 * Adds a ChonoStorageBlock to this chrono full revision object.
-	 *
-	 * @param block
-	 *            reference to the chrono storage block
-	 */
-	public void add(final ChronoStorageBlock block)
-	{
+  /**
+   * Adds a ChonoStorageBlock to this chrono full revision object.
+   *
+   * @param block reference to the chrono storage block
+   */
+  public void add(final ChronoStorageBlock block) {
 
-		int revCount = block.getRevisionCounter();
-		this.size += block.length();
+    int revCount = block.getRevisionCounter();
+    this.size += block.length();
 
-		if (first == null) {
-			first = block;
-		}
-		else {
+    if (first == null) {
+      first = block;
+    } else {
 
-			ChronoStorageBlock previous = null, current = first;
-			do {
-				if (revCount < current.getRevisionCounter()) {
+      ChronoStorageBlock previous = null, current = first;
+      do {
+        if (revCount < current.getRevisionCounter()) {
 
-					block.setCounterPrev(previous);
-					block.setCounterNext(current);
+          block.setCounterPrev(previous);
+          block.setCounterNext(current);
 
-					if (previous != null) {
-						previous.setCounterNext(block);
-					}
+          if (previous != null) {
+            previous.setCounterNext(block);
+          }
 
-					current.setCounterPrev(block);
+          current.setCounterPrev(block);
 
-					if (current == this.first) {
-						this.first = block;
-					}
+          if (current == this.first) {
+            this.first = block;
+          }
 
-					return;
-				}
+          return;
+        }
 
-				previous = current;
-				current = current.getCounterNext();
+        previous = current;
+        current = current.getCounterNext();
 
-			}
-			while (current != null);
+      }
+      while (current != null);
 
-			// Add to end of list
-			previous.setCounterNext(block);
-			block.setCounterPrev(previous);
-		}
-	}
+      // Add to end of list
+      previous.setCounterNext(block);
+      block.setCounterPrev(previous);
+    }
+  }
 
-	/**
-	 * Returns the nearest available revision to the specified revision counter.
-	 *
-	 * @param revisionCounter
-	 *            revision counter
-	 * @return Revision
-	 */
-	public Revision getNearest(final int revisionCounter)
-	{
+  /**
+   * Returns the nearest available revision to the specified revision counter.
+   *
+   * @param revisionCounter revision counter
+   * @return Revision
+   */
+  public Revision getNearest(final int revisionCounter) {
 
-		if (first != null) {
+    if (first != null) {
 
-			ChronoStorageBlock previous = null, current = first;
-			while (current != null
-					&& current.getRevisionCounter() <= revisionCounter) {
-				previous = current;
-				current = current.getCounterNext();
-			}
+      ChronoStorageBlock previous = null, current = first;
+      while (current != null
+              && current.getRevisionCounter() <= revisionCounter) {
+        previous = current;
+        current = current.getCounterNext();
+      }
 
-			return previous.getRev();
-		}
+      return previous.getRev();
+    }
 
-		return null;
-	}
+    return null;
+  }
 
-	/**
-	 * Removes the revision counter from the list of reconstructible revisions.
-	 *
-	 * @param revisionCounter
-	 *            revision counter
-	 */
-	public void remove(final int revisionCounter)
-	{
-		this.set.remove(revisionCounter);
-		if (this.set.isEmpty()) {
-			clean(0, 0);
-		}
-	}
+  /**
+   * Removes the revision counter from the list of reconstructible revisions.
+   *
+   * @param revisionCounter revision counter
+   */
+  public void remove(final int revisionCounter) {
+    this.set.remove(revisionCounter);
+    if (this.set.isEmpty()) {
+      clean(0, 0);
+    }
+  }
 
-	/**
-	 * Returns whether more revisions can be reconstructed by the use of this
-	 * chrono full revision.
-	 *
-	 * @return TRUE | FALSE
-	 */
-	public boolean isEmpty()
-	{
-		return this.set.isEmpty();
-	}
+  /**
+   * Returns whether more revisions can be reconstructed by the use of this
+   * chrono full revision.
+   *
+   * @return TRUE | FALSE
+   */
+  public boolean isEmpty() {
+    return this.set.isEmpty();
+  }
 
-	/**
-	 * Returns the next chrono full revision.
-	 *
-	 * @return next chrono full revision
-	 */
-	public ChronoFullRevision getNext()
-	{
-		return next;
-	}
+  /**
+   * Returns the next chrono full revision.
+   *
+   * @return next chrono full revision
+   */
+  public ChronoFullRevision getNext() {
+    return next;
+  }
 
-	/**
-	 * Sets the link to the next chrono full revision.
-	 *
-	 * @param next
-	 *            next chrono full revision
-	 */
-	public void setNext(final ChronoFullRevision next)
-	{
-		this.next = next;
-	}
+  /**
+   * Sets the link to the next chrono full revision.
+   *
+   * @param next next chrono full revision
+   */
+  public void setNext(final ChronoFullRevision next) {
+    this.next = next;
+  }
 
-	/**
-	 * Returns the previous chrono full revision.
-	 *
-	 * @return previous chrono full revision
-	 */
-	public ChronoFullRevision getPrev()
-	{
-		return prev;
-	}
+  /**
+   * Returns the previous chrono full revision.
+   *
+   * @return previous chrono full revision
+   */
+  public ChronoFullRevision getPrev() {
+    return prev;
+  }
 
-	/**
-	 * Sets the link to the previous chrono full revision.
-	 *
-	 * @param prev
-	 *            previous chrono full revision
-	 */
-	public void setPrev(final ChronoFullRevision prev)
-	{
-		this.prev = prev;
-	}
+  /**
+   * Sets the link to the previous chrono full revision.
+   *
+   * @param prev previous chrono full revision
+   */
+  public void setPrev(final ChronoFullRevision prev) {
+    this.prev = prev;
+  }
 
-	/**
-	 * Reduces the storage space.
-	 *
-	 * @param currentRevisionIndex
-	 *            index of the current revision
-	 * @param revisionIndex
-	 *            index of the revision
-	 * @return size of used storage
-	 */
-	public long clean(final int currentRevisionIndex, final int revisionIndex)
-	{
+  /**
+   * Reduces the storage space.
+   *
+   * @param currentRevisionIndex index of the current revision
+   * @param revisionIndex        index of the revision
+   * @return size of used storage
+   */
+  public long clean(final int currentRevisionIndex, final int revisionIndex) {
 
-		if (first == null) {
-			return 0;
-		}
-		else if (this.set.isEmpty()) {
-			this.first = null;
-			this.size = 0;
-			return 0;
-		}
+    if (first == null) {
+      return 0;
+    } else if (this.set.isEmpty()) {
+      this.first = null;
+      this.size = 0;
+      return 0;
+    }
 
-		ChronoStorageBlock next, prev, current = first;
-		boolean remove;
+    ChronoStorageBlock next, prev, current = first;
+    boolean remove;
 
-		do {
-			remove = false;
+    do {
+      remove = false;
 
-			if (current.isDelivered()) {
+      if (current.isDelivered()) {
 
-				next = current.getCounterNext();
+        next = current.getCounterNext();
 
-				if (next != null) {
-					if (current.getRevisionCounter() + 1 == next
-							.getRevisionCounter()) {
-						remove = true;
-					}
-				}
+        if (next != null) {
+          if (current.getRevisionCounter() + 1 == next
+                  .getRevisionCounter()) {
+            remove = true;
+          }
+        }
 
-			}
-			else if (current.getIndexNext() == null
-					&& current.getIndexPrev() == null) {
+      } else if (current.getIndexNext() == null
+              && current.getIndexPrev() == null) {
 
-				remove = (current.getRevisionIndex() < currentRevisionIndex)
-						|| (current.getRevisionIndex() == revisionIndex);
-			}
+        remove = (current.getRevisionIndex() < currentRevisionIndex)
+                || (current.getRevisionIndex() == revisionIndex);
+      }
 
-			if (remove) {
-				// System.out.println("Clearn CFR : " +
-				// current.getRevisionCounter());
+      if (remove) {
+        // System.out.println("Clearn CFR : " +
+        // current.getRevisionCounter());
 
-				prev = current.getCounterPrev();
-				next = current.getCounterNext();
+        prev = current.getCounterPrev();
+        next = current.getCounterNext();
 
-				current.setCounterNext(null);
-				current.setCounterPrev(null);
+        current.setCounterNext(null);
+        current.setCounterPrev(null);
 
-				if (prev != null) {
-					prev.setCounterNext(next);
-				}
-				if (next != null) {
-					next.setCounterPrev(prev);
-				}
-				if (current == first) {
-					this.first = next;
-				}
+        if (prev != null) {
+          prev.setCounterNext(next);
+        }
+        if (next != null) {
+          next.setCounterPrev(prev);
+        }
+        if (current == first) {
+          this.first = next;
+        }
 
-				this.size -= current.length();
-				current = next;
-			}
+        this.size -= current.length();
+        current = next;
+      }
 
-			if (current != null) {
-				current = current.getCounterNext();
-			}
+      if (current != null) {
+        current = current.getCounterNext();
+      }
 
-		}
-		while (current != null);
+    }
+    while (current != null);
 
-		return this.size;
-	}
+    return this.size;
+  }
 
-	/**
-	 * Returns the size of this chrono full revision.
-	 *
-	 * @return size
-	 */
-	public long size()
-	{
-		return this.size;
-	}
+  /**
+   * Returns the size of this chrono full revision.
+   *
+   * @return size
+   */
+  public long size() {
+    return this.size;
+  }
 
-	/**
-	 * Returns the last revision counter based on this full revision.
-	 *
-	 * @return last revision counter
-	 */
-	public int getEndRC()
-	{
-		return endRC;
-	}
+  /**
+   * Returns the last revision counter based on this full revision.
+   *
+   * @return last revision counter
+   */
+  public int getEndRC() {
+    return endRC;
+  }
 
-	/**
-	 * Returns the pk of the full revision.
-	 *
-	 * @return pk of the full revision
-	 */
-	public int getFullRevisionPK()
-	{
-		return fullRevisionPK;
-	}
+  /**
+   * Returns the pk of the full revision.
+   *
+   * @return pk of the full revision
+   */
+  public int getFullRevisionPK() {
+    return fullRevisionPK;
+  }
 
-	/**
-	 * Returns the revision counter of the full revision.
-	 *
-	 * @return first revision counter
-	 */
-	public int getStartRC()
-	{
-		return startRC;
-	}
+  /**
+   * Returns the revision counter of the full revision.
+   *
+   * @return first revision counter
+   */
+  public int getStartRC() {
+    return startRC;
+  }
 }

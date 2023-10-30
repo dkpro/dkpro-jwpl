@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,59 +34,48 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels.AbstractPanel;
 
 /**
  * ConfigDialog - Displays the ConfigVerification elements.
- *
- *
- *
  */
 @SuppressWarnings("serial")
 public class ConfigDialog
-	extends JDialog
-{
+        extends JDialog {
 
-	/**
-	 * Panel of the ConfigDialog
-	 *
-	 *
-	 *
-	 */
-	private class ConfigDialogPanel
-		extends AbstractPanel
-	{
+  /**
+   * Panel of the ConfigDialog
+   */
+  private class ConfigDialogPanel
+          extends AbstractPanel {
 
-		private JTable itemTable;
-		private JScrollPane itemScrollPane;
+    private JTable itemTable;
+    private JScrollPane itemScrollPane;
 
-		private JButton returnButton;
-		private JButton saveButton;
+    private JButton returnButton;
+    private JButton saveButton;
 
-		/**
-		 * (Constructor) Creates the ConfigDialogPanel.
-		 *
-		 * @param controller
-		 *            Reference to the controller
-		 */
-		public ConfigDialogPanel(final ConfigController controller)
-		{
-			super(controller);
-			createItemTable();
-			createButtons();
-		}
+    /**
+     * (Constructor) Creates the ConfigDialogPanel.
+     *
+     * @param controller Reference to the controller
+     */
+    public ConfigDialogPanel(final ConfigController controller) {
+      super(controller);
+      createItemTable();
+      createButtons();
+    }
 
-		/**
-		 * Creates the buttons of the dialog panel.
-		 */
-		private void createButtons()
-		{
+    /**
+     * Creates the buttons of the dialog panel.
+     */
+    private void createButtons() {
 
-			returnButton = new JButton("Return");
-			returnButton.setBounds(105, 195, 120, 25);
-			returnButton.addActionListener(e -> close());
+      returnButton = new JButton("Return");
+      returnButton.setBounds(105, 195, 120, 25);
+      returnButton.addActionListener(e -> close());
 
-			this.add(returnButton);
+      this.add(returnButton);
 
-			saveButton = new JButton("Save");
-			saveButton.setBounds(235, 195, 120, 25);
-			saveButton.addActionListener(e -> {
+      saveButton = new JButton("Save");
+      saveButton.setBounds(235, 195, 120, 25);
+      saveButton.addActionListener(e -> {
 
         XMLFileChooser fc = new XMLFileChooser();
         if (fc.showSaveDialog(new JPanel()) == XMLFileChooser.APPROVE_OPTION) {
@@ -98,112 +87,102 @@ public class ConfigDialog
 
           if (controller.saveConfiguration(path)) {
             System.out.println("SAVE CONFIG SUCCESSFULL");
-          }
-          else {
+          } else {
             System.out.println("SAVE CONFIG FAILED");
           }
         }
       });
 
-			this.add(saveButton);
-		}
+      this.add(saveButton);
+    }
 
-		/**
-		 * Creates the JTable for displaying the input archives.
-		 */
-		private void createItemTable()
-		{
-			itemTable = new JTable(controller.getConfigErrors());
-			itemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    /**
+     * Creates the JTable for displaying the input archives.
+     */
+    private void createItemTable() {
+      itemTable = new JTable(controller.getConfigErrors());
+      itemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			itemScrollPane = new JScrollPane(itemTable);
-			itemScrollPane.setBounds(10, 10, 470, 180);
+      itemScrollPane = new JScrollPane(itemTable);
+      itemScrollPane.setBounds(10, 10, 470, 180);
 
-			this.add(itemScrollPane);
-		}
+      this.add(itemScrollPane);
+    }
 
-		/**
-		 * empty method
-		 */
-		@Override
-		public void relocate()
-		{
+    /**
+     * empty method
+     */
+    @Override
+    public void relocate() {
 
-		}
+    }
 
-		/**
-		 * A call of this method should validate the positions of the panels
-		 * components.
-		 */
-		@Override
-		public void validate()
-		{
+    /**
+     * A call of this method should validate the positions of the panels
+     * components.
+     */
+    @Override
+    public void validate() {
 
-			ConfigVerification verification = controller.getConfigErrors();
-			if (verification != null) {
-				saveButton.setEnabled(!verification.hasFailed());
-			}
-			else {
-				saveButton.setEnabled(false);
-			}
-		}
+      ConfigVerification verification = controller.getConfigErrors();
+      if (verification != null) {
+        saveButton.setEnabled(!verification.hasFailed());
+      } else {
+        saveButton.setEnabled(false);
+      }
+    }
 
-		/**
-		 * empty method
-		 *
-		 * @deprecated
-		 * @throws UnsupportedOperationException
-		 */
-		@Deprecated
-		@Override
-		public void toXML(final StringBuilder builder,
-				final ConfigVerification errors)
-		{
-			throw new UnsupportedOperationException();
-		}
+    /**
+     * empty method
+     *
+     * @throws UnsupportedOperationException
+     * @deprecated
+     */
+    @Deprecated
+    @Override
+    public void toXML(final StringBuilder builder,
+                      final ConfigVerification errors) {
+      throw new UnsupportedOperationException();
+    }
 
-		/**
-		 * empty method
-		 *
-		 * @deprecated
-		 * @throws UnsupportedOperationException
-		 */
-		@Deprecated
-		@Override
-		public void applyConfig(final ConfigSettings config)
-		{
-			throw new UnsupportedOperationException();
-		}
-	}
+    /**
+     * empty method
+     *
+     * @throws UnsupportedOperationException
+     * @deprecated
+     */
+    @Deprecated
+    @Override
+    public void applyConfig(final ConfigSettings config) {
+      throw new UnsupportedOperationException();
+    }
+  }
 
-	/**
-	 * (Constructor) Creates a new ConfigDialog.
-	 *
-	 * @param controller
-	 *            Reference to the controller
-	 */
-	public ConfigDialog(final ConfigController controller)
-	{
-		super(controller.getRegistry().getGUI(), true);
+  /**
+   * (Constructor) Creates a new ConfigDialog.
+   *
+   * @param controller Reference to the controller
+   */
+  public ConfigDialog(final ConfigController controller) {
+    super(controller.getRegistry().getGUI(), true);
 
-		this.setTitle("Verification");
+    this.setTitle("Verification");
 
-		setSize(500, 250);
-		setResizable(false);
+    setSize(500, 250);
+    setResizable(false);
 
-		Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-		setLocation((d.width - getSize().width) / 2,
-				(d.height - getSize().height) / 2);
+    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+    setLocation((d.width - getSize().width) / 2,
+            (d.height - getSize().height) / 2);
 
-		this.setContentPane(new ConfigDialogPanel(controller));
-	}
+    this.setContentPane(new ConfigDialogPanel(controller));
+  }
 
-	/**
-	 * Closes the dialog.
-	 */
-	public void close()
-	{
-		this.setVisible(true);
-		this.dispose();
-	}
+  /**
+   * Closes the dialog.
+   */
+  public void close() {
+    this.setVisible(true);
+    this.dispose();
+  }
 }

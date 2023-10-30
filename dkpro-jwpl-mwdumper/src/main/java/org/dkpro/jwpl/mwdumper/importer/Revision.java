@@ -28,21 +28,21 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.util.Calendar;
 
 public class Revision {
-	public int Id;
-	public Calendar Timestamp;
-	public Contributor Contributor;
-	public String Comment;
-	public String Text;
-	public boolean Minor;
-	
-	public boolean isRedirect() {
-		// FIXME
-		return Text.startsWith("#REDIRECT ") || Text.startsWith("#redirect ");
-	}
-	
-	public Revision() {
-		Comment = "";
-		Text = "";
-		Minor = false;
-	}
+  public int Id;
+  public Calendar Timestamp;
+  public Contributor Contributor;
+  public String Comment;
+  public String Text;
+  public boolean Minor;
+
+  public boolean isRedirect() {
+    // FIXME
+    return Text.startsWith("#REDIRECT ") || Text.startsWith("#redirect ");
+  }
+
+  public Revision() {
+    Comment = "";
+    Text = "";
+    Minor = false;
+  }
 }

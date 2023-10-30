@@ -29,36 +29,37 @@ import java.util.IdentityHashMap;
 
 public final class Buffer {
 
-	private Buffer() {}
+  private Buffer() {
+  }
 
-	private static final IdentityHashMap<Thread, char[]> BUFFERS = new IdentityHashMap<>();
+  private static final IdentityHashMap<Thread, char[]> BUFFERS = new IdentityHashMap<>();
 
-	private static Thread lastThread;
-	private static char[] lastBuffer;
+  private static Thread lastThread;
+  private static char[] lastBuffer;
 
-	public static synchronized char[] get(int capacity) {
-		final Thread thread = Thread.currentThread();
-		char[] buffer;
+  public static synchronized char[] get(int capacity) {
+    final Thread thread = Thread.currentThread();
+    char[] buffer;
 
-		if (lastThread == thread) {
-			buffer = lastBuffer;
-		} else {
-			lastThread = thread;
-			buffer = lastBuffer = BUFFERS.get(thread);
-		}
+    if (lastThread == thread) {
+      buffer = lastBuffer;
+    } else {
+      lastThread = thread;
+      buffer = lastBuffer = BUFFERS.get(thread);
+    }
 
-		if (buffer == null) {
-			buffer = lastBuffer = new char[capacity];
-			BUFFERS.put(thread, buffer);
-		} else if (buffer.length < capacity) {
-			int newsize = buffer.length * 2;
-			if (newsize < capacity)
-				newsize = capacity;
+    if (buffer == null) {
+      buffer = lastBuffer = new char[capacity];
+      BUFFERS.put(thread, buffer);
+    } else if (buffer.length < capacity) {
+      int newsize = buffer.length * 2;
+      if (newsize < capacity)
+        newsize = capacity;
 
-			buffer = lastBuffer = new char[newsize];
-			BUFFERS.put(thread, buffer);
-		}
+      buffer = lastBuffer = new char[newsize];
+      BUFFERS.put(thread, buffer);
+    }
 
-		return buffer;
-	}
+    return buffer;
+  }
 }

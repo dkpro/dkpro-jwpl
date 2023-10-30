@@ -26,11 +26,11 @@
 package org.dkpro.jwpl.mwdumper.importer;
 
 public class NotalkFilter extends PageFilter {
-	public NotalkFilter(DumpWriter sink) {
-		super(sink);
-	}
+  public NotalkFilter(DumpWriter sink) {
+    super(sink);
+  }
 
-	protected boolean pass(Page page) {
-		return !page.Title.isTalk();
-	}
+  protected boolean pass(Page page) {
+    return !page.Title.isTalk();
+  }
 }

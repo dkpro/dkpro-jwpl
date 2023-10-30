@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,94 +34,92 @@ import org.slf4j.LoggerFactory;
 // There should be no way to construct a category graph that circumvents the manager.
 public class CategoryGraphManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static Map<String,CategoryGraph> catGraphMap;
+  private static Map<String, CategoryGraph> catGraphMap;
 
-    private final static String catGraphSerializationFilename = "catGraphSer";
+  private final static String catGraphSerializationFilename = "catGraphSer";
 
-    public static CategoryGraph getCategoryGraph(Wikipedia wiki) throws WikiApiException {
-        return getCategoryGraph(wiki, null, true);
+  public static CategoryGraph getCategoryGraph(Wikipedia wiki) throws WikiApiException {
+    return getCategoryGraph(wiki, null, true);
+  }
+
+  public static CategoryGraph getCategoryGraph(Wikipedia wiki, boolean serialize) throws WikiApiException {
+    return getCategoryGraph(wiki, null, serialize);
+  }
+
+  public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds) throws WikiApiException {
+    return getCategoryGraph(wiki, pageIds, true);
+  }
+
+  public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds, boolean serialize) throws WikiApiException {
+    if (catGraphMap == null) {
+      catGraphMap = new HashMap<>();
     }
 
-    public static CategoryGraph getCategoryGraph(Wikipedia wiki, boolean serialize) throws WikiApiException {
-        return getCategoryGraph(wiki, null, serialize);
+    String wikiID = wiki.getWikipediaId();
+    if (catGraphMap.containsKey(wikiID)) {
+      return catGraphMap.get(wikiID);
     }
 
-    public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds) throws WikiApiException {
-        return getCategoryGraph(wiki, pageIds, true);
+    String size = "";
+    if (pageIds != null) {
+      size = Integer.valueOf(pageIds.size()).toString();
     }
 
-    public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds, boolean serialize) throws WikiApiException {
-        if (catGraphMap == null) {
-            catGraphMap = new HashMap<>();
-        }
-
-        String wikiID = wiki.getWikipediaId();
-        if (catGraphMap.containsKey(wikiID)) {
-            return catGraphMap.get(wikiID);
-        }
-
-        String size = "";
-        if (pageIds != null) {
-            size = Integer.valueOf(pageIds.size()).toString();
-        }
-
-        CategoryGraph catGraph;
-        if (serialize) {
-            catGraph = tryToLoadCategoryGraph(wiki, wikiID, size);
-            if (catGraph != null) {
-                catGraphMap.put(wikiID, catGraph);
-                return catGraph;
-            }
-        }
-
-
-        // could not be loaded (= no serialized category graph was written so far) => create it
-        if (pageIds != null) {
-            catGraph = new CategoryGraph(wiki, pageIds);
-        }
-        else {
-            catGraph = new CategoryGraph(wiki);
-        }
-
+    CategoryGraph catGraph;
+    if (serialize) {
+      catGraph = tryToLoadCategoryGraph(wiki, wikiID, size);
+      if (catGraph != null) {
         catGraphMap.put(wikiID, catGraph);
-
-        if (serialize) {
-            saveCategoryGraph(catGraph, wikiID, size);
-        }
-
         return catGraph;
+      }
     }
 
-     private static CategoryGraph tryToLoadCategoryGraph(Wikipedia wiki, String wikiId, String size) throws WikiApiException {
 
-         String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
-         File defaulSerializedGraphFile = new File(defaultSerializedGraphLocation);
-         if (defaulSerializedGraphFile.exists()) {
-             try {
-                 logger.info("Loading category graph from " + defaultSerializedGraphLocation);
-                 return new CategoryGraph(wiki, GraphSerialization.loadGraph(defaultSerializedGraphLocation));
-             } catch (IOException | ClassNotFoundException e) {
-                 throw new WikiApiException(e);
-             }
-         }
-         else {
-             return null;
-         }
-     }
+    // could not be loaded (= no serialized category graph was written so far) => create it
+    if (pageIds != null) {
+      catGraph = new CategoryGraph(wiki, pageIds);
+    } else {
+      catGraph = new CategoryGraph(wiki);
+    }
 
-      private static void saveCategoryGraph(CategoryGraph catGraph, String wikiId, String size) throws WikiApiException {
-          String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
-          try {
-              logger.info("Saving category graph to " + defaultSerializedGraphLocation);
-              GraphSerialization.saveGraph(catGraph.getGraph(), defaultSerializedGraphLocation);
-          } catch (IOException e) {
-              throw new WikiApiException(e);
-          }
+    catGraphMap.put(wikiID, catGraph);
+
+    if (serialize) {
+      saveCategoryGraph(catGraph, wikiID, size);
+    }
+
+    return catGraph;
+  }
+
+  private static CategoryGraph tryToLoadCategoryGraph(Wikipedia wiki, String wikiId, String size) throws WikiApiException {
+
+    String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
+    File defaulSerializedGraphFile = new File(defaultSerializedGraphLocation);
+    if (defaulSerializedGraphFile.exists()) {
+      try {
+        logger.info("Loading category graph from " + defaultSerializedGraphLocation);
+        return new CategoryGraph(wiki, GraphSerialization.loadGraph(defaultSerializedGraphLocation));
+      } catch (IOException | ClassNotFoundException e) {
+        throw new WikiApiException(e);
       }
+    } else {
+      return null;
+    }
+  }
 
-      private static String getCategoryGraphSerializationFileName(String wikiId, String size) {
-          return catGraphSerializationFilename + "_" + wikiId + size;
-      }
+  private static void saveCategoryGraph(CategoryGraph catGraph, String wikiId, String size) throws WikiApiException {
+    String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
+    try {
+      logger.info("Saving category graph to " + defaultSerializedGraphLocation);
+      GraphSerialization.saveGraph(catGraph.getGraph(), defaultSerializedGraphLocation);
+    } catch (IOException e) {
+      throw new WikiApiException(e);
+    }
+  }
+
+  private static String getCategoryGraphSerializationFileName(String wikiId, String size) {
+    return catGraphSerializationFilename + "_" + wikiId + size;
+  }
 }

@@ -34,39 +34,40 @@ import java.util.Set;
  * <a href="https://stackoverflow.com/a/42389029">https://stackoverflow.com/a/42389029</a>
  */
 public final class DeleteFilesAtShutdown {
-    private static Set<Path> paths = new LinkedHashSet<>();
+  private static Set<Path> paths = new LinkedHashSet<>();
 
-    static {
-        // registers the call of 'shutdownHook' at JVM shutdown
-        Runtime.getRuntime().addShutdownHook(new Thread(DeleteFilesAtShutdown::cleanupRegisteredFiles));
+  static {
+    // registers the call of 'shutdownHook' at JVM shutdown
+    Runtime.getRuntime().addShutdownHook(new Thread(DeleteFilesAtShutdown::cleanupRegisteredFiles));
+  }
+
+  private static void cleanupRegisteredFiles() {
+    Set<Path> local;
+    synchronized (DeleteFilesAtShutdown.class) {
+      local = paths;
+      paths = null;
     }
 
-    private static void cleanupRegisteredFiles() {
-        Set<Path> local;
-        synchronized(DeleteFilesAtShutdown.class){
-            local = paths;
-            paths = null;
-        }
-
-        List<Path> toBeDeleted = new ArrayList<>(local);
-        Collections.reverse(toBeDeleted);
-        for (Path p : toBeDeleted) {
-            try {
-                Files.delete(p);
-            } catch (IOException | RuntimeException e) {
-                // do nothing - best-effort
-            }
-        }
+    List<Path> toBeDeleted = new ArrayList<>(local);
+    Collections.reverse(toBeDeleted);
+    for (Path p : toBeDeleted) {
+      try {
+        Files.delete(p);
+      } catch (IOException | RuntimeException e) {
+        // do nothing - best-effort
+      }
     }
+  }
 
-    /**
-     * Registers a {@link Path} to be removed at JVM shutdown.
-     * @param filePath A valid path pointing to a file.
-     */
-    public static synchronized void register(Path filePath) {
-        if (paths == null) {
-            throw new IllegalStateException("Shutdown hook is already in progress. Adding paths is not allowed now!");
-        }
-        paths.add(filePath);
+  /**
+   * Registers a {@link Path} to be removed at JVM shutdown.
+   *
+   * @param filePath A valid path pointing to a file.
+   */
+  public static synchronized void register(Path filePath) {
+    if (paths == null) {
+      throw new IllegalStateException("Shutdown hook is already in progress. Adding paths is not allowed now!");
     }
+    paths.add(filePath);
+  }
 }

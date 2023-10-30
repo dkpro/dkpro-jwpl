@@ -26,9 +26,9 @@
 package org.dkpro.jwpl.mwdumper.importer;
 
 public class Siteinfo {
-	public String Sitename;
-	public String Base;
-	public String Generator;
-	public String Case;
-	public NamespaceSet Namespaces;
+  public String Sitename;
+  public String Base;
+  public String Generator;
+  public String Case;
+  public NamespaceSet Namespaces;
 }

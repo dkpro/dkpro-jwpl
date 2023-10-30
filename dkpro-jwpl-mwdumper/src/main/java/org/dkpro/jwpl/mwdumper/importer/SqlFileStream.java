@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,23 +23,23 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
 public class SqlFileStream implements SqlStream {
-	protected final PrintStream stream;
-	
-	public SqlFileStream(OutputStream output) throws IOException {
-		this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
-	}
-	
-	public void writeComment(CharSequence sql) {
-		stream.println(sql.toString());
-	}
-	
-	public void writeStatement(CharSequence sql) {
-		stream.print(sql.toString());
-		stream.println(';');
-	}
-	
-	public void close() {
-		stream.flush();
-		stream.close();
-	}
+  protected final PrintStream stream;
+
+  public SqlFileStream(OutputStream output) throws IOException {
+    this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
+  }
+
+  public void writeComment(CharSequence sql) {
+    stream.println(sql.toString());
+  }
+
+  public void writeStatement(CharSequence sql) {
+    stream.print(sql.toString());
+    stream.println(';');
+  }
+
+  public void close() {
+    stream.flush();
+    stream.close();
+  }
 }

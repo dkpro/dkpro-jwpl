@@ -28,8 +28,7 @@ public class SingleDumpVersionJDKStringKeyFactory implements
 	public IDumpVersion getDumpVersion() {
 		IDumpVersion dumpVersion;
 		try {
-			dumpVersion = new SingleDumpVersionJDKGeneric<String, StringHashCodeDisabled>(
-					StringHashCodeDisabled.class);
+			dumpVersion = new SingleDumpVersionJDKGeneric<String, StringHashCodeDisabled>(StringHashCodeDisabled.class);
 		} catch (Exception e) {
 			dumpVersion = null;
 		}

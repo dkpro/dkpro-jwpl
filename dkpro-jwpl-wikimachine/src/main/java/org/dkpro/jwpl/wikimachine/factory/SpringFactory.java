@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,88 +37,86 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
 public class SpringFactory implements IEnvironmentFactory {
 
-	private static final String INNER_APPLICATION_CONTEXT = "context/applicationContext.xml";
+  private static final String INNER_APPLICATION_CONTEXT = "context/applicationContext.xml";
 
-	private static final String OUTER_APPLICATION_CONTEXT = "applicationContext.xml";
+  private static final String OUTER_APPLICATION_CONTEXT = "applicationContext.xml";
 
-	private static final String LOG_BEAN = "logger";
+  private static final String LOG_BEAN = "logger";
 
-	private static final String DECOMPRESSOR_BEAN = "decompressor";
+  private static final String DECOMPRESSOR_BEAN = "decompressor";
 
-	private static final String DUMPVERSIONPROCESSOR_BEAN = "dumpVersionProcessor";
+  private static final String DUMPVERSIONPROCESSOR_BEAN = "dumpVersionProcessor";
 
-	private static final String PAGEPARSER_BEAN = "pageParser";
+  private static final String PAGEPARSER_BEAN = "pageParser";
 
-	private static final String SNAPSHOTGENERATOR_BEAN = "snapshotGenerator";
+  private static final String SNAPSHOTGENERATOR_BEAN = "snapshotGenerator";
 
-	private static final String REVISIONPARSER_BEAN = "revisionParser";
+  private static final String REVISIONPARSER_BEAN = "revisionParser";
 
-	private static final String TEXTPARSER_BEAN = "textParser";
+  private static final String TEXTPARSER_BEAN = "textParser";
 
-	private static final String DUMPVERSION_BEAN = "dumpVersion";
+  private static final String DUMPVERSION_BEAN = "dumpVersion";
 
-	private static final String DUMPTABLEINPUTSTREAM_BEAN = "dumpTableInputStream";
+  private static final String DUMPTABLEINPUTSTREAM_BEAN = "dumpTableInputStream";
 
-	private static final BeanFactory factory = getBeanFactory();
+  private static final BeanFactory factory = getBeanFactory();
 
-	private static final SpringFactory instance = new SpringFactory();
+  private static final SpringFactory instance = new SpringFactory();
 
-	private static BeanFactory getBeanFactory() {
-		File outerContextFile = new File(OUTER_APPLICATION_CONTEXT);
-		boolean outerContextFileProper = outerContextFile.exists()
-				&& outerContextFile.isFile() && outerContextFile.canRead();
-		Resource res = (outerContextFileProper) ? new FileSystemResource(outerContextFile) :
-						new ClassPathResource(INNER_APPLICATION_CONTEXT);
-		return new XmlBeanFactory(res);
-	}
+  private static BeanFactory getBeanFactory() {
+    File outerContextFile = new File(OUTER_APPLICATION_CONTEXT);
+    boolean outerContextFileProper = outerContextFile.exists()
+            && outerContextFile.isFile() && outerContextFile.canRead();
+    Resource res = (outerContextFileProper) ? new FileSystemResource(outerContextFile) :
+            new ClassPathResource(INNER_APPLICATION_CONTEXT);
+    return new XmlBeanFactory(res);
+  }
 
-	public static SpringFactory getInstance() {
-		return instance;
-	}
+  public static SpringFactory getInstance() {
+    return instance;
+  }
 
-	public ILogger getLogger() {
-		return (ILogger) factory.getBean(LOG_BEAN);
-	}
+  public ILogger getLogger() {
+    return (ILogger) factory.getBean(LOG_BEAN);
+  }
 
-	public IDecompressor getDecompressor() {
-		return (IDecompressor) factory.getBean(DECOMPRESSOR_BEAN);
-	}
+  public IDecompressor getDecompressor() {
+    return (IDecompressor) factory.getBean(DECOMPRESSOR_BEAN);
+  }
 
-	@Override
-	public ISnapshotGenerator getSnapshotGenerator() {
-		return (ISnapshotGenerator) factory.getBean(SNAPSHOTGENERATOR_BEAN);
-	}
+  @Override
+  public ISnapshotGenerator getSnapshotGenerator() {
+    return (ISnapshotGenerator) factory.getBean(SNAPSHOTGENERATOR_BEAN);
+  }
 
-	@Override
-	public DumpVersionProcessor getDumpVersionProcessor() {
-		return (DumpVersionProcessor) factory
-				.getBean(DUMPVERSIONPROCESSOR_BEAN);
-	}
+  @Override
+  public DumpVersionProcessor getDumpVersionProcessor() {
+    return (DumpVersionProcessor) factory.getBean(DUMPVERSIONPROCESSOR_BEAN);
+  }
 
-	@Override
-	public IDumpVersion getDumpVersion() {
-		return (IDumpVersion) factory.getBean(DUMPVERSION_BEAN);
-	}
+  @Override
+  public IDumpVersion getDumpVersion() {
+    return (IDumpVersion) factory.getBean(DUMPVERSION_BEAN);
+  }
 
-	@Override
-	public DumpTableInputStream getDumpTableInputStream() {
-		return (DumpTableInputStream) factory
-				.getBean(DUMPTABLEINPUTSTREAM_BEAN);
-	}
+  @Override
+  public DumpTableInputStream getDumpTableInputStream() {
+    return (DumpTableInputStream) factory.getBean(DUMPTABLEINPUTSTREAM_BEAN);
+  }
 
-	@Override
-	public PageParser getPageParser() {
-		return (PageParser) factory.getBean(PAGEPARSER_BEAN);
-	}
+  @Override
+  public PageParser getPageParser() {
+    return (PageParser) factory.getBean(PAGEPARSER_BEAN);
+  }
 
-	@Override
-	public RevisionParser getRevisionParser() {
-		return (RevisionParser) factory.getBean(REVISIONPARSER_BEAN);
-	}
+  @Override
+  public RevisionParser getRevisionParser() {
+    return (RevisionParser) factory.getBean(REVISIONPARSER_BEAN);
+  }
 
-	@Override
-	public TextParser getTextParser() {
-		return (TextParser) factory.getBean(TEXTPARSER_BEAN);
-	}
+  @Override
+  public TextParser getTextParser() {
+    return (TextParser) factory.getBean(TEXTPARSER_BEAN);
+  }
 
 }
