@@ -20,10 +20,9 @@ package org.dkpro.jwpl.wikimachine.factory;
 import java.io.File;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.xml.XmlBeanFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
+import org.springframework.context.support.AbstractXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
@@ -67,19 +66,26 @@ public class SpringFactory implements IEnvironmentFactory {
     File outerContextFile = new File(OUTER_APPLICATION_CONTEXT);
     boolean outerContextFileProper = outerContextFile.exists()
             && outerContextFile.isFile() && outerContextFile.canRead();
-    Resource res = (outerContextFileProper) ? new FileSystemResource(outerContextFile) :
-            new ClassPathResource(INNER_APPLICATION_CONTEXT);
-    return new XmlBeanFactory(res);
+
+    AbstractXmlApplicationContext ctx;
+    if (outerContextFileProper) {
+      ctx = new FileSystemXmlApplicationContext(OUTER_APPLICATION_CONTEXT);
+    } else {
+      ctx = new ClassPathXmlApplicationContext(INNER_APPLICATION_CONTEXT);
+    }
+    return ctx;
   }
 
   public static SpringFactory getInstance() {
     return instance;
   }
 
+  @Override
   public ILogger getLogger() {
     return (ILogger) factory.getBean(LOG_BEAN);
   }
 
+  @Override
   public IDecompressor getDecompressor() {
     return (IDecompressor) factory.getBean(DECOMPRESSOR_BEAN);
   }
