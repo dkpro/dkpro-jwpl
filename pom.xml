@@ -32,12 +32,15 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.release>17</maven.compiler.release>
     <ukp.wikipedia.version>2.0.0-SNAPSHOT</ukp.wikipedia.version>
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
-    <spring.version>5.3.30</spring.version>
+    <spring.version>6.0.13</spring.version>
     <commons.lang3.version>3.13.0</commons.lang3.version>
 
     <!-- DB specific dependency versions -->
@@ -163,6 +166,11 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
         <version>${spring.version}</version>
       </dependency>
       <dependency>
