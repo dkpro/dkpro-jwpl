@@ -36,6 +36,7 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.util.distance.LevenshteinStringDistance;
 import org.hibernate.Session;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -753,10 +754,10 @@ public class Wikipedia
      */
     public boolean existsPage(String title)
     {
-
         if (title == null || title.isEmpty()) {
             return false;
         }
+
         Title t;
         try {
             t = new Title(title);
@@ -764,19 +765,27 @@ public class Wikipedia
         catch (WikiTitleParsingException e) {
             return false;
         }
+
         String encodedTitle = t.getWikiStyleTitle();
 
         Session session = this.__getHibernateSession();
-        session.beginTransaction();
-        String query = "select p.id from PageMapLine as p where p.name = :pName";
-        if (dbConfig.supportsCollation()) {
-            query += SQL_COLLATION;
-        }
-        Object returnValue = session.createNativeQuery(query)
-                .setParameter("pName", encodedTitle, StandardBasicTypes.STRING).uniqueResult();
-        session.getTransaction().commit();
+        try {
+            session.beginTransaction();
+            var query = "select p.id from PageMapLine as p where p.name = :pName";
+            if (dbConfig.supportsCollation()) {
+                query += SQL_COLLATION;
+            }
 
-        return returnValue != null;
+            // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
+            // NativeQuery...
+            var nativeQuery = (NativeQuery) session.createNativeQuery(query) //
+                    .setParameter("pName", encodedTitle, StandardBasicTypes.STRING);
+            var returnValue = nativeQuery.uniqueResult();
+            return returnValue != null;
+        }
+        finally {
+            session.getTransaction().commit();
+        }
     }
 
     /**
