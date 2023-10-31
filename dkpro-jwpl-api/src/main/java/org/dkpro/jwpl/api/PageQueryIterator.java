@@ -28,39 +28,47 @@ import org.slf4j.LoggerFactory;
 /**
  * An iterator over {@link Page} objects selected by a query.
  */
-public class PageQueryIterator implements Iterator<Page> {
+public class PageQueryIterator
+    implements Iterator<Page>
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  private final Wikipedia wiki;
-  private int iterPosition;
-  private final List<Integer> pageIDs;
+    private final Wikipedia wiki;
+    private int iterPosition;
+    private final List<Integer> pageIDs;
 
-  public PageQueryIterator(Wikipedia wiki, List<Integer> pPageIDs) {
-    this.wiki = wiki;
-    this.iterPosition = 0;
-    this.pageIDs = pPageIDs;
-  }
-
-  @Override
-  public boolean hasNext() {
-    return iterPosition < this.pageIDs.size();
-  }
-
-  @Override
-  public Page next() {
-    Page page = null;
-    try {
-      page = this.wiki.getPage(pageIDs.get(iterPosition));
-    } catch (WikiApiException e) {
-      logger.error("Could not load page with id {}", pageIDs.get(iterPosition), e);
+    public PageQueryIterator(Wikipedia wiki, List<Integer> pPageIDs)
+    {
+        this.wiki = wiki;
+        this.iterPosition = 0;
+        this.pageIDs = pPageIDs;
     }
-    iterPosition++;
-    return page;
-  }
 
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }
+    @Override
+    public boolean hasNext()
+    {
+        return iterPosition < this.pageIDs.size();
+    }
+
+    @Override
+    public Page next()
+    {
+        Page page = null;
+        try {
+            page = this.wiki.getPage(pageIDs.get(iterPosition));
+        }
+        catch (WikiApiException e) {
+            logger.error("Could not load page with id {}", pageIDs.get(iterPosition), e);
+        }
+        iterPosition++;
+        return page;
+    }
+
+    @Override
+    public void remove()
+    {
+        throw new UnsupportedOperationException();
+    }
 }

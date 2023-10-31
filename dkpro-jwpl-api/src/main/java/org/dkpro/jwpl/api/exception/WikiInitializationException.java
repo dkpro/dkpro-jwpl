@@ -17,28 +17,32 @@
  */
 package org.dkpro.jwpl.api.exception;
 
-
 /**
  * Thrown, when the Wikipedia object could not be properly initialized.
  */
-public class WikiInitializationException extends WikiApiException {
+public class WikiInitializationException
+    extends WikiApiException
+{
 
+    private static final long serialVersionUID = 7240072132466204183L;
 
-  private static final long serialVersionUID = 7240072132466204183L;
+    public WikiInitializationException()
+    {
+        super();
+    }
 
-  public WikiInitializationException() {
-    super();
-  }
+    public WikiInitializationException(String txt)
+    {
+        super(txt);
+    }
 
-  public WikiInitializationException(String txt) {
-    super(txt);
-  }
+    public WikiInitializationException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 
-  public WikiInitializationException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public WikiInitializationException(Throwable cause) {
-    super(cause);
-  }
+    public WikiInitializationException(Throwable cause)
+    {
+        super(cause);
+    }
 }

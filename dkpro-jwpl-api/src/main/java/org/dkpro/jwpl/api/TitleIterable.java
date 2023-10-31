@@ -22,32 +22,33 @@ import java.util.Iterator;
 /**
  * An {@link Iterable} over {@link Title} objects.
  */
-public class TitleIterable implements Iterable<Title> {
+public class TitleIterable
+    implements Iterable<Title>
+{
 
-  private final Wikipedia wiki;
+    private final Wikipedia wiki;
 
-  /*
-   * The size of the title buffer.
-   * With bufferSize = 1, a database connection is needed for retrieving a single title.
-   * Higher bufferSize gives better performance, but needs memory.
-   * Initialize it with 5000.
-   */
-  private int bufferSize = 5000;
+    /*
+     * The size of the title buffer. With bufferSize = 1, a database connection is needed for
+     * retrieving a single title. Higher bufferSize gives better performance, but needs memory.
+     * Initialize it with 5000.
+     */
+    private int bufferSize = 5000;
 
-  public TitleIterable(Wikipedia wiki) {
-    this.wiki = wiki;
-  }
+    public TitleIterable(Wikipedia wiki)
+    {
+        this.wiki = wiki;
+    }
 
-  public TitleIterable(Wikipedia wiki, int bufferSize) {
-    this.wiki = wiki;
-    this.bufferSize = bufferSize;
-  }
+    public TitleIterable(Wikipedia wiki, int bufferSize)
+    {
+        this.wiki = wiki;
+        this.bufferSize = bufferSize;
+    }
 
-  @Override
-  public Iterator<Title> iterator() {
-    return new TitleIterator(wiki, bufferSize);
-  }
+    @Override
+    public Iterator<Title> iterator()
+    {
+        return new TitleIterator(wiki, bufferSize);
+    }
 }
-
-
-

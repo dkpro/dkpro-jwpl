@@ -29,47 +29,57 @@ import org.slf4j.LoggerFactory;
  * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.Category
  */
-public class CategoryDAO extends GenericDAO<Category> {
+public class CategoryDAO
+    extends GenericDAO<Category>
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  public CategoryDAO(Wikipedia pWiki) {
-    super(pWiki, Category.class);
-  }
+    public CategoryDAO(Wikipedia pWiki)
+    {
+        super(pWiki, Category.class);
+    }
 
-  @Override
-  public void persist(Category transientInstance) {
-    logger.debug("persisting Category instance");
-    super.persist(transientInstance);
-  }
+    @Override
+    public void persist(Category transientInstance)
+    {
+        logger.debug("persisting Category instance");
+        super.persist(transientInstance);
+    }
 
-  @Override
-  public void attachDirty(Category instance) {
-    logger.debug("attaching dirty Category instance");
-    super.attachDirty(instance);
-  }
+    @Override
+    public void attachDirty(Category instance)
+    {
+        logger.debug("attaching dirty Category instance");
+        super.attachDirty(instance);
+    }
 
-  @Override
-  public void attachClean(Category instance) {
-    logger.debug("attaching clean Category instance");
-    super.attachClean(instance);
-  }
+    @Override
+    public void attachClean(Category instance)
+    {
+        logger.debug("attaching clean Category instance");
+        super.attachClean(instance);
+    }
 
-  @Override
-  public void delete(Category persistentInstance) {
-    logger.debug("deleting Category instance");
-    super.delete(persistentInstance);
-  }
+    @Override
+    public void delete(Category persistentInstance)
+    {
+        logger.debug("deleting Category instance");
+        super.delete(persistentInstance);
+    }
 
-  @Override
-  public Category merge(Category detachedInstance) {
-    logger.debug("merging Category instance");
-    return super.merge(detachedInstance);
-  }
+    @Override
+    public Category merge(Category detachedInstance)
+    {
+        logger.debug("merging Category instance");
+        return super.merge(detachedInstance);
+    }
 
-  @Override
-  public Category findById(java.lang.Long id) {
-    logger.debug("getting Category instance with id: " + id);
-    return super.findById(id);
-  }
+    @Override
+    public Category findById(java.lang.Long id)
+    {
+        logger.debug("getting Category instance with id: " + id);
+        return super.findById(id);
+    }
 }

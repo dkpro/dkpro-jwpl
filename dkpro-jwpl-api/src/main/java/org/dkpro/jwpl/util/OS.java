@@ -17,36 +17,40 @@
  */
 package org.dkpro.jwpl.util;
 
-public class OS {
+public class OS
+{
 
-  /**
-   * Tries to determine the type of OS the application is running on.
-   * At the moment only Windows and Linux are supported.
-   *
-   * @return The type of OS the application is running on. Or "unknown" if the system is unknown.
-   */
-  public static String getOsType() {
-    String osType = "unknown";
-    String osName = System.getProperty("os.name");
-    if (osName.contains("Windows")) {
-      osType = "Windows";
-    } else if (osName.contains("Linux")) {
-      osType = "Linux";
+    /**
+     * Tries to determine the type of OS the application is running on. At the moment only Windows
+     * and Linux are supported.
+     *
+     * @return The type of OS the application is running on. Or "unknown" if the system is unknown.
+     */
+    public static String getOsType()
+    {
+        String osType = "unknown";
+        String osName = System.getProperty("os.name");
+        if (osName.contains("Windows")) {
+            osType = "Windows";
+        }
+        else if (osName.contains("Linux")) {
+            osType = "Linux";
+        }
+        return osType;
     }
-    return osType;
-  }
 
-  /**
-   * Gets the memory used by the JVM in MB.
-   *
-   * @return Returns how much memory (in MB) is used by the JVM at the moment.
-   */
-  public static double getUsedMemory() {
-    Runtime rt = Runtime.getRuntime();
+    /**
+     * Gets the memory used by the JVM in MB.
+     *
+     * @return Returns how much memory (in MB) is used by the JVM at the moment.
+     */
+    public static double getUsedMemory()
+    {
+        Runtime rt = Runtime.getRuntime();
 
-    long memLong = rt.totalMemory() - rt.freeMemory();
-    double memDouble = memLong / (1024.0 * 1024.0);
-    memDouble = Math.round(memDouble * 100) / 100.0;
-    return memDouble;
-  }
+        long memLong = rt.totalMemory() - rt.freeMemory();
+        double memDouble = memLong / (1024.0 * 1024.0);
+        memDouble = Math.round(memDouble * 100) / 100.0;
+        return memDouble;
+    }
 }

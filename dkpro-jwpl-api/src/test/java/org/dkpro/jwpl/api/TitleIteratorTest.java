@@ -24,36 +24,39 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class TitleIteratorTest extends BaseJWPLTest{
+public class TitleIteratorTest
+    extends BaseJWPLTest
+{
 
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignored tests after failed
-	 * assumptions
-	 */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration();
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
-		}
-	}
-
-
-	@Test
-	public void test_titleIteratorTest() {
-
-		int nrOfTitles = 0;
-		Iterable<Title> iterable = wiki.getTitles();
-		assertNotNull(iterable);
-    for (Title t : iterable) {
-      assertNotNull(t);
-      nrOfTitles++;
+    /**
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
+     */
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        try {
+            wiki = new Wikipedia(db);
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
+        }
     }
-		assertEquals(39, nrOfTitles, "Number of titles == 39");
 
-	}
+    @Test
+    public void test_titleIteratorTest()
+    {
+
+        int nrOfTitles = 0;
+        Iterable<Title> iterable = wiki.getTitles();
+        assertNotNull(iterable);
+        for (Title t : iterable) {
+            assertNotNull(t);
+            nrOfTitles++;
+        }
+        assertEquals(39, nrOfTitles, "Number of titles == 39");
+
+    }
 }

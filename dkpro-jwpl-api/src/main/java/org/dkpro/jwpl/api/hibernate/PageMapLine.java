@@ -17,56 +17,68 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
-public class PageMapLine {
-  private long id;
-  private String name;
-  private int pageID;
-  private String stem;
-  private String lemma;
+public class PageMapLine
+{
+    private long id;
+    private String name;
+    private int pageID;
+    private String stem;
+    private String lemma;
 
-  /**
-   * A no argument constructor as required by Hibernate.
-   */
-  public PageMapLine() {
-  }
+    /**
+     * A no argument constructor as required by Hibernate.
+     */
+    public PageMapLine()
+    {
+    }
 
-  public long getId() {
-    return id;
-  }
+    public long getId()
+    {
+        return id;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public void setId(long id)
+    {
+        this.id = id;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public String getName()
+    {
+        return name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-  public int getPageID() {
-    return pageID;
-  }
+    public int getPageID()
+    {
+        return pageID;
+    }
 
-  public void setPageID(int pageID) {
-    this.pageID = pageID;
-  }
+    public void setPageID(int pageID)
+    {
+        this.pageID = pageID;
+    }
 
-  public String getLemma() {
-    return lemma;
-  }
+    public String getLemma()
+    {
+        return lemma;
+    }
 
-  public void setLemma(String lemma) {
-    this.lemma = lemma;
-  }
+    public void setLemma(String lemma)
+    {
+        this.lemma = lemma;
+    }
 
-  public String getStem() {
-    return stem;
-  }
+    public String getStem()
+    {
+        return stem;
+    }
 
-  public void setStem(String stem) {
-    this.stem = stem;
-  }
+    public void setStem(String stem)
+    {
+        this.stem = stem;
+    }
 }

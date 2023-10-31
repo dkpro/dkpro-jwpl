@@ -22,32 +22,36 @@ import java.util.Iterator;
 /**
  * An {@link Iterable} over category objects retrieved by {@link Category#getDescendants()}.
  */
-public class CategoryDescendantsIterable implements Iterable<Category> {
+public class CategoryDescendantsIterable
+    implements Iterable<Category>
+{
 
-  private final Wikipedia wiki;
-  private final Category startCategory;
+    private final Wikipedia wiki;
+    private final Category startCategory;
 
-  /*
-   * The size of the page buffer.
-   * With bufferSize = 1, a database connection is needed for retrieving a single article.
-   * Higher bufferSize gives better performance, but needs memory.
-   * Initialize it with 25.
-   */
-  private int bufferSize = 25;
+    /*
+     * The size of the page buffer. With bufferSize = 1, a database connection is needed for
+     * retrieving a single article. Higher bufferSize gives better performance, but needs memory.
+     * Initialize it with 25.
+     */
+    private int bufferSize = 25;
 
-  public CategoryDescendantsIterable(Wikipedia wiki, Category startCategory) {
-    this.wiki = wiki;
-    this.startCategory = startCategory;
-  }
+    public CategoryDescendantsIterable(Wikipedia wiki, Category startCategory)
+    {
+        this.wiki = wiki;
+        this.startCategory = startCategory;
+    }
 
-  public CategoryDescendantsIterable(Wikipedia wiki, int bufferSize, Category startCategory) {
-    this.wiki = wiki;
-    this.bufferSize = bufferSize;
-    this.startCategory = startCategory;
-  }
+    public CategoryDescendantsIterable(Wikipedia wiki, int bufferSize, Category startCategory)
+    {
+        this.wiki = wiki;
+        this.bufferSize = bufferSize;
+        this.startCategory = startCategory;
+    }
 
-  @Override
-  public Iterator<Category> iterator() {
-    return new CategoryDescendantsIterator(wiki, bufferSize, startCategory);
-  }
+    @Override
+    public Iterator<Category> iterator()
+    {
+        return new CategoryDescendantsIterator(wiki, bufferSize, startCategory);
+    }
 }

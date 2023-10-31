@@ -17,8 +17,9 @@
  */
 package org.dkpro.jwpl.util.distance;
 
-public interface StringDistance {
+public interface StringDistance
+{
 
-  double distance(String s1, String s2);
+    double distance(String s1, String s2);
 
 }

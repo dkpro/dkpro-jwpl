@@ -33,133 +33,143 @@ import org.slf4j.LoggerFactory;
 /**
  * An iterable over {@link Page} objects selected by a query.
  */
-public class PageQueryIterable implements Iterable<Page> {
+public class PageQueryIterable
+    implements Iterable<Page>
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  private final Wikipedia wiki;
-  private final List<Integer> pageIdList;
+    private final Wikipedia wiki;
+    private final List<Integer> pageIdList;
 
-  public PageQueryIterable(Wikipedia wiki, PageQuery q) throws WikiApiException {
+    public PageQueryIterable(Wikipedia wiki, PageQuery q) throws WikiApiException
+    {
 
-    this.wiki = wiki;
-    this.pageIdList = new ArrayList<>();
+        this.wiki = wiki;
+        this.pageIdList = new ArrayList<>();
 
-    // get a list with all pageIDs of the pages conforming with the query
-    String hql = "select p.pageId from Page as p ";
-    List<String> conditions = new ArrayList<>();
-    if (q.onlyDisambiguationPages()) {
-      conditions.add("p.isDisambiguation = 1");
+        // get a list with all pageIDs of the pages conforming with the query
+        String hql = "select p.pageId from Page as p ";
+        List<String> conditions = new ArrayList<>();
+        if (q.onlyDisambiguationPages()) {
+            conditions.add("p.isDisambiguation = 1");
+        }
+        if (q.onlyArticlePages()) {
+            conditions.add("p.isDisambiguation = 0");
+        }
+        if (!"".equals(q.getTitlePattern())) {
+            conditions.add("p.name like '" + q.getTitlePattern() + "'");
+        }
+
+        String conditionString = StringUtils.join(conditions, " AND ");
+        if (conditionString.length() > 0) {
+            hql += "where " + conditionString;
+        }
+
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        List<Integer> idList = session.createQuery(hql, Integer.class).list();
+        session.getTransaction().commit();
+
+        int progress = 0;
+        for (Integer pageID : idList) {
+            progress++;
+            ApiUtilities.printProgressInfo(progress, idList.size(), 100,
+                    ApiUtilities.ProgressInfoMode.TEXT,
+                    "searching " + idList.size() + " pages ... ");
+
+            // shortcut to fasten queries that do not have such constraints
+            if (q.getMaxCategories() == Integer.MAX_VALUE && q.getMaxIndegree() == Integer.MAX_VALUE
+                    && q.getMaxOutdegree() == Integer.MAX_VALUE
+                    && q.getMaxRedirects() == Integer.MAX_VALUE
+                    && q.getMaxTokens() == Integer.MAX_VALUE && q.getMinCategories() == 0
+                    && q.getMinIndegree() == 0 && q.getMinOutdegree() == 0
+                    && q.getMinRedirects() == 0 && q.getMinTokens() == 0) {
+                pageIdList.add(pageID);
+                continue;
+            }
+
+            Page page = null;
+            try {
+                page = wiki.getPage(pageID);
+            }
+            catch (WikiPageNotFoundException e) {
+                logger.error("Page with pageID {} could not be found. Fatal error. Terminating.",
+                        pageID);
+                e.printStackTrace();
+                System.exit(1);
+            }
+
+            String[] tokens = page.getPlainText().split(" ");
+
+            if (!(q.getMinIndegree() >= 0 && q.getMaxIndegree() >= 0
+                    && q.getMinIndegree() <= q.getMaxIndegree())) {
+                q.setMinIndegree(0);
+                q.setMaxIndegree(Integer.MAX_VALUE);
+            }
+
+            if (!(q.getMinOutdegree() >= 0 && q.getMaxOutdegree() >= 0
+                    && q.getMinOutdegree() <= q.getMaxOutdegree())) {
+                q.setMinOutdegree(0);
+                q.setMaxOutdegree(Integer.MAX_VALUE);
+            }
+
+            if (!(q.getMinRedirects() >= 0 && q.getMaxRedirects() >= 0
+                    && q.getMinRedirects() <= q.getMaxRedirects())) {
+                q.setMinRedirects(0);
+                q.setMaxRedirects(Integer.MAX_VALUE);
+            }
+
+            if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0
+                    && q.getMinCategories() <= q.getMaxCategories())) {
+                q.setMinCategories(0);
+                q.setMaxCategories(Integer.MAX_VALUE);
+            }
+
+            if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0
+                    && q.getMinCategories() <= q.getMaxCategories())) {
+                q.setMinCategories(0);
+                q.setMaxCategories(Integer.MAX_VALUE);
+            }
+
+            if (!(q.getMinTokens() >= 0 && q.getMaxTokens() >= 0
+                    && q.getMinTokens() <= q.getMaxTokens())) {
+                q.setMinTokens(0);
+                q.setMaxTokens(Integer.MAX_VALUE);
+            }
+
+            int inlinkSize = page.getNumberOfInlinks();
+            if (inlinkSize < q.getMinIndegree() || inlinkSize > q.getMaxIndegree()) {
+                continue;
+            }
+
+            int outlinkSize = page.getNumberOfOutlinks();
+            if (outlinkSize < q.getMinOutdegree() || outlinkSize > q.getMaxOutdegree()) {
+                continue;
+            }
+            if (page.getRedirects().size() < q.getMinRedirects()
+                    || page.getRedirects().size() > q.getMaxRedirects()) {
+                continue;
+            }
+
+            int categoriesSize = page.getCategories().size();
+            if (categoriesSize < q.getMinCategories() || categoriesSize > q.getMaxCategories()) {
+                continue;
+            }
+            if (tokens.length < q.getMinTokens() || tokens.length > q.getMaxTokens()) {
+                continue;
+            }
+
+            // if still here, add page
+            pageIdList.add(pageID);
+        } // for
+        logger.info("Query selected {} pages.", pageIdList.size());
     }
-    if (q.onlyArticlePages()) {
-      conditions.add("p.isDisambiguation = 0");
+
+    @Override
+    public Iterator<Page> iterator()
+    {
+        return new PageQueryIterator(wiki, pageIdList);
     }
-    if (!"".equals(q.getTitlePattern())) {
-      conditions.add("p.name like '" + q.getTitlePattern() + "'");
-    }
-
-    String conditionString = StringUtils.join(conditions, " AND ");
-    if (conditionString.length() > 0) {
-      hql += "where " + conditionString;
-    }
-
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    List<Integer> idList = session.createQuery(hql, Integer.class).list();
-    session.getTransaction().commit();
-
-    int progress = 0;
-    for (Integer pageID : idList) {
-      progress++;
-      ApiUtilities.printProgressInfo(progress, idList.size(), 100, ApiUtilities.ProgressInfoMode.TEXT, "searching " + idList.size() + " pages ... ");
-
-      // shortcut to fasten queries that do not have such constraints
-      if (q.getMaxCategories() == Integer.MAX_VALUE &&
-              q.getMaxIndegree() == Integer.MAX_VALUE &&
-              q.getMaxOutdegree() == Integer.MAX_VALUE &&
-              q.getMaxRedirects() == Integer.MAX_VALUE &&
-              q.getMaxTokens() == Integer.MAX_VALUE &&
-              q.getMinCategories() == 0 &&
-              q.getMinIndegree() == 0 &&
-              q.getMinOutdegree() == 0 &&
-              q.getMinRedirects() == 0 &&
-              q.getMinTokens() == 0) {
-        pageIdList.add(pageID);
-        continue;
-      }
-
-      Page page = null;
-      try {
-        page = wiki.getPage(pageID);
-      } catch (WikiPageNotFoundException e) {
-        logger.error("Page with pageID {} could not be found. Fatal error. Terminating.", pageID);
-        e.printStackTrace();
-        System.exit(1);
-      }
-
-      String[] tokens = page.getPlainText().split(" ");
-
-      if (!(q.getMinIndegree() >= 0 && q.getMaxIndegree() >= 0 && q.getMinIndegree() <= q.getMaxIndegree())) {
-        q.setMinIndegree(0);
-        q.setMaxIndegree(Integer.MAX_VALUE);
-      }
-
-      if (!(q.getMinOutdegree() >= 0 && q.getMaxOutdegree() >= 0 && q.getMinOutdegree() <= q.getMaxOutdegree())) {
-        q.setMinOutdegree(0);
-        q.setMaxOutdegree(Integer.MAX_VALUE);
-      }
-
-      if (!(q.getMinRedirects() >= 0 && q.getMaxRedirects() >= 0 && q.getMinRedirects() <= q.getMaxRedirects())) {
-        q.setMinRedirects(0);
-        q.setMaxRedirects(Integer.MAX_VALUE);
-      }
-
-      if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0 && q.getMinCategories() <= q.getMaxCategories())) {
-        q.setMinCategories(0);
-        q.setMaxCategories(Integer.MAX_VALUE);
-      }
-
-      if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0 && q.getMinCategories() <= q.getMaxCategories())) {
-        q.setMinCategories(0);
-        q.setMaxCategories(Integer.MAX_VALUE);
-      }
-
-      if (!(q.getMinTokens() >= 0 && q.getMaxTokens() >= 0 && q.getMinTokens() <= q.getMaxTokens())) {
-        q.setMinTokens(0);
-        q.setMaxTokens(Integer.MAX_VALUE);
-      }
-
-      int inlinkSize = page.getNumberOfInlinks();
-      if (inlinkSize < q.getMinIndegree() || inlinkSize > q.getMaxIndegree()) {
-        continue;
-      }
-
-      int outlinkSize = page.getNumberOfOutlinks();
-      if (outlinkSize < q.getMinOutdegree() || outlinkSize > q.getMaxOutdegree()) {
-        continue;
-      }
-      if (page.getRedirects().size() < q.getMinRedirects() || page.getRedirects().size() > q.getMaxRedirects()) {
-        continue;
-      }
-
-      int categoriesSize = page.getCategories().size();
-      if (categoriesSize < q.getMinCategories() || categoriesSize > q.getMaxCategories()) {
-        continue;
-      }
-      if (tokens.length < q.getMinTokens() || tokens.length > q.getMaxTokens()) {
-        continue;
-      }
-
-      // if still here, add page
-      pageIdList.add(pageID);
-    } // for
-    logger.info("Query selected {} pages.", pageIdList.size());
-  }
-
-  @Override
-  public Iterator<Page> iterator() {
-    return new PageQueryIterator(wiki, pageIdList);
-  }
 }
-
-

@@ -17,95 +17,115 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
-public class MetaData {
+public class MetaData
+{
 
-  private long id;
+    private long id;
 
-  private String language;
-  private String disambiguationCategory;
-  private String mainCategory;
-  private String version;
+    private String language;
+    private String disambiguationCategory;
+    private String mainCategory;
+    private String version;
 
-  private long nrofPages;
-  private long nrofRedirects;
-  private long nrofDisambiguationPages;
-  private long nrofCategories;
+    private long nrofPages;
+    private long nrofRedirects;
+    private long nrofDisambiguationPages;
+    private long nrofCategories;
 
-  /**
-   * A no argument constructor as required by Hibernate.
-   */
-  public MetaData() {
-  }
+    /**
+     * A no argument constructor as required by Hibernate.
+     */
+    public MetaData()
+    {
+    }
 
-  public String getDisambiguationCategory() {
-    return disambiguationCategory;
-  }
+    public String getDisambiguationCategory()
+    {
+        return disambiguationCategory;
+    }
 
-  public void setDisambiguationCategory(String disambiguationCategory) {
-    this.disambiguationCategory = disambiguationCategory;
-  }
+    public void setDisambiguationCategory(String disambiguationCategory)
+    {
+        this.disambiguationCategory = disambiguationCategory;
+    }
 
-  public String getMainCategory() {
-    return mainCategory;
-  }
+    public String getMainCategory()
+    {
+        return mainCategory;
+    }
 
-  public void setMainCategory(String mainCategory) {
-    this.mainCategory = mainCategory;
-  }
+    public void setMainCategory(String mainCategory)
+    {
+        this.mainCategory = mainCategory;
+    }
 
-  public long getNrofCategories() {
-    return nrofCategories;
-  }
+    public long getNrofCategories()
+    {
+        return nrofCategories;
+    }
 
-  public long getNrofDisambiguationPages() {
-    return nrofDisambiguationPages;
-  }
+    public long getNrofDisambiguationPages()
+    {
+        return nrofDisambiguationPages;
+    }
 
-  public long getNrofPages() {
-    return nrofPages;
-  }
+    public long getNrofPages()
+    {
+        return nrofPages;
+    }
 
-  public long getNrofRedirects() {
-    return nrofRedirects;
-  }
+    public long getNrofRedirects()
+    {
+        return nrofRedirects;
+    }
 
-  public long getId() {
-    return id;
-  }
+    public long getId()
+    {
+        return id;
+    }
 
-  public void setId(long id) {
-    this.id = id;
-  }
+    public void setId(long id)
+    {
+        this.id = id;
+    }
 
-  public String getLanguage() {
-    return language;
-  }
+    public String getLanguage()
+    {
+        return language;
+    }
 
-  public void setLanguage(String language) {
-    this.language = language;
-  }
+    public void setLanguage(String language)
+    {
+        this.language = language;
+    }
 
-  public void setNrofCategories(long nrofCategories) {
-    this.nrofCategories = nrofCategories;
-  }
+    public void setNrofCategories(long nrofCategories)
+    {
+        this.nrofCategories = nrofCategories;
+    }
 
-  public void setNrofDisambiguationPages(long nrofDisambiguationPages) {
-    this.nrofDisambiguationPages = nrofDisambiguationPages;
-  }
+    public void setNrofDisambiguationPages(long nrofDisambiguationPages)
+    {
+        this.nrofDisambiguationPages = nrofDisambiguationPages;
+    }
 
-  public void setNrofPages(long nrofPages) {
-    this.nrofPages = nrofPages;
-  }
+    public void setNrofPages(long nrofPages)
+    {
+        this.nrofPages = nrofPages;
+    }
 
-  public void setNrofRedirects(long nrofRedirects) {
-    this.nrofRedirects = nrofRedirects;
-  }
+    public void setNrofRedirects(long nrofRedirects)
+    {
+        this.nrofRedirects = nrofRedirects;
+    }
 
-  public String getVersion() {
-    return version;
-  }
+    public String getVersion()
+    {
+        return version;
+    }
 
-  public void setVersion(String version) {
-    this.version = version;
-  }
+    public void setVersion(String version)
+    {
+        this.version = version;
+    }
 }

@@ -21,49 +21,55 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
-public class CommonUtilities {
+public class CommonUtilities
+{
 
-  /**
-   * Debug output an internal set structure.
-   *
-   * @param s Must not be {@code null}.
-   * @return The resulting String of the contents of {@code s}.
-   * @deprecated To be removed without replacement.
-   */
-  @Deprecated(since="2.0.0", forRemoval=true)
-  public static String getSetContents(Set<?> s) {
-    Object[] sortedArray = s.toArray();
-    Arrays.sort(sortedArray);
+    /**
+     * Debug output an internal set structure.
+     *
+     * @param s
+     *            Must not be {@code null}.
+     * @return The resulting String of the contents of {@code s}.
+     * @deprecated To be removed without replacement.
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public static String getSetContents(Set<?> s)
+    {
+        Object[] sortedArray = s.toArray();
+        Arrays.sort(sortedArray);
 
-    int counter = 0;
-    int elementsPerRow = 10;
-    StringBuffer sb = new StringBuffer(1000);
-    for (Object element : sortedArray) {
-      sb.append(element.toString()).append(" ");
-      counter++;
-      if ((counter % elementsPerRow) == 0) {
+        int counter = 0;
+        int elementsPerRow = 10;
+        StringBuffer sb = new StringBuffer(1000);
+        for (Object element : sortedArray) {
+            sb.append(element.toString()).append(" ");
+            counter++;
+            if ((counter % elementsPerRow) == 0) {
+                sb.append(System.getProperty("line.separator"));
+            }
+        }
         sb.append(System.getProperty("line.separator"));
-      }
+        return sb.toString();
     }
-    sb.append(System.getProperty("line.separator"));
-    return sb.toString();
-  }
 
-  /**
-   * Debug output an internal map structure as key-value pairs.
-   *
-   * @param m Must not be {@code null}.
-   * @return The resulting String of the contents of {@code m}.
-   */
-  public static String getMapContents(Map<?, ?> m) {
-    Object[] sortedArray = m.keySet().toArray();
-    Arrays.sort(sortedArray);
+    /**
+     * Debug output an internal map structure as key-value pairs.
+     *
+     * @param m
+     *            Must not be {@code null}.
+     * @return The resulting String of the contents of {@code m}.
+     */
+    public static String getMapContents(Map<?, ?> m)
+    {
+        Object[] sortedArray = m.keySet().toArray();
+        Arrays.sort(sortedArray);
 
-    StringBuffer sb = new StringBuffer(1000);
-    for (Object element : sortedArray) {
-      sb.append(element.toString()).append(" - ").append(m.get(element)).append(System.getProperty("line.separator"));
+        StringBuffer sb = new StringBuffer(1000);
+        for (Object element : sortedArray) {
+            sb.append(element.toString()).append(" - ").append(m.get(element))
+                    .append(System.getProperty("line.separator"));
+        }
+        return sb.toString();
     }
-    return sb.toString();
-  }
 
 }

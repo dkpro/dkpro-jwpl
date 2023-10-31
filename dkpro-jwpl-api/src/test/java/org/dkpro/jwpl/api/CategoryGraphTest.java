@@ -27,45 +27,52 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-public class CategoryGraphTest extends BaseJWPLTest{
+public class CategoryGraphTest
+    extends BaseJWPLTest
+{
 
-	private static CategoryGraph catGraph;
+    private static CategoryGraph catGraph;
 
     /**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
      */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
-		}
+        try {
+            wiki = new Wikipedia(db);
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
+        }
 
         try {
             catGraph = CategoryGraphManager.getCategoryGraph(wiki, false);
-        } catch (WikiApiException e) {
-            fail("CategoryGraph could not be initialized: "+e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("CategoryGraph could not be initialized: " + e.getLocalizedMessage());
         }
     }
 
-	@Test
-	public void testDepth(){
+    @Test
+    public void testDepth()
+    {
         try {
             double depth = catGraph.getDepth();
             assertEquals(4, depth, 0.00001);
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("Getting depth of the CategoryGraph throws exception.");
         }
     }
 
     @Test
-    public void testGetPathLength() throws WikiApiException{
+    public void testGetPathLength() throws WikiApiException
+    {
         String catString = "UKP";
         String neighborCatString = "Projects of UKP";
         String twoStepsAwayCatString = "SIR";
@@ -93,8 +100,9 @@ public class CategoryGraphTest extends BaseJWPLTest{
 
     @Test
     // each value within the map must be higher than the number of nodes in the category graph
-    public void testHyponymCountMap() throws WikiApiException{
-        Map<Integer,Integer> hyponymCountMap = catGraph.getHyponymCountMap();
+    public void testHyponymCountMap() throws WikiApiException
+    {
+        Map<Integer, Integer> hyponymCountMap = catGraph.getHyponymCountMap();
         int numberOfNodes = catGraph.getNumberOfNodes();
         for (Integer key : hyponymCountMap.keySet()) {
             assertTrue(hyponymCountMap.get(key) < numberOfNodes);
@@ -105,20 +113,20 @@ public class CategoryGraphTest extends BaseJWPLTest{
         }
 
         assertEquals(16, hyponymCountMap.get(1).intValue());
-        assertEquals(0,  hyponymCountMap.get(2).intValue());
+        assertEquals(0, hyponymCountMap.get(2).intValue());
         assertEquals(10, hyponymCountMap.get(3).intValue());
-        assertEquals(1,  hyponymCountMap.get(4).intValue());
-        assertEquals(5,  hyponymCountMap.get(5).intValue());
-        assertEquals(9,  hyponymCountMap.get(6).intValue());
-        assertEquals(2,  hyponymCountMap.get(7).intValue());
-        assertEquals(4,  hyponymCountMap.get(8).intValue());
-        assertEquals(0,  hyponymCountMap.get(9).intValue());
-        assertEquals(0,  hyponymCountMap.get(10).intValue());
-        assertEquals(0,  hyponymCountMap.get(11).intValue());
-        assertEquals(0,  hyponymCountMap.get(12).intValue());
-        assertEquals(0,  hyponymCountMap.get(13).intValue());
-        assertEquals(0,  hyponymCountMap.get(14).intValue());
-        assertEquals(0,  hyponymCountMap.get(15).intValue());
-        assertEquals(0,  hyponymCountMap.get(200).intValue());
+        assertEquals(1, hyponymCountMap.get(4).intValue());
+        assertEquals(5, hyponymCountMap.get(5).intValue());
+        assertEquals(9, hyponymCountMap.get(6).intValue());
+        assertEquals(2, hyponymCountMap.get(7).intValue());
+        assertEquals(4, hyponymCountMap.get(8).intValue());
+        assertEquals(0, hyponymCountMap.get(9).intValue());
+        assertEquals(0, hyponymCountMap.get(10).intValue());
+        assertEquals(0, hyponymCountMap.get(11).intValue());
+        assertEquals(0, hyponymCountMap.get(12).intValue());
+        assertEquals(0, hyponymCountMap.get(13).intValue());
+        assertEquals(0, hyponymCountMap.get(14).intValue());
+        assertEquals(0, hyponymCountMap.get(15).intValue());
+        assertEquals(0, hyponymCountMap.get(200).intValue());
     }
 }

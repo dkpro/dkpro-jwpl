@@ -22,18 +22,20 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import org.junit.jupiter.api.Test;
 import org.sweble.wikitext.engine.config.WikiConfig;
 
-public class WikiConfigTest {
+public class WikiConfigTest
+{
 
     @Test
-    public void testGetWikiConf() {
+    public void testGetWikiConf()
+    {
         WikiConfig portugueseConf = WikiConstants.Language.portuguese.getWikiconfig();
         WikiConfig englishConf = WikiConstants.Language.english.getWikiconfig();
         WikiConfig testConf = WikiConstants.Language._test.getWikiconfig();
         WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
         // assertion block
-      assertSame("pt", portugueseConf.getContentLanguage());
-      assertSame("en", englishConf.getContentLanguage());
-      assertSame("en", testConf.getContentLanguage());
-      assertSame("fr", frenchConf.getContentLanguage());
+        assertSame("pt", portugueseConf.getContentLanguage());
+        assertSame("en", englishConf.getContentLanguage());
+        assertSame("en", testConf.getContentLanguage());
+        assertSame("fr", frenchConf.getContentLanguage());
     }
 }

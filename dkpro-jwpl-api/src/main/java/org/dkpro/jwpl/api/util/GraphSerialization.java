@@ -33,87 +33,108 @@ import org.jgrapht.graph.DefaultEdge;
  * Utility for serializing and deserializing {@link DefaultDirectedGraph} objects, that are<br>
  * wrapped into {@link SerializableDirectedGraph} objects.
  */
-public final class GraphSerialization {
+public final class GraphSerialization
+{
 
-  /**
-   * This class cannot be instantiated.
-   */
-  private GraphSerialization() {
-  }
-
-  /**
-   * Serializes the given {@link DefaultDirectedGraph} object to the given location.
-   *
-   * @param graph    Must not be {@code null}.
-   * @param location Must not be {@code null} and a valid file path.
-   * @throws IOException Thrown if errors occurred on the IO level.
-   */
-  public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, String location) throws IOException {
-    File file = new File(location);
-    file.createNewFile();
-    if (!file.canWrite()) {
-      throw new IOException("Cannot write to file " + location);
+    /**
+     * This class cannot be instantiated.
+     */
+    private GraphSerialization()
+    {
     }
-    GraphSerialization.saveGraph(graph, file);
-  }
 
-  /**
-   * Serializes the given {@link DefaultDirectedGraph} object to the given location.
-   *
-   * @param graph Must not be {@code null}.
-   * @param file  Must not be {@code null} and valid {@link File}.
-   * @throws IOException Thrown if errors occurred on the IO level.
-   */
-  public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, File file) throws IOException {
-    SerializableDirectedGraph serialGraph = new SerializableDirectedGraph(graph);
-    BufferedOutputStream fos;
-    ObjectOutputStream out;
-    fos = new BufferedOutputStream(new FileOutputStream(file));
-    out = new ObjectOutputStream(fos);
-    out.writeObject(serialGraph);
-    out.close();
-
-  }
-
-  /**
-   * Deserializes a {@link SerializableDirectedGraph} object that is stored in the
-   * given location. This method returns the {@link DefaultDirectedGraph} object, that is wrapped
-   * in the {@link SerializableDirectedGraph}.
-   *
-   * @param location Must not be {@code null} and a valid file path.
-   * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
-   * {@link SerializableDirectedGraph}.
-   * @throws IOException            Thrown if errors occurred on the IO level.
-   * @throws ClassNotFoundException Thrown if a class could not be find while deserialization.
-   */
-  public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(String location)
-          throws IOException, ClassNotFoundException {
-    File file = new File(location);
-    if (!file.canWrite()) {
-      throw new IOException("Cannot read from file " + location);
+    /**
+     * Serializes the given {@link DefaultDirectedGraph} object to the given location.
+     *
+     * @param graph
+     *            Must not be {@code null}.
+     * @param location
+     *            Must not be {@code null} and a valid file path.
+     * @throws IOException
+     *             Thrown if errors occurred on the IO level.
+     */
+    public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, String location)
+        throws IOException
+    {
+        File file = new File(location);
+        file.createNewFile();
+        if (!file.canWrite()) {
+            throw new IOException("Cannot write to file " + location);
+        }
+        GraphSerialization.saveGraph(graph, file);
     }
-    return GraphSerialization.loadGraph(file);
-  }
 
-  /**
-   * Deserializes a {@link SerializableDirectedGraph} object that is stored in the
-   * given location. This method returns the {@link DefaultDirectedGraph}  object, that is wrapped
-   * in the {@link SerializableDirectedGraph}.
-   *
-   * @param file Must not be {@code null} and valid {@link File}.
-   * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
-   * {@link SerializableDirectedGraph}.
-   * @throws IOException            Thrown if errors occurred on the IO level.
-   * @throws ClassNotFoundException Thrown if a class could not be find while deserialization.
-   */
-  public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(File file) throws IOException, ClassNotFoundException {
-    SerializableDirectedGraph serialGraph;
-    BufferedInputStream fin;
-    ObjectInputStream in;
-    fin = new BufferedInputStream(new FileInputStream(file));
-    in = new ObjectInputStream(fin);
-    serialGraph = (SerializableDirectedGraph) in.readObject();
-    in.close();
-    return serialGraph.getGraph();
-  }
+    /**
+     * Serializes the given {@link DefaultDirectedGraph} object to the given location.
+     *
+     * @param graph
+     *            Must not be {@code null}.
+     * @param file
+     *            Must not be {@code null} and valid {@link File}.
+     * @throws IOException
+     *             Thrown if errors occurred on the IO level.
+     */
+    public static void saveGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph, File file)
+        throws IOException
+    {
+        SerializableDirectedGraph serialGraph = new SerializableDirectedGraph(graph);
+        BufferedOutputStream fos;
+        ObjectOutputStream out;
+        fos = new BufferedOutputStream(new FileOutputStream(file));
+        out = new ObjectOutputStream(fos);
+        out.writeObject(serialGraph);
+        out.close();
+
+    }
+
+    /**
+     * Deserializes a {@link SerializableDirectedGraph} object that is stored in the given location.
+     * This method returns the {@link DefaultDirectedGraph} object, that is wrapped in the
+     * {@link SerializableDirectedGraph}.
+     *
+     * @param location
+     *            Must not be {@code null} and a valid file path.
+     * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
+     *         {@link SerializableDirectedGraph}.
+     * @throws IOException
+     *             Thrown if errors occurred on the IO level.
+     * @throws ClassNotFoundException
+     *             Thrown if a class could not be find while deserialization.
+     */
+    public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(String location)
+        throws IOException, ClassNotFoundException
+    {
+        File file = new File(location);
+        if (!file.canWrite()) {
+            throw new IOException("Cannot read from file " + location);
+        }
+        return GraphSerialization.loadGraph(file);
+    }
+
+    /**
+     * Deserializes a {@link SerializableDirectedGraph} object that is stored in the given location.
+     * This method returns the {@link DefaultDirectedGraph} object, that is wrapped in the
+     * {@link SerializableDirectedGraph}.
+     *
+     * @param file
+     *            Must not be {@code null} and valid {@link File}.
+     * @return The {@link DefaultDirectedGraph} object, that is wrapped in the
+     *         {@link SerializableDirectedGraph}.
+     * @throws IOException
+     *             Thrown if errors occurred on the IO level.
+     * @throws ClassNotFoundException
+     *             Thrown if a class could not be find while deserialization.
+     */
+    public static DefaultDirectedGraph<Integer, DefaultEdge> loadGraph(File file)
+        throws IOException, ClassNotFoundException
+    {
+        SerializableDirectedGraph serialGraph;
+        BufferedInputStream fin;
+        ObjectInputStream in;
+        fin = new BufferedInputStream(new FileInputStream(file));
+        in = new ObjectInputStream(fin);
+        serialGraph = (SerializableDirectedGraph) in.readObject();
+        in.close();
+        return serialGraph.getGraph();
+    }
 }

@@ -31,11 +31,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Encapsulates the integration test code that stresses a Wikipedia backend to check the performance of it.
+ * Encapsulates the integration test code that stresses a Wikipedia backend to check the performance
+ * of it.
  */
-class PerformanceTest {
+class PerformanceTest
+{
 
-    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private final Wikipedia wiki;
 
@@ -47,7 +50,8 @@ class PerformanceTest {
     private final int maxiCycles;
     private final int pageCycles;
 
-    PerformanceTest(Wikipedia pWiki, int maxiCycles, int pageCycles) throws WikiApiException {
+    PerformanceTest(Wikipedia pWiki, int maxiCycles, int pageCycles) throws WikiApiException
+    {
         this.wiki = pWiki;
         this.maxiCycles = maxiCycles;
         this.pageCycles = pageCycles;
@@ -55,13 +59,14 @@ class PerformanceTest {
         initializeLists(pageIDs);
     }
 
-    private void initializeLists(Set<Integer> allPageIDs) throws WikiApiException {
+    private void initializeLists(Set<Integer> allPageIDs) throws WikiApiException
+    {
         randomIdList = new ArrayList<>();
         randomTitleList = new ArrayList<>();
 
-        for (int j=0; j<maxiCycles; j++) {
+        for (int j = 0; j < maxiCycles; j++) {
             Set<Integer> randomPageIds = GraphUtilities.getRandomPageSubset(allPageIDs, pageCycles);
-            List<Integer> randomPageIdList = new ArrayList<>( randomPageIds );
+            List<Integer> randomPageIdList = new ArrayList<>(randomPageIds);
             randomIdList.add(randomPageIdList);
 
             List<String> randomPageTitles = new ArrayList<>();
@@ -74,13 +79,14 @@ class PerformanceTest {
 
     }
 
-    void loadPagesTest(String mode) throws WikiApiException {
+    void loadPagesTest(String mode) throws WikiApiException
+    {
         double averageThroughput = 0;
-        for (int j=0; j<maxiCycles; j++) {
+        for (int j = 0; j < maxiCycles; j++) {
             double averageTime = 0;
-            for (int i=0; i<pageCycles; i++) {
+            for (int i = 0; i < pageCycles; i++) {
 
-                long id = wiki.__getPageHibernateId( randomIdList.get(j).get(i) );
+                long id = wiki.__getPageHibernateId(randomIdList.get(j).get(i));
                 String title = randomTitleList.get(j).get(i);
 
                 double startTime = System.currentTimeMillis();
@@ -101,15 +107,16 @@ class PerformanceTest {
 
         logger.debug("-----------------");
         logger.debug("average throughput: {} pages/ms", averageThroughput);
-        logger.debug("average throughput: {} pages/s", averageThroughput*1000);
+        logger.debug("average throughput: {} pages/s", averageThroughput * 1000);
         logger.debug("-----------------");
     }
 
-    void loadPagesAndAccessFieldsTest(String mode) throws WikiApiException {
+    void loadPagesAndAccessFieldsTest(String mode) throws WikiApiException
+    {
         double averageThroughput = 0;
-        for (int j=0; j<maxiCycles; j++) {
+        for (int j = 0; j < maxiCycles; j++) {
             double averageTime = 0;
-            for (int i=0; i<pageCycles; i++) {
+            for (int i = 0; i < pageCycles; i++) {
 
                 Set<Integer> page = GraphUtilities.getRandomPageSubset(pageIDs, 1);
                 Iterator<Integer> it = page.iterator();
@@ -134,20 +141,24 @@ class PerformanceTest {
 
         logger.debug("-----------------");
         logger.debug("average throughput: {} pages/ms", averageThroughput);
-        logger.debug("average throughput: {} pages/s", averageThroughput*1000);        logger.debug("-----------------");
+        logger.debug("average throughput: {} pages/s", averageThroughput * 1000);
+        logger.debug("-----------------");
     }
 
-    private void loadPage(long id) throws WikiApiException {
+    private void loadPage(long id) throws WikiApiException
+    {
         Page page = new Page(this.wiki, id);
         assertNotNull(page);
     }
 
-    private void loadPage(String title) throws WikiApiException {
+    private void loadPage(String title) throws WikiApiException
+    {
         Page page = wiki.getPage(title);
         assertNotNull(page);
     }
 
-    private void loadPageAndAccessFields_intern(long id) throws WikiApiException {
+    private void loadPageAndAccessFields_intern(long id) throws WikiApiException
+    {
         Page page = new Page(this.wiki, id);
         Set<Integer> inLinks = page.getInlinkIDs();
         assertNotNull(inLinks);
@@ -157,7 +168,8 @@ class PerformanceTest {
         assertNotNull(text);
     }
 
-    private void loadPageAndAccessFields_extern(long id) throws WikiApiException {
+    private void loadPageAndAccessFields_extern(long id) throws WikiApiException
+    {
         Page page = new Page(this.wiki, id);
         Set<Page> inLinks = page.getInlinks();
         assertNotNull(inLinks);
@@ -168,14 +180,14 @@ class PerformanceTest {
     }
 
     /**
-     * This is a test class for the version of PageIterator, that buffers a
-     * certain number of pages in order to gain efficiency.
-     * We get the same number of pages from a Wikipedia using
-     * different buffer sizes and return the performance.
+     * This is a test class for the version of PageIterator, that buffers a certain number of pages
+     * in order to gain efficiency. We get the same number of pages from a Wikipedia using different
+     * buffer sizes and return the performance.
      * <p>
      * For an unbuffered iterator set bufferSize to 1.
      */
-    void loadPageAndIterate(int numberOfPages, int bufferSize, Wikipedia wiki) {
+    void loadPageAndIterate(int numberOfPages, int bufferSize, Wikipedia wiki)
+    {
         long from = System.currentTimeMillis();
         Iterator<Page> pages = wiki.getPages(bufferSize).iterator();
         int counter = 0;

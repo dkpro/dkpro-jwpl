@@ -29,54 +29,62 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MetaDataTest extends BaseJWPLTest {
+public class MetaDataTest
+    extends BaseJWPLTest
+{
 
     // The object under test
     private MetaData metaData;
 
     /**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
      */
     @BeforeAll
-    public static void setupWikipedia() {
+    public static void setupWikipedia()
+    {
         DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
         try {
             wiki = new Wikipedia(db);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
         }
     }
 
     @BeforeEach
-    public void setup() {
+    public void setup()
+    {
         metaData = new MetaData(wiki);
     }
 
     @AfterEach
-    public void tearDown() {
+    public void tearDown()
+    {
         metaData = null;
     }
 
     @Test
-    public void testGetNumberOfCategories() {
+    public void testGetNumberOfCategories()
+    {
         long numberOfCategories = metaData.getNumberOfCategories();
         assertTrue(numberOfCategories > 0);
         assertEquals(17, numberOfCategories);
     }
 
     @Test
-    public void testGetNumberOfPages() {
+    public void testGetNumberOfPages()
+    {
         long numberOfPages = metaData.getNumberOfPages();
         assertTrue(numberOfPages > 0);
         assertEquals(36, numberOfPages);
     }
 
     @Test
-    public void testGetNumberOfDisambiguationPages() {
+    public void testGetNumberOfDisambiguationPages()
+    {
         long numberOfDisambiguationPages = metaData.getNumberOfDisambiguationPages();
         assertTrue(numberOfDisambiguationPages > 0);
         assertEquals(2, numberOfDisambiguationPages);
@@ -84,50 +92,61 @@ public class MetaDataTest extends BaseJWPLTest {
     }
 
     @Test
-    public void testGetNumberOfRedirectPages() {
+    public void testGetNumberOfRedirectPages()
+    {
         long numberOfRedirectPages = metaData.getNumberOfRedirectPages();
         assertTrue(numberOfRedirectPages > 0);
         assertEquals(6, numberOfRedirectPages);
     }
 
     @Test
-    public void testGetMainCategory() {
+    public void testGetMainCategory()
+    {
         try {
             Category c = metaData.getMainCategory();
             assertNotNull(c);
             assertEquals(1, c.getPageId());
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the main category: " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the main category: "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testGetDisambiguationCategory() {
+    public void testGetDisambiguationCategory()
+    {
         try {
             Category c = metaData.getDisambiguationCategory();
             assertNotNull(c);
             assertEquals(200, c.getPageId());
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the disambiguation category: " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the disambiguation category: "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testGetLanguage() {
+    public void testGetLanguage()
+    {
         WikiConstants.Language language = metaData.getLanguage();
         assertNotNull(language);
         assertEquals(WikiConstants.Language._test, language);
     }
 
     @Test
-    public void testGetVersion() {
+    public void testGetVersion()
+    {
         try {
             String version = metaData.getVersion();
             assertNotNull(version);
             assertFalse(version.isEmpty());
             assertEquals("1.0", version);
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the disambiguation category: " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the disambiguation category: "
+                    + e.getLocalizedMessage());
         }
     }
 }

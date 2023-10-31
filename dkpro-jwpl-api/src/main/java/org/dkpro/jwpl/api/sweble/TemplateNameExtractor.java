@@ -41,66 +41,73 @@ import de.fau.cs.osr.ptk.common.ast.AstText;
 /**
  * A visitor that extracts template names (no parameters) from an article AST.
  */
-public class TemplateNameExtractor extends AstVisitor<WtNode> {
-  private final WikiConfig config;
+public class TemplateNameExtractor
+    extends AstVisitor<WtNode>
+{
+    private final WikiConfig config;
 
+    private List<String> templates;
 
-  private List<String> templates;
+    // =========================================================================
 
-  // =========================================================================
-
-
-  /**
-   * Creates a new visitor that extracts anchors of internal links from a
-   * parsed Wikipedia article using the default Sweble config as defined
-   * in WikiConstants.SWEBLE_CONFIG.
-   */
-  public TemplateNameExtractor() {
-    this.config = DefaultConfigEnWp.generate();
-  }
-
-  /**
-   * Creates a new visitor that extracts anchors of internal links from a
-   * parsed Wikipedia article.
-   *
-   * @param config the Sweble configuration
-   */
-  public TemplateNameExtractor(WikiConfig config) {
-    this.config = config;
-  }
-
-  @Override
-  protected WtNode before(WtNode node) {
-    // This method is called by go() before visitation starts
-    templates = new LinkedList<>();
-    return super.before(node);
-  }
-
-  @Override
-  protected Object after(WtNode node, Object result) {
-    return templates;
-  }
-
-  // =========================================================================
-
-  public void visit(WtNode n) {
-    iterate(n);
-  }
-
-  public void visit(WtTemplate tmpl) throws IOException {
-    for (AstNode n : tmpl.getName()) {
-      if (n instanceof AstText) {
-        add(((AstText) n).getContent());
-      }
+    /**
+     * Creates a new visitor that extracts anchors of internal links from a parsed Wikipedia article
+     * using the default Sweble config as defined in WikiConstants.SWEBLE_CONFIG.
+     */
+    public TemplateNameExtractor()
+    {
+        this.config = DefaultConfigEnWp.generate();
     }
-  }
 
-  private void add(String s) {
-    s = s.replace("\n", "").replace("\r", "");
-    if (s.trim().isEmpty()) {
-      return;
+    /**
+     * Creates a new visitor that extracts anchors of internal links from a parsed Wikipedia
+     * article.
+     *
+     * @param config
+     *            the Sweble configuration
+     */
+    public TemplateNameExtractor(WikiConfig config)
+    {
+        this.config = config;
     }
-    templates.add(s);
-  }
+
+    @Override
+    protected WtNode before(WtNode node)
+    {
+        // This method is called by go() before visitation starts
+        templates = new LinkedList<>();
+        return super.before(node);
+    }
+
+    @Override
+    protected Object after(WtNode node, Object result)
+    {
+        return templates;
+    }
+
+    // =========================================================================
+
+    public void visit(WtNode n)
+    {
+        iterate(n);
+    }
+
+    public void visit(WtTemplate tmpl) throws IOException
+    {
+        for (AstNode n : tmpl.getName()) {
+            if (n instanceof AstText) {
+                add(((AstText) n).getContent());
+            }
+        }
+    }
+
+    private void add(String s)
+    {
+        s = s.replace("\n", "").replace("\r", "");
+        if (s.trim().isEmpty()) {
+            return;
+        }
+        templates.add(s);
+    }
 
 }

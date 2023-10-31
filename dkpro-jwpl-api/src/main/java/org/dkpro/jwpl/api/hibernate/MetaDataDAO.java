@@ -30,47 +30,58 @@ import org.slf4j.LoggerFactory;
  * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.MetaData
  */
-public class MetaDataDAO extends GenericDAO<MetaData> implements WikiConstants {
+public class MetaDataDAO
+    extends GenericDAO<MetaData>
+    implements WikiConstants
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  public MetaDataDAO(Wikipedia wiki) {
-    super(wiki, MetaData.class);
-  }
+    public MetaDataDAO(Wikipedia wiki)
+    {
+        super(wiki, MetaData.class);
+    }
 
-  @Override
-  public void persist(MetaData transientInstance) {
-    logger.debug("persisting MetaData instance");
-    super.persist(transientInstance);
-  }
+    @Override
+    public void persist(MetaData transientInstance)
+    {
+        logger.debug("persisting MetaData instance");
+        super.persist(transientInstance);
+    }
 
-  @Override
-  public void attachDirty(MetaData instance) {
-    logger.debug("attaching dirty MetaData instance");
-    super.attachDirty(instance);
-  }
+    @Override
+    public void attachDirty(MetaData instance)
+    {
+        logger.debug("attaching dirty MetaData instance");
+        super.attachDirty(instance);
+    }
 
-  @Override
-  public void attachClean(MetaData instance) {
-    logger.debug("attaching clean MetaData instance");
-    super.attachClean(instance);
-  }
+    @Override
+    public void attachClean(MetaData instance)
+    {
+        logger.debug("attaching clean MetaData instance");
+        super.attachClean(instance);
+    }
 
-  @Override
-  public void delete(MetaData persistentInstance) {
-    logger.debug("deleting MetaData instance");
-    super.delete(persistentInstance);
-  }
+    @Override
+    public void delete(MetaData persistentInstance)
+    {
+        logger.debug("deleting MetaData instance");
+        super.delete(persistentInstance);
+    }
 
-  @Override
-  public MetaData merge(MetaData detachedInstance) {
-    logger.debug("merging MetaData instance");
-    return super.merge(detachedInstance);
-  }
+    @Override
+    public MetaData merge(MetaData detachedInstance)
+    {
+        logger.debug("merging MetaData instance");
+        return super.merge(detachedInstance);
+    }
 
-  @Override
-  public MetaData findById(java.lang.Long id) {
-    logger.debug("getting MetaData instance with id: " + id);
-    return super.findById(id);
-  }
+    @Override
+    public MetaData findById(java.lang.Long id)
+    {
+        logger.debug("getting MetaData instance with id: " + id);
+        return super.findById(id);
+    }
 }

@@ -24,130 +24,146 @@ import org.hibernate.Session;
 /**
  * Provides access to meta-data about a certain {@link Wikipedia} instance.
  */
-public class MetaData implements WikiConstants {
+public class MetaData
+    implements WikiConstants
+{
 
-  private final Wikipedia wiki;
-  private final org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
+    private final Wikipedia wiki;
+    private final org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
 
-  /**
-   * Creates a meta data object.
-   */
-  protected MetaData(Wikipedia wiki) {
-    this.wiki = wiki;
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    hibernateMetaData = session.createQuery("from MetaData",
-            org.dkpro.jwpl.api.hibernate.MetaData.class).uniqueResult();
-    session.getTransaction().commit();
-  }
+    /**
+     * Creates a meta data object.
+     */
+    protected MetaData(Wikipedia wiki)
+    {
+        this.wiki = wiki;
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        hibernateMetaData = session
+                .createQuery("from MetaData", org.dkpro.jwpl.api.hibernate.MetaData.class)
+                .uniqueResult();
+        session.getTransaction().commit();
+    }
 
-  /**
-   * @return The id of the {@link MetaData} object.
-   */
-  /*
-   * Note well:
-   * Access is limited to package-private here intentionally, as the database ID is considered framework-internal use.
-   */
-  long getId() {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    long id = hibernateMetaData.getId();
-    session.getTransaction().commit();
-    return id;
-  }
+    /**
+     * @return The id of the {@link MetaData} object.
+     */
+    /*
+     * Note well: Access is limited to package-private here intentionally, as the database ID is
+     * considered framework-internal use.
+     */
+    long getId()
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        long id = hibernateMetaData.getId();
+        session.getTransaction().commit();
+        return id;
+    }
 
-  /**
-   * @return The number of categories in the current Wikipedia.
-   */
-  public long getNumberOfCategories() {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    long nrofCategories = hibernateMetaData.getNrofCategories();
-    session.getTransaction().commit();
-    return nrofCategories;
-  }
+    /**
+     * @return The number of categories in the current Wikipedia.
+     */
+    public long getNumberOfCategories()
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        long nrofCategories = hibernateMetaData.getNrofCategories();
+        session.getTransaction().commit();
+        return nrofCategories;
+    }
 
-  /**
-   * @return The number of pages in the current Wikipedia.
-   */
-  public long getNumberOfPages() {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    long nrofPages = hibernateMetaData.getNrofPages();
-    session.getTransaction().commit();
-    return nrofPages;
-  }
+    /**
+     * @return The number of pages in the current Wikipedia.
+     */
+    public long getNumberOfPages()
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        long nrofPages = hibernateMetaData.getNrofPages();
+        session.getTransaction().commit();
+        return nrofPages;
+    }
 
-  /**
-   * @return The number of disambiguation pages in the current Wikipedia.
-   */
-  public long getNumberOfDisambiguationPages() {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    long nrofDisambPages = hibernateMetaData.getNrofDisambiguationPages();
-    session.getTransaction().commit();
-    return nrofDisambPages;
-  }
+    /**
+     * @return The number of disambiguation pages in the current Wikipedia.
+     */
+    public long getNumberOfDisambiguationPages()
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        long nrofDisambPages = hibernateMetaData.getNrofDisambiguationPages();
+        session.getTransaction().commit();
+        return nrofDisambPages;
+    }
 
-  /**
-   * @return The number of redirects in the current Wikipedia.
-   */
-  public long getNumberOfRedirectPages() {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    long nrofRedirects = hibernateMetaData.getNrofRedirects();
-    session.getTransaction().commit();
-    return nrofRedirects;
-  }
+    /**
+     * @return The number of redirects in the current Wikipedia.
+     */
+    public long getNumberOfRedirectPages()
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        long nrofRedirects = hibernateMetaData.getNrofRedirects();
+        session.getTransaction().commit();
+        return nrofRedirects;
+    }
 
-  /**
-   * @return The disambiguation {@link Category}.
-   * @throws WikiApiException Thrown if errors occurred fetching the information.
-   */
-  public Category getDisambiguationCategory() throws WikiApiException {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    String disambCategoryTitle = hibernateMetaData.getDisambiguationCategory();
-    session.getTransaction().commit();
-    return wiki.getCategory(disambCategoryTitle);
-  }
+    /**
+     * @return The disambiguation {@link Category}.
+     * @throws WikiApiException
+     *             Thrown if errors occurred fetching the information.
+     */
+    public Category getDisambiguationCategory() throws WikiApiException
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        String disambCategoryTitle = hibernateMetaData.getDisambiguationCategory();
+        session.getTransaction().commit();
+        return wiki.getCategory(disambCategoryTitle);
+    }
 
-  /**
-   * @return The name of the main/root {@link Category}.
-   * @throws WikiApiException Thrown if errors occurred fetching the information.
-   */
-  public Category getMainCategory() throws WikiApiException {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    String mainCategoryTitle = hibernateMetaData.getMainCategory();
-    session.getTransaction().commit();
-    return wiki.getCategory(mainCategoryTitle);
-  }
+    /**
+     * @return The name of the main/root {@link Category}.
+     * @throws WikiApiException
+     *             Thrown if errors occurred fetching the information.
+     */
+    public Category getMainCategory() throws WikiApiException
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        String mainCategoryTitle = hibernateMetaData.getMainCategory();
+        session.getTransaction().commit();
+        return wiki.getCategory(mainCategoryTitle);
+    }
 
-  /**
-   * @return The version of the wikipedia data.
-   * @throws WikiApiException Thrown if errors occurred fetching the information.
-   */
-  public String getVersion() throws WikiApiException {
-    Session session = this.wiki.__getHibernateSession();
-    session.beginTransaction();
-    session.lock(hibernateMetaData, LockMode.NONE);
-    String version = hibernateMetaData.getVersion();
-    session.getTransaction().commit();
-    return version;
-  }
+    /**
+     * @return The version of the wikipedia data.
+     * @throws WikiApiException
+     *             Thrown if errors occurred fetching the information.
+     */
+    public String getVersion() throws WikiApiException
+    {
+        Session session = this.wiki.__getHibernateSession();
+        session.beginTransaction();
+        session.lock(hibernateMetaData, LockMode.NONE);
+        String version = hibernateMetaData.getVersion();
+        session.getTransaction().commit();
+        return version;
+    }
 
-  /**
-   * @return The language of this wikipedia.
-   */
-  public Language getLanguage() {
-    return wiki.getLanguage();
-  }
+    /**
+     * @return The language of this wikipedia.
+     */
+    public Language getLanguage()
+    {
+        return wiki.getLanguage();
+    }
 }

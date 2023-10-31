@@ -22,38 +22,40 @@ import java.util.Iterator;
 /**
  * An {@link Iterable} of {@link Page} objects.
  */
-public class PageIterable implements Iterable<Page> {
+public class PageIterable
+    implements Iterable<Page>
+{
 
-  private final Wikipedia wiki;
+    private final Wikipedia wiki;
 
-  /*
-   * Whether only articles are retrieved (or also disambiguation pages)
-   */
-  private final boolean onlyArticles;
+    /*
+     * Whether only articles are retrieved (or also disambiguation pages)
+     */
+    private final boolean onlyArticles;
 
-  /*
-   * The size of the page buffer.
-   * With bufferSize = 1, a database connection is needed for retrieving a single article.
-   * Higher bufferSize gives better performance, but needs memory.
-   * Initialize it with 500.
-   */
-  private int bufferSize = 500;
+    /*
+     * The size of the page buffer. With bufferSize = 1, a database connection is needed for
+     * retrieving a single article. Higher bufferSize gives better performance, but needs memory.
+     * Initialize it with 500.
+     */
+    private int bufferSize = 500;
 
-  public PageIterable(Wikipedia wiki, boolean onlyArticles) {
-    this.wiki = wiki;
-    this.onlyArticles = onlyArticles;
-  }
+    public PageIterable(Wikipedia wiki, boolean onlyArticles)
+    {
+        this.wiki = wiki;
+        this.onlyArticles = onlyArticles;
+    }
 
-  protected PageIterable(Wikipedia wiki, boolean onlyArticles, int bufferSize) {
-    this.wiki = wiki;
-    this.onlyArticles = onlyArticles;
-    this.bufferSize = bufferSize;
-  }
+    protected PageIterable(Wikipedia wiki, boolean onlyArticles, int bufferSize)
+    {
+        this.wiki = wiki;
+        this.onlyArticles = onlyArticles;
+        this.bufferSize = bufferSize;
+    }
 
-  @Override
-  public Iterator<Page> iterator() {
-    return new PageIterator(wiki, onlyArticles, bufferSize);
-  }
+    @Override
+    public Iterator<Page> iterator()
+    {
+        return new PageIterator(wiki, onlyArticles, bufferSize);
+    }
 }
-
-

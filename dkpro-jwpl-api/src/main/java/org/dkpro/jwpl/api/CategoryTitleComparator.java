@@ -24,17 +24,21 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 /**
  * Compares two {@link Category categories} based on the lexicographic ordering of their titles.
  */
-public class CategoryTitleComparator implements Comparator<Category> {
+public class CategoryTitleComparator
+    implements Comparator<Category>
+{
 
-  @Override
-  public int compare(Category o1, Category o2) {
+    @Override
+    public int compare(Category o1, Category o2)
+    {
 
-    int retVal = 0;
-    try {
-      retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
-    } catch (WikiTitleParsingException e) {
-      e.printStackTrace();
+        int retVal = 0;
+        try {
+            retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
+        }
+        catch (WikiTitleParsingException e) {
+            e.printStackTrace();
+        }
+        return retVal;
     }
-    return retVal;
-  }
 }
