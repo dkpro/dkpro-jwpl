@@ -22,17 +22,21 @@ import java.io.IOException;
 
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 
-public class DataMachineRevisionParser extends RevisionParser {
+public class DataMachineRevisionParser
+    extends RevisionParser
+{
 
-  @Override
-  public boolean next() throws IOException {
-    boolean hasNext = true;
-    try {
-      revPage = stream.readInt();
-      revTextId = stream.readInt();
-    } catch (EOFException e) {
-      hasNext = false;
+    @Override
+    public boolean next() throws IOException
+    {
+        boolean hasNext = true;
+        try {
+            revPage = stream.readInt();
+            revTextId = stream.readInt();
+        }
+        catch (EOFException e) {
+            hasNext = false;
+        }
+        return hasNext;
     }
-    return hasNext;
-  }
 }

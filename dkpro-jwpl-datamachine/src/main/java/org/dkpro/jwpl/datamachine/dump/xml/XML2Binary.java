@@ -25,28 +25,33 @@ import org.dkpro.jwpl.mwdumper.importer.NamespaceFilter;
 import org.dkpro.jwpl.mwdumper.importer.XmlDumpReader;
 
 /**
- * Use org.mediawiki.importer engine to parse the XML-Dump (only useful fields)
- * and store it to binary file. Compression of the output files is possible.
+ * Use org.mediawiki.importer engine to parse the XML-Dump (only useful fields) and store it to
+ * binary file. Compression of the output files is possible.
  */
-public class XML2Binary {
-  
-  /*
-   * Enable the main and category pages as well as discussions
-   */
-  private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
+public class XML2Binary
+{
 
-  private static final boolean USE_MODIFIED_PARSER = true;
+    /*
+     * Enable the main and category pages as well as discussions
+     */
+    private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
 
-  public XML2Binary(InputStream iStream, DataMachineFiles files) throws IOException {
-    if (USE_MODIFIED_PARSER) {
-      // modified parser, skips faulty tags
-      new SimpleXmlDumpReader(iStream, new NamespaceFilter(
-              new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES)).readDump();
-    } else {
-      // original MWDumper parser, very sensible to not closed tags
-      new XmlDumpReader(iStream, new NamespaceFilter(
-              new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES)).readDump();
+    private static final boolean USE_MODIFIED_PARSER = true;
+
+    public XML2Binary(InputStream iStream, DataMachineFiles files) throws IOException
+    {
+        if (USE_MODIFIED_PARSER) {
+            // modified parser, skips faulty tags
+            new SimpleXmlDumpReader(iStream,
+                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES))
+                            .readDump();
+        }
+        else {
+            // original MWDumper parser, very sensible to not closed tags
+            new XmlDumpReader(iStream,
+                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES))
+                            .readDump();
+        }
     }
-  }
 
 }

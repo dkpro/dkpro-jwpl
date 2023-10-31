@@ -23,19 +23,23 @@ import java.io.InputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 
-public class BinaryDumpTableInputStream extends DumpTableInputStream {
+public class BinaryDumpTableInputStream
+    extends DumpTableInputStream
+{
 
-  protected InputStream inputStream = null;
+    protected InputStream inputStream = null;
 
-  @Override
-  public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException {
-    // just read from the stream without any data manipulations
-    this.inputStream = inputStream;
-  }
+    @Override
+    public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
+    {
+        // just read from the stream without any data manipulations
+        this.inputStream = inputStream;
+    }
 
-  @Override
-  public int read() throws IOException {
-    return inputStream.read();
-  }
+    @Override
+    public int read() throws IOException
+    {
+        return inputStream.read();
+    }
 
 }
