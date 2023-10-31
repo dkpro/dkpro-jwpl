@@ -25,81 +25,91 @@
 
 package org.dkpro.jwpl.mwdumper.importer;
 
-public class Title {
-  public final Integer Namespace;
-  public final String Text;
+public class Title
+{
+    public final Integer Namespace;
+    public final String Text;
 
-  private final NamespaceSet namespaces;
+    private final NamespaceSet namespaces;
 
-  public Title(Integer namespaceKey, String text, NamespaceSet namespaces) {
-    this.namespaces = namespaces;
-    Namespace = namespaceKey;
-    Text = text;
-  }
-
-  public Title(String prefixedTitle, NamespaceSet namespaces) {
-    this.namespaces = namespaces;
-    int colon = prefixedTitle.indexOf(':');
-    if (colon > 0) {
-      String prefix = prefixedTitle.substring(0, colon);
-      if (namespaces.hasPrefix(prefix)) {
-        Namespace = namespaces.getIndex(prefix);
-        Text = prefixedTitle.substring(colon + 1);
-        return;
-      }
+    public Title(Integer namespaceKey, String text, NamespaceSet namespaces)
+    {
+        this.namespaces = namespaces;
+        Namespace = namespaceKey;
+        Text = text;
     }
-    Namespace = 0;
-    Text = prefixedTitle;
-  }
 
-  public static String ValidateTitleChars(String text) {
-    // FIXME
-    return text;
-  }
-
-  public String toString() {
-    String prefix = namespaces.getPrefix(Namespace);
-    if (Namespace == 0)
-      return prefix.concat(Text);
-    return prefix + ':' + Text;
-  }
-
-  public boolean isSpecial() {
-    return Namespace < 0;
-  }
-
-  public boolean isTalk() {
-    return !isSpecial() && (Namespace.intValue() % 2 == 1);
-  }
-
-  public Title talkPage() {
-    if (isTalk())
-      return this;
-    else if (isSpecial())
-      return null;
-    else
-      return new Title(Namespace + 1, Text, namespaces);
-  }
-
-  public Title subjectPage() {
-    if (isTalk())
-      return new Title(Namespace - 1, Text, namespaces);
-    else
-      return this;
-  }
-
-  public int hashCode() {
-    return Namespace.hashCode() ^ Text.hashCode();
-  }
-
-  public boolean equals(Object other) {
-    if (other == this)
-      return true;
-    if (other instanceof Title) {
-      Title ot = (Title) other;
-      return Namespace.equals(ot.Namespace) &&
-              Text.equals(ot.Text);
+    public Title(String prefixedTitle, NamespaceSet namespaces)
+    {
+        this.namespaces = namespaces;
+        int colon = prefixedTitle.indexOf(':');
+        if (colon > 0) {
+            String prefix = prefixedTitle.substring(0, colon);
+            if (namespaces.hasPrefix(prefix)) {
+                Namespace = namespaces.getIndex(prefix);
+                Text = prefixedTitle.substring(colon + 1);
+                return;
+            }
+        }
+        Namespace = 0;
+        Text = prefixedTitle;
     }
-    return false;
-  }
+
+    public static String ValidateTitleChars(String text)
+    {
+        // FIXME
+        return text;
+    }
+
+    public String toString()
+    {
+        String prefix = namespaces.getPrefix(Namespace);
+        if (Namespace == 0)
+            return prefix.concat(Text);
+        return prefix + ':' + Text;
+    }
+
+    public boolean isSpecial()
+    {
+        return Namespace < 0;
+    }
+
+    public boolean isTalk()
+    {
+        return !isSpecial() && (Namespace.intValue() % 2 == 1);
+    }
+
+    public Title talkPage()
+    {
+        if (isTalk())
+            return this;
+        else if (isSpecial())
+            return null;
+        else
+            return new Title(Namespace + 1, Text, namespaces);
+    }
+
+    public Title subjectPage()
+    {
+        if (isTalk())
+            return new Title(Namespace - 1, Text, namespaces);
+        else
+            return this;
+    }
+
+    public int hashCode()
+    {
+        return Namespace.hashCode() ^ Text.hashCode();
+    }
+
+    public boolean equals(Object other)
+    {
+        if (other == this)
+            return true;
+        if (other instanceof Title) {
+            Title ot = (Title) other;
+            return Namespace.equals(ot.Namespace) && Text.equals(ot.Text);
+        }
+        return false;
+    }
 }

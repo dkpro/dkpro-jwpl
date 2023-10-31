@@ -29,50 +29,60 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class TimeStampFilter implements DumpWriter {
-  final DumpWriter sink;
-  protected final Calendar filterTimeStamp;
-  protected Page currentPage;
-  protected boolean pageWritten;
+public class TimeStampFilter
+    implements DumpWriter
+{
+    final DumpWriter sink;
+    protected final Calendar filterTimeStamp;
+    protected Page currentPage;
+    protected boolean pageWritten;
 
-  public TimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException {
-    this.sink = sink;
-    filterTimeStamp = Calendar.getInstance();
-    filterTimeStamp.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeStamp));
-  }
-
-  public void close() throws IOException {
-    sink.close();
-  }
-
-  public void writeStartWiki() throws IOException {
-    sink.writeStartWiki();
-  }
-
-  public void writeEndWiki() throws IOException {
-    sink.writeEndWiki();
-  }
-
-  public void writeSiteinfo(Siteinfo info) throws IOException {
-    sink.writeSiteinfo(info);
-  }
-
-  public void writeStartPage(Page page) throws IOException {
-    currentPage = page;
-    pageWritten = false;
-  }
-
-  public void writeEndPage() throws IOException {
-    if (pageWritten) {
-      sink.writeEndPage();
+    public TimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException
+    {
+        this.sink = sink;
+        filterTimeStamp = Calendar.getInstance();
+        filterTimeStamp.setTime(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timeStamp));
     }
-  }
 
-  public void writeRevision(Revision revision) throws IOException {
-    if (!pageWritten) {
-      sink.writeStartPage(currentPage);
-      pageWritten = true;
+    public void close() throws IOException
+    {
+        sink.close();
     }
-    sink.writeRevision(revision);
-  }
+
+    public void writeStartWiki() throws IOException
+    {
+        sink.writeStartWiki();
+    }
+
+    public void writeEndWiki() throws IOException
+    {
+        sink.writeEndWiki();
+    }
+
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
+        sink.writeSiteinfo(info);
+    }
+
+    public void writeStartPage(Page page) throws IOException
+    {
+        currentPage = page;
+        pageWritten = false;
+    }
+
+    public void writeEndPage() throws IOException
+    {
+        if (pageWritten) {
+            sink.writeEndPage();
+        }
+    }
+
+    public void writeRevision(Revision revision) throws IOException
+    {
+        if (!pageWritten) {
+            sink.writeStartPage(currentPage);
+            pageWritten = true;
+        }
+        sink.writeRevision(revision);
+    }
 }

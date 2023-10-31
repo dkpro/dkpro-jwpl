@@ -27,15 +27,17 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.util.Hashtable;
 
-public class Page {
-  public Title Title;
-  public int Id;
-  public final Hashtable<String, Object> DiscussionThreadingInfo;
-  public String Restrictions;
+public class Page
+{
+    public Title Title;
+    public int Id;
+    public final Hashtable<String, Object> DiscussionThreadingInfo;
+    public String Restrictions;
 
-  public Page() {
-    // <restrictions> is optional...
-    Restrictions = "";
-    DiscussionThreadingInfo = new Hashtable<>();
-  }
+    public Page()
+    {
+        // <restrictions> is optional...
+        Restrictions = "";
+        DiscussionThreadingInfo = new Hashtable<>();
+    }
 }

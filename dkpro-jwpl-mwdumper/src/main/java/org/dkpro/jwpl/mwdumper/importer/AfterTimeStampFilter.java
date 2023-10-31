@@ -27,15 +27,19 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 import java.text.ParseException;
 
-public class AfterTimeStampFilter extends TimeStampFilter {
+public class AfterTimeStampFilter
+    extends TimeStampFilter
+{
 
-  public AfterTimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException {
-    super(sink, timeStamp);
-  }
-
-  public void writeRevision(Revision revision) throws IOException {
-    if (revision.Timestamp.after(super.filterTimeStamp)) {
-      super.writeRevision(revision);
+    public AfterTimeStampFilter(DumpWriter sink, String timeStamp) throws ParseException
+    {
+        super(sink, timeStamp);
     }
-  }
+
+    public void writeRevision(Revision revision) throws IOException
+    {
+        if (revision.Timestamp.after(super.filterTimeStamp)) {
+            super.writeRevision(revision);
+        }
+    }
 }

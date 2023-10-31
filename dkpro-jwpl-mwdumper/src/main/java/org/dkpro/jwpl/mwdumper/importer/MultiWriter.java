@@ -29,63 +29,74 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MultiWriter implements DumpWriter {
-  private final List<DumpWriter> sinks;
+public class MultiWriter
+    implements DumpWriter
+{
+    private final List<DumpWriter> sinks;
 
-  public MultiWriter() {
-    sinks = new ArrayList<>();
-  }
-
-  public void close() throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.close();
+    public MultiWriter()
+    {
+        sinks = new ArrayList<>();
     }
-  }
 
-  public void writeStartWiki() throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeStartWiki();
+    public void close() throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.close();
+        }
     }
-  }
 
-  public void writeEndWiki() throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeEndWiki();
+    public void writeStartWiki() throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeStartWiki();
+        }
     }
-  }
 
-  public void writeSiteinfo(Siteinfo info) throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeSiteinfo(info);
+    public void writeEndWiki() throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeEndWiki();
+        }
     }
-  }
 
-  public void writeStartPage(Page page) throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeStartPage(page);
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeSiteinfo(info);
+        }
     }
-  }
 
-  public void writeEndPage() throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeEndPage();
+    public void writeStartPage(Page page) throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeStartPage(page);
+        }
     }
-  }
 
-  public void writeRevision(Revision revision) throws IOException {
-    for (int i = 0; i < sinks.size(); i++) {
-      DumpWriter sink = sinks.get(i);
-      sink.writeRevision(revision);
+    public void writeEndPage() throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeEndPage();
+        }
     }
-  }
 
-  public void add(DumpWriter sink) {
-    sinks.add(sink);
-  }
+    public void writeRevision(Revision revision) throws IOException
+    {
+        for (int i = 0; i < sinks.size(); i++) {
+            DumpWriter sink = sinks.get(i);
+            sink.writeRevision(revision);
+        }
+    }
+
+    public void add(DumpWriter sink)
+    {
+        sinks.add(sink);
+    }
 }

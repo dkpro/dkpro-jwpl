@@ -27,68 +27,80 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.io.IOException;
 
-public class SqlWriter14 extends SqlWriter {
-  private Page currentPage;
-  private Revision lastRevision;
+public class SqlWriter14
+    extends SqlWriter
+{
+    private Page currentPage;
+    private Revision lastRevision;
 
-  public SqlWriter14(SqlWriter.Traits tr, SqlStream output) {
-    super(tr, output);
-  }
+    public SqlWriter14(SqlWriter.Traits tr, SqlStream output)
+    {
+        super(tr, output);
+    }
 
-  public SqlWriter14(SqlWriter.Traits tr, SqlStream output, String prefix) {
-    super(tr, output, prefix);
-  }
+    public SqlWriter14(SqlWriter.Traits tr, SqlStream output, String prefix)
+    {
+        super(tr, output, prefix);
+    }
 
-  public void writeStartPage(Page page) {
-    currentPage = page;
-    lastRevision = null;
-  }
+    public void writeStartPage(Page page)
+    {
+        currentPage = page;
+        lastRevision = null;
+    }
 
-  public void writeEndPage() throws IOException {
-    if (lastRevision != null)
-      writeCurRevision(currentPage, lastRevision);
-    currentPage = null;
-    lastRevision = null;
-  }
+    public void writeEndPage() throws IOException
+    {
+        if (lastRevision != null)
+            writeCurRevision(currentPage, lastRevision);
+        currentPage = null;
+        lastRevision = null;
+    }
 
-  public void writeRevision(Revision revision) throws IOException {
-    if (lastRevision != null)
-      writeOldRevision(currentPage, lastRevision);
-    lastRevision = revision;
-  }
+    public void writeRevision(Revision revision) throws IOException
+    {
+        if (lastRevision != null)
+            writeOldRevision(currentPage, lastRevision);
+        lastRevision = revision;
+    }
 
-  private void writeOldRevision(Page page, Revision revision) throws IOException {
-    bufferInsertRow("old", new Object[][]{
-            {"old_id", revision.Id},
-            {"old_namespace", page.Title.Namespace},
-            {"old_title", titleFormat(page.Title.Text)},
-            {"old_text", revision.Text == null ? "" : revision.Text},
-            {"old_comment", revision.Comment == null ? "" : revision.Comment},
-            {"old_user", revision.Contributor.Username == null ? ZERO : revision.Contributor.Id},
-            {"old_user_text", revision.Contributor.Username == null ? "" : revision.Contributor.Username},
-            {"old_timestamp", timestampFormat(revision.Timestamp)},
-            {"old_minor_edit", revision.Minor ? ONE : ZERO},
-            {"old_flags", "utf-8"},
-            {"inverse_timestamp", inverseTimestamp(revision.Timestamp)}});
-  }
+    private void writeOldRevision(Page page, Revision revision) throws IOException
+    {
+        bufferInsertRow("old", new Object[][] { { "old_id", revision.Id },
+                { "old_namespace", page.Title.Namespace },
+                { "old_title", titleFormat(page.Title.Text) },
+                { "old_text", revision.Text == null ? "" : revision.Text },
+                { "old_comment", revision.Comment == null ? "" : revision.Comment },
+                { "old_user",
+                        revision.Contributor.Username == null ? ZERO : revision.Contributor.Id },
+                { "old_user_text",
+                        revision.Contributor.Username == null ? ""
+                                : revision.Contributor.Username },
+                { "old_timestamp", timestampFormat(revision.Timestamp) },
+                { "old_minor_edit", revision.Minor ? ONE : ZERO }, { "old_flags", "utf-8" },
+                { "inverse_timestamp", inverseTimestamp(revision.Timestamp) } });
+    }
 
-  private void writeCurRevision(Page page, Revision revision) throws IOException {
-    bufferInsertRow("cur", new Object[][]{
-            {"cur_id", page.Id},
-            {"cur_namespace", page.Title.Namespace},
-            {"cur_title", titleFormat(page.Title.Text)},
-            {"cur_text", revision.Text == null ? "" : revision.Text},
-            {"cur_comment", revision.Comment == null ? "" : revision.Comment},
-            {"cur_user", revision.Contributor.Username == null ? ZERO : Integer.valueOf(revision.Contributor.Id)},
-            {"cur_user_text", revision.Contributor.Username == null ? "" : revision.Contributor.Username},
-            {"cur_timestamp", timestampFormat(revision.Timestamp)},
-            {"cur_restrictions", page.Restrictions},
-            {"cur_counter", ZERO},
-            {"cur_is_redirect", revision.isRedirect() ? ONE : ZERO},
-            {"cur_minor_edit", revision.Minor ? ONE : ZERO},
-            {"cur_random", traits.getRandom()},
-            {"cur_touched", traits.getCurrentTime()},
-            {"inverse_timestamp", inverseTimestamp(revision.Timestamp)}});
-    checkpoint();
-  }
+    private void writeCurRevision(Page page, Revision revision) throws IOException
+    {
+        bufferInsertRow("cur",
+                new Object[][] { { "cur_id", page.Id }, { "cur_namespace", page.Title.Namespace },
+                        { "cur_title", titleFormat(page.Title.Text) },
+                        { "cur_text", revision.Text == null ? "" : revision.Text },
+                        { "cur_comment", revision.Comment == null ? "" : revision.Comment },
+                        { "cur_user",
+                                revision.Contributor.Username == null ? ZERO
+                                        : Integer.valueOf(revision.Contributor.Id) },
+                        { "cur_user_text",
+                                revision.Contributor.Username == null ? ""
+                                        : revision.Contributor.Username },
+                        { "cur_timestamp", timestampFormat(revision.Timestamp) },
+                        { "cur_restrictions", page.Restrictions }, { "cur_counter", ZERO },
+                        { "cur_is_redirect", revision.isRedirect() ? ONE : ZERO },
+                        { "cur_minor_edit", revision.Minor ? ONE : ZERO },
+                        { "cur_random", traits.getRandom() },
+                        { "cur_touched", traits.getCurrentTime() },
+                        { "inverse_timestamp", inverseTimestamp(revision.Timestamp) } });
+        checkpoint();
+    }
 }

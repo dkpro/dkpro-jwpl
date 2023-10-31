@@ -32,63 +32,73 @@ import java.util.Calendar;
 /**
  * Generates XML stream suitable for the Sphinx search engine's xmlpipe input.
  */
-public class SphinxWriter implements DumpWriter {
-  protected final OutputStream stream;
-  protected final XmlWriter writer;
-  protected Page _page;
-  protected Revision _rev;
+public class SphinxWriter
+    implements DumpWriter
+{
+    protected final OutputStream stream;
+    protected final XmlWriter writer;
+    protected Page _page;
+    protected Revision _rev;
 
-  public SphinxWriter(OutputStream output) {
-    stream = output;
-    writer = new XmlWriter(stream);
-  }
+    public SphinxWriter(OutputStream output)
+    {
+        stream = output;
+        writer = new XmlWriter(stream);
+    }
 
-  public void close() throws IOException {
-    writer.close();
-  }
+    public void close() throws IOException
+    {
+        writer.close();
+    }
 
-  public void writeStartWiki() throws IOException {
-    writer.openXml();
-    // No containing element to open
-  }
+    public void writeStartWiki() throws IOException
+    {
+        writer.openXml();
+        // No containing element to open
+    }
 
-  public void writeEndWiki() throws IOException {
-    // No containing element to close
-    writer.closeXml();
-  }
+    public void writeEndWiki() throws IOException
+    {
+        // No containing element to close
+        writer.closeXml();
+    }
 
-  public void writeSiteinfo(Siteinfo info) throws IOException {
-    // Nothing!
-  }
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
+        // Nothing!
+    }
 
-  public void writeStartPage(Page page) throws IOException {
-    _page = page;
-  }
+    public void writeStartPage(Page page) throws IOException
+    {
+        _page = page;
+    }
 
-  /**
-   * FIXME What's the "group" number here do?
-   * FIXME preprocess the text to strip some formatting?
-   */
-  public void writeEndPage() throws IOException {
-    writer.openElement("document");
-    writer.textElement("id", Integer.toString(_page.Id));
-    writer.textElement("group", "0");
-    writer.textElement("timestamp", formatTimestamp(_rev.Timestamp));
-    writer.textElement("title", _page.Title.toString());
-    writer.textElement("body", _rev.Text);
-    writer.closeElement();
-    _rev = null;
-    _page = null;
-  }
+    /**
+     * FIXME What's the "group" number here do? FIXME preprocess the text to strip some formatting?
+     */
+    public void writeEndPage() throws IOException
+    {
+        writer.openElement("document");
+        writer.textElement("id", Integer.toString(_page.Id));
+        writer.textElement("group", "0");
+        writer.textElement("timestamp", formatTimestamp(_rev.Timestamp));
+        writer.textElement("title", _page.Title.toString());
+        writer.textElement("body", _rev.Text);
+        writer.closeElement();
+        _rev = null;
+        _page = null;
+    }
 
-  public void writeRevision(Revision rev) throws IOException {
-    _rev = rev;
-  }
+    public void writeRevision(Revision rev) throws IOException
+    {
+        _rev = rev;
+    }
 
-  /**
-   * FIXME double-check that it wants Unix timestamp
-   */
-  static String formatTimestamp(Calendar ts) {
-    return Long.toString(ts.getTimeInMillis() / 1000L);
-  }
+    /**
+     * FIXME double-check that it wants Unix timestamp
+     */
+    static String formatTimestamp(Calendar ts)
+    {
+        return Long.toString(ts.getTimeInMillis() / 1000L);
+    }
 }
