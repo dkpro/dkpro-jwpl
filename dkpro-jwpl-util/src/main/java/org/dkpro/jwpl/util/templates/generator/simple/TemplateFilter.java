@@ -20,102 +20,118 @@ package org.dkpro.jwpl.util.templates.generator.simple;
 import java.util.Set;
 
 /**
- * This class is used for filtering templates by they names using different
- * white/black lists
+ * This class is used for filtering templates by they names using different white/black lists
  */
-public class TemplateFilter {
-  private final Set<String> whiteList;
-  private final Set<String> whitePrefixList;
-  private final Set<String> blackList;
-  private final Set<String> blackPrefixList;
+public class TemplateFilter
+{
+    private final Set<String> whiteList;
+    private final Set<String> whitePrefixList;
+    private final Set<String> blackList;
+    private final Set<String> blackPrefixList;
 
-  /**
-   * Init template filter with different lists
-   *
-   * @param whiteList       list with allowed template names
-   * @param whitePrefixList list with allowed template prefixes
-   * @param blackList       list with prohibited template names
-   * @param blackPrefixList list with prohibited template prefixes
-   */
-  public TemplateFilter(Set<String> whiteList, Set<String> whitePrefixList, Set<String> blackList,
-                        Set<String> blackPrefixList) {
-    this.whiteList = whiteList;
-    this.whitePrefixList = whitePrefixList;
-    this.blackList = blackList;
-    this.blackPrefixList = blackPrefixList;
+    /**
+     * Init template filter with different lists
+     *
+     * @param whiteList
+     *            list with allowed template names
+     * @param whitePrefixList
+     *            list with allowed template prefixes
+     * @param blackList
+     *            list with prohibited template names
+     * @param blackPrefixList
+     *            list with prohibited template prefixes
+     */
+    public TemplateFilter(Set<String> whiteList, Set<String> whitePrefixList, Set<String> blackList,
+            Set<String> blackPrefixList)
+    {
+        this.whiteList = whiteList;
+        this.whitePrefixList = whitePrefixList;
+        this.blackList = blackList;
+        this.blackPrefixList = blackPrefixList;
 
-  }
-
-  /**
-   * Checks if the input string is in white list
-   *
-   * @param tpl string to check
-   * @return
-   */
-  private boolean isInWhiteList(String tpl) {
-    return (!whiteList.isEmpty() && whiteList.contains(tpl)) || (whiteList.isEmpty());
-  }
-
-  /**
-   * Checks if the input string is in black list
-   *
-   * @param tpl string to check
-   * @return
-   */
-  private boolean isInBlackList(String tpl) {
-    return blackList.contains(tpl);
-  }
-
-  /**
-   * Checks if the input string contains prefixes from white list
-   *
-   * @param tpl string to check
-   * @return
-   */
-  private boolean containsAllowedPrefix(String tpl) {
-    if (whitePrefixList.isEmpty())
-      return true;
-
-    for (String i : whitePrefixList) {
-      if (tpl.startsWith(i))
-        return true;
     }
-    return false;
-  }
 
-  /**
-   * Checks if the input string contains prefixes from black list
-   *
-   * @param tpl string to check
-   * @return
-   */
-  private boolean containsRestrictedPrefix(String tpl) {
-    for (String i : blackPrefixList) {
-      if (tpl.startsWith(i))
-        return true;
+    /**
+     * Checks if the input string is in white list
+     *
+     * @param tpl
+     *            string to check
+     * @return
+     */
+    private boolean isInWhiteList(String tpl)
+    {
+        return (!whiteList.isEmpty() && whiteList.contains(tpl)) || (whiteList.isEmpty());
     }
-    return false;
-  }
 
-  /**
-   * Checks whether to include the template with the given name in the
-   * database or not.
-   *
-   * @param tpl the template name
-   * @return true, if the template should be included in the db
-   */
-  public boolean acceptTemplate(String tpl) {
+    /**
+     * Checks if the input string is in black list
+     *
+     * @param tpl
+     *            string to check
+     * @return
+     */
+    private boolean isInBlackList(String tpl)
+    {
+        return blackList.contains(tpl);
+    }
 
-    if (isInWhiteList(tpl) && !isInBlackList(tpl)) {
-      if (containsAllowedPrefix(tpl) && !containsRestrictedPrefix(tpl)) {
-        return true;
-      } else {
+    /**
+     * Checks if the input string contains prefixes from white list
+     *
+     * @param tpl
+     *            string to check
+     * @return
+     */
+    private boolean containsAllowedPrefix(String tpl)
+    {
+        if (whitePrefixList.isEmpty())
+            return true;
+
+        for (String i : whitePrefixList) {
+            if (tpl.startsWith(i))
+                return true;
+        }
         return false;
-      }
-    } else {
-      return false;
     }
 
-  }
+    /**
+     * Checks if the input string contains prefixes from black list
+     *
+     * @param tpl
+     *            string to check
+     * @return
+     */
+    private boolean containsRestrictedPrefix(String tpl)
+    {
+        for (String i : blackPrefixList) {
+            if (tpl.startsWith(i))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether to include the template with the given name in the database or not.
+     *
+     * @param tpl
+     *            the template name
+     * @return true, if the template should be included in the db
+     */
+    public boolean acceptTemplate(String tpl)
+    {
+
+        if (isInWhiteList(tpl) && !isInBlackList(tpl)) {
+            if (containsAllowedPrefix(tpl) && !containsRestrictedPrefix(tpl)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+
+    }
 
 }

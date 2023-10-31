@@ -25,32 +25,35 @@ import org.dkpro.jwpl.api.WikiConstants;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
 
-public class SectionExtractionTest {
+public class SectionExtractionTest
+{
 
-  /**
-   * @param args
-   */
-  public static void main(String[] args) {
-    DatabaseConfiguration dbconf = new DatabaseConfiguration();
-    dbconf.setDatabase("wiki_en_20120104_rev");
-    dbconf.setUser("root");
-    dbconf.setPassword("");
-    dbconf.setHost("127.0.0.1:3307");
-    dbconf.setLanguage(WikiConstants.Language.english);
-    try {
-      Wikipedia wiki = new Wikipedia(dbconf);
-      Page p = wiki.getPage("Ari Sitas");
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        DatabaseConfiguration dbconf = new DatabaseConfiguration();
+        dbconf.setDatabase("wiki_en_20120104_rev");
+        dbconf.setUser("root");
+        dbconf.setPassword("");
+        dbconf.setHost("127.0.0.1:3307");
+        dbconf.setLanguage(WikiConstants.Language.english);
+        try {
+            Wikipedia wiki = new Wikipedia(dbconf);
+            Page p = wiki.getPage("Ari Sitas");
 
-      List<ExtractedSection> sects = ParseUtils.getSections(p.getText(), p.getTitle().toString(), -1);
-      for (ExtractedSection sect : sects) {
-        System.out.println(sect.getBody());
-      }
+            List<ExtractedSection> sects = ParseUtils.getSections(p.getText(),
+                    p.getTitle().toString(), -1);
+            for (ExtractedSection sect : sects) {
+                System.out.println(sect.getBody());
+            }
 
-    } catch (Exception e) {
-      e.printStackTrace();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
-
-
-  }
 
 }

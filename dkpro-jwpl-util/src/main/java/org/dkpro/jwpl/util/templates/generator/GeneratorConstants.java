@@ -17,9 +17,10 @@
  */
 package org.dkpro.jwpl.util.templates.generator;
 
-public class GeneratorConstants {
-  public final static String TABLE_TPLID_REVISIONID = "templateId_revisionId";
-  public final static String TABLE_TPLID_PAGEID = "templateId_pageId";
-  public final static String TABLE_TPLID_TPLNAME = "templates";
+public class GeneratorConstants
+{
+    public final static String TABLE_TPLID_REVISIONID = "templateId_revisionId";
+    public final static String TABLE_TPLID_PAGEID = "templateId_pageId";
+    public final static String TABLE_TPLID_TPLNAME = "templates";
 
 }
