@@ -35,205 +35,208 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.PanelKeys;
 /**
  * Panel class of the ConfigurationTool
  * <p>
- * This panel contains all components for setting configuration parameters
- * related to the filtering.
+ * This panel contains all components for setting configuration parameters related to the filtering.
  */
 @SuppressWarnings("serial")
 public class FilterPanel
-        extends AbstractPanel {
-  // table with namespaces to filter
-  private JTable namespaces;
+    extends AbstractPanel
+{
+    // table with namespaces to filter
+    private JTable namespaces;
 
-  /**
-   * (Constructor) Creates a new SurrogatePanel
-   *
-   * @param controller Reference to the controller
-   */
-  public FilterPanel(ConfigController controller) {
-    super(controller);
+    /**
+     * (Constructor) Creates a new SurrogatePanel
+     *
+     * @param controller
+     *            Reference to the controller
+     */
+    public FilterPanel(ConfigController controller)
+    {
+        super(controller);
 
-    controller.register(PanelKeys.PANEL_FILTER, this);
+        controller.register(PanelKeys.PANEL_FILTER, this);
 
-    initTable();
+        initTable();
 
-    initButtons();
+        initButtons();
 
-    // init label
-    JLabel hint = new JLabel();
-    hint.setText("<html>If nothing is selected,<br> all namespaces are allowed.</html>");
-    hint.setBounds(385, 70, 180, 60);
-    this.add(hint);
-  }
+        // init label
+        JLabel hint = new JLabel();
+        hint.setText("<html>If nothing is selected,<br> all namespaces are allowed.</html>");
+        hint.setBounds(385, 70, 180, 60);
+        this.add(hint);
+    }
 
-  /**
-   * Initialize JTable that contains namespaces
-   */
-  private void initTable() {
-    namespaces = new JTable(new FilterTableModel());
+    /**
+     * Initialize JTable that contains namespaces
+     */
+    private void initTable()
+    {
+        namespaces = new JTable(new FilterTableModel());
 
-    namespaces.removeColumn(namespaces.getColumn("#"));
+        namespaces.removeColumn(namespaces.getColumn("#"));
 
-    namespaces.setFillsViewportHeight(true);
-    namespaces.setPreferredScrollableViewportSize(new Dimension(500, 70));
+        namespaces.setFillsViewportHeight(true);
+        namespaces.setPreferredScrollableViewportSize(new Dimension(500, 70));
 
-    // Create the scroll pane and add the table to it.
-    JScrollPane scrollPane = new JScrollPane(namespaces);
+        // Create the scroll pane and add the table to it.
+        JScrollPane scrollPane = new JScrollPane(namespaces);
 
-    scrollPane.setBounds(70, 10, 300, 200);
-    this.add(scrollPane);
-  }
+        scrollPane.setBounds(70, 10, 300, 200);
+        this.add(scrollPane);
+    }
 
-  /**
-   * Initialize two buttons: SelectAll and UnselectAll
-   */
-  private void initButtons() {
-    JButton selectAll = new JButton("Select all");
-    selectAll.addActionListener(arg0 -> {
-      for (int i = 0; i < 22; i++) {
-        namespaces.getModel().setValueAt(true, i, 1);
-      }
+    /**
+     * Initialize two buttons: SelectAll and UnselectAll
+     */
+    private void initButtons()
+    {
+        JButton selectAll = new JButton("Select all");
+        selectAll.addActionListener(arg0 -> {
+            for (int i = 0; i < 22; i++) {
+                namespaces.getModel().setValueAt(true, i, 1);
+            }
 
-    });
-    selectAll.setBounds(380, 10, 120, 25);
-    this.add(selectAll);
+        });
+        selectAll.setBounds(380, 10, 120, 25);
+        this.add(selectAll);
 
-    JButton unselectAll = new JButton("Unselect all");
+        JButton unselectAll = new JButton("Unselect all");
 
-    unselectAll.addActionListener(e -> {
-      for (int i = 0; i < 22; i++) {
-        namespaces.getModel().setValueAt(false, i, 1);
-      }
+        unselectAll.addActionListener(e -> {
+            for (int i = 0; i < 22; i++) {
+                namespaces.getModel().setValueAt(false, i, 1);
+            }
 
-    });
+        });
 
-    unselectAll.setBounds(380, 40, 120, 25);
-    this.add(unselectAll);
-  }
+        unselectAll.setBounds(380, 40, 120, 25);
+        this.add(unselectAll);
+    }
 
-  @Override
-  public void validate() {
-
-  }
-
-  @Override
-  public void relocate() {
-
-  }
-
-  @Override
-  public void toXML(StringBuilder builder, ConfigVerification errors) {
-    builder.append("\t<filter>\r\n");
-    builder.append("\t\t<namespaces>\r\n");
-    int rows = this.namespaces.getModel().getRowCount();
-    for (int j = 0; j < rows; j++) {
-
-      if (this.namespaces.getModel().getValueAt(j, 1).equals(true)) {
-        builder.append("\t\t\t<ns>");
-        builder.append(this.namespaces.getModel().getValueAt(j, 2));
-        builder.append("</ns>\r\n");
-      }
+    @Override
+    public void validate()
+    {
 
     }
 
-    builder.append("\t\t</namespaces>\r\n");
-    builder.append("\t</filter>\r\n");
+    @Override
+    public void relocate()
+    {
 
-  }
+    }
 
-  @Override
-  public void applyConfig(ConfigSettings config) {
-    @SuppressWarnings("unchecked")
-    Set<Integer> namespaces = (Set<Integer>) config
-            .getConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP);
+    @Override
+    public void toXML(StringBuilder builder, ConfigVerification errors)
+    {
+        builder.append("\t<filter>\r\n");
+        builder.append("\t\t<namespaces>\r\n");
+        int rows = this.namespaces.getModel().getRowCount();
+        for (int j = 0; j < rows; j++) {
 
-    if (namespaces != null) {
+            if (this.namespaces.getModel().getValueAt(j, 1).equals(true)) {
+                builder.append("\t\t\t<ns>");
+                builder.append(this.namespaces.getModel().getValueAt(j, 2));
+                builder.append("</ns>\r\n");
+            }
 
-      int rows = this.namespaces.getModel().getRowCount();
-      for (int j = 0; j < rows; j++) {
-        if (namespaces.contains((this.namespaces.getModel().getValueAt(
-                j, 2)))) {
-          this.namespaces.getModel().setValueAt(true, j,
-                  1);
-        } else {
-          this.namespaces.getModel().setValueAt(false,
-                  j, 1);
         }
 
-      }
+        builder.append("\t\t</namespaces>\r\n");
+        builder.append("\t</filter>\r\n");
 
-    }
-
-  }
-
-  /**
-   * Custom model for JTable that contains a list of namespaces to filter
-   */
-  class FilterTableModel
-          extends AbstractTableModel {
-    private final String[] columnNames = {"Namespace", "Allow", "#"};
-
-    private final Object[][] data = {{"main(0)", false, 0},
-            {"talk(1)", false, 1},
-            {"user(2)", false, 2},
-            {"user talk(3)", false, 3},
-            {"wikipedia(4)", false, 4},
-            {"wikipedia talk(5)", false, 5},
-            {"file(6)", false, 6},
-            {"file talk(7)", false, 7},
-            {"mediawiki(8)", false, 8},
-            {"mediawiki talk(9)", false, 9},
-            {"template(10)", false, 10},
-            {"template talk(11)", false, 11},
-            {"help(12)", false, 12},
-            {"help talk(13)", false, 13},
-            {"category(14)", false, 14},
-            {"category talk(15)", false, 15},
-            {"portal(100)", false, 100},
-            {"portal talk(101)", false, 101},
-            {"book(108)", false, 108},
-            {"book talk(109)", false, 109},
-            {"special(-1)", false, -1},
-            {"media(-2)", false, -2}
-
-    };
-
-    @Override
-    public int getColumnCount() {
-      return columnNames.length;
     }
 
     @Override
-    public int getRowCount() {
-      return data.length;
+    public void applyConfig(ConfigSettings config)
+    {
+        @SuppressWarnings("unchecked")
+        Set<Integer> namespaces = (Set<Integer>) config
+                .getConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP);
+
+        if (namespaces != null) {
+
+            int rows = this.namespaces.getModel().getRowCount();
+            for (int j = 0; j < rows; j++) {
+                if (namespaces.contains((this.namespaces.getModel().getValueAt(j, 2)))) {
+                    this.namespaces.getModel().setValueAt(true, j, 1);
+                }
+                else {
+                    this.namespaces.getModel().setValueAt(false, j, 1);
+                }
+
+            }
+
+        }
+
     }
 
-    @Override
-    public String getColumnName(int col) {
-      return columnNames[col];
-    }
+    /**
+     * Custom model for JTable that contains a list of namespaces to filter
+     */
+    class FilterTableModel
+        extends AbstractTableModel
+    {
+        private final String[] columnNames = { "Namespace", "Allow", "#" };
 
-    @Override
-    public Object getValueAt(int row, int col) {
-      return data[row][col];
-    }
+        private final Object[][] data = { { "main(0)", false, 0 }, { "talk(1)", false, 1 },
+                { "user(2)", false, 2 }, { "user talk(3)", false, 3 }, { "wikipedia(4)", false, 4 },
+                { "wikipedia talk(5)", false, 5 }, { "file(6)", false, 6 },
+                { "file talk(7)", false, 7 }, { "mediawiki(8)", false, 8 },
+                { "mediawiki talk(9)", false, 9 }, { "template(10)", false, 10 },
+                { "template talk(11)", false, 11 }, { "help(12)", false, 12 },
+                { "help talk(13)", false, 13 }, { "category(14)", false, 14 },
+                { "category talk(15)", false, 15 }, { "portal(100)", false, 100 },
+                { "portal talk(101)", false, 101 }, { "book(108)", false, 108 },
+                { "book talk(109)", false, 109 }, { "special(-1)", false, -1 },
+                { "media(-2)", false, -2 }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public Class getColumnClass(int c) {
-      return getValueAt(0, c).getClass();
-    }
+        };
 
-    @Override
-    public boolean isCellEditable(int row, int col) {
-      return true;
-    }
+        @Override
+        public int getColumnCount()
+        {
+            return columnNames.length;
+        }
 
-    @Override
-    public void setValueAt(Object value, int row, int col) {
-      data[row][col] = value;
-      fireTableCellUpdated(row, col);
-    }
+        @Override
+        public int getRowCount()
+        {
+            return data.length;
+        }
 
-  }
+        @Override
+        public String getColumnName(int col)
+        {
+            return columnNames[col];
+        }
+
+        @Override
+        public Object getValueAt(int row, int col)
+        {
+            return data[row][col];
+        }
+
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        @Override
+        public Class getColumnClass(int c)
+        {
+            return getValueAt(0, c).getClass();
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int col)
+        {
+            return true;
+        }
+
+        @Override
+        public void setValueAt(Object value, int row, int col)
+        {
+            data[row][col] = value;
+            fireTableCellUpdated(row, col);
+        }
+
+    }
 
 }

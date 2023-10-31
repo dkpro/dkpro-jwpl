@@ -20,6 +20,9 @@ package org.dkpro.jwpl.wikimachine.dump.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
-public abstract class DumpTableInputStream extends InputStream {
-  public abstract void initialize(InputStream inputStream, DumpTableEnum table) throws IOException;
+public abstract class DumpTableInputStream
+    extends InputStream
+{
+    public abstract void initialize(InputStream inputStream, DumpTableEnum table)
+        throws IOException;
 }

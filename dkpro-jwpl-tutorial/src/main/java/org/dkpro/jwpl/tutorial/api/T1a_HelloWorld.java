@@ -26,30 +26,32 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 /**
  * Tutorial 1a
  * <p>
- * Get the text of a wikipedia article.
- * The text will be formatted with MediaWiki markup.
+ * Get the text of a wikipedia article. The text will be formatted with MediaWiki markup.
  * <p>
  * Throws an exception, if no page with the given title exists.
  */
-public class T1a_HelloWorld implements WikiConstants {
+public class T1a_HelloWorld
+    implements WikiConstants
+{
 
-  public static void main(String[] args) throws WikiApiException {
+    public static void main(String[] args) throws WikiApiException
+    {
 
-    // configure the database connection parameters
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setHost("SERVER_URL");
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.german);
+        // configure the database connection parameters
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setHost("SERVER_URL");
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.german);
 
-    // Create a new German wikipedia.
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // Create a new German wikipedia.
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    // Get the page with title "Hello world".
-    // May throw an exception, if the page does not exist.
-    Page page = wiki.getPage("Hello world");
-    System.out.println(page.getText());
+        // Get the page with title "Hello world".
+        // May throw an exception, if the page does not exist.
+        Page page = wiki.getPage("Hello world");
+        System.out.println(page.getText());
 
-  }
+    }
 }

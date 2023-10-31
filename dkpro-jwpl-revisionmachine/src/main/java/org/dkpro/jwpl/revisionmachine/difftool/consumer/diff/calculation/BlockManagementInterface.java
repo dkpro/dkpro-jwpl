@@ -25,19 +25,26 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * Interface of the BlockManagement
  */
-public interface BlockManagementInterface {
+public interface BlockManagementInterface
+{
 
-  /**
-   * Uses the substring blocks to create the diff operations.
-   *
-   * @param revA   revision A
-   * @param revB   revision B
-   * @param queueA queue A
-   * @param queueB queue B
-   * @return Diff
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   */
-  Diff manage(final char[] revA, final char[] revB, final ArrayList<DiffBlock> queueA, final ArrayList<DiffBlock> queueB)
-          throws UnsupportedEncodingException;
+    /**
+     * Uses the substring blocks to create the diff operations.
+     *
+     * @param revA
+     *            revision A
+     * @param revB
+     *            revision B
+     * @param queueA
+     *            queue A
+     * @param queueB
+     *            queue B
+     * @return Diff
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     */
+    Diff manage(final char[] revA, final char[] revB, final ArrayList<DiffBlock> queueA,
+            final ArrayList<DiffBlock> queueB)
+        throws UnsupportedEncodingException;
 
 }

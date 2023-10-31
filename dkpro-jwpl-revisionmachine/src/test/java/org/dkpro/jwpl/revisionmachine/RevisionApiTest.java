@@ -17,12 +17,9 @@
  */
 package org.dkpro.jwpl.revisionmachine;
 
-import org.dkpro.jwpl.api.DatabaseConfiguration;
-import org.dkpro.jwpl.api.WikiConstants.Language;
-import org.dkpro.jwpl.api.Wikipedia;
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.revisionmachine.api.Revision;
-import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -31,218 +28,236 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 
+import org.dkpro.jwpl.api.DatabaseConfiguration;
+import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.api.Wikipedia;
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.revisionmachine.api.Revision;
+import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
+public class RevisionApiTest
+    extends BaseJWPLTest
+{
 
-public class RevisionApiTest extends BaseJWPLTest {
+    private static Wikipedia wiki = null;
 
-	private static Wikipedia wiki = null;
+    private Timestamp convertToUTC(Timestamp ts)
+    {
 
-	private Timestamp convertToUTC(Timestamp ts) {
+        final LocalDateTime dt = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.UTC);
+        return Timestamp.valueOf(dt);
+    }
 
-		final LocalDateTime dt = LocalDateTime.ofInstant(ts.toInstant(), ZoneOffset.UTC);
-		return Timestamp.valueOf(dt);
-	}
+    // The object under test
+    private RevisionApi revisionApi;
 
-	// The object under test
-	private RevisionApi revisionApi;
+    /**
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
+     */
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration("wikiapi_simple_20090119_stripped",
+                Language.simple_english);
+        try {
+            wiki = new Wikipedia(db);
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
+        }
+        assertNotNull(wiki);
+    }
 
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignored tests after failed
-	 * assumptions
-	 */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration(
-				"wikiapi_simple_20090119_stripped", Language.simple_english);
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-			fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
-		}
-		assertNotNull(wiki);
-	}
+    @BeforeEach
+    public void setupInstanceUnderTest()
+    {
+        try {
+            revisionApi = new RevisionApi(wiki.getDatabaseConfiguration());
+            assertNotNull(revisionApi);
+        }
+        catch (WikiApiException e) {
+            fail("RevisionApi could not be initialized: " + e.getLocalizedMessage());
+        }
+    }
 
-	@BeforeEach
-	public void setupInstanceUnderTest() {
-		try {
-			revisionApi = new RevisionApi(wiki.getDatabaseConfiguration());
-			assertNotNull(revisionApi);
-		} catch (WikiApiException e) {
-			fail("RevisionApi could not be initialized: " + e.getLocalizedMessage());
-		}
-	}
+    @AfterEach
+    public void cleanUpInstanceUnderTest()
+    {
+        if (revisionApi != null) {
+            try {
+                revisionApi.close();
+            }
+            catch (SQLException e) {
+                fail("RevisionApi could not be shut down correctly: " + e.getLocalizedMessage());
+            }
+        }
+    }
 
-	@AfterEach
-	public void cleanUpInstanceUnderTest() {
-		if(revisionApi!=null) {
-			try {
-				revisionApi.close();
-			} catch (SQLException e) {
-				fail("RevisionApi could not be shut down correctly: " + e.getLocalizedMessage());
-			}
-		}
-	}
+    @Test
+    public void getRevisionByTimestampTest()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
-	@Test
-	public void getRevisionByTimestampTest() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+        try {
 
-		try {
+            int pageId = wiki.getPage("Car").getPageId();
 
-			int pageId = wiki.getPage("Car").getPageId();
+            Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+            Revision revision = revisionApi.getRevision(pageId, timestamp);
 
-			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
-			Revision revision = revisionApi.getRevision(pageId, timestamp);
+            assertEquals(1142935, revision.getRevisionID());
+            assertEquals(0, revision.getFullRevisionID());
+            assertEquals(349, revision.getRevisionCounter());
+            assertEquals(pageId, revision.getArticleID());
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 
-			assertEquals(1142935, revision.getRevisionID());
-			assertEquals(0, revision.getFullRevisionID());
-			assertEquals(349, revision.getRevisionCounter());
-			assertEquals(pageId, revision.getArticleID());
-		}
-		catch (WikiApiException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+    @Test
+    public void getRevisionByRevisionId()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
-	@Test
-	public void getRevisionByRevisionId() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+        try {
+            int pageId = wiki.getPage("Car").getPageId();
 
-		try {
-			int pageId = wiki.getPage("Car").getPageId();
+            Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
 
-			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+            Revision revision1 = revisionApi.getRevision(1142935);
+            Revision revision2 = revisionApi.getRevision(pageId, timestamp);
 
-			Revision revision1 = revisionApi.getRevision(1142935);
-			Revision revision2 = revisionApi.getRevision(pageId, timestamp);
+            assertEquals(1142935, revision1.getRevisionID());
+            assertEquals(0, revision1.getFullRevisionID());
+            assertEquals(349, revision1.getRevisionCounter());
 
-			assertEquals(1142935, revision1.getRevisionID());
-			assertEquals(0, revision1.getFullRevisionID());
-			assertEquals(349, revision1.getRevisionCounter());
+            assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
+            assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
+            assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
+            assertEquals(revision1.getArticleID(), revision2.getArticleID());
 
-			assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
-			assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
-			assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
-			assertEquals(revision1.getArticleID(), revision2.getArticleID());
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 
-		}
-		catch (WikiApiException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+    @Test
+    public void getRevisionByRevisionCounter()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
-	@Test
-	public void getRevisionByRevisionCounter() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+        try {
+            int pageId = wiki.getPage("Car").getPageId();
 
-		try {
-			int pageId = wiki.getPage("Car").getPageId();
+            Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
 
-			Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+            Revision revision1 = revisionApi.getRevision(pageId, 349);
+            Revision revision2 = revisionApi.getRevision(pageId, timestamp);
 
-			Revision revision1 = revisionApi.getRevision(pageId, 349);
-			Revision revision2 = revisionApi.getRevision(pageId, timestamp);
+            assertEquals(1142935, revision1.getRevisionID());
+            assertEquals(0, revision1.getFullRevisionID());
+            assertEquals(349, revision1.getRevisionCounter());
 
-			assertEquals(1142935, revision1.getRevisionID());
-			assertEquals(0, revision1.getFullRevisionID());
-			assertEquals(349, revision1.getRevisionCounter());
+            assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
+            assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
+            assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
+            assertEquals(revision1.getArticleID(), revision2.getArticleID());
 
-			assertEquals(revision1.getRevisionID(), revision2.getRevisionID());
-			assertEquals(revision1.getFullRevisionID(), revision2.getFullRevisionID());
-			assertEquals(revision1.getRevisionCounter(), revision2.getRevisionCounter());
-			assertEquals(revision1.getArticleID(), revision2.getArticleID());
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 
-		}
-		catch (WikiApiException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+    @Test
+    public void articleIDTests()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
-	@Test
-	public void articleIDTests() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+        try {
+            int pageId = wiki.getPage("Car").getPageId();
 
-		try {
-			int pageId = wiki.getPage("Car").getPageId();
+            Timestamp firstDayOfAppearance = convertToUTC(
+                    revisionApi.getFirstDateOfAppearance(pageId));
+            Timestamp lastDayOfAppearance = convertToUTC(
+                    revisionApi.getLastDateOfAppearance(pageId));
+            int nrOfRevisions = revisionApi.getNumberOfRevisions(pageId);
 
-			Timestamp firstDayOfAppearance = convertToUTC(revisionApi.getFirstDateOfAppearance(pageId));
-			Timestamp lastDayOfAppearance = convertToUTC(revisionApi.getLastDateOfAppearance(pageId));
-			int nrOfRevisions = revisionApi.getNumberOfRevisions(pageId);
+            assertEquals("2004-04-07 00:31:34.0", firstDayOfAppearance.toString());
+            assertEquals("2009-01-19 03:58:09.0", lastDayOfAppearance.toString());
+            assertEquals(382, nrOfRevisions);
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 
-			assertEquals("2004-04-07 00:31:34.0", firstDayOfAppearance.toString());
-			assertEquals("2009-01-19 03:58:09.0", lastDayOfAppearance.toString());
-			assertEquals(382, nrOfRevisions);
-		}
-		catch (WikiApiException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+    @Test
+    @Disabled
+    public void lastRevisionTest()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
-	@Test
-	@Disabled
-	public void lastRevisionTest() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+        String pageName = "Car";
+        try {
+            int pageId = wiki.getPage(pageName).getPageId();
 
-		String pageName = "Car";
-		try {
-			int pageId = wiki.getPage(pageName).getPageId();
+            Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
+            Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
+            // FIXME the comparison shall hold - Check: flattened in one line vs. multiple lines
+            assertEquals(wiki.getPage(pageId).getText(), revision.getRevisionText());
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 
-			Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
-			Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
-			// FIXME the comparison shall hold - Check: flattened in one line vs. multiple lines
-			assertEquals(wiki.getPage(pageId).getText(), revision.getRevisionText());
-		}
-		catch (WikiApiException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+    @Test
+    public void lazyLoadingTest()
+    {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2008, 10, 10, 10, 10, 10);
 
+        try {
+            int pageId = wiki.getPage("Car").getPageId();
 
-	@Test
-	public void lazyLoadingTest() {
-		Calendar calendar = Calendar.getInstance();
-		calendar.set(2008, 10, 10, 10, 10, 10);
+            Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
+            Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
 
-		try {
-			int pageId = wiki.getPage("Car").getPageId();
+            Field privateStringField = Revision.class.getDeclaredField("revisionText");
+            privateStringField.setAccessible(true);
 
-			Timestamp lastRevisionTimestamp = revisionApi.getLastDateOfAppearance(pageId);
-			Revision revision = revisionApi.getRevision(pageId, lastRevisionTimestamp);
+            String fieldValue = (String) privateStringField.get(revision);
+            if (fieldValue != null) {
+                fail("Not lazy loaded!");
+            }
 
-			Field privateStringField = Revision.class.getDeclaredField("revisionText");
-			privateStringField.setAccessible(true);
+            // trigger the load of the data
+            revision.getRevisionText();
 
-			String fieldValue = (String) privateStringField.get(revision);
-			if (fieldValue != null) {
-				fail("Not lazy loaded!");
-			}
+            fieldValue = (String) privateStringField.get(revision);
+            if (fieldValue == null) {
+                fail("Not lazy loaded!");
+            }
 
-			// trigger the load of the data
-			revision.getRevisionText();
-
-			fieldValue = (String) privateStringField.get(revision);
-			if (fieldValue == null) {
-				fail("Not lazy loaded!");
-			}
-
-		} catch (WikiApiException | SecurityException | NoSuchFieldException |
-				 IllegalArgumentException | IllegalAccessException e) {
-			fail(e.getMessage(), e);
-		}
-	}
+        }
+        catch (WikiApiException | SecurityException | NoSuchFieldException
+                | IllegalArgumentException | IllegalAccessException e) {
+            fail(e.getMessage(), e);
+        }
+    }
 }

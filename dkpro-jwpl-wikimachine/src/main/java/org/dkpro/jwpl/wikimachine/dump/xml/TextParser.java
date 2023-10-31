@@ -23,55 +23,63 @@ import java.io.InputStream;
 
 import org.dkpro.jwpl.wikimachine.util.UTFDataInputStream;
 
-public class TextParser {
+public class TextParser
+{
 
-  /**
-   * Need fields from the table text.<br>
-   * These fields are updated each time the method next() returns true.
-   */
-  private int oldId;
-  private String oldText;
-  private UTFDataInputStream stream;
+    /**
+     * Need fields from the table text.<br>
+     * These fields are updated each time the method next() returns true.
+     */
+    private int oldId;
+    private String oldText;
+    private UTFDataInputStream stream;
 
-  /**
-   * Create a parser from an input stream
-   *
-   * @param inputStream
-   */
-  public void setInputStream(InputStream inputStream) {
-    stream = new UTFDataInputStream(inputStream);
-  }
-
-  /**
-   * @return Returns the old_id.
-   */
-  public int getOldId() {
-    return oldId;
-  }
-
-  /**
-   * @return Returns the old_text.
-   */
-  public String getOldText() {
-    return oldText;
-  }
-
-  /**
-   * @return {@code true} if the table has more rows, {@code false} othwise.
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  public boolean next() throws IOException {
-    boolean hasNext = true;
-    try {
-      oldId = stream.readInt();
-      oldText = stream.readUTFAsArray();
-    } catch (EOFException e) {
-      hasNext = false;
+    /**
+     * Create a parser from an input stream
+     *
+     * @param inputStream
+     */
+    public void setInputStream(InputStream inputStream)
+    {
+        stream = new UTFDataInputStream(inputStream);
     }
-    return hasNext;
-  }
 
-  public void close() throws IOException {
-    stream.close();
-  }
+    /**
+     * @return Returns the old_id.
+     */
+    public int getOldId()
+    {
+        return oldId;
+    }
+
+    /**
+     * @return Returns the old_text.
+     */
+    public String getOldText()
+    {
+        return oldText;
+    }
+
+    /**
+     * @return {@code true} if the table has more rows, {@code false} othwise.
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    public boolean next() throws IOException
+    {
+        boolean hasNext = true;
+        try {
+            oldId = stream.readInt();
+            oldText = stream.readUTFAsArray();
+        }
+        catch (EOFException e) {
+            hasNext = false;
+        }
+        return hasNext;
+    }
+
+    public void close() throws IOException
+    {
+        stream.close();
+    }
 }

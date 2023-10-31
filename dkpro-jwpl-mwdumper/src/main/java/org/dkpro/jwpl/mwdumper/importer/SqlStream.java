@@ -19,10 +19,11 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.io.IOException;
 
-public interface SqlStream {
-  void writeComment(CharSequence sql) throws IOException;
+public interface SqlStream
+{
+    void writeComment(CharSequence sql) throws IOException;
 
-  void writeStatement(CharSequence sql) throws IOException;
+    void writeStatement(CharSequence sql) throws IOException;
 
-  void close() throws IOException;
+    void close() throws IOException;
 }

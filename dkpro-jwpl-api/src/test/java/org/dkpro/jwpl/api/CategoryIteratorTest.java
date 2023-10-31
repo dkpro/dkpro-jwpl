@@ -17,61 +17,66 @@
  */
 package org.dkpro.jwpl.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import java.util.Iterator;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+public class CategoryIteratorTest
+    extends BaseJWPLTest
+{
 
-public class CategoryIteratorTest extends BaseJWPLTest {
-
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignored tests after failed
-	 * assumptions
-	 */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration();
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
-			fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
-		}
-	}
-
-	/**
-	 * The test wikipedia contains 17 categories.
-	 */
-	@Test
-	public void test_categoryIteratorTest() {
-		int nrOfPages = 0;
-
-    for (Category c : wiki.getCategories()) {
-      nrOfPages++;
+    /**
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
+     */
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        try {
+            wiki = new Wikipedia(db);
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
+        }
     }
-		assertEquals(17, nrOfPages, "Number of categories == 17");
 
-	}
+    /**
+     * The test wikipedia contains 17 categories.
+     */
+    @Test
+    public void test_categoryIteratorTest()
+    {
+        int nrOfPages = 0;
 
-	/**
-	 * The test wikipedia contains 17 categories.
-	 */
-	@Test
-	public void test_categoryIteratorTestBufferSize() {
+        for (Category c : wiki.getCategories()) {
+            nrOfPages++;
+        }
+        assertEquals(17, nrOfPages, "Number of categories == 17");
 
-		for (int bufferSize=1;bufferSize<=100;bufferSize+=5) {
-			Iterator<Category> catIter = wiki.getCategories(bufferSize).iterator();
-			int nrOfPages = 0;
-			while (catIter.hasNext()) {
-				@SuppressWarnings("unused")
-				Category c = catIter.next();
-				nrOfPages++;
-			}
-			assertEquals(17, nrOfPages, "Number of categories == 17");
-		}
-	}
+    }
+
+    /**
+     * The test wikipedia contains 17 categories.
+     */
+    @Test
+    public void test_categoryIteratorTestBufferSize()
+    {
+
+        for (int bufferSize = 1; bufferSize <= 100; bufferSize += 5) {
+            Iterator<Category> catIter = wiki.getCategories(bufferSize).iterator();
+            int nrOfPages = 0;
+            while (catIter.hasNext()) {
+                @SuppressWarnings("unused")
+                Category c = catIter.next();
+                nrOfPages++;
+            }
+            assertEquals(17, nrOfPages, "Number of categories == 17");
+        }
+    }
 }

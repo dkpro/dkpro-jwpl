@@ -47,190 +47,212 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class writes the output to a file.
  */
-public class SQLFileWriter implements WriterInterface {
+public class SQLFileWriter
+    implements WriterInterface
+{
 
-  /**
-   * File counter
-   */
-  private int fileCounter;
+    /**
+     * File counter
+     */
+    private int fileCounter;
 
-  /**
-   * Configuration parameter - maximum size of an output file
-   */
-  private final long LIMIT_SQL_FILE_SIZE;
+    /**
+     * Configuration parameter - maximum size of an output file
+     */
+    private final long LIMIT_SQL_FILE_SIZE;
 
-  /**
-   * Reference to the logger
-   */
-  protected Logger logger;
+    /**
+     * Reference to the logger
+     */
+    protected Logger logger;
 
-  /**
-   * Configuration parameter - Flag, that indicates whether the statistical
-   * output is enabled or not
-   */
-  private final boolean MODE_STATISTICAL_OUTPUT;
+    /**
+     * Configuration parameter - Flag, that indicates whether the statistical output is enabled or
+     * not
+     */
+    private final boolean MODE_STATISTICAL_OUTPUT;
 
-  /**
-   * Name of the related sql consumer - used as prefix for the output
-   * filenames
-   */
-  private String outputName;
+    /**
+     * Name of the related sql consumer - used as prefix for the output filenames
+     */
+    private String outputName;
 
-  /**
-   * Configuration parameter - output path
-   */
-  private final String PATH_OUTPUT_SQL_FILES;
+    /**
+     * Configuration parameter - output path
+     */
+    private final String PATH_OUTPUT_SQL_FILES;
 
-  /**
-   * Reference to the SQLEncoder
-   */
-  protected SQLEncoderInterface sqlEncoder;
+    /**
+     * Reference to the SQLEncoder
+     */
+    protected SQLEncoderInterface sqlEncoder;
 
-  /**
-   * Reference to the output file
-   */
-  private File sqlFile;
+    /**
+     * Reference to the output file
+     */
+    private File sqlFile;
 
-  /**
-   * Reference to the file writer
-   */
-  private Writer writer;
+    /**
+     * Reference to the file writer
+     */
+    private Writer writer;
 
-  private final String WIKIPEDIA_ENCODING;
+    private final String WIKIPEDIA_ENCODING;
 
-  /**
-   * Creates a new SQLFileWriter object.
-   *
-   * @throws ConfigurationException if an error occurred while accessing the configuration
-   */
-  private SQLFileWriter() throws ConfigurationException {
+    /**
+     * Creates a new SQLFileWriter object.
+     *
+     * @throws ConfigurationException
+     *             if an error occurred while accessing the configuration
+     */
+    private SQLFileWriter() throws ConfigurationException
+    {
 
-    // Load config parameters
-    ConfigurationManager config = ConfigurationManager.getInstance();
+        // Load config parameters
+        ConfigurationManager config = ConfigurationManager.getInstance();
 
-    LIMIT_SQL_FILE_SIZE = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE);
-    PATH_OUTPUT_SQL_FILES = (String) config.getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
-    MODE_STATISTICAL_OUTPUT = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
-    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+        LIMIT_SQL_FILE_SIZE = (Long) config
+                .getConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE);
+        PATH_OUTPUT_SQL_FILES = (String) config
+                .getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
+        MODE_STATISTICAL_OUTPUT = (Boolean) config
+                .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+        WIKIPEDIA_ENCODING = (String) config
+                .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
-    // Create sql file
-    fileCounter = 0;
-  }
+        // Create sql file
+        fileCounter = 0;
+    }
 
+    /**
+     * Creates a new SQLFileWriter object.
+     *
+     * @param outputName
+     *            Name of the sql consumer
+     * @param logger
+     *            Reference to a logger
+     * @throws ConfigurationException
+     *             if an error occurred while accessing the configuration
+     * @throws LoggingException
+     *             if an error occurred while accessing the logger
+     */
+    public SQLFileWriter(final String outputName, final Logger logger)
+        throws IOException, ConfigurationException, LoggingException
+    {
 
-  /**
-   * Creates a new SQLFileWriter object.
-   *
-   * @param outputName Name of the sql consumer
-   * @param logger     Reference to a logger
-   * @throws ConfigurationException if an error occurred while accessing the configuration
-   * @throws LoggingException       if an error occurred while accessing the logger
-   */
-  public SQLFileWriter(final String outputName, final Logger logger)
-          throws IOException, ConfigurationException, LoggingException {
+        this();
 
-    this();
+        this.outputName = outputName;
+        this.logger = logger;
 
-    this.outputName = outputName;
-    this.logger = logger;
+        init();
+        writeHeader();
+    }
 
-    init();
-    writeHeader();
-  }
+    /**
+     * This method will close the connection to the output.
+     *
+     * @throws IOException
+     *             if problems occurred while closing the file or process.
+     */
+    @Override
+    public void close() throws IOException
+    {
+        this.writer.close();
+    }
 
-  /**
-   * This method will close the connection to the output.
-   *
-   * @throws IOException if problems occurred while closing the file or process.
-   */
-  @Override
-  public void close() throws IOException {
-    this.writer.close();
-  }
+    /**
+     * Creates the sql encoder.
+     *
+     * @throws ConfigurationException
+     *             if an error occurred while accessing the configuration
+     * @throws LoggingException
+     *             if an error occurred while accessing the logger
+     */
+    protected void init() throws ConfigurationException, LoggingException
+    {
 
-  /**
-   * Creates the sql encoder.
-   *
-   * @throws ConfigurationException if an error occurred while accessing the configuration
-   * @throws LoggingException       if an error occurred while accessing the logger
-   */
-  protected void init() throws ConfigurationException, LoggingException {
+        this.sqlEncoder = new SQLEncoder(logger);
+    }
 
-    this.sqlEncoder = new SQLEncoder(logger);
-  }
+    /**
+     * This method will process the given DiffTask and send it to the specified output.
+     *
+     * @param task
+     *            DiffTask
+     * @throws ConfigurationException
+     *             if problems occurred while initializing the components
+     * @throws IOException
+     *             if problems occurred while writing the output (to file or archive)
+     * @throws SQLConsumerException
+     *             if problems occurred while writing the output (to the sql producer database)
+     */
+    @Override
+    public void process(final Task<Diff> task)
+        throws ConfigurationException, IOException, SQLConsumerException
+    {
 
-  /**
-   * This method will process the given DiffTask and send it to the specified
-   * output.
-   *
-   * @param task DiffTask
-   * @throws ConfigurationException if problems occurred while initializing the components
-   * @throws IOException            if problems occurred while writing the output (to file or
-   *                                archive)
-   * @throws SQLConsumerException   if problems occurred while writing the output (to the sql
-   *                                producer database)
-   */
-  @Override
-  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
+        try {
+            SQLEncoding[] encoding = sqlEncoder.encodeTask(task);
 
-    try {
-      SQLEncoding[] encoding = sqlEncoder.encodeTask(task);
+            for (SQLEncoding sql : encoding) {
+                this.writer.write(sql.getQuery() + "\r\n");
+                this.writer.flush();
+            }
 
-      for (SQLEncoding sql : encoding) {
-        this.writer.write(sql.getQuery() + "\r\n");
+            if (task.getTaskType() == TaskTypes.TASK_FULL
+                    || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
+
+                if (this.sqlFile.length() > LIMIT_SQL_FILE_SIZE) {
+                    writeHeader();
+                }
+
+                if (!MODE_STATISTICAL_OUTPUT) {
+                    System.out.println(task);
+                }
+
+            }
+            else {
+                System.out.println(task);
+            }
+
+        }
+        catch (DecodingException | EncodingException e) {
+            throw ErrorFactory.createSQLConsumerException(
+                    ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
+
+        }
+    }
+
+    /**
+     * Creates a new output file and writes the header information.
+     *
+     * @throws IOException
+     *             if an error occurred while writing a file
+     */
+    protected void writeHeader() throws IOException
+    {
+
+        if (writer != null) {
+            writer.close();
+        }
+
+        this.fileCounter++;
+        String filePath = PATH_OUTPUT_SQL_FILES + this.outputName + "_" + fileCounter + ".sql";
+
+        SQLConsumerLogMessages.logFileCreation(logger, filePath);
+
+        this.sqlFile = new File(filePath);
+
+        this.writer = new BufferedWriter(new OutputStreamWriter(
+                new BufferedOutputStream(new FileOutputStream(filePath)), WIKIPEDIA_ENCODING));
+
+        String[] revTable = this.sqlEncoder.getTable();
+
+        for (String sTable : revTable) {
+            this.writer.write(sTable + "\r\n");
+        }
+
         this.writer.flush();
-      }
-
-      if (task.getTaskType() == TaskTypes.TASK_FULL
-              || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
-
-        if (this.sqlFile.length() > LIMIT_SQL_FILE_SIZE) {
-          writeHeader();
-        }
-
-        if (!MODE_STATISTICAL_OUTPUT) {
-          System.out.println(task);
-        }
-
-      } else {
-        System.out.println(task);
-      }
-
-    } catch (DecodingException | EncodingException e) {
-      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
-
     }
-  }
-
-  /**
-   * Creates a new output file and writes the header information.
-   *
-   * @throws IOException            if an error occurred while writing a file
-   */
-  protected void writeHeader() throws IOException {
-
-    if (writer != null) {
-      writer.close();
-    }
-
-    this.fileCounter++;
-    String filePath = PATH_OUTPUT_SQL_FILES + this.outputName + "_"
-            + fileCounter + ".sql";
-
-    SQLConsumerLogMessages.logFileCreation(logger, filePath);
-
-    this.sqlFile = new File(filePath);
-
-    this.writer = new BufferedWriter(new OutputStreamWriter(new BufferedOutputStream(
-            new FileOutputStream(filePath)), WIKIPEDIA_ENCODING));
-
-
-    String[] revTable = this.sqlEncoder.getTable();
-
-    for (String sTable : revTable) {
-      this.writer.write(sTable + "\r\n");
-    }
-
-    this.writer.flush();
-  }
 }

@@ -17,24 +17,27 @@
  */
 package org.dkpro.jwpl.wikimachine.debug;
 
-
 /**
- * A logger implementation which combines several {@link ILogger} instances into a chain which is processed in
- * the order in which the chain was initially composed.
+ * A logger implementation which combines several {@link ILogger} instances into a chain which is
+ * processed in the order in which the chain was initially composed.
  */
-public class CompositeLogger implements ILogger {
+public class CompositeLogger
+    implements ILogger
+{
 
-  private final ILogger[] loggers;
+    private final ILogger[] loggers;
 
-  public CompositeLogger(ILogger[] initLoggers) {
-    loggers = (initLoggers != null) ? initLoggers : new ILogger[0];
-  }
-
-  @Override
-  public void log(Object message) {
-    for (ILogger logger : loggers) {
-      logger.log(message);
+    public CompositeLogger(ILogger[] initLoggers)
+    {
+        loggers = (initLoggers != null) ? initLoggers : new ILogger[0];
     }
-  }
+
+    @Override
+    public void log(Object message)
+    {
+        for (ILogger logger : loggers) {
+            logger.log(message);
+        }
+    }
 
 }

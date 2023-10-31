@@ -21,16 +21,21 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionFactory;
 import org.dkpro.jwpl.wikimachine.hashing.StringHashCodeJDK;
 
-public class SingleDumpVersionJDKIntKeyFactory implements IDumpVersionFactory {
+public class SingleDumpVersionJDKIntKeyFactory
+    implements IDumpVersionFactory
+{
 
-  @Override
-  public IDumpVersion getDumpVersion() {
-    IDumpVersion dumpVersion;
-    try {
-      dumpVersion = new SingleDumpVersionJDKGeneric<Integer, StringHashCodeJDK>(StringHashCodeJDK.class);
-    } catch (Exception e) {
-      dumpVersion = null;
+    @Override
+    public IDumpVersion getDumpVersion()
+    {
+        IDumpVersion dumpVersion;
+        try {
+            dumpVersion = new SingleDumpVersionJDKGeneric<Integer, StringHashCodeJDK>(
+                    StringHashCodeJDK.class);
+        }
+        catch (Exception e) {
+            dumpVersion = null;
+        }
+        return dumpVersion;
     }
-    return dumpVersion;
-  }
 }

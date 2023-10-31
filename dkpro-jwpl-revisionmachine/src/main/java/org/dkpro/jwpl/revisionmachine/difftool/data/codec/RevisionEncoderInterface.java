@@ -25,32 +25,39 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * The RevisionEncoderInterface describes the link to the diff encoding unit.
  */
-public interface RevisionEncoderInterface {
+public interface RevisionEncoderInterface
+{
 
-  /**
-   * Returns the textual encoding of the given Diff.
-   *
-   * @param codecData CodecData used to encode the diff-data
-   * @param diff      diff-data
-   * @return base 64 encoded diff
-   * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
-   *                                      supported by JAVA.
-   * @throws EncodingException            if the encoding process fails
-   */
-  String encodeDiff(final RevisionCodecData codecData, final Diff diff)
-          throws UnsupportedEncodingException, EncodingException;
+    /**
+     * Returns the textual encoding of the given Diff.
+     *
+     * @param codecData
+     *            CodecData used to encode the diff-data
+     * @param diff
+     *            diff-data
+     * @return base 64 encoded diff
+     * @throws UnsupportedEncodingException
+     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     * @throws EncodingException
+     *             if the encoding process fails
+     */
+    String encodeDiff(final RevisionCodecData codecData, final Diff diff)
+        throws UnsupportedEncodingException, EncodingException;
 
-  /**
-   * Returns the binary encoding of the given Diff.
-   *
-   * @param codecData CodecData used to encode the diff-data
-   * @param diff      diff-data
-   * @return binary encoded diff
-   * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
-   *                                      supported by JAVA.
-   * @throws EncodingException            if the encoding process fails
-   */
-  byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
-          throws UnsupportedEncodingException, EncodingException;
+    /**
+     * Returns the binary encoding of the given Diff.
+     *
+     * @param codecData
+     *            CodecData used to encode the diff-data
+     * @param diff
+     *            diff-data
+     * @return binary encoded diff
+     * @throws UnsupportedEncodingException
+     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     * @throws EncodingException
+     *             if the encoding process fails
+     */
+    byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
+        throws UnsupportedEncodingException, EncodingException;
 
 }

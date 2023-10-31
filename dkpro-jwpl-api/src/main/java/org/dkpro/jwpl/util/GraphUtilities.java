@@ -26,62 +26,72 @@ import org.dkpro.jwpl.api.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class GraphUtilities {
+public class GraphUtilities
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * @deprecated Use {@link #getRandomPageSubset(Set, int)} instead.
-   */
-  @Deprecated(since="2.0.0", forRemoval=true)
-  public static Set<Integer> getRandomPageSubset(Iterable<Page> pages, int pResultSetSize) {
-    Set<Integer> pageIDs = new HashSet<>();
-    while (pages.iterator().hasNext()) {
-      pageIDs.add(pages.iterator().next().getPageId());
-    }
-    return getRandomPageSubset(pageIDs, pResultSetSize);
-  }
-
-  /**
-   * Get a random subset (of size pSize) of the page set passed to the method.
-   *
-   * @param pPageIDs       The pages.
-   * @param pResultSetSize The size of the result set.
-   * @return A random subset of the original page set of the given size or null, if the requested subset size is larger than the original page set.
-   */
-  public static Set<Integer> getRandomPageSubset(Set<Integer> pPageIDs, int pResultSetSize) {
-
-    Set<Integer> uniqueRandomSet = new HashSet<>();
-
-    if (pPageIDs.size() < pResultSetSize) {
-      logger.warn("Requested subset size is larger than the original page set size.");
-      return null;
-    }
-
-    Random rand = new Random();
-
-    Object[] pageIdArray = pPageIDs.toArray();
-
-    // If pSize is quite close to the size of the original pageSet the probability of generating the offset of the last
-    // missing pageIDs is quite low, with the consequence of unpredictable run-time.
-    // => if more than the half of pages should be included in the result set, better remove random numbers than adding them
-    if (pResultSetSize > (pPageIDs.size() / 2)) {
-      uniqueRandomSet.addAll(pPageIDs);
-      while (uniqueRandomSet.size() > pResultSetSize) {
-        int randomOffset = rand.nextInt(pPageIDs.size());
-        if (uniqueRandomSet.contains(pageIdArray[randomOffset])) {
-          uniqueRandomSet.remove(pageIdArray[randomOffset]);
+    /**
+     * @deprecated Use {@link #getRandomPageSubset(Set, int)} instead.
+     */
+    @Deprecated(since = "2.0.0", forRemoval = true)
+    public static Set<Integer> getRandomPageSubset(Iterable<Page> pages, int pResultSetSize)
+    {
+        Set<Integer> pageIDs = new HashSet<>();
+        while (pages.iterator().hasNext()) {
+            pageIDs.add(pages.iterator().next().getPageId());
         }
-      }
-    } else {
-      while (uniqueRandomSet.size() < pResultSetSize) {
-        int randomOffset = rand.nextInt(pPageIDs.size());
-        if (!uniqueRandomSet.contains(pageIdArray[randomOffset])) {
-          uniqueRandomSet.add((Integer) pageIdArray[randomOffset]);
-        }
-      }
+        return getRandomPageSubset(pageIDs, pResultSetSize);
     }
 
-    return uniqueRandomSet;
-  }
+    /**
+     * Get a random subset (of size pSize) of the page set passed to the method.
+     *
+     * @param pPageIDs
+     *            The pages.
+     * @param pResultSetSize
+     *            The size of the result set.
+     * @return A random subset of the original page set of the given size or null, if the requested
+     *         subset size is larger than the original page set.
+     */
+    public static Set<Integer> getRandomPageSubset(Set<Integer> pPageIDs, int pResultSetSize)
+    {
+
+        Set<Integer> uniqueRandomSet = new HashSet<>();
+
+        if (pPageIDs.size() < pResultSetSize) {
+            logger.warn("Requested subset size is larger than the original page set size.");
+            return null;
+        }
+
+        Random rand = new Random();
+
+        Object[] pageIdArray = pPageIDs.toArray();
+
+        // If pSize is quite close to the size of the original pageSet the probability of generating
+        // the offset of the last
+        // missing pageIDs is quite low, with the consequence of unpredictable run-time.
+        // => if more than the half of pages should be included in the result set, better remove
+        // random numbers than adding them
+        if (pResultSetSize > (pPageIDs.size() / 2)) {
+            uniqueRandomSet.addAll(pPageIDs);
+            while (uniqueRandomSet.size() > pResultSetSize) {
+                int randomOffset = rand.nextInt(pPageIDs.size());
+                if (uniqueRandomSet.contains(pageIdArray[randomOffset])) {
+                    uniqueRandomSet.remove(pageIdArray[randomOffset]);
+                }
+            }
+        }
+        else {
+            while (uniqueRandomSet.size() < pResultSetSize) {
+                int randomOffset = rand.nextInt(pPageIDs.size());
+                if (!uniqueRandomSet.contains(pageIdArray[randomOffset])) {
+                    uniqueRandomSet.add((Integer) pageIdArray[randomOffset]);
+                }
+            }
+        }
+
+        return uniqueRandomSet;
+    }
 }

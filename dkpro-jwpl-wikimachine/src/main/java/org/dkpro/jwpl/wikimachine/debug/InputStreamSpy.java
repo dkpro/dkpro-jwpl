@@ -21,48 +21,56 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class InputStreamSpy extends InputStream {
+public class InputStreamSpy
+    extends InputStream
+{
 
-  private final InputStream iStream;
-  private final OutputStream oStream;
+    private final InputStream iStream;
+    private final OutputStream oStream;
 
-  public InputStreamSpy(InputStream iStream, OutputStream oStream) {
-    this.iStream = iStream;
-    this.oStream = oStream;
-  }
+    public InputStreamSpy(InputStream iStream, OutputStream oStream)
+    {
+        this.iStream = iStream;
+        this.oStream = oStream;
+    }
 
-  @Override
-  public int read() throws IOException {
-    int result = iStream.read();
-    oStream.write(result);
-    return result;
-  }
+    @Override
+    public int read() throws IOException
+    {
+        int result = iStream.read();
+        oStream.write(result);
+        return result;
+    }
 
-  @Override
-  public int available() throws IOException {
-    return iStream.available();
-  }
+    @Override
+    public int available() throws IOException
+    {
+        return iStream.available();
+    }
 
-  @Override
-  public void close() throws IOException {
-    iStream.close();
-    oStream.flush();
-  }
+    @Override
+    public void close() throws IOException
+    {
+        iStream.close();
+        oStream.flush();
+    }
 
-  @Override
-  public void mark(int readlimit) {
-    iStream.mark(readlimit);
-  }
+    @Override
+    public void mark(int readlimit)
+    {
+        iStream.mark(readlimit);
+    }
 
-  @Override
-  public void reset() throws IOException {
-    iStream.reset();
-  }
+    @Override
+    public void reset() throws IOException
+    {
+        iStream.reset();
+    }
 
-  @Override
-  public boolean markSupported() {
-    return iStream.markSupported();
-  }
-
+    @Override
+    public boolean markSupported()
+    {
+        return iStream.markSupported();
+    }
 
 }

@@ -20,67 +20,80 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Category {
-  private long id;
-  private int pageId;
-  private String name;
-  private Set<Integer> inLinks = new HashSet<>();
-  private Set<Integer> outLinks = new HashSet<>();
-  private Set<Integer> pages = new HashSet<>();
+public class Category
+{
+    private long id;
+    private int pageId;
+    private String name;
+    private Set<Integer> inLinks = new HashSet<>();
+    private Set<Integer> outLinks = new HashSet<>();
+    private Set<Integer> pages = new HashSet<>();
 
-  /**
-   * A no argument constructor as required by Hibernate.
-   */
-  public Category() {
-  }
+    /**
+     * A no argument constructor as required by Hibernate.
+     */
+    public Category()
+    {
+    }
 
+    public long getId()
+    {
+        return id;
+    }
 
-  public long getId() {
-    return id;
-  }
+    @SuppressWarnings("unused")
+    private void setId(long id)
+    {
+        this.id = id;
+    }
 
-  @SuppressWarnings("unused")
-  private void setId(long id) {
-    this.id = id;
-  }
+    public int getPageId()
+    {
+        return pageId;
+    }
 
-  public int getPageId() {
-    return pageId;
-  }
+    public void setPageId(int pageId)
+    {
+        this.pageId = pageId;
+    }
 
-  public void setPageId(int pageId) {
-    this.pageId = pageId;
-  }
+    public Set<Integer> getInLinks()
+    {
+        return inLinks;
+    }
 
-  public Set<Integer> getInLinks() {
-    return inLinks;
-  }
+    public void setInLinks(Set<Integer> inLinks)
+    {
+        this.inLinks = inLinks;
+    }
 
-  public void setInLinks(Set<Integer> inLinks) {
-    this.inLinks = inLinks;
-  }
+    public String getName()
+    {
+        return name;
+    }
 
-  public String getName() {
-    return name;
-  }
+    public void setName(String name)
+    {
+        this.name = name;
+    }
 
-  public void setName(String name) {
-    this.name = name;
-  }
+    public Set<Integer> getOutLinks()
+    {
+        return outLinks;
+    }
 
-  public Set<Integer> getOutLinks() {
-    return outLinks;
-  }
+    public void setOutLinks(Set<Integer> outLinks)
+    {
+        this.outLinks = outLinks;
+    }
 
-  public void setOutLinks(Set<Integer> outLinks) {
-    this.outLinks = outLinks;
-  }
+    public Set<Integer> getPages()
+    {
+        return pages;
+    }
 
-  public Set<Integer> getPages() {
-    return pages;
-  }
-
-  public void setPages(Set<Integer> pages) {
-    this.pages = pages;
-  }
+    public void setPages(Set<Integer> pages)
+    {
+        this.pages = pages;
+    }
 }

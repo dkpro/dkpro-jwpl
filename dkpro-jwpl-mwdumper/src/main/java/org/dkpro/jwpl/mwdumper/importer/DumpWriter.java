@@ -27,19 +27,20 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.io.IOException;
 
-public interface DumpWriter {
-  void close() throws IOException;
+public interface DumpWriter
+{
+    void close() throws IOException;
 
-  void writeStartWiki() throws IOException;
+    void writeStartWiki() throws IOException;
 
-  void writeEndWiki() throws IOException;
+    void writeEndWiki() throws IOException;
 
-  void writeSiteinfo(Siteinfo info) throws IOException;
+    void writeSiteinfo(Siteinfo info) throws IOException;
 
-  void writeStartPage(Page page) throws IOException;
+    void writeStartPage(Page page) throws IOException;
 
-  void writeEndPage() throws IOException;
+    void writeEndPage() throws IOException;
 
-  void writeRevision(Revision revision) throws IOException;
-  //void WriteUpload(Upload upload) throws IOException; // for the future
+    void writeRevision(Revision revision) throws IOException;
+    // void WriteUpload(Upload upload) throws IOException; // for the future
 }

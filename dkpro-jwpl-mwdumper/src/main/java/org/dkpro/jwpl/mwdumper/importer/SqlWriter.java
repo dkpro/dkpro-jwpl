@@ -34,345 +34,386 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 
+public abstract class SqlWriter
+    implements DumpWriter
+{
+    public static abstract class Traits
+    {
+        public abstract SqlLiteral getCurrentTime();
 
-public abstract class SqlWriter implements DumpWriter {
-  public static abstract class Traits {
-    public abstract SqlLiteral getCurrentTime();
+        public abstract SqlLiteral getRandom();
 
-    public abstract SqlLiteral getRandom();
+        public abstract String getTextTable();
 
-    public abstract String getTextTable();
+        public abstract boolean supportsMultiRowInsert();
 
-    public abstract boolean supportsMultiRowInsert();
+        public abstract MessageFormat getTimestampFormatter();
 
-    public abstract MessageFormat getTimestampFormatter();
-
-    public String getWikiPrologue() {
-      return null;
-    }
-
-    public String getWikiEpilogue() {
-      return null;
-    }
-  }
-
-  public static class MySQLTraits extends Traits {
-    // UTC_TIMESTAMP() is new in MySQL 4.1 or 5.0, so using this
-    // godawful hack found in documentation comments:
-    public SqlLiteral getCurrentTime() {
-      return new SqlLiteral("DATE_ADD('1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)+0");
-    }
-
-    public SqlLiteral getRandom() {
-      return new SqlLiteral("RAND()");
-    }
-
-    public boolean supportsMultiRowInsert() {
-      return true;
-    }
-
-    public String getTextTable() {
-      return "text";
-    }
-
-    private static final MessageFormat timestampFormatter = new MessageFormat(
-            "{0,number,0000}{1,number,00}{2,number,00}{3,number,00}{4,number,00}{5,number,00}");
-
-    public MessageFormat getTimestampFormatter() {
-      return timestampFormatter;
-    }
-  }
-
-  public static class PostgresTraits extends Traits {
-    public SqlLiteral getCurrentTime() {
-      return new SqlLiteral("current_timestamp AT TIME ZONE 'UTC'");
-    }
-
-    public SqlLiteral getRandom() {
-      return new SqlLiteral("RANDOM()");
-    }
-
-    public boolean supportsMultiRowInsert() {
-      return false;
-    }
-
-    public String getTextTable() {
-      return "pagecontent";
-    }
-
-    private static final MessageFormat timestampFormatter = new MessageFormat(
-            "{0,number,0000}-{1,number,00}-{2,number,00} {3,number,00}:{4,number,00}:{5,number,00}");
-
-    public MessageFormat getTimestampFormatter() {
-      return timestampFormatter;
-    }
-
-    public String getWikiPrologue() {
-      return
-              "ALTER TABLE revision DISABLE TRIGGER ALL;" +
-                      "ALTER TABLE page DISABLE TRIGGER ALL;";
-    }
-
-    public String getWikiEpilogue() {
-      return
-              "ALTER TABLE revision ENABLE TRIGGER ALL;" +
-                      "ALTER TABLE page ENABLE TRIGGER ALL;";
-    }
-  }
-
-  private final SqlStream stream;
-  private String tablePrefix = "";
-
-  protected static final Integer ONE = 1;
-  protected static final Integer ZERO = 0;
-  protected final Traits traits;
-
-  public SqlWriter(Traits tr, SqlStream output) {
-    stream = output;
-    traits = tr;
-  }
-
-  public SqlWriter(Traits tr, SqlStream output, String prefix) {
-    stream = output;
-    tablePrefix = prefix;
-    traits = tr;
-  }
-
-  public void close() throws IOException {
-    stream.close();
-  }
-
-  public void writeStartWiki() throws IOException {
-    stream.writeComment("-- MediaWiki XML dump converted to SQL by mwdumper");
-    stream.writeStatement("BEGIN");
-
-    String prologue = traits.getWikiPrologue();
-    if (prologue != null)
-      stream.writeStatement(prologue);
-  }
-
-  public void writeEndWiki() throws IOException {
-    flushInsertBuffers();
-
-    String epilogue = traits.getWikiEpilogue();
-    if (epilogue != null)
-      stream.writeStatement(epilogue);
-    stream.writeStatement("COMMIT");
-    stream.writeComment("-- DONE");
-  }
-
-  public void writeSiteinfo(Siteinfo info) throws IOException {
-    stream.writeComment("");
-    stream.writeComment("-- Site: " + commentSafe(info.Sitename));
-    stream.writeComment("-- URL: " + commentSafe(info.Base));
-    stream.writeComment("-- Generator: " + commentSafe(info.Generator));
-    stream.writeComment("-- Case: " + commentSafe(info.Case));
-    stream.writeComment("--");
-    stream.writeComment("-- Namespaces:");
-    for (Iterator<Map.Entry<Integer, String>> i = info.Namespaces.orderedEntries(); i.hasNext(); ) {
-      Map.Entry<Integer, String> e = i.next();
-      stream.writeComment("-- " + e.getKey() + ": " + e.getValue());
-    }
-    stream.writeComment("");
-  }
-
-  public abstract void writeStartPage(Page page) throws IOException;
-
-  public abstract void writeEndPage() throws IOException;
-
-  public abstract void writeRevision(Revision revision) throws IOException;
-
-  protected String commentSafe(String text) {
-    return text;
-  }
-
-  private final Map<CharSequence, StringBuffer> insertBuffers = new HashMap<>();
-  private static final int blockSize = 1024 * 512; // default 512k inserts
-
-  protected void bufferInsertRow(String table, Object[][] row) throws IOException {
-    StringBuffer sql = insertBuffers.get(table);
-    if (sql != null) {
-      if (traits.supportsMultiRowInsert() && (sql.length() < blockSize)) {
-        sql.append(',');
-        appendInsertValues(sql, row);
-        return;
-      } else {
-        flushInsertBuffer(table);
-      }
-    }
-    sql = new StringBuffer(blockSize);
-    synchronized (sql) { //only for StringBuffer
-      appendInsertStatement(sql, table, row);
-      insertBuffers.put(table, sql);
-    }
-  }
-
-  protected void flushInsertBuffer(String table) throws IOException {
-    stream.writeStatement(insertBuffers.get(table));
-    insertBuffers.remove(table);
-  }
-
-  protected void flushInsertBuffers() throws IOException {
-    for (StringBuffer stringBuffer : insertBuffers.values()) {
-      stream.writeStatement(stringBuffer);
-    }
-    insertBuffers.clear();
-  }
-
-  protected void insertRow(String table, Object[][] row) throws IOException {
-    StringBuffer sql = new StringBuffer(65536);
-    appendInsertStatement(sql, table, row);
-    stream.writeStatement(sql);
-  }
-
-  private void appendInsertStatement(StringBuffer sql, String table, Object[][] row) {
-    sql.append("INSERT INTO ");
-    sql.append(tablePrefix);
-    sql.append(table);
-    sql.append(" (");
-
-    for (int i = 0; i < row.length; i++) {
-      String field = (String) row[i][0];
-      if (i > 0)
-        sql.append(',');
-      sql.append(field);
-    }
-    sql.append(") VALUES ");
-    appendInsertValues(sql, row);
-  }
-
-  private static void appendInsertValues(StringBuffer sql, Object[][] row) {
-    sql.append('(');
-    for (int i = 0; i < row.length; i++) {
-      Object val = row[i][1];
-      if (i > 0)
-        sql.append(',');
-      sql.append(sqlSafe(val));
-    }
-    sql.append(')');
-  }
-
-  protected void updateRow(String table, Object[][] row, String keyField, Object keyValue) throws IOException {
-    StringBuffer sql = new StringBuffer(65536);
-    synchronized (sql) { //only for StringBuffer
-      sql.append("UPDATE ");
-      sql.append(tablePrefix);
-      sql.append(table);
-      sql.append(" SET ");
-
-      for (int i = 0; i < row.length; i++) {
-        String field = (String) row[i][0];
-        Object val = row[i][1];
-        if (i > 0)
-          sql.append(',');
-        sql.append(field);
-        sql.append('=');
-        sql.append(sqlSafe(val));
-      }
-
-      sql.append(" WHERE ");
-      sql.append(keyField);
-      sql.append('=');
-      sql.append(sqlSafe(keyValue));
-
-      stream.writeStatement(sql);
-    }
-  }
-
-  protected static String sqlSafe(Object val) {
-    if (val == null)
-      return "NULL";
-
-    String str = val.toString();
-    if (val instanceof String) {
-      return sqlEscape(str);
-    } else if (val instanceof Integer) {
-      return str;
-    } else if (val instanceof Double) {
-      return str;
-    } else if (val instanceof SqlLiteral) {
-      return str;
-    } else {
-      throw new IllegalArgumentException("Unknown type in SQL");
-    }
-  }
-
-  protected static String sqlEscape(String str) {
-    if (str.length() == 0)
-      return "''"; //TODO "NULL",too ?
-    final int len = str.length();
-    StringBuffer sql = new StringBuffer(len * 2);
-    synchronized (sql) { //only for StringBuffer
-      sql.append('\'');
-      for (int i = 0; i < len; i++) {
-        char c = str.charAt(i);
-        switch (c) {
-          case '\u0000':
-            sql.append('\\').append('0');
-            break;
-          case '\n':
-            sql.append('\\').append('n');
-            break;
-          case '\r':
-            sql.append('\\').append('r');
-            break;
-          case '\u001a':
-            sql.append('\\').append('Z');
-            break;
-          case '"':
-          case '\'':
-          case '\\':
-            sql.append('\\');
-            // fall through
-          default:
-            sql.append(c);
-            break;
+        public String getWikiPrologue()
+        {
+            return null;
         }
-      }
-      sql.append('\'');
-      return sql.toString();
+
+        public String getWikiEpilogue()
+        {
+            return null;
+        }
     }
-  }
 
-  protected static String titleFormat(String title) {
-    return title.replace(' ', '_');
-  }
+    public static class MySQLTraits
+        extends Traits
+    {
+        // UTC_TIMESTAMP() is new in MySQL 4.1 or 5.0, so using this
+        // godawful hack found in documentation comments:
+        public SqlLiteral getCurrentTime()
+        {
+            return new SqlLiteral("DATE_ADD('1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)+0");
+        }
 
-  protected String timestampFormat(Calendar time) {
-    return traits.getTimestampFormatter().format(new Object[]{
-            time.get(Calendar.YEAR),
-            time.get(Calendar.MONTH) + 1,
-            time.get(Calendar.DAY_OF_MONTH),
-            time.get(Calendar.HOUR_OF_DAY),
-            time.get(Calendar.MINUTE),
-            time.get(Calendar.SECOND)});
-  }
+        public SqlLiteral getRandom()
+        {
+            return new SqlLiteral("RAND()");
+        }
 
-  protected String inverseTimestamp(Calendar time) {
-    return traits.getTimestampFormatter().format(new Object[]{
-            9999 - time.get(Calendar.YEAR),
-            99 - time.get(Calendar.MONTH) - 1,
-            99 - time.get(Calendar.DAY_OF_MONTH),
-            99 - time.get(Calendar.HOUR_OF_DAY),
-            99 - time.get(Calendar.MINUTE),
-            99 - time.get(Calendar.SECOND)});
-  }
+        public boolean supportsMultiRowInsert()
+        {
+            return true;
+        }
 
-  private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+        public String getTextTable()
+        {
+            return "text";
+        }
 
-  protected static GregorianCalendar now() {
-    return new GregorianCalendar(utc);
-  }
+        private static final MessageFormat timestampFormatter = new MessageFormat(
+                "{0,number,0000}{1,number,00}{2,number,00}{3,number,00}{4,number,00}{5,number,00}");
 
-  final int commitInterval = 1000; // Commit a transaction every n pages
-  int pageCount = 0;
-
-  protected void checkpoint() throws IOException {
-    pageCount++;
-    if (pageCount % commitInterval == 0) {
-      flushInsertBuffers();
-      stream.writeStatement("COMMIT");
-      stream.writeStatement("BEGIN");
+        public MessageFormat getTimestampFormatter()
+        {
+            return timestampFormatter;
+        }
     }
-  }
+
+    public static class PostgresTraits
+        extends Traits
+    {
+        public SqlLiteral getCurrentTime()
+        {
+            return new SqlLiteral("current_timestamp AT TIME ZONE 'UTC'");
+        }
+
+        public SqlLiteral getRandom()
+        {
+            return new SqlLiteral("RANDOM()");
+        }
+
+        public boolean supportsMultiRowInsert()
+        {
+            return false;
+        }
+
+        public String getTextTable()
+        {
+            return "pagecontent";
+        }
+
+        private static final MessageFormat timestampFormatter = new MessageFormat(
+                "{0,number,0000}-{1,number,00}-{2,number,00} {3,number,00}:{4,number,00}:{5,number,00}");
+
+        public MessageFormat getTimestampFormatter()
+        {
+            return timestampFormatter;
+        }
+
+        public String getWikiPrologue()
+        {
+            return "ALTER TABLE revision DISABLE TRIGGER ALL;"
+                    + "ALTER TABLE page DISABLE TRIGGER ALL;";
+        }
+
+        public String getWikiEpilogue()
+        {
+            return "ALTER TABLE revision ENABLE TRIGGER ALL;"
+                    + "ALTER TABLE page ENABLE TRIGGER ALL;";
+        }
+    }
+
+    private final SqlStream stream;
+    private String tablePrefix = "";
+
+    protected static final Integer ONE = 1;
+    protected static final Integer ZERO = 0;
+    protected final Traits traits;
+
+    public SqlWriter(Traits tr, SqlStream output)
+    {
+        stream = output;
+        traits = tr;
+    }
+
+    public SqlWriter(Traits tr, SqlStream output, String prefix)
+    {
+        stream = output;
+        tablePrefix = prefix;
+        traits = tr;
+    }
+
+    public void close() throws IOException
+    {
+        stream.close();
+    }
+
+    public void writeStartWiki() throws IOException
+    {
+        stream.writeComment("-- MediaWiki XML dump converted to SQL by mwdumper");
+        stream.writeStatement("BEGIN");
+
+        String prologue = traits.getWikiPrologue();
+        if (prologue != null)
+            stream.writeStatement(prologue);
+    }
+
+    public void writeEndWiki() throws IOException
+    {
+        flushInsertBuffers();
+
+        String epilogue = traits.getWikiEpilogue();
+        if (epilogue != null)
+            stream.writeStatement(epilogue);
+        stream.writeStatement("COMMIT");
+        stream.writeComment("-- DONE");
+    }
+
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
+        stream.writeComment("");
+        stream.writeComment("-- Site: " + commentSafe(info.Sitename));
+        stream.writeComment("-- URL: " + commentSafe(info.Base));
+        stream.writeComment("-- Generator: " + commentSafe(info.Generator));
+        stream.writeComment("-- Case: " + commentSafe(info.Case));
+        stream.writeComment("--");
+        stream.writeComment("-- Namespaces:");
+        for (Iterator<Map.Entry<Integer, String>> i = info.Namespaces.orderedEntries(); i
+                .hasNext();) {
+            Map.Entry<Integer, String> e = i.next();
+            stream.writeComment("-- " + e.getKey() + ": " + e.getValue());
+        }
+        stream.writeComment("");
+    }
+
+    public abstract void writeStartPage(Page page) throws IOException;
+
+    public abstract void writeEndPage() throws IOException;
+
+    public abstract void writeRevision(Revision revision) throws IOException;
+
+    protected String commentSafe(String text)
+    {
+        return text;
+    }
+
+    private final Map<CharSequence, StringBuffer> insertBuffers = new HashMap<>();
+    private static final int blockSize = 1024 * 512; // default 512k inserts
+
+    protected void bufferInsertRow(String table, Object[][] row) throws IOException
+    {
+        StringBuffer sql = insertBuffers.get(table);
+        if (sql != null) {
+            if (traits.supportsMultiRowInsert() && (sql.length() < blockSize)) {
+                sql.append(',');
+                appendInsertValues(sql, row);
+                return;
+            }
+            else {
+                flushInsertBuffer(table);
+            }
+        }
+        sql = new StringBuffer(blockSize);
+        synchronized (sql) { // only for StringBuffer
+            appendInsertStatement(sql, table, row);
+            insertBuffers.put(table, sql);
+        }
+    }
+
+    protected void flushInsertBuffer(String table) throws IOException
+    {
+        stream.writeStatement(insertBuffers.get(table));
+        insertBuffers.remove(table);
+    }
+
+    protected void flushInsertBuffers() throws IOException
+    {
+        for (StringBuffer stringBuffer : insertBuffers.values()) {
+            stream.writeStatement(stringBuffer);
+        }
+        insertBuffers.clear();
+    }
+
+    protected void insertRow(String table, Object[][] row) throws IOException
+    {
+        StringBuffer sql = new StringBuffer(65536);
+        appendInsertStatement(sql, table, row);
+        stream.writeStatement(sql);
+    }
+
+    private void appendInsertStatement(StringBuffer sql, String table, Object[][] row)
+    {
+        sql.append("INSERT INTO ");
+        sql.append(tablePrefix);
+        sql.append(table);
+        sql.append(" (");
+
+        for (int i = 0; i < row.length; i++) {
+            String field = (String) row[i][0];
+            if (i > 0)
+                sql.append(',');
+            sql.append(field);
+        }
+        sql.append(") VALUES ");
+        appendInsertValues(sql, row);
+    }
+
+    private static void appendInsertValues(StringBuffer sql, Object[][] row)
+    {
+        sql.append('(');
+        for (int i = 0; i < row.length; i++) {
+            Object val = row[i][1];
+            if (i > 0)
+                sql.append(',');
+            sql.append(sqlSafe(val));
+        }
+        sql.append(')');
+    }
+
+    protected void updateRow(String table, Object[][] row, String keyField, Object keyValue)
+        throws IOException
+    {
+        StringBuffer sql = new StringBuffer(65536);
+        synchronized (sql) { // only for StringBuffer
+            sql.append("UPDATE ");
+            sql.append(tablePrefix);
+            sql.append(table);
+            sql.append(" SET ");
+
+            for (int i = 0; i < row.length; i++) {
+                String field = (String) row[i][0];
+                Object val = row[i][1];
+                if (i > 0)
+                    sql.append(',');
+                sql.append(field);
+                sql.append('=');
+                sql.append(sqlSafe(val));
+            }
+
+            sql.append(" WHERE ");
+            sql.append(keyField);
+            sql.append('=');
+            sql.append(sqlSafe(keyValue));
+
+            stream.writeStatement(sql);
+        }
+    }
+
+    protected static String sqlSafe(Object val)
+    {
+        if (val == null)
+            return "NULL";
+
+        String str = val.toString();
+        if (val instanceof String) {
+            return sqlEscape(str);
+        }
+        else if (val instanceof Integer) {
+            return str;
+        }
+        else if (val instanceof Double) {
+            return str;
+        }
+        else if (val instanceof SqlLiteral) {
+            return str;
+        }
+        else {
+            throw new IllegalArgumentException("Unknown type in SQL");
+        }
+    }
+
+    protected static String sqlEscape(String str)
+    {
+        if (str.length() == 0)
+            return "''"; // TODO "NULL",too ?
+        final int len = str.length();
+        StringBuffer sql = new StringBuffer(len * 2);
+        synchronized (sql) { // only for StringBuffer
+            sql.append('\'');
+            for (int i = 0; i < len; i++) {
+                char c = str.charAt(i);
+                switch (c) {
+                case '\u0000':
+                    sql.append('\\').append('0');
+                    break;
+                case '\n':
+                    sql.append('\\').append('n');
+                    break;
+                case '\r':
+                    sql.append('\\').append('r');
+                    break;
+                case '\u001a':
+                    sql.append('\\').append('Z');
+                    break;
+                case '"':
+                case '\'':
+                case '\\':
+                    sql.append('\\');
+                    // fall through
+                default:
+                    sql.append(c);
+                    break;
+                }
+            }
+            sql.append('\'');
+            return sql.toString();
+        }
+    }
+
+    protected static String titleFormat(String title)
+    {
+        return title.replace(' ', '_');
+    }
+
+    protected String timestampFormat(Calendar time)
+    {
+        return traits.getTimestampFormatter()
+                .format(new Object[] { time.get(Calendar.YEAR), time.get(Calendar.MONTH) + 1,
+                        time.get(Calendar.DAY_OF_MONTH), time.get(Calendar.HOUR_OF_DAY),
+                        time.get(Calendar.MINUTE), time.get(Calendar.SECOND) });
+    }
+
+    protected String inverseTimestamp(Calendar time)
+    {
+        return traits.getTimestampFormatter()
+                .format(new Object[] { 9999 - time.get(Calendar.YEAR),
+                        99 - time.get(Calendar.MONTH) - 1, 99 - time.get(Calendar.DAY_OF_MONTH),
+                        99 - time.get(Calendar.HOUR_OF_DAY), 99 - time.get(Calendar.MINUTE),
+                        99 - time.get(Calendar.SECOND) });
+    }
+
+    private static final TimeZone utc = TimeZone.getTimeZone("UTC");
+
+    protected static GregorianCalendar now()
+    {
+        return new GregorianCalendar(utc);
+    }
+
+    final int commitInterval = 1000; // Commit a transaction every n pages
+    int pageCount = 0;
+
+    protected void checkpoint() throws IOException
+    {
+        pageCount++;
+        if (pageCount % commitInterval == 0) {
+            flushInsertBuffers();
+            stream.writeStatement("COMMIT");
+            stream.writeStatement("BEGIN");
+        }
+    }
 }

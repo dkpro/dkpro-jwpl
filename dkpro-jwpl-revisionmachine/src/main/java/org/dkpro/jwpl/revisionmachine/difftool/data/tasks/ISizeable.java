@@ -20,12 +20,13 @@ package org.dkpro.jwpl.revisionmachine.difftool.data.tasks;
 /**
  * This interface defines a method for size estimations.
  */
-public interface ISizeable {
+public interface ISizeable
+{
 
-  /**
-   * This method should return a size estimation of the data.
-   *
-   * @return size estimation in byte
-   */
-  long byteSize();
+    /**
+     * This method should return a size estimation of the data.
+     *
+     * @return size estimation in byte
+     */
+    long byteSize();
 }

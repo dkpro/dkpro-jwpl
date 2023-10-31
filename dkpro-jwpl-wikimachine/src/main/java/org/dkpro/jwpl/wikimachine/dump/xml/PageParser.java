@@ -23,73 +23,83 @@ import java.io.InputStream;
 
 import org.dkpro.jwpl.wikimachine.util.UTFDataInputStream;
 
-public class PageParser {
-  /**
-   * Needed fields from the table page.<br>
-   * These fields are updated each time the method next() returns true.
-   */
-  protected int pageId;
-  protected int pageNamespace;
-  protected String pageTitle;
-  protected boolean pageIsRedirect;
+public class PageParser
+{
+    /**
+     * Needed fields from the table page.<br>
+     * These fields are updated each time the method next() returns true.
+     */
+    protected int pageId;
+    protected int pageNamespace;
+    protected String pageTitle;
+    protected boolean pageIsRedirect;
 
-  protected UTFDataInputStream stream;
+    protected UTFDataInputStream stream;
 
-  /**
-   * Create a parser from an input stream
-   *
-   * @param inputStream
-   */
-  public void setInputStream(InputStream inputStream) {
-    stream = new UTFDataInputStream(inputStream);
-  }
-
-  /**
-   * @return Returns the page_id.
-   */
-  public int getPageId() {
-    return pageId;
-  }
-
-  /**
-   * @return Returns the page_is_redirect.
-   */
-  public boolean getPageIsRedirect() {
-    return pageIsRedirect;
-  }
-
-  /**
-   * @return Returns the page_namespace.
-   */
-  public int getPageNamespace() {
-    return pageNamespace;
-  }
-
-  /**
-   * @return Returns the page_title.
-   */
-  public String getPageTitle() {
-    return pageTitle;
-  }
-
-  /**
-   * @return {@code true} if the table has more rows, {@code false} othwise.
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  public boolean next() throws IOException {
-    boolean hasNext = true;
-    try {
-      pageId = stream.readInt();
-      pageNamespace = stream.readInt();
-      pageTitle = stream.readUTFAsArray();
-      pageIsRedirect = stream.readBoolean();
-    } catch (EOFException e) {
-      hasNext = false;
+    /**
+     * Create a parser from an input stream
+     *
+     * @param inputStream
+     */
+    public void setInputStream(InputStream inputStream)
+    {
+        stream = new UTFDataInputStream(inputStream);
     }
-    return hasNext;
-  }
 
-  public void close() throws IOException {
-    stream.close();
-  }
+    /**
+     * @return Returns the page_id.
+     */
+    public int getPageId()
+    {
+        return pageId;
+    }
+
+    /**
+     * @return Returns the page_is_redirect.
+     */
+    public boolean getPageIsRedirect()
+    {
+        return pageIsRedirect;
+    }
+
+    /**
+     * @return Returns the page_namespace.
+     */
+    public int getPageNamespace()
+    {
+        return pageNamespace;
+    }
+
+    /**
+     * @return Returns the page_title.
+     */
+    public String getPageTitle()
+    {
+        return pageTitle;
+    }
+
+    /**
+     * @return {@code true} if the table has more rows, {@code false} othwise.
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    public boolean next() throws IOException
+    {
+        boolean hasNext = true;
+        try {
+            pageId = stream.readInt();
+            pageNamespace = stream.readInt();
+            pageTitle = stream.readUTFAsArray();
+            pageIsRedirect = stream.readBoolean();
+        }
+        catch (EOFException e) {
+            hasNext = false;
+        }
+        return hasNext;
+    }
+
+    public void close() throws IOException
+    {
+        stream.close();
+    }
 }

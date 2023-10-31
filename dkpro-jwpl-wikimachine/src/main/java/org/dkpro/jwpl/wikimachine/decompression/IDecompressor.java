@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * The main interface for all Decompressors, which uses a archive file path and
- * returns a InputStream
+ * The main interface for all Decompressors, which uses a archive file path and returns a
+ * InputStream
  */
-public interface IDecompressor {
+public interface IDecompressor
+{
 
-  InputStream getInputStream(String fileName) throws IOException;
+    InputStream getInputStream(String fileName) throws IOException;
 }

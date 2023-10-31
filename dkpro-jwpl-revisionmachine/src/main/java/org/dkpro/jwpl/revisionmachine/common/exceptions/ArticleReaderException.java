@@ -18,37 +18,45 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * ArticleReaderException Describes an exception that occurred while reading the
- * articles.
+ * ArticleReaderException Describes an exception that occurred while reading the articles.
  */
 @SuppressWarnings("serial")
-public class ArticleReaderException extends Exception {
+public class ArticleReaderException
+    extends Exception
+{
 
-  /**
-   * Creates a new ArticleReaderException.
-   *
-   * @param description message
-   */
-  public ArticleReaderException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new ArticleReaderException.
+     *
+     * @param description
+     *            message
+     */
+    public ArticleReaderException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new ArticleReaderException.
-   *
-   * @param e inner exception
-   */
-  public ArticleReaderException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new ArticleReaderException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public ArticleReaderException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new ArticleReaderException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public ArticleReaderException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new ArticleReaderException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public ArticleReaderException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 }

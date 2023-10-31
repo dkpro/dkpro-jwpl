@@ -20,20 +20,21 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * Contains the keys for the different types of the DiffTool outputs.
  */
-public enum OutputCompressionEnum {
+public enum OutputCompressionEnum
+{
 
-  /**
-   * Uncompressed output type
-   */
-  None,
+    /**
+     * Uncompressed output type
+     */
+    None,
 
-  /**
-   * SevenZip output type
-   */
-  SevenZip,
+    /**
+     * SevenZip output type
+     */
+    SevenZip,
 
-  /**
-   * BZip2 output type
-   */
-  BZip2,
+    /**
+     * BZip2 output type
+     */
+    BZip2,
 }

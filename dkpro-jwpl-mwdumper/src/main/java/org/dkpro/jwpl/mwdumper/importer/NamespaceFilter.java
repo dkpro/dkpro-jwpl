@@ -28,53 +28,45 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NamespaceFilter extends PageFilter {
-  final boolean invert;
-  final Map<Integer, String> matches;
+public class NamespaceFilter
+    extends PageFilter
+{
+    final boolean invert;
+    final Map<Integer, String> matches;
 
-  public NamespaceFilter(DumpWriter sink, String configString) {
-    super(sink);
+    public NamespaceFilter(DumpWriter sink, String configString)
+    {
+        super(sink);
 
-    invert = configString.startsWith("!");
-    if (invert)
-      configString = configString.substring(1);
-    matches = new HashMap<>();
+        invert = configString.startsWith("!");
+        if (invert)
+            configString = configString.substring(1);
+        matches = new HashMap<>();
 
-    String[] namespaceKeys = {
-            "NS_MAIN",
-            "NS_TALK",
-            "NS_USER",
-            "NS_USER_TALK",
-            "NS_PROJECT",
-            "NS_PROJECT_TALK",
-            "NS_IMAGE",
-            "NS_IMAGE_TALK",
-            "NS_MEDIAWIKI",
-            "NS_MEDIAWIKI_TALK",
-            "NS_TEMPLATE",
-            "NS_TEMPLATE_TALK",
-            "NS_HELP",
-            "NS_HELP_TALK",
-            "NS_CATEGORY",
-            "NS_CATEGORY_TALK"};
+        String[] namespaceKeys = { "NS_MAIN", "NS_TALK", "NS_USER", "NS_USER_TALK", "NS_PROJECT",
+                "NS_PROJECT_TALK", "NS_IMAGE", "NS_IMAGE_TALK", "NS_MEDIAWIKI", "NS_MEDIAWIKI_TALK",
+                "NS_TEMPLATE", "NS_TEMPLATE_TALK", "NS_HELP", "NS_HELP_TALK", "NS_CATEGORY",
+                "NS_CATEGORY_TALK" };
 
-    String[] itemList = configString.trim().split(",");
-    for (int i = 0; i < itemList.length; i++) {
-      String keyString = itemList[i];
-      String trimmed = keyString.trim();
-      try {
-        int key = Integer.parseInt(trimmed);
-        matches.put(key, trimmed);
-      } catch (NumberFormatException e) {
-        for (int key = 0; key < namespaceKeys.length; key++) {
-          if (trimmed.equalsIgnoreCase(namespaceKeys[key]))
-            matches.put(key, trimmed);
+        String[] itemList = configString.trim().split(",");
+        for (int i = 0; i < itemList.length; i++) {
+            String keyString = itemList[i];
+            String trimmed = keyString.trim();
+            try {
+                int key = Integer.parseInt(trimmed);
+                matches.put(key, trimmed);
+            }
+            catch (NumberFormatException e) {
+                for (int key = 0; key < namespaceKeys.length; key++) {
+                    if (trimmed.equalsIgnoreCase(namespaceKeys[key]))
+                        matches.put(key, trimmed);
+                }
+            }
         }
-      }
     }
-  }
 
-  protected boolean pass(Page page) {
-    return invert ^ matches.containsKey(page.Title.Namespace);
-  }
+    protected boolean pass(Page page)
+    {
+        return invert ^ matches.containsKey(page.Title.Namespace);
+    }
 }

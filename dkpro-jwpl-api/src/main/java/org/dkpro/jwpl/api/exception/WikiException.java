@@ -17,23 +17,29 @@
  */
 package org.dkpro.jwpl.api.exception;
 
-public class WikiException extends Exception {
+public class WikiException
+    extends Exception
+{
 
-  private static final long serialVersionUID = 3891003920835683241L;
+    private static final long serialVersionUID = 3891003920835683241L;
 
-  public WikiException() {
-    super();
-  }
+    public WikiException()
+    {
+        super();
+    }
 
-  public WikiException(String txt) {
-    super(txt);
-  }
+    public WikiException(String txt)
+    {
+        super(txt);
+    }
 
-  public WikiException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public WikiException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 
-  public WikiException(Throwable cause) {
-    super(cause);
-  }
+    public WikiException(Throwable cause)
+    {
+        super(cause);
+    }
 }

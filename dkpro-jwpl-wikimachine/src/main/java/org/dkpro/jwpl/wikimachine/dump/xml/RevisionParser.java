@@ -21,43 +21,50 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public abstract class RevisionParser {
+public abstract class RevisionParser
+{
 
-  protected int revPage;
-  protected int revTextId;
-  protected int revTimestamp;
+    protected int revPage;
+    protected int revTextId;
+    protected int revTimestamp;
 
-  protected DataInputStream stream;
+    protected DataInputStream stream;
 
-  /**
-   * Create a parser from an input stream
-   *
-   * @param inputStream
-   */
-  public void setInputStream(InputStream inputStream) {
-    stream = new DataInputStream(inputStream);
-  }
+    /**
+     * Create a parser from an input stream
+     *
+     * @param inputStream
+     */
+    public void setInputStream(InputStream inputStream)
+    {
+        stream = new DataInputStream(inputStream);
+    }
 
-  public int getRevPage() {
-    return revPage;
-  }
+    public int getRevPage()
+    {
+        return revPage;
+    }
 
-  public int getRevTextId() {
-    return revTextId;
-  }
+    public int getRevTextId()
+    {
+        return revTextId;
+    }
 
-  public int getRevTimestamp() {
-    return revTimestamp;
-  }
+    public int getRevTimestamp()
+    {
+        return revTimestamp;
+    }
 
-  public void close() throws IOException {
-    stream.close();
-  }
+    public void close() throws IOException
+    {
+        stream.close();
+    }
 
-  /**
-   * @return {@code true} if the table has more rows, {@code false} othwise.
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  public abstract boolean next() throws IOException;
+    /**
+     * @return {@code true} if the table has more rows, {@code false} othwise.
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    public abstract boolean next() throws IOException;
 
 }

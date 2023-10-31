@@ -17,74 +17,85 @@
  */
 package org.dkpro.jwpl.revisionmachine.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A common base class that handles the aspect of database connection handling.
  */
-public abstract class AbstractRevisionService {
+public abstract class AbstractRevisionService
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(AbstractRevisionService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractRevisionService.class);
 
-  /**
-   * Reference to database connection
-   */
-  protected Connection connection;
+    /**
+     * Reference to database connection
+     */
+    protected Connection connection;
 
-  /**
-   * Reference to the configuration parameters
-   */
-  protected RevisionAPIConfiguration config;
+    /**
+     * Reference to the configuration parameters
+     */
+    protected RevisionAPIConfiguration config;
 
-  /**
-   * Helper method to obtain a connection via the given {@link RevisionAPIConfiguration} parameter.
-   *
-   * @param config Must not be {@code null}.
-   * @return A valid {@link Connection} to the database endpoint.
-   * @throws WikiApiException Thrown if errors occurred while opening a connection.
-   */
-  protected Connection getConnection(RevisionAPIConfiguration config) throws WikiApiException {
-    Connection c;
-    try {
+    /**
+     * Helper method to obtain a connection via the given {@link RevisionAPIConfiguration}
+     * parameter.
+     *
+     * @param config
+     *            Must not be {@code null}.
+     * @return A valid {@link Connection} to the database endpoint.
+     * @throws WikiApiException
+     *             Thrown if errors occurred while opening a connection.
+     */
+    protected Connection getConnection(RevisionAPIConfiguration config) throws WikiApiException
+    {
+        Connection c;
+        try {
 
-      String driverDB = config.getDatabaseDriver();
-      Class.forName(driverDB);
+            String driverDB = config.getDatabaseDriver();
+            Class.forName(driverDB);
 
-      c = DriverManager.getConnection(config.getJdbcURL(), config.getUser(), config.getPassword());
-      if (!c.isValid(5)) {
-        throw new WikiApiException("Connection could not be established.");
-      }
-    } catch (SQLException | ClassNotFoundException e) {
-      throw new WikiApiException(e);
+            c = DriverManager.getConnection(config.getJdbcURL(), config.getUser(),
+                    config.getPassword());
+            if (!c.isValid(5)) {
+                throw new WikiApiException("Connection could not be established.");
+            }
+        }
+        catch (SQLException | ClassNotFoundException e) {
+            throw new WikiApiException(e);
+        }
+
+        return c;
     }
 
-    return c;
-  }
-
-  /**
-   * This method closes any open {@link Connection connections} to the database.
-   *
-   * @throws SQLException if an error occurs while closing the connection
-   */
-  public final void close() throws SQLException {
-    if (this.connection != null) {
-      this.connection.close();
+    /**
+     * This method closes any open {@link Connection connections} to the database.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the connection
+     */
+    public final void close() throws SQLException
+    {
+        if (this.connection != null) {
+            this.connection.close();
+        }
     }
-  }
 
-  protected void reconnect() throws SQLException {
-    close();
-    try {
-      this.connection = getConnection(config);
-    } catch (WikiApiException e) {
-      close();
-      logger.error("Could not reconnect. Closing connection...", e);
+    protected void reconnect() throws SQLException
+    {
+        close();
+        try {
+            this.connection = getConnection(config);
+        }
+        catch (WikiApiException e) {
+            close();
+            logger.error("Could not reconnect. Closing connection...", e);
+        }
     }
-  }
 }

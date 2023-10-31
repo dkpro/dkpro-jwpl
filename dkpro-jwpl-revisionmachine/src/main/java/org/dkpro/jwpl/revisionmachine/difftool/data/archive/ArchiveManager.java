@@ -27,63 +27,70 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
  *
  * @version 0.5.0
  */
-public class ArchiveManager {
+public class ArchiveManager
+{
 
-  /**
-   * List of available archives
-   */
-  private final List<ArchiveDescription> archives;
+    /**
+     * List of available archives
+     */
+    private final List<ArchiveDescription> archives;
 
-  /**
-   * (Constructor) Creates the ArchiveManager.
-   *
-   * @throws ConfigurationException if an error occurs while accessing the configuration
-   */
-  public ArchiveManager() throws ConfigurationException {
+    /**
+     * (Constructor) Creates the ArchiveManager.
+     *
+     * @throws ConfigurationException
+     *             if an error occurs while accessing the configuration
+     */
+    public ArchiveManager() throws ConfigurationException
+    {
 
-    ConfigurationManager config = ConfigurationManager.getInstance();
-    this.archives = config.getArchiveList();
-  }
-
-  /**
-   * Returns whether an archive is available or not.
-   *
-   * @return TRUE | FALSE
-   */
-  public boolean hasArchive() {
-    return !this.archives.isEmpty();
-  }
-
-  /**
-   * Returns an archive.
-   *
-   * @return ArchiveDescription or NULL if no archive is available
-   */
-  public synchronized ArchiveDescription getArchive() {
-
-    if (!this.archives.isEmpty()) {
-
-      return this.archives.remove(0);
+        ConfigurationManager config = ConfigurationManager.getInstance();
+        this.archives = config.getArchiveList();
     }
 
-    return null;
-  }
+    /**
+     * Returns whether an archive is available or not.
+     *
+     * @return TRUE | FALSE
+     */
+    public boolean hasArchive()
+    {
+        return !this.archives.isEmpty();
+    }
 
-  /**
-   * Returns the number of remaining archives.
-   *
-   * @return number of available archives
-   */
-  public int size() {
-    return this.archives.size();
-  }
+    /**
+     * Returns an archive.
+     *
+     * @return ArchiveDescription or NULL if no archive is available
+     */
+    public synchronized ArchiveDescription getArchive()
+    {
 
-  /**
-   * Returns the string representation of the ArchiveManager's content.
-   *
-   * @return [ number of archives ]
-   */
-  public String toString() {
-    return "ArchiveManager:\t[" + this.size() + "]";
-  }
+        if (!this.archives.isEmpty()) {
+
+            return this.archives.remove(0);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the number of remaining archives.
+     *
+     * @return number of available archives
+     */
+    public int size()
+    {
+        return this.archives.size();
+    }
+
+    /**
+     * Returns the string representation of the ArchiveManager's content.
+     *
+     * @return [ number of archives ]
+     */
+    public String toString()
+    {
+        return "ArchiveManager:\t[" + this.size() + "]";
+    }
 }

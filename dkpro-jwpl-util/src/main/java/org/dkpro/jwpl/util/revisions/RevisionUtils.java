@@ -32,99 +32,113 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 
 /**
  * Provides several revision-related utilities that should not be part of the RevisionMachine
- * package because of dependencies to the JWPL API. RevisionMachine should stay independent
- * of the RevisionMachine
+ * package because of dependencies to the JWPL API. RevisionMachine should stay independent of the
+ * RevisionMachine
  *
  * @deprecated To be removed in future releases.
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
-public class RevisionUtils {
-  private RevisionApi revApi;
-  private Wikipedia wiki;
+public class RevisionUtils
+{
+    private RevisionApi revApi;
+    private Wikipedia wiki;
 
-  public RevisionUtils(DatabaseConfiguration conf) throws WikiApiException {
-    wiki = new Wikipedia(conf);
-    revApi = new RevisionApi(conf);
-  }
-
-  public RevisionUtils(Wikipedia wiki, RevisionApi revApi) throws WikiApiException {
-    this.revApi = revApi;
-    this.wiki = wiki;
-  }
-
-  /**
-   * For a given article revision, the method returns the revision of the article discussion
-   * page which was current at the time the revision was created.
-   *
-   * @param revisionId revision of the article for which the talk page revision should be retrieved
-   * @return the revision of the talk page that was current at the creation time of the given article revision
-   * @throws WikiApiException          if any error occurred accessing the Wiki db
-   * @throws WikiPageNotFoundException if no discussion page was available at the time of the given article revision
-   */
-  public Revision getDiscussionRevisionForArticleRevision(int revisionId) throws WikiApiException, WikiPageNotFoundException {
-    //get article revision
-    Revision rev = revApi.getRevision(revisionId);
-    Timestamp revTime = rev.getTimeStamp();
-
-    //get corresponding discussion page
-    Page discussion = wiki.getDiscussionPage(rev.getArticleID());
-
-    /*
-     * find correct revision of discussion page
-     */
-    List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discussion.getPageId());
-
-    // sort in reverse order - newest first
-    discussionTs.sort(Comparator.reverseOrder());
-
-    //find first timestamp equal to or before the article revision timestamp
-    for (Timestamp curDiscTime : discussionTs) {
-      if (curDiscTime == revTime || curDiscTime.before(revTime)) {
-        return revApi.getRevision(discussion.getPageId(), curDiscTime);
-      }
+    public RevisionUtils(DatabaseConfiguration conf) throws WikiApiException
+    {
+        wiki = new Wikipedia(conf);
+        revApi = new RevisionApi(conf);
     }
 
-    throw new WikiPageNotFoundException("Not discussion page was available at the time of the given article revision");
-  }
+    public RevisionUtils(Wikipedia wiki, RevisionApi revApi) throws WikiApiException
+    {
+        this.revApi = revApi;
+        this.wiki = wiki;
+    }
 
-
-  /**
-   * For a given article revision, the method returns the revisions of the archived article discussion
-   * pages which were available at the time of the article revision
-   *
-   * @param revisionId revision of the article for which the talk page archive revisions should be retrieved
-   * @return the revisions of the talk page archives that were available at the time of the article revision
-   */
-  public List<Revision> getDiscussionArchiveRevisionsForArticleRevision(int revisionId) throws WikiApiException, WikiPageNotFoundException {
-    List<Revision> result = new LinkedList<>();
-
-    //get article revision
-    Revision rev = revApi.getRevision(revisionId);
-    Timestamp revTime = rev.getTimeStamp();
-
-    //get corresponding discussion archives
-    Iterable<Page> discArchives = wiki.getDiscussionArchives(rev.getArticleID());
-
-    /*
-     * for each discussion archive, find correct revision of discussion page
+    /**
+     * For a given article revision, the method returns the revision of the article discussion page
+     * which was current at the time the revision was created.
+     *
+     * @param revisionId
+     *            revision of the article for which the talk page revision should be retrieved
+     * @return the revision of the talk page that was current at the creation time of the given
+     *         article revision
+     * @throws WikiApiException
+     *             if any error occurred accessing the Wiki db
+     * @throws WikiPageNotFoundException
+     *             if no discussion page was available at the time of the given article revision
      */
-    for (Page discArchive : discArchives) {
-      //get revision timestamps for the current discussion archive
-      List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discArchive.getPageId());
+    public Revision getDiscussionRevisionForArticleRevision(int revisionId)
+        throws WikiApiException, WikiPageNotFoundException
+    {
+        // get article revision
+        Revision rev = revApi.getRevision(revisionId);
+        Timestamp revTime = rev.getTimeStamp();
 
-      // sort in reverse order - newest first
-      discussionTs.sort(Comparator.reverseOrder());
+        // get corresponding discussion page
+        Page discussion = wiki.getDiscussionPage(rev.getArticleID());
 
-      //find first timestamp equal to or before the article revision timestamp
-      for (Timestamp curDiscTime : discussionTs) {
-        if (curDiscTime == revTime || curDiscTime.before(revTime)) {
-          result.add(revApi.getRevision(discArchive.getPageId(), curDiscTime));
-          break;
+        /*
+         * find correct revision of discussion page
+         */
+        List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discussion.getPageId());
+
+        // sort in reverse order - newest first
+        discussionTs.sort(Comparator.reverseOrder());
+
+        // find first timestamp equal to or before the article revision timestamp
+        for (Timestamp curDiscTime : discussionTs) {
+            if (curDiscTime == revTime || curDiscTime.before(revTime)) {
+                return revApi.getRevision(discussion.getPageId(), curDiscTime);
+            }
         }
-      }
+
+        throw new WikiPageNotFoundException(
+                "Not discussion page was available at the time of the given article revision");
     }
 
-    return result;
-  }
+    /**
+     * For a given article revision, the method returns the revisions of the archived article
+     * discussion pages which were available at the time of the article revision
+     *
+     * @param revisionId
+     *            revision of the article for which the talk page archive revisions should be
+     *            retrieved
+     * @return the revisions of the talk page archives that were available at the time of the
+     *         article revision
+     */
+    public List<Revision> getDiscussionArchiveRevisionsForArticleRevision(int revisionId)
+        throws WikiApiException, WikiPageNotFoundException
+    {
+        List<Revision> result = new LinkedList<>();
+
+        // get article revision
+        Revision rev = revApi.getRevision(revisionId);
+        Timestamp revTime = rev.getTimeStamp();
+
+        // get corresponding discussion archives
+        Iterable<Page> discArchives = wiki.getDiscussionArchives(rev.getArticleID());
+
+        /*
+         * for each discussion archive, find correct revision of discussion page
+         */
+        for (Page discArchive : discArchives) {
+            // get revision timestamps for the current discussion archive
+            List<Timestamp> discussionTs = revApi.getRevisionTimestamps(discArchive.getPageId());
+
+            // sort in reverse order - newest first
+            discussionTs.sort(Comparator.reverseOrder());
+
+            // find first timestamp equal to or before the article revision timestamp
+            for (Timestamp curDiscTime : discussionTs) {
+                if (curDiscTime == revTime || curDiscTime.before(revTime)) {
+                    result.add(revApi.getRevision(discArchive.getPageId(), curDiscTime));
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
 
 }

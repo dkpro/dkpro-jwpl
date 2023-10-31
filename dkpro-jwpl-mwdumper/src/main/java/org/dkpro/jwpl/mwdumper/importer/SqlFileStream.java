@@ -22,24 +22,30 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-public class SqlFileStream implements SqlStream {
-  protected final PrintStream stream;
+public class SqlFileStream
+    implements SqlStream
+{
+    protected final PrintStream stream;
 
-  public SqlFileStream(OutputStream output) throws IOException {
-    this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
-  }
+    public SqlFileStream(OutputStream output) throws IOException
+    {
+        this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
+    }
 
-  public void writeComment(CharSequence sql) {
-    stream.println(sql.toString());
-  }
+    public void writeComment(CharSequence sql)
+    {
+        stream.println(sql.toString());
+    }
 
-  public void writeStatement(CharSequence sql) {
-    stream.print(sql.toString());
-    stream.println(';');
-  }
+    public void writeStatement(CharSequence sql)
+    {
+        stream.print(sql.toString());
+        stream.println(';');
+    }
 
-  public void close() {
-    stream.flush();
-    stream.close();
-  }
+    public void close()
+    {
+        stream.flush();
+        stream.close();
+    }
 }

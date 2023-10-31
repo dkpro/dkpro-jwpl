@@ -17,11 +17,12 @@
  */
 package org.dkpro.jwpl.parser.mediawiki;
 
-public interface ParserConstants {
+public interface ParserConstants
+{
 
-  /**
-   * Shortcut for System.getProperty("line.separator").
-   */
-  String LF = System.getProperty("line.separator");
+    /**
+     * Shortcut for System.getProperty("line.separator").
+     */
+    String LF = System.getProperty("line.separator");
 
 }

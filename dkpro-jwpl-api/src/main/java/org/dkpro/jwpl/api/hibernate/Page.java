@@ -21,104 +21,125 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The page class that is actually persisted by Hibernate.
- * It is accessed via a equally named class in the api package to hide session management from the user.
+ * The page class that is actually persisted by Hibernate. It is accessed via a equally named class
+ * in the api package to hide session management from the user.
  */
-public class Page {
-  
-  private long id;
-  private int pageId;
-  private String name;
-  private String text;
-  private boolean isDisambiguation;
-  private Set<Integer> inLinks = new HashSet<>();
-  private Set<Integer> outLinks = new HashSet<>();
-  private Set<Integer> categories = new HashSet<>();
-  private Set<String> redirects = new HashSet<>();
+public class Page
+{
 
-  /**
-   * A no argument constructor as required by Hibernate.
-   */
-  public Page() {
-  }
+    private long id;
+    private int pageId;
+    private String name;
+    private String text;
+    private boolean isDisambiguation;
+    private Set<Integer> inLinks = new HashSet<>();
+    private Set<Integer> outLinks = new HashSet<>();
+    private Set<Integer> categories = new HashSet<>();
+    private Set<String> redirects = new HashSet<>();
 
-  public long getId() {
-    return id;
-  }
-
-  @SuppressWarnings("unused")
-  private void setId(long id) {
-    this.id = id;
-  }
-
-  public int getPageId() {
-    return pageId;
-  }
-
-  public void setPageId(int pageId) {
-    this.pageId = pageId;
-  }
-
-  public Set<Integer> getCategories() {
-    return categories;
-  }
-
-  public void setCategories(Set<Integer> categories) {
-    this.categories = categories;
-  }
-
-  public Set<Integer> getInLinks() {
-    return inLinks;
-  }
-
-  public void setInLinks(Set<Integer> inLinks) {
-    this.inLinks = inLinks;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Set<Integer> getOutLinks() {
-    return outLinks;
-  }
-
-  public int getOutDegree() {
-    return outLinks.size();
-  }
-
-  public void setOutLinks(Set<Integer> outLinks) {
-    this.outLinks = outLinks;
-  }
-
-  public Set<String> getRedirects() {
-    return redirects;
-  }
-
-  public void setRedirects(Set<String> redirects) {
-    this.redirects = redirects;
-  }
-
-  public String getText() {
-    return text;
-  }
-
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  public boolean getIsDisambiguation() {
-    return isDisambiguation;
-  }
-
-  public void setIsDisambiguation(Boolean isDisambiguation) {
-    if (isDisambiguation == null) {
-      isDisambiguation = false;
+    /**
+     * A no argument constructor as required by Hibernate.
+     */
+    public Page()
+    {
     }
-    this.isDisambiguation = isDisambiguation;
-  }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    @SuppressWarnings("unused")
+    private void setId(long id)
+    {
+        this.id = id;
+    }
+
+    public int getPageId()
+    {
+        return pageId;
+    }
+
+    public void setPageId(int pageId)
+    {
+        this.pageId = pageId;
+    }
+
+    public Set<Integer> getCategories()
+    {
+        return categories;
+    }
+
+    public void setCategories(Set<Integer> categories)
+    {
+        this.categories = categories;
+    }
+
+    public Set<Integer> getInLinks()
+    {
+        return inLinks;
+    }
+
+    public void setInLinks(Set<Integer> inLinks)
+    {
+        this.inLinks = inLinks;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public Set<Integer> getOutLinks()
+    {
+        return outLinks;
+    }
+
+    public int getOutDegree()
+    {
+        return outLinks.size();
+    }
+
+    public void setOutLinks(Set<Integer> outLinks)
+    {
+        this.outLinks = outLinks;
+    }
+
+    public Set<String> getRedirects()
+    {
+        return redirects;
+    }
+
+    public void setRedirects(Set<String> redirects)
+    {
+        this.redirects = redirects;
+    }
+
+    public String getText()
+    {
+        return text;
+    }
+
+    public void setText(String text)
+    {
+        this.text = text;
+    }
+
+    public boolean getIsDisambiguation()
+    {
+        return isDisambiguation;
+    }
+
+    public void setIsDisambiguation(Boolean isDisambiguation)
+    {
+        if (isDisambiguation == null) {
+            isDisambiguation = false;
+        }
+        this.isDisambiguation = isDisambiguation;
+    }
 }

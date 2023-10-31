@@ -24,54 +24,58 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 
-
 /**
  * Tutorial 2
  * <p>
  * A page provides a number of informative methods.
  */
-public class T2_PageInfo implements WikiConstants {
+public class T2_PageInfo
+    implements WikiConstants
+{
 
-  public static void main(String[] args) throws WikiApiException {
+    public static void main(String[] args) throws WikiApiException
+    {
 
-    // configure the database connection parameters
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setHost("SERVER_URL");
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.german);
+        // configure the database connection parameters
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setHost("SERVER_URL");
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.german);
 
-    // Create a new German wikipedia
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // Create a new German wikipedia
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    String title = "Hello world";
-    Page page;
-    try {
-      page = wiki.getPage(title);
-    } catch (WikiPageNotFoundException e) {
-      throw new WikiApiException("Page " + title + " does not exist");
+        String title = "Hello world";
+        Page page;
+        try {
+            page = wiki.getPage(title);
+        }
+        catch (WikiPageNotFoundException e) {
+            throw new WikiApiException("Page " + title + " does not exist");
+        }
+
+        // the title of the page
+        System.out.println("Queried string       : " + title);
+        System.out.println("Title                : " + page.getTitle());
+
+        // whether the page is a disambiguation page
+        System.out.println("IsDisambiguationPage : " + page.isDisambiguation());
+
+        // whether the page is a redirect
+        // If a page is a redirect, we can use it like a normal page.
+        // The other infos in this example are transparently served by the page that the redirect
+        // points to.
+        System.out.println("redirect page query  : " + page.isRedirect());
+
+        // the number of links pointing to this page
+        System.out.println("# of ingoing links   : " + page.getNumberOfInlinks());
+
+        // the number of links in this page pointing to other pages
+        System.out.println("# of outgoing links  : " + page.getNumberOfOutlinks());
+
+        // the number of categories that are assigned to this page
+        System.out.println("# of categories      : " + page.getNumberOfCategories());
     }
-
-    // the title of the page
-    System.out.println("Queried string       : " + title);
-    System.out.println("Title                : " + page.getTitle());
-
-    // whether the page is a disambiguation page
-    System.out.println("IsDisambiguationPage : " + page.isDisambiguation());
-
-    // whether the page is a redirect
-    // If a page is a redirect, we can use it like a normal page.
-    // The other infos in this example are transparently served by the page that the redirect points to.
-    System.out.println("redirect page query  : " + page.isRedirect());
-
-    // the number of links pointing to this page
-    System.out.println("# of ingoing links   : " + page.getNumberOfInlinks());
-
-    // the number of links in this page pointing to other pages
-    System.out.println("# of outgoing links  : " + page.getNumberOfOutlinks());
-
-    // the number of categories that are assigned to this page
-    System.out.println("# of categories      : " + page.getNumberOfCategories());
-  }
 }

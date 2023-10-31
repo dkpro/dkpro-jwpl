@@ -20,58 +20,64 @@ package org.dkpro.jwpl.revisionmachine.common.util;
 /**
  * This utility class contains some surrogate related methods.
  */
-public class Surrogates {
+public class Surrogates
+{
 
-  /**
-   * No object - utility class
-   */
-  private Surrogates() {
-  }
-
-  /**
-   * Returns whether a surrogate character was contained in the specified
-   * input.
-   *
-   * @param input input
-   * @return if a surrogate character was contained or not
-   */
-  public static boolean scan(final char[] input) {
-
-    int surLow = 0xD800;
-    int surHgh = 0xDFFF;
-
-    int end = input.length;
-    for (int i = 0; i < end; i++) {
-      if ((int) input[i] >= surLow && input[i] <= surHgh) {
-        return true;
-      }
+    /**
+     * No object - utility class
+     */
+    private Surrogates()
+    {
     }
 
-    return false;
-  }
+    /**
+     * Returns whether a surrogate character was contained in the specified input.
+     *
+     * @param input
+     *            input
+     * @return if a surrogate character was contained or not
+     */
+    public static boolean scan(final char[] input)
+    {
 
-  /**
-   * Replaces all surrogates characters with '?'.
-   *
-   * @param input input
-   * @return input with '?' instead of surrogates characters
-   */
-  public static char[] replace(final char[] input) {
+        int surLow = 0xD800;
+        int surHgh = 0xDFFF;
 
-    int surLow = 0xD800;
-    int surHgh = 0xDFFF;
+        int end = input.length;
+        for (int i = 0; i < end; i++) {
+            if ((int) input[i] >= surLow && input[i] <= surHgh) {
+                return true;
+            }
+        }
 
-    int end = input.length;
-    char[] output = new char[end];
-
-    for (int i = 0; i < end; i++) {
-      if ((int) input[i] >= surLow && input[i] <= surHgh) {
-        output[i] = '?';
-      } else {
-        output[i] = input[i];
-      }
+        return false;
     }
 
-    return output;
-  }
+    /**
+     * Replaces all surrogates characters with '?'.
+     *
+     * @param input
+     *            input
+     * @return input with '?' instead of surrogates characters
+     */
+    public static char[] replace(final char[] input)
+    {
+
+        int surLow = 0xD800;
+        int surHgh = 0xDFFF;
+
+        int end = input.length;
+        char[] output = new char[end];
+
+        for (int i = 0; i < end; i++) {
+            if ((int) input[i] >= surLow && input[i] <= surHgh) {
+                output[i] = '?';
+            }
+            else {
+                output[i] = input[i];
+            }
+        }
+
+        return output;
+    }
 }

@@ -21,30 +21,33 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
-public abstract class AbstractSnapshotGenerator implements ISnapshotGenerator {
-  protected Configuration configuration = null;
-  protected final IDecompressor decompressor;
-  protected final ILogger logger;
-  protected final DumpVersionProcessor dumpVersionProcessor;
-  protected final IEnvironmentFactory environmentFactory;
+public abstract class AbstractSnapshotGenerator
+    implements ISnapshotGenerator
+{
+    protected Configuration configuration = null;
+    protected final IDecompressor decompressor;
+    protected final ILogger logger;
+    protected final DumpVersionProcessor dumpVersionProcessor;
+    protected final IEnvironmentFactory environmentFactory;
 
-  public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory) {
-    this.decompressor = environmentFactory.getDecompressor();
-    this.logger = environmentFactory.getLogger();
-    this.dumpVersionProcessor = environmentFactory
-            .getDumpVersionProcessor();
+    public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory)
+    {
+        this.decompressor = environmentFactory.getDecompressor();
+        this.logger = environmentFactory.getLogger();
+        this.dumpVersionProcessor = environmentFactory.getDumpVersionProcessor();
 
-    this.environmentFactory = environmentFactory;
-  }
+        this.environmentFactory = environmentFactory;
+    }
 
-  @Override
-  public abstract void setFiles(Files files);
+    @Override
+    public abstract void setFiles(Files files);
 
-  @Override
-  public void setConfiguration(Configuration configuration) {
-    this.configuration = configuration;
-  }
+    @Override
+    public void setConfiguration(Configuration configuration)
+    {
+        this.configuration = configuration;
+    }
 
-  @Override
-  public abstract void start() throws Exception;
+    @Override
+    public abstract void start() throws Exception;
 }

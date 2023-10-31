@@ -22,32 +22,33 @@ import java.util.Iterator;
 /**
  * An {@link Iterable} over {@link Category} objects.
  */
-public class CategoryIterable implements Iterable<Category> {
+public class CategoryIterable
+    implements Iterable<Category>
+{
 
-  private final Wikipedia wiki;
+    private final Wikipedia wiki;
 
-  /*
-   * The size of the page buffer.
-   * With bufferSize = 1, a database connection is needed for retrieving a single article.
-   * Higher bufferSize gives better performance, but needs memory.
-   * Initialize it with 500.
-   */
-  private int bufferSize = 500;
+    /*
+     * The size of the page buffer. With bufferSize = 1, a database connection is needed for
+     * retrieving a single article. Higher bufferSize gives better performance, but needs memory.
+     * Initialize it with 500.
+     */
+    private int bufferSize = 500;
 
-  public CategoryIterable(Wikipedia wiki) {
-    this.wiki = wiki;
-  }
+    public CategoryIterable(Wikipedia wiki)
+    {
+        this.wiki = wiki;
+    }
 
-  public CategoryIterable(Wikipedia wiki, int bufferSize) {
-    this.wiki = wiki;
-    this.bufferSize = bufferSize;
-  }
+    public CategoryIterable(Wikipedia wiki, int bufferSize)
+    {
+        this.wiki = wiki;
+        this.bufferSize = bufferSize;
+    }
 
-  @Override
-  public Iterator<Category> iterator() {
-    return new CategoryIterator(wiki, bufferSize);
-  }
+    @Override
+    public Iterator<Category> iterator()
+    {
+        return new CategoryIterator(wiki, bufferSize);
+    }
 }
-
-
-

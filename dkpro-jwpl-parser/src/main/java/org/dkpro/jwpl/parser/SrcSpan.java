@@ -20,48 +20,57 @@ package org.dkpro.jwpl.parser;
 /**
  *
  */
-public class SrcSpan {
-  private int start;
-  private int end;
+public class SrcSpan
+{
+    private int start;
+    private int end;
 
-  /**
-   * @param start is the startposition of the Object in the original MediaWikiSource
-   * @param end   is the endposition of the Object in the original MediaWikiSource
-   */
-  public SrcSpan(int start, int end) {
-    this.start = start;
-    this.end = end;
-  }
+    /**
+     * @param start
+     *            is the startposition of the Object in the original MediaWikiSource
+     * @param end
+     *            is the endposition of the Object in the original MediaWikiSource
+     */
+    public SrcSpan(int start, int end)
+    {
+        this.start = start;
+        this.end = end;
+    }
 
-  /**
-   * Look at Constructor for Details...
-   */
-  public int getEnd() {
-    return end;
-  }
+    /**
+     * Look at Constructor for Details...
+     */
+    public int getEnd()
+    {
+        return end;
+    }
 
-  /**
-   * Look at Constructor for Details...
-   */
-  public void setEnd(int end) {
-    this.end = end;
-  }
+    /**
+     * Look at Constructor for Details...
+     */
+    public void setEnd(int end)
+    {
+        this.end = end;
+    }
 
-  /**
-   * Look at Constructor for Details...
-   */
-  public int getStart() {
-    return start;
-  }
+    /**
+     * Look at Constructor for Details...
+     */
+    public int getStart()
+    {
+        return start;
+    }
 
-  /**
-   * Look at Constructor for Details...
-   */
-  public void setStart(int start) {
-    this.start = start;
-  }
+    /**
+     * Look at Constructor for Details...
+     */
+    public void setStart(int start)
+    {
+        this.start = start;
+    }
 
-  public String toString() {
-    return "(" + start + ", " + end + ")";
-  }
+    public String toString()
+    {
+        return "(" + start + ", " + end + ")";
+    }
 }

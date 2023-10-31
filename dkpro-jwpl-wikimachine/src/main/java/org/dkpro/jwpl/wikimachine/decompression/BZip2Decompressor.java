@@ -17,34 +17,37 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
 /**
- * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream
- * to set up the archive path and returns the InputStream to read from
+ * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream to set up the archive
+ * path and returns the InputStream to read from
  */
-public class BZip2Decompressor implements IDecompressor {
+public class BZip2Decompressor
+    implements IDecompressor
+{
 
-  @Override
-  public InputStream getInputStream(String fileName) throws IOException {
-    InputStream outputStream;
+    @Override
+    public InputStream getInputStream(String fileName) throws IOException
+    {
+        InputStream outputStream;
 
-    BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
-    /*
-     * skip 2 first bytes (see the documentation of CBZip2InputStream) e.g.
-     * here http://lucene.apache.org/tika/xref/org/apache/tika/parser
-     * /pkg/bzip2 /CBZip2InputStream.html
-     */
-    inputStream.skip(2);
-    outputStream = new BZip2CompressorInputStream(inputStream);
+        BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fileName));
+        /*
+         * skip 2 first bytes (see the documentation of CBZip2InputStream) e.g. here
+         * http://lucene.apache.org/tika/xref/org/apache/tika/parser /pkg/bzip2
+         * /CBZip2InputStream.html
+         */
+        inputStream.skip(2);
+        outputStream = new BZip2CompressorInputStream(inputStream);
 
-    return outputStream;
+        return outputStream;
 
-  }
+    }
 
 }

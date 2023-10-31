@@ -17,51 +17,53 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
-
-public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
+public class CategoryDescendantsIteratorTest
+    extends BaseJWPLTest
+{
 
     /**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
      */
     @BeforeAll
-    public static void setupWikipedia() {
+    public static void setupWikipedia()
+    {
         DatabaseConfiguration db = obtainHSDLDBConfiguration();
         try {
             wiki = new Wikipedia(db);
-        } catch (Exception e) {
-            fail("Wikipedia could not be initialized: "+e.getLocalizedMessage());
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
         }
     }
 
-
     /**
-    * The category UKP has 9 descendants with pageIds 7-15.
-    */
+     * The category UKP has 9 descendants with pageIds 7-15.
+     */
     @Test
-    public void test_categoryIteratorTest() {
+    public void test_categoryIteratorTest()
+    {
 
         Category cat = null;
         try {
             cat = wiki.getCategory("UKP");
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             e.printStackTrace();
             fail("A WikiApiException occurred while getting the category 'UKP'");
         }
-
 
         List<Integer> expectedPageIds = new ArrayList<>();
         expectedPageIds.add(7);
@@ -75,7 +77,7 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         expectedPageIds.add(15);
 
         List<Integer> isIds = new ArrayList<>();
-        for(Category descendant : cat.getDescendants()) {
+        for (Category descendant : cat.getDescendants()) {
             isIds.add(descendant.getPageId());
         }
         Collections.sort(expectedPageIds);
@@ -87,16 +89,17 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
      * The category UKP has 9 descendants with pageIds 7-15.
      */
     @Test
-    public void test_categoryIteratorTestBufferSize() {
+    public void test_categoryIteratorTestBufferSize()
+    {
 
         Category cat = null;
         try {
             cat = wiki.getCategory("UKP");
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             e.printStackTrace();
             fail("A WikiApiException occurred while getting the category 'UKP'");
         }
-
 
         List<Integer> expectedPageIds = new ArrayList<>();
         expectedPageIds.add(7);
@@ -109,15 +112,15 @@ public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
         expectedPageIds.add(14);
         expectedPageIds.add(15);
 
-		for (int bufferSize=1;bufferSize<=100;bufferSize+=5) {
-        List<Integer> isIds = new ArrayList<>();
-        for(Category descendant : cat.getDescendants(bufferSize)) {
-            isIds.add(descendant.getPageId());
-        }
-        Collections.sort(expectedPageIds);
-        Collections.sort(isIds);
-        assertEquals(expectedPageIds, isIds, "descendants");
+        for (int bufferSize = 1; bufferSize <= 100; bufferSize += 5) {
+            List<Integer> isIds = new ArrayList<>();
+            for (Category descendant : cat.getDescendants(bufferSize)) {
+                isIds.add(descendant.getPageId());
+            }
+            Collections.sort(expectedPageIds);
+            Collections.sort(isIds);
+            assertEquals(expectedPageIds, isIds, "descendants");
 
+        }
     }
-	}
 }

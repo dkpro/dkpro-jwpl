@@ -18,69 +18,73 @@
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump;
 
 /**
- * The single method {@link SQLEscape#escape(String)} removes all unwanted escape
- * characters from a string to make is UNCOMPRESSED conform. Maybe not thread-save.
+ * The single method {@link SQLEscape#escape(String)} removes all unwanted escape characters from a
+ * string to make is UNCOMPRESSED conform. Maybe not thread-save.
  * <p>
  * Copied from the WikiMachine to avoid having to add dependency.
  */
-public class SQLEscape {
-  private SQLEscape() {
+public class SQLEscape
+{
+    private SQLEscape()
+    {
 
-  }
-
-  /**
-   * @param str unescaped String
-   * @return String with escape characters
-   * @see SQLEscape
-   */
-  public static String escape(String str) {
-    final int len = str.length();
-
-    // maybe the StringBuffer would be safer?
-    StringBuilder sql = new StringBuilder(len * 2);
-
-    for (int i = 0; i < len; i++) {
-      char c = str.charAt(i);
-      switch (c) {
-        case '\u0000':
-          sql.append('\\').append('0');
-          break;
-        case '\n':
-          sql.append('\\').append('n');
-          break;
-        case '\t':
-          sql.append('\\').append('t');
-          break;
-        case '\r':
-          sql.append('\\').append('r');
-          break;
-        case '\u001a':
-          sql.append('\\').append('Z');
-          break;
-        case '\'':
-          sql.append('\\').append('\'');
-          break;
-        case '\"':
-          sql.append('\\').append('"');
-          break;
-        case '\b':
-          sql.append('\\').append('b');
-          break;
-        case '\\':
-          sql.append('\\').append('\\');
-          break;
-//			case '%':
-//				sql.append('[').append('%').append(']');
-//				break;
-//			case '_':
-//				sql.append('[').append('_').append(']');
-//				break;
-        default:
-          sql.append(c);
-          break;
-      }
     }
-    return sql.toString();
-  }
+
+    /**
+     * @param str
+     *            unescaped String
+     * @return String with escape characters
+     * @see SQLEscape
+     */
+    public static String escape(String str)
+    {
+        final int len = str.length();
+
+        // maybe the StringBuffer would be safer?
+        StringBuilder sql = new StringBuilder(len * 2);
+
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            switch (c) {
+            case '\u0000':
+                sql.append('\\').append('0');
+                break;
+            case '\n':
+                sql.append('\\').append('n');
+                break;
+            case '\t':
+                sql.append('\\').append('t');
+                break;
+            case '\r':
+                sql.append('\\').append('r');
+                break;
+            case '\u001a':
+                sql.append('\\').append('Z');
+                break;
+            case '\'':
+                sql.append('\\').append('\'');
+                break;
+            case '\"':
+                sql.append('\\').append('"');
+                break;
+            case '\b':
+                sql.append('\\').append('b');
+                break;
+            case '\\':
+                sql.append('\\').append('\\');
+                break;
+            // case '%':
+            // sql.append('[').append('%').append(']');
+            // break;
+            // case '_':
+            // sql.append('[').append('_').append(']');
+            // break;
+            default:
+                sql.append(c);
+                break;
+            }
+        }
+        return sql.toString();
+    }
 
 }

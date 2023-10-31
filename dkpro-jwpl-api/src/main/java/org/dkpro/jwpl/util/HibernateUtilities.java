@@ -20,61 +20,67 @@ package org.dkpro.jwpl.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkpro.jwpl.api.WikiConstants;
-import org.hibernate.Session;
-
 import org.dkpro.jwpl.api.DatabaseConfiguration;
+import org.dkpro.jwpl.api.WikiConstants;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
+import org.hibernate.Session;
 
 /**
  * @deprecated To be removed without replacement.
  */
-@Deprecated(since="2.0.0", forRemoval=true)
-public class HibernateUtilities implements WikiConstants {
+@Deprecated(since = "2.0.0", forRemoval = true)
+public class HibernateUtilities
+    implements WikiConstants
+{
 
-  private final DatabaseConfiguration dbConfig;
+    private final DatabaseConfiguration dbConfig;
 
-  public HibernateUtilities(Language pLanguage, DatabaseConfiguration dbConfig) {
-    this.dbConfig = dbConfig;
-  }
-
-  /**
-   * Hibernate IDs are needed to load an object from the database.
-   * Internal references are via pageIDs.
-   *
-   * @return A mapping of pageIDs to hibernate IDs.
-   */
-  public Map<Integer, Long> getIdMappingPages() {
-    Map<Integer, Long> idMapping = new HashMap<>();
-
-    Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
-    session.beginTransaction();
-    for (Object o : session.createQuery("select page.id, page.pageId from Page as page").list()) {
-      Object[] row = (Object[]) o;
-      // put (pageID, id)
-      idMapping.put((Integer) row[1], (Long) row[0]);
+    public HibernateUtilities(Language pLanguage, DatabaseConfiguration dbConfig)
+    {
+        this.dbConfig = dbConfig;
     }
-    session.getTransaction().commit();
-    return idMapping;
-  }
 
-  /**
-   * Hibernate IDs are needed to load an object from the database.
-   * Internal references are via pageIDs.
-   *
-   * @return A mapping of pageIDs to hibernate IDs.
-   */
-  public Map<Integer, Long> getIdMappingCategories() {
-    Map<Integer, Long> idMapping = new HashMap<>();
+    /**
+     * Hibernate IDs are needed to load an object from the database. Internal references are via
+     * pageIDs.
+     *
+     * @return A mapping of pageIDs to hibernate IDs.
+     */
+    public Map<Integer, Long> getIdMappingPages()
+    {
+        Map<Integer, Long> idMapping = new HashMap<>();
 
-    Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
-    session.beginTransaction();
-    for (Object o : session.createQuery("select cat.id, cat.pageId from Category as cat").list()) {
-      Object[] row = (Object[]) o;
-      // put (pageID, id)
-      idMapping.put((Integer) row[1], (Long) row[0]);
+        Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
+        session.beginTransaction();
+        for (Object o : session.createQuery("select page.id, page.pageId from Page as page")
+                .list()) {
+            Object[] row = (Object[]) o;
+            // put (pageID, id)
+            idMapping.put((Integer) row[1], (Long) row[0]);
+        }
+        session.getTransaction().commit();
+        return idMapping;
     }
-    session.getTransaction().commit();
-    return idMapping;
-  }
+
+    /**
+     * Hibernate IDs are needed to load an object from the database. Internal references are via
+     * pageIDs.
+     *
+     * @return A mapping of pageIDs to hibernate IDs.
+     */
+    public Map<Integer, Long> getIdMappingCategories()
+    {
+        Map<Integer, Long> idMapping = new HashMap<>();
+
+        Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
+        session.beginTransaction();
+        for (Object o : session.createQuery("select cat.id, cat.pageId from Category as cat")
+                .list()) {
+            Object[] row = (Object[]) o;
+            // put (pageID, id)
+            idMapping.put((Integer) row[1], (Long) row[0]);
+        }
+        session.getTransaction().commit();
+        return idMapping;
+    }
 }

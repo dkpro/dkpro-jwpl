@@ -17,11 +17,11 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import java.lang.invoke.MethodHandles;
+
 import org.dkpro.jwpl.api.Wikipedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
 
 /**
  * Data access object for class {@link Page}.
@@ -29,47 +29,57 @@ import java.lang.invoke.MethodHandles;
  * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.Page
  */
-public class PageDAO extends GenericDAO<Page> {
+public class PageDAO
+    extends GenericDAO<Page>
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  public PageDAO(Wikipedia pWiki) {
-    super(pWiki, Page.class);
-  }
+    public PageDAO(Wikipedia pWiki)
+    {
+        super(pWiki, Page.class);
+    }
 
-  @Override
-  public void persist(Page transientInstance) {
-    logger.debug("persisting Page instance");
-    super.persist(transientInstance);
-  }
+    @Override
+    public void persist(Page transientInstance)
+    {
+        logger.debug("persisting Page instance");
+        super.persist(transientInstance);
+    }
 
-  @Override
-  public void attachDirty(Page instance) {
-    logger.debug("attaching dirty Page instance");
-    super.attachDirty(instance);
-  }
+    @Override
+    public void attachDirty(Page instance)
+    {
+        logger.debug("attaching dirty Page instance");
+        super.attachDirty(instance);
+    }
 
-  @Override
-  public void attachClean(Page instance) {
-    logger.debug("attaching clean Page instance");
-    super.attachClean(instance);
-  }
+    @Override
+    public void attachClean(Page instance)
+    {
+        logger.debug("attaching clean Page instance");
+        super.attachClean(instance);
+    }
 
-  @Override
-  public void delete(Page persistentInstance) {
-    logger.debug("deleting Page instance");
-    super.delete(persistentInstance);
-  }
+    @Override
+    public void delete(Page persistentInstance)
+    {
+        logger.debug("deleting Page instance");
+        super.delete(persistentInstance);
+    }
 
-  @Override
-  public Page merge(Page detachedInstance) {
-    logger.debug("merging Page instance");
-    return super.merge(detachedInstance);
-  }
+    @Override
+    public Page merge(Page detachedInstance)
+    {
+        logger.debug("merging Page instance");
+        return super.merge(detachedInstance);
+    }
 
-  @Override
-  public Page findById(java.lang.Long id) {
-    logger.debug("getting Page instance with id: " + id);
-    return super.findById(id);
-  }
+    @Override
+    public Page findById(java.lang.Long id)
+    {
+        logger.debug("getting Page instance with id: " + id);
+        return super.findById(id);
+    }
 }

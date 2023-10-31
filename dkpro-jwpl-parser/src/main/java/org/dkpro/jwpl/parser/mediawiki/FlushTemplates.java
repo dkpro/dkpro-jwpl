@@ -23,17 +23,21 @@ import org.dkpro.jwpl.parser.Template;
 /**
  * This TemplateParser will delete ALL templates, whitout any exception!
  */
-public final class FlushTemplates implements MediaWikiTemplateParser {
+public final class FlushTemplates
+    implements MediaWikiTemplateParser
+{
 
-  public ResolvedTemplate parseTemplate(Template t, ParsedPage pp) {
-    ResolvedTemplate result = new ResolvedTemplate(t);
-    result.setPreParseReplacement(ResolvedTemplate.TEMPLATESPACER);
-    result.setPostParseReplacement("");
-    result.setParsedObject(null);
-    return result;
-  }
+    public ResolvedTemplate parseTemplate(Template t, ParsedPage pp)
+    {
+        ResolvedTemplate result = new ResolvedTemplate(t);
+        result.setPreParseReplacement(ResolvedTemplate.TEMPLATESPACER);
+        result.setPostParseReplacement("");
+        result.setParsedObject(null);
+        return result;
+    }
 
-  public String configurationInfo() {
-    return "All Templates will be Deleted";
-  }
+    public String configurationInfo()
+    {
+        return "All Templates will be Deleted";
+    }
 }

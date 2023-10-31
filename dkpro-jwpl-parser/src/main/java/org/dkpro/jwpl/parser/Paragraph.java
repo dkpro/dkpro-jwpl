@@ -20,33 +20,43 @@ package org.dkpro.jwpl.parser;
 /**
  * This is a simple ContentElement extende with a Paragraph Type.
  */
-public class Paragraph extends ContentElement {
+public class Paragraph
+    extends ContentElement
+{
 
-  public enum type {NORMAL, BOXED, INDENTED}
+    public enum type
+    {
+        NORMAL, BOXED, INDENTED
+    }
 
-  private type t;
+    private type t;
 
-  public Paragraph() {
-    super();
-  }
+    public Paragraph()
+    {
+        super();
+    }
 
-  public Paragraph(type t) {
-    super();
-    this.t = t;
-  }
+    public Paragraph(type t)
+    {
+        super();
+        this.t = t;
+    }
 
-  public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append(super.toString());
-    result.append(System.getProperty("line.separator") + "PA_TYPE: " + t);
-    return result.toString();
-  }
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder();
+        result.append(super.toString());
+        result.append(System.getProperty("line.separator") + "PA_TYPE: " + t);
+        return result.toString();
+    }
 
-  public void setType(type t) {
-    this.t = t;
-  }
+    public void setType(type t)
+    {
+        this.t = t;
+    }
 
-  public type getType() {
-    return t;
-  }
+    public type getType()
+    {
+        return t;
+    }
 }

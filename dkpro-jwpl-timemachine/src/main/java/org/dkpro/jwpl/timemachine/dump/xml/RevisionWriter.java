@@ -26,48 +26,58 @@ import org.dkpro.jwpl.mwdumper.importer.Page;
 import org.dkpro.jwpl.mwdumper.importer.Revision;
 import org.dkpro.jwpl.mwdumper.importer.Siteinfo;
 
-public class RevisionWriter implements DumpWriter {
+public class RevisionWriter
+    implements DumpWriter
+{
 
-  private Page currentPage;
-  private final DataOutputStream stream;
+    private Page currentPage;
+    private final DataOutputStream stream;
 
-  public RevisionWriter(OutputStream output) throws IOException {
-    this.stream = new DataOutputStream(output);
-  }
+    public RevisionWriter(OutputStream output) throws IOException
+    {
+        this.stream = new DataOutputStream(output);
+    }
 
-  @Override
-  public void close() throws IOException {
-    stream.close();
-  }
+    @Override
+    public void close() throws IOException
+    {
+        stream.close();
+    }
 
-  @Override
-  public void writeEndPage() throws IOException {
-    currentPage = null;
-  }
+    @Override
+    public void writeEndPage() throws IOException
+    {
+        currentPage = null;
+    }
 
-  @Override
-  public void writeEndWiki() throws IOException {
-    stream.flush();
-  }
+    @Override
+    public void writeEndWiki() throws IOException
+    {
+        stream.flush();
+    }
 
-  @Override
-  public void writeRevision(Revision revision) throws IOException {
-    stream.writeInt(currentPage.Id);
-    stream.writeInt(revision.Id);
-    stream.writeLong(revision.Timestamp.getTimeInMillis());
-  }
+    @Override
+    public void writeRevision(Revision revision) throws IOException
+    {
+        stream.writeInt(currentPage.Id);
+        stream.writeInt(revision.Id);
+        stream.writeLong(revision.Timestamp.getTimeInMillis());
+    }
 
-  @Override
-  public void writeSiteinfo(Siteinfo info) throws IOException {
+    @Override
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
 
-  }
+    }
 
-  @Override
-  public void writeStartPage(Page page) throws IOException {
-    currentPage = page;
-  }
+    @Override
+    public void writeStartPage(Page page) throws IOException
+    {
+        currentPage = page;
+    }
 
-  @Override
-  public void writeStartWiki() throws IOException {
-  }
+    @Override
+    public void writeStartWiki() throws IOException
+    {
+    }
 }

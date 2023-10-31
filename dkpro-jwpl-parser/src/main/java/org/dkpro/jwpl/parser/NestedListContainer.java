@@ -23,52 +23,65 @@ import java.util.List;
 /**
  * Take a Look a NestedList description first.
  */
-public class NestedListContainer extends ContentContainer implements NestedList {
+public class NestedListContainer
+    extends ContentContainer
+    implements NestedList
+{
 
-  private final List<NestedList> lists;
-  private final boolean numbered;
+    private final List<NestedList> lists;
+    private final boolean numbered;
 
-  public NestedListContainer(boolean numbered) {
-    this.ccl = new ArrayList<>();
-    this.lists = new ArrayList<>();
-    this.numbered = numbered;
-  }
+    public NestedListContainer(boolean numbered)
+    {
+        this.ccl = new ArrayList<>();
+        this.lists = new ArrayList<>();
+        this.numbered = numbered;
+    }
 
-  /**
-   * Returns if the NestedList is a numbered or a unnumbered/pointed NestedList
-   */
-  public boolean isNumbered() {
-    return numbered;
-  }
+    /**
+     * Returns if the NestedList is a numbered or a unnumbered/pointed NestedList
+     */
+    public boolean isNumbered()
+    {
+        return numbered;
+    }
 
-  /**
-   * Returns the NestedListContainer or NestedListElement at Positon i.
-   */
-  public NestedList getNestedList(int i) {
-    if (i < lists.size()) return lists.get(i);
-    else return null;
-  }
+    /**
+     * Returns the NestedListContainer or NestedListElement at Positon i.
+     */
+    public NestedList getNestedList(int i)
+    {
+        if (i < lists.size())
+            return lists.get(i);
+        else
+            return null;
+    }
 
-  public void add(NestedList nl) {
-    lists.add(nl);
-    ccl.add(nl);
-  }
+    public void add(NestedList nl)
+    {
+        lists.add(nl);
+        ccl.add(nl);
+    }
 
-  public void remove(NestedList nl) {
-    lists.remove(nl);
-    ccl.remove(nl);
-  }
+    public void remove(NestedList nl)
+    {
+        lists.remove(nl);
+        ccl.remove(nl);
+    }
 
-  public List<NestedList> getNestedLists() {
-    return new ArrayList<>(lists);
-  }
+    public List<NestedList> getNestedLists()
+    {
+        return new ArrayList<>(lists);
+    }
 
-  public String toString() {
-    StringBuilder result = new StringBuilder();
-    result.append("NLS_NUMBERD: " + numbered);
-    result.append("\nNLS_CONTENT: false");
-    result.append("\nNLS_NESTEDTLISTS: " + lists.size());
-    for (NestedList l : lists) result.append("\nNLS_NESTEDLIST:\n" + l);
-    return result.toString();
-  }
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder();
+        result.append("NLS_NUMBERD: " + numbered);
+        result.append("\nNLS_CONTENT: false");
+        result.append("\nNLS_NESTEDTLISTS: " + lists.size());
+        for (NestedList l : lists)
+            result.append("\nNLS_NESTEDLIST:\n" + l);
+        return result.toString();
+    }
 }

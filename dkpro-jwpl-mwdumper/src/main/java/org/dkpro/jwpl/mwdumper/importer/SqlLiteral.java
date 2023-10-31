@@ -28,14 +28,17 @@ package org.dkpro.jwpl.mwdumper.importer;
 /**
  * Quickie wrapper class for including literal SQL expressions.
  */
-public class SqlLiteral {
-  final String contents;
+public class SqlLiteral
+{
+    final String contents;
 
-  public SqlLiteral(String contents) {
-    this.contents = contents;
-  }
+    public SqlLiteral(String contents)
+    {
+        this.contents = contents;
+    }
 
-  public String toString() {
-    return contents;
-  }
+    public String toString()
+    {
+        return contents;
+    }
 }

@@ -26,26 +26,28 @@ import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
 
-public class T6_HelperMethods {
+public class T6_HelperMethods
+{
 
-  public static Set<String> getUniqueArticleTitles() throws WikiInitializationException {
-    // configure the database connection parameters
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setHost("SERVER_URL");
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.german);
+    public static Set<String> getUniqueArticleTitles() throws WikiInitializationException
+    {
+        // configure the database connection parameters
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setHost("SERVER_URL");
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.german);
 
-    // Create a new German wikipedia.
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // Create a new German wikipedia.
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    Set<String> uniqueArticleTitles = new TreeSet<>();
-    for (Title title : wiki.getTitles()) {
-      uniqueArticleTitles.add(title.getPlainTitle());
+        Set<String> uniqueArticleTitles = new TreeSet<>();
+        for (Title title : wiki.getTitles()) {
+            uniqueArticleTitles.add(title.getPlainTitle());
+        }
+
+        return uniqueArticleTitles;
     }
-
-    return uniqueArticleTitles;
-  }
 
 }

@@ -32,33 +32,35 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 /**
  * Displays the titles of the sections found in the page <i>Dog</i>.<br>
  */
-public class T4_InterfacingWithWikipedia {
+public class T4_InterfacingWithWikipedia
+{
 
-  public static void main(String[] args) throws WikiApiException {
-    //db connection settings
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setHost("HOST");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.english);
+    public static void main(String[] args) throws WikiApiException
+    {
+        // db connection settings
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setHost("HOST");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.english);
 
-    //initialize a wiki
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // initialize a wiki
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    //get the page 'Dog'
-    Page p = wiki.getPage("Dog");
+        // get the page 'Dog'
+        Page p = wiki.getPage("Dog");
 
-    //get a ParsedPage object
-    MediaWikiParserFactory pf = new MediaWikiParserFactory();
-    MediaWikiParser parser = pf.createParser();
-    ParsedPage pp = parser.parse(p.getText());
+        // get a ParsedPage object
+        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        MediaWikiParser parser = pf.createParser();
+        ParsedPage pp = parser.parse(p.getText());
 
-    //get the sections of the page
-    List<Section> sections = pp.getSections();
+        // get the sections of the page
+        List<Section> sections = pp.getSections();
 
-    for (Section section : sections) {
-      System.out.println(section.getTitle());
+        for (Section section : sections) {
+            System.out.println(section.getTitle());
+        }
     }
-  }
 }

@@ -20,23 +20,23 @@ package org.dkpro.jwpl.parser.mediawiki;
 import org.dkpro.jwpl.parser.ParsedPage;
 
 /**
- * This is an Interface for MediaWiki Parsers. Which simply "converts"
- * MediaWiki Source, given as a String, to a ParsedPage
+ * This is an Interface for MediaWiki Parsers. Which simply "converts" MediaWiki Source, given as a
+ * String, to a ParsedPage
  */
-public interface MediaWikiParser {
-  /**
-   * Parses MediaWiki Source, given as parameter src,  and returns a ParsedPage.
-   */
-  ParsedPage parse(String src);
+public interface MediaWikiParser
+{
+    /**
+     * Parses MediaWiki Source, given as parameter src, and returns a ParsedPage.
+     */
+    ParsedPage parse(String src);
 
-  /**
-   * Retruns information abour the configuration of the parser.
-   */
-  String configurationInfo();
+    /**
+     * Retruns information abour the configuration of the parser.
+     */
+    String configurationInfo();
 
-  /**
-   * Retruns the String which is uses as line separator, usually it
-   * will be "\n" or "\r\n"
-   */
-  String getLineSeparator();
+    /**
+     * Retruns the String which is uses as line separator, usually it will be "\n" or "\r\n"
+     */
+    String getLineSeparator();
 }

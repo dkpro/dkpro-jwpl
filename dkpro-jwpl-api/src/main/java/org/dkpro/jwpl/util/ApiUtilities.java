@@ -22,42 +22,54 @@ import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ApiUtilities {
+public class ApiUtilities
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * DOTS - print progress dots.
-   * TEXT - print a message with progress in percent.
-   */
-  public enum ProgressInfoMode {DOTS, TEXT}
-
-  /**
-   * Prints a progress counter.
-   *
-   * @param counter Indicates the position in the task.
-   * @param size    Size of the overall task.
-   * @param step    How many parts should the progress counter have?
-   * @param mode    Sets the output mode.
-   * @param text    The text that should be print along with the progress indicator.
-   */
-  public static void printProgressInfo(int counter, int size, int step, ProgressInfoMode mode, String text) {
-    if (size < step) {
-      return;
+    /**
+     * DOTS - print progress dots. TEXT - print a message with progress in percent.
+     */
+    public enum ProgressInfoMode
+    {
+        DOTS, TEXT
     }
 
-    if (counter % (size / step) == 0) {
-      double progressPercent = counter * 100 / size;
-      progressPercent = 1 + Math.round(progressPercent * 100) / 100.0;
-      if (mode.equals(ApiUtilities.ProgressInfoMode.TEXT)) {
-        logger.info(text + ": " + progressPercent + " - " + OS.getUsedMemory() + " MB");
-      } else if (mode.equals(ApiUtilities.ProgressInfoMode.DOTS)) {
-        System.out.print(".");
-        if (progressPercent >= 100) {
-          System.out.println();
+    /**
+     * Prints a progress counter.
+     *
+     * @param counter
+     *            Indicates the position in the task.
+     * @param size
+     *            Size of the overall task.
+     * @param step
+     *            How many parts should the progress counter have?
+     * @param mode
+     *            Sets the output mode.
+     * @param text
+     *            The text that should be print along with the progress indicator.
+     */
+    public static void printProgressInfo(int counter, int size, int step, ProgressInfoMode mode,
+            String text)
+    {
+        if (size < step) {
+            return;
         }
-      }
+
+        if (counter % (size / step) == 0) {
+            double progressPercent = counter * 100 / size;
+            progressPercent = 1 + Math.round(progressPercent * 100) / 100.0;
+            if (mode.equals(ApiUtilities.ProgressInfoMode.TEXT)) {
+                logger.info(text + ": " + progressPercent + " - " + OS.getUsedMemory() + " MB");
+            }
+            else if (mode.equals(ApiUtilities.ProgressInfoMode.DOTS)) {
+                System.out.print(".");
+                if (progressPercent >= 100) {
+                    System.out.println();
+                }
+            }
+        }
     }
-  }
-  
+
 }

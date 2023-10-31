@@ -35,131 +35,141 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
 /**
  * Transforms a database from mediawiki format to JWPL format.<br>
- * The transformation produces .txt files for the different tables in the JWPL
- * database.
+ * The transformation produces .txt files for the different tables in the JWPL database.
  */
-public class DataMachineGenerator extends AbstractSnapshotGenerator {
+public class DataMachineGenerator
+    extends AbstractSnapshotGenerator
+{
 
-  DataMachineFiles files = null;
-  IDumpVersion version = null;
+    DataMachineFiles files = null;
+    IDumpVersion version = null;
 
-  public DataMachineGenerator(IEnvironmentFactory environmentFactory) {
-    super(environmentFactory);
-  }
-
-  @Override
-  public void setFiles(Files files) {
-    this.files = (DataMachineFiles) files;
-  }
-
-  @Override
-  public void start() throws Exception {
-    version = environmentFactory.getDumpVersion();
-    MetaData metaData = MetaData.initWithConfig(configuration);
-    version.initialize(null);
-    version.setMetaData(metaData);
-    version.setFiles(files);
-    processInputDump();
-  }
-
-  private void processInputDump() throws IOException {
-
-    logger.log("parse input dumps...");
-    new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()),
-            files);
-
-
-    dumpVersionProcessor.setDumpVersions(new IDumpVersion[]{version});
-
-    logger.log("processing table page...");
-    dumpVersionProcessor.processPage(createPageParser());
-
-    logger.log("processing table categorylinks...");
-    dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
-
-    logger.log("processing table pagelinks...");
-    dumpVersionProcessor.processPagelinks(createPagelinksParser());
-
-    logger.log("processing table revision...");
-    dumpVersionProcessor.processRevision(createRevisionParser());
-
-    logger.log("processing table text...");
-    dumpVersionProcessor.processText(createTextParser());
-
-    logger.log("writing metadata...");
-    dumpVersionProcessor.writeMetaData();
-
-    logger.log("finished");
-  }
-
-  /**
-   * Parse either "pages-articles.xml" or "pages-meta-current.xml". If both
-   * files exist in the input directory "pages-meta-current.xml" will be
-   * favored.
-   *
-   * @return the input articles dump
-   */
-  private String getPagesArticlesFile() {
-    String pagesArticlesFile = null;
-    String parseMessage = null;
-
-    //Use of minimal dump only with articles
-    if (files.getInputPagesArticles() != null) {
-      pagesArticlesFile = files.getInputPagesArticles();
-      parseMessage = "Discussions are unavailable";
+    public DataMachineGenerator(IEnvironmentFactory environmentFactory)
+    {
+        super(environmentFactory);
     }
 
-    //Use of dump with discussions
-    if (files.getInputPagesMetaCurrent() != null) {
-      pagesArticlesFile = files.getInputPagesMetaCurrent();
-      parseMessage = "Discussions are available";
+    @Override
+    public void setFiles(Files files)
+    {
+        this.files = (DataMachineFiles) files;
     }
 
-    logger.log(parseMessage);
-    return pagesArticlesFile;
-  }
+    @Override
+    public void start() throws Exception
+    {
+        version = environmentFactory.getDumpVersion();
+        MetaData metaData = MetaData.initWithConfig(configuration);
+        version.initialize(null);
+        version.setMetaData(metaData);
+        version.setFiles(files);
+        processInputDump();
+    }
 
-  private PageParser createPageParser() throws IOException {
-    String pageFile = files.getGeneratedPage();
+    private void processInputDump() throws IOException
+    {
 
-    DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
-    pageTableInputStream.initialize(decompressor.getInputStream(pageFile), DumpTableEnum.PAGE);
+        logger.log("parse input dumps...");
+        new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()), files);
 
-    PageParser pageParser = environmentFactory.getPageParser();
-    pageParser.setInputStream(pageTableInputStream);
-    return pageParser;
-  }
+        dumpVersionProcessor.setDumpVersions(new IDumpVersion[] { version });
 
-  private CategorylinksParser createCategorylinksParser() throws IOException {
-    String categorylinksFile = files.getInputCategoryLinks();
-    return new CategorylinksParser(decompressor.getInputStream(categorylinksFile));
-  }
+        logger.log("processing table page...");
+        dumpVersionProcessor.processPage(createPageParser());
 
-  private PagelinksParser createPagelinksParser() throws IOException {
-    String pagelinksFile = files.getInputPageLinks();
-    return new PagelinksParser(decompressor.getInputStream(pagelinksFile));
-  }
+        logger.log("processing table categorylinks...");
+        dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
 
-  private RevisionParser createRevisionParser() throws IOException {
-    String revisionFile = files.getGeneratedRevision();
+        logger.log("processing table pagelinks...");
+        dumpVersionProcessor.processPagelinks(createPagelinksParser());
 
-    DumpTableInputStream revisionTableInputStream = environmentFactory.getDumpTableInputStream();
-    revisionTableInputStream.initialize(decompressor.getInputStream(revisionFile), DumpTableEnum.REVISION);
+        logger.log("processing table revision...");
+        dumpVersionProcessor.processRevision(createRevisionParser());
 
-    RevisionParser revisionParser = environmentFactory.getRevisionParser();
-    revisionParser.setInputStream(revisionTableInputStream);
-    return revisionParser;
-  }
+        logger.log("processing table text...");
+        dumpVersionProcessor.processText(createTextParser());
 
-  private TextParser createTextParser() throws IOException {
-    String textFile = files.getGeneratedText();
+        logger.log("writing metadata...");
+        dumpVersionProcessor.writeMetaData();
 
-    DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
-    textTableInputStream.initialize(decompressor.getInputStream(textFile), DumpTableEnum.TEXT);
+        logger.log("finished");
+    }
 
-    TextParser textParser = environmentFactory.getTextParser();
-    textParser.setInputStream(textTableInputStream);
-    return textParser;
-  }
+    /**
+     * Parse either "pages-articles.xml" or "pages-meta-current.xml". If both files exist in the
+     * input directory "pages-meta-current.xml" will be favored.
+     *
+     * @return the input articles dump
+     */
+    private String getPagesArticlesFile()
+    {
+        String pagesArticlesFile = null;
+        String parseMessage = null;
+
+        // Use of minimal dump only with articles
+        if (files.getInputPagesArticles() != null) {
+            pagesArticlesFile = files.getInputPagesArticles();
+            parseMessage = "Discussions are unavailable";
+        }
+
+        // Use of dump with discussions
+        if (files.getInputPagesMetaCurrent() != null) {
+            pagesArticlesFile = files.getInputPagesMetaCurrent();
+            parseMessage = "Discussions are available";
+        }
+
+        logger.log(parseMessage);
+        return pagesArticlesFile;
+    }
+
+    private PageParser createPageParser() throws IOException
+    {
+        String pageFile = files.getGeneratedPage();
+
+        DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
+        pageTableInputStream.initialize(decompressor.getInputStream(pageFile), DumpTableEnum.PAGE);
+
+        PageParser pageParser = environmentFactory.getPageParser();
+        pageParser.setInputStream(pageTableInputStream);
+        return pageParser;
+    }
+
+    private CategorylinksParser createCategorylinksParser() throws IOException
+    {
+        String categorylinksFile = files.getInputCategoryLinks();
+        return new CategorylinksParser(decompressor.getInputStream(categorylinksFile));
+    }
+
+    private PagelinksParser createPagelinksParser() throws IOException
+    {
+        String pagelinksFile = files.getInputPageLinks();
+        return new PagelinksParser(decompressor.getInputStream(pagelinksFile));
+    }
+
+    private RevisionParser createRevisionParser() throws IOException
+    {
+        String revisionFile = files.getGeneratedRevision();
+
+        DumpTableInputStream revisionTableInputStream = environmentFactory
+                .getDumpTableInputStream();
+        revisionTableInputStream.initialize(decompressor.getInputStream(revisionFile),
+                DumpTableEnum.REVISION);
+
+        RevisionParser revisionParser = environmentFactory.getRevisionParser();
+        revisionParser.setInputStream(revisionTableInputStream);
+        return revisionParser;
+    }
+
+    private TextParser createTextParser() throws IOException
+    {
+        String textFile = files.getGeneratedText();
+
+        DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
+        textTableInputStream.initialize(decompressor.getInputStream(textFile), DumpTableEnum.TEXT);
+
+        TextParser textParser = environmentFactory.getTextParser();
+        textParser.setInputStream(textTableInputStream);
+        return textParser;
+    }
 
 }

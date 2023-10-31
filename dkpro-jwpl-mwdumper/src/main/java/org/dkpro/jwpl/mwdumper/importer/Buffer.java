@@ -27,39 +27,44 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.util.IdentityHashMap;
 
-public final class Buffer {
+public final class Buffer
+{
 
-  private Buffer() {
-  }
-
-  private static final IdentityHashMap<Thread, char[]> BUFFERS = new IdentityHashMap<>();
-
-  private static Thread lastThread;
-  private static char[] lastBuffer;
-
-  public static synchronized char[] get(int capacity) {
-    final Thread thread = Thread.currentThread();
-    char[] buffer;
-
-    if (lastThread == thread) {
-      buffer = lastBuffer;
-    } else {
-      lastThread = thread;
-      buffer = lastBuffer = BUFFERS.get(thread);
+    private Buffer()
+    {
     }
 
-    if (buffer == null) {
-      buffer = lastBuffer = new char[capacity];
-      BUFFERS.put(thread, buffer);
-    } else if (buffer.length < capacity) {
-      int newsize = buffer.length * 2;
-      if (newsize < capacity)
-        newsize = capacity;
+    private static final IdentityHashMap<Thread, char[]> BUFFERS = new IdentityHashMap<>();
 
-      buffer = lastBuffer = new char[newsize];
-      BUFFERS.put(thread, buffer);
+    private static Thread lastThread;
+    private static char[] lastBuffer;
+
+    public static synchronized char[] get(int capacity)
+    {
+        final Thread thread = Thread.currentThread();
+        char[] buffer;
+
+        if (lastThread == thread) {
+            buffer = lastBuffer;
+        }
+        else {
+            lastThread = thread;
+            buffer = lastBuffer = BUFFERS.get(thread);
+        }
+
+        if (buffer == null) {
+            buffer = lastBuffer = new char[capacity];
+            BUFFERS.put(thread, buffer);
+        }
+        else if (buffer.length < capacity) {
+            int newsize = buffer.length * 2;
+            if (newsize < capacity)
+                newsize = capacity;
+
+            buffer = lastBuffer = new char[newsize];
+            BUFFERS.put(thread, buffer);
+        }
+
+        return buffer;
     }
-
-    return buffer;
-  }
 }

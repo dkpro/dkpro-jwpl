@@ -24,33 +24,37 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class StringHashCodeJBoss implements IStringHashCode {
+public class StringHashCodeJBoss
+    implements IStringHashCode
+{
 
-  public StringHashCodeJBoss() {
-    // use for instantiate as generic
-  }
-
-  @Override
-  public Long hashCode(String string) {
-    MessageDigest messageDigest;
-    try {
-      messageDigest = MessageDigest.getInstance("SHA");
-      DataOutputStream dataOut = new DataOutputStream(
-              new DigestOutputStream(new ByteArrayOutputStream(0x200),
-                      messageDigest));
-      dataOut.writeUTF(string);
-      dataOut.flush();
-    } catch (NoSuchAlgorithmException | IOException e) {
-      throw new RuntimeException(e);
+    public StringHashCodeJBoss()
+    {
+        // use for instantiate as generic
     }
 
-    byte[] digest = messageDigest.digest();
-    long hash = 0;
-    int i = digest.length > 8 ? 8 : digest.length;
-    while (i-- > 0) {
-      hash += (long) (digest[i] & 0xff) << 8 * i;
+    @Override
+    public Long hashCode(String string)
+    {
+        MessageDigest messageDigest;
+        try {
+            messageDigest = MessageDigest.getInstance("SHA");
+            DataOutputStream dataOut = new DataOutputStream(
+                    new DigestOutputStream(new ByteArrayOutputStream(0x200), messageDigest));
+            dataOut.writeUTF(string);
+            dataOut.flush();
+        }
+        catch (NoSuchAlgorithmException | IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        byte[] digest = messageDigest.digest();
+        long hash = 0;
+        int i = digest.length > 8 ? 8 : digest.length;
+        while (i-- > 0) {
+            hash += (long) (digest[i] & 0xff) << 8 * i;
+        }
+        return hash;
     }
-    return hash;
-  }
 
 }

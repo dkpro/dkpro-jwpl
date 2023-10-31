@@ -18,50 +18,55 @@
 package org.dkpro.jwpl.wikimachine.debug;
 
 /**
- * Logger, which does not implement some concrete output technique, but knows
- * how exceptions are handled. AbstractLogger provides a template
- * method {@link #log(Object)} for its derivatives.
+ * Logger, which does not implement some concrete output technique, but knows how exceptions are
+ * handled. AbstractLogger provides a template method {@link #log(Object)} for its derivatives.
  */
-public abstract class AbstractLogger implements ILogger {
+public abstract class AbstractLogger
+    implements ILogger
+{
 
-  protected boolean isThrowable(Class<?> c) {
-    boolean throwable = false;
-    if (c != null) {
-      throwable = c.equals(Throwable.class);
-      if (!throwable) {
-        for (Class<?> i : c.getInterfaces()) {
-          if (throwable |= isThrowable(i)) {
-            break;
-          }
+    protected boolean isThrowable(Class<?> c)
+    {
+        boolean throwable = false;
+        if (c != null) {
+            throwable = c.equals(Throwable.class);
+            if (!throwable) {
+                for (Class<?> i : c.getInterfaces()) {
+                    if (throwable |= isThrowable(i)) {
+                        break;
+                    }
+                }
+                if (!throwable) {
+                    throwable |= isThrowable(c.getSuperclass());
+                }
+            }
         }
-        if (!throwable) {
-          throwable |= isThrowable(c.getSuperclass());
+        return throwable;
+    }
+
+    protected String createThrowableMessage(Throwable e)
+    {
+        StringBuilder message = new StringBuilder();
+        message.append(e.getMessage());
+        message.append('\n');
+        for (StackTraceElement currentTrace : e.getStackTrace()) {
+            message.append('\n');
+            message.append(currentTrace);
         }
-      }
+        return message.toString();
     }
-    return throwable;
-  }
 
-  protected String createThrowableMessage(Throwable e) {
-    StringBuilder message = new StringBuilder();
-    message.append(e.getMessage());
-    message.append('\n');
-    for (StackTraceElement currentTrace : e.getStackTrace()) {
-      message.append('\n');
-      message.append(currentTrace);
+    @Override
+    public void log(Object message)
+    {
+        if (isThrowable(message.getClass())) {
+            logObject(createThrowableMessage((Throwable) message));
+        }
+        else {
+            logObject(message);
+        }
     }
-    return message.toString();
-  }
 
-  @Override
-  public void log(Object message) {
-    if (isThrowable(message.getClass())) {
-      logObject(createThrowableMessage((Throwable) message));
-    } else {
-      logObject(message);
-    }
-  }
-
-  protected abstract void logObject(Object message);
+    protected abstract void logObject(Object message);
 
 }

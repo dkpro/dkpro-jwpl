@@ -26,106 +26,114 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.ConfigItem;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.ConfigItemTypes;
 
 /**
- * This class contains the list of error or warning messages that have been
- * generated during the verification of the configuration settings.
+ * This class contains the list of error or warning messages that have been generated during the
+ * verification of the configuration settings.
  */
 @SuppressWarnings("serial")
 public class ConfigVerification
-        extends AbstractTableModel {
+    extends AbstractTableModel
+{
 
-  /**
-   * If an error message was added to the list.
-   */
-  private boolean failed;
+    /**
+     * If an error message was added to the list.
+     */
+    private boolean failed;
 
-  /**
-   * List of configuration items
-   */
-  private final List<ConfigItem> list;
+    /**
+     * List of configuration items
+     */
+    private final List<ConfigItem> list;
 
-  /**
-   * Column names of the table representation
-   */
-  private final String[] columnNames;
+    /**
+     * Column names of the table representation
+     */
+    private final String[] columnNames;
 
-  /**
-   * (Constructor) Creates an empty ConfigVerification object.
-   */
-  public ConfigVerification() {
-    this.list = new ArrayList<>();
-    this.failed = false;
+    /**
+     * (Constructor) Creates an empty ConfigVerification object.
+     */
+    public ConfigVerification()
+    {
+        this.list = new ArrayList<>();
+        this.failed = false;
 
-    this.columnNames = new String[]{"Type", "Error", "Message"};
-  }
-
-  /**
-   * Adds a configuration item to the list.
-   *
-   * @param item configuration item
-   */
-  public void add(final ConfigItem item) {
-    failed = failed || item.getType() == ConfigItemTypes.ERROR;
-    this.list.add(item);
-  }
-
-  /**
-   * Returns the name of the column with the index col.
-   *
-   * @return column name of the specified column.
-   */
-  @Override
-  public String getColumnName(final int col) {
-    return this.columnNames[col];
-  }
-
-  /**
-   * Returns the number of columns.
-   *
-   * @return number of columns
-   */
-  @Override
-  public int getColumnCount() {
-    return 3;
-  }
-
-  /**
-   * Returns the number of rows.
-   *
-   * @return number of rows
-   */
-  @Override
-  public int getRowCount() {
-    return list.size();
-  }
-
-  /**
-   * Returns the value at the specified column of the specified row.
-   *
-   * @return value
-   */
-  @Override
-  public Object getValueAt(final int row, final int column) {
-
-    ConfigItem item = this.list.get(row);
-
-    switch (column) {
-      case 0:
-        return item.getType();
-      case 1:
-        return item.getKey();
-      case 2:
-        return item.getMessage();
+        this.columnNames = new String[] { "Type", "Error", "Message" };
     }
-    return null;
-  }
 
-  /**
-   * Returns whether the configuration item list contains an error message or
-   * not.
-   *
-   * @return TRUE | FALSE
-   */
-  public boolean hasFailed() {
-    return this.failed;
-  }
+    /**
+     * Adds a configuration item to the list.
+     *
+     * @param item
+     *            configuration item
+     */
+    public void add(final ConfigItem item)
+    {
+        failed = failed || item.getType() == ConfigItemTypes.ERROR;
+        this.list.add(item);
+    }
+
+    /**
+     * Returns the name of the column with the index col.
+     *
+     * @return column name of the specified column.
+     */
+    @Override
+    public String getColumnName(final int col)
+    {
+        return this.columnNames[col];
+    }
+
+    /**
+     * Returns the number of columns.
+     *
+     * @return number of columns
+     */
+    @Override
+    public int getColumnCount()
+    {
+        return 3;
+    }
+
+    /**
+     * Returns the number of rows.
+     *
+     * @return number of rows
+     */
+    @Override
+    public int getRowCount()
+    {
+        return list.size();
+    }
+
+    /**
+     * Returns the value at the specified column of the specified row.
+     *
+     * @return value
+     */
+    @Override
+    public Object getValueAt(final int row, final int column)
+    {
+
+        ConfigItem item = this.list.get(row);
+
+        switch (column) {
+        case 0:
+            return item.getType();
+        case 1:
+            return item.getKey();
+        case 2:
+            return item.getMessage();
+        }
+        return null;
+    }
+
+    /**
+     * Returns whether the configuration item list contains an error message or not.
+     *
+     * @return TRUE | FALSE
+     */
+    public boolean hasFailed()
+    {
+        return this.failed;
+    }
 }

@@ -17,9 +17,11 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,91 +30,103 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-public class CategoryTest extends BaseJWPLTest {
+public class CategoryTest
+    extends BaseJWPLTest
+{
 
     private static final String A_FAMOUS_CATEGORY = "People of UKP";
     private static final int A_FAMOUS_PAGE_ID = 8;
     // Here: ORMs internal object identifier aka Primary Key.
     private static final long A_FAMOUS_PAGE_OBJECT_ID = 4;
 
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignored tests after failed
-	 * assumptions
-	 */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration();
+    /**
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
+     */
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration();
 
-		try {
-			wiki = new Wikipedia(db);
-		} catch (Exception e) {
+        try {
+            wiki = new Wikipedia(db);
+        }
+        catch (Exception e) {
             fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
-		}
-	}
-
-	@Test
-	public void testCategoryTitle(){
-		Category cat;
-		try {
-			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
-			assertNotNull(cat);
-			assertEquals("People of UKP", cat.getTitle().toString(), "testing the title");
-		} catch (WikiTitleParsingException e) {
-			fail("A WikiTitleParsingException occurred while testing the title of the category 'People of UKP': " + e.getLocalizedMessage());
-		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
-		}
-	}
-
-	@Test
-	public void testCategoryPageId(){
-		Category cat;
-		try {
-			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
-			assertNotNull(cat);
-		    assertEquals(8, cat.getPageId(), "testing the pageId");
-		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
-		}
-		//test the pageId
-	}
-
-	@Test
-	public void testCategoryParents(){
-		Category cat;
-		try {
-			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
-			assertNotNull(cat);
-      //test the parents
-      List<Integer> expectedPageIds = new ArrayList<>();
-      expectedPageIds.add(5);
-      expectedPageIds.add(6);
-
-      List<Integer> isIds = new ArrayList<>();
-      for(Category parent : cat.getParents()) {
-          isIds.add(parent.getPageId());
-      }
-      Collections.sort(expectedPageIds);
-      Collections.sort(isIds);
-      assertEquals(expectedPageIds, isIds, "parents");
-		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
-		}
-	}
+        }
+    }
 
     @Test
-    public void testNumberOfCategoryParents(){
+    public void testCategoryTitle()
+    {
+        Category cat;
+        try {
+            cat = wiki.getCategory(A_FAMOUS_CATEGORY);
+            assertNotNull(cat);
+            assertEquals("People of UKP", cat.getTitle().toString(), "testing the title");
+        }
+        catch (WikiTitleParsingException e) {
+            fail("A WikiTitleParsingException occurred while testing the title of the category 'People of UKP': "
+                    + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
+        }
+    }
+
+    @Test
+    public void testCategoryPageId()
+    {
+        Category cat;
+        try {
+            cat = wiki.getCategory(A_FAMOUS_CATEGORY);
+            assertNotNull(cat);
+            assertEquals(8, cat.getPageId(), "testing the pageId");
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
+        }
+        // test the pageId
+    }
+
+    @Test
+    public void testCategoryParents()
+    {
+        Category cat;
+        try {
+            cat = wiki.getCategory(A_FAMOUS_CATEGORY);
+            assertNotNull(cat);
+            // test the parents
+            List<Integer> expectedPageIds = new ArrayList<>();
+            expectedPageIds.add(5);
+            expectedPageIds.add(6);
+
+            List<Integer> isIds = new ArrayList<>();
+            for (Category parent : cat.getParents()) {
+                isIds.add(parent.getPageId());
+            }
+            Collections.sort(expectedPageIds);
+            Collections.sort(isIds);
+            assertEquals(expectedPageIds, isIds, "parents");
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
+        }
+    }
+
+    @Test
+    public void testNumberOfCategoryParents()
+    {
         Category cat;
         try {
             cat = wiki.getCategory(A_FAMOUS_CATEGORY);
@@ -120,19 +134,22 @@ public class CategoryTest extends BaseJWPLTest {
             int numberOfParents = cat.getNumberOfParents();
             // expecting IDs: 5 and 6 to make up for 2 parent categories
             assertEquals(2, numberOfParents);
-            
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
+
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCategoryDescendants(){
+    public void testCategoryDescendants()
+    {
         Category cat;
         try {
             cat = wiki.getCategory("UKP");
-			assertNotNull(cat);
-            //test the descendants
+            assertNotNull(cat);
+            // test the descendants
             List<Integer> expectedPageIds = new ArrayList<>();
             expectedPageIds.add(7);
             expectedPageIds.add(8);
@@ -144,43 +161,49 @@ public class CategoryTest extends BaseJWPLTest {
             expectedPageIds.add(14);
             expectedPageIds.add(15);
             List<Integer> isIds = new ArrayList<>();
-            for(Category descendant : cat.getDescendants()) {
+            for (Category descendant : cat.getDescendants()) {
                 isIds.add(descendant.getPageId());
             }
             Collections.sort(expectedPageIds);
             Collections.sort(isIds);
             assertEquals(expectedPageIds, isIds, "descendants");
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the category 'UKP': " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'UKP': "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-	public void testCategoryChildren(){
-		Category cat;
-		try {
-			cat = wiki.getCategory(A_FAMOUS_CATEGORY);
+    public void testCategoryChildren()
+    {
+        Category cat;
+        try {
+            cat = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat);
             List<Integer> expectedPageIds = new ArrayList<>();
             List<Integer> isIds = new ArrayList<>();
-            //test the children
+            // test the children
             expectedPageIds.add(13);
             expectedPageIds.add(12);
             expectedPageIds.add(15);
             expectedPageIds.add(14);
-            for(Category child : cat.getChildren()) {
+            for (Category child : cat.getChildren()) {
                 isIds.add(child.getPageId());
             }
             Collections.sort(expectedPageIds);
             Collections.sort(isIds);
             assertEquals(expectedPageIds, isIds, "children");
-		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
-		}
-	}
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
+        }
+    }
 
     @Test
-    public void testNumberOfCategoryChildren(){
+    public void testNumberOfCategoryChildren()
+    {
         Category cat;
         try {
             cat = wiki.getCategory(A_FAMOUS_CATEGORY);
@@ -189,16 +212,19 @@ public class CategoryTest extends BaseJWPLTest {
             int expectedNumberOfChildren = cat.getNumberOfChildren();
             assertEquals(4, expectedNumberOfChildren);
 
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
         }
     }
 
-	@Test
-	public void testCategoryPages(){
-		Category cat;
-		try {
-			cat = wiki.getCategory("UKP");
+    @Test
+    public void testCategoryPages()
+    {
+        Category cat;
+        try {
+            cat = wiki.getCategory("UKP");
             assertNotNull(cat);
             List<Integer> expectedPageIds = new ArrayList<>();
             expectedPageIds.add(1010);
@@ -208,22 +234,27 @@ public class CategoryTest extends BaseJWPLTest {
                 Set<Page> pages = cat.getArticles();
                 assertNotNull(pages);
                 assertFalse(pages.isEmpty());
-                for(Page p : pages) {
+                for (Page p : pages) {
                     isIds.add(p.getPageId());
                 }
-            } catch (WikiApiException e) {
-                fail("A WikiApiException occurred while getting the pages of the category 'People of UKP' for testing: " + e.getLocalizedMessage());
+            }
+            catch (WikiApiException e) {
+                fail("A WikiApiException occurred while getting the pages of the category 'People of UKP' for testing: "
+                        + e.getLocalizedMessage());
             }
             Collections.sort(expectedPageIds);
             Collections.sort(isIds);
             assertEquals(expectedPageIds, isIds, "page");
-		} catch (WikiApiException e) {
-			fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage(), e);
-		}
-	}
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage(), e);
+        }
+    }
 
     @Test
-    public void testNumberOfCategoryPages(){
+    public void testNumberOfCategoryPages()
+    {
         Category cat;
         try {
             cat = wiki.getCategory("UKP");
@@ -231,135 +262,162 @@ public class CategoryTest extends BaseJWPLTest {
             int numberOfPages = cat.getNumberOfPages();
             assertTrue(numberOfPages > 0);
             assertEquals(2, numberOfPages);
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCreateCategoryByPageID() {
+    public void testCreateCategoryByPageID()
+    {
         try {
             Category p = new Category(wiki, A_FAMOUS_PAGE_ID);
             assertNotNull(p);
             assertEquals(A_FAMOUS_PAGE_ID, p.getPageId());
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCreateCategoryByPageIDInvalid() {
+    public void testCreateCategoryByPageIDInvalid()
+    {
         try {
             new Category(wiki, -42);
-        } catch (WikiPageNotFoundException pnfe) {
+        }
+        catch (WikiPageNotFoundException pnfe) {
             // this is expected behavior here, provoked by the test
         }
     }
 
     @Test
-    public void testCreateCategoryByObjectID() {
+    public void testCreateCategoryByObjectID()
+    {
         try {
             Category p = new Category(wiki, A_FAMOUS_PAGE_OBJECT_ID);
             assertNotNull(p);
             assertEquals(A_FAMOUS_PAGE_ID, p.getPageId());
             assertEquals(A_FAMOUS_PAGE_OBJECT_ID, p.__getId());
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCreateCategoryByObjectIDInvalid() {
+    public void testCreateCategoryByObjectIDInvalid()
+    {
         try {
             long invalidObjectID = -42L;
             new Category(wiki, invalidObjectID);
-        } catch (WikiPageNotFoundException pnfe) {
+        }
+        catch (WikiPageNotFoundException pnfe) {
             // this is expected behavior here, provoked by the test
         }
     }
 
     @Test
-    public void testCreateCategoryByName() {
+    public void testCreateCategoryByName()
+    {
         try {
             Category p = new Category(wiki, A_FAMOUS_CATEGORY);
             assertNotNull(p);
             assertEquals(A_FAMOUS_CATEGORY, p.getTitle().getPlainTitle());
             assertEquals(A_FAMOUS_PAGE_ID, p.getPageId());
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCreateCategoryByNameRandom() {
+    public void testCreateCategoryByNameRandom()
+    {
         try {
             new Category(wiki, UUID.randomUUID().toString());
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             // this is expected, as a random page title should not be found
         }
     }
 
     @Test
-    public void testCreateCategoryByNameEmpty() {
+    public void testCreateCategoryByNameEmpty()
+    {
         try {
             new Category(wiki, "");
-        } catch (WikiPageNotFoundException pnfe) {
+        }
+        catch (WikiPageNotFoundException pnfe) {
             // this is expected behavior here, provoked by the test
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCreateCategoryByNameNull() {
+    public void testCreateCategoryByNameNull()
+    {
         try {
             new Category(wiki, null);
-        } catch (WikiPageNotFoundException pnfe) {
+        }
+        catch (WikiPageNotFoundException pnfe) {
             // this is expected behavior here, provoked by the test
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testGetCategoryInfo() {
+    public void testGetCategoryInfo()
+    {
         try {
             Category p = new Category(wiki, "UKP");
             assertNotNull(p);
             String categoryInfo = p.getCategoryInfo();
             assertNotNull(categoryInfo);
             assertTrue(categoryInfo.length() > 0);
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the page info: " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the page info: "
+                    + e.getLocalizedMessage());
         }
     }
 
     @Test
-    public void testCategorySiblings(){
+    public void testCategorySiblings()
+    {
         Category cat;
         try {
             cat = wiki.getCategory(A_FAMOUS_CATEGORY);
             assertNotNull(cat);
             Set<Integer> expectedPageIds = new HashSet<>();
             Set<Integer> isIds = new HashSet<>();
-            //test the children
+            // test the children
             expectedPageIds.add(7);
             expectedPageIds.add(8);
             expectedPageIds.add(9);
             Set<Category> siblings = cat.getSiblings();
             assertNotNull(siblings);
             assertTrue(siblings.size() > 0);
-            for(Category sibling : siblings) {
+            for (Category sibling : siblings) {
                 isIds.add(sibling.getPageId());
             }
             assertEquals(expectedPageIds, isIds, "siblings");
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while getting the category 'People of UKP': " + e.getLocalizedMessage(), e);
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'People of UKP': "
+                    + e.getLocalizedMessage(), e);
         }
     }
 
     @Test
-    public void testCategoryTitleComparatorEquality() {
+    public void testCategoryTitleComparatorEquality()
+    {
         Category cat1;
         Category cat2;
         try {
@@ -376,13 +434,16 @@ public class CategoryTest extends BaseJWPLTest {
             assertEquals(cat1, categories.get(0));
             assertEquals(cat2, categories.get(1));
 
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while comparing the category 'People of UKP': " + e.getLocalizedMessage(), e);
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while comparing the category 'People of UKP': "
+                    + e.getLocalizedMessage(), e);
         }
     }
 
     @Test
-    public void testCategoryTitleComparatorNewOrder() {
+    public void testCategoryTitleComparatorNewOrder()
+    {
         Category cat1;
         Category cat2;
         try {
@@ -400,8 +461,10 @@ public class CategoryTest extends BaseJWPLTest {
             assertEquals(cat2, categories.get(0));
             assertEquals(cat1, categories.get(1));
 
-        } catch (WikiApiException e) {
-            fail("A WikiApiException occurred while comparing the category 'People of UKP': " + e.getLocalizedMessage());
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while comparing the category 'People of UKP': "
+                    + e.getLocalizedMessage());
         }
     }
 }

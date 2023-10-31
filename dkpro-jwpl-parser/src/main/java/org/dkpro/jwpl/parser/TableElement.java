@@ -22,103 +22,126 @@ import java.util.List;
 /**
  * This Class implements a Field in a Table...<br>
  * it simply has an int for col and row, and a SectionContainer for the Content.<br>
- * This implementation is needed, because a Table in MediaWiki can contain neary
- * everything.
+ * This implementation is needed, because a Table in MediaWiki can contain neary everything.
  */
-public class TableElement extends ContentContainer {
+public class TableElement
+    extends ContentContainer
+{
 
-  private final int col;
-  private final int row;
-  private final SectionContainer s;
+    private final int col;
+    private final int row;
+    private final SectionContainer s;
 
-  public TableElement(SectionContainer s, int row, int col) {
-    this.ccl = s.ccl;
-    this.s = s;
-    this.row = row;
-    this.col = col;
-  }
+    public TableElement(SectionContainer s, int row, int col)
+    {
+        this.ccl = s.ccl;
+        this.s = s;
+        this.row = row;
+        this.col = col;
+    }
 
-  public int getCol() {
-    return col;
-  }
+    public int getCol()
+    {
+        return col;
+    }
 
-  public int getRow() {
-    return row;
-  }
+    public int getRow()
+    {
+        return row;
+    }
 
-  public int nrOfSections() {
-    return s.nrOfSubSections();
-  }
+    public int nrOfSections()
+    {
+        return s.nrOfSubSections();
+    }
 
-  public Section getSection(int i) {
-    return s.getSubSection(i);
-  }
+    public Section getSection(int i)
+    {
+        return s.getSubSection(i);
+    }
 
-  public void removeSection(Section s) {
-    this.s.removeSection(s);
-  }
+    public void removeSection(Section s)
+    {
+        this.s.removeSection(s);
+    }
 
-  public List<Section> getSubSections() {
-    return s.getSubSections();
-  }
+    public List<Section> getSubSections()
+    {
+        return s.getSubSections();
+    }
 
-  public List<Content> getContentList() {
-    return s.getContentList();
-  }
+    public List<Content> getContentList()
+    {
+        return s.getContentList();
+    }
 
-  public int nrOfParagraphs() {
-    return s.nrOfParagraphs();
-  }
+    public int nrOfParagraphs()
+    {
+        return s.nrOfParagraphs();
+    }
 
-  public Paragraph getParagraph(int i) {
-    return s.getParagraph(i);
-  }
+    public Paragraph getParagraph(int i)
+    {
+        return s.getParagraph(i);
+    }
 
-  public List<Paragraph> getParagraphs() {
-    return s.getParagraphs();
-  }
+    public List<Paragraph> getParagraphs()
+    {
+        return s.getParagraphs();
+    }
 
-  public int nrOfTables() {
-    return s.nrOfTables();
-  }
+    public int nrOfTables()
+    {
+        return s.nrOfTables();
+    }
 
-  public Table getTable(int i) {
-    return s.getTable(i);
-  }
+    public Table getTable(int i)
+    {
+        return s.getTable(i);
+    }
 
-  public List<Table> getTables() {
-    return s.getTables();
-  }
+    public List<Table> getTables()
+    {
+        return s.getTables();
+    }
 
-  public int nrOfNestedLists() {
-    return s.nrOfNestedLists();
-  }
+    public int nrOfNestedLists()
+    {
+        return s.nrOfNestedLists();
+    }
 
-  public NestedList getNestedList(int i) {
-    return s.getNestedList(i);
-  }
+    public NestedList getNestedList(int i)
+    {
+        return s.getNestedList(i);
+    }
 
-  public List<NestedListContainer> getNestedLists() {
-    return s.getNestedLists();
-  }
+    public List<NestedListContainer> getNestedLists()
+    {
+        return s.getNestedLists();
+    }
 
-  public int nrOfDefinitionLists() {
-    return s.nrOfDefinitionLists();
-  }
+    public int nrOfDefinitionLists()
+    {
+        return s.nrOfDefinitionLists();
+    }
 
-  public DefinitionList getDefinitionList(int i) {
-    return s.getDefinitionList(i);
-  }
+    public DefinitionList getDefinitionList(int i)
+    {
+        return s.getDefinitionList(i);
+    }
 
-  public List<DefinitionList> getDefinitionLists() {
-    return s.getDefinitionLists();
-  }
+    public List<DefinitionList> getDefinitionLists()
+    {
+        return s.getDefinitionLists();
+    }
 
-  public SectionContainer getSectionContainer() {
-    return s;
-  }
+    public SectionContainer getSectionContainer()
+    {
+        return s;
+    }
 
-  public String toString() {
-    return "TABLE_DATA: \n" + s;
-  }
+    public String toString()
+    {
+        return "TABLE_DATA: \n" + s;
+    }
 }

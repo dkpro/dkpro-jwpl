@@ -20,51 +20,52 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * Contains the keys for the different panels of the ConfigurationTool.
  */
-public enum PanelKeys {
+public enum PanelKeys
+{
 
-  /**
-   * Key for the mode panel
-   */
-  PANEL_VALUES,
+    /**
+     * Key for the mode panel
+     */
+    PANEL_VALUES,
 
-  /**
-   * Key for the externals panel
-   */
-  PANEL_EXTERNALS,
+    /**
+     * Key for the externals panel
+     */
+    PANEL_EXTERNALS,
 
-  /**
-   * Key for the input panel
-   */
-  PANEL_INPUT,
+    /**
+     * Key for the input panel
+     */
+    PANEL_INPUT,
 
-  /**
-   * Key for the output panel
-   */
-  PANEL_OUTPUT,
+    /**
+     * Key for the output panel
+     */
+    PANEL_OUTPUT,
 
-  /**
-   * Key for the sql panel
-   */
-  PANEL_SQL,
+    /**
+     * Key for the sql panel
+     */
+    PANEL_SQL,
 
-  /**
-   * Key for the cache panel
-   */
-  PANEL_CACHE,
+    /**
+     * Key for the cache panel
+     */
+    PANEL_CACHE,
 
-  /**
-   * Key for the logging panel
-   */
-  PANEL_LOGGING,
+    /**
+     * Key for the logging panel
+     */
+    PANEL_LOGGING,
 
-  /**
-   * Key for the debug panel
-   */
-  PANEL_DEBUG,
+    /**
+     * Key for the debug panel
+     */
+    PANEL_DEBUG,
 
-  /**
-   * Key for the filter panel
-   */
-  PANEL_FILTER
+    /**
+     * Key for the filter panel
+     */
+    PANEL_FILTER
 
 }

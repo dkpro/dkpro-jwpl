@@ -40,409 +40,451 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This class represents the interface to iterate through multiple revisions.
  */
-public class RevisionIterator extends AbstractRevisionService implements RevisionIteratorInterface {
+public class RevisionIterator
+    extends AbstractRevisionService
+    implements RevisionIteratorInterface
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(RevisionIterator.class);
+    private static final Logger logger = LoggerFactory.getLogger(RevisionIterator.class);
 
-  /**
-   * Reference to the ResultSet
-   */
-  private ResultSet result;
+    /**
+     * Reference to the ResultSet
+     */
+    private ResultSet result;
 
-  /**
-   * Reference to the Statement
-   */
-  private PreparedStatement statement;
+    /**
+     * Reference to the Statement
+     */
+    private PreparedStatement statement;
 
-  /**
-   * Binary Data Flag
-   */
-  private boolean binaryData;
+    /**
+     * Binary Data Flag
+     */
+    private boolean binaryData;
 
-  /**
-   * Text of the previous revision
-   */
-  private String previousRevision;
+    /**
+     * Text of the previous revision
+     */
+    private String previousRevision;
 
-  /**
-   * Current primary key
-   */
-  private int primaryKey;
+    /**
+     * Current primary key
+     */
+    private int primaryKey;
 
-  /**
-   * Primary key indicating the end of the data
-   */
-  private int endPK;
+    /**
+     * Primary key indicating the end of the data
+     */
+    private int endPK;
 
-  /**
-   * ID of the current article
-   */
-  private int currentArticleID;
+    /**
+     * ID of the current article
+     */
+    private int currentArticleID;
 
-  /**
-   * The last known revision counter
-   */
-  private int currentRevCounter;
+    /**
+     * The last known revision counter
+     */
+    private int currentRevCounter;
 
-  /**
-   * Configuration parameter - indicates the maximum size of a query.
-   */
-  private final int MAX_NUMBER_RESULTS;
+    /**
+     * Configuration parameter - indicates the maximum size of a query.
+     */
+    private final int MAX_NUMBER_RESULTS;
 
-  /**
-   * Should load revision text?
-   */
-  private boolean shouldLoadRevisionText;
+    /**
+     * Should load revision text?
+     */
+    private boolean shouldLoadRevisionText;
 
-  /**
-   * The revision-api for this iterator - used by the Revision object
-   * in case of lazy loading
-   */
-  private RevisionApi revApi = null;
+    /**
+     * The revision-api for this iterator - used by the Revision object in case of lazy loading
+     */
+    private RevisionApi revApi = null;
 
-  public boolean shouldLoadRevisionText() {
-    return shouldLoadRevisionText;
-  }
-
-  public void setShouldLoadRevisionText(boolean shouldLoadRevisionText) {
-    this.shouldLoadRevisionText = shouldLoadRevisionText;
-  }
-
-  /**
-   * Creates a new RevisionIterator object.
-   *
-   * @param config     Reference to the configuration object
-   * @param startPK    Start index
-   * @param endPK      End index
-   * @param connection Reference to the connection
-   * @throws WikiApiException if an error occurs
-   */
-  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
-                          final Connection connection) throws WikiApiException {
-
-    if (startPK < 0 || endPK < 0 || startPK > endPK || connection == null) {
-      throw new IllegalArgumentException("Illegal argument");
+    public boolean shouldLoadRevisionText()
+    {
+        return shouldLoadRevisionText;
     }
 
-    this.primaryKey = startPK - 1;
-    this.endPK = endPK;
-    this.config = config;
-
-    this.currentArticleID = -1;
-    this.currentRevCounter = -1;
-
-    MAX_NUMBER_RESULTS = config.getBufferSize();
-
-    this.connection = connection;
-  }
-
-  /**
-   * Creates a new RevisionIterator object.
-   *
-   * @param config  Reference to the configuration object
-   * @param startPK Start index
-   * @throws WikiApiException if an error occurs
-   */
-  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK) throws WikiApiException {
-
-    this(config);
-
-    if (startPK < 0) {
-      throw new IllegalArgumentException("Illegal argument");
+    public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
+    {
+        this.shouldLoadRevisionText = shouldLoadRevisionText;
     }
 
-    this.primaryKey = startPK - 1;
-  }
+    /**
+     * Creates a new RevisionIterator object.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index
+     * @param endPK
+     *            End index
+     * @param connection
+     *            Reference to the connection
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public RevisionIterator(final RevisionAPIConfiguration config, final int startPK,
+            final int endPK, final Connection connection)
+        throws WikiApiException
+    {
 
-  /**
-   * Creates a new RevisionIterator object.
-   *
-   * @param config  Reference to the configuration object
-   * @param startPK Start index
-   * @param endPK   End index
-   * @throws WikiApiException if an error occurs
-   */
-  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK)
-          throws WikiApiException {
-
-    this(config, startPK);
-
-    if (endPK < 0 || startPK > endPK) {
-      throw new IllegalArgumentException("Illegal argument");
-    }
-
-    this.endPK = endPK;
-  }
-
-  /**
-   * Creates a new RevisionIterator object.
-   *
-   * @param config Reference to the configuration object
-   * @throws WikiApiException if an error occurs
-   */
-  public RevisionIterator(final RevisionAPIConfiguration config) throws WikiApiException {
-
-    this.config = config;
-    this.primaryKey = -1;
-    this.endPK = Integer.MAX_VALUE;
-
-    this.statement = null;
-    this.result = null;
-    this.previousRevision = null;
-    MAX_NUMBER_RESULTS = config.getBufferSize();
-
-    connection = getConnection(config);
-  }
-
-  /**
-   * Creates a new RevisionIterator object.
-   *
-   * @param config                 Reference to the configuration object
-   * @param shouldLoadRevisionText should load revision text
-   * @throws WikiApiException if an error occurs
-   */
-  public RevisionIterator(final RevisionAPIConfiguration config, boolean shouldLoadRevisionText)
-          throws WikiApiException {
-    this(config);
-    this.shouldLoadRevisionText = shouldLoadRevisionText;
-  }
-
-  public RevisionIterator(final DatabaseConfiguration db) throws WikiApiException {
-    this(getRevisionAPIConfig(db));
-  }
-
-  private static RevisionAPIConfiguration getRevisionAPIConfig(final DatabaseConfiguration db) {
-    RevisionAPIConfiguration revAPIConfig = new RevisionAPIConfiguration();
-
-    revAPIConfig.setHost(db.getHost());
-    revAPIConfig.setDatabase(db.getDatabase());
-    revAPIConfig.setDatabaseDriver(db.getDatabaseDriver());
-    revAPIConfig.setJdbcURL(db.getJdbcURL());
-    revAPIConfig.setUser(db.getUser());
-    revAPIConfig.setPassword(db.getPassword());
-    revAPIConfig.setLanguage(db.getLanguage());
-
-    return revAPIConfig;
-  }
-
-  /**
-   * Sends the query to the database and stores the result. The {@link java.sql.Statement} and
-   * {@link ResultSet} connection will not be closed.
-   *
-   * @return {@code true}, if the result set has another element {@code false}, otherwise
-   * @throws SQLException if an error occurs while accessing the database.
-   */
-  private boolean query() throws SQLException {
-    String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
-            + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered "
-            + "FROM revisions";
-
-    if (primaryKey > 0) {
-      query += " WHERE PrimaryKey > " + primaryKey;
-    }
-
-    if (MAX_NUMBER_RESULTS > 0) {
-      query += " LIMIT ";
-
-      if (primaryKey + MAX_NUMBER_RESULTS > endPK) {
-        query += (endPK - primaryKey + 1); // TODO: +1 ?
-      } else {
-        query += MAX_NUMBER_RESULTS;
-      }
-
-    } else if (endPK != Integer.MAX_VALUE) {
-      query += " LIMIT " + (endPK - primaryKey + 1);
-    }
-
-    try {
-      statement = this.connection.prepareStatement(query);
-      result = statement.executeQuery();
-    } catch (Exception e) {
-      logger.error(e.getLocalizedMessage(), e);
-      try {
-        boolean connectionReady = !connection.isClosed() && connection.isValid(5);
-        logger.debug("Connection ready: {}", connectionReady);
-        if (!connectionReady) {
-          connection = getConnection(config);
+        if (startPK < 0 || endPK < 0 || startPK > endPK || connection == null) {
+            throw new IllegalArgumentException("Illegal argument");
         }
-        statement = this.connection.prepareStatement(query);
-        result = statement.executeQuery(query);
-      } catch (WikiApiException wae) {
-        logger.error(wae.getLocalizedMessage(), wae);
-      }
+
+        this.primaryKey = startPK - 1;
+        this.endPK = endPK;
+        this.config = config;
+
+        this.currentArticleID = -1;
+        this.currentRevCounter = -1;
+
+        MAX_NUMBER_RESULTS = config.getBufferSize();
+
+        this.connection = connection;
     }
 
+    /**
+     * Creates a new RevisionIterator object.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public RevisionIterator(final RevisionAPIConfiguration config, final int startPK)
+        throws WikiApiException
+    {
 
-    if (result.next()) {
-      binaryData = result.getMetaData().getColumnType(2) == Types.LONGVARBINARY;
-      return true;
+        this(config);
+
+        if (startPK < 0) {
+            throw new IllegalArgumentException("Illegal argument");
+        }
+
+        this.primaryKey = startPK - 1;
     }
 
-    return false;
-  }
+    /**
+     * Creates a new RevisionIterator object.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index
+     * @param endPK
+     *            End index
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public RevisionIterator(final RevisionAPIConfiguration config, final int startPK,
+            final int endPK)
+        throws WikiApiException
+    {
 
-  /**
-   * Returns the next revision.
-   *
-   * @return next revision
-   */
-  @Override
-  public Revision next() {
-    try {
+        this(config, startPK);
 
-      int revCount, articleID;
+        if (endPK < 0 || startPK > endPK) {
+            throw new IllegalArgumentException("Illegal argument");
+        }
 
-      revCount = result.getInt(3);
-      articleID = result.getInt(5);
+        this.endPK = endPK;
+    }
 
-      if (articleID != this.currentArticleID) {
-        this.currentRevCounter = 0;
-        this.currentArticleID = articleID;
-      }
+    /**
+     * Creates a new RevisionIterator object.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public RevisionIterator(final RevisionAPIConfiguration config) throws WikiApiException
+    {
 
-      if (revCount - 1 != this.currentRevCounter) {
+        this.config = config;
+        this.primaryKey = -1;
+        this.endPK = Integer.MAX_VALUE;
 
-        logger.error("Invalid RevCounter -" + " [ArticleId "
-                + articleID + ", RevisionId " + result.getInt(4)
-                + ", RevisionCounter " + revCount + "] - Expected: "
-                + (this.currentRevCounter + 1));
-
-        this.currentRevCounter = revCount;
+        this.statement = null;
+        this.result = null;
         this.previousRevision = null;
+        MAX_NUMBER_RESULTS = config.getBufferSize();
 
-        return null;
-      }
+        connection = getConnection(config);
+    }
 
-      this.currentRevCounter = revCount;
-      this.primaryKey = result.getInt(1);
+    /**
+     * Creates a new RevisionIterator object.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param shouldLoadRevisionText
+     *            should load revision text
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    public RevisionIterator(final RevisionAPIConfiguration config, boolean shouldLoadRevisionText)
+        throws WikiApiException
+    {
+        this(config);
+        this.shouldLoadRevisionText = shouldLoadRevisionText;
+    }
 
-      Revision revision = new Revision(revCount);
-      revision.setPrimaryKey(this.primaryKey);
-      if (!shouldLoadRevisionText) {
-        String currentRevision;
+    public RevisionIterator(final DatabaseConfiguration db) throws WikiApiException
+    {
+        this(getRevisionAPIConfig(db));
+    }
 
-        Diff diff;
-        RevisionDecoder decoder = new RevisionDecoder(
-                config.getCharacterSet());
+    private static RevisionAPIConfiguration getRevisionAPIConfig(final DatabaseConfiguration db)
+    {
+        RevisionAPIConfiguration revAPIConfig = new RevisionAPIConfiguration();
 
-        if (binaryData) {
-          decoder.setInput(result.getBinaryStream(2), true);
-        } else {
-          decoder.setInput(result.getString(2));
+        revAPIConfig.setHost(db.getHost());
+        revAPIConfig.setDatabase(db.getDatabase());
+        revAPIConfig.setDatabaseDriver(db.getDatabaseDriver());
+        revAPIConfig.setJdbcURL(db.getJdbcURL());
+        revAPIConfig.setUser(db.getUser());
+        revAPIConfig.setPassword(db.getPassword());
+        revAPIConfig.setLanguage(db.getLanguage());
+
+        return revAPIConfig;
+    }
+
+    /**
+     * Sends the query to the database and stores the result. The {@link java.sql.Statement} and
+     * {@link ResultSet} connection will not be closed.
+     *
+     * @return {@code true}, if the result set has another element {@code false}, otherwise
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     */
+    private boolean query() throws SQLException
+    {
+        String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
+                + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered "
+                + "FROM revisions";
+
+        if (primaryKey > 0) {
+            query += " WHERE PrimaryKey > " + primaryKey;
         }
-        diff = decoder.decode();
+
+        if (MAX_NUMBER_RESULTS > 0) {
+            query += " LIMIT ";
+
+            if (primaryKey + MAX_NUMBER_RESULTS > endPK) {
+                query += (endPK - primaryKey + 1); // TODO: +1 ?
+            }
+            else {
+                query += MAX_NUMBER_RESULTS;
+            }
+
+        }
+        else if (endPK != Integer.MAX_VALUE) {
+            query += " LIMIT " + (endPK - primaryKey + 1);
+        }
 
         try {
-          currentRevision = diff.buildRevision(previousRevision);
-        } catch (Exception e) {
-          this.previousRevision = null;
-          logger.error("Reconstruction failed -"
-                  + " [ArticleId " + result.getInt(5)
-                  + ", RevisionId " + result.getInt(4)
-                  + ", RevisionCounter " + result.getInt(3) + "]");
-          return null;
+            statement = this.connection.prepareStatement(query);
+            result = statement.executeQuery();
+        }
+        catch (Exception e) {
+            logger.error(e.getLocalizedMessage(), e);
+            try {
+                boolean connectionReady = !connection.isClosed() && connection.isValid(5);
+                logger.debug("Connection ready: {}", connectionReady);
+                if (!connectionReady) {
+                    connection = getConnection(config);
+                }
+                statement = this.connection.prepareStatement(query);
+                result = statement.executeQuery(query);
+            }
+            catch (WikiApiException wae) {
+                logger.error(wae.getLocalizedMessage(), wae);
+            }
         }
 
-        previousRevision = currentRevision;
-        revision.setRevisionText(currentRevision);
-      } else {
-        if (revApi == null) {
-          revApi = new RevisionApi(config);
+        if (result.next()) {
+            binaryData = result.getMetaData().getColumnType(2) == Types.LONGVARBINARY;
+            return true;
         }
-        revision.setRevisionApi(revApi);
-      }
 
-      revision.setRevisionID(result.getInt(4));
-      revision.setArticleID(articleID);
-      revision.setTimeStamp(new Timestamp(result.getLong(6)));
-      revision.setFullRevisionID(result.getInt(7));
-      revision.setContributorName(result.getString(8));
-      revision.setContributorId(result.getInt(9));
-      revision.setComment(result.getString(10));
-      revision.setMinor(result.getBoolean(11));
-      revision.setContributorIsRegistered(result.getBoolean(12));
-
-      return revision;
-
-    } catch (DecodingException | SQLException | IOException | WikiApiException e) {
-      throw new RuntimeException(e);
+        return false;
     }
-  }
 
-  /**
-   * Returns whether another revision is available or not.
-   */
-  @Override
-  public boolean hasNext() {
-    try {
-      if (result != null && result.next()) {
-        return true;
-      }
+    /**
+     * Returns the next revision.
+     *
+     * @return next revision
+     */
+    @Override
+    public Revision next()
+    {
+        try {
 
-      // Close old queries
-      if (this.statement != null) {
-        this.statement.close();
-      }
-      if (this.result != null) {
-        this.result.close();
-      }
+            int revCount, articleID;
 
-      if (primaryKey <= endPK) { // TODO: <= ?
-        return query();
-      }
+            revCount = result.getInt(3);
+            articleID = result.getInt(5);
 
-      return false;
+            if (articleID != this.currentArticleID) {
+                this.currentRevCounter = 0;
+                this.currentArticleID = articleID;
+            }
 
-    } catch (SQLException e) {
-      throw new RuntimeException(e);
-    }
-  }
+            if (revCount - 1 != this.currentRevCounter) {
 
-  /**
-   * This method is unsupported and will result in a {@link UnsupportedOperationException}.
-   *
-   * @deprecated Don't call this method as it will result in an exception at runtime.
-   */
-  @Override
-  @Deprecated(since = "1.1")
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }
+                logger.error("Invalid RevCounter -" + " [ArticleId " + articleID + ", RevisionId "
+                        + result.getInt(4) + ", RevisionCounter " + revCount + "] - Expected: "
+                        + (this.currentRevCounter + 1));
 
-  @Deprecated(since = "1.1", forRemoval = true)
-  // TODO This should go into a demo or test class separated from the code here...
-  public static void main(final String[] args) throws Exception {
+                this.currentRevCounter = revCount;
+                this.previousRevision = null;
 
-    RevisionAPIConfiguration config = new RevisionAPIConfiguration();
-    config.setHost("localhost");
-    config.setDatabase("en_wiki");
-    config.setUser("root");
-    config.setPassword("1234");
+                return null;
+            }
 
-    config.setCharacterSet("UTF-8");
-    config.setBufferSize(20000);
-    config.setMaxAllowedPacket(16 * 1024 * 1023);
+            this.currentRevCounter = revCount;
+            this.primaryKey = result.getInt(1);
 
-    long count = 1;
-    long start = System.currentTimeMillis();
+            Revision revision = new Revision(revCount);
+            revision.setPrimaryKey(this.primaryKey);
+            if (!shouldLoadRevisionText) {
+                String currentRevision;
 
-    Revision rev;
-    Iterator<Revision> it = new RevisionIterator(config);
+                Diff diff;
+                RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
 
-    System.out.println(Time.toClock(System.currentTimeMillis() - start));
+                if (binaryData) {
+                    decoder.setInput(result.getBinaryStream(2), true);
+                }
+                else {
+                    decoder.setInput(result.getString(2));
+                }
+                diff = decoder.decode();
 
-    while (it.hasNext()) {
-      rev = it.next();
+                try {
+                    currentRevision = diff.buildRevision(previousRevision);
+                }
+                catch (Exception e) {
+                    this.previousRevision = null;
+                    logger.error("Reconstruction failed -" + " [ArticleId " + result.getInt(5)
+                            + ", RevisionId " + result.getInt(4) + ", RevisionCounter "
+                            + result.getInt(3) + "]");
+                    return null;
+                }
 
-      if (count++ % 10000 == 0) {
+                previousRevision = currentRevision;
+                revision.setRevisionText(currentRevision);
+            }
+            else {
+                if (revApi == null) {
+                    revApi = new RevisionApi(config);
+                }
+                revision.setRevisionApi(revApi);
+            }
 
-        if (rev != null) {
-          System.out.println(rev);
+            revision.setRevisionID(result.getInt(4));
+            revision.setArticleID(articleID);
+            revision.setTimeStamp(new Timestamp(result.getLong(6)));
+            revision.setFullRevisionID(result.getInt(7));
+            revision.setContributorName(result.getString(8));
+            revision.setContributorId(result.getInt(9));
+            revision.setComment(result.getString(10));
+            revision.setMinor(result.getBoolean(11));
+            revision.setContributorIsRegistered(result.getBoolean(12));
+
+            return revision;
+
         }
-      }
+        catch (DecodingException | SQLException | IOException | WikiApiException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    // w.close();
-    System.out.println(Time.toClock(System.currentTimeMillis() - start));
-  }
+    /**
+     * Returns whether another revision is available or not.
+     */
+    @Override
+    public boolean hasNext()
+    {
+        try {
+            if (result != null && result.next()) {
+                return true;
+            }
+
+            // Close old queries
+            if (this.statement != null) {
+                this.statement.close();
+            }
+            if (this.result != null) {
+                this.result.close();
+            }
+
+            if (primaryKey <= endPK) { // TODO: <= ?
+                return query();
+            }
+
+            return false;
+
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This method is unsupported and will result in a {@link UnsupportedOperationException}.
+     *
+     * @deprecated Don't call this method as it will result in an exception at runtime.
+     */
+    @Override
+    @Deprecated(since = "1.1")
+    public void remove()
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated(since = "1.1", forRemoval = true)
+    // TODO This should go into a demo or test class separated from the code here...
+    public static void main(final String[] args) throws Exception
+    {
+
+        RevisionAPIConfiguration config = new RevisionAPIConfiguration();
+        config.setHost("localhost");
+        config.setDatabase("en_wiki");
+        config.setUser("root");
+        config.setPassword("1234");
+
+        config.setCharacterSet("UTF-8");
+        config.setBufferSize(20000);
+        config.setMaxAllowedPacket(16 * 1024 * 1023);
+
+        long count = 1;
+        long start = System.currentTimeMillis();
+
+        Revision rev;
+        Iterator<Revision> it = new RevisionIterator(config);
+
+        System.out.println(Time.toClock(System.currentTimeMillis() - start));
+
+        while (it.hasNext()) {
+            rev = it.next();
+
+            if (count++ % 10000 == 0) {
+
+                if (rev != null) {
+                    System.out.println(rev);
+                }
+            }
+        }
+
+        // w.close();
+        System.out.println(Time.toClock(System.currentTimeMillis() - start));
+    }
 }

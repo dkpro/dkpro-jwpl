@@ -29,38 +29,43 @@ import org.slf4j.LoggerFactory;
 /**
  * @deprecated To be removed without replacement.
  */
-@Deprecated(since="2.0.0", forRemoval=true)
-public class DbUtilities {
+@Deprecated(since = "2.0.0", forRemoval = true)
+public class DbUtilities
+{
 
-  private final Connection conn;
+    private final Connection conn;
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  public DbUtilities(Connection conn) {
-    this.conn = conn;
-  }
-
-  public boolean tableExists(String tableName) {
-
-    try {
-      DatabaseMetaData dbmd = conn.getMetaData();
-
-      // Specify the type of object; in this case we want tables
-      String[] types = {"TABLE"};
-
-      // get all table names
-      ResultSet resultSet = dbmd.getTables(null, null, "%", types);
-
-      while (resultSet.next()) {
-        if (resultSet.getString("TABLE_NAME").equals(tableName)) {
-          return true;
-        }
-      }
-    } catch (SQLException e) {
-      logger.error("Table " + tableName + " does not exist.", new RuntimeException(e));
+    public DbUtilities(Connection conn)
+    {
+        this.conn = conn;
     }
 
-    return false;
-  }
+    public boolean tableExists(String tableName)
+    {
+
+        try {
+            DatabaseMetaData dbmd = conn.getMetaData();
+
+            // Specify the type of object; in this case we want tables
+            String[] types = { "TABLE" };
+
+            // get all table names
+            ResultSet resultSet = dbmd.getTables(null, null, "%", types);
+
+            while (resultSet.next()) {
+                if (resultSet.getString("TABLE_NAME").equals(tableName)) {
+                    return true;
+                }
+            }
+        }
+        catch (SQLException e) {
+            logger.error("Table " + tableName + " does not exist.", new RuntimeException(e));
+        }
+
+        return false;
+    }
 
 }

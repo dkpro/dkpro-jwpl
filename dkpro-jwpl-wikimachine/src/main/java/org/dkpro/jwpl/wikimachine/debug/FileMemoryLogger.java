@@ -33,50 +33,56 @@ import org.slf4j.LoggerFactory;
  * <p>
  * The format - and it's semantics - is defined by the header: {@link FileMemoryLogger#FILEHEADER}.
  */
-public class FileMemoryLogger extends AbstractLogger {
+public class FileMemoryLogger
+    extends AbstractLogger
+{
 
-  private static final String FILEHEADER = "\"Date/Time\",\"Total Memory\",\"Free Memory\",\"Message\"";
+    private static final String FILEHEADER = "\"Date/Time\",\"Total Memory\",\"Free Memory\",\"Message\"";
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  private static final SimpleDateFormat FILENAME_FORMAT = new SimpleDateFormat(
-          "yyyyMMdd_HHmmss");
-  private static final SimpleDateFormat DATEFIELD_FORMAT = new SimpleDateFormat(
-          "yyyy.MM.dd HH:mm:ss");
+    private static final SimpleDateFormat FILENAME_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss");
+    private static final SimpleDateFormat DATEFIELD_FORMAT = new SimpleDateFormat(
+            "yyyy.MM.dd HH:mm:ss");
 
-  public static String now(SimpleDateFormat format) {
-    return format.format(new Date());
-  }
-
-  private PrintStream output;
-
-  public FileMemoryLogger() {
-
-    try {
-      output = new PrintStream(new BufferedOutputStream(new FileOutputStream(FILENAME_FORMAT
-              .format(new Date()).concat(".txt"))));
-      output.println(FILEHEADER);
-    } catch (FileNotFoundException e) {
-      logger.error(e.getMessage(), e);
-      output = null;
+    public static String now(SimpleDateFormat format)
+    {
+        return format.format(new Date());
     }
 
-  }
+    private PrintStream output;
 
-  @Override
-  public void logObject(Object message) {
-    if (output != null) {
-      output.println("\"" + DATEFIELD_FORMAT.format(new Date()) + "\",\""
-              + Runtime.getRuntime().totalMemory() + "\",\""
-              + Runtime.getRuntime().freeMemory() + "\",\"" + message
-              + "\"");
+    public FileMemoryLogger()
+    {
+
+        try {
+            output = new PrintStream(new BufferedOutputStream(
+                    new FileOutputStream(FILENAME_FORMAT.format(new Date()).concat(".txt"))));
+            output.println(FILEHEADER);
+        }
+        catch (FileNotFoundException e) {
+            logger.error(e.getMessage(), e);
+            output = null;
+        }
+
     }
-  }
 
-  @Override
-  protected void finalize() throws Throwable {
-    output.close();
-    super.finalize();
-  }
+    @Override
+    public void logObject(Object message)
+    {
+        if (output != null) {
+            output.println("\"" + DATEFIELD_FORMAT.format(new Date()) + "\",\""
+                    + Runtime.getRuntime().totalMemory() + "\",\""
+                    + Runtime.getRuntime().freeMemory() + "\",\"" + message + "\"");
+        }
+    }
+
+    @Override
+    protected void finalize() throws Throwable
+    {
+        output.close();
+        super.finalize();
+    }
 
 }

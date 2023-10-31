@@ -30,131 +30,148 @@ import org.slf4j.LoggerFactory;
 /**
  * An {@link Iterator} over {@link Category} objects.
  */
-public class CategoryIterator implements Iterator<Category> {
+public class CategoryIterator
+    implements Iterator<Category>
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  private final CategoryBuffer buffer;
+    private final CategoryBuffer buffer;
 
-  public CategoryIterator(Wikipedia wiki, int bufferSize) {
-    buffer = new CategoryBuffer(bufferSize, wiki);
-  }
+    public CategoryIterator(Wikipedia wiki, int bufferSize)
+    {
+        buffer = new CategoryBuffer(bufferSize, wiki);
+    }
 
-  @Override
-  public boolean hasNext() {
-    return buffer.hasNext();
-  }
+    @Override
+    public boolean hasNext()
+    {
+        return buffer.hasNext();
+    }
 
-  @Override
-  public Category next() {
-    return buffer.next();
-  }
+    @Override
+    public Category next()
+    {
+        return buffer.next();
+    }
 
-  @Override
-  public void remove() {
-    throw new UnsupportedOperationException();
-  }
-
-  /**
-   * Buffers categories in a list.
-   */
-  static class CategoryBuffer {
-
-    private final Wikipedia wiki;
-
-    private final List<Category> buffer;
-    private final int maxBufferSize;  // the number of pages to be buffered after a query to the database.
-    private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
-    private int bufferOffset;   // the offset in the buffer
-    private int dataOffset;     // the overall offset in the data
-
-    public CategoryBuffer(int bufferSize, Wikipedia wiki) {
-      this.maxBufferSize = bufferSize;
-      this.wiki = wiki;
-      this.buffer = new ArrayList<>();
-      this.bufferFillSize = 0;
-      this.bufferOffset = 0;
-      this.dataOffset = 0;
-      //TODO test whether this works when zero pages are retrieved
+    @Override
+    public void remove()
+    {
+        throw new UnsupportedOperationException();
     }
 
     /**
-     * If there are elements in the buffer left, then return true.
-     * If the end of the filled buffer is reached, then try to load new buffer.
-     *
-     * @return True, if there are pages left. False otherwise.
+     * Buffers categories in a list.
      */
-    public boolean hasNext() {
-      if (bufferOffset < bufferFillSize) {
-        return true;
-      } else {
-        return this.fillBuffer();
-      }
-    }
+    static class CategoryBuffer
+    {
 
-    /**
-     * @return The next Category or null if no more categories are available.
-     */
-    public Category next() {
-      // if there are still elements in the buffer, just retrieve the next one
-      if (bufferOffset < bufferFillSize) {
-        return this.getBufferElement();
-      }
-      // if there are no more elements => try to fill a new buffer
-      else if (this.fillBuffer()) {
-        return this.getBufferElement();
-      } else {
-        // if it cannot be filled => return null
-        return null;
-      }
-    }
+        private final Wikipedia wiki;
 
-    private Category getBufferElement() {
-      Category cat = buffer.get(bufferOffset);
-      bufferOffset++;
-      dataOffset++;
-      return cat;
-    }
+        private final List<Category> buffer;
+        private final int maxBufferSize; // the number of pages to be buffered after a query to the
+                                         // database.
+        private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
+        private int bufferOffset; // the offset in the buffer
+        private int dataOffset; // the overall offset in the data
 
-    private boolean fillBuffer() {
-
-      Session session = this.wiki.__getHibernateSession();
-      session.beginTransaction();
-      final String sql = "SELECT c FROM Category c";
-      List<org.dkpro.jwpl.api.hibernate.Category> returnValues =
-              session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
-                      .setFirstResult(dataOffset)
-                      .setMaxResults(maxBufferSize)
-                      .setFetchSize(maxBufferSize)
-                      .list();
-      session.getTransaction().commit();
-
-      // clear the old buffer and all variables regarding the state of the buffer
-      buffer.clear();
-      bufferOffset = 0;
-      bufferFillSize = 0;
-
-      Category apiCategory;
-      for (org.dkpro.jwpl.api.hibernate.Category o : returnValues) {
-        if (o == null) {
-          return false;
-        } else {
-          long id = o.getId();
-          try {
-            apiCategory = new Category(this.wiki, id);
-            buffer.add(apiCategory);
-          } catch (WikiApiException e) {
-            logger.error("Page with hibernateID {} not found.", id, e);
-          }
+        public CategoryBuffer(int bufferSize, Wikipedia wiki)
+        {
+            this.maxBufferSize = bufferSize;
+            this.wiki = wiki;
+            this.buffer = new ArrayList<>();
+            this.bufferFillSize = 0;
+            this.bufferOffset = 0;
+            this.dataOffset = 0;
+            // TODO test whether this works when zero pages are retrieved
         }
-      }
-      if (buffer.size() > 0) {
-        bufferFillSize = buffer.size();
-        return true;
-      } else {
-        return false;
-      }
-    }
 
-  }
+        /**
+         * If there are elements in the buffer left, then return true. If the end of the filled
+         * buffer is reached, then try to load new buffer.
+         *
+         * @return True, if there are pages left. False otherwise.
+         */
+        public boolean hasNext()
+        {
+            if (bufferOffset < bufferFillSize) {
+                return true;
+            }
+            else {
+                return this.fillBuffer();
+            }
+        }
+
+        /**
+         * @return The next Category or null if no more categories are available.
+         */
+        public Category next()
+        {
+            // if there are still elements in the buffer, just retrieve the next one
+            if (bufferOffset < bufferFillSize) {
+                return this.getBufferElement();
+            }
+            // if there are no more elements => try to fill a new buffer
+            else if (this.fillBuffer()) {
+                return this.getBufferElement();
+            }
+            else {
+                // if it cannot be filled => return null
+                return null;
+            }
+        }
+
+        private Category getBufferElement()
+        {
+            Category cat = buffer.get(bufferOffset);
+            bufferOffset++;
+            dataOffset++;
+            return cat;
+        }
+
+        private boolean fillBuffer()
+        {
+
+            Session session = this.wiki.__getHibernateSession();
+            session.beginTransaction();
+            final String sql = "SELECT c FROM Category c";
+            List<org.dkpro.jwpl.api.hibernate.Category> returnValues = session
+                    .createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
+                    .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
+                    .setFetchSize(maxBufferSize).list();
+            session.getTransaction().commit();
+
+            // clear the old buffer and all variables regarding the state of the buffer
+            buffer.clear();
+            bufferOffset = 0;
+            bufferFillSize = 0;
+
+            Category apiCategory;
+            for (org.dkpro.jwpl.api.hibernate.Category o : returnValues) {
+                if (o == null) {
+                    return false;
+                }
+                else {
+                    long id = o.getId();
+                    try {
+                        apiCategory = new Category(this.wiki, id);
+                        buffer.add(apiCategory);
+                    }
+                    catch (WikiApiException e) {
+                        logger.error("Page with hibernateID {} not found.", id, e);
+                    }
+                }
+            }
+            if (buffer.size() > 0) {
+                bufferFillSize = buffer.size();
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+    }
 }

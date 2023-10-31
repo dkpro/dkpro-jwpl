@@ -32,70 +32,70 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 /**
  * An interface to abstract from DumpVersion realization
  */
-public interface IDumpVersion {
+public interface IDumpVersion
+{
 
-  void setLogger(ILogger logger);
+    void setLogger(ILogger logger);
 
-  void setCategoryRedirectsSkip(boolean skipCategory);
+    void setCategoryRedirectsSkip(boolean skipCategory);
 
-  void setPageRedirectsSkip(boolean skipPage);
+    void setPageRedirectsSkip(boolean skipPage);
 
-  // initialize
-  void initialize(Timestamp timestamp);
+    // initialize
+    void initialize(Timestamp timestamp);
 
-  void setMetaData(MetaData commonMetaData);
+    void setMetaData(MetaData commonMetaData);
 
-  void setFiles(Files versionFiles);
+    void setFiles(Files versionFiles);
 
-  // parse revisions
-  void initRevisionParsion();
+    // parse revisions
+    void initRevisionParsion();
 
-  void processRevisionRow(RevisionParser revisionParser);
+    void processRevisionRow(RevisionParser revisionParser);
 
-  void exportAfterRevisionParsing() throws IOException;
+    void exportAfterRevisionParsing() throws IOException;
 
-  void freeAfterRevisonParsing();
+    void freeAfterRevisonParsing();
 
-  // parse pages
-  void initPageParsing() throws IOException;
+    // parse pages
+    void initPageParsing() throws IOException;
 
-  void processPageRow(PageParser pageParser) throws IOException;
+    void processPageRow(PageParser pageParser) throws IOException;
 
-  void exportAfterPageParsing() throws IOException;
+    void exportAfterPageParsing() throws IOException;
 
-  void freeAfterPageParsing();
+    void freeAfterPageParsing();
 
-  // parse category links
-  void initCategoryLinksParsing() throws IOException;
+    // parse category links
+    void initCategoryLinksParsing() throws IOException;
 
-  void processCategoryLinksRow(CategorylinksParser clParser)
-          throws IOException;
+    void processCategoryLinksRow(CategorylinksParser clParser) throws IOException;
 
-  void exportAfterCategoryLinksParsing() throws IOException;
+    void exportAfterCategoryLinksParsing() throws IOException;
 
-  void freeAfterCategoryLinksParsing();
+    void freeAfterCategoryLinksParsing();
 
-  // parse page links
-  void initPageLinksParsing() throws IOException;
+    // parse page links
+    void initPageLinksParsing() throws IOException;
 
-  void processPageLinksRow(PagelinksParser plParser) throws IOException;
+    void processPageLinksRow(PagelinksParser plParser) throws IOException;
 
-  void exportAfterPageLinksParsing() throws IOException;
+    void exportAfterPageLinksParsing() throws IOException;
 
-  void freeAfterPageLinksParsing();
+    void freeAfterPageLinksParsing();
 
-  // parse text
-  void initTextParsing() throws IOException;
+    // parse text
+    void initTextParsing() throws IOException;
 
-  void processTextRow(TextParser textParser) throws IOException;
+    void processTextRow(TextParser textParser) throws IOException;
 
-  void flushByTextParsing() throws IOException;
+    void flushByTextParsing() throws IOException;
 
-  void exportAfterTextParsing() throws IOException;
+    void exportAfterTextParsing() throws IOException;
 
-  void freeAfterTextParsing();
+    void freeAfterTextParsing();
 
-  // write meta data
-  void writeMetaData() throws IOException;
+    // write meta data
+    void writeMetaData() throws IOException;
 
 }

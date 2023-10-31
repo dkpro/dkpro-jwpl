@@ -27,43 +27,53 @@ import org.dkpro.jwpl.mwdumper.importer.Siteinfo;
 import org.dkpro.jwpl.wikimachine.dump.sql.SQLEscape;
 import org.dkpro.jwpl.wikimachine.util.UTFDataOutputStream;
 
-public class TextWriter implements DumpWriter {
+public class TextWriter
+    implements DumpWriter
+{
 
-  private final UTFDataOutputStream stream;
+    private final UTFDataOutputStream stream;
 
-  public TextWriter(OutputStream output) throws IOException {
-    this.stream = new UTFDataOutputStream(output);
-  }
+    public TextWriter(OutputStream output) throws IOException
+    {
+        this.stream = new UTFDataOutputStream(output);
+    }
 
-  @Override
-  public void close() throws IOException {
-    stream.close();
-  }
+    @Override
+    public void close() throws IOException
+    {
+        stream.close();
+    }
 
-  @Override
-  public void writeEndPage() throws IOException {
-  }
+    @Override
+    public void writeEndPage() throws IOException
+    {
+    }
 
-  @Override
-  public void writeEndWiki() throws IOException {
-    stream.flush();
-  }
+    @Override
+    public void writeEndWiki() throws IOException
+    {
+        stream.flush();
+    }
 
-  @Override
-  public void writeRevision(Revision revision) throws IOException {
-    stream.writeInt(revision.Id);
-    stream.writeUTFAsArray(SQLEscape.escape(revision.Text));
-  }
+    @Override
+    public void writeRevision(Revision revision) throws IOException
+    {
+        stream.writeInt(revision.Id);
+        stream.writeUTFAsArray(SQLEscape.escape(revision.Text));
+    }
 
-  @Override
-  public void writeSiteinfo(Siteinfo info) throws IOException {
-  }
+    @Override
+    public void writeSiteinfo(Siteinfo info) throws IOException
+    {
+    }
 
-  @Override
-  public void writeStartPage(Page page) throws IOException {
-  }
+    @Override
+    public void writeStartPage(Page page) throws IOException
+    {
+    }
 
-  @Override
-  public void writeStartWiki() throws IOException {
-  }
+    @Override
+    public void writeStartWiki() throws IOException
+    {
+    }
 }

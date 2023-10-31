@@ -17,6 +17,10 @@ package org.dkpro.jwpl.parser;
  * limitations under the License.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.WikiConstants.Language;
@@ -24,48 +28,46 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
-
-public class ParsedPageTest extends BaseJWPLTest{
+public class ParsedPageTest
+    extends BaseJWPLTest
+{
 
     private static final String LF = "\n";
 
     /**
-     * Made this static so that following tests don't run if assumption fails.
-     * (With AT_Before, tests also would not be executed but marked as passed)
-     * This could be changed back as soon as JUnit ignored tests after failed
-     * assumptions
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
      */
     @BeforeAll
-    public static void setupWikipedia() {
+    public static void setupWikipedia()
+    {
         DatabaseConfiguration db = obtainHSQLDBConfiguration();
         try {
             wiki = new Wikipedia(db);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             fail("Wikipedia could not be initialized: " + e.getLocalizedMessage(), e);
         }
     }
 
     @Test
-    public void testParsedPage(){
+    public void testParsedPage()
+    {
         String title = "Wikipedia API";
         Page p = null;
         try {
             p = wiki.getPage(title);
-        } catch (WikiApiException e) {
+        }
+        catch (WikiApiException e) {
             fail("A WikiApiException occurred while getting the page " + title, e);
         }
 
-
-        String text = "Wikipedia API ist die wichtigste Software überhaupt." + LF +
-        	"Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de en:Wikipedia API";
-
+        String text = "Wikipedia API ist die wichtigste Software überhaupt." + LF
+                + "Wikipedia API. Nicht zu übertreffen. Unglaublich http://www.ukp.tu-darmstadt.de en:Wikipedia API";
 
         MediaWikiParserFactory pf = new MediaWikiParserFactory(Language.english);
         MediaWikiParser parser = pf.createParser();
@@ -73,12 +75,12 @@ public class ParsedPageTest extends BaseJWPLTest{
         ParsedPage pp = parser.parse(p.getText());
         assertNotNull(pp);
 
-        int i=0;
+        int i = 0;
         for (Link link : pp.getSection(0).getLinks()) {
-            if (i==0) {
+            if (i == 0) {
                 assertEquals("Software", link.getText());
             }
-            else if (i==1) {
+            else if (i == 1) {
                 assertEquals("Wikipedia API", link.getText());
                 assertEquals("JWPL", link.getTarget());
             }
@@ -87,5 +89,5 @@ public class ParsedPageTest extends BaseJWPLTest{
         String parsedPageText = pp.getText();
         assertNotNull(parsedPageText);
         assertEquals(text, parsedPageText);
-	  }
+    }
 }

@@ -22,20 +22,21 @@ import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.api.Wikipedia;
 
 /**
- * Simple test base class to inject the same hsqldb test context into every test
- * class to avoid duplicated code and efforts. Also shuts down the
- * hibernate/hsqldb context properly.
+ * Simple test base class to inject the same hsqldb test context into every test class to avoid
+ * duplicated code and efforts. Also shuts down the hibernate/hsqldb context properly.
  * 
  * @author mawiesne
  */
-public abstract class BaseJWPLTest {
+public abstract class BaseJWPLTest
+{
 
-	protected static Wikipedia wiki;
+    protected static Wikipedia wiki;
 
-	protected static final DatabaseConfiguration obtainHSDLDBConfiguration(String databaseName, Language language) {
-		return new DatabaseConfiguration("org.hsqldb.jdbcDriver",
-				"jdbc:hsqldb:file:./src/test/resources/db/"+databaseName,
-				"localhost", databaseName, "sa",
-				"", language);
-	}
+    protected static final DatabaseConfiguration obtainHSDLDBConfiguration(String databaseName,
+            Language language)
+    {
+        return new DatabaseConfiguration("org.hsqldb.jdbcDriver",
+                "jdbc:hsqldb:file:./src/test/resources/db/" + databaseName, "localhost",
+                databaseName, "sa", "", language);
+    }
 }

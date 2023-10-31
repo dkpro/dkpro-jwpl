@@ -23,14 +23,17 @@ import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 /**
- * GZip Decompressor (based on Singleton Design Pattern). Uses getInputStream to
- * set up the archive path and returns the InputStream to read from
+ * GZip Decompressor (based on Singleton Design Pattern). Uses getInputStream to set up the archive
+ * path and returns the InputStream to read from
  */
-public class GZipDecompressor implements IDecompressor {
+public class GZipDecompressor
+    implements IDecompressor
+{
 
-  @Override
-  public InputStream getInputStream(String fileName) throws IOException {
-    return new GZIPInputStream(new FileInputStream(fileName));
-  }
+    @Override
+    public InputStream getInputStream(String fileName) throws IOException
+    {
+        return new GZIPInputStream(new FileInputStream(fileName));
+    }
 
 }

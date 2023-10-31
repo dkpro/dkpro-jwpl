@@ -18,38 +18,45 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * SQLConsumerException Describes an exception that occurred while accessing the
- * database.
+ * SQLConsumerException Describes an exception that occurred while accessing the database.
  */
 @SuppressWarnings("serial")
 public class SQLConsumerException
-        extends Exception {
+    extends Exception
+{
 
-  /**
-   * Creates a new SQLConsumerException.
-   *
-   * @param description message
-   */
-  public SQLConsumerException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new SQLConsumerException.
+     *
+     * @param description
+     *            message
+     */
+    public SQLConsumerException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new SQLConsumerException.
-   *
-   * @param e inner exception
-   */
-  public SQLConsumerException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new SQLConsumerException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public SQLConsumerException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new SQLConsumerException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public SQLConsumerException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new SQLConsumerException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public SQLConsumerException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 }

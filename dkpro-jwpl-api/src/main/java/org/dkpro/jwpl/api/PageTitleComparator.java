@@ -24,16 +24,20 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 /**
  * Compares two pages based on the lexicographic ordering of their titles.
  */
-public class PageTitleComparator implements Comparator<Page> {
+public class PageTitleComparator
+    implements Comparator<Page>
+{
 
-  public int compare(Page o1, Page o2) {
+    public int compare(Page o1, Page o2)
+    {
 
-    int retVal = 0;
-    try {
-      retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
-    } catch (WikiTitleParsingException e) {
-      e.printStackTrace();
+        int retVal = 0;
+        try {
+            retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
+        }
+        catch (WikiTitleParsingException e) {
+            e.printStackTrace();
+        }
+        return retVal;
     }
-    return retVal;
-  }
 }

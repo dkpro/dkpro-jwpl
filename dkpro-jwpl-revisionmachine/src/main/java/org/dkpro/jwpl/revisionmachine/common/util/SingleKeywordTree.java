@@ -18,81 +18,91 @@
 package org.dkpro.jwpl.revisionmachine.common.util;
 
 /**
- * This class represents a keyword tree and is used to process or to search a
- * character sequence.
+ * This class represents a keyword tree and is used to process or to search a character sequence.
  * <p>
  * This keyword tree can only be used for non overlapping keywords.
  *
- * @param <V> related value
+ * @param <V>
+ *            related value
  */
-public class SingleKeywordTree<V> {
+public class SingleKeywordTree<V>
+{
 
-  /**
-   * Reference to the root
-   */
-  private final LetterNode<V> root;
+    /**
+     * Reference to the root
+     */
+    private final LetterNode<V> root;
 
-  /**
-   * Reference to the current node
-   */
-  private LetterNode<V> current;
+    /**
+     * Reference to the current node
+     */
+    private LetterNode<V> current;
 
-  /**
-   * Creates an empty SingleKeywordTree object.
-   */
-  public SingleKeywordTree() {
-    root = new LetterNode<>();
-    reset();
-  }
-
-  /**
-   * Adds a keyword and its related value.
-   *
-   * @param s     keyword
-   * @param value related value
-   */
-  public void addKeyword(final String s, final V value) {
-    root.add(s, value);
-  }
-
-  /**
-   * Checks whether the character is related to the currently used node. If
-   * the comparison fails the keyword tree will be reseted to its root node,
-   * otherwise the related node will replace the current node.
-   *
-   * @param c character
-   * @return TRUE if the current node contains a keyword FALSE otherwise
-   */
-  public boolean check(final char c) {
-    current = current.get(c);
-    if (current == null) {
-      reset();
+    /**
+     * Creates an empty SingleKeywordTree object.
+     */
+    public SingleKeywordTree()
+    {
+        root = new LetterNode<>();
+        reset();
     }
-    return current.isKeyword();
-  }
 
-  /**
-   * Resets the current node with the root node.
-   */
-  public void reset() {
-    this.current = root;
-  }
+    /**
+     * Adds a keyword and its related value.
+     *
+     * @param s
+     *            keyword
+     * @param value
+     *            related value
+     */
+    public void addKeyword(final String s, final V value)
+    {
+        root.add(s, value);
+    }
 
-  /**
-   * Returns the keyword of the current node.
-   *
-   * @return keyword
-   */
-  public String getWord() {
-    return this.current.getWord();
-  }
+    /**
+     * Checks whether the character is related to the currently used node. If the comparison fails
+     * the keyword tree will be reseted to its root node, otherwise the related node will replace
+     * the current node.
+     *
+     * @param c
+     *            character
+     * @return TRUE if the current node contains a keyword FALSE otherwise
+     */
+    public boolean check(final char c)
+    {
+        current = current.get(c);
+        if (current == null) {
+            reset();
+        }
+        return current.isKeyword();
+    }
 
-  /**
-   * Returns the related value of the current node.
-   *
-   * @return related value
-   */
-  public V getValue() {
-    return this.current.getValue();
-  }
+    /**
+     * Resets the current node with the root node.
+     */
+    public void reset()
+    {
+        this.current = root;
+    }
+
+    /**
+     * Returns the keyword of the current node.
+     *
+     * @return keyword
+     */
+    public String getWord()
+    {
+        return this.current.getWord();
+    }
+
+    /**
+     * Returns the related value of the current node.
+     *
+     * @return related value
+     */
+    public V getValue()
+    {
+        return this.current.getValue();
+    }
 }

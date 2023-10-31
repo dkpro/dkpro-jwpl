@@ -17,28 +17,32 @@
  */
 package org.dkpro.jwpl.api.exception;
 
-
 /**
  * Thrown when a requested page or category could not be found in Wikipedia.
  */
-public class WikiPageNotFoundException extends WikiApiException {
+public class WikiPageNotFoundException
+    extends WikiApiException
+{
 
+    private static final long serialVersionUID = -3676016515948761351L;
 
-  private static final long serialVersionUID = -3676016515948761351L;
+    public WikiPageNotFoundException()
+    {
+        super();
+    }
 
-  public WikiPageNotFoundException() {
-    super();
-  }
+    public WikiPageNotFoundException(String txt)
+    {
+        super(txt);
+    }
 
-  public WikiPageNotFoundException(String txt) {
-    super(txt);
-  }
+    public WikiPageNotFoundException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 
-  public WikiPageNotFoundException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
-  public WikiPageNotFoundException(Throwable cause) {
-    super(cause);
-  }
+    public WikiPageNotFoundException(Throwable cause)
+    {
+        super(cause);
+    }
 }

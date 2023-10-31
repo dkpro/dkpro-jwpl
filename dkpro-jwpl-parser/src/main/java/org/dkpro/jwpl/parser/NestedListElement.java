@@ -20,9 +20,13 @@ package org.dkpro.jwpl.parser;
 /**
  * This is a simple ContentElement, wich occures in a NestedList.
  */
-public class NestedListElement extends ContentElement implements NestedList {
+public class NestedListElement
+    extends ContentElement
+    implements NestedList
+{
 
-  public String toString() {
-    return "NLC_IS_CONTENT: true\n" + super.toString();
-  }
+    public String toString()
+    {
+        return "NLC_IS_CONTENT: true\n" + super.toString();
+    }
 }

@@ -26,32 +26,39 @@ import java.nio.charset.StandardCharsets;
 /**
  * Writes the dumps of tables as txt files.
  */
-public class TxtFileWriter extends PrintStream {
+public class TxtFileWriter
+    extends PrintStream
+{
 
-  private static final boolean AUTOFLUSH = false;
+    private static final boolean AUTOFLUSH = false;
 
-  /**
-   * Instantiates a new TxtFileWriter object.
-   *
-   * @param filename
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  public TxtFileWriter(String filename) throws IOException {
-    super(new BufferedOutputStream(new FileOutputStream(filename)), AUTOFLUSH, StandardCharsets.UTF_8);
-  }
+    /**
+     * Instantiates a new TxtFileWriter object.
+     *
+     * @param filename
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    public TxtFileWriter(String filename) throws IOException
+    {
+        super(new BufferedOutputStream(new FileOutputStream(filename)), AUTOFLUSH,
+                StandardCharsets.UTF_8);
+    }
 
-  /**
-   * Add one or more rows to the dump of the table.
-   *
-   * @param row
-   */
-  public void addRow(Object... row) {
-    super.print(Strings.join(row, "\t") + "\n");
-  }
+    /**
+     * Add one or more rows to the dump of the table.
+     *
+     * @param row
+     */
+    public void addRow(Object... row)
+    {
+        super.print(Strings.join(row, "\t") + "\n");
+    }
 
-  public void export() {
-    super.flush();
-    super.close();
-  }
+    public void export()
+    {
+        super.flush();
+        super.close();
+    }
 
 }

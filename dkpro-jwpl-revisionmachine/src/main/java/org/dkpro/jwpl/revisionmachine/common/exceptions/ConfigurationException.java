@@ -18,62 +18,74 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * ConfigurationException Describes an exception that occurred while accessing
- * the configuration.
+ * ConfigurationException Describes an exception that occurred while accessing the configuration.
  */
 @SuppressWarnings("serial")
-public class ConfigurationException extends Exception {
+public class ConfigurationException
+    extends Exception
+{
 
-  /**
-   * Reference to the error key
-   */
-  private ErrorKeys key;
+    /**
+     * Reference to the error key
+     */
+    private ErrorKeys key;
 
-  /**
-   * Creates a new ConfigurationException.
-   *
-   * @param description message
-   */
-  public ConfigurationException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new ConfigurationException.
+     *
+     * @param description
+     *            message
+     */
+    public ConfigurationException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new ConfigurationException.
-   *
-   * @param e inner exception
-   */
-  public ConfigurationException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new ConfigurationException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public ConfigurationException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new ConfigurationException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public ConfigurationException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new ConfigurationException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public ConfigurationException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 
-  /**
-   * Creates a new ConfigurationException.
-   *
-   * @param key         error key
-   * @param description message
-   */
-  public ConfigurationException(final ErrorKeys key, final String description) {
-    super(description);
-    this.key = key;
-  }
+    /**
+     * Creates a new ConfigurationException.
+     *
+     * @param key
+     *            error key
+     * @param description
+     *            message
+     */
+    public ConfigurationException(final ErrorKeys key, final String description)
+    {
+        super(description);
+        this.key = key;
+    }
 
-  /**
-   * Returns the error key.
-   *
-   * @return error key
-   */
-  public ErrorKeys getKey() {
-    return this.key;
-  }
+    /**
+     * Returns the error key.
+     *
+     * @return error key
+     */
+    public ErrorKeys getKey()
+    {
+        return this.key;
+    }
 }

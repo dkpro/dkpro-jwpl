@@ -20,15 +20,16 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * Contains the keys for the configuration types.
  */
-public enum ConfigEnum {
+public enum ConfigEnum
+{
 
-  /**
-   * Default Configuration
-   */
-  DEFAULT,
+    /**
+     * Default Configuration
+     */
+    DEFAULT,
 
-  /**
-   * Imported Configuration
-   */
-  IMPORT
+    /**
+     * Imported Configuration
+     */
+    IMPORT
 }

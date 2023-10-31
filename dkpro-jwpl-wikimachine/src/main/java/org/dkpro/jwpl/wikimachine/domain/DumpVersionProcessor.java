@@ -27,158 +27,171 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
-public class DumpVersionProcessor {
+public class DumpVersionProcessor
+{
 
-  private static ILogger logger;
+    private static ILogger logger;
 
-  private Integer step2Log = 100000;
-  private Integer step2GC = step2Log * 10;
-  private Integer step2Flush = step2GC;
+    private Integer step2Log = 100000;
+    private Integer step2GC = step2Log * 10;
+    private Integer step2Flush = step2GC;
 
-  public DumpVersionProcessor(ILogger initialLogger) {
-    logger = initialLogger;
-  }
-
-  private IDumpVersion[] versions;
-
-  public void setDumpVersions(IDumpVersion[] versions) {
-    this.versions = versions;
-  }
-
-  public void setStep2Log(Integer step2Log) {
-    this.step2Log = step2Log;
-  }
-
-  public void setStep2GC(Integer step2GC) {
-    this.step2GC = step2GC;
-  }
-
-  public void setStep2Flush(Integer step2Flush) {
-    this.step2Flush = step2Flush;
-  }
-
-  public void processRevision(RevisionParser revisionParser) throws IOException {
-    for (IDumpVersion version : versions) {
-      version.initRevisionParsion();
-    }
-    int counter = 0;
-    while (revisionParser.next()) {
-      for (IDumpVersion version : versions) {
-        version.processRevisionRow(revisionParser);
-      }
-
-      logAndClear(++counter, "Revision");
+    public DumpVersionProcessor(ILogger initialLogger)
+    {
+        logger = initialLogger;
     }
 
-    for (IDumpVersion version : versions) {
-      version.exportAfterRevisionParsing();
-      version.freeAfterRevisonParsing();
+    private IDumpVersion[] versions;
+
+    public void setDumpVersions(IDumpVersion[] versions)
+    {
+        this.versions = versions;
     }
 
-    revisionParser.close();
-  }
-
-  public void processPage(PageParser pageParser) throws IOException {
-    for (IDumpVersion version : versions) {
-      version.initPageParsing();
+    public void setStep2Log(Integer step2Log)
+    {
+        this.step2Log = step2Log;
     }
 
-    int counter = 0;
-    while (pageParser.next()) {
-      for (IDumpVersion version : versions) {
-        version.processPageRow(pageParser);
-      }
-      logAndClear(++counter, "Pages");
+    public void setStep2GC(Integer step2GC)
+    {
+        this.step2GC = step2GC;
     }
 
-    for (IDumpVersion version : versions) {
-      version.exportAfterPageParsing();
-      version.freeAfterPageParsing();
+    public void setStep2Flush(Integer step2Flush)
+    {
+        this.step2Flush = step2Flush;
     }
 
-    pageParser.close();
-  }
-
-  public void processCategorylinks(CategorylinksParser categorylinksParser) throws IOException {
-    for (IDumpVersion version : versions) {
-      version.initCategoryLinksParsing();
-    }
-
-    int counter = 0;
-    while (categorylinksParser.next()) {
-      for (IDumpVersion version : versions) {
-        version.processCategoryLinksRow(categorylinksParser);
-      }
-      logAndClear(++counter, "Categorylinks");
-    }
-
-    for (IDumpVersion version : versions) {
-      version.exportAfterCategoryLinksParsing();
-      version.freeAfterCategoryLinksParsing();
-    }
-
-    categorylinksParser.close();
-  }
-
-  public void processPagelinks(PagelinksParser pagelinksParser) throws IOException {
-    for (IDumpVersion version : versions) {
-      version.initPageLinksParsing();
-    }
-
-    int counter = 0;
-    while (pagelinksParser.next()) {
-      for (IDumpVersion version : versions) {
-        version.processPageLinksRow(pagelinksParser);
-      }
-      logAndClear(++counter, "Pagelinks");
-    }
-
-    for (IDumpVersion version : versions) {
-      version.exportAfterPageLinksParsing();
-      version.freeAfterPageLinksParsing();
-    }
-
-    pagelinksParser.close();
-  }
-
-  public void processText(TextParser textParser) throws IOException {
-    for (IDumpVersion version : versions) {
-      version.initTextParsing();
-    }
-
-    int counter = 0;
-    while (textParser.next()) {
-      for (IDumpVersion version : versions) {
-        version.processTextRow(textParser);
-      }
-      if (step2Flush != 0 && counter % step2Flush == 0) {
+    public void processRevision(RevisionParser revisionParser) throws IOException
+    {
         for (IDumpVersion version : versions) {
-          version.flushByTextParsing();
+            version.initRevisionParsion();
         }
-      }
-      logAndClear(++counter, "Text");
+        int counter = 0;
+        while (revisionParser.next()) {
+            for (IDumpVersion version : versions) {
+                version.processRevisionRow(revisionParser);
+            }
 
+            logAndClear(++counter, "Revision");
+        }
+
+        for (IDumpVersion version : versions) {
+            version.exportAfterRevisionParsing();
+            version.freeAfterRevisonParsing();
+        }
+
+        revisionParser.close();
     }
 
-    for (IDumpVersion version : versions) {
-      version.exportAfterTextParsing();
-      version.freeAfterTextParsing();
+    public void processPage(PageParser pageParser) throws IOException
+    {
+        for (IDumpVersion version : versions) {
+            version.initPageParsing();
+        }
+
+        int counter = 0;
+        while (pageParser.next()) {
+            for (IDumpVersion version : versions) {
+                version.processPageRow(pageParser);
+            }
+            logAndClear(++counter, "Pages");
+        }
+
+        for (IDumpVersion version : versions) {
+            version.exportAfterPageParsing();
+            version.freeAfterPageParsing();
+        }
+
+        pageParser.close();
     }
 
-    textParser.close();
-  }
+    public void processCategorylinks(CategorylinksParser categorylinksParser) throws IOException
+    {
+        for (IDumpVersion version : versions) {
+            version.initCategoryLinksParsing();
+        }
 
-  public void writeMetaData() throws IOException {
-    for (IDumpVersion version : versions) {
-      version.writeMetaData();
-    }
-  }
+        int counter = 0;
+        while (categorylinksParser.next()) {
+            for (IDumpVersion version : versions) {
+                version.processCategoryLinksRow(categorylinksParser);
+            }
+            logAndClear(++counter, "Categorylinks");
+        }
 
-  private void logAndClear(int counter, String event) throws IOException {
-    if (step2Log != 0 && counter % step2Log == 0) {
-      String message = event + " " + counter;
-      logger.log(message);
+        for (IDumpVersion version : versions) {
+            version.exportAfterCategoryLinksParsing();
+            version.freeAfterCategoryLinksParsing();
+        }
+
+        categorylinksParser.close();
     }
-  }
+
+    public void processPagelinks(PagelinksParser pagelinksParser) throws IOException
+    {
+        for (IDumpVersion version : versions) {
+            version.initPageLinksParsing();
+        }
+
+        int counter = 0;
+        while (pagelinksParser.next()) {
+            for (IDumpVersion version : versions) {
+                version.processPageLinksRow(pagelinksParser);
+            }
+            logAndClear(++counter, "Pagelinks");
+        }
+
+        for (IDumpVersion version : versions) {
+            version.exportAfterPageLinksParsing();
+            version.freeAfterPageLinksParsing();
+        }
+
+        pagelinksParser.close();
+    }
+
+    public void processText(TextParser textParser) throws IOException
+    {
+        for (IDumpVersion version : versions) {
+            version.initTextParsing();
+        }
+
+        int counter = 0;
+        while (textParser.next()) {
+            for (IDumpVersion version : versions) {
+                version.processTextRow(textParser);
+            }
+            if (step2Flush != 0 && counter % step2Flush == 0) {
+                for (IDumpVersion version : versions) {
+                    version.flushByTextParsing();
+                }
+            }
+            logAndClear(++counter, "Text");
+
+        }
+
+        for (IDumpVersion version : versions) {
+            version.exportAfterTextParsing();
+            version.freeAfterTextParsing();
+        }
+
+        textParser.close();
+    }
+
+    public void writeMetaData() throws IOException
+    {
+        for (IDumpVersion version : versions) {
+            version.writeMetaData();
+        }
+    }
+
+    private void logAndClear(int counter, String event) throws IOException
+    {
+        if (step2Log != 0 && counter % step2Log == 0) {
+            String message = event + " " + counter;
+            logger.log(message);
+        }
+    }
 
 }

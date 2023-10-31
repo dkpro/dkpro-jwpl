@@ -27,15 +27,19 @@ package org.dkpro.jwpl.mwdumper.importer;
 
 import java.util.regex.Pattern;
 
-public class TitleMatchFilter extends PageFilter {
-  final Pattern regex;
+public class TitleMatchFilter
+    extends PageFilter
+{
+    final Pattern regex;
 
-  public TitleMatchFilter(DumpWriter sink, String regexString) {
-    super(sink);
-    regex = Pattern.compile(regexString);
-  }
+    public TitleMatchFilter(DumpWriter sink, String regexString)
+    {
+        super(sink);
+        regex = Pattern.compile(regexString);
+    }
 
-  protected boolean pass(Page page) {
-    return regex.matcher(page.Title.toString()).matches();
-  }
+    protected boolean pass(Page page)
+    {
+        return regex.matcher(page.Title.toString()).matches();
+    }
 }

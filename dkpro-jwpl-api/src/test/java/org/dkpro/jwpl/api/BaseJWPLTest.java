@@ -18,25 +18,26 @@
 package org.dkpro.jwpl.api;
 
 /**
- * Simple test base class to inject the same hsqldb test context into every test
- * class to avoid duplicated code and efforts. Also shuts down the
- * hibernate/hsqldb context properly.
+ * Simple test base class to inject the same hsqldb test context into every test class to avoid
+ * duplicated code and efforts. Also shuts down the hibernate/hsqldb context properly.
  *
  * @author mawiesne
  */
-public abstract class BaseJWPLTest {
+public abstract class BaseJWPLTest
+{
 
-	protected static Wikipedia wiki;
+    protected static Wikipedia wiki;
 
-	protected static DatabaseConfiguration obtainHSDLDBConfiguration() {
-		DatabaseConfiguration db = new DatabaseConfiguration();
-		db.setDatabase("wikiapi_test");
-		db.setHost("localhost");
-		db.setUser("sa");
-		db.setPassword("");
-		db.setLanguage(WikiConstants.Language._test);
-		db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
-		db.setDatabaseDriver("org.hsqldb.jdbcDriver");
-		return db;
-	}
+    protected static DatabaseConfiguration obtainHSDLDBConfiguration()
+    {
+        DatabaseConfiguration db = new DatabaseConfiguration();
+        db.setDatabase("wikiapi_test");
+        db.setHost("localhost");
+        db.setUser("sa");
+        db.setPassword("");
+        db.setLanguage(WikiConstants.Language._test);
+        db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
+        db.setDatabaseDriver("org.hsqldb.jdbcDriver");
+        return db;
+    }
 }

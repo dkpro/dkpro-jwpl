@@ -37,152 +37,164 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels.AbstractPanel;
  */
 @SuppressWarnings("serial")
 public class ConfigDialog
-        extends JDialog {
-
-  /**
-   * Panel of the ConfigDialog
-   */
-  private class ConfigDialogPanel
-          extends AbstractPanel {
-
-    private JTable itemTable;
-    private JScrollPane itemScrollPane;
-
-    private JButton returnButton;
-    private JButton saveButton;
+    extends JDialog
+{
 
     /**
-     * (Constructor) Creates the ConfigDialogPanel.
-     *
-     * @param controller Reference to the controller
+     * Panel of the ConfigDialog
      */
-    public ConfigDialogPanel(final ConfigController controller) {
-      super(controller);
-      createItemTable();
-      createButtons();
-    }
+    private class ConfigDialogPanel
+        extends AbstractPanel
+    {
 
-    /**
-     * Creates the buttons of the dialog panel.
-     */
-    private void createButtons() {
+        private JTable itemTable;
+        private JScrollPane itemScrollPane;
 
-      returnButton = new JButton("Return");
-      returnButton.setBounds(105, 195, 120, 25);
-      returnButton.addActionListener(e -> close());
+        private JButton returnButton;
+        private JButton saveButton;
 
-      this.add(returnButton);
-
-      saveButton = new JButton("Save");
-      saveButton.setBounds(235, 195, 120, 25);
-      saveButton.addActionListener(e -> {
-
-        XMLFileChooser fc = new XMLFileChooser();
-        if (fc.showSaveDialog(new JPanel()) == XMLFileChooser.APPROVE_OPTION) {
-
-          String path = fc.getSelectedFile().getPath();
-          if (path.indexOf('.') == -1) {
-            path += ".xml";
-          }
-
-          if (controller.saveConfiguration(path)) {
-            System.out.println("SAVE CONFIG SUCCESSFULL");
-          } else {
-            System.out.println("SAVE CONFIG FAILED");
-          }
+        /**
+         * (Constructor) Creates the ConfigDialogPanel.
+         *
+         * @param controller
+         *            Reference to the controller
+         */
+        public ConfigDialogPanel(final ConfigController controller)
+        {
+            super(controller);
+            createItemTable();
+            createButtons();
         }
-      });
 
-      this.add(saveButton);
+        /**
+         * Creates the buttons of the dialog panel.
+         */
+        private void createButtons()
+        {
+
+            returnButton = new JButton("Return");
+            returnButton.setBounds(105, 195, 120, 25);
+            returnButton.addActionListener(e -> close());
+
+            this.add(returnButton);
+
+            saveButton = new JButton("Save");
+            saveButton.setBounds(235, 195, 120, 25);
+            saveButton.addActionListener(e -> {
+
+                XMLFileChooser fc = new XMLFileChooser();
+                if (fc.showSaveDialog(new JPanel()) == XMLFileChooser.APPROVE_OPTION) {
+
+                    String path = fc.getSelectedFile().getPath();
+                    if (path.indexOf('.') == -1) {
+                        path += ".xml";
+                    }
+
+                    if (controller.saveConfiguration(path)) {
+                        System.out.println("SAVE CONFIG SUCCESSFULL");
+                    }
+                    else {
+                        System.out.println("SAVE CONFIG FAILED");
+                    }
+                }
+            });
+
+            this.add(saveButton);
+        }
+
+        /**
+         * Creates the JTable for displaying the input archives.
+         */
+        private void createItemTable()
+        {
+            itemTable = new JTable(controller.getConfigErrors());
+            itemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+            itemScrollPane = new JScrollPane(itemTable);
+            itemScrollPane.setBounds(10, 10, 470, 180);
+
+            this.add(itemScrollPane);
+        }
+
+        /**
+         * empty method
+         */
+        @Override
+        public void relocate()
+        {
+
+        }
+
+        /**
+         * A call of this method should validate the positions of the panels components.
+         */
+        @Override
+        public void validate()
+        {
+
+            ConfigVerification verification = controller.getConfigErrors();
+            if (verification != null) {
+                saveButton.setEnabled(!verification.hasFailed());
+            }
+            else {
+                saveButton.setEnabled(false);
+            }
+        }
+
+        /**
+         * empty method
+         *
+         * @throws UnsupportedOperationException
+         * @deprecated
+         */
+        @Deprecated
+        @Override
+        public void toXML(final StringBuilder builder, final ConfigVerification errors)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * empty method
+         *
+         * @throws UnsupportedOperationException
+         * @deprecated
+         */
+        @Deprecated
+        @Override
+        public void applyConfig(final ConfigSettings config)
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
-     * Creates the JTable for displaying the input archives.
-     */
-    private void createItemTable() {
-      itemTable = new JTable(controller.getConfigErrors());
-      itemTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-      itemScrollPane = new JScrollPane(itemTable);
-      itemScrollPane.setBounds(10, 10, 470, 180);
-
-      this.add(itemScrollPane);
-    }
-
-    /**
-     * empty method
-     */
-    @Override
-    public void relocate() {
-
-    }
-
-    /**
-     * A call of this method should validate the positions of the panels
-     * components.
-     */
-    @Override
-    public void validate() {
-
-      ConfigVerification verification = controller.getConfigErrors();
-      if (verification != null) {
-        saveButton.setEnabled(!verification.hasFailed());
-      } else {
-        saveButton.setEnabled(false);
-      }
-    }
-
-    /**
-     * empty method
+     * (Constructor) Creates a new ConfigDialog.
      *
-     * @throws UnsupportedOperationException
-     * @deprecated
+     * @param controller
+     *            Reference to the controller
      */
-    @Deprecated
-    @Override
-    public void toXML(final StringBuilder builder,
-                      final ConfigVerification errors) {
-      throw new UnsupportedOperationException();
+    public ConfigDialog(final ConfigController controller)
+    {
+        super(controller.getRegistry().getGUI(), true);
+
+        this.setTitle("Verification");
+
+        setSize(500, 250);
+        setResizable(false);
+
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation((d.width - getSize().width) / 2, (d.height - getSize().height) / 2);
+
+        this.setContentPane(new ConfigDialogPanel(controller));
     }
 
     /**
-     * empty method
-     *
-     * @throws UnsupportedOperationException
-     * @deprecated
+     * Closes the dialog.
      */
-    @Deprecated
-    @Override
-    public void applyConfig(final ConfigSettings config) {
-      throw new UnsupportedOperationException();
+    public void close()
+    {
+        this.setVisible(true);
+        this.dispose();
     }
-  }
-
-  /**
-   * (Constructor) Creates a new ConfigDialog.
-   *
-   * @param controller Reference to the controller
-   */
-  public ConfigDialog(final ConfigController controller) {
-    super(controller.getRegistry().getGUI(), true);
-
-    this.setTitle("Verification");
-
-    setSize(500, 250);
-    setResizable(false);
-
-    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-    setLocation((d.width - getSize().width) / 2,
-            (d.height - getSize().height) / 2);
-
-    this.setContentPane(new ConfigDialogPanel(controller));
-  }
-
-  /**
-   * Closes the dialog.
-   */
-  public void close() {
-    this.setVisible(true);
-    this.dispose();
-  }
 }
