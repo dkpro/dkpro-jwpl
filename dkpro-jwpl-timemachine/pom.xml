@@ -15,73 +15,76 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.dkpro.jwpl</groupId>
-		<artifactId>dkpro-jwpl</artifactId>
-		<version>2.0.0-SNAPSHOT</version>
-	</parent>
-	<artifactId>dkpro-jwpl-timemachine</artifactId>
-	<name>TimeMachine</name>
-	
-	<dependencies>
-		<dependency>
-			<groupId>org.dkpro.jwpl</groupId>
-			<artifactId>dkpro-jwpl-wikimachine</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.dkpro.jwpl</groupId>
-			<artifactId>dkpro-jwpl-mwdumper</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>it.unimi.dsi</groupId>
-			<artifactId>fastutil-core</artifactId>
-		</dependency>
-		<!-- logger dependencies -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<scope>provided</scope>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>create-executable-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<attach>false</attach>
-							<descriptors>
-								<descriptor>src/main/assembly/assembly.xml</descriptor>
-							</descriptors>
-							<archive>
-								<manifest>
-									<mainClass>org.dkpro.jwpl.timemachine.domain.JWPLTimeMachine
-									</mainClass>
-								</manifest>
-							</archive>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.dkpro.jwpl</groupId>
+    <artifactId>dkpro-jwpl</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>dkpro-jwpl-timemachine</artifactId>
+  <name>TimeMachine</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.dkpro.jwpl</groupId>
+      <artifactId>dkpro-jwpl-wikimachine</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dkpro.jwpl</groupId>
+      <artifactId>dkpro-jwpl-mwdumper</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil-core</artifactId>
+    </dependency>
+
+    <!-- logger dependencies -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-executable-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/main/assembly/assembly.xml</descriptor>
+              </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>org.dkpro.jwpl.timemachine.domain.JWPLTimeMachine</mainClass>
+                </manifest>
+              </archive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

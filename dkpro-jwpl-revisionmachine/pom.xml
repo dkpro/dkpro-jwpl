@@ -16,87 +16,93 @@
   limitations under the License.
 -->
 
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.dkpro.jwpl</groupId>
-		<artifactId>dkpro-jwpl</artifactId>
-		<version>2.0.0-SNAPSHOT</version>
-	</parent>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.dkpro.jwpl</groupId>
+    <artifactId>dkpro-jwpl</artifactId>
+    <version>2.0.0-SNAPSHOT</version>
+  </parent>
   <artifactId>dkpro-jwpl-revisionmachine</artifactId>
   <name>RevisionMachine</name>
 
   <dependencies>
-  	<dependency>
-  		<groupId>org.dkpro.jwpl</groupId>
-  		<artifactId>dkpro-jwpl-api</artifactId>
-  	</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-		</dependency>
-	  <dependency>
-		  <groupId>org.slf4j</groupId>
-		  <artifactId>slf4j-api</artifactId>
-	  </dependency>
-	  <dependency>
-		  <groupId>org.apache.logging.log4j</groupId>
-		  <artifactId>log4j-slf4j-impl</artifactId>
-		  <scope>provided</scope>
-	  </dependency>
-	  <dependency>
-		  <groupId>org.apache.logging.log4j</groupId>
-		  <artifactId>log4j-core</artifactId>
-		  <scope>provided</scope>
-	  </dependency>
-		<!-- TEST dependencies -->
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-params</artifactId>
-			<scope>test</scope>
-		</dependency>
-	  <dependency>
-		  <groupId>org.hsqldb</groupId>
-		  <artifactId>hsqldb</artifactId>
-		  <scope>test</scope>
-	  </dependency>
-	  <dependency>
-    	  <groupId>mysql</groupId>
-    	  <artifactId>mysql-connector-java</artifactId>
-	  </dependency>
+    <dependency>
+      <groupId>org.dkpro.jwpl</groupId>
+      <artifactId>dkpro-jwpl-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-compress</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- TEST dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
   </dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>create-executable-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>single</goal>
-						</goals>
-						<configuration>
-							<attach>false</attach>
-							<descriptors>
-								<descriptor>src/main/assembly/assembly.xml</descriptor>
-							</descriptors>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-executable-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <attach>false</attach>
+              <descriptors>
+                <descriptor>src/main/assembly/assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
