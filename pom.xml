@@ -35,7 +35,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.release>17</maven.compiler.release>
-    <ukp.wikipedia.version>2.0.0-SNAPSHOT</ukp.wikipedia.version>
+    
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
@@ -60,14 +60,15 @@
     <!-- Maven plugin versions -->
     <maven.failsafe.plugin>2.21.0</maven.failsafe.plugin>
     <maven.build.helper.plugin>3.0.0</maven.build.helper.plugin>
-
   </properties>
+
   <scm>
     <connection>scm:git:https://github.com/dkpro/dkpro-jwpl</connection>
     <developerConnection>scm:git:https://github.com/dkpro/dkpro-jwpl</developerConnection>
     <url>https://github.com/dkpro/dkpro-jwpl</url>
     <tag>HEAD</tag>
   </scm>
+
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
@@ -75,11 +76,14 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
+
   <organization>
     <name>Ubiquitous Knowledge Processing (UKP) Lab, Technische Universität Darmstadt</name>
     <url>https://www.ukp.tu-darmstadt.de/</url>
   </organization>
+
   <url>https://dkpro.github.io/dkpro-jwpl</url>
+
   <developers>
     <developer>
       <id>oliver.ferschke</id>
@@ -204,46 +208,6 @@
         <version>8.5.12</version>
       </dependency>
       <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-api</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-datamachine</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-mwdumper</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-timemachine</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-revisionmachine</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-util</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-wikimachine</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.dkpro.jwpl</groupId>
-        <artifactId>dkpro-jwpl-parser</artifactId>
-        <version>${ukp.wikipedia.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.javassist</groupId>
         <artifactId>javassist</artifactId>
         <version>3.29.2-GA</version>
@@ -280,6 +244,25 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <modules>
+    <module>dkpro-jwpl-api</module>
+    <module>dkpro-jwpl-datamachine</module>
+    <module>dkpro-jwpl-timemachine</module>
+    <module>dkpro-jwpl-wikimachine</module>
+    <module>dkpro-jwpl-revisionmachine</module>
+    <module>dkpro-jwpl-mwdumper</module>
+    <module>dkpro-jwpl-util</module>
+    <module>dkpro-jwpl-parser</module>
+    <module>dkpro-jwpl-tutorial</module>
+    <module>dkpro-jwpl-deps</module>
+  </modules>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/dkpro/dkpro-jwpl/issues</url>
+  </issueManagement>
+
   <profiles>
     <profile>
       <id>rat-check</id>
@@ -326,20 +309,4 @@
       </build>
     </profile>
   </profiles>
-  <modules>
-    <module>dkpro-jwpl-api</module>
-    <module>dkpro-jwpl-datamachine</module>
-    <module>dkpro-jwpl-timemachine</module>
-    <module>dkpro-jwpl-wikimachine</module>
-    <module>dkpro-jwpl-revisionmachine</module>
-    <module>dkpro-jwpl-mwdumper</module>
-    <module>dkpro-jwpl-util</module>
-    <module>dkpro-jwpl-parser</module>
-    <module>dkpro-jwpl-tutorial</module>
-    <module>dkpro-jwpl-deps</module>
-  </modules>
-  <issueManagement>
-    <system>GitHub</system>
-    <url>https://github.com/dkpro/dkpro-jwpl/issues</url>
-  </issueManagement>
 </project>
