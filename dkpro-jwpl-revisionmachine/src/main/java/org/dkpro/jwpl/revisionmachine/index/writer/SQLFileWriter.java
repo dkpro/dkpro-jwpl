@@ -29,8 +29,7 @@ import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 /**
  * This class writes the output of the index generator to an sql file.
  */
-public class SQLFileWriter
-        implements IndexWriterInterface {
+public class SQLFileWriter implements IndexWriterInterface {
 
   /**
    * Reference to the Writer object
@@ -38,9 +37,9 @@ public class SQLFileWriter
   private final Writer writer;
 
   /**
-   * (Constructor) Creates a new SQLFileWriter.
+   * Creates a new SQLFileWriter.
    *
-   * @param config Reference to the configuration paramters
+   * @param config Reference to the configuration parameters
    * @throws IOException if an error occurred while writing the file
    */
   public SQLFileWriter(final RevisionAPIConfiguration config)
@@ -78,23 +77,18 @@ public class SQLFileWriter
   }
 
   /**
-   * Writes the buffered finalzed queries to the output.
+   * Writes the buffered finalized queries to the output.
    *
    * @param index Reference to an index
    * @throws IOException if an error occurred while writing the output
    */
-  public void write(final AbstractIndex index)
-          throws IOException {
+  @Override
+  public void write(final AbstractIndex index) throws IOException {
 
     StringBuilder cmd;
-
     while (index.size() > 0) {
-
       System.out.println("Transmit Index [" + index + "]");
-
       cmd = index.remove();
-      // System.out.println(cmd.toString());
-
       cmd.append("\r\n");
       writer.write(cmd.toString());
     }
@@ -107,8 +101,8 @@ public class SQLFileWriter
    *
    * @throws IOException if an error occurred while closing the file
    */
-  public void close()
-          throws IOException {
+  @Override
+  public void close() throws IOException {
     this.writer.close();
   }
 
@@ -118,6 +112,7 @@ public class SQLFileWriter
    *
    * @throws IOException if an error occurred while writing to the file
    */
+  @Override
   public void finish() throws IOException {
 
     writer.write("CREATE INDEX articleIdx ON revisions(ArticleID);\r\n");

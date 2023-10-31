@@ -30,6 +30,10 @@ public class GraphUtilities {
 
   private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+  /**
+   * @deprecated Use {@link #getRandomPageSubset(Set, int)} instead.
+   */
+  @Deprecated(since="2.0.0", forRemoval=true)
   public static Set<Integer> getRandomPageSubset(Iterable<Page> pages, int pResultSetSize) {
     Set<Integer> pageIDs = new HashSet<>();
     while (pages.iterator().hasNext()) {

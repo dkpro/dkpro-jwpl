@@ -22,12 +22,6 @@ import java.util.Set;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 
-/**
- * ChronoFullRevision
- * <p>
- * <p>
- * 1
- */
 public class ChronoFullRevision {
 
   /**
@@ -180,7 +174,7 @@ public class ChronoFullRevision {
   }
 
   /**
-   * Removes the revision counter from the list of reconstructible revisions.
+   * Removes the revision counter from the list of reconstructble revisions.
    *
    * @param revisionCounter revision counter
    */

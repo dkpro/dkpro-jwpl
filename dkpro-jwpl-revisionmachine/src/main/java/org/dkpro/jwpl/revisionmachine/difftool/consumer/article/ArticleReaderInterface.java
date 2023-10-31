@@ -34,8 +34,7 @@ public interface ArticleReaderInterface {
    * @return TRUE | FALSE
    * @throws ArticleReaderException if the parsing of the input fails
    */
-  boolean hasNext()
-          throws ArticleReaderException;
+  boolean hasNext() throws ArticleReaderException;
 
   /**
    * Returns the next RevisionTask.
@@ -43,8 +42,7 @@ public interface ArticleReaderInterface {
    * @return RevisionTask.
    * @throws ArticleReaderException if the parsing of the input fails
    */
-  Task<Revision> next()
-          throws ArticleReaderException;
+  Task<Revision> next() throws ArticleReaderException;
 
   /**
    * Resets the task processing status of the ArticleReader.

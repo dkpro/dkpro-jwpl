@@ -23,7 +23,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.EncodingException;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * The RevisionApi Interface describes the link to the diff encoding unit.
+ * The RevisionEncoderInterface describes the link to the diff encoding unit.
  */
 public interface RevisionEncoderInterface {
 

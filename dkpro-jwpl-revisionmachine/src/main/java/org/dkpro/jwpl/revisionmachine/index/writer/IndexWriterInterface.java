@@ -28,14 +28,13 @@ import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 public interface IndexWriterInterface {
 
   /**
-   * Writes the buffered finalzed queries to the output.
+   * Writes the buffered finalized queries to the output.
    *
    * @param index Reference to an index
    * @throws IOException  if an error occurred while writing the output
    * @throws SQLException if an error occurred while transmitting the output
    */
-  void write(final AbstractIndex index)
-          throws IOException, SQLException;
+  void write(final AbstractIndex index) throws IOException, SQLException;
 
   /**
    * Closes the file or the database connection.
@@ -43,8 +42,7 @@ public interface IndexWriterInterface {
    * @throws IOException  if an error occurred while closing the file
    * @throws SQLException if an error occurred while closing the database connection
    */
-  void close()
-          throws IOException, SQLException;
+  void close() throws IOException, SQLException;
 
   /**
    * Wraps up the index generation process and writes all remaining statements

@@ -22,10 +22,9 @@ import java.util.List;
 /**
  * Index for article information.
  */
-public class ArticleIndex
-        extends AbstractIndex {
+public class ArticleIndex extends AbstractIndex {
   /**
-   * (Constructor) Creates a new ArticleIndex object.
+   * Creates a new ArticleIndex object.
    */
   public ArticleIndex() {
 
@@ -33,7 +32,7 @@ public class ArticleIndex
   }
 
   /**
-   * (Constructor) Creates a new ArticleIndex object.
+   * Creates a new ArticleIndex object.
    *
    * @param MAX_ALLOWED_PACKET MAX_ALLOWED_PACKET
    */

@@ -28,8 +28,7 @@ import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 /**
  * This class writes the output of the index generator to a database.
  */
-public class DatabaseWriter
-        implements IndexWriterInterface {
+public class DatabaseWriter implements IndexWriterInterface {
 
   /**
    * Reference to the database connection
@@ -37,9 +36,9 @@ public class DatabaseWriter
   private final Connection connection;
 
   /**
-   * (Constructor) Creates a new DatabaseWriter.
+   * Creates a new DatabaseWriter.
    *
-   * @param config Reference to the configuration paramters
+   * @param config Reference to the configuration parameters
    * @throws ClassNotFoundException if the JDBC Driver could not be located
    * @throws SQLException           if an error occurred while creating the index tables
    */
@@ -95,11 +94,12 @@ public class DatabaseWriter
   }
 
   /**
-   * Writes the buffered finalzed queries to the output.
+   * Writes the buffered finalized queries to the output.
    *
    * @param index Reference to an index
    * @throws SQLException if an error occurred while transmitting the output
    */
+  @Override
   public void write(final AbstractIndex index)
           throws SQLException {
 
@@ -125,6 +125,7 @@ public class DatabaseWriter
    *
    * @throws SQLException if an error occurred while accessing the database
    */
+  @Override
   public void finish() throws SQLException {
     Statement statement = connection.createStatement();
     statement.execute("CREATE INDEX articleIdx on revisions(ArticleID);");
@@ -145,6 +146,7 @@ public class DatabaseWriter
    *
    * @throws SQLException if an error occurred while closing the database connection
    */
+  @Override
   public void close()
           throws SQLException {
     this.connection.close();

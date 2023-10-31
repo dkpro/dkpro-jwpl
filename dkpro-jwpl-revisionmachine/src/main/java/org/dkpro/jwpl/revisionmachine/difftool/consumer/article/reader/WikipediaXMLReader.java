@@ -51,8 +51,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformatio
 /**
  * This class parses the wikipedia xml format.
  */
-public class WikipediaXMLReader
-        implements ArticleReaderInterface {
+public class WikipediaXMLReader implements ArticleReaderInterface {
 
   /**
    * Reference to the reader
@@ -80,7 +79,7 @@ public class WikipediaXMLReader
   private ArticleFilter articleFilter;
 
   /**
-   * (Constructor) Creates a new WikipediaXMLReader.
+   * Creates a new WikipediaXMLReader.
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
@@ -94,15 +93,14 @@ public class WikipediaXMLReader
 
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    LIMIT_TASK_SIZE_REVISIONS = (Long) config
-            .getConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS);
+    LIMIT_TASK_SIZE_REVISIONS = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS);
 
     initXMLKeys();
 
   }
 
   /**
-   * (Constructor) Creates a new WikipediaXMLReader.
+   * Creates a new WikipediaXMLReader.
    *
    * @param input Reference to the reader
    * @throws ConfigurationException if an error occurred while accessing the configuration
@@ -117,7 +115,7 @@ public class WikipediaXMLReader
   }
 
   /**
-   * (Constructor) Creates a new WikipediaXMLReader.
+   * Creates a new WikipediaXMLReader.
    *
    * @param input              Reference to the reader
    * @param articleNameChecker Reference to a name checker
@@ -258,8 +256,7 @@ public class WikipediaXMLReader
    * reached
    * @throws IOException if an error occurs while reading the input
    */
-  private int read()
-          throws IOException {
+  private int read() throws IOException {
     this.bytePosition++;
     return input.read();
   }
@@ -293,8 +290,7 @@ public class WikipediaXMLReader
    * @return TRUE | FALSE
    * @throws ArticleReaderException if the parsing of the input fails
    */
-  public boolean hasNext()
-          throws ArticleReaderException {
+  public boolean hasNext() throws ArticleReaderException {
 
     try {
       if (!this.lastTaskCompleted) {
@@ -334,8 +330,7 @@ public class WikipediaXMLReader
    * @throws IOException            if an error occurs while reading from the input
    * @throws ArticleReaderException if an error occurs while parsing the input
    */
-  protected boolean readHeader()
-          throws IOException, ArticleReaderException {
+  protected boolean readHeader() throws IOException, ArticleReaderException {
 
     this.taskHeader = new ArticleInformation();
 
@@ -390,8 +385,8 @@ public class WikipediaXMLReader
             return true;
 
           default:
-            throw ErrorFactory
-                    .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
+            throw ErrorFactory.createArticleReaderException(
+                    ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
         }
 
         this.keywords.reset();
@@ -400,8 +395,8 @@ public class WikipediaXMLReader
       r = read();
     }
 
-    throw ErrorFactory
-            .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
+    throw ErrorFactory.createArticleReaderException(
+            ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
   }
 
   /**
@@ -411,8 +406,7 @@ public class WikipediaXMLReader
    * @throws IOException            if an error occurs while reading from the input
    * @throws ArticleReaderException if an error occurs while parsing the input
    */
-  protected Revision readRevision()
-          throws IOException, ArticleReaderException {
+  protected Revision readRevision() throws IOException, ArticleReaderException {
 
     this.taskRevisionCounter++;
     Revision revision = new Revision(this.taskRevisionCounter);
@@ -451,12 +445,9 @@ public class WikipediaXMLReader
           case KEY_END_ID:
             if (!hasId) {
               size = buffer.length();
-              buffer.delete(size
-                      - WikipediaXMLKeys.KEY_END_ID.getKeyword()
-                      .length(), size);
+              buffer.delete(size - WikipediaXMLKeys.KEY_END_ID.getKeyword().length(), size);
 
-              revision.setRevisionID(Integer.parseInt(buffer
-                      .toString()));
+              revision.setRevisionID(Integer.parseInt(buffer.toString()));
               buffer = null;
 
               hasId = true;
@@ -465,9 +456,7 @@ public class WikipediaXMLReader
 
           case KEY_END_TIMESTAMP:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword().length(), size);
 
             revision.setTimeStamp(buffer.toString());
             buffer = null;
@@ -475,9 +464,7 @@ public class WikipediaXMLReader
 
           case KEY_END_TEXT:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_TEXT.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_TEXT.getKeyword().length(), size);
 
             revision.setRevisionText(buffer.toString());
             buffer = null;
@@ -485,9 +472,7 @@ public class WikipediaXMLReader
 
           case KEY_END_COMMENT:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_COMMENT.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_COMMENT.getKeyword().length(), size);
             //escape comment string
             revision.setComment(SQLEscape.escape(buffer.toString()));
             buffer = null;
@@ -495,9 +480,7 @@ public class WikipediaXMLReader
 
           case KEY_END_CONTRIBUTOR:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword().length(), size);
             //escape id string
             readContributor(revision, buffer.toString());
             buffer = null;
@@ -512,7 +495,7 @@ public class WikipediaXMLReader
             this.keywords.reset();
             return revision;
 
-          //the following cases are handeled in readContributor()
+          //the following cases are handled in readContributor()
           //they can be skipped here
           case KEY_START_IP:
           case KEY_END_IP:
@@ -522,8 +505,8 @@ public class WikipediaXMLReader
 
           default:
             System.out.println(keywords.getValue());
-            throw ErrorFactory
-                    .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
+            throw ErrorFactory.createArticleReaderException(
+                    ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
         }
 
         this.keywords.reset();
@@ -532,8 +515,8 @@ public class WikipediaXMLReader
       r = read();
     }
 
-    throw ErrorFactory
-            .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
+    throw ErrorFactory.createArticleReaderException(
+            ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
   }
 
   /**
@@ -542,10 +525,8 @@ public class WikipediaXMLReader
    *
    * @param rev the revision object to store the parsed info in
    * @param str the contributor data to be parsed
-   * @throws IOException
-   * @throws ArticleReaderException
    */
-  protected void readContributor(Revision rev, String str) throws IOException, ArticleReaderException {
+  protected void readContributor(Revision rev, String str) {
     char[] contrChars = str.toCharArray();
     int size;
 
@@ -570,9 +551,7 @@ public class WikipediaXMLReader
 
           case KEY_END_IP:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_IP.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_IP.getKeyword().length(), size);
             // escape id string
             rev.setContributorName(SQLEscape.escape(buffer.toString()));
             rev.setContributorIsRegistered(false);
@@ -581,9 +560,7 @@ public class WikipediaXMLReader
 
           case KEY_END_USERNAME:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_USERNAME.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_USERNAME.getKeyword().length(), size);
             // escape id string
             rev.setContributorName(SQLEscape.escape(buffer.toString()));
             rev.setContributorIsRegistered(true);
@@ -592,9 +569,7 @@ public class WikipediaXMLReader
 
           case KEY_END_ID:
             size = buffer.length();
-            buffer.delete(size
-                    - WikipediaXMLKeys.KEY_END_ID.getKeyword()
-                    .length(), size);
+            buffer.delete(size - WikipediaXMLKeys.KEY_END_ID.getKeyword().length(), size);
             String id = buffer.toString();
             if (!id.isEmpty()) {
               rev.setContributorId(Integer.parseInt(buffer.toString()));
@@ -612,8 +587,8 @@ public class WikipediaXMLReader
    * @return RevisionTask.
    * @throws ArticleReaderException if the parsing of the input fails
    */
-  public Task<Revision> next()
-          throws ArticleReaderException {
+  @Override
+  public Task<Revision> next() throws ArticleReaderException {
 
     try {
       this.keywords.reset();
@@ -681,8 +656,8 @@ public class WikipediaXMLReader
         r = read();
       }
 
-      throw ErrorFactory
-              .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
+      throw ErrorFactory.createArticleReaderException(
+              ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
 
     } catch (ArticleReaderException e) {
       throw e;
@@ -697,6 +672,7 @@ public class WikipediaXMLReader
    * This method has to be called if the hasNext() or next() methods throw an
    * exception.
    */
+  @Override
   public void resetTaskCompleted() {
     this.lastTaskCompleted = true;
   }
@@ -706,6 +682,7 @@ public class WikipediaXMLReader
    *
    * @return number of bytes (current position in the file / archive)
    */
+  @Override
   public long getBytePosition() {
     return this.bytePosition;
   }

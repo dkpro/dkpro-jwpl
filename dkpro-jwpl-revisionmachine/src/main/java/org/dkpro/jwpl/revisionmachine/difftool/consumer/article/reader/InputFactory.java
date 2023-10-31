@@ -62,10 +62,8 @@ public class InputFactory {
     try {
       config = ConfigurationManager.getInstance();
 
-      WIKIPEDIA_ENCODING = (String) config
-              .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
-      MODE_STATISTICAL_OUTPUT = (Boolean) config
-              .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+      WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+      MODE_STATISTICAL_OUTPUT = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
 
     } catch (ConfigurationException e) {
       e.printStackTrace();
@@ -86,14 +84,11 @@ public class InputFactory {
    * @return InputStreamReader
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  private static InputStreamReader decompressWith7Zip(final String archivePath)
-          throws ConfigurationException {
-    PATH_PROGRAM_7ZIP = (String) config
-            .getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
+  private static InputStreamReader decompressWith7Zip(final String archivePath) throws ConfigurationException {
+    PATH_PROGRAM_7ZIP = (String) config.getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
 
     if (PATH_PROGRAM_7ZIP == null) {
-      throw ErrorFactory
-              .createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
+      throw ErrorFactory.createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
     }
 
     try {
@@ -112,11 +107,8 @@ public class InputFactory {
    *
    * @param archivePath path to the archive
    * @return InputStreamReader
-   * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  private static InputStreamReader decompressWithBZip2(
-          final String archivePath)
-          throws ConfigurationException {
+  private static InputStreamReader decompressWithBZip2(final String archivePath) {
 
     Bzip2Archiver archiver = new Bzip2Archiver();
     InputStreamReader reader = null;
@@ -139,8 +131,7 @@ public class InputFactory {
   private static InputStreamReader readXMLFile(final String archivePath) {
 
     try {
-      return new InputStreamReader(new BufferedInputStream(new FileInputStream(archivePath)),
-              WIKIPEDIA_ENCODING);
+      return new InputStreamReader(new BufferedInputStream(new FileInputStream(archivePath)), WIKIPEDIA_ENCODING);
 
     } catch (Exception e) {
       throw new RuntimeException(e);
@@ -155,8 +146,7 @@ public class InputFactory {
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws ArticleReaderException if an error occurred while parsing the file
    */
-  public static ArticleReaderInterface getTaskReader(
-          final ArchiveDescription archive)
+  public static ArticleReaderInterface getTaskReader(final ArchiveDescription archive)
           throws ConfigurationException, ArticleReaderException {
     Reader reader;
 
@@ -171,8 +161,8 @@ public class InputFactory {
         reader = decompressWithBZip2(archive.getPath());
         break;
       default:
-        throw ErrorFactory
-                .createArticleReaderException(ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
+        throw ErrorFactory.createArticleReaderException(
+                ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
     }
 
     if (MODE_STATISTICAL_OUTPUT) {
@@ -190,8 +180,7 @@ public class InputFactory {
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws ArticleReaderException if an error occurred while parsing the file
    */
-  public static ArticleReaderInterface getTaskReader(
-          final ArchiveDescription archive, final ArticleFilter checker)
+  public static ArticleReaderInterface getTaskReader(final ArchiveDescription archive, final ArticleFilter checker)
           throws ConfigurationException, ArticleReaderException {
     Reader reader;
 

@@ -43,12 +43,10 @@ public class ConfigurationManager {
    * @throws ConfigurationException if the ConfigurationManager has not been created during the
    *                                startup of the application.
    */
-  public static ConfigurationManager getInstance()
-          throws ConfigurationException {
+  public static ConfigurationManager getInstance() throws ConfigurationException {
 
     if (instance == null) {
-      throw ErrorFactory
-              .createConfigurationException(ErrorKeys.CONFIGURATION_CONFIGURATIONMANAGER_NOT_INITIALIZED);
+      throw ErrorFactory.createConfigurationException(ErrorKeys.CONFIGURATION_CONFIGURATIONMANAGER_NOT_INITIALIZED);
     }
     return instance;
   }
@@ -85,9 +83,7 @@ public class ConfigurationManager {
    * @return Value of the configuration parameter
    * @throws ConfigurationException if the configuration value was not defined or was not set.
    */
-  public Object getConfigParameter(final ConfigurationKeys configParameter)
-          throws ConfigurationException {
-
+  public Object getConfigParameter(final ConfigurationKeys configParameter) throws ConfigurationException {
 
     Object o = this.config.getConfigParameter(configParameter);
     if (o != null) {
@@ -116,8 +112,7 @@ public class ConfigurationManager {
     } else if (configParameter == ConfigurationKeys.MODE_DATAFILE_OUTPUT) {
       return false;
     } else {
-      throw ErrorFactory
-              .createConfigurationException(
+      throw ErrorFactory.createConfigurationException(
                       ErrorKeys.CONFIGURATION_CONFIGURATIONMANAGER_UNKNOWN_CONFIG_PARAMETER,
                       configParameter.toString());
     }

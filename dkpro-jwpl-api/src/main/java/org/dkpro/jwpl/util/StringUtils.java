@@ -17,16 +17,10 @@
  */
 package org.dkpro.jwpl.util;
 
-import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class StringUtils {
-
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
   private static final StringBuilder buffer = new StringBuilder(10_000_000);
 

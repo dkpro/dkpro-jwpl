@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents an abstact index.
+ * This class represents an abstract index.
  */
 public abstract class AbstractIndex {
 

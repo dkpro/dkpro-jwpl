@@ -22,10 +22,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Index for the correct chonological order of revisions.
+ * Index for the correct chronological order of revisions.
  */
-public class ChronoIndex
-        extends AbstractIndex {
+public class ChronoIndex extends AbstractIndex {
 
   /**
    * ID of the last procesed article
@@ -39,7 +38,7 @@ public class ChronoIndex
 
 
   /**
-   * (Constructor) Creates a new ChronoIndex object.
+   * Creates a new ChronoIndex object.
    */
   public ChronoIndex() {
 
@@ -49,7 +48,7 @@ public class ChronoIndex
   }
 
   /**
-   * (Constructor) Creates a new ChronoIndex object.
+   * Creates a new ChronoIndex object.
    *
    * @param MAX_ALLOWED_PACKET MAX_ALLOWED_PACKET
    */

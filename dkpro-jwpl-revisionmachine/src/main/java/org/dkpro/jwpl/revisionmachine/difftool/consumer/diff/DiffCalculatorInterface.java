@@ -31,7 +31,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
  * unit.
  * <p>
  * Please notice that there is no default method to return the generated diff.
- * The currently implementation uses the TaskTransmitterInterface (given as
+ * The current implementation uses the TaskTransmitterInterface (given as
  * parameter of the constructor) to send the diffed data to the DiffProducer.
  */
 public interface DiffCalculatorInterface {
@@ -46,8 +46,7 @@ public interface DiffCalculatorInterface {
    * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
    *                                      supported by JAVA.
    */
-  void process(final Task<Revision> task)
-          throws DiffException, TimeoutException, UnsupportedEncodingException;
+  void process(final Task<Revision> task) throws DiffException, TimeoutException, UnsupportedEncodingException;
 
   /**
    * This method is used to delete all information concerning the partial task

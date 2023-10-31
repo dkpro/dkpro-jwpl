@@ -18,7 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.common.util;
 
 /**
- * Mathematic functions
+ * Mathematical functions
  */
 public class MathUtilities {
 

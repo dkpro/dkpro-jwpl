@@ -40,8 +40,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class writes the output to an archive.
  */
-public class DataFileArchiveWriter
-        implements WriterInterface {
+public class DataFileArchiveWriter implements WriterInterface {
 
   /**
    * File counter
@@ -86,24 +85,18 @@ public class DataFileArchiveWriter
   protected DataFileEncoder dataFileEncoder;
 
   /**
-   * (Constructor) Creates a new SQLArchiveWriter object.
+   * Creates a new SQLArchiveWriter object.
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  private DataFileArchiveWriter()
-          throws ConfigurationException {
+  private DataFileArchiveWriter() throws ConfigurationException {
 
     // Load config parameters
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    LIMIT_SQL_ARCHIVE_SIZE = (Long) config
-            .getConfigParameter(ConfigurationKeys.LIMIT_SQL_ARCHIVE_SIZE);
-
-    PATH_OUTPUT_SQL_FILES = (String) config
-            .getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
-
-    MODE_STATISTICAL_OUTPUT = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+    LIMIT_SQL_ARCHIVE_SIZE = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_SQL_ARCHIVE_SIZE);
+    PATH_OUTPUT_SQL_FILES = (String) config.getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
+    MODE_STATISTICAL_OUTPUT = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
 
     // Create sql file
     counter = 0;
@@ -111,7 +104,7 @@ public class DataFileArchiveWriter
 
 
   /**
-   * (Constructor) Creates a new SQLArchiveWriter object.
+   * Creates a new SQLArchiveWriter object.
    *
    * @param outputName Name of the sql consumer
    * @throws ConfigurationException if an error occurred while accessing the configuration
@@ -121,7 +114,6 @@ public class DataFileArchiveWriter
           throws IOException, ConfigurationException, LoggingException {
 
     this();
-
     this.outputName = outputName;
 
     init();
@@ -134,8 +126,7 @@ public class DataFileArchiveWriter
    * @throws IOException if problems occurred while closing the file or process.
    */
   @Override
-  public void close()
-          throws IOException {
+  public void close() throws IOException {
     this.output.close();
     this.output = null;
   }
@@ -146,8 +137,7 @@ public class DataFileArchiveWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws LoggingException       if an error occurred while accessing the logger
    */
-  protected void init()
-          throws ConfigurationException, LoggingException {
+  protected void init() throws ConfigurationException, LoggingException {
 
     this.dataFileEncoder = new DataFileEncoder();
   }
@@ -164,8 +154,7 @@ public class DataFileArchiveWriter
    *                                producer database)
    */
   @Override
-  public void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException {
+  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
 
     // this.startTime = System.currentTimeMillis();
     try {
@@ -203,21 +192,16 @@ public class DataFileArchiveWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws IOException            if an error occurred while writing a file
    */
-  protected void writeHeader()
-          throws ConfigurationException, IOException {
+  protected void writeHeader() throws ConfigurationException, IOException {
 
     if (this.output != null) {
       close();
     }
-
     this.counter++;
 
     String filePath = PATH_OUTPUT_SQL_FILES + this.outputName + "_" + counter;
-
     this.output = OutputFactory.getOutputStream(filePath);
-
     this.dataArchive = new File(filePath);
-
     this.output.flush();
   }
 }

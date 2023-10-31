@@ -119,7 +119,7 @@ public class RevisionCodecData {
   }
 
   /**
-   * Gathers the information about an b block.
+   * Gathers the information about a b block.
    *
    * @param value block id
    */
@@ -197,7 +197,7 @@ public class RevisionCodecData {
 
   /**
    * Returns the number of bits used to encode a B block. This method is
-   * intended to used after the conversion.
+   * intended to be used after the conversion.
    *
    * @return block bit-length
    */
@@ -207,7 +207,7 @@ public class RevisionCodecData {
 
   /**
    * Returns the number of bits used to encode a E block. This method is
-   * intended to used after the conversion.
+   * intended to be used after the conversion.
    *
    * @return block bit-length
    */
@@ -217,7 +217,7 @@ public class RevisionCodecData {
 
   /**
    * Returns the number of bits used to encode a L block. This method is
-   * intended to used after the conversion.
+   * intended to be used after the conversion.
    *
    * @return block bit-length
    */
@@ -227,7 +227,7 @@ public class RevisionCodecData {
 
   /**
    * Returns the number of bits used to encode a S block. This method is
-   * intended to used after the conversion.
+   * intended to be used after the conversion.
    *
    * @return block bit-length
    */

@@ -20,8 +20,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.diff.calculation;
 /**
  * Contains the information for a block. Used for the Diff Calculation.
  */
-public class DiffBlock
-        implements Comparable<DiffBlock> {
+public class DiffBlock implements Comparable<DiffBlock> {
 
   /**
    * Block ID

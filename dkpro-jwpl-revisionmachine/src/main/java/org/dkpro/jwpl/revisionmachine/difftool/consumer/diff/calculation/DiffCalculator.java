@@ -47,8 +47,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 /**
  * Calculates the Diff.
  */
-public class DiffCalculator
-        implements DiffCalculatorInterface {
+public class DiffCalculator implements DiffCalculatorInterface {
 
   /**
    * Configuration parameter - Flag, which indicates whether debug output is
@@ -118,8 +117,7 @@ public class DiffCalculator
    * @param taskTransmitter Reference to the TaskTransmitter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public DiffCalculator(final TaskTransmitterInterface taskTransmitter)
-          throws ConfigurationException {
+  public DiffCalculator(final TaskTransmitterInterface taskTransmitter) throws ConfigurationException {
     this.taskTransmitter = taskTransmitter;
     this.blocks = new BlockManagement();
 
@@ -129,30 +127,18 @@ public class DiffCalculator
     // Load config parameters
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    MODE_DEBUG_OUTPUT_ACTIVATED = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.MODE_DEBUG_OUTPUT);
+    MODE_DEBUG_OUTPUT_ACTIVATED = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_DEBUG_OUTPUT);
 
-    LOGGING_PATH_DIFFTOOL = (String) config
-            .getConfigParameter(ConfigurationKeys.LOGGING_PATH_DIFFTOOL);
+    LOGGING_PATH_DIFFTOOL = (String) config.getConfigParameter(ConfigurationKeys.LOGGING_PATH_DIFFTOOL);
+    LOGGING_PATH_DEBUG = (String) config.getConfigParameter(ConfigurationKeys.LOGGING_PATH_DEBUG);
 
-    LOGGING_PATH_DEBUG = (String) config
-            .getConfigParameter(ConfigurationKeys.LOGGING_PATH_DEBUG);
-
-    COUNTER_FULL_REVISION = (Integer) config
-            .getConfigParameter(ConfigurationKeys.COUNTER_FULL_REVISION);
-
-    LIMIT_TASK_SIZE_DIFFS = (Long) config
-            .getConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS);
-
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
-
-    VERIFICATION_DIFF = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.VERIFICATION_DIFF);
+    COUNTER_FULL_REVISION = (Integer) config.getConfigParameter(ConfigurationKeys.COUNTER_FULL_REVISION);
+    LIMIT_TASK_SIZE_DIFFS = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    VERIFICATION_DIFF = (Boolean) config.getConfigParameter(ConfigurationKeys.VERIFICATION_DIFF);
 
     VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING = (Integer) config
             .getConfigParameter(ConfigurationKeys.VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING);
-
     MODE_SURROGATES = (SurrogateModes) config
             .getConfigParameter(ConfigurationKeys.MODE_SURROGATES);
   }
@@ -733,14 +719,8 @@ public class DiffCalculator
 
     return true;
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tud.ukp.kulessa.delta.consumers.diff.calculation.DiffCalculatorInterface
-   * #reset()
-   */
+  
+  @Override
   public void reset() {
     this.result = null;
   }

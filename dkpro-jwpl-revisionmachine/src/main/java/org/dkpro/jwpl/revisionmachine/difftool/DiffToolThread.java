@@ -63,8 +63,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class represents the main method for the DiffTool application
  */
-public class DiffToolThread
-        extends Thread {
+public class DiffToolThread extends Thread {
 
   /**
    * Reference to the DiffTool Logger
@@ -106,8 +105,7 @@ public class DiffToolThread
    * This class is used to receive tasks from the diff modules and transmits
    * them to the sql modules.
    */
-  private class TaskTransmitter
-          implements TaskTransmitterInterface {
+  private class TaskTransmitter implements TaskTransmitterInterface {
 
     /**
      * Reference to the (dump) output writer
@@ -136,19 +134,13 @@ public class DiffToolThread
      * @throws IOException            if an error occurs while writing the output
      * @throws LoggingException       if an error occurs while logging
      */
-    public TaskTransmitter()
-            throws ConfigurationException, IOException, LoggingException {
+    public TaskTransmitter() throws ConfigurationException, IOException, LoggingException {
 
       ConfigurationManager config = ConfigurationManager.getInstance();
 
-      MODE_OUTPUT = (OutputType) config
-              .getConfigParameter(ConfigurationKeys.MODE_OUTPUT);
-
-      MODE_STATISTICAL_OUTPUT = (Boolean) cconfig
-              .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
-
-      MODE_DATAFILE_OUTPUT = (Boolean) cconfig
-              .getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT);
+      MODE_OUTPUT = (OutputType) config.getConfigParameter(ConfigurationKeys.MODE_OUTPUT);
+      MODE_STATISTICAL_OUTPUT = (Boolean) cconfig.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+      MODE_DATAFILE_OUTPUT = (Boolean) cconfig.getConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT);
 
       switch (MODE_OUTPUT) {
 

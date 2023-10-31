@@ -32,8 +32,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformatio
 /**
  * Calculates the Diff while collecting statistical data.
  */
-public class TimedDiffCalculator
-        extends DiffCalculator {
+public class TimedDiffCalculator extends DiffCalculator {
 
   /**
    * Temporary variable - revision counter
@@ -71,8 +70,7 @@ public class TimedDiffCalculator
    * @param taskTransmitter Reference to the TaskTransmitter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public TimedDiffCalculator(final TaskTransmitterInterface taskTransmitter)
-          throws ConfigurationException {
+  public TimedDiffCalculator(final TaskTransmitterInterface taskTransmitter) throws ConfigurationException {
     super(taskTransmitter);
   }
 
@@ -102,8 +100,7 @@ public class TimedDiffCalculator
    * @param result Reference to the DiffTask
    * @throws TimeoutException if a timeout occurred
    */
-  protected void transmitPartialTask(final Task<Diff> result)
-          throws TimeoutException {
+  protected void transmitPartialTask(final Task<Diff> result) throws TimeoutException {
 
     this.diffedSize += result.byteSize();
     this.processingTimeDiff += System.currentTimeMillis() - startTime;
@@ -120,9 +117,7 @@ public class TimedDiffCalculator
    * @param result Reference to the DiffTask
    * @throws TimeoutException if a timeout occurred
    */
-  protected void transmitAtEndOfTask(final Task<Revision> task,
-                                     final Task<Diff> result)
-          throws TimeoutException {
+  protected void transmitAtEndOfTask(final Task<Revision> task, final Task<Diff> result) throws TimeoutException {
 
     this.processingTimeDiff += System.currentTimeMillis() - startTime;
 
@@ -150,8 +145,7 @@ public class TimedDiffCalculator
    * @return Diff
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    */
-  protected Diff processRevision(final Revision revision)
-          throws UnsupportedEncodingException {
+  protected Diff processRevision(final Revision revision) throws UnsupportedEncodingException {
 
     Diff diff = super.processRevision(revision);
     if (diff == null) {
@@ -166,13 +160,7 @@ public class TimedDiffCalculator
 
   /*--------------------------------------------------------------------------*/
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tud.ukp.kulessa.delta.consumers.diff.calculation.DiffCalculatorInterface
-   * #process(de.tud.ukp.kulessa.delta.data.Task)
-   */
+  @Override
   public void process(final Task<Revision> task)
           throws DiffException, TimeoutException, UnsupportedEncodingException {
 

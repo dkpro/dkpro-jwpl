@@ -166,8 +166,7 @@ public class Indexer {
    * @param rev Reference to a revision
    * @throws WikiApiException if an error occurs
    */
-  public void index(final Revision rev)
-          throws WikiApiException {
+  public void index(final Revision rev) throws WikiApiException {
 
     int articleID = rev.getArticleID();
     int fullRevisionID = rev.getFullRevisionID();
@@ -247,8 +246,7 @@ public class Indexer {
    *
    * @throws WikiApiException if an error occurs
    */
-  public void close()
-          throws WikiApiException {
+  public void close() throws WikiApiException {
 
     try {
       this.revisionIndex.finalizeIndex();

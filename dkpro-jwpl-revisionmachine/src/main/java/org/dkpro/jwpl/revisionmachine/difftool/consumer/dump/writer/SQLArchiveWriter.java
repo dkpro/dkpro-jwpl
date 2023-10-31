@@ -43,8 +43,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class writes the output to an archive.
  */
-public class SQLArchiveWriter
-        implements WriterInterface {
+public class SQLArchiveWriter implements WriterInterface {
 
   /**
    * File counter
@@ -99,27 +98,19 @@ public class SQLArchiveWriter
   private final String WIKIPEDIA_ENCODING;
 
   /**
-   * (Constructor) Creates a new SQLArchiveWriter object.
+   * Creates a new SQLArchiveWriter object.
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  private SQLArchiveWriter()
-          throws ConfigurationException {
+  private SQLArchiveWriter() throws ConfigurationException {
 
     // Load config parameters
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    LIMIT_SQL_ARCHIVE_SIZE = (Long) config
-            .getConfigParameter(ConfigurationKeys.LIMIT_SQL_ARCHIVE_SIZE);
-
-    PATH_OUTPUT_SQL_FILES = (String) config
-            .getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
-
-    MODE_STATISTICAL_OUTPUT = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
-
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    LIMIT_SQL_ARCHIVE_SIZE = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_SQL_ARCHIVE_SIZE);
+    PATH_OUTPUT_SQL_FILES = (String) config.getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
+    MODE_STATISTICAL_OUTPUT = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
     // Create sql file
     counter = 0;
@@ -127,7 +118,7 @@ public class SQLArchiveWriter
 
 
   /**
-   * (Constructor) Creates a new SQLArchiveWriter object.
+   * Creates a new SQLArchiveWriter object.
    *
    * @param outputName Name of the sql consumer
    * @param logger     Reference to a logger
@@ -152,8 +143,7 @@ public class SQLArchiveWriter
    * @throws IOException if problems occurred while closing the file or process.
    */
   @Override
-  public void close()
-          throws IOException {
+  public void close() throws IOException {
     this.output.close();
     this.output = null;
   }
@@ -164,8 +154,7 @@ public class SQLArchiveWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws LoggingException       if an error occurred while accessing the logger
    */
-  protected void init()
-          throws ConfigurationException, LoggingException {
+  protected void init() throws ConfigurationException, LoggingException {
 
     this.sqlEncoder = new SQLEncoder(logger);
   }
@@ -182,8 +171,7 @@ public class SQLArchiveWriter
    *                                producer database)
    */
   @Override
-  public void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException {
+  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
 
     // this.startTime = System.currentTimeMillis();
     try {
@@ -225,8 +213,7 @@ public class SQLArchiveWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws IOException            if an error occurred while writing a file
    */
-  protected void writeHeader()
-          throws ConfigurationException, IOException {
+  protected void writeHeader() throws ConfigurationException, IOException {
 
     if (this.output != null) {
       close();

@@ -36,8 +36,7 @@ import org.slf4j.event.Level;
  * This class writes the output to a database while collecting statistical
  * information.
  */
-public class TimedSQLDatabaseWriter
-        extends SQLDatabaseWriter {
+public class TimedSQLDatabaseWriter extends SQLDatabaseWriter {
 
   /**
    * Reference to the logger
@@ -56,7 +55,7 @@ public class TimedSQLDatabaseWriter
 
 
   /**
-   * (Constructor) Creates a new TimedSQLDatabaseWriter object.
+   * Creates a new TimedSQLDatabaseWriter object.
    *
    * @param logger Reference to the logger
    * @throws ConfigurationException if an error occurred while accessing the configuration
@@ -79,8 +78,7 @@ public class TimedSQLDatabaseWriter
    * @throws LoggingException       if an error occurred while accessing the logger
    */
   @Override
-  protected void init()
-          throws ConfigurationException, LoggingException {
+  protected void init() throws ConfigurationException, LoggingException {
 
     this.sqlEncoder = new TimedSQLEncoder(logger);
     super.sqlEncoder = this.sqlEncoder;
@@ -100,8 +98,7 @@ public class TimedSQLDatabaseWriter
    *                                producer database)
    */
   @Override
-  public void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException {
+  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
 
     long startTime = System.currentTimeMillis();
 
@@ -125,9 +122,8 @@ public class TimedSQLDatabaseWriter
       info.setExitingTime(System.currentTimeMillis());
       info.setProcessingTimeSQL(processingTimeSQL);
 
-      String succesReport = info.toString();
-      // System.out.println(succesReport);
-      this.outputLogger.logMessage(Level.INFO, "\r\n" + succesReport);
+      String successReport = info.toString();
+      this.outputLogger.logMessage(Level.INFO, "\r\n" + successReport);
     }
   }
 
@@ -138,8 +134,7 @@ public class TimedSQLDatabaseWriter
    *                      database.
    */
   @Override
-  public void close()
-          throws SQLException {
+  public void close() throws SQLException {
     try {
       super.close();
     } finally {

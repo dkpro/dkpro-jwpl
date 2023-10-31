@@ -26,6 +26,10 @@ import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @deprecated To be removed without replacement.
+ */
+@Deprecated(since="2.0.0", forRemoval=true)
 public class DbUtilities {
 
   private final Connection conn;

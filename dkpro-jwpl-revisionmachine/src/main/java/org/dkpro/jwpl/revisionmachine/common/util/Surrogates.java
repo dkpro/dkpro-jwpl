@@ -18,7 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.common.util;
 
 /**
- * This utitly class contains some surrogate related methods.
+ * This utility class contains some surrogate related methods.
  */
 public class Surrogates {
 

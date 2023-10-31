@@ -20,11 +20,10 @@ package org.dkpro.jwpl.revisionmachine.index.indices;
 /**
  * This class represents the data used by the ChronoIndex.
  */
-public class ChronoIndexData
-        implements Comparable<ChronoIndexData> {
+public class ChronoIndexData implements Comparable<ChronoIndexData> {
 
   /**
-   * Flag - whether the data should be sorted choronlogical or in order of the
+   * Flag - whether the data should be sorted chronological or in order of the
    * revision counter
    */
   private boolean chronoSort;
@@ -45,7 +44,7 @@ public class ChronoIndexData
   private final long time;
 
   /**
-   * (Constructor) Creates a new ChronoInfo object.
+   * Creates a new ChronoInfo object.
    *
    * @param time            Timestamp value
    * @param revisionCounter RevisionCounter
@@ -62,6 +61,7 @@ public class ChronoIndexData
    * @return a negative integer, zero, or a positive integer as this object is
    * less than, equal to, or greater than the specified object.
    */
+  @Override
   public int compareTo(final ChronoIndexData info) {
 
     long value;
@@ -80,12 +80,7 @@ public class ChronoIndexData
       return -1;
     }
   }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
+  
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {

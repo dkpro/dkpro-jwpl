@@ -27,8 +27,10 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for SQLConsumers.
  * <p>
- * TODO: This file should be replaced with resource files.
+ * @deprecated To be removed without replacement.
  */
+// TODO: This file should be replaced with resource files.
+@Deprecated(since = "1.1", forRemoval = true)
 public class SQLConsumerLogMessages {
 
   /**
@@ -41,10 +43,7 @@ public class SQLConsumerLogMessages {
   public static void logDiffProcessed(final Logger logger,
                                       final Task<Diff> diff, final long time) {
 
-    logger.logMessage(
-            Level.INFO,
-            "Generated Entry\t" + Time.toClock(time) + "\t"
-                    + diff.toString());
+    logger.logMessage(Level.INFO, "Generated Entry\t" + Time.toClock(time) + "\t" + diff.toString());
   }
 
   /**
@@ -69,11 +68,9 @@ public class SQLConsumerLogMessages {
                                                  final Task<Diff> task, final OutOfMemoryError e) {
 
     if (task != null) {
-      logger.logError(Level.WARN, "Error while reading a task: "
-              + task, e);
+      logger.logError(Level.WARN, "Error while reading a task: " + task, e);
     } else {
-      logger.logError(Level.WARN,
-              "Error while reading an unknown task", e);
+      logger.logError(Level.WARN, "Error while reading an unknown task", e);
     }
   }
 

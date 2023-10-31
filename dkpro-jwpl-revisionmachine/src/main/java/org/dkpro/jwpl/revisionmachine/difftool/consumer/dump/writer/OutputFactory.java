@@ -50,8 +50,7 @@ public class OutputFactory {
     PATH_PROGRAM_7ZIP = (String) config.getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
 
     if (PATH_PROGRAM_7ZIP == null) {
-      throw ErrorFactory
-              .createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
+      throw ErrorFactory.createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
     }
 
     try {
@@ -64,8 +63,7 @@ public class OutputFactory {
     }
   }
 
-  private static OutputStream compressWithBZip2(final String archivePath)
-          throws ConfigurationException {
+  private static OutputStream compressWithBZip2(final String archivePath) {
 
     OutputStream output = null;
     try {

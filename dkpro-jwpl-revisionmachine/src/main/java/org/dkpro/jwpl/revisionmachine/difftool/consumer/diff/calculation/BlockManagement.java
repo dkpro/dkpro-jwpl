@@ -34,8 +34,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
  * The BlockManagement class is used to calculate the diff operations using the
  * blocks of the longest common substring search.
  */
-public class BlockManagement
-        implements BlockManagementInterface {
+public class BlockManagement implements BlockManagementInterface {
 
   /**
    * Configuration parameter - Charset name of the input data
@@ -67,25 +66,16 @@ public class BlockManagement
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public BlockManagement()
-          throws ConfigurationException {
+  public BlockManagement() throws ConfigurationException {
 
     ConfigurationManager config = ConfigurationManager.getInstance();
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see de.tudarmstadt.ukp.kulessa.delta.consumers.diff.calculation.
-   * BlockManagementInterface#manage(char[], char[], java.util.ArrayList,
-   * java.util.ArrayList)
-   */
+  @Override
   public Diff manage(char[] revA, char[] revB, ArrayList<DiffBlock> queueA,
-                     ArrayList<DiffBlock> queueB)
-          throws UnsupportedEncodingException {
+                     ArrayList<DiffBlock> queueB) throws UnsupportedEncodingException {
 
     this.diff = new Diff();
     this.codecData = new RevisionCodecData();
@@ -197,8 +187,7 @@ public class BlockManagement
    * @param curB Reference to the block B
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    */
-  private void insert(final char[] revB, final DiffBlock curB)
-          throws UnsupportedEncodingException {
+  private void insert(final char[] revB, final DiffBlock curB) throws UnsupportedEncodingException {
 
     String text = copy(revB, curB.getRevBStart(), curB.getRevBEnd());
 
@@ -222,7 +211,6 @@ public class BlockManagement
    * Creates a delete operation.
    *
    * @param curA Reference to the block A
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
    */
   private void delete(final DiffBlock curA) {
 
@@ -249,8 +237,7 @@ public class BlockManagement
    * @param curB Reference to current block B
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    */
-  private void replace(final char[] revA, final char[] revB,
-                       final DiffBlock curA, final DiffBlock curB)
+  private void replace(final char[] revA, final char[] revB, final DiffBlock curA, final DiffBlock curB)
           throws UnsupportedEncodingException {
 
     // Replace (C S E L T)

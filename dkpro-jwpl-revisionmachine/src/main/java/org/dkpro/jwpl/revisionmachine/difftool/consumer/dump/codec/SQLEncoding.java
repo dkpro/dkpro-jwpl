@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used to stored the sql statements.
+ * This class is used to store the sql statements.
  */
 public class SQLEncoding {
 
@@ -114,11 +114,10 @@ public class SQLEncoding {
 
     try {
       StringBuilder buffer = new StringBuilder();
-
-      buffer.append(query + "\r\n\r\n");
+      buffer.append(query).append("\r\n\r\n");
 
       for (int i = 0; i < list.size(); i++) {
-        buffer.append(i + "\t" + list.get(i).length + "\r\n");
+        buffer.append(i).append("\t").append(list.get(i).length).append("\r\n");
       }
 
       return buffer.toString();

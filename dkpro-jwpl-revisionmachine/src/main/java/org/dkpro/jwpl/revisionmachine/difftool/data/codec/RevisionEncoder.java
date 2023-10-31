@@ -31,10 +31,9 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 
 /**
- * The RevisionApi class contains methods to encode the diff information.
+ * The RevisionEncoder class contains methods to encode the diff information.
  */
-public class RevisionEncoder
-        implements RevisionEncoderInterface {
+public class RevisionEncoder implements RevisionEncoderInterface {
 
   /**
    * Reference to the codec
@@ -62,26 +61,14 @@ public class RevisionEncoder
    * @throws ConfigurationException if an error occurs while accessing the configuration
    *                                parameters
    */
-  public RevisionEncoder()
-          throws ConfigurationException {
+  public RevisionEncoder() throws ConfigurationException {
 
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
-
-    MODE_ZIP_COMPRESSION = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    MODE_ZIP_COMPRESSION = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tud.ukp.kulessa.delta.data.codec.RevisionEncoderInterface#binaryDiff
-   * (de.tud.ukp.kulessa.delta.data.codec.RevisionCodecData,
-   * de.tud.ukp.kulessa.delta.data.tasks.content.Diff)
-   */
   @Override
   public byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
           throws UnsupportedEncodingException, EncodingException {
@@ -178,8 +165,7 @@ public class RevisionEncoder
    * @param codecData Reference to the codec
    * @throws EncodingException if the encoding failed
    */
-  private void encodeCodecData(final RevisionCodecData codecData)
-          throws EncodingException {
+  private void encodeCodecData(final RevisionCodecData codecData) throws EncodingException {
 
     this.codecData = codecData;
 
@@ -204,8 +190,7 @@ public class RevisionEncoder
    * @param part Reference to the Cut operation
    * @throws EncodingException if the encoding failed
    */
-  private void encodeCut(final DiffPart part)
-          throws EncodingException {
+  private void encodeCut(final DiffPart part) throws EncodingException {
 
     // C
     data.writeBit(1);
@@ -232,8 +217,7 @@ public class RevisionEncoder
    * @param part Reference to the Delete operation
    * @throws EncodingException if the encoding failed
    */
-  private void encodeDelete(final DiffPart part)
-          throws EncodingException {
+  private void encodeDelete(final DiffPart part) throws EncodingException {
 
     // C
     data.writeBit(0);
@@ -249,14 +233,6 @@ public class RevisionEncoder
     data.writeFillBits();
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tud.ukp.kulessa.delta.data.codec.RevisionEncoderInterface#encodeDiff
-   * (de.tud.ukp.kulessa.delta.data.codec.RevisionCodecData,
-   * de.tud.ukp.kulessa.delta.data.tasks.content.Diff)
-   */
   @Override
   public String encodeDiff(final RevisionCodecData codecData, final Diff diff)
           throws UnsupportedEncodingException, EncodingException {
@@ -325,8 +301,7 @@ public class RevisionEncoder
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    * @throws EncodingException            if the encoding failed
    */
-  private void encodeInsert(final DiffPart part)
-          throws UnsupportedEncodingException, EncodingException {
+  private void encodeInsert(final DiffPart part) throws UnsupportedEncodingException, EncodingException {
 
     // C
     data.writeBit(0);
@@ -350,8 +325,7 @@ public class RevisionEncoder
    * @param part Reference to the Paste operation
    * @throws EncodingException if the encoding failed
    */
-  private void encodePaste(final DiffPart part)
-          throws EncodingException {
+  private void encodePaste(final DiffPart part) throws EncodingException {
 
     // C
     data.writeBit(1);
@@ -375,8 +349,7 @@ public class RevisionEncoder
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    * @throws EncodingException            if the encoding failed
    */
-  private void encodeReplace(final DiffPart part)
-          throws UnsupportedEncodingException, EncodingException {
+  private void encodeReplace(final DiffPart part) throws UnsupportedEncodingException, EncodingException {
 
     // C
     data.writeBit(1);

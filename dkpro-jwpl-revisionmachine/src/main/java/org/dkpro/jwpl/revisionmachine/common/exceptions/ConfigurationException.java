@@ -22,8 +22,7 @@ package org.dkpro.jwpl.revisionmachine.common.exceptions;
  * the configuration.
  */
 @SuppressWarnings("serial")
-public class ConfigurationException
-        extends Exception {
+public class ConfigurationException extends Exception {
 
   /**
    * Reference to the error key
@@ -31,7 +30,7 @@ public class ConfigurationException
   private ErrorKeys key;
 
   /**
-   * (Constructor) Creates a new ConfigurationException.
+   * Creates a new ConfigurationException.
    *
    * @param description message
    */
@@ -40,7 +39,7 @@ public class ConfigurationException
   }
 
   /**
-   * (Constructor) Creates a new ConfigurationException.
+   * Creates a new ConfigurationException.
    *
    * @param e inner exception
    */
@@ -49,7 +48,7 @@ public class ConfigurationException
   }
 
   /**
-   * (Constructor) Creates a new ConfigurationException.
+   * Creates a new ConfigurationException.
    *
    * @param description message
    * @param e           inner exception
@@ -59,7 +58,7 @@ public class ConfigurationException
   }
 
   /**
-   * (Constructor) Creates a new ConfigurationException.
+   * Creates a new ConfigurationException.
    *
    * @param key         error key
    * @param description message

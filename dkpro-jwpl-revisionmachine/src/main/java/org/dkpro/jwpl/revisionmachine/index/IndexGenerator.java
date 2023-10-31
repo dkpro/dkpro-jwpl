@@ -42,7 +42,7 @@ public class IndexGenerator {
   private final RevisionAPIConfiguration config;
 
   /**
-   * (Constructor) Creates a new IndexGenerator object.
+   * Creates a new IndexGenerator object.
    *
    * @param config Reference to the configuration
    */
@@ -55,8 +55,7 @@ public class IndexGenerator {
    *
    * @throws WikiApiException if an error occurs
    */
-  public void generate()
-          throws WikiApiException {
+  public void generate() throws WikiApiException {
     Indexer data = null;
     try {
       data = new Indexer(config);

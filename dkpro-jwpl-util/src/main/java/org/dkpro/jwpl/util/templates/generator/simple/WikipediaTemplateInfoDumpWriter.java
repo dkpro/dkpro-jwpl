@@ -100,7 +100,7 @@ public class WikipediaTemplateInfoDumpWriter {
   /**
    * Generate sql statement for table template id -> page id
    *
-   * @param tableExists     if table does not exists create index for this table
+   * @param tableExists     if table does not exist create index for this table
    * @param dataSourceToUse data source to use for sql statement generation
    * @return sql statement string
    */
@@ -153,7 +153,7 @@ public class WikipediaTemplateInfoDumpWriter {
   /**
    * Generate sql statement for table template id -> revision id
    *
-   * @param tableExists     if table does not exists create index for this table
+   * @param tableExists     if table does not exist create index for this table
    * @param dataSourceToUse data source to use for sql statement generation
    * @return sql statement string
    */
@@ -182,8 +182,8 @@ public class WikipediaTemplateInfoDumpWriter {
   /**
    * Generate and write sql statements to output file
    *
-   * @param revTableExists  if revision table does not exists -&gt; create index
-   * @param pageTableExists if page table does not exists -&gt; create index
+   * @param revTableExists  if revision table does not exist -&gt; create index
+   * @param pageTableExists if page table does not exist -&gt; create index
    * @param mode            generation mode
    */
   void writeSQL(boolean revTableExists, boolean pageTableExists, GeneratorMode mode) {

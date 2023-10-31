@@ -31,8 +31,10 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for ArticleConsumers.
  * <p>
- * TODO: This file should be replaced with resource files.
+ * @deprecated To be removed without replacement.
  */
+// TODO: This file should be replaced with resource files.
+@Deprecated(since = "1.1", forRemoval = true)
 public final class ArticleConsumerLogMessages {
 
   /**
@@ -41,11 +43,9 @@ public final class ArticleConsumerLogMessages {
    * @param logger  reference to the logger
    * @param archive reference to the archive descriptor
    */
-  public static void logArchiveRetrieved(final Logger logger,
-                                         final ArchiveDescription archive) {
+  public static void logArchiveRetrieved(final Logger logger, final ArchiveDescription archive) {
 
-    logger.logMessage(Level.INFO, "Retrieved archive " + archive.toString()
-            + " successfully");
+    logger.logMessage(Level.INFO, "Retrieved archive " + archive.toString() + " successfully");
   }
 
   /**
@@ -55,8 +55,7 @@ public final class ArticleConsumerLogMessages {
    * @param article reference to the revision task
    * @param time    time needed for the operation
    */
-  public static void logArticleRead(final Logger logger,
-                                    final Task<Revision> article, final long time) {
+  public static void logArticleRead(final Logger logger, final Task<Revision> article, final long time) {
 
     logger.logMessage(Level.INFO, "Read article\t" + Time.toClock(time)
             + "\t" + article.toString());
@@ -70,49 +69,45 @@ public final class ArticleConsumerLogMessages {
    * @param time     time needed for the operation
    * @param position input file position
    */
-  public static void logArticleRead(final Logger logger,
-                                    final Task<Revision> article, final long time, final long position) {
+  public static void logArticleRead(final Logger logger, final Task<Revision> article, 
+                                    final long time, final long position) {
 
     logger.logMessage(Level.INFO, "Read article\t" + Time.toClock(time)
             + "\t" + article.toString() + "\t" + position);
   }
 
   /**
-   * Logs the occurance of an error while retrieving the input file.
+   * Logs the occurrence of an error while retrieving the input file.
    *
    * @param logger  reference to the logger
    * @param archive reference to the archive
    * @param e       reference to the error
    */
-  public static void logErrorRetrieveArchive(final Logger logger,
-                                             final ArchiveDescription archive, final Error e) {
+  public static void logErrorRetrieveArchive(final Logger logger, final ArchiveDescription archive, final Error e) {
 
-    logger.logError(Level.ERROR, "Error while accessing archive "
-            + archive.toString(), e);
+    logger.logError(Level.ERROR, "Error while accessing archive " + archive.toString(), e);
   }
 
   /**
-   * Logs the occurance of an exception while retrieving the input file.
+   * Logs the occurrence of an exception while retrieving the input file.
    *
    * @param logger  reference to the logger
    * @param archive reference to the archive
    * @param e       reference to the exception
    */
-  public static void logExceptionRetrieveArchive(final Logger logger,
-                                                 final ArchiveDescription archive, final Exception e) {
+  public static void logExceptionRetrieveArchive(final Logger logger, final ArchiveDescription archive,
+                                                 final Exception e) {
 
-    logger.logException(Level.ERROR, "Exception while accessing archive "
-            + archive.toString(), e);
+    logger.logException(Level.ERROR, "Exception while accessing archive " + archive.toString(), e);
   }
 
   /**
-   * Logs the occurance of an invalid task type.
+   * Logs the occurrence of an invalid task type.
    *
    * @param logger reference to the logger
    * @param type   type of task
    */
-  public static void logInvalidTaskType(final Logger logger,
-                                        final TaskTypes type) {
+  public static void logInvalidTaskType(final Logger logger, final TaskTypes type) {
 
     logger.logMessage(Level.INFO, "Invalid TaskType: " + type);
   }
@@ -124,8 +119,7 @@ public final class ArticleConsumerLogMessages {
    */
   public static void logNoMoreArchives(final Logger logger) {
 
-    logger.logMessage(Level.INFO,
-            "Consumer initiates SHUTDOWN: no more archives available.");
+    logger.logMessage(Level.INFO, "Consumer initiates SHUTDOWN: no more archives available.");
   }
 
   /**
@@ -134,34 +128,29 @@ public final class ArticleConsumerLogMessages {
    * @param logger  reference to the logger
    * @param archive reference to the archive descriptor
    */
-  public static void logNoMoreArticles(final Logger logger,
-                                       final ArchiveDescription archive) {
+  public static void logNoMoreArticles(final Logger logger, final ArchiveDescription archive) {
 
-    logger.logMessage(Level.INFO, "Archive " + archive.toString()
-            + " contains no more articles");
+    logger.logMessage(Level.INFO, "Archive " + archive.toString() + " contains no more articles");
   }
 
   /**
-   * Logs an occurance of an exception while reading a task.
+   * Logs an occurrence of an exception while reading a task.
    *
    * @param logger reference to the logger
    * @param task   reference to the task
    * @param e      reference to the exception
    */
-  public static void logReadTaskException(final Logger logger,
-                                          final Task<Revision> task, final Exception e) {
+  public static void logReadTaskException(final Logger logger, final Task<Revision> task, final Exception e) {
 
     if (task != null) {
-      logger.logException(Level.ERROR, "Error while reading a task: "
-              + task, e);
+      logger.logException(Level.ERROR, "Error while reading a task: " + task, e);
     } else {
-      logger.logException(Level.ERROR,
-              "Error while reading an unknown task", e);
+      logger.logException(Level.ERROR, "Error while reading an unknown task", e);
     }
   }
 
   /**
-   * Logs an occurance of an OutOfMemoryError while reading a task.
+   * Logs an occurrence of an OutOfMemoryError while reading a task.
    *
    * @param logger reference to the logger
    * @param task   reference to the task
@@ -171,11 +160,9 @@ public final class ArticleConsumerLogMessages {
                                                  final Task<Revision> task, final OutOfMemoryError e) {
 
     if (task != null) {
-      logger.logError(Level.WARN, "Error while reading a task: "
-              + task, e);
+      logger.logError(Level.WARN, "Error while reading a task: " + task, e);
     } else {
-      logger.logError(Level.WARN,
-              "Error while reading an unknown task", e);
+      logger.logError(Level.WARN, "Error while reading an unknown task", e);
     }
   }
 
@@ -218,7 +205,7 @@ public final class ArticleConsumerLogMessages {
   }
 
   /**
-   * Logs the occurance of an ArticleReaderException.
+   * Logs the occurrence of an ArticleReaderException.
    *
    * @param logger reference to the logger
    * @param e      reference to the exception

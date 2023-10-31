@@ -38,9 +38,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return RuntimeException
    */
-  public static RuntimeException createRuntimeException(
-          final ErrorKeys errorId) {
-
+  public static RuntimeException createRuntimeException(final ErrorKeys errorId) {
     return new RuntimeException(errorId.toString());
   }
 
@@ -54,9 +52,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return ArticleReaderException
    */
-  public static ArticleReaderException createArticleReaderException(
-          final ErrorKeys errorId) {
-
+  public static ArticleReaderException createArticleReaderException(final ErrorKeys errorId) {
     return new ArticleReaderException(errorId.toString());
   }
 
@@ -70,9 +66,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return ConfigurationException
    */
-  public static ConfigurationException createConfigurationException(
-          final ErrorKeys errorId) {
-
+  public static ConfigurationException createConfigurationException(final ErrorKeys errorId) {
     return new ConfigurationException(errorId.toString());
   }
 
@@ -83,11 +77,8 @@ public final class ErrorFactory {
    * @param message additional error message
    * @return ConfigurationException
    */
-  public static ConfigurationException createConfigurationException(
-          final ErrorKeys errorId, final String message) {
-
-    return new ConfigurationException(errorId.toString() + ":\r\n"
-            + message);
+  public static ConfigurationException createConfigurationException(final ErrorKeys errorId, final String message) {
+    return new ConfigurationException(errorId.toString() + ":\r\n" + message);
   }
 
   /*
@@ -101,11 +92,9 @@ public final class ErrorFactory {
    * @param sleepPeriod time value
    * @return TimeoutException
    */
-  public static TimeoutException createTimeoutException(
-          final ErrorKeys errorId, final long sleepPeriod) {
+  public static TimeoutException createTimeoutException(final ErrorKeys errorId, final long sleepPeriod) {
 
-    return new TimeoutException(errorId.toString() + "\r\n"
-            + "Timeout after " + sleepPeriod + " miliseconds.");
+    return new TimeoutException(errorId.toString() + "\r\n" + "Timeout after " + sleepPeriod + " miliseconds.");
   }
 
   /*
@@ -118,9 +107,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return LoggingException
    */
-  public static LoggingException createLoggingException(
-          final ErrorKeys errorId) {
-
+  public static LoggingException createLoggingException(final ErrorKeys errorId) {
     return new LoggingException(errorId.toString());
   }
 
@@ -131,9 +118,7 @@ public final class ErrorFactory {
    * @param e       inner exception
    * @return LoggingException
    */
-  public static LoggingException createLoggingException(
-          final ErrorKeys errorId, final Exception e) {
-
+  public static LoggingException createLoggingException(final ErrorKeys errorId, final Exception e) {
     return new LoggingException(errorId.toString(), e);
   }
 
@@ -148,9 +133,7 @@ public final class ErrorFactory {
    * @param message additional message
    * @return DiffException
    */
-  public static DiffException createDiffException(final ErrorKeys errorId,
-                                                  final String message) {
-
+  public static DiffException createDiffException(final ErrorKeys errorId, final String message) {
     return new DiffException(errorId.toString() + ":\r\n" + message);
   }
 
@@ -162,9 +145,7 @@ public final class ErrorFactory {
    * @param e       inner exception
    * @return DiffException
    */
-  public static DiffException createDiffException(final ErrorKeys errorId,
-                                                  final String message, final Exception e) {
-
+  public static DiffException createDiffException(final ErrorKeys errorId, final String message, final Exception e) {
     return new DiffException(errorId.toString() + ":\r\n" + message, e);
   }
 
@@ -178,9 +159,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return EncodingException
    */
-  public static EncodingException createEncodingException(
-          final ErrorKeys errorId) {
-
+  public static EncodingException createEncodingException(final ErrorKeys errorId) {
     return new EncodingException(errorId.toString());
   }
 
@@ -191,9 +170,7 @@ public final class ErrorFactory {
    * @param message additional message
    * @return EncodingException
    */
-  public static EncodingException createEncodingException(
-          final ErrorKeys errorId, final String message) {
-
+  public static EncodingException createEncodingException(final ErrorKeys errorId, final String message) {
     return new EncodingException(errorId.toString() + ":\r\n" + message);
   }
 
@@ -221,8 +198,7 @@ public final class ErrorFactory {
    * @param errorId reference to the error identifier
    * @return DecodingException
    */
-  public static DecodingException createDecodingException(
-          final ErrorKeys errorId) {
+  public static DecodingException createDecodingException(final ErrorKeys errorId) {
 
     return new DecodingException(errorId.toString());
   }
@@ -234,8 +210,7 @@ public final class ErrorFactory {
    * @param message additional message
    * @return DecodingException
    */
-  public static DecodingException createDecodingException(
-          final ErrorKeys errorId, final String message) {
+  public static DecodingException createDecodingException(final ErrorKeys errorId, final String message) {
 
     return new DecodingException(errorId.toString() + ":\r\n" + message);
   }
@@ -248,9 +223,8 @@ public final class ErrorFactory {
    * @param e       inner exception
    * @return DecodingException
    */
-  public static DecodingException createDecodingException(
-          final ErrorKeys errorId, final String message, final Exception e) {
-
+  public static DecodingException createDecodingException(final ErrorKeys errorId, final String message,
+                                                          final Exception e) {
     return new DecodingException(errorId.toString() + ":\r\n" + message, e);
   }
 
@@ -266,9 +240,7 @@ public final class ErrorFactory {
    * @param e       inner exception
    * @return SQLConsumerException
    */
-  public static SQLConsumerException createSQLConsumerException(
-          final ErrorKeys errorId, final Exception e) {
-
+  public static SQLConsumerException createSQLConsumerException(final ErrorKeys errorId, final Exception e) {
     return new SQLConsumerException(errorId.toString(), e);
   }
 
@@ -279,9 +251,7 @@ public final class ErrorFactory {
    * @param message additional message
    * @return SQLConsumerException
    */
-  public static SQLConsumerException createSQLConsumerException(
-          final ErrorKeys errorId, final String message) {
-
+  public static SQLConsumerException createSQLConsumerException(final ErrorKeys errorId, final String message) {
     return new SQLConsumerException(errorId.toString() + ":\r\n" + message);
   }
 
@@ -293,10 +263,8 @@ public final class ErrorFactory {
    * @param e       inner exception
    * @return SQLConsumerException
    */
-  public static SQLConsumerException createSQLConsumerException(
-          final ErrorKeys errorId, final String message, final Exception e) {
-
-    return new SQLConsumerException(errorId.toString() + ":\r\n" + message,
-            e);
+  public static SQLConsumerException createSQLConsumerException(final ErrorKeys errorId, final String message,
+                                                                final Exception e) {
+    return new SQLConsumerException(errorId.toString() + ":\r\n" + message, e);
   }
 }

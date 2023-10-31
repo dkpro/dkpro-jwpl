@@ -30,8 +30,7 @@ import org.dkpro.jwpl.revisionmachine.common.util.Time;
 /**
  * This class represents the iteration in chronological order.
  */
-public class ChronoRevisionIterator
-        implements RevisionIteratorInterface {
+public class ChronoRevisionIterator implements RevisionIteratorInterface {
 
   /**
    * Reference to the configuration parameters
@@ -137,8 +136,7 @@ public class ChronoRevisionIterator
    * @throws WikiApiException if an error occurs
    */
   public ChronoRevisionIterator(final RevisionAPIConfiguration config,
-                                final int firstArticleID, final int lastArticleID)
-          throws WikiApiException {
+                                final int firstArticleID, final int lastArticleID) throws WikiApiException {
 
     this(config);
 
@@ -152,8 +150,7 @@ public class ChronoRevisionIterator
    * @return whether the query contains results or not
    * @throws SQLException if an error occurs while executing the query
    */
-  private boolean queryArticle()
-          throws SQLException {
+  private boolean queryArticle() throws SQLException {
 
     Statement statement = this.connection.createStatement();
 
@@ -186,8 +183,7 @@ public class ChronoRevisionIterator
    * @return First Revision
    * @throws WikiApiException if an error occurs
    */
-  private Revision init()
-          throws WikiApiException {
+  private Revision init() throws WikiApiException {
 
     try {
       currentArticleID = resultArticles.getInt(1);
@@ -347,10 +343,10 @@ public class ChronoRevisionIterator
   /**
    * This method is unsupported.
    *
-   * @throws UnsupportedOperationException
-   * @deprecated
+   * @deprecated Do not use as the method will throw an exception at runtime.
    */
-  @Deprecated
+  @Override
+  @Deprecated(since = "1.0")
   public void remove() {
     throw new UnsupportedOperationException();
   }
@@ -361,8 +357,8 @@ public class ChronoRevisionIterator
    * @throws SQLException if an error occurs while closing the connection to the
    *                      database.
    */
-  public void close()
-          throws SQLException {
+  @Override
+  public void close() throws SQLException {
     if (this.connection != null) {
       this.connection.close();
     }

@@ -46,7 +46,7 @@ public class MultipleKeywordTree<V> {
   private final List<LetterNode<V>> hits;
 
   /**
-   * (Constructor) Creates an empty MultipleKeywordTree object.
+   * Creates an empty MultipleKeywordTree object.
    */
   public MultipleKeywordTree() {
     root = new LetterNode<>();

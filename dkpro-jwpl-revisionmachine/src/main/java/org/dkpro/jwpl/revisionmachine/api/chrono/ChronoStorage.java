@@ -25,9 +25,6 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 
 /**
  * This class represents the chrono storage.
- * <p>
- * <p>
- * 1
  */
 public class ChronoStorage {
 

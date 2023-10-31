@@ -47,8 +47,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class writes the output to a file.
  */
-public class SQLFileWriter
-        implements WriterInterface {
+public class SQLFileWriter implements WriterInterface {
 
   /**
    * File counter
@@ -100,27 +99,19 @@ public class SQLFileWriter
   private final String WIKIPEDIA_ENCODING;
 
   /**
-   * (Constructor) Creates a new SQLFileWriter object.
+   * Creates a new SQLFileWriter object.
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  private SQLFileWriter()
-          throws ConfigurationException {
+  private SQLFileWriter() throws ConfigurationException {
 
     // Load config parameters
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    LIMIT_SQL_FILE_SIZE = (Long) config
-            .getConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE);
-
-    PATH_OUTPUT_SQL_FILES = (String) config
-            .getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
-
-    MODE_STATISTICAL_OUTPUT = (Boolean) config
-            .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
-
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    LIMIT_SQL_FILE_SIZE = (Long) config.getConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE);
+    PATH_OUTPUT_SQL_FILES = (String) config.getConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES);
+    MODE_STATISTICAL_OUTPUT = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
     // Create sql file
     fileCounter = 0;
@@ -128,7 +119,7 @@ public class SQLFileWriter
 
 
   /**
-   * (Constructor) Creates a new SQLFileWriter object.
+   * Creates a new SQLFileWriter object.
    *
    * @param outputName Name of the sql consumer
    * @param logger     Reference to a logger
@@ -153,8 +144,7 @@ public class SQLFileWriter
    * @throws IOException if problems occurred while closing the file or process.
    */
   @Override
-  public void close()
-          throws IOException {
+  public void close() throws IOException {
     this.writer.close();
   }
 
@@ -164,8 +154,7 @@ public class SQLFileWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws LoggingException       if an error occurred while accessing the logger
    */
-  protected void init()
-          throws ConfigurationException, LoggingException {
+  protected void init() throws ConfigurationException, LoggingException {
 
     this.sqlEncoder = new SQLEncoder(logger);
   }
@@ -182,8 +171,7 @@ public class SQLFileWriter
    *                                producer database)
    */
   @Override
-  public void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException {
+  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
 
     try {
       SQLEncoding[] encoding = sqlEncoder.encodeTask(task);
@@ -209,9 +197,7 @@ public class SQLFileWriter
       }
 
     } catch (DecodingException | EncodingException e) {
-
-      throw ErrorFactory.createSQLConsumerException(
-              ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
+      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
 
     }
   }
@@ -219,11 +205,9 @@ public class SQLFileWriter
   /**
    * Creates a new output file and writes the header information.
    *
-   * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws IOException            if an error occurred while writing a file
    */
-  protected void writeHeader()
-          throws ConfigurationException, IOException {
+  protected void writeHeader() throws IOException {
 
     if (writer != null) {
       writer.close();

@@ -31,8 +31,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class encodes the diffs while collecting statistical information.
  */
-public class TimedSQLEncoder
-        extends SQLEncoder {
+public class TimedSQLEncoder extends SQLEncoder {
 
   /**
    * Temporary variable - used for storing the encoded size
@@ -49,10 +48,8 @@ public class TimedSQLEncoder
    *
    * @param logger Reference to the logger
    * @throws ConfigurationException if an error occurred while accessing the configuration
-   * @throws LoggingException       if an error occurred while accessing the logger
    */
-  public TimedSQLEncoder(final Logger logger)
-          throws ConfigurationException, LoggingException {
+  public TimedSQLEncoder(final Logger logger) throws ConfigurationException {
     super(logger);
   }
 
@@ -109,31 +106,17 @@ public class TimedSQLEncoder
     return encoding;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tud.ukp.kulessa.delta.consumers.sql.codec.SQLEncodrInterface#binaryTask
-   * (de.tudarmstadt.ukp.kulessa.delta.data.tasks.Task)
-   */
+  @Override
   protected byte[] binaryDiff(final Task<Diff> task, final Diff diff)
           throws ConfigurationException, UnsupportedEncodingException,
           DecodingException, EncodingException, SQLConsumerException {
 
     byte[] encoding = super.binaryDiff(task, diff);
-
     this.encodedSize += encoding.length;
-
     return encoding;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see
-   * de.tudarmstadt.ukp.kulessa.delta.consumers.sql.codec.SQLEncodrInterface
-   * #encodeTask(de.tudarmstadt.ukp.kulessa.delta.data.tasks.Task)
-   */
+  @Override
   public SQLEncoding[] encodeTask(final Task<Diff> task)
           throws ConfigurationException, UnsupportedEncodingException,
           DecodingException, EncodingException, SQLConsumerException {

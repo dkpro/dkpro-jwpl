@@ -181,11 +181,11 @@ public class TimeMachineGenerator extends AbstractSnapshotGenerator {
 
     String metahistory = initialFiles.getMetaHistoryFile();
 
-    DumpTableInputStream textTableIntputStream = environmentFactory.getDumpTableInputStream();
-    textTableIntputStream.initialize(decompressor.getInputStream(metahistory), DumpTableEnum.TEXT);
+    DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
+    textTableInputStream.initialize(decompressor.getInputStream(metahistory), DumpTableEnum.TEXT);
 
     TextParser textParser = environmentFactory.getTextParser();
-    textParser.setInputStream(textTableIntputStream);
+    textParser.setInputStream(textTableInputStream);
 
     return textParser;
 

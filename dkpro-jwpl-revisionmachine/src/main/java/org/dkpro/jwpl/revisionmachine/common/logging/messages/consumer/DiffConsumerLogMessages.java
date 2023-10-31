@@ -28,8 +28,10 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for DiffConsumers.
  * <p>
- * TODO: This file should be replaced with resource files.
+ * @deprecated To be removed without replacement.
  */
+// TODO: This file should be replaced with resource files.
+@Deprecated(since = "1.1", forRemoval = true)
 public class DiffConsumerLogMessages {
 
   /**
@@ -57,15 +59,14 @@ public class DiffConsumerLogMessages {
   public static void logArticleProcessed(final Logger logger,
                                          final Task<Revision> article, long time, long transmittingTime) {
 
-    logger.logMessage(
-            Level.INFO,
+    logger.logMessage(Level.INFO,
             "Generated Diff\t" + Time.toClock(time) + "\t"
                     + Time.toClock(transmittingTime) + "\t"
                     + article.toString());
   }
 
   /**
-   * Logs the occurance of a DiffException.
+   * Logs the occurrence of a DiffException.
    *
    * @param logger reference to the logger
    * @param e      reference to the exception
@@ -88,7 +89,7 @@ public class DiffConsumerLogMessages {
   }
 
   /**
-   * Logs the occurance of an invalid task type.
+   * Logs the occurrence of an invalid task type.
    *
    * @param logger reference to the logger
    * @param type   type of task
@@ -100,7 +101,7 @@ public class DiffConsumerLogMessages {
   }
 
   /**
-   * Logs the occurance of an TaskOutOfMemoryError while reading a revision
+   * Logs the occurrence of an TaskOutOfMemoryError while reading a revision
    * task.
    *
    * @param logger reference to the logger

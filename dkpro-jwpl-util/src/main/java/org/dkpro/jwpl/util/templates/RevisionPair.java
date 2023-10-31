@@ -129,7 +129,7 @@ public class RevisionPair implements Serializable {
         }
       }
     } catch (Exception ex) {
-      //This happends if a (SWEBLE-)compiler exception occurs.S
+      //This happens if a (SWEBLE-)compiler exception occurs.S
       //Sometimes, malformed xml items seem to cause class cast exceptions
       //in the parser, which is not wrapped in a Compiler exception.
       //Therefore, we should catch all exceptions here and return the
