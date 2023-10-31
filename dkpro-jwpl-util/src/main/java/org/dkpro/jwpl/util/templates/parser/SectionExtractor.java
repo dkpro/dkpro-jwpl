@@ -44,14 +44,33 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.fau.cs.osr.ptk.common.AstVisitor;
-import de.fau.cs.osr.ptk.common.ast.AstNode;
-import de.fau.cs.osr.ptk.common.ast.AstText;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.parser.nodes.*;
+import org.sweble.wikitext.parser.nodes.WtBold;
+import org.sweble.wikitext.parser.nodes.WtDefinitionList;
+import org.sweble.wikitext.parser.nodes.WtDefinitionListDef;
+import org.sweble.wikitext.parser.nodes.WtDefinitionListTerm;
+import org.sweble.wikitext.parser.nodes.WtExternalLink;
+import org.sweble.wikitext.parser.nodes.WtInternalLink;
+import org.sweble.wikitext.parser.nodes.WtItalics;
+import org.sweble.wikitext.parser.nodes.WtLinkTarget;
+import org.sweble.wikitext.parser.nodes.WtLinkTitle;
+import org.sweble.wikitext.parser.nodes.WtNode;
+import org.sweble.wikitext.parser.nodes.WtNodeList;
+import org.sweble.wikitext.parser.nodes.WtPage;
+import org.sweble.wikitext.parser.nodes.WtParagraph;
+import org.sweble.wikitext.parser.nodes.WtSection;
+import org.sweble.wikitext.parser.nodes.WtTemplate;
+import org.sweble.wikitext.parser.nodes.WtWhitespace;
+import org.sweble.wikitext.parser.nodes.WtXmlEmptyTag;
+import org.sweble.wikitext.parser.nodes.WtXmlEndTag;
+import org.sweble.wikitext.parser.nodes.WtXmlStartTag;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
+
+import de.fau.cs.osr.ptk.common.AstVisitor;
+import de.fau.cs.osr.ptk.common.ast.AstNode;
+import de.fau.cs.osr.ptk.common.ast.AstText;
 
 /**
  * A visitor that extracts sections from an article AST.

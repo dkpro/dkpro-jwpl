@@ -17,11 +17,11 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import java.lang.invoke.MethodHandles;
+
 import org.dkpro.jwpl.api.Wikipedia;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.lang.invoke.MethodHandles;
 
 /**
  * Data access object for class {@link Page}.

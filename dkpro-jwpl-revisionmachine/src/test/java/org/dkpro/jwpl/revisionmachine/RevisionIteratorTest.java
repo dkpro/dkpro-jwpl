@@ -17,6 +17,14 @@
  */
 package org.dkpro.jwpl.revisionmachine;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.api.Wikipedia;
@@ -24,19 +32,10 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class RevisionIteratorTest extends BaseJWPLTest {
 

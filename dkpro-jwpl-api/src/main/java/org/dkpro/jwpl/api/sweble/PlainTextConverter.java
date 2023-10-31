@@ -17,6 +17,52 @@
  */
 package org.dkpro.jwpl.api.sweble;
 
+import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.nodes.WtBold;
+import org.sweble.wikitext.parser.nodes.WtExternalLink;
+import org.sweble.wikitext.parser.nodes.WtHorizontalRule;
+import org.sweble.wikitext.parser.nodes.WtIllegalCodePoint;
+import org.sweble.wikitext.parser.nodes.WtImageLink;
+import org.sweble.wikitext.parser.nodes.WtInnerNode2;
+import org.sweble.wikitext.parser.nodes.WtInternalLink;
+import org.sweble.wikitext.parser.nodes.WtItalics;
+import org.sweble.wikitext.parser.nodes.WtLinkTitle;
+import org.sweble.wikitext.parser.nodes.WtListItem;
+import org.sweble.wikitext.parser.nodes.WtNode;
+import org.sweble.wikitext.parser.nodes.WtNodeList;
+import org.sweble.wikitext.parser.nodes.WtPage;
+import org.sweble.wikitext.parser.nodes.WtParagraph;
+import org.sweble.wikitext.parser.nodes.WtSection;
+import org.sweble.wikitext.parser.nodes.WtTable;
+import org.sweble.wikitext.parser.nodes.WtTableCaption;
+import org.sweble.wikitext.parser.nodes.WtTableCell;
+import org.sweble.wikitext.parser.nodes.WtTableHeader;
+import org.sweble.wikitext.parser.nodes.WtTableImplicitTableBody;
+import org.sweble.wikitext.parser.nodes.WtTableRow;
+import org.sweble.wikitext.parser.nodes.WtTagExtension;
+import org.sweble.wikitext.parser.nodes.WtTemplate;
+import org.sweble.wikitext.parser.nodes.WtTemplateArgument;
+import org.sweble.wikitext.parser.nodes.WtTemplateParameter;
+import org.sweble.wikitext.parser.nodes.WtUrl;
+import org.sweble.wikitext.parser.nodes.WtWhitespace;
+import org.sweble.wikitext.parser.nodes.WtXmlAttribute;
+import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
+import org.sweble.wikitext.parser.nodes.WtXmlComment;
+import org.sweble.wikitext.parser.nodes.WtXmlElement;
+import org.sweble.wikitext.parser.nodes.WtXmlEndTag;
+import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
+import org.sweble.wikitext.parser.parser.LinkTargetException;
+
 /*
  * Derived from the TextConverter class which was published in the
  * Sweble example project provided on
@@ -28,51 +74,6 @@ package org.dkpro.jwpl.api.sweble;
 import de.fau.cs.osr.ptk.common.AstVisitor;
 import de.fau.cs.osr.ptk.common.ast.AstText;
 import de.fau.cs.osr.utils.StringTools;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.parser.nodes.WtBold;
-import org.sweble.wikitext.parser.nodes.WtExternalLink;
-import org.sweble.wikitext.parser.nodes.WtHorizontalRule;
-import org.sweble.wikitext.parser.nodes.WtIllegalCodePoint;
-import org.sweble.wikitext.parser.nodes.WtImageLink;
-import org.sweble.wikitext.parser.nodes.WtInternalLink;
-import org.sweble.wikitext.parser.nodes.WtItalics;
-import org.sweble.wikitext.parser.nodes.WtInnerNode2;
-import org.sweble.wikitext.parser.nodes.WtListItem;
-import org.sweble.wikitext.parser.nodes.WtNode;
-import org.sweble.wikitext.parser.nodes.WtNodeList;
-import org.sweble.wikitext.parser.nodes.WtParagraph;
-import org.sweble.wikitext.parser.nodes.WtPage;
-import org.sweble.wikitext.parser.nodes.WtSection;
-import org.sweble.wikitext.parser.nodes.WtUrl;
-import org.sweble.wikitext.parser.nodes.WtWhitespace;
-import org.sweble.wikitext.parser.nodes.WtXmlElement;
-import org.sweble.wikitext.parser.nodes.WtTagExtension;
-import org.sweble.wikitext.parser.nodes.WtTable;
-import org.sweble.wikitext.parser.nodes.WtTableCaption;
-import org.sweble.wikitext.parser.nodes.WtTableHeader;
-import org.sweble.wikitext.parser.nodes.WtTableRow;
-import org.sweble.wikitext.parser.nodes.WtTableCell;
-import org.sweble.wikitext.parser.nodes.WtTableImplicitTableBody;
-import org.sweble.wikitext.parser.nodes.WtTemplate;
-import org.sweble.wikitext.parser.nodes.WtTemplateArgument;
-import org.sweble.wikitext.parser.nodes.WtTemplateParameter;
-import org.sweble.wikitext.parser.nodes.WtLinkTitle;
-import org.sweble.wikitext.parser.nodes.WtXmlAttribute;
-import org.sweble.wikitext.parser.nodes.WtXmlComment;
-import org.sweble.wikitext.parser.nodes.WtXmlCharRef;
-import org.sweble.wikitext.parser.nodes.WtXmlEntityRef;
-import org.sweble.wikitext.parser.nodes.WtXmlEndTag;
-import org.sweble.wikitext.parser.parser.LinkTargetException;
-
-import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * A visitor to convert an article AST into a plain text representation. To

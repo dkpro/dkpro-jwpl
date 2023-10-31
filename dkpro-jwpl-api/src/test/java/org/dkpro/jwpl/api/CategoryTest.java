@@ -17,9 +17,11 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,14 +30,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class CategoryTest extends BaseJWPLTest {
 

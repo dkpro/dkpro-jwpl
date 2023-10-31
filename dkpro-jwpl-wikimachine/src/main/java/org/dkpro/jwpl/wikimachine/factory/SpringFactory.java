@@ -19,11 +19,6 @@ package org.dkpro.jwpl.wikimachine.factory;
 
 import java.io.File;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.context.support.AbstractXmlApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
 import org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor;
@@ -33,6 +28,10 @@ import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
+import org.springframework.beans.factory.BeanFactory;
+import org.springframework.context.support.AbstractXmlApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 
 public class SpringFactory implements IEnvironmentFactory {
 

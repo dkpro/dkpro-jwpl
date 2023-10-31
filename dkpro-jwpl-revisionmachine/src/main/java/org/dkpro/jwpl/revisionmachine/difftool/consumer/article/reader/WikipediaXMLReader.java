@@ -26,13 +26,6 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ArticleReaderException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
@@ -47,6 +40,12 @@ import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.SQLEscape;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.TaskTypes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformation;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  * This class parses the wikipedia xml format.

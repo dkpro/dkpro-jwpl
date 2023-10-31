@@ -17,16 +17,15 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-
-import java.util.Map;
-
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.Map;
+
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 public class CategoryGraphTest extends BaseJWPLTest{
 

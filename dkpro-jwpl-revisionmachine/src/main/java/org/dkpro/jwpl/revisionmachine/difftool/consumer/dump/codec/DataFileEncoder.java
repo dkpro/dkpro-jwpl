@@ -24,8 +24,6 @@ import java.util.List;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.EncodingException;
-import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
-import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecData;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionEncoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionEncoderInterface;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;

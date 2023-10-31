@@ -17,15 +17,17 @@
  */
 package org.dkpro.jwpl.api;
 
-import com.neovisionaries.i18n.LanguageCode;
+import java.io.IOException;
+import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.List;
+import com.neovisionaries.i18n.LanguageCode;
 
 public interface WikiConstants {
   /**

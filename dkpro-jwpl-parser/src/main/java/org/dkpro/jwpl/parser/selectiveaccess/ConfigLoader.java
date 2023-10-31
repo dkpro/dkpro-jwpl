@@ -20,11 +20,10 @@ package org.dkpro.jwpl.parser.selectiveaccess;
 import java.util.EnumMap;
 import java.util.Map;
 
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
-
 import org.dkpro.jwpl.parser.selectiveaccess.SelectiveAccessHandler.CIT;
 import org.dkpro.jwpl.parser.selectiveaccess.SelectiveAccessHandler.SIT;
+import org.xml.sax.Attributes;
+import org.xml.sax.helpers.DefaultHandler;
 
 class ConfigLoader extends DefaultHandler {
   final SelectiveAccessHandler sah;

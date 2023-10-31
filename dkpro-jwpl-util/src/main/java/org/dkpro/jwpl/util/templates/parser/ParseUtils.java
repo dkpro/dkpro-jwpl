@@ -21,18 +21,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.sweble.wikitext.engine.config.WikiConfig;
+import org.dkpro.jwpl.api.sweble.TemplateNameExtractor;
+import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
 import org.sweble.wikitext.engine.EngineException;
-import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
-import org.dkpro.jwpl.api.sweble.TemplateNameExtractor;
-import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
 
 public class ParseUtils {
 

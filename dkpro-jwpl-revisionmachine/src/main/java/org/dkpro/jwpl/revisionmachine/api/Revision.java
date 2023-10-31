@@ -24,7 +24,6 @@ import java.sql.Timestamp;
 import java.util.Collection;
 
 import org.apache.commons.lang3.StringEscapeUtils;
-
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.ISizeable;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 

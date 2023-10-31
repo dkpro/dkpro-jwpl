@@ -22,7 +22,6 @@ import java.io.UnsupportedEncodingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.EncodingException;
-import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;

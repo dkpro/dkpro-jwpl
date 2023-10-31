@@ -17,12 +17,12 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
-import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
-
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
  * BZip2 Decompressor (based on Singleton Design Pattern). Uses getInputStream

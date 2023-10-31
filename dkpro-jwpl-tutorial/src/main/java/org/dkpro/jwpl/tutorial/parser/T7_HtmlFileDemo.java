@@ -18,9 +18,9 @@
 package org.dkpro.jwpl.tutorial.parser;
 
 import org.dkpro.jwpl.parser.ParsedPage;
+import org.dkpro.jwpl.parser.html.HtmlWriter;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
-import org.dkpro.jwpl.parser.html.HtmlWriter;
 
 /**
  * This class shows how to use the HtmlTools.class...<br>

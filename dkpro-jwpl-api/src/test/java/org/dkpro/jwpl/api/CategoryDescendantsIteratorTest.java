@@ -17,17 +17,16 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class CategoryDescendantsIteratorTest extends BaseJWPLTest{
 

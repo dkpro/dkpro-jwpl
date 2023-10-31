@@ -17,28 +17,26 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PageTest extends BaseJWPLTest {
 

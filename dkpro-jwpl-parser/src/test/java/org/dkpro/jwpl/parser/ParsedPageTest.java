@@ -17,6 +17,10 @@ package org.dkpro.jwpl.parser;
  * limitations under the License.
  */
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.WikiConstants.Language;
@@ -24,13 +28,8 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class ParsedPageTest extends BaseJWPLTest{
 

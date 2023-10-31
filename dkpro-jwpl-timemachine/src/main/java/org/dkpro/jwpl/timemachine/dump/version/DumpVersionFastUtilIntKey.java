@@ -22,9 +22,6 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import org.dkpro.jwpl.timemachine.domain.Revision;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
@@ -35,6 +32,10 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
+
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class DumpVersionFastUtilIntKey extends AbstractDumpVersion {
   private static final String SQL_NULL = "NULL";

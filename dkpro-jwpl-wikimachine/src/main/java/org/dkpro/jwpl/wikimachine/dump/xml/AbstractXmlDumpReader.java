@@ -28,18 +28,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TimeZone;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import org.dkpro.jwpl.mwdumper.importer.Contributor;
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
@@ -48,6 +47,11 @@ import org.dkpro.jwpl.mwdumper.importer.Page;
 import org.dkpro.jwpl.mwdumper.importer.Revision;
 import org.dkpro.jwpl.mwdumper.importer.Siteinfo;
 import org.dkpro.jwpl.mwdumper.importer.Title;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Parser of WikiMedia XML dumps. Modification of XmlDumpReader with some enhanced error

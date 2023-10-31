@@ -24,12 +24,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.TypedQuery;
-
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.persistence.TypedQuery;
 
 /**
  * An {@link Iterator} over {@link Page} objects.

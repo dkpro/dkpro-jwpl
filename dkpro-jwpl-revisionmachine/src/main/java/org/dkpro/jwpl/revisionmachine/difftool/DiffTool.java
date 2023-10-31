@@ -21,10 +21,9 @@ import java.io.IOException;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationReader;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
+import org.xml.sax.SAXException;
 
 /**
  * This class contains the start method for the DiffTool application.

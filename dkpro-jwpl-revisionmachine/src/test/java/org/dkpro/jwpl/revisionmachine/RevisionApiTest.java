@@ -17,12 +17,9 @@
  */
 package org.dkpro.jwpl.revisionmachine;
 
-import org.dkpro.jwpl.api.DatabaseConfiguration;
-import org.dkpro.jwpl.api.WikiConstants.Language;
-import org.dkpro.jwpl.api.Wikipedia;
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.revisionmachine.api.Revision;
-import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
@@ -31,15 +28,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Calendar;
 
+import org.dkpro.jwpl.api.DatabaseConfiguration;
+import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.api.Wikipedia;
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.revisionmachine.api.Revision;
+import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class RevisionApiTest extends BaseJWPLTest {
 

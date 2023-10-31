@@ -17,10 +17,7 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.util.GraphUtilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
@@ -28,7 +25,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.util.GraphUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Encapsulates the integration test code that stresses a Wikipedia backend to check the performance of it.

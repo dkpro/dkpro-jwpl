@@ -17,13 +17,13 @@
  */
 package org.dkpro.jwpl.revisionmachine.api;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A common base class that handles the aspect of database connection handling.

@@ -20,6 +20,12 @@ package org.dkpro.jwpl.api;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import org.dkpro.jwpl.api.hibernate.PageDAO;
+import org.dkpro.jwpl.api.sweble.PlainTextConverter;
+import org.dkpro.jwpl.util.UnmodifiableArraySet;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
@@ -29,12 +35,6 @@ import org.sweble.wikitext.engine.WtEngineImpl;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
-import org.dkpro.jwpl.api.hibernate.PageDAO;
-import org.dkpro.jwpl.api.sweble.PlainTextConverter;
-import org.dkpro.jwpl.util.UnmodifiableArraySet;
 
 /**
  * Represents a Wikipedia article page.

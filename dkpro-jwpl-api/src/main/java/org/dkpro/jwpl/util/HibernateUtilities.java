@@ -20,11 +20,10 @@ package org.dkpro.jwpl.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.dkpro.jwpl.api.WikiConstants;
-import org.hibernate.Session;
-
 import org.dkpro.jwpl.api.DatabaseConfiguration;
+import org.dkpro.jwpl.api.WikiConstants;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
+import org.hibernate.Session;
 
 /**
  * @deprecated To be removed without replacement.

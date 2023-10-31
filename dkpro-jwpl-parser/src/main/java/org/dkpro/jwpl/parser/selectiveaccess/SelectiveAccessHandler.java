@@ -28,8 +28,6 @@ import java.util.Map;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.xml.sax.helpers.DefaultHandler;
-
 import org.dkpro.jwpl.parser.Content;
 import org.dkpro.jwpl.parser.Content.FormatType;
 import org.dkpro.jwpl.parser.DefinitionList;
@@ -42,6 +40,7 @@ import org.dkpro.jwpl.parser.SectionContainer;
 import org.dkpro.jwpl.parser.SectionContent;
 import org.dkpro.jwpl.parser.Span;
 import org.dkpro.jwpl.parser.Table;
+import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * Provides access to a ParsedPage at an abstract Level.

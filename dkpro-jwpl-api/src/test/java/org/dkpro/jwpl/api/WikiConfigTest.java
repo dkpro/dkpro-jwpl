@@ -17,11 +17,10 @@
  */
 package org.dkpro.jwpl.api;
 
-import org.sweble.wikitext.engine.config.WikiConfig;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertSame;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 public class WikiConfigTest {
 
