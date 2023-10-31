@@ -28,66 +28,71 @@ import java.io.StreamTokenizer;
  * and PagelinksParser.
  *
  * @version 0.2 <br>
- * <code>SQLFileParser</code> don't create a BufferedReader by himself
- * but entrust it to <code>BufferedReaderFactory</code>. Thereby
- * BufferedReaders are created according to archive type and try to
- * uncompress the file on the fly. (Ivan Galkin 15.01.2009)
+ *          <code>SQLFileParser</code> don't create a BufferedReader by himself but entrust it to
+ *          <code>BufferedReaderFactory</code>. Thereby BufferedReaders are created according to
+ *          archive type and try to uncompress the file on the fly. (Ivan Galkin 15.01.2009)
  */
-abstract class SQLFileParser {
+abstract class SQLFileParser
+{
 
-  private static final String ENCODING = "UTF-8";
-  protected InputStream stream;
-  protected StreamTokenizer st;
-  protected boolean EOF_reached;
+    private static final String ENCODING = "UTF-8";
+    protected InputStream stream;
+    protected StreamTokenizer st;
+    protected boolean EOF_reached;
 
-  /**
-   * Init the SQLFileParser with an input stream
-   *
-   * @param inputStream
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  protected void init(InputStream inputStream) throws IOException {
-    stream = inputStream;
-    st = new StreamTokenizer(new BufferedReader(new InputStreamReader(
-            stream, ENCODING)));
+    /**
+     * Init the SQLFileParser with an input stream
+     *
+     * @param inputStream
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    protected void init(InputStream inputStream) throws IOException
+    {
+        stream = inputStream;
+        st = new StreamTokenizer(new BufferedReader(new InputStreamReader(stream, ENCODING)));
 
-    EOF_reached = false;
-    skipStatements();
+        EOF_reached = false;
+        skipStatements();
 
-  }
-
-  /**
-   * Skip the sql statements for table creation and the prefix <br>
-   * INSERT INTO TABLE .... VALUES for values insertion.<br>
-   * Read tokens until the word 'VALUES' is reached or the EOF.
-   *
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  protected void skipStatements() throws IOException {
-    while (true) {
-      st.nextToken();
-      if (null != st.sval && st.sval.equalsIgnoreCase("VALUES")) {
-        // the next token is the begin of a value
-        break;
-      }
-      if (st.ttype == StreamTokenizer.TT_EOF) {
-        // the end of the file is reached
-        EOF_reached = true;
-        break;
-      }
     }
-  }
 
-  public void close() throws IOException {
-    stream.close();
-  }
+    /**
+     * Skip the sql statements for table creation and the prefix <br>
+     * INSERT INTO TABLE .... VALUES for values insertion.<br>
+     * Read tokens until the word 'VALUES' is reached or the EOF.
+     *
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    protected void skipStatements() throws IOException
+    {
+        while (true) {
+            st.nextToken();
+            if (null != st.sval && st.sval.equalsIgnoreCase("VALUES")) {
+                // the next token is the begin of a value
+                break;
+            }
+            if (st.ttype == StreamTokenizer.TT_EOF) {
+                // the end of the file is reached
+                EOF_reached = true;
+                break;
+            }
+        }
+    }
 
-  /**
-   * This method must be implemented by the PagelinksParser and the
-   * CategorylinksParser<br> classes.
-   *
-   * @return Returns true if a new value is now available und false otherwise.
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  abstract boolean next() throws IOException;
+    public void close() throws IOException
+    {
+        stream.close();
+    }
+
+    /**
+     * This method must be implemented by the PagelinksParser and the CategorylinksParser<br>
+     * classes.
+     *
+     * @return Returns true if a new value is now available und false otherwise.
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    abstract boolean next() throws IOException;
 }

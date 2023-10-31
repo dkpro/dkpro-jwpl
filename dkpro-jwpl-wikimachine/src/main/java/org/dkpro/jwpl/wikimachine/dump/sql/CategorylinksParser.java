@@ -25,78 +25,85 @@ import java.io.InputStream;
  * <p>
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  */
-public class CategorylinksParser extends SQLFileParser {
+public class CategorylinksParser
+    extends SQLFileParser
+{
 
-  /**
-   * The fields of the table categorylinks.<br>
-   * These fields are updated on each readen value.
-   */
-  private int clFrom;
-  private String clTo;
+    /**
+     * The fields of the table categorylinks.<br>
+     * These fields are updated on each readen value.
+     */
+    private int clFrom;
+    private String clTo;
 
-  /**
-   * Create a parser from an input stream
-   *
-   * @param inputStream
-   * @throws IOException Thrown if IO errors occurred.
-   */
-  public CategorylinksParser(InputStream inputStream) throws IOException {
-    init(inputStream);
-  }
-
-  /**
-   * @return Returns the cl_from.
-   */
-  public int getClFrom() {
-    return clFrom;
-  }
-
-  /**
-   * @return Returns the cl_to.
-   */
-  public String getClTo() {
-    return clTo;
-  }
-
-  @Override
-  public boolean next() throws IOException {
-    if (EOF_reached) {
-      return false;
-    }
-    // read '('
-    st.nextToken();
-    // read cl_from
-    st.nextToken();
-    clFrom = (int) st.nval;
-    // read ','
-    st.nextToken();
-    // read cl_to
-    st.nextToken();
-    clTo = SQLEscape.escape(st.sval);
-    // read ','
-    st.nextToken();
-    // read cl_sortkey
-    st.nextToken();
-    // read ','
-    st.nextToken();
-    // read cl_timestamp
-    st.nextToken();
-
-    boolean EOE = false;  // end of entry
-    while (!EOE) {
-      st.nextToken();
-      // corresponds to closing parenthesis
-      if (st.ttype == 41) {
-        EOE = true;
-      }
+    /**
+     * Create a parser from an input stream
+     *
+     * @param inputStream
+     * @throws IOException
+     *             Thrown if IO errors occurred.
+     */
+    public CategorylinksParser(InputStream inputStream) throws IOException
+    {
+        init(inputStream);
     }
 
-    // read ',' or ';'. If ';' is found then skip statement or expect eof.
-    st.nextToken();
-
-    if (st.toString().substring(7, 8).equals(";")) {
-      skipStatements();
+    /**
+     * @return Returns the cl_from.
+     */
+    public int getClFrom()
+    {
+        return clFrom;
     }
-    return true;
-  }
+
+    /**
+     * @return Returns the cl_to.
+     */
+    public String getClTo()
+    {
+        return clTo;
+    }
+
+    @Override
+    public boolean next() throws IOException
+    {
+        if (EOF_reached) {
+            return false;
+        }
+        // read '('
+        st.nextToken();
+        // read cl_from
+        st.nextToken();
+        clFrom = (int) st.nval;
+        // read ','
+        st.nextToken();
+        // read cl_to
+        st.nextToken();
+        clTo = SQLEscape.escape(st.sval);
+        // read ','
+        st.nextToken();
+        // read cl_sortkey
+        st.nextToken();
+        // read ','
+        st.nextToken();
+        // read cl_timestamp
+        st.nextToken();
+
+        boolean EOE = false; // end of entry
+        while (!EOE) {
+            st.nextToken();
+            // corresponds to closing parenthesis
+            if (st.ttype == 41) {
+                EOE = true;
+            }
+        }
+
+        // read ',' or ';'. If ';' is found then skip statement or expect eof.
+        st.nextToken();
+
+        if (st.toString().substring(7, 8).equals(";")) {
+            skipStatements();
+        }
+        return true;
+    }
 }

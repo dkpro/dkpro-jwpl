@@ -17,10 +17,11 @@
  */
 package org.dkpro.jwpl.wikimachine.domain;
 
-public interface ISnapshotGenerator {
-  void setFiles(Files files);
+public interface ISnapshotGenerator
+{
+    void setFiles(Files files);
 
-  void setConfiguration(Configuration configuration);
+    void setConfiguration(Configuration configuration);
 
-  void start() throws Exception;
+    void start() throws Exception;
 }

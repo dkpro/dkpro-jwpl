@@ -25,18 +25,24 @@ import org.slf4j.LoggerFactory;
 /**
  * A logger implementation which directs to Slf4J.
  */
-public class Slf4JLogger extends AbstractLogger {
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+public class Slf4JLogger
+    extends AbstractLogger
+{
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  @Override
-  protected void logObject(Object message) {
-    if (isThrowable(message.getClass())) {
-      logger.info(createThrowableMessage((Throwable) message));
-    } else if (message instanceof String) {
-      logger.info((String) message);
-    } else {
-      // Choosing a different level and pre-text here as this might not have been intended.
-      logger.warn("Logging {}: {}", message.getClass(), message);
+    @Override
+    protected void logObject(Object message)
+    {
+        if (isThrowable(message.getClass())) {
+            logger.info(createThrowableMessage((Throwable) message));
+        }
+        else if (message instanceof String) {
+            logger.info((String) message);
+        }
+        else {
+            // Choosing a different level and pre-text here as this might not have been intended.
+            logger.warn("Logging {}: {}", message.getClass(), message);
+        }
     }
-  }
 }

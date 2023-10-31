@@ -17,15 +17,19 @@
  */
 package org.dkpro.jwpl.wikimachine.hashing;
 
-public class StringHashCodeJDK implements IStringHashCode {
+public class StringHashCodeJDK
+    implements IStringHashCode
+{
 
-  public StringHashCodeJDK() {
-    // use for instantiate as generic
-  }
+    public StringHashCodeJDK()
+    {
+        // use for instantiate as generic
+    }
 
-  @Override
-  public Integer hashCode(String string) {
-    return string.hashCode();
-  }
+    @Override
+    public Integer hashCode(String string)
+    {
+        return string.hashCode();
+    }
 
 }

@@ -25,6 +25,7 @@ package org.dkpro.jwpl.wikimachine.dump.xml;
  * <li>TEXT</li>
  * </ul>
  */
-public enum DumpTableEnum {
-  PAGE, REVISION, TEXT
+public enum DumpTableEnum
+{
+    PAGE, REVISION, TEXT
 }

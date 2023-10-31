@@ -20,13 +20,16 @@ package org.dkpro.jwpl.wikimachine.debug;
 /**
  * Represents a simplistic facade to direct messages to different logging endpoints.
  */
-public interface ILogger {
+public interface ILogger
+{
 
-  /**
-   * Direct {@code message} to the underlying logging endpoint. The {@code message} can be a {@link Throwable} or in
-   * a classical representation, e.g. {@link String} or {@link CharSequence}.
-   *
-   * @param message Must not be {@code null}.
-   */
-  void log(Object message);
+    /**
+     * Direct {@code message} to the underlying logging endpoint. The {@code message} can be a
+     * {@link Throwable} or in a classical representation, e.g. {@link String} or
+     * {@link CharSequence}.
+     *
+     * @param message
+     *            Must not be {@code null}.
+     */
+    void log(Object message);
 }
