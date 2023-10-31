@@ -31,69 +31,83 @@ import org.slf4j.LoggerFactory;
 /**
  * Thread for converting of XML stream to SQL stream.
  */
-class XMLDumpTableInputStreamThread extends Thread {
+class XMLDumpTableInputStreamThread
+    extends Thread
+{
 
-  private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
-  /**
-   * Enable the main and category pages as well as discussions
-   */
-  private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
+    /**
+     * Enable the main and category pages as well as discussions
+     */
+    private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
 
-  /**
-   * Generalization {@link org.dkpro.jwpl.mwdumper.importer.XmlDumpReader}
-   * that parses the XML dump
-   */
-  private AbstractXmlDumpReader xmlReader;
+    /**
+     * Generalization {@link org.dkpro.jwpl.mwdumper.importer.XmlDumpReader} that parses the XML
+     * dump
+     */
+    private AbstractXmlDumpReader xmlReader;
 
-  /**
-   * completion flag for a conversion process
-   */
-  private boolean isComplete;
+    /**
+     * completion flag for a conversion process
+     */
+    private boolean isComplete;
 
-  /**
-   * Initiate input and output streams
-   *
-   * @param iStream XML input stream
-   * @param oStream SQL output stream
-   * @throws IOException Thrown in case errors occurred.
-   */
-  public XMLDumpTableInputStreamThread(InputStream iStream, OutputStream oStream, DumpTableEnum table)
-          throws IOException {
-    super("xml2sql");
+    /**
+     * Initiate input and output streams
+     *
+     * @param iStream
+     *            XML input stream
+     * @param oStream
+     *            SQL output stream
+     * @throws IOException
+     *             Thrown in case errors occurred.
+     */
+    public XMLDumpTableInputStreamThread(InputStream iStream, OutputStream oStream,
+            DumpTableEnum table)
+        throws IOException
+    {
+        super("xml2sql");
 
-    switch (table) {
-      case PAGE:
-        xmlReader = new PageReader(iStream, new NamespaceFilter(new PageWriter(oStream), ENABLED_NAMESPACES));
-        break;
-      case REVISION:
-        xmlReader = new RevisionReader(iStream, new NamespaceFilter(new RevisionWriter(oStream), ENABLED_NAMESPACES));
-        break;
-      case TEXT:
-        xmlReader = new TextReader(iStream, new NamespaceFilter(new TextWriter(oStream), ENABLED_NAMESPACES));
-        break;
+        switch (table) {
+        case PAGE:
+            xmlReader = new PageReader(iStream,
+                    new NamespaceFilter(new PageWriter(oStream), ENABLED_NAMESPACES));
+            break;
+        case REVISION:
+            xmlReader = new RevisionReader(iStream,
+                    new NamespaceFilter(new RevisionWriter(oStream), ENABLED_NAMESPACES));
+            break;
+        case TEXT:
+            xmlReader = new TextReader(iStream,
+                    new NamespaceFilter(new TextWriter(oStream), ENABLED_NAMESPACES));
+            break;
+        }
     }
-  }
 
-  @Override
-  public synchronized void run() {
-    try {
-      isComplete = false;
-      xmlReader.readDump();
-      isComplete = true;
-    } catch (IOException e) {
-      logger.error(e.getMessage(), e);
-      throw new RuntimeException(e);
+    @Override
+    public synchronized void run()
+    {
+        try {
+            isComplete = false;
+            xmlReader.readDump();
+            isComplete = true;
+        }
+        catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
-  }
 
-  /**
-   * Abort a conversion
-   */
-  public synchronized void abort() {
-    if (!isComplete) {
-      xmlReader.abort();
-      isComplete = true;
+    /**
+     * Abort a conversion
+     */
+    public synchronized void abort()
+    {
+        if (!isComplete) {
+            xmlReader.abort();
+            isComplete = true;
+        }
     }
-  }
 }

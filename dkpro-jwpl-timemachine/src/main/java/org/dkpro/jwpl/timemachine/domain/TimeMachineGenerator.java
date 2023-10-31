@@ -36,159 +36,173 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
 
 /**
- * Generate dumps as .txt files for the JWPL database from given MediaWiki dump
- * files.<br>
- * By specifying a 'from' and a 'to' time stamps and the number of days to take
- * as interval<br>
+ * Generate dumps as .txt files for the JWPL database from given MediaWiki dump files.<br>
+ * By specifying a 'from' and a 'to' time stamps and the number of days to take as interval<br>
  * this class produces multiple dump versions.
  */
-public class TimeMachineGenerator extends AbstractSnapshotGenerator {
+public class TimeMachineGenerator
+    extends AbstractSnapshotGenerator
+{
 
-  private IDumpVersion[] versions = null;
-  private TimeMachineFiles initialFiles = null;
+    private IDumpVersion[] versions = null;
+    private TimeMachineFiles initialFiles = null;
 
-  public TimeMachineGenerator(IEnvironmentFactory environmentFactory) {
-    super(environmentFactory);
-  }
-
-  @Override
-  public void setFiles(Files files) {
-    initialFiles = (TimeMachineFiles) files;
-  }
-
-  private Integer calculateSnapshotsCount(Timestamp from, Timestamp to,
-                                          Integer dayInterval) {
-    Integer result = 0;
-
-    for (Timestamp i = from; i.before(to); i = TimestampUtil.getNextTimestamp(i, dayInterval)) {
-      result++;
+    public TimeMachineGenerator(IEnvironmentFactory environmentFactory)
+    {
+        super(environmentFactory);
     }
 
-    return result;
-  }
-
-  @Override
-  public void start() throws Exception {
-
-    Timestamp fromTimestamp = configuration.getFromTimestamp();
-    Timestamp toTimestamp = configuration.getToTimestamp();
-    int each = configuration.getEach();
-
-    int snapshotsCount = fromTimestamp.equals(toTimestamp) ? 1
-            : calculateSnapshotsCount(fromTimestamp, toTimestamp, each);
-
-    if (snapshotsCount > 0) {
-
-      versions = new IDumpVersion[snapshotsCount];
-      logger.log("Dumps to be generated:");
-
-      for (int i = 0; i < snapshotsCount; i++) {
-
-        Timestamp currentTimestamp = TimestampUtil.getNextTimestamp(fromTimestamp, i * each);
-        logger.log(currentTimestamp);
-
-        MetaData commonMetaData = MetaData.initWithConfig(configuration);
-        commonMetaData.setTimestamp(currentTimestamp);
-
-        IDumpVersion version = environmentFactory.getDumpVersion();
-
-        version.initialize(currentTimestamp);
-        version.setMetaData(commonMetaData);
-        TimeMachineFiles currentFiles = new TimeMachineFiles(
-                initialFiles);
-        currentFiles.setTimestamp(currentTimestamp);
-        version.setFiles(currentFiles);
-        versions[i] = version;
-      }
-
-      processInputDumps();
-
-    } else {
-      logger.log("No timestamps.");
+    @Override
+    public void setFiles(Files files)
+    {
+        initialFiles = (TimeMachineFiles) files;
     }
-  }
 
-  private void processInputDumps() throws IOException {
+    private Integer calculateSnapshotsCount(Timestamp from, Timestamp to, Integer dayInterval)
+    {
+        Integer result = 0;
 
-    dumpVersionProcessor.setDumpVersions(versions);
+        for (Timestamp i = from; i.before(to); i = TimestampUtil.getNextTimestamp(i, dayInterval)) {
+            result++;
+        }
 
-    logger.log("Processing the revision table");
-    dumpVersionProcessor.processRevision(createRevisionParser());
+        return result;
+    }
 
-    logger.log("Processing the page table");
-    dumpVersionProcessor.processPage(createPageParser());
+    @Override
+    public void start() throws Exception
+    {
 
-    logger.log("Processing the categorylinks table");
-    dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
+        Timestamp fromTimestamp = configuration.getFromTimestamp();
+        Timestamp toTimestamp = configuration.getToTimestamp();
+        int each = configuration.getEach();
 
-    logger.log("Processing the pagelinks table");
-    dumpVersionProcessor.processPagelinks(createPagelinksParser());
+        int snapshotsCount = fromTimestamp.equals(toTimestamp) ? 1
+                : calculateSnapshotsCount(fromTimestamp, toTimestamp, each);
 
-    logger.log("Processing the text table");
-    dumpVersionProcessor.processText(createTextParser());
+        if (snapshotsCount > 0) {
 
-    logger.log("Writing meta data");
-    dumpVersionProcessor.writeMetaData();
-  }
+            versions = new IDumpVersion[snapshotsCount];
+            logger.log("Dumps to be generated:");
 
-  private RevisionParser createRevisionParser() throws IOException {
+            for (int i = 0; i < snapshotsCount; i++) {
 
-    String metahistory = initialFiles.getMetaHistoryFile();
+                Timestamp currentTimestamp = TimestampUtil.getNextTimestamp(fromTimestamp,
+                        i * each);
+                logger.log(currentTimestamp);
 
-    DumpTableInputStream revisionTableInputStream = environmentFactory.getDumpTableInputStream();
-    revisionTableInputStream.initialize(decompressor.getInputStream(metahistory), DumpTableEnum.REVISION);
+                MetaData commonMetaData = MetaData.initWithConfig(configuration);
+                commonMetaData.setTimestamp(currentTimestamp);
 
-    RevisionParser revisionParser = environmentFactory.getRevisionParser();
-    revisionParser.setInputStream(revisionTableInputStream);
+                IDumpVersion version = environmentFactory.getDumpVersion();
 
-    return revisionParser;
+                version.initialize(currentTimestamp);
+                version.setMetaData(commonMetaData);
+                TimeMachineFiles currentFiles = new TimeMachineFiles(initialFiles);
+                currentFiles.setTimestamp(currentTimestamp);
+                version.setFiles(currentFiles);
+                versions[i] = version;
+            }
 
-  }
+            processInputDumps();
 
-  private PageParser createPageParser() throws IOException {
+        }
+        else {
+            logger.log("No timestamps.");
+        }
+    }
 
-    String metahistory = initialFiles.getMetaHistoryFile();
+    private void processInputDumps() throws IOException
+    {
 
-    DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
-    pageTableInputStream.initialize(decompressor.getInputStream(metahistory), DumpTableEnum.PAGE);
+        dumpVersionProcessor.setDumpVersions(versions);
 
-    PageParser pageParser = environmentFactory.getPageParser();
-    pageParser.setInputStream(pageTableInputStream);
+        logger.log("Processing the revision table");
+        dumpVersionProcessor.processRevision(createRevisionParser());
 
-    return pageParser;
+        logger.log("Processing the page table");
+        dumpVersionProcessor.processPage(createPageParser());
 
-  }
+        logger.log("Processing the categorylinks table");
+        dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
 
-  private CategorylinksParser createCategorylinksParser() throws IOException {
+        logger.log("Processing the pagelinks table");
+        dumpVersionProcessor.processPagelinks(createPagelinksParser());
 
-    String categorylinks = initialFiles.getCategoryLinksFile();
-    InputStream categorylinksStream = decompressor.getInputStream(categorylinks);
+        logger.log("Processing the text table");
+        dumpVersionProcessor.processText(createTextParser());
 
-    return new CategorylinksParser(categorylinksStream);
+        logger.log("Writing meta data");
+        dumpVersionProcessor.writeMetaData();
+    }
 
-  }
+    private RevisionParser createRevisionParser() throws IOException
+    {
 
-  private PagelinksParser createPagelinksParser() throws IOException {
+        String metahistory = initialFiles.getMetaHistoryFile();
 
-    String pagelinks = initialFiles.getPageLinksFile();
+        DumpTableInputStream revisionTableInputStream = environmentFactory
+                .getDumpTableInputStream();
+        revisionTableInputStream.initialize(decompressor.getInputStream(metahistory),
+                DumpTableEnum.REVISION);
 
-    InputStream pagelinksStream = decompressor.getInputStream(pagelinks);
-    return new PagelinksParser(pagelinksStream);
+        RevisionParser revisionParser = environmentFactory.getRevisionParser();
+        revisionParser.setInputStream(revisionTableInputStream);
 
-  }
+        return revisionParser;
 
-  private TextParser createTextParser() throws IOException {
+    }
 
-    String metahistory = initialFiles.getMetaHistoryFile();
+    private PageParser createPageParser() throws IOException
+    {
 
-    DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
-    textTableInputStream.initialize(decompressor.getInputStream(metahistory), DumpTableEnum.TEXT);
+        String metahistory = initialFiles.getMetaHistoryFile();
 
-    TextParser textParser = environmentFactory.getTextParser();
-    textParser.setInputStream(textTableInputStream);
+        DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
+        pageTableInputStream.initialize(decompressor.getInputStream(metahistory),
+                DumpTableEnum.PAGE);
 
-    return textParser;
+        PageParser pageParser = environmentFactory.getPageParser();
+        pageParser.setInputStream(pageTableInputStream);
 
-  }
+        return pageParser;
+
+    }
+
+    private CategorylinksParser createCategorylinksParser() throws IOException
+    {
+
+        String categorylinks = initialFiles.getCategoryLinksFile();
+        InputStream categorylinksStream = decompressor.getInputStream(categorylinks);
+
+        return new CategorylinksParser(categorylinksStream);
+
+    }
+
+    private PagelinksParser createPagelinksParser() throws IOException
+    {
+
+        String pagelinks = initialFiles.getPageLinksFile();
+
+        InputStream pagelinksStream = decompressor.getInputStream(pagelinks);
+        return new PagelinksParser(pagelinksStream);
+
+    }
+
+    private TextParser createTextParser() throws IOException
+    {
+
+        String metahistory = initialFiles.getMetaHistoryFile();
+
+        DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
+        textTableInputStream.initialize(decompressor.getInputStream(metahistory),
+                DumpTableEnum.TEXT);
+
+        TextParser textParser = environmentFactory.getTextParser();
+        textParser.setInputStream(textTableInputStream);
+
+        return textParser;
+
+    }
 
 }

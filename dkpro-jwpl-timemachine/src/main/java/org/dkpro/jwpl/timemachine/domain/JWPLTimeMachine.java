@@ -25,60 +25,63 @@ import org.dkpro.jwpl.wikimachine.factory.SpringFactory;
 
 /**
  * This is the main class of the DBMapping Tool of the JWPL.<br>
- * The <code>main</code> method gets the path of a configuration file as
- * argument<br>
+ * The <code>main</code> method gets the path of a configuration file as argument<br>
  * <br>
  * <p>
  * Refactored on 16 April 2009 by Ivan Galkin .
  */
-public class JWPLTimeMachine {
+public class JWPLTimeMachine
+{
 
-  private static final IEnvironmentFactory environmentFactory = SpringFactory.getInstance();
+    private static final IEnvironmentFactory environmentFactory = SpringFactory.getInstance();
 
-  private static final long startTime = System.currentTimeMillis();
-  private static final ILogger logger = environmentFactory.getLogger();
+    private static final long startTime = System.currentTimeMillis();
+    private static final ILogger logger = environmentFactory.getLogger();
 
-  /**
-   * Checks given arguments
-   *
-   * @param args <br>
-   *             args[0] the settings file like described in
-   *             {@link SettingsXML}<br>
-   * @return true if all necessary arguments are given and false otherwise
-   * @see SettingsXML
-   */
-  private static boolean checkArgs(String[] args) {
-    boolean result = (args.length > 0);
-    if (!result) {
-      System.out.println("Usage: java -jar JWPLTimeMachine.jar <config-file>");
-    }
-    return result;
-  }
-
-  public static void main(String[] args) {
-
-    try {
-      if (checkArgs(args)) {
-        logger.log("parsing configuration file....");
-        Configuration config = SettingsXML.loadConfiguration(args[0], logger);
-        TimeMachineFiles files = SettingsXML.loadFiles(args[0], logger);
-
-        if (config != null && files != null) {
-          if (files.checkAll() && config.checkTimeConfig()) {
-            logger.log("processing data ...");
-
-            ISnapshotGenerator generator = environmentFactory
-                    .getSnapshotGenerator();
-            generator.setConfiguration(config);
-            generator.setFiles(files);
-            generator.start();
-
-            logger.log("End of the application. Working time = " + (System.currentTimeMillis() - startTime) + " ms");
-          }
+    /**
+     * Checks given arguments
+     *
+     * @param args
+     *            <br>
+     *            args[0] the settings file like described in {@link SettingsXML}<br>
+     * @return true if all necessary arguments are given and false otherwise
+     * @see SettingsXML
+     */
+    private static boolean checkArgs(String[] args)
+    {
+        boolean result = (args.length > 0);
+        if (!result) {
+            System.out.println("Usage: java -jar JWPLTimeMachine.jar <config-file>");
         }
-      }
-    } catch (Exception e) {
-      logger.log(e);
+        return result;
     }
-  }
+
+    public static void main(String[] args)
+    {
+
+        try {
+            if (checkArgs(args)) {
+                logger.log("parsing configuration file....");
+                Configuration config = SettingsXML.loadConfiguration(args[0], logger);
+                TimeMachineFiles files = SettingsXML.loadFiles(args[0], logger);
+
+                if (config != null && files != null) {
+                    if (files.checkAll() && config.checkTimeConfig()) {
+                        logger.log("processing data ...");
+
+                        ISnapshotGenerator generator = environmentFactory.getSnapshotGenerator();
+                        generator.setConfiguration(config);
+                        generator.setFiles(files);
+                        generator.start();
+
+                        logger.log("End of the application. Working time = "
+                                + (System.currentTimeMillis() - startTime) + " ms");
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.log(e);
+        }
+    }
 }

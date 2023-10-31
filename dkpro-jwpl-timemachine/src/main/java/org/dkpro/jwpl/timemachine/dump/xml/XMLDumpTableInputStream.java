@@ -27,80 +27,89 @@ import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 
 /**
- * Decorator for an {@link InputStream}. Converts an XML source to SQL
- * result in a separated thread via
- * <code>org.mediawiki.importer.XmlDumpReader</code>
+ * Decorator for an {@link InputStream}. Converts an XML source to SQL result in a separated thread
+ * via <code>org.mediawiki.importer.XmlDumpReader</code>
  *
  * <ul>
  * <li>update 18.11.2009 : constructor is replaced by initialize method</li>
  * </ul>
  */
-public class XMLDumpTableInputStream extends DumpTableInputStream {
+public class XMLDumpTableInputStream
+    extends DumpTableInputStream
+{
 
-  private static final int BUFFERSIZE = 8192;
-  /**
-   * piped result stream, that is buffered for better performance
-   */
-  private BufferedInputStream result;
-  /**
-   * thread where the conversion algorithm should run
-   */
-  private XMLDumpTableInputStreamThread xmlInputThread;
-
-  /**
-   * Decorator for InputStream, which allows to convert an XML input stream to
-   * SQL
-   *
-   * @param inputStream XML input stream
-   * @throws IOException
-   */
-  @Override
-  public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException {
-
-    /*
-     * piped input stream, that allows to read from a <code>decodedStream</code>
+    private static final int BUFFERSIZE = 8192;
+    /**
+     * piped result stream, that is buffered for better performance
      */
-    PipedInputStream unbufferedResult = new PipedInputStream();
-    /*
-     * piped output stream where the conversion thread <code>XMLInputStreamThread</code> is writing in
+    private BufferedInputStream result;
+    /**
+     * thread where the conversion algorithm should run
      */
-    PipedOutputStream decodedStream = new PipedOutputStream(unbufferedResult);
-    result = new BufferedInputStream(unbufferedResult, BUFFERSIZE);
+    private XMLDumpTableInputStreamThread xmlInputThread;
 
-    xmlInputThread = new XMLDumpTableInputStreamThread(inputStream, decodedStream, table);
-    xmlInputThread.start();
+    /**
+     * Decorator for InputStream, which allows to convert an XML input stream to SQL
+     *
+     * @param inputStream
+     *            XML input stream
+     * @throws IOException
+     */
+    @Override
+    public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
+    {
 
-  }
+        /*
+         * piped input stream, that allows to read from a <code>decodedStream</code>
+         */
+        PipedInputStream unbufferedResult = new PipedInputStream();
+        /*
+         * piped output stream where the conversion thread <code>XMLInputStreamThread</code> is
+         * writing in
+         */
+        PipedOutputStream decodedStream = new PipedOutputStream(unbufferedResult);
+        result = new BufferedInputStream(unbufferedResult, BUFFERSIZE);
 
-  @Override
-  public int read() throws IOException {
-    return result.read();
-  }
+        xmlInputThread = new XMLDumpTableInputStreamThread(inputStream, decodedStream, table);
+        xmlInputThread.start();
 
-  @Override
-  public int available() throws IOException {
-    return result.available();
-  }
+    }
 
-  @Override
-  public void close() throws IOException {
-    result.close();
-    xmlInputThread.abort();
-  }
+    @Override
+    public int read() throws IOException
+    {
+        return result.read();
+    }
 
-  @Override
-  public void mark(int readlimit) {
-    result.mark(readlimit);
-  }
+    @Override
+    public int available() throws IOException
+    {
+        return result.available();
+    }
 
-  @Override
-  public void reset() throws IOException {
-    result.reset();
-  }
+    @Override
+    public void close() throws IOException
+    {
+        result.close();
+        xmlInputThread.abort();
+    }
 
-  @Override
-  public boolean markSupported() {
-    return result.markSupported();
-  }
+    @Override
+    public void mark(int readlimit)
+    {
+        result.mark(readlimit);
+    }
+
+    @Override
+    public void reset() throws IOException
+    {
+        result.reset();
+    }
+
+    @Override
+    public boolean markSupported()
+    {
+        return result.markSupported();
+    }
 
 }

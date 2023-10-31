@@ -21,17 +21,22 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionFactory;
 import org.dkpro.jwpl.wikimachine.hashing.StringHashCodeJBoss;
 
-public class DumpVersionJDKLongKeyFactory implements IDumpVersionFactory {
+public class DumpVersionJDKLongKeyFactory
+    implements IDumpVersionFactory
+{
 
-  @Override
-  public IDumpVersion getDumpVersion() {
-    IDumpVersion dumpVersion;
-    try {
-      dumpVersion = new DumpVersionJDKGeneric<Long, StringHashCodeJBoss>(StringHashCodeJBoss.class);
-    } catch (Exception e) {
-      dumpVersion = null;
+    @Override
+    public IDumpVersion getDumpVersion()
+    {
+        IDumpVersion dumpVersion;
+        try {
+            dumpVersion = new DumpVersionJDKGeneric<Long, StringHashCodeJBoss>(
+                    StringHashCodeJBoss.class);
+        }
+        catch (Exception e) {
+            dumpVersion = null;
+        }
+        return dumpVersion;
     }
-    return dumpVersion;
-  }
 
 }

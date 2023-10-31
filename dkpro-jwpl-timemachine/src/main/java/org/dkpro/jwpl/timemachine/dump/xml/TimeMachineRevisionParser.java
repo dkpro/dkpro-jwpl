@@ -23,21 +23,25 @@ import java.io.IOException;
 import org.dkpro.jwpl.timemachine.domain.Revision;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 
-public class TimeMachineRevisionParser extends RevisionParser {
+public class TimeMachineRevisionParser
+    extends RevisionParser
+{
 
-  @Override
-  public boolean next() throws IOException {
-    boolean hasNext = true;
-    try {
-      revPage = stream.readInt();
-      revTextId = stream.readInt();
-      revTimestamp = Revision.compressTime(stream.readLong());
-    } catch (EOFException e) {
-      hasNext = false;
+    @Override
+    public boolean next() throws IOException
+    {
+        boolean hasNext = true;
+        try {
+            revPage = stream.readInt();
+            revTextId = stream.readInt();
+            revTimestamp = Revision.compressTime(stream.readLong());
+        }
+        catch (EOFException e) {
+            hasNext = false;
+        }
+
+        return hasNext;
+
     }
-
-    return hasNext;
-
-  }
 
 }
