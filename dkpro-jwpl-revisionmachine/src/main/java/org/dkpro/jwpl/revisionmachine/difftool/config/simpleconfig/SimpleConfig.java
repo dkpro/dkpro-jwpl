@@ -20,21 +20,23 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.simpleconfig;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigController;
 
 /**
- * This class is an alternative to the ConfigGUI and can be used to produce
- * configuration files for the DiffTool.
+ * This class is an alternative to the ConfigGUI and can be used to produce configuration files for
+ * the DiffTool.
  */
-public class SimpleConfig {
-  /**
-   * Reference to the ConfigController
-   */
-  private final ConfigController controller;
+public class SimpleConfig
+{
+    /**
+     * Reference to the ConfigController
+     */
+    private final ConfigController controller;
 
-  /**
-   * (Constructor) Creates a new ConfigGUI object.
-   */
-  public SimpleConfig() {
-    this.controller = new ConfigController();
-    controller.defaultConfiguration();
-    //TODO nothing here yet...
-  }
+    /**
+     * (Constructor) Creates a new ConfigGUI object.
+     */
+    public SimpleConfig()
+    {
+        this.controller = new ConfigController();
+        controller.defaultConfiguration();
+        // TODO nothing here yet...
+    }
 }

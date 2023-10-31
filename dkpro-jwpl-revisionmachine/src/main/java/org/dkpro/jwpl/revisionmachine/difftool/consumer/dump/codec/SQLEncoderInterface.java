@@ -27,65 +27,74 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * The SQLEncoderInterface provides the link to the SQLEncoder who will define
- * the formatting of the output.
+ * The SQLEncoderInterface provides the link to the SQLEncoder who will define the formatting of the
+ * output.
  */
-public interface SQLEncoderInterface {
+public interface SQLEncoderInterface
+{
 
-  /**
-   * Returns the tables for textual output.
-   * <p>
-   * Each Array entry will contain a single sql command.
-   *
-   * @return sql command to create the tables
-   */
-  String[] getTable();
+    /**
+     * Returns the tables for textual output.
+     * <p>
+     * Each Array entry will contain a single sql command.
+     *
+     * @return sql command to create the tables
+     */
+    String[] getTable();
 
-  /**
-   * Returns the tables for binary output.
-   * <p>
-   * Each Array entry will contain a single sql command.
-   *
-   * @return sql command to create the tables
-   */
-  String[] getBinaryTable();
+    /**
+     * Returns the tables for binary output.
+     * <p>
+     * Each Array entry will contain a single sql command.
+     *
+     * @return sql command to create the tables
+     */
+    String[] getBinaryTable();
 
-  /**
-   * Returns the binary encoding of the given DiffTask.
-   * <p>
-   * Each Array entry will contain a single sql command.
-   *
-   * @param task DiffTask
-   * @return binary encoding of the task.
-   * @throws ConfigurationException       if problems occurred while initializing the components
-   * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
-   *                                      supported by JAVA.
-   * @throws DecodingException            if the decoding process fails (during the verification
-   *                                      process)
-   * @throws EncodingException            if the encoding process fails
-   * @throws SQLConsumerException         if the verification process fails
-   */
-  SQLEncoding[] binaryTask(final Task<Diff> task)
-          throws ConfigurationException, UnsupportedEncodingException,
-          DecodingException, EncodingException, SQLConsumerException;
+    /**
+     * Returns the binary encoding of the given DiffTask.
+     * <p>
+     * Each Array entry will contain a single sql command.
+     *
+     * @param task
+     *            DiffTask
+     * @return binary encoding of the task.
+     * @throws ConfigurationException
+     *             if problems occurred while initializing the components
+     * @throws UnsupportedEncodingException
+     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     * @throws DecodingException
+     *             if the decoding process fails (during the verification process)
+     * @throws EncodingException
+     *             if the encoding process fails
+     * @throws SQLConsumerException
+     *             if the verification process fails
+     */
+    SQLEncoding[] binaryTask(final Task<Diff> task)
+        throws ConfigurationException, UnsupportedEncodingException, DecodingException,
+        EncodingException, SQLConsumerException;
 
-  /**
-   * Returns the textual encoding of the given DiffTask.
-   * <p>
-   * Each Array entry will contain a single sql command.
-   *
-   * @param task DiffTask
-   * @return binary encoding of the task.
-   * @throws ConfigurationException       if problems occurred while initializing the components
-   * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
-   *                                      supported by JAVA.
-   * @throws DecodingException            if the decoding process fails (during the verification
-   *                                      process)
-   * @throws EncodingException            if the encoding process fails
-   * @throws SQLConsumerException         if the verification process fails
-   */
-  SQLEncoding[] encodeTask(final Task<Diff> task)
-          throws ConfigurationException, UnsupportedEncodingException,
-          DecodingException, EncodingException, SQLConsumerException;
+    /**
+     * Returns the textual encoding of the given DiffTask.
+     * <p>
+     * Each Array entry will contain a single sql command.
+     *
+     * @param task
+     *            DiffTask
+     * @return binary encoding of the task.
+     * @throws ConfigurationException
+     *             if problems occurred while initializing the components
+     * @throws UnsupportedEncodingException
+     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     * @throws DecodingException
+     *             if the decoding process fails (during the verification process)
+     * @throws EncodingException
+     *             if the encoding process fails
+     * @throws SQLConsumerException
+     *             if the verification process fails
+     */
+    SQLEncoding[] encodeTask(final Task<Diff> task)
+        throws ConfigurationException, UnsupportedEncodingException, DecodingException,
+        EncodingException, SQLConsumerException;
 
 }

@@ -20,35 +20,36 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * Contains the keys for the configuration verification error types.
  */
-public enum ConfigErrorKeys {
+public enum ConfigErrorKeys
+{
 
-  /**
-   * Mode was enabled, but no value was set
-   */
-  COMMAND_NOT_SET,
+    /**
+     * Mode was enabled, but no value was set
+     */
+    COMMAND_NOT_SET,
 
-  /**
-   * Configuration value out of range
-   */
-  VALUE_OUT_OF_RANGE,
+    /**
+     * Configuration value out of range
+     */
+    VALUE_OUT_OF_RANGE,
 
-  /**
-   * Path was not set
-   */
-  PATH_NOT_SET,
+    /**
+     * Path was not set
+     */
+    PATH_NOT_SET,
 
-  /**
-   * Illegal configuration value
-   */
-  ILLEGAL_INPUT,
+    /**
+     * Illegal configuration value
+     */
+    ILLEGAL_INPUT,
 
-  /**
-   * Illegal input file type
-   */
-  ILLEGAL_INPUT_FILE,
+    /**
+     * Illegal input file type
+     */
+    ILLEGAL_INPUT_FILE,
 
-  /**
-   * Required value is missing
-   */
-  MISSING_VALUE
+    /**
+     * Required value is missing
+     */
+    MISSING_VALUE
 }

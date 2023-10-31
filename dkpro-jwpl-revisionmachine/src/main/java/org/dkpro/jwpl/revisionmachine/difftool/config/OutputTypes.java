@@ -20,21 +20,22 @@ package org.dkpro.jwpl.revisionmachine.difftool.config;
 /**
  * This class represents the enumeration of OutputTypes of the IndexGenerator.
  */
-public enum OutputTypes {
+public enum OutputTypes
+{
 
-  /**
-   * Output to the Database
-   */
-  DATABASE,
+    /**
+     * Output to the Database
+     */
+    DATABASE,
 
-  /**
-   * Output as single sql file.
-   */
-  SQL,
+    /**
+     * Output as single sql file.
+     */
+    SQL,
 
-  /**
-   * Output as datafile.
-   */
-  DATAFILE
+    /**
+     * Output as datafile.
+     */
+    DATAFILE
 
 }

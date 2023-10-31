@@ -18,38 +18,45 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * TimeoutException Describes an exception that occurred because of a timeout
- * event.
+ * TimeoutException Describes an exception that occurred because of a timeout event.
  */
 @SuppressWarnings("serial")
 public class TimeoutException
-        extends Exception {
+    extends Exception
+{
 
-  /**
-   * Creates a new TimeoutException.
-   *
-   * @param description message
-   */
-  public TimeoutException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new TimeoutException.
+     *
+     * @param description
+     *            message
+     */
+    public TimeoutException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new TimeoutException.
-   *
-   * @param e inner exception
-   */
-  public TimeoutException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new TimeoutException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public TimeoutException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new TimeoutException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public TimeoutException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new TimeoutException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public TimeoutException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 }

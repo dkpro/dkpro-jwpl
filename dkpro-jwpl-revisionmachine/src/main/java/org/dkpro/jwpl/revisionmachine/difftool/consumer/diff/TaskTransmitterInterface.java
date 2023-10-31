@@ -25,40 +25,39 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * The TaskTransmitterInterface handles the transmission of DiffTasks to the
- * DiffProducer.
+ * The TaskTransmitterInterface handles the transmission of DiffTasks to the DiffProducer.
  */
-public interface TaskTransmitterInterface {
+public interface TaskTransmitterInterface
+{
 
-  /**
-   * Sends the given task to the DiffProducer - FullTaskPool.
-   *
-   * @param result DiffTask of type TaskTypes.FULL_TASK or
-   *               TaskTypes.PARTIAL_TASK_FIRST
-   * @throws TimeoutException if the TaskTransmitter times out during the transmission of
-   *                          the task to the DiffProducer.
-   */
-  void transmitDiff(final Task<Diff> result)
-          throws TimeoutException;
+    /**
+     * Sends the given task to the DiffProducer - FullTaskPool.
+     *
+     * @param result
+     *            DiffTask of type TaskTypes.FULL_TASK or TaskTypes.PARTIAL_TASK_FIRST
+     * @throws TimeoutException
+     *             if the TaskTransmitter times out during the transmission of the task to the
+     *             DiffProducer.
+     */
+    void transmitDiff(final Task<Diff> result) throws TimeoutException;
 
-  /**
-   * Sends the given task to the DiffProducer - PartialTaskPool.
-   *
-   * @param result DiffTask of type TaskTypes.PARTIAL_TASK or
-   *               TaskTypes.PARTIAL_TASK_LAST
-   * @throws TimeoutException if the TaskTransmitter times out during the transmission of
-   *                          the task to the DiffProducer.
-   */
-  void transmitPartialDiff(final Task<Diff> result)
-          throws TimeoutException;
+    /**
+     * Sends the given task to the DiffProducer - PartialTaskPool.
+     *
+     * @param result
+     *            DiffTask of type TaskTypes.PARTIAL_TASK or TaskTypes.PARTIAL_TASK_LAST
+     * @throws TimeoutException
+     *             if the TaskTransmitter times out during the transmission of the task to the
+     *             DiffProducer.
+     */
+    void transmitPartialDiff(final Task<Diff> result) throws TimeoutException;
 
-
-  /**
-   * Close stream
-   *
-   * @throws IOException
-   * @throws SQLException
-   */
-  void close() throws IOException, SQLException;
+    /**
+     * Close stream
+     *
+     * @throws IOException
+     * @throws SQLException
+     */
+    void close() throws IOException, SQLException;
 
 }

@@ -27,38 +27,43 @@ import javax.swing.filechooser.FileFilter;
  */
 @SuppressWarnings("serial")
 public class XMLFileChooser
-        extends JFileChooser {
+    extends JFileChooser
+{
 
-  /**
-   * (Constructor) Creates an FileChooser with a xml file filter.
-   */
-  public XMLFileChooser() {
+    /**
+     * (Constructor) Creates an FileChooser with a xml file filter.
+     */
+    public XMLFileChooser()
+    {
 
-    setFileFilter(new FileFilter() {
+        setFileFilter(new FileFilter()
+        {
 
-      @Override
-      public String getDescription() {
-        return ".xml";
-      }
+            @Override
+            public String getDescription()
+            {
+                return ".xml";
+            }
 
-      @Override
-      public boolean accept(final File f) {
+            @Override
+            public boolean accept(final File f)
+            {
 
-        // Always accept directories
-        if (f.isDirectory()) {
-          return true;
-        }
+                // Always accept directories
+                if (f.isDirectory()) {
+                    return true;
+                }
 
-        int p = f.getName().indexOf(".");
+                int p = f.getName().indexOf(".");
 
-        // Files need a ending
-        if (p == -1) {
-          return false;
-        }
+                // Files need a ending
+                if (p == -1) {
+                    return false;
+                }
 
-        // Verify the ending
-        return f.getName().substring(p).equals(".xml");
-      }
-    });
-  }
+                // Verify the ending
+                return f.getName().substring(p).equals(".xml");
+            }
+        });
+    }
 }

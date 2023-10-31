@@ -18,37 +18,45 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * DiffException Describes an exception that occurred while calculating the
- * diff.
+ * DiffException Describes an exception that occurred while calculating the diff.
  */
 @SuppressWarnings("serial")
-public class DiffException extends Exception {
+public class DiffException
+    extends Exception
+{
 
-  /**
-   * Creates a new DiffException.
-   *
-   * @param description message
-   */
-  public DiffException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new DiffException.
+     *
+     * @param description
+     *            message
+     */
+    public DiffException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new DiffException.
-   *
-   * @param e inner exception
-   */
-  public DiffException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new DiffException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public DiffException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new DiffException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public DiffException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new DiffException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public DiffException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 }

@@ -26,101 +26,106 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 /**
  * This class contains the constants for the DiffActions.
  */
-public enum DiffAction implements Serializable {
+public enum DiffAction
+    implements Serializable
+{
 
-  /**
-   * Codec
-   */
-  DECODER_DATA((byte) 0),
+    /**
+     * Codec
+     */
+    DECODER_DATA((byte) 0),
 
-  /**
-   * Full Revision
-   */
-  FULL_REVISION_UNCOMPRESSED((byte) 1),
+    /**
+     * Full Revision
+     */
+    FULL_REVISION_UNCOMPRESSED((byte) 1),
 
-  /**
-   * Insert operation
-   */
-  INSERT((byte) 2),
+    /**
+     * Insert operation
+     */
+    INSERT((byte) 2),
 
-  /**
-   * Delete operation
-   */
-  DELETE((byte) 3),
+    /**
+     * Delete operation
+     */
+    DELETE((byte) 3),
 
-  /**
-   * Replace operation
-   */
-  REPLACE((byte) 4),
+    /**
+     * Replace operation
+     */
+    REPLACE((byte) 4),
 
-  /**
-   * Cut operation
-   */
-  CUT((byte) 5),
+    /**
+     * Cut operation
+     */
+    CUT((byte) 5),
 
-  /**
-   * Paste operation
-   */
-  PASTE((byte) 6)/*
-   * ,
-   *
-   * FULL_REVISION_COMPRESSED((byte)7)
-   */;
+    /**
+     * Paste operation
+     */
+    PASTE((byte) 6)/*
+                    * ,
+                    *
+                    * FULL_REVISION_COMPRESSED((byte)7)
+                    */;
 
-  /**
-   * byte constant
-   */
-  private final byte code;
+    /**
+     * byte constant
+     */
+    private final byte code;
 
-  /**
-   * Creates a DiffAction.
-   *
-   * @param code byte constant
-   */
-  DiffAction(final byte code) {
-    this.code = code;
-  }
-
-  /**
-   * Returns the byte constant
-   *
-   * @return value of the constant
-   */
-  public byte getValue() {
-    return code;
-  }
-
-  /**
-   * Returns the appropriate DiffAction value.
-   *
-   * @param val byte value
-   * @return DiffAction
-   * @throws DecodingException if the value does not match one of the predefined byte
-   *                           constants
-   */
-  public static DiffAction parse(final int val)
-          throws DecodingException {
-
-    switch (val) {
-      case 0:
-        return DECODER_DATA;
-      case 1:
-        return FULL_REVISION_UNCOMPRESSED;
-      case 2:
-        return INSERT;
-      case 3:
-        return DELETE;
-      case 4:
-        return REPLACE;
-      case 5:
-        return CUT;
-      case 6:
-        return PASTE;
-      // case 7: return FULL_REVISION_COMPRESSED;
-      default:
-        throw ErrorFactory.createDecodingException(
-                ErrorKeys.DIFFTOOL_ENCODING_INVALID_VALUE,
-                "Invalid value: " + val);
+    /**
+     * Creates a DiffAction.
+     *
+     * @param code
+     *            byte constant
+     */
+    DiffAction(final byte code)
+    {
+        this.code = code;
     }
-  }
+
+    /**
+     * Returns the byte constant
+     *
+     * @return value of the constant
+     */
+    public byte getValue()
+    {
+        return code;
+    }
+
+    /**
+     * Returns the appropriate DiffAction value.
+     *
+     * @param val
+     *            byte value
+     * @return DiffAction
+     * @throws DecodingException
+     *             if the value does not match one of the predefined byte constants
+     */
+    public static DiffAction parse(final int val) throws DecodingException
+    {
+
+        switch (val) {
+        case 0:
+            return DECODER_DATA;
+        case 1:
+            return FULL_REVISION_UNCOMPRESSED;
+        case 2:
+            return INSERT;
+        case 3:
+            return DELETE;
+        case 4:
+            return REPLACE;
+        case 5:
+            return CUT;
+        case 6:
+            return PASTE;
+        // case 7: return FULL_REVISION_COMPRESSED;
+        default:
+            throw ErrorFactory.createDecodingException(ErrorKeys.DIFFTOOL_ENCODING_INVALID_VALUE,
+                    "Invalid value: " + val);
+        }
+    }
 }

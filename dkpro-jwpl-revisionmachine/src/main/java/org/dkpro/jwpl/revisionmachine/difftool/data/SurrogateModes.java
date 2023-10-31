@@ -20,60 +20,64 @@ package org.dkpro.jwpl.revisionmachine.difftool.data;
 /**
  * This Enumerator lists the different method of how to handle surrogates.
  * <p>
- * TODO: The surrogate mode implementations need a work over.
- * TODO Add documentation for surrogates
+ * TODO: The surrogate mode implementations need a work over. TODO Add documentation for surrogates
  */
-public enum SurrogateModes {
+public enum SurrogateModes
+{
 
-  /**
-   * Replace the surrogate
-   * TODO COULD BE FAULTY. CHECK BEFORE USING!!! DISABLED FOR NOW!
-   */
-  REPLACE,
+    /**
+     * Replace the surrogate TODO COULD BE FAULTY. CHECK BEFORE USING!!! DISABLED FOR NOW!
+     */
+    REPLACE,
 
-  /**
-   * Throw an error if a surrogate is detected
-   * TODO COULD BE FAULTY. CHECK BEFORE USING!!! DISABLED FOR NOW!
-   */
-  THROW_ERROR,
+    /**
+     * Throw an error if a surrogate is detected TODO COULD BE FAULTY. CHECK BEFORE USING!!!
+     * DISABLED FOR NOW!
+     */
+    THROW_ERROR,
 
-  /**
-   * Discard the rest of the article after a surrogate is detected
-   * TODO COULD BE FAULTY. CHECK BEFORE USING!!! DISABLED FOR NOW!
-   */
-  DISCARD_REST,
+    /**
+     * Discard the rest of the article after a surrogate is detected TODO COULD BE FAULTY. CHECK
+     * BEFORE USING!!! DISABLED FOR NOW!
+     */
+    DISCARD_REST,
 
-  /**
-   * Discard revisions which contain surrogates (java default setting)
-   */
-  DISCARD_REVISION;
+    /**
+     * Discard revisions which contain surrogates (java default setting)
+     */
+    DISCARD_REVISION;
 
-  /**
-   * Parses the given string.
-   *
-   * @param s string
-   * @return SurrogateModes
-   */
-  public static SurrogateModes parse(final String s) {
+    /**
+     * Parses the given string.
+     *
+     * @param s
+     *            string
+     * @return SurrogateModes
+     */
+    public static SurrogateModes parse(final String s)
+    {
 
-    String t = s.toUpperCase();
+        String t = s.toUpperCase();
 
-    if (t.equals("REPLACE")) {
-      // return REPLACE;
-      throw new UnsupportedOperationException(
-              "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-    } else if (t.equals("THROW_ERROR")) {
-      // return THROW_ERROR;
-      throw new UnsupportedOperationException(
-              "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-    } else if (t.equals("DISCARD_REST")) {
-      // return DISCARD_REST;
-      throw new UnsupportedOperationException(
-              "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-    } else if (t.equals("DISCARD_REVISION")) {
-      return DISCARD_REVISION;
+        if (t.equals("REPLACE")) {
+            // return REPLACE;
+            throw new UnsupportedOperationException(
+                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
+        }
+        else if (t.equals("THROW_ERROR")) {
+            // return THROW_ERROR;
+            throw new UnsupportedOperationException(
+                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
+        }
+        else if (t.equals("DISCARD_REST")) {
+            // return DISCARD_REST;
+            throw new UnsupportedOperationException(
+                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
+        }
+        else if (t.equals("DISCARD_REVISION")) {
+            return DISCARD_REVISION;
+        }
+
+        throw new IllegalArgumentException("Unknown SurrogateModes : " + s);
     }
-
-    throw new IllegalArgumentException("Unknown SurrogateModes : " + s);
-  }
 }

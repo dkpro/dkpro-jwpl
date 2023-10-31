@@ -43,448 +43,449 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.archive.InputType;
 /**
  * Panel class of the ConfigurationTool
  * <p>
- * This panel contains all components for setting configuration parameters
- * related to the input data.
+ * This panel contains all components for setting configuration parameters related to the input
+ * data.
  */
 @SuppressWarnings("serial")
 public class InputPanel
-        extends AbstractPanel {
-
-  /**
-   * Subpanel of the InputPanel
-   * <p>
-   * Contains the settings related to the surrogate mode
-   */
-  private class SurrogatePanel
-          extends AbstractPanel {
-
-    private JLabel surrogateLabel;
-    private JRadioButton replaceSurrogatesRadioButton;
-    private JRadioButton faultySurrogatesRadioButton;
-    private JRadioButton discardSurrogatesRevisionRadioButton;
-    private JRadioButton discardSurrogatesArticleRadioButton;
+    extends AbstractPanel
+{
 
     /**
-     * (Constructor) Creates a new SurrogatePanel
-     *
-     * @param controller Reference to the controller
+     * Subpanel of the InputPanel
+     * <p>
+     * Contains the settings related to the surrogate mode
      */
-    public SurrogatePanel(final ConfigController controller) {
-      super(controller);
-      createButtons();
-    }
+    private class SurrogatePanel
+        extends AbstractPanel
+    {
 
-    private void createButtons() {
-      surrogateLabel = new JLabel("Surrogate Characters");
-      surrogateLabel.setBounds(10, 10, 130, 25);
-      this.add(surrogateLabel);
+        private JLabel surrogateLabel;
+        private JRadioButton replaceSurrogatesRadioButton;
+        private JRadioButton faultySurrogatesRadioButton;
+        private JRadioButton discardSurrogatesRevisionRadioButton;
+        private JRadioButton discardSurrogatesArticleRadioButton;
 
-      /*
-       * DEFAULT MODE
-       */
-      discardSurrogatesRevisionRadioButton = new JRadioButton(
-              "Discard revision");
-      discardSurrogatesRevisionRadioButton.setBounds(10, 90, 120, 25);
+        /**
+         * (Constructor) Creates a new SurrogatePanel
+         *
+         * @param controller
+         *            Reference to the controller
+         */
+        public SurrogatePanel(final ConfigController controller)
+        {
+            super(controller);
+            createButtons();
+        }
 
-      discardSurrogatesRevisionRadioButton
-              .addActionListener(e -> {
+        private void createButtons()
+        {
+            surrogateLabel = new JLabel("Surrogate Characters");
+            surrogateLabel.setBounds(10, 10, 130, 25);
+            this.add(surrogateLabel);
+
+            /*
+             * DEFAULT MODE
+             */
+            discardSurrogatesRevisionRadioButton = new JRadioButton("Discard revision");
+            discardSurrogatesRevisionRadioButton.setBounds(10, 90, 120, 25);
+
+            discardSurrogatesRevisionRadioButton.addActionListener(e -> {
 
                 if (controller.getSurrogates() != SurrogateModes.DISCARD_REVISION) {
-                  controller
-                          .setSurrogates(SurrogateModes.DISCARD_REVISION);
+                    controller.setSurrogates(SurrogateModes.DISCARD_REVISION);
                 }
 
                 validateSurrogateSettings();
-              });
+            });
 
-      // pre-activate default mode
-      discardSurrogatesRevisionRadioButton.setSelected(true);
+            // pre-activate default mode
+            discardSurrogatesRevisionRadioButton.setSelected(true);
 
-      this.add(discardSurrogatesRevisionRadioButton);
+            this.add(discardSurrogatesRevisionRadioButton);
 
-      /*
-       * REPLACE-Mode
-       */
+            /*
+             * REPLACE-Mode
+             */
 
-      replaceSurrogatesRadioButton = new JRadioButton("Replace them");
-      replaceSurrogatesRadioButton.setBounds(10, 40, 120, 25);
+            replaceSurrogatesRadioButton = new JRadioButton("Replace them");
+            replaceSurrogatesRadioButton.setBounds(10, 40, 120, 25);
 
-      replaceSurrogatesRadioButton.addActionListener(e -> {
+            replaceSurrogatesRadioButton.addActionListener(e -> {
 
-        if (controller.getSurrogates() != SurrogateModes.REPLACE) {
-          controller.setSurrogates(SurrogateModes.REPLACE);
-        }
+                if (controller.getSurrogates() != SurrogateModes.REPLACE) {
+                    controller.setSurrogates(SurrogateModes.REPLACE);
+                }
 
-        validateSurrogateSettings();
-      });
-      this.add(replaceSurrogatesRadioButton);
+                validateSurrogateSettings();
+            });
+            this.add(replaceSurrogatesRadioButton);
 
-      /*
-       * THROW_ERROR-Mode
-       */
+            /*
+             * THROW_ERROR-Mode
+             */
 
-      faultySurrogatesRadioButton = new JRadioButton("Throw an error");
-      faultySurrogatesRadioButton.setBounds(10, 65, 120, 25);
+            faultySurrogatesRadioButton = new JRadioButton("Throw an error");
+            faultySurrogatesRadioButton.setBounds(10, 65, 120, 25);
 
-      faultySurrogatesRadioButton.addActionListener(e -> {
+            faultySurrogatesRadioButton.addActionListener(e -> {
 
-        if (controller.getSurrogates() != SurrogateModes.THROW_ERROR) {
-          controller.setSurrogates(SurrogateModes.THROW_ERROR);
-        }
+                if (controller.getSurrogates() != SurrogateModes.THROW_ERROR) {
+                    controller.setSurrogates(SurrogateModes.THROW_ERROR);
+                }
 
-        validateSurrogateSettings();
-      });
-      this.add(faultySurrogatesRadioButton);
+                validateSurrogateSettings();
+            });
+            this.add(faultySurrogatesRadioButton);
 
-      /*
-       * DISCARD_REST-Mode
-       */
+            /*
+             * DISCARD_REST-Mode
+             */
 
-      discardSurrogatesArticleRadioButton = new JRadioButton(
-              "Discard rest");
-      discardSurrogatesArticleRadioButton.setBounds(10, 115, 120, 25);
+            discardSurrogatesArticleRadioButton = new JRadioButton("Discard rest");
+            discardSurrogatesArticleRadioButton.setBounds(10, 115, 120, 25);
 
-      discardSurrogatesArticleRadioButton
-              .addActionListener(e -> {
+            discardSurrogatesArticleRadioButton.addActionListener(e -> {
 
                 if (controller.getSurrogates() != SurrogateModes.DISCARD_REST) {
-                  controller
-                          .setSurrogates(SurrogateModes.DISCARD_REST);
+                    controller.setSurrogates(SurrogateModes.DISCARD_REST);
                 }
 
                 validateSurrogateSettings();
-              });
-      this.add(discardSurrogatesArticleRadioButton);
+            });
+            this.add(discardSurrogatesArticleRadioButton);
 
+        }
+
+        /**
+         * A call of this method should validate the status of the panels components.
+         */
+        @Override
+        public void validate()
+        {
+            validateSurrogateSettings();
+        }
+
+        /**
+         * Validates the surrogate settings.
+         */
+        private void validateSurrogateSettings()
+        {
+
+            /*
+             * TODO Uncomment this code as soon as the surrogate modes are reactivated
+             */
+
+            // SurrogateModes sur = controller.getSurrogates();
+            //
+            // replaceSurrogatesRadioButton
+            // .setSelected(sur == SurrogateModes.REPLACE);
+            // faultySurrogatesRadioButton
+            // .setSelected(sur == SurrogateModes.THROW_ERROR);
+            // discardSurrogatesRevisionRadioButton
+            // .setSelected(sur == SurrogateModes.DISCARD_REVISION);
+            // discardSurrogatesArticleRadioButton
+            // .setSelected(sur == SurrogateModes.DISCARD_REST);
+
+            /*
+             * DEACTIVATE UNSUPPORTED MODES TODO: remove config options for unsupported surrogates
+             * mode. Can be activated again as soon as the implementation of these modes have been
+             * checked. Then also uncomment the original code above.
+             */
+            // BEGIN WORK AROUND FOR DEACTIVATED SURROGATE MODES
+            faultySurrogatesRadioButton.setEnabled(false);
+            discardSurrogatesArticleRadioButton.setEnabled(false);
+            replaceSurrogatesRadioButton.setEnabled(false);
+            discardSurrogatesRevisionRadioButton.setSelected(true);
+            // END WORK AROUND FOR DEACTIVATED SURROGATE MODES
+
+        }
+
+        /**
+         * A call of this method should validate the positions of the panels components.
+         */
+        @Override
+        public void relocate()
+        {
+
+            int w = 120, h = 130;
+            int x = (this.getWidth() - w) / 2, y = (this.getHeight() - h) / 2;
+
+            surrogateLabel.setLocation(10, 10);
+            faultySurrogatesRadioButton.setLocation(x, y + 55);
+            replaceSurrogatesRadioButton.setLocation(x, y + 30);
+            discardSurrogatesRevisionRadioButton.setLocation(x, y + 80);
+            discardSurrogatesArticleRadioButton.setLocation(x, y + 105);
+        }
+
+        /**
+         * empty method
+         *
+         * @throws UnsupportedOperationException
+         * @deprecated
+         */
+        @Deprecated
+        @Override
+        public void applyConfig(final ConfigSettings config)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        /**
+         * empty method
+         *
+         * @throws UnsupportedOperationException
+         * @deprecated
+         */
+        @Deprecated
+        @Override
+        public void toXML(final StringBuilder builder, final ConfigVerification errors)
+        {
+            throw new UnsupportedOperationException();
+        }
     }
 
-    /**
-     * A call of this method should validate the status of the panels
-     * components.
-     */
-    @Override
-    public void validate() {
-      validateSurrogateSettings();
-    }
+    // --------------------------------------------------------------------------//
+    // FIELDS & CONSTRUCTORS //
+    // --------------------------------------------------------------------------//
+
+    private JTable archiveTable;
+    private JScrollPane archiveScrollPane;
+
+    private JButton addArchiveButton;
+    private JButton removeArchiveButton;
+
+    private JLabel encodingLabel;
+    private JTextField encodingField;
+
+    private SurrogatePanel surrogatePanel;
 
     /**
-     * Validates the surrogate settings.
-     */
-    private void validateSurrogateSettings() {
-
-
-      /*
-       * TODO Uncomment this code as soon as the surrogate modes are reactivated
-       */
-
-//			SurrogateModes sur = controller.getSurrogates();
-//
-//			replaceSurrogatesRadioButton
-//					.setSelected(sur == SurrogateModes.REPLACE);
-//			faultySurrogatesRadioButton
-//					.setSelected(sur == SurrogateModes.THROW_ERROR);
-//			discardSurrogatesRevisionRadioButton
-//					.setSelected(sur == SurrogateModes.DISCARD_REVISION);
-//			discardSurrogatesArticleRadioButton
-//					.setSelected(sur == SurrogateModes.DISCARD_REST);
-
-      /*
-       * DEACTIVATE UNSUPPORTED MODES
-       * TODO: remove config options for
-       * unsupported surrogates mode. Can be activated again as soon as
-       * the implementation of these modes have been checked.
-       * Then also uncomment the original code above.
-       */
-      //BEGIN WORK AROUND FOR DEACTIVATED SURROGATE MODES
-      faultySurrogatesRadioButton.setEnabled(false);
-      discardSurrogatesArticleRadioButton.setEnabled(false);
-      replaceSurrogatesRadioButton.setEnabled(false);
-      discardSurrogatesRevisionRadioButton.setSelected(true);
-      //END WORK AROUND FOR DEACTIVATED SURROGATE MODES
-
-
-    }
-
-    /**
-     * A call of this method should validate the positions of the panels
-     * components.
-     */
-    @Override
-    public void relocate() {
-
-      int w = 120, h = 130;
-      int x = (this.getWidth() - w) / 2, y = (this.getHeight() - h) / 2;
-
-      surrogateLabel.setLocation(10, 10);
-      faultySurrogatesRadioButton.setLocation(x, y + 55);
-      replaceSurrogatesRadioButton.setLocation(x, y + 30);
-      discardSurrogatesRevisionRadioButton.setLocation(x, y + 80);
-      discardSurrogatesArticleRadioButton.setLocation(x, y + 105);
-    }
-
-    /**
-     * empty method
+     * (Constructor) Creates a new InputPanel.
      *
-     * @throws UnsupportedOperationException
-     * @deprecated
+     * @param controller
+     *            Reference to the controller
      */
-    @Deprecated
+    public InputPanel(final ConfigController controller)
+    {
+
+        super(controller);
+        controller.register(PanelKeys.PANEL_INPUT, this);
+
+        createArchiveTable();
+        createControllButtons();
+        createEncodingSettings();
+        createSurrogateSettings();
+    }
+
+    // --------------------------------------------------------------------------//
+    // CONSTRUCTION METHODS //
+    // --------------------------------------------------------------------------//
+
+    private void createArchiveTable()
+    {
+        archiveTable = new JTable(controller.getArchives());
+        archiveTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        archiveScrollPane = new JScrollPane(archiveTable);
+        archiveScrollPane.setBounds(10, 10, 410, 210);
+
+        this.add(archiveScrollPane);
+    }
+
+    private void createControllButtons()
+    {
+        addArchiveButton = new JButton("Add");
+        addArchiveButton.setBounds(445, 20, 100, 25);
+
+        addArchiveButton.addActionListener(e -> {
+
+            new InputDialog(controller).setVisible(true);
+            repaint();
+        });
+
+        this.add(addArchiveButton);
+
+        removeArchiveButton = new JButton("Remove");
+        removeArchiveButton.setBounds(445, 50, 100, 25);
+
+        removeArchiveButton.addActionListener(e -> {
+
+            controller.removeArchive(archiveTable.getSelectedRow());
+            archiveTable.revalidate();
+            repaint();
+        });
+
+        this.add(removeArchiveButton);
+    }
+
+    private void createEncodingSettings()
+    {
+        encodingLabel = new JLabel("Wikipedia Character Encoding: ");
+        encodingLabel.setBorder(BorderFactory.createRaisedBevelBorder());
+        encodingLabel.setBounds(10, 230, 200, 25);
+        this.add(encodingLabel);
+
+        encodingField = new JTextField();
+        encodingField.setBounds(220, 230, 200, 25);
+        this.add(encodingField);
+    }
+
+    private void createSurrogateSettings()
+    {
+        surrogatePanel = new SurrogatePanel(controller);
+        surrogatePanel.setBorder(BorderFactory.createLoweredBevelBorder());
+        surrogatePanel.setBounds(425, 95, 140, 160);
+        this.add(surrogatePanel);
+    }
+
+    // --------------------------------------------------------------------------//
+    // VALIDATION METHODS //
+    // --------------------------------------------------------------------------//
+
+    /**
+     * A call of this method should validate the status of the panels components.
+     */
     @Override
-    public void applyConfig(final ConfigSettings config) {
-      throw new UnsupportedOperationException();
+    public void validate()
+    {
+
+        this.archiveTable.revalidate();
+        this.surrogatePanel.validate();
     }
 
     /**
-     * empty method
-     *
-     * @throws UnsupportedOperationException
-     * @deprecated
+     * A call of this method should validate the positions of the panels components.
      */
-    @Deprecated
     @Override
-    public void toXML(final StringBuilder builder,
-                      final ConfigVerification errors) {
-      throw new UnsupportedOperationException();
-    }
-  }
+    public void relocate()
+    {
 
-  // --------------------------------------------------------------------------//
-  // FIELDS & CONSTRUCTORS //
-  // --------------------------------------------------------------------------//
+        int w = 555, h = 235;
+        int x = (this.getWidth() - w) / 2, y = (this.getHeight() - h) / 2;
 
-  private JTable archiveTable;
-  private JScrollPane archiveScrollPane;
+        archiveScrollPane.setLocation(x, y);
 
-  private JButton addArchiveButton;
-  private JButton removeArchiveButton;
+        addArchiveButton.setLocation(x + 435, y + 10);
+        removeArchiveButton.setLocation(x + 435, y + 40);
 
-  private JLabel encodingLabel;
-  private JTextField encodingField;
+        encodingLabel.setLocation(x, y + 220);
+        encodingField.setLocation(x + 210, y + 220);
 
-  private SurrogatePanel surrogatePanel;
+        surrogatePanel.setLocation(x + 415, y + 85);
 
-  /**
-   * (Constructor) Creates a new InputPanel.
-   *
-   * @param controller Reference to the controller
-   */
-  public InputPanel(final ConfigController controller) {
-
-    super(controller);
-    controller.register(PanelKeys.PANEL_INPUT, this);
-
-    createArchiveTable();
-    createControllButtons();
-    createEncodingSettings();
-    createSurrogateSettings();
-  }
-
-  // --------------------------------------------------------------------------//
-  // CONSTRUCTION METHODS //
-  // --------------------------------------------------------------------------//
-
-  private void createArchiveTable() {
-    archiveTable = new JTable(controller.getArchives());
-    archiveTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    archiveScrollPane = new JScrollPane(archiveTable);
-    archiveScrollPane.setBounds(10, 10, 410, 210);
-
-    this.add(archiveScrollPane);
-  }
-
-  private void createControllButtons() {
-    addArchiveButton = new JButton("Add");
-    addArchiveButton.setBounds(445, 20, 100, 25);
-
-    addArchiveButton.addActionListener(e -> {
-
-      new InputDialog(controller).setVisible(true);
-      repaint();
-    });
-
-    this.add(addArchiveButton);
-
-    removeArchiveButton = new JButton("Remove");
-    removeArchiveButton.setBounds(445, 50, 100, 25);
-
-    removeArchiveButton.addActionListener(e -> {
-
-      controller.removeArchive(archiveTable.getSelectedRow());
-      archiveTable.revalidate();
-      repaint();
-    });
-
-    this.add(removeArchiveButton);
-  }
-
-  private void createEncodingSettings() {
-    encodingLabel = new JLabel("Wikipedia Character Encoding: ");
-    encodingLabel.setBorder(BorderFactory.createRaisedBevelBorder());
-    encodingLabel.setBounds(10, 230, 200, 25);
-    this.add(encodingLabel);
-
-    encodingField = new JTextField();
-    encodingField.setBounds(220, 230, 200, 25);
-    this.add(encodingField);
-  }
-
-  private void createSurrogateSettings() {
-    surrogatePanel = new SurrogatePanel(controller);
-    surrogatePanel.setBorder(BorderFactory.createLoweredBevelBorder());
-    surrogatePanel.setBounds(425, 95, 140, 160);
-    this.add(surrogatePanel);
-  }
-
-  // --------------------------------------------------------------------------//
-  // VALIDATION METHODS //
-  // --------------------------------------------------------------------------//
-
-  /**
-   * A call of this method should validate the status of the panels
-   * components.
-   */
-  @Override
-  public void validate() {
-
-    this.archiveTable.revalidate();
-    this.surrogatePanel.validate();
-  }
-
-  /**
-   * A call of this method should validate the positions of the panels
-   * components.
-   */
-  @Override
-  public void relocate() {
-
-    int w = 555, h = 235;
-    int x = (this.getWidth() - w) / 2, y = (this.getHeight() - h) / 2;
-
-    archiveScrollPane.setLocation(x, y);
-
-    addArchiveButton.setLocation(x + 435, y + 10);
-    removeArchiveButton.setLocation(x + 435, y + 40);
-
-    encodingLabel.setLocation(x, y + 220);
-    encodingField.setLocation(x + 210, y + 220);
-
-    surrogatePanel.setLocation(x + 415, y + 85);
-
-  }
-
-  // --------------------------------------------------------------------------//
-  // INPUT/OUTPUT METHODS //
-  // --------------------------------------------------------------------------//
-
-  /**
-   * Reads the configuration parameters described in the panel from the
-   * ConfigSettings and and sets the contained values.
-   *
-   * @param config Reference to the ConfigSettings object
-   */
-  @Override
-  public void applyConfig(final ConfigSettings config) {
-
-    Object o = config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
-    if (o != null) {
-      encodingField.setText((String) o);
-    } else {
-      encodingField.setText("");
     }
 
-    o = config.getConfigParameter(ConfigurationKeys.MODE_SURROGATES);
-    if (o != null) {
-      controller.setSurrogates((SurrogateModes) o);
-    } else {
-      controller.setSurrogates(SurrogateModes.DISCARD_REVISION);
-    }
-  }
+    // --------------------------------------------------------------------------//
+    // INPUT/OUTPUT METHODS //
+    // --------------------------------------------------------------------------//
 
-  /**
-   * Adds the xml description of the panels content to the StringBuilder.
-   * Errors which occur during the xml transformation will be added to the
-   * ConfigVerification.
-   *
-   * @param builder Reference to a StringBuilder object
-   * @param errors  Reference to the ConfigVerification object
-   */
-  @Override
-  public void toXML(final StringBuilder builder,
-                    final ConfigVerification errors) {
+    /**
+     * Reads the configuration parameters described in the panel from the ConfigSettings and and
+     * sets the contained values.
+     *
+     * @param config
+     *            Reference to the ConfigSettings object
+     */
+    @Override
+    public void applyConfig(final ConfigSettings config)
+    {
 
-    SurrogateModes surMode = controller.getSurrogates();
+        Object o = config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+        if (o != null) {
+            encodingField.setText((String) o);
+        }
+        else {
+            encodingField.setText("");
+        }
 
-    String wikiEncoding = encodingField.getText();
-    if (wikiEncoding.length() == 0) {
-
-      errors.add(new ConfigItem(ConfigItemTypes.WARNING,
-              ConfigErrorKeys.MISSING_VALUE,
-              "The CharacterEncoding was not set."));
-    }
-
-    builder.append("\t<input>\r\n");
-    builder.append("\t\t<MODE_SURROGATES>" + surMode
-            + "</MODE_SURROGATES>\r\n");
-    builder.append("\t\t<WIKIPEDIA_ENCODING>" + wikiEncoding
-            + "</WIKIPEDIA_ENCODING>\r\n");
-
-    ArchiveRegistry reg = controller.getArchives();
-
-    int size = reg.getRowCount();
-
-    ArchiveDescription archive;
-    InputType type;
-    String archivePath;
-    long start;
-
-    if (size == 0) {
-      errors.add(new ConfigItem(ConfigItemTypes.WARNING,
-              ConfigErrorKeys.MISSING_VALUE,
-              "No source file has been set."));
+        o = config.getConfigParameter(ConfigurationKeys.MODE_SURROGATES);
+        if (o != null) {
+            controller.setSurrogates((SurrogateModes) o);
+        }
+        else {
+            controller.setSurrogates(SurrogateModes.DISCARD_REVISION);
+        }
     }
 
-    for (int i = 0; i < size; i++) {
+    /**
+     * Adds the xml description of the panels content to the StringBuilder. Errors which occur
+     * during the xml transformation will be added to the ConfigVerification.
+     *
+     * @param builder
+     *            Reference to a StringBuilder object
+     * @param errors
+     *            Reference to the ConfigVerification object
+     */
+    @Override
+    public void toXML(final StringBuilder builder, final ConfigVerification errors)
+    {
 
-      archive = reg.get(i);
+        SurrogateModes surMode = controller.getSurrogates();
 
-      type = archive.getType();
-      switch (type) {
-        case XML:
-          break;
-        case BZIP2:
-          //bzip is always enabled - nothing to check here
-          break;
-        case SEVENZIP:
-          if (!controller.is7ZipEnabled()) {
-            errors.add(new ConfigItem(ConfigItemTypes.ERROR,
-                    ConfigErrorKeys.ILLEGAL_INPUT_FILE,
-                    "The SevenUip mode is not " + "activated"));
-          }
-          break;
-      }
+        String wikiEncoding = encodingField.getText();
+        if (wikiEncoding.length() == 0) {
 
-      archivePath = archive.getPath();
-      if (archivePath.length() == 0) {
-        errors.add(new ConfigItem(ConfigItemTypes.ERROR,
-                ConfigErrorKeys.PATH_NOT_SET,
-                "The archive path is missing"));
-      }
+            errors.add(new ConfigItem(ConfigItemTypes.WARNING, ConfigErrorKeys.MISSING_VALUE,
+                    "The CharacterEncoding was not set."));
+        }
 
-      start = archive.getStartPosition();
-      if (start < 0) {
-        errors.add(new ConfigItem(ConfigItemTypes.ERROR,
-                ConfigErrorKeys.VALUE_OUT_OF_RANGE,
-                "The archive start value should be at least 0"));
-      }
+        builder.append("\t<input>\r\n");
+        builder.append("\t\t<MODE_SURROGATES>" + surMode + "</MODE_SURROGATES>\r\n");
+        builder.append("\t\t<WIKIPEDIA_ENCODING>" + wikiEncoding + "</WIKIPEDIA_ENCODING>\r\n");
 
-      builder.append("\t\t<archive>\r\n");
-      builder.append("\t\t\t<type>" + type + "</type>\r\n");
-      builder.append("\t\t\t<path>\"" + archivePath + "\"</path>\r\n");
-      builder.append("\t\t\t<start>" + start + "</start>\r\n");
-      builder.append("\t\t</archive>\r\n");
+        ArchiveRegistry reg = controller.getArchives();
+
+        int size = reg.getRowCount();
+
+        ArchiveDescription archive;
+        InputType type;
+        String archivePath;
+        long start;
+
+        if (size == 0) {
+            errors.add(new ConfigItem(ConfigItemTypes.WARNING, ConfigErrorKeys.MISSING_VALUE,
+                    "No source file has been set."));
+        }
+
+        for (int i = 0; i < size; i++) {
+
+            archive = reg.get(i);
+
+            type = archive.getType();
+            switch (type) {
+            case XML:
+                break;
+            case BZIP2:
+                // bzip is always enabled - nothing to check here
+                break;
+            case SEVENZIP:
+                if (!controller.is7ZipEnabled()) {
+                    errors.add(new ConfigItem(ConfigItemTypes.ERROR,
+                            ConfigErrorKeys.ILLEGAL_INPUT_FILE,
+                            "The SevenUip mode is not " + "activated"));
+                }
+                break;
+            }
+
+            archivePath = archive.getPath();
+            if (archivePath.length() == 0) {
+                errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.PATH_NOT_SET,
+                        "The archive path is missing"));
+            }
+
+            start = archive.getStartPosition();
+            if (start < 0) {
+                errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.VALUE_OUT_OF_RANGE,
+                        "The archive start value should be at least 0"));
+            }
+
+            builder.append("\t\t<archive>\r\n");
+            builder.append("\t\t\t<type>" + type + "</type>\r\n");
+            builder.append("\t\t\t<path>\"" + archivePath + "\"</path>\r\n");
+            builder.append("\t\t\t<start>" + start + "</start>\r\n");
+            builder.append("\t\t</archive>\r\n");
+        }
+        builder.append("\t</input>\r\n");
     }
-    builder.append("\t</input>\r\n");
-  }
 }

@@ -23,192 +23,216 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.OutputTypes;
 /**
  * This class contains the additional parameters for the {@link RevisionApi}.
  */
-public class RevisionAPIConfiguration extends DatabaseConfiguration {
+public class RevisionAPIConfiguration
+    extends DatabaseConfiguration
+{
 
-  /**
-   * Number of maximum size of an result set
-   */
-  private int bufferSize;
+    /**
+     * Number of maximum size of an result set
+     */
+    private int bufferSize;
 
-  /**
-   * Character encoding
-   */
-  private String characterSet;
+    /**
+     * Character encoding
+     */
+    private String characterSet;
 
-  /**
-   * Memory size for the storage of revisions for the chronological iteration
-   */
-  private long chronoStorageSpace;
+    /**
+     * Memory size for the storage of revisions for the chronological iteration
+     */
+    private long chronoStorageSpace;
 
-  /**
-   * MAX_ALLOWED_PACKET - parameter of the MySQL Server This value indicates
-   * the maximum size of an sql query.
-   */
-  private long maxAllowedPacket;
+    /**
+     * MAX_ALLOWED_PACKET - parameter of the MySQL Server This value indicates the maximum size of
+     * an sql query.
+     */
+    private long maxAllowedPacket;
 
-  /**
-   * Path for the IndexGenerator output
-   */
-  private String outputPath;
+    /**
+     * Path for the IndexGenerator output
+     */
+    private String outputPath;
 
-  /**
-   * Type of the IndexGenerator output
-   */
-  private OutputTypes outputType;
+    /**
+     * Type of the IndexGenerator output
+     */
+    private OutputTypes outputType;
 
-  /**
-   * <p>(Constructor) Creates the default configuration.</p>
-   * OutputType: UNCOMPRESSED (revisionIndex.sql)<br>
-   */
-  public RevisionAPIConfiguration() {
+    /**
+     * <p>
+     * (Constructor) Creates the default configuration.
+     * </p>
+     * OutputType: UNCOMPRESSED (revisionIndex.sql)<br>
+     */
+    public RevisionAPIConfiguration()
+    {
 
-    super();
-    this.setHost("localhost");
+        super();
+        this.setHost("localhost");
 
-    characterSet = "UTF-8";
-    maxAllowedPacket = 1024 * 1023;
-    bufferSize = 10000;
+        characterSet = "UTF-8";
+        maxAllowedPacket = 1024 * 1023;
+        bufferSize = 10000;
 
-    chronoStorageSpace = 100 * 1024 * 1024;
+        chronoStorageSpace = 100 * 1024 * 1024;
 
-    outputPath = "revisionIndex.sql";
-    outputType = OutputTypes.SQL;
-  }
+        outputPath = "revisionIndex.sql";
+        outputType = OutputTypes.SQL;
+    }
 
-  /**
-   * <p>Creates a (default) RevisionAPIConfiguration from an existing
-   * DatabaseConfiguration.</p>
-   * <p>
-   * OutputType: DATABASE<br>
-   */
-  public RevisionAPIConfiguration(DatabaseConfiguration existingWikiConfig) {
+    /**
+     * <p>
+     * Creates a (default) RevisionAPIConfiguration from an existing DatabaseConfiguration.
+     * </p>
+     * <p>
+     * OutputType: DATABASE<br>
+     */
+    public RevisionAPIConfiguration(DatabaseConfiguration existingWikiConfig)
+    {
 
-    super();
+        super();
 
-    characterSet = "UTF-8";
-    maxAllowedPacket = 1024 * 1023;
-    bufferSize = 10000;
+        characterSet = "UTF-8";
+        maxAllowedPacket = 1024 * 1023;
+        bufferSize = 10000;
 
-    chronoStorageSpace = 100 * 1024 * 1024;
+        chronoStorageSpace = 100 * 1024 * 1024;
 
-    outputType = OutputTypes.DATABASE;
+        outputType = OutputTypes.DATABASE;
 
-    setHost(existingWikiConfig.getHost());
-    setDatabase(existingWikiConfig.getDatabase());
-    setDatabaseDriver(existingWikiConfig.getDatabaseDriver());
-    setJdbcURL(existingWikiConfig.getJdbcURL());
-    setUser(existingWikiConfig.getUser());
-    setPassword(existingWikiConfig.getPassword());
-    setLanguage(existingWikiConfig.getLanguage());
+        setHost(existingWikiConfig.getHost());
+        setDatabase(existingWikiConfig.getDatabase());
+        setDatabaseDriver(existingWikiConfig.getDatabaseDriver());
+        setJdbcURL(existingWikiConfig.getJdbcURL());
+        setUser(existingWikiConfig.getUser());
+        setPassword(existingWikiConfig.getPassword());
+        setLanguage(existingWikiConfig.getLanguage());
 
-  }
+    }
 
+    /**
+     * Returns the maximum size of a result set.
+     *
+     * @return maximum size of a result set
+     */
+    public int getBufferSize()
+    {
+        return bufferSize;
+    }
 
-  /**
-   * Returns the maximum size of a result set.
-   *
-   * @return maximum size of a result set
-   */
-  public int getBufferSize() {
-    return bufferSize;
-  }
+    /**
+     * Returns the character encoding.
+     *
+     * @return character encoding
+     */
+    public String getCharacterSet()
+    {
+        return characterSet;
+    }
 
-  /**
-   * Returns the character encoding.
-   *
-   * @return character encoding
-   */
-  public String getCharacterSet() {
-    return characterSet;
-  }
+    /**
+     * Returns the memory size used for the purpose of storing revisions.
+     *
+     * @return memory size
+     */
+    public long getChronoStorageSpace()
+    {
+        return this.chronoStorageSpace;
+    }
 
-  /**
-   * Returns the memory size used for the purpose of storing revisions.
-   *
-   * @return memory size
-   */
-  public long getChronoStorageSpace() {
-    return this.chronoStorageSpace;
-  }
+    /**
+     * Returns the value of MAX_ALLOWED_PACKET parameter.
+     *
+     * @return MAX_ALLOWED_PACKET
+     */
+    public long getMaxAllowedPacket()
+    {
+        return maxAllowedPacket;
+    }
 
-  /**
-   * Returns the value of MAX_ALLOWED_PACKET parameter.
-   *
-   * @return MAX_ALLOWED_PACKET
-   */
-  public long getMaxAllowedPacket() {
-    return maxAllowedPacket;
-  }
+    /**
+     * Returns the output path of the index generator.
+     *
+     * @return output path
+     */
+    public String getOutputPath()
+    {
+        return outputPath;
+    }
 
-  /**
-   * Returns the output path of the index generator.
-   *
-   * @return output path
-   */
-  public String getOutputPath() {
-    return outputPath;
-  }
+    /**
+     * Returns the output type of the index generator.
+     *
+     * @return output type
+     */
+    public OutputTypes getOutputType()
+    {
+        return outputType;
+    }
 
-  /**
-   * Returns the output type of the index generator.
-   *
-   * @return output type
-   */
-  public OutputTypes getOutputType() {
-    return outputType;
-  }
+    /**
+     * Sets the maximum size of a result set.
+     *
+     * @param bufferSize
+     *            maximum size of a result set
+     */
+    public void setBufferSize(final int bufferSize)
+    {
+        this.bufferSize = bufferSize;
+    }
 
-  /**
-   * Sets the maximum size of a result set.
-   *
-   * @param bufferSize maximum size of a result set
-   */
-  public void setBufferSize(final int bufferSize) {
-    this.bufferSize = bufferSize;
-  }
+    /**
+     * Sets the character encoding.
+     *
+     * @param characterSet
+     *            character encoding
+     */
+    public void setCharacterSet(final String characterSet)
+    {
+        this.characterSet = characterSet;
+    }
 
-  /**
-   * Sets the character encoding.
-   *
-   * @param characterSet character encoding
-   */
-  public void setCharacterSet(final String characterSet) {
-    this.characterSet = characterSet;
-  }
+    /**
+     * Set the memory size used for the purpose of storing revisions.
+     *
+     * @param chronoStorageSpace
+     *            memory size result
+     */
+    public void setChronoStorageSpace(final long chronoStorageSpace)
+    {
+        this.chronoStorageSpace = chronoStorageSpace;
+    }
 
-  /**
-   * Set the memory size used for the purpose of storing revisions.
-   *
-   * @param chronoStorageSpace memory size result
-   */
-  public void setChronoStorageSpace(final long chronoStorageSpace) {
-    this.chronoStorageSpace = chronoStorageSpace;
-  }
+    /**
+     * Sets the value of MAX_ALLOWED_PACKET parameter.
+     *
+     * @param maxAllowedPacket
+     *            MAX_ALLOWED_PACKET
+     */
+    public void setMaxAllowedPacket(final long maxAllowedPacket)
+    {
+        this.maxAllowedPacket = maxAllowedPacket;
+    }
 
-  /**
-   * Sets the value of MAX_ALLOWED_PACKET parameter.
-   *
-   * @param maxAllowedPacket MAX_ALLOWED_PACKET
-   */
-  public void setMaxAllowedPacket(final long maxAllowedPacket) {
-    this.maxAllowedPacket = maxAllowedPacket;
-  }
+    /**
+     * Sets the output path of the index generator.
+     *
+     * @param outputPath
+     *            output path
+     */
+    public void setOutputPath(final String outputPath)
+    {
+        this.outputPath = outputPath;
+    }
 
-  /**
-   * Sets the output path of the index generator.
-   *
-   * @param outputPath output path
-   */
-  public void setOutputPath(final String outputPath) {
-    this.outputPath = outputPath;
-  }
-
-  /**
-   * Sets the output type of the index generator.
-   *
-   * @param outputType output type
-   */
-  public void setOutputType(final OutputTypes outputType) {
-    this.outputType = outputType;
-  }
+    /**
+     * Sets the output type of the index generator.
+     *
+     * @param outputType
+     *            output type
+     */
+    public void setOutputType(final OutputTypes outputType)
+    {
+        this.outputType = outputType;
+    }
 }

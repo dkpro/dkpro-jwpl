@@ -33,340 +33,377 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 /**
  * The RevisionEncoder class contains methods to encode the diff information.
  */
-public class RevisionEncoder implements RevisionEncoderInterface {
+public class RevisionEncoder
+    implements RevisionEncoderInterface
+{
 
-  /**
-   * Reference to the codec
-   */
-  private RevisionCodecData codecData;
+    /**
+     * Reference to the codec
+     */
+    private RevisionCodecData codecData;
 
-  /**
-   * Reference to the BitWriter
-   */
-  private BitWriter data;
+    /**
+     * Reference to the BitWriter
+     */
+    private BitWriter data;
 
-  /**
-   * Configuration Parameter - Zip Compression
-   */
-  private final boolean MODE_ZIP_COMPRESSION;
+    /**
+     * Configuration Parameter - Zip Compression
+     */
+    private final boolean MODE_ZIP_COMPRESSION;
 
-  /**
-   * Configuration Parameter - Wikipedia Encoding
-   */
-  private final String WIKIPEDIA_ENCODING;
+    /**
+     * Configuration Parameter - Wikipedia Encoding
+     */
+    private final String WIKIPEDIA_ENCODING;
 
-  /**
-   * (Constructor) Creates a new RevisionEnocder object.
-   *
-   * @throws ConfigurationException if an error occurs while accessing the configuration
-   *                                parameters
-   */
-  public RevisionEncoder() throws ConfigurationException {
+    /**
+     * (Constructor) Creates a new RevisionEnocder object.
+     *
+     * @throws ConfigurationException
+     *             if an error occurs while accessing the configuration parameters
+     */
+    public RevisionEncoder() throws ConfigurationException
+    {
 
-    ConfigurationManager config = ConfigurationManager.getInstance();
+        ConfigurationManager config = ConfigurationManager.getInstance();
 
-    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
-    MODE_ZIP_COMPRESSION = (Boolean) config.getConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED);
-  }
+        WIKIPEDIA_ENCODING = (String) config
+                .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+        MODE_ZIP_COMPRESSION = (Boolean) config
+                .getConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED);
+    }
 
-  @Override
-  public byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
-          throws UnsupportedEncodingException, EncodingException {
+    @Override
+    public byte[] binaryDiff(final RevisionCodecData codecData, final Diff diff)
+        throws UnsupportedEncodingException, EncodingException
+    {
 
-    byte[] bData = encode(codecData, diff);
-    if (MODE_ZIP_COMPRESSION) {
+        byte[] bData = encode(codecData, diff);
+        if (MODE_ZIP_COMPRESSION) {
 
-      Deflater compresser = new Deflater();
-      compresser.setInput(bData);
-      compresser.finish();
+            Deflater compresser = new Deflater();
+            compresser.setInput(bData);
+            compresser.finish();
 
-      byte[] output = new byte[1000];
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            byte[] output = new byte[1000];
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-      int cLength;
-      do {
-        cLength = compresser.deflate(output);
-        stream.write(output, 0, cLength);
-      }
-      while (cLength == 1000);
+            int cLength;
+            do {
+                cLength = compresser.deflate(output);
+                stream.write(output, 0, cLength);
+            }
+            while (cLength == 1000);
 
-      output = stream.toByteArray();
-      if (bData.length + 1 < output.length) {
+            output = stream.toByteArray();
+            if (bData.length + 1 < output.length) {
+                return bData;
+            }
+            else {
+
+                stream = new ByteArrayOutputStream();
+                stream.write(new byte[] { -128 }, 0, 1);
+                stream.write(output, 0, output.length);
+
+                return stream.toByteArray();
+            }
+        }
+
         return bData;
-      } else {
-
-        stream = new ByteArrayOutputStream();
-        stream.write(new byte[]{-128}, 0, 1);
-        stream.write(output, 0, output.length);
-
-        return stream.toByteArray();
-      }
     }
 
-    return bData;
-  }
+    /**
+     * Creates the binary encoding of the diff while using the codec information.
+     *
+     * @param codecData
+     *            codec
+     * @param diff
+     *            diff
+     * @return binary data
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private byte[] encode(final RevisionCodecData codecData, final Diff diff)
+        throws UnsupportedEncodingException, EncodingException
+    {
 
-  /**
-   * Creates the binary encoding of the diff while using the codec
-   * information.
-   *
-   * @param codecData codec
-   * @param diff      diff
-   * @return binary data
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   * @throws EncodingException            if the encoding failed
-   */
-  private byte[] encode(final RevisionCodecData codecData, final Diff diff)
-          throws UnsupportedEncodingException, EncodingException {
+        this.data = new BitWriter(codecData.totalSizeInBits());
+        encodeCodecData(codecData);
 
-    this.data = new BitWriter(codecData.totalSizeInBits());
-    encodeCodecData(codecData);
+        DiffPart part;
 
-    DiffPart part;
+        Iterator<DiffPart> partIt = diff.iterator();
+        while (partIt.hasNext()) {
+            part = partIt.next();
 
-    Iterator<DiffPart> partIt = diff.iterator();
-    while (partIt.hasNext()) {
-      part = partIt.next();
+            switch (part.getAction()) {
+            case FULL_REVISION_UNCOMPRESSED:
+                encodeFullRevisionUncompressed(part);
+                break;
+            case INSERT:
+                encodeInsert(part);
+                break;
+            case DELETE:
+                encodeDelete(part);
+                break;
+            case REPLACE:
+                encodeReplace(part);
+                break;
+            case CUT:
+                encodeCut(part);
+                break;
+            case PASTE:
+                encodePaste(part);
+                break;
+            /*
+             * case FULL_REVISION_COMPRESSED: encodeFullRevisionCompressed(part); break;
+             */
+            default:
+                throw new RuntimeException();
+            }
+        }
 
-      switch (part.getAction()) {
-        case FULL_REVISION_UNCOMPRESSED:
-          encodeFullRevisionUncompressed(part);
-          break;
-        case INSERT:
-          encodeInsert(part);
-          break;
-        case DELETE:
-          encodeDelete(part);
-          break;
-        case REPLACE:
-          encodeReplace(part);
-          break;
-        case CUT:
-          encodeCut(part);
-          break;
-        case PASTE:
-          encodePaste(part);
-          break;
-        /*
-         * case FULL_REVISION_COMPRESSED:
-         * encodeFullRevisionCompressed(part); break;
-         */
-        default:
-          throw new RuntimeException();
-      }
+        return data.toByteArray();
     }
 
-    return data.toByteArray();
-  }
+    /**
+     * Encodes the codecData.
+     *
+     * @param codecData
+     *            Reference to the codec
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeCodecData(final RevisionCodecData codecData) throws EncodingException
+    {
 
-  /**
-   * Encodes the codecData.
-   *
-   * @param codecData Reference to the codec
-   * @throws EncodingException if the encoding failed
-   */
-  private void encodeCodecData(final RevisionCodecData codecData) throws EncodingException {
+        this.codecData = codecData;
 
-    this.codecData = codecData;
+        // C
+        data.writeBit(0);
+        data.writeBit(0);
+        data.writeBit(0);
 
-    // C
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(0);
+        // BLOCK SIZES - S E B L
+        this.data.writeValue(5, codecData.getBlocksizeS());
+        this.data.writeValue(5, codecData.getBlocksizeE());
+        this.data.writeValue(5, codecData.getBlocksizeB());
+        this.data.writeValue(5, codecData.getBlocksizeL());
 
-    // BLOCK SIZES - S E B L
-    this.data.writeValue(5, codecData.getBlocksizeS());
-    this.data.writeValue(5, codecData.getBlocksizeE());
-    this.data.writeValue(5, codecData.getBlocksizeB());
-    this.data.writeValue(5, codecData.getBlocksizeL());
-
-    // 1 Bit
-    data.writeFillBits();
-  }
-
-  /**
-   * Encodes a Cut operation.
-   *
-   * @param part Reference to the Cut operation
-   * @throws EncodingException if the encoding failed
-   */
-  private void encodeCut(final DiffPart part) throws EncodingException {
-
-    // C
-    data.writeBit(1);
-    data.writeBit(0);
-    data.writeBit(1);
-
-    // S
-    data.writeValue(codecData.getBlocksizeS(), part.getStart());
-
-    // E
-    data.writeValue(codecData.getBlocksizeE(), part.getLength());
-
-    // B
-    data.writeValue(codecData.getBlocksizeB(),
-            Integer.parseInt(part.getText()));
-
-    data.writeFillBits();
-
-  }
-
-  /**
-   * Encodes a Delete operation.
-   *
-   * @param part Reference to the Delete operation
-   * @throws EncodingException if the encoding failed
-   */
-  private void encodeDelete(final DiffPart part) throws EncodingException {
-
-    // C
-    data.writeBit(0);
-    data.writeBit(1);
-    data.writeBit(1);
-
-    // S
-    data.writeValue(codecData.getBlocksizeS(), part.getStart());
-
-    // E
-    data.writeValue(codecData.getBlocksizeE(), part.getLength());
-
-    data.writeFillBits();
-  }
-
-  @Override
-  public String encodeDiff(final RevisionCodecData codecData, final Diff diff)
-          throws UnsupportedEncodingException, EncodingException {
-
-    String sEncoding;
-    byte[] bData = encode(codecData, diff);
-    Base64.Encoder encoder = Base64.getEncoder();
-    if (MODE_ZIP_COMPRESSION) {
-
-      Deflater compresser = new Deflater();
-      compresser.setInput(bData);
-      compresser.finish();
-
-      byte[] output = new byte[1000];
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-      int cLength;
-      do {
-        cLength = compresser.deflate(output);
-        stream.write(output, 0, cLength);
-      }
-      while (cLength == 1000);
-
-      output = stream.toByteArray();
-
-      if (bData.length + 1 < output.length) {
-        sEncoding = encoder.encodeToString(bData);
-      } else {
-        sEncoding = "_" + encoder.encodeToString(output);
-      }
-    } else {
-      sEncoding = encoder.encodeToString(bData);
+        // 1 Bit
+        data.writeFillBits();
     }
 
-    return sEncoding;
-  }
+    /**
+     * Encodes a Cut operation.
+     *
+     * @param part
+     *            Reference to the Cut operation
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeCut(final DiffPart part) throws EncodingException
+    {
 
-  /**
-   * Encodes a FullRevision operation.
-   *
-   * @param part Reference to the FullRevision operation
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   * @throws EncodingException            if the encoding failed
-   */
-  private void encodeFullRevisionUncompressed(final DiffPart part)
-          throws UnsupportedEncodingException, EncodingException {
+        // C
+        data.writeBit(1);
+        data.writeBit(0);
+        data.writeBit(1);
 
-    // C
-    data.writeBit(0);
-    data.writeBit(0);
-    data.writeBit(1);
+        // S
+        data.writeValue(codecData.getBlocksizeS(), part.getStart());
 
-    // L T
-    String text = part.getText();
-    byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+        // E
+        data.writeValue(codecData.getBlocksizeE(), part.getLength());
 
-    data.writeValue(codecData.getBlocksizeL(), bText.length);
-    data.write(bText);
+        // B
+        data.writeValue(codecData.getBlocksizeB(), Integer.parseInt(part.getText()));
 
-  }
+        data.writeFillBits();
 
-  /**
-   * Encodes an Insert operation.
-   *
-   * @param part Reference to the Insert operation
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   * @throws EncodingException            if the encoding failed
-   */
-  private void encodeInsert(final DiffPart part) throws UnsupportedEncodingException, EncodingException {
+    }
 
-    // C
-    data.writeBit(0);
-    data.writeBit(1);
-    data.writeBit(0);
+    /**
+     * Encodes a Delete operation.
+     *
+     * @param part
+     *            Reference to the Delete operation
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeDelete(final DiffPart part) throws EncodingException
+    {
 
-    // S
-    data.writeValue(codecData.getBlocksizeS(), part.getStart());
+        // C
+        data.writeBit(0);
+        data.writeBit(1);
+        data.writeBit(1);
 
-    // L T
-    String text = part.getText();
-    byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+        // S
+        data.writeValue(codecData.getBlocksizeS(), part.getStart());
 
-    data.writeValue(codecData.getBlocksizeL(), bText.length);
-    data.write(bText);
-  }
+        // E
+        data.writeValue(codecData.getBlocksizeE(), part.getLength());
 
-  /**
-   * Encodes a Paste operation.
-   *
-   * @param part Reference to the Paste operation
-   * @throws EncodingException if the encoding failed
-   */
-  private void encodePaste(final DiffPart part) throws EncodingException {
+        data.writeFillBits();
+    }
 
-    // C
-    data.writeBit(1);
-    data.writeBit(1);
-    data.writeBit(0);
+    @Override
+    public String encodeDiff(final RevisionCodecData codecData, final Diff diff)
+        throws UnsupportedEncodingException, EncodingException
+    {
 
-    // S
-    data.writeValue(codecData.getBlocksizeS(), part.getStart());
+        String sEncoding;
+        byte[] bData = encode(codecData, diff);
+        Base64.Encoder encoder = Base64.getEncoder();
+        if (MODE_ZIP_COMPRESSION) {
 
-    // B
-    data.writeValue(codecData.getBlocksizeB(),
-            Integer.parseInt(part.getText()));
+            Deflater compresser = new Deflater();
+            compresser.setInput(bData);
+            compresser.finish();
 
-    data.writeFillBits();
-  }
+            byte[] output = new byte[1000];
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-  /**
-   * Encodes a Replace operation.
-   *
-   * @param part Reference to the replace operation
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   * @throws EncodingException            if the encoding failed
-   */
-  private void encodeReplace(final DiffPart part) throws UnsupportedEncodingException, EncodingException {
+            int cLength;
+            do {
+                cLength = compresser.deflate(output);
+                stream.write(output, 0, cLength);
+            }
+            while (cLength == 1000);
 
-    // C
-    data.writeBit(1);
-    data.writeBit(0);
-    data.writeBit(0);
+            output = stream.toByteArray();
 
-    // S
-    data.writeValue(codecData.getBlocksizeS(), part.getStart());
+            if (bData.length + 1 < output.length) {
+                sEncoding = encoder.encodeToString(bData);
+            }
+            else {
+                sEncoding = "_" + encoder.encodeToString(output);
+            }
+        }
+        else {
+            sEncoding = encoder.encodeToString(bData);
+        }
 
-    // E
-    data.writeValue(codecData.getBlocksizeE(), part.getLength());
+        return sEncoding;
+    }
 
-    // L T
-    String text = part.getText();
-    byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+    /**
+     * Encodes a FullRevision operation.
+     *
+     * @param part
+     *            Reference to the FullRevision operation
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeFullRevisionUncompressed(final DiffPart part)
+        throws UnsupportedEncodingException, EncodingException
+    {
 
-    data.writeValue(codecData.getBlocksizeL(), bText.length);
-    data.write(bText);
-  }
+        // C
+        data.writeBit(0);
+        data.writeBit(0);
+        data.writeBit(1);
+
+        // L T
+        String text = part.getText();
+        byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+
+        data.writeValue(codecData.getBlocksizeL(), bText.length);
+        data.write(bText);
+
+    }
+
+    /**
+     * Encodes an Insert operation.
+     *
+     * @param part
+     *            Reference to the Insert operation
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeInsert(final DiffPart part)
+        throws UnsupportedEncodingException, EncodingException
+    {
+
+        // C
+        data.writeBit(0);
+        data.writeBit(1);
+        data.writeBit(0);
+
+        // S
+        data.writeValue(codecData.getBlocksizeS(), part.getStart());
+
+        // L T
+        String text = part.getText();
+        byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+
+        data.writeValue(codecData.getBlocksizeL(), bText.length);
+        data.write(bText);
+    }
+
+    /**
+     * Encodes a Paste operation.
+     *
+     * @param part
+     *            Reference to the Paste operation
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodePaste(final DiffPart part) throws EncodingException
+    {
+
+        // C
+        data.writeBit(1);
+        data.writeBit(1);
+        data.writeBit(0);
+
+        // S
+        data.writeValue(codecData.getBlocksizeS(), part.getStart());
+
+        // B
+        data.writeValue(codecData.getBlocksizeB(), Integer.parseInt(part.getText()));
+
+        data.writeFillBits();
+    }
+
+    /**
+     * Encodes a Replace operation.
+     *
+     * @param part
+     *            Reference to the replace operation
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     * @throws EncodingException
+     *             if the encoding failed
+     */
+    private void encodeReplace(final DiffPart part)
+        throws UnsupportedEncodingException, EncodingException
+    {
+
+        // C
+        data.writeBit(1);
+        data.writeBit(0);
+        data.writeBit(0);
+
+        // S
+        data.writeValue(codecData.getBlocksizeS(), part.getStart());
+
+        // E
+        data.writeValue(codecData.getBlocksizeE(), part.getLength());
+
+        // L T
+        String text = part.getText();
+        byte[] bText = text.getBytes(WIKIPEDIA_ENCODING);
+
+        data.writeValue(codecData.getBlocksizeL(), bText.length);
+        data.write(bText);
+    }
 }

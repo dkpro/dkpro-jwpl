@@ -18,37 +18,45 @@
 package org.dkpro.jwpl.revisionmachine.common.exceptions;
 
 /**
- * DecodingException Describes an exception that occurred while decoding the
- * diff information.
+ * DecodingException Describes an exception that occurred while decoding the diff information.
  */
 @SuppressWarnings("serial")
-public class DecodingException extends Exception {
+public class DecodingException
+    extends Exception
+{
 
-  /**
-   * Creates a new DecodingException.
-   *
-   * @param description message
-   */
-  public DecodingException(final String description) {
-    super(description);
-  }
+    /**
+     * Creates a new DecodingException.
+     *
+     * @param description
+     *            message
+     */
+    public DecodingException(final String description)
+    {
+        super(description);
+    }
 
-  /**
-   * Creates a new DecodingException.
-   *
-   * @param e inner exception
-   */
-  public DecodingException(final Exception e) {
-    super(e);
-  }
+    /**
+     * Creates a new DecodingException.
+     *
+     * @param e
+     *            inner exception
+     */
+    public DecodingException(final Exception e)
+    {
+        super(e);
+    }
 
-  /**
-   * Creates a new DecodingException.
-   *
-   * @param description message
-   * @param e           inner exception
-   */
-  public DecodingException(final String description, final Exception e) {
-    super(description, e);
-  }
+    /**
+     * Creates a new DecodingException.
+     *
+     * @param description
+     *            message
+     * @param e
+     *            inner exception
+     */
+    public DecodingException(final String description, final Exception e)
+    {
+        super(description, e);
+    }
 }

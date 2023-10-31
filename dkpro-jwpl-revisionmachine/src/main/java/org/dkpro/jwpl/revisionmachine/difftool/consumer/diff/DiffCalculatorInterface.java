@@ -27,42 +27,44 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.TimeoutException;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 
 /**
- * The DiffCalculatorInterface represents the interface to the diff processing
- * unit.
+ * The DiffCalculatorInterface represents the interface to the diff processing unit.
  * <p>
- * Please notice that there is no default method to return the generated diff.
- * The current implementation uses the TaskTransmitterInterface (given as
- * parameter of the constructor) to send the diffed data to the DiffProducer.
+ * Please notice that there is no default method to return the generated diff. The current
+ * implementation uses the TaskTransmitterInterface (given as parameter of the constructor) to send
+ * the diffed data to the DiffProducer.
  */
-public interface DiffCalculatorInterface {
+public interface DiffCalculatorInterface
+{
 
-  /**
-   * This method process the given task to generate the diff.
-   *
-   * @param task RevisionTask
-   * @throws DiffException                if the diff process fails
-   * @throws TimeoutException             if the TaskTransmitter times out during the transmission of
-   *                                      the task to the DiffProducer.
-   * @throws UnsupportedEncodingException if the CharacterSet defined in the configuration is not
-   *                                      supported by JAVA.
-   */
-  void process(final Task<Revision> task) throws DiffException, TimeoutException, UnsupportedEncodingException;
+    /**
+     * This method process the given task to generate the diff.
+     *
+     * @param task
+     *            RevisionTask
+     * @throws DiffException
+     *             if the diff process fails
+     * @throws TimeoutException
+     *             if the TaskTransmitter times out during the transmission of the task to the
+     *             DiffProducer.
+     * @throws UnsupportedEncodingException
+     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     */
+    void process(final Task<Revision> task)
+        throws DiffException, TimeoutException, UnsupportedEncodingException;
 
-  /**
-   * This method is used to delete all information concerning the partial task
-   * processing.
-   * <p>
-   * This method has to be called if the process method throws an exception.
-   */
-  void reset();
+    /**
+     * This method is used to delete all information concerning the partial task processing.
+     * <p>
+     * This method has to be called if the process method throws an exception.
+     */
+    void reset();
 
-
-  /**
-   * Close Stream of Transmitter
-   *
-   * @throws IOException
-   * @throws SQLException
-   */
-  void closeTransmitter() throws IOException, SQLException;
+    /**
+     * Close Stream of Transmitter
+     *
+     * @throws IOException
+     * @throws SQLException
+     */
+    void closeTransmitter() throws IOException, SQLException;
 
 }

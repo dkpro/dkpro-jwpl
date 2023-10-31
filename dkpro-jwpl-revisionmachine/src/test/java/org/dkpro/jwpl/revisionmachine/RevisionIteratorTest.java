@@ -37,124 +37,133 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class RevisionIteratorTest extends BaseJWPLTest {
+public class RevisionIteratorTest
+    extends BaseJWPLTest
+{
 
     // Note: In the stripped HSQLDB data set only 382 revisions exist for the Page 'Car'
-	private static final int GLOBAL_REVISION_COUNT = 382;
+    private static final int GLOBAL_REVISION_COUNT = 382;
 
     private static Wikipedia wiki = null;
-	private static RevisionAPIConfiguration config = null;
+    private static RevisionAPIConfiguration config = null;
 
-	// The object under test
-	private RevisionIterator revisionIterator = null;
+    // The object under test
+    private RevisionIterator revisionIterator = null;
 
-	/**
-	 * Made this static so that following tests don't run if assumption fails.
-	 * (With AT_Before, tests also would not be executed but marked as passed)
-	 * This could be changed back as soon as JUnit ignored tests after failed
-	 * assumptions
-	 */
-	@BeforeAll
-	public static void setupWikipedia() {
-		DatabaseConfiguration db = obtainHSDLDBConfiguration(
-				"wikiapi_simple_20090119_stripped", Language.simple_english);
-		try {
-			wiki = new Wikipedia(db);
-			config = new RevisionAPIConfiguration(wiki.getDatabaseConfiguration());
-		} catch (Exception e) {
-			fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
-		}
-		assertNotNull(wiki);
-		assertNotNull(config);
+    /**
+     * Made this static so that following tests don't run if assumption fails. (With AT_Before,
+     * tests also would not be executed but marked as passed) This could be changed back as soon as
+     * JUnit ignored tests after failed assumptions
+     */
+    @BeforeAll
+    public static void setupWikipedia()
+    {
+        DatabaseConfiguration db = obtainHSDLDBConfiguration("wikiapi_simple_20090119_stripped",
+                Language.simple_english);
+        try {
+            wiki = new Wikipedia(db);
+            config = new RevisionAPIConfiguration(wiki.getDatabaseConfiguration());
+        }
+        catch (Exception e) {
+            fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
+        }
+        assertNotNull(wiki);
+        assertNotNull(config);
 
-	}
+    }
 
-	@BeforeEach
-	public void setupInstanceUnderTest()
-	{
-		try {
-			revisionIterator = new RevisionIterator(config);
-			assertNotNull(revisionIterator);
-		} catch (WikiApiException e) {
-			fail("RevisionIterator could not be initialized: " + e.getLocalizedMessage());
-		}
-	}
+    @BeforeEach
+    public void setupInstanceUnderTest()
+    {
+        try {
+            revisionIterator = new RevisionIterator(config);
+            assertNotNull(revisionIterator);
+        }
+        catch (WikiApiException e) {
+            fail("RevisionIterator could not be initialized: " + e.getLocalizedMessage());
+        }
+    }
 
-	@AfterEach
-	public void cleanUpInstanceUnderTest()
-	{
-		if(revisionIterator!=null) {
-			try {
-				revisionIterator.close();
-			} catch (SQLException e) {
-				fail("RevisionIterator could not be shut down correctly: " + e.getLocalizedMessage());
-			}
-		}
-	}
+    @AfterEach
+    public void cleanUpInstanceUnderTest()
+    {
+        if (revisionIterator != null) {
+            try {
+                revisionIterator.close();
+            }
+            catch (SQLException e) {
+                fail("RevisionIterator could not be shut down correctly: "
+                        + e.getLocalizedMessage());
+            }
+        }
+    }
 
-	@Test
-	public void iteratorTest() {
+    @Test
+    public void iteratorTest()
+    {
 
-		int i = 0;
+        int i = 0;
 
-		while (revisionIterator.hasNext() && i < 500) {
-			Revision revision = revisionIterator.next();
-			assertNotNull(revision);
-			assertTrue(revision.getArticleID() > 0);
+        while (revisionIterator.hasNext() && i < 500) {
+            Revision revision = revisionIterator.next();
+            assertNotNull(revision);
+            assertTrue(revision.getArticleID() > 0);
             assertTrue(revision.getFullRevisionID() > 0);
             assertTrue(revision.getRevisionCounter() > 0);
             assertNotNull(revision.getRevisionText());
             assertNotNull(revision.getTimeStamp());
-			i++;
-		}
+            i++;
+        }
 
-		assertEquals(GLOBAL_REVISION_COUNT, i);
-	}
+        assertEquals(GLOBAL_REVISION_COUNT, i);
+    }
 
+    @Test
+    public void lazyLoadingTest()
+    {
+        ArrayList<String> texts = new ArrayList<>();
+        int i = 0;
 
-	@Test
-	public void lazyLoadingTest() {
-		ArrayList<String> texts = new ArrayList<>();
-		int i = 0;
-
-		while (revisionIterator.hasNext() && i < 500) {
-			Revision revision = revisionIterator.next();
+        while (revisionIterator.hasNext() && i < 500) {
+            Revision revision = revisionIterator.next();
             assertNotNull(revision);
-			texts.add(revision.getRevisionText());
-			i++;
-		}
+            texts.add(revision.getRevisionText());
+            i++;
+        }
         assertEquals(GLOBAL_REVISION_COUNT, i);
 
-		ArrayList<String> lazyLoadedTexts = new ArrayList<>();
-		i = 0;
+        ArrayList<String> lazyLoadedTexts = new ArrayList<>();
+        i = 0;
 
-		//create new iterator with lazy loading
-		try{
-			revisionIterator = new RevisionIterator(config, true);
-		}catch (WikiApiException e) {
-            fail("RevisionIterator could not be initialized with lazy loading = 'true': " + e.getLocalizedMessage());
-		}
+        // create new iterator with lazy loading
+        try {
+            revisionIterator = new RevisionIterator(config, true);
+        }
+        catch (WikiApiException e) {
+            fail("RevisionIterator could not be initialized with lazy loading = 'true': "
+                    + e.getLocalizedMessage());
+        }
 
-		while (revisionIterator.hasNext() && i < 1000) {
-			Revision revision = revisionIterator.next();
-			lazyLoadedTexts.add(revision.getRevisionText());
-			i++;
-		}
+        while (revisionIterator.hasNext() && i < 1000) {
+            Revision revision = revisionIterator.next();
+            lazyLoadedTexts.add(revision.getRevisionText());
+            i++;
+        }
         assertEquals(GLOBAL_REVISION_COUNT, i);
 
-		for (int j = 0; j < texts.size(); j++) {
-			if(!texts.get(j).equals(lazyLoadedTexts.get(j))){
-        fail();
-			}
-		}
-		//close iterator
-		try {
-			revisionIterator.close();
-		}
-		catch (SQLException e) {
+        for (int j = 0; j < texts.size(); j++) {
+            if (!texts.get(j).equals(lazyLoadedTexts.get(j))) {
+                fail();
+            }
+        }
+        // close iterator
+        try {
+            revisionIterator.close();
+        }
+        catch (SQLException e) {
             fail("RevisionIterator could not be shut down correctly: " + e.getLocalizedMessage());
-		}
+        }
 
-	}
+    }
 
 }

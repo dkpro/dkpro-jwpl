@@ -20,15 +20,16 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * Contains the keys for the different types of configuration items.
  */
-public enum ConfigItemTypes {
+public enum ConfigItemTypes
+{
 
-  /**
-   * Warning message
-   */
-  WARNING,
+    /**
+     * Warning message
+     */
+    WARNING,
 
-  /**
-   * Error message
-   */
-  ERROR
+    /**
+     * Error message
+     */
+    ERROR
 }

@@ -28,72 +28,74 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigVerifica
 /**
  * AbstractPanel Super panel class of the KonfigurationTool
  * <p>
- * All panels (which contain configuration parameters) will inherit from this
- * class.
+ * All panels (which contain configuration parameters) will inherit from this class.
  */
 @SuppressWarnings("serial")
 public abstract class AbstractPanel
-        extends JPanel {
+    extends JPanel
+{
 
-  /**
-   * Reference to the controller
-   */
-  protected final ConfigController controller;
+    /**
+     * Reference to the controller
+     */
+    protected final ConfigController controller;
 
-  /**
-   * (Constructor) Creates an AbstractPanel object.
-   *
-   * @param controller Reference to the controller
-   */
-  public AbstractPanel(final ConfigController controller) {
-    this.controller = controller;
-    this.setLayout(null);
-  }
+    /**
+     * (Constructor) Creates an AbstractPanel object.
+     *
+     * @param controller
+     *            Reference to the controller
+     */
+    public AbstractPanel(final ConfigController controller)
+    {
+        this.controller = controller;
+        this.setLayout(null);
+    }
 
-  /**
-   * A call of this method should validate the status of the panels
-   * components.
-   */
-  @Override
-  public abstract void validate();
+    /**
+     * A call of this method should validate the status of the panels components.
+     */
+    @Override
+    public abstract void validate();
 
-  /**
-   * A call of this method should validate the positions of the panels
-   * components.
-   */
-  public abstract void relocate();
+    /**
+     * A call of this method should validate the positions of the panels components.
+     */
+    public abstract void relocate();
 
-  /**
-   * The default paint method was expanded with calls of the validate() and
-   * relocate() methods.
-   *
-   * @param g Graphics
-   */
-  @Override
-  public void paint(final Graphics g) {
+    /**
+     * The default paint method was expanded with calls of the validate() and relocate() methods.
+     *
+     * @param g
+     *            Graphics
+     */
+    @Override
+    public void paint(final Graphics g)
+    {
 
-    validate();
-    relocate();
+        validate();
+        relocate();
 
-    super.paint(g);
-  }
+        super.paint(g);
+    }
 
-  /**
-   * Adds the xml description of the panels content to the StringBuilder.
-   * Errors which occur during the xml transformation will be added to the
-   * ConfigVerification.
-   *
-   * @param builder Reference to a StringBuilder object
-   * @param errors  Reference to the ConfigVerification object
-   */
-  public abstract void toXML(final StringBuilder builder,
-                             final ConfigVerification errors);
+    /**
+     * Adds the xml description of the panels content to the StringBuilder. Errors which occur
+     * during the xml transformation will be added to the ConfigVerification.
+     *
+     * @param builder
+     *            Reference to a StringBuilder object
+     * @param errors
+     *            Reference to the ConfigVerification object
+     */
+    public abstract void toXML(final StringBuilder builder, final ConfigVerification errors);
 
-  /**
-   * Reads the configuration parameters described in the panel from the
-   * ConfigSettings and and sets the contained values.
-   *
-   * @param config Reference to the ConfigSettings object
-   */
-  public abstract void applyConfig(final ConfigSettings config);
+    /**
+     * Reads the configuration parameters described in the panel from the ConfigSettings and and
+     * sets the contained values.
+     *
+     * @param config
+     *            Reference to the ConfigSettings object
+     */
+    public abstract void applyConfig(final ConfigSettings config);
 }

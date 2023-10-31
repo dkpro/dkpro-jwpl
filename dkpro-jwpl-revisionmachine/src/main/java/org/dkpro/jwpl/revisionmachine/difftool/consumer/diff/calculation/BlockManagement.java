@@ -31,289 +31,323 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffAction;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 
 /**
- * The BlockManagement class is used to calculate the diff operations using the
- * blocks of the longest common substring search.
+ * The BlockManagement class is used to calculate the diff operations using the blocks of the
+ * longest common substring search.
  */
-public class BlockManagement implements BlockManagementInterface {
+public class BlockManagement
+    implements BlockManagementInterface
+{
 
-  /**
-   * Configuration parameter - Charset name of the input data
-   */
-  private static String WIKIPEDIA_ENCODING;
+    /**
+     * Configuration parameter - Charset name of the input data
+     */
+    private static String WIKIPEDIA_ENCODING;
 
-  /**
-   * Temporary variable - Just in Time revision
-   */
-  private StringBuilder version;
+    /**
+     * Temporary variable - Just in Time revision
+     */
+    private StringBuilder version;
 
-  /**
-   * Temporary variable - Diff
-   */
-  private Diff diff;
+    /**
+     * Temporary variable - Diff
+     */
+    private Diff diff;
 
-  /**
-   * Temporary variable - Storage for intermediate blocks
-   */
-  private Map<Integer, String> bufferMap;
+    /**
+     * Temporary variable - Storage for intermediate blocks
+     */
+    private Map<Integer, String> bufferMap;
 
-  /**
-   * Reference to the codec
-   */
-  private RevisionCodecData codecData;
+    /**
+     * Reference to the codec
+     */
+    private RevisionCodecData codecData;
 
-  /**
-   * (Constructor) Creates a BlockManagement object.
-   *
-   * @throws ConfigurationException if an error occurred while accessing the configuration
-   */
-  public BlockManagement() throws ConfigurationException {
+    /**
+     * (Constructor) Creates a BlockManagement object.
+     *
+     * @throws ConfigurationException
+     *             if an error occurred while accessing the configuration
+     */
+    public BlockManagement() throws ConfigurationException
+    {
 
-    ConfigurationManager config = ConfigurationManager.getInstance();
-    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+        ConfigurationManager config = ConfigurationManager.getInstance();
+        WIKIPEDIA_ENCODING = (String) config
+                .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
-  }
-
-  @Override
-  public Diff manage(char[] revA, char[] revB, ArrayList<DiffBlock> queueA,
-                     ArrayList<DiffBlock> queueB) throws UnsupportedEncodingException {
-
-    this.diff = new Diff();
-    this.codecData = new RevisionCodecData();
-
-    this.bufferMap = new HashMap<>();
-    this.version = new StringBuilder();
-
-    DiffBlock curA = null, curB = null;
-    while (!queueA.isEmpty() || !queueB.isEmpty() || curB != null) {
-
-      if (!queueA.isEmpty() && curA == null) {
-        curA = queueA.remove(0);
-      }
-      if (!queueB.isEmpty() && curB == null) {
-        curB = queueB.remove(0);
-      }
-
-      if (curA != null && curB != null) {
-
-        if (curA.getId() == curB.getId()) {
-
-          if (curA.getId() == -1) {
-            replace(revA, revB, curA, curB);
-          } else {
-            version.append(copy(revA, curA.getRevAStart(),
-                    curA.getRevAEnd()));
-          }
-
-          curA = null;
-          curB = null;
-
-        } else if (curA.getId() == -1) {
-
-          delete(curA);
-          curA = null;
-
-        } else if (curB.getId() == -1) {
-
-          insert(revB, curB);
-          curB = null;
-
-        } else {
-
-          // Difference :(
-          if (bufferMap.containsKey(curB.getId())) {
-
-            paste(curB);
-            curB = null;
-
-          } else {
-
-            cut(revA, curA);
-            curA = null;
-
-            // System.out.println("@TO CUT: " + curA.getId() + "\t<"
-            // + text + ">");
-          }
-        }
-
-      } else if (curA != null) {
-
-        delete(curA);
-        curA = null;
-
-      } else if (curB != null) {
-
-        // Difference :(
-        if (bufferMap.containsKey(curB.getId())) {
-
-          paste(curB);
-          curB = null;
-
-        } else {
-
-          insert(revB, curB);
-          curB = null;
-        }
-
-      } else {
-        System.err.println("INVALID CASE");
-        System.exit(-1);
-      }
     }
 
-    diff.setCodecData(codecData);
-    return diff;
-  }
+    @Override
+    public Diff manage(char[] revA, char[] revB, ArrayList<DiffBlock> queueA,
+            ArrayList<DiffBlock> queueB)
+        throws UnsupportedEncodingException
+    {
 
-  /*-PRIVATE-METHODS----------------------------------------------------------*/
+        this.diff = new Diff();
+        this.codecData = new RevisionCodecData();
 
-  /**
-   * Copies the specified interval of characters for the array.
-   *
-   * @return specified interval
-   */
-  private String copy(final char[] array, final int start, final int end) {
-    StringBuilder text = new StringBuilder();
-    for (int j = start; j < end; j++) {
-      text.append(array[j]);
+        this.bufferMap = new HashMap<>();
+        this.version = new StringBuilder();
+
+        DiffBlock curA = null, curB = null;
+        while (!queueA.isEmpty() || !queueB.isEmpty() || curB != null) {
+
+            if (!queueA.isEmpty() && curA == null) {
+                curA = queueA.remove(0);
+            }
+            if (!queueB.isEmpty() && curB == null) {
+                curB = queueB.remove(0);
+            }
+
+            if (curA != null && curB != null) {
+
+                if (curA.getId() == curB.getId()) {
+
+                    if (curA.getId() == -1) {
+                        replace(revA, revB, curA, curB);
+                    }
+                    else {
+                        version.append(copy(revA, curA.getRevAStart(), curA.getRevAEnd()));
+                    }
+
+                    curA = null;
+                    curB = null;
+
+                }
+                else if (curA.getId() == -1) {
+
+                    delete(curA);
+                    curA = null;
+
+                }
+                else if (curB.getId() == -1) {
+
+                    insert(revB, curB);
+                    curB = null;
+
+                }
+                else {
+
+                    // Difference :(
+                    if (bufferMap.containsKey(curB.getId())) {
+
+                        paste(curB);
+                        curB = null;
+
+                    }
+                    else {
+
+                        cut(revA, curA);
+                        curA = null;
+
+                        // System.out.println("@TO CUT: " + curA.getId() + "\t<"
+                        // + text + ">");
+                    }
+                }
+
+            }
+            else if (curA != null) {
+
+                delete(curA);
+                curA = null;
+
+            }
+            else if (curB != null) {
+
+                // Difference :(
+                if (bufferMap.containsKey(curB.getId())) {
+
+                    paste(curB);
+                    curB = null;
+
+                }
+                else {
+
+                    insert(revB, curB);
+                    curB = null;
+                }
+
+            }
+            else {
+                System.err.println("INVALID CASE");
+                System.exit(-1);
+            }
+        }
+
+        diff.setCodecData(codecData);
+        return diff;
     }
 
-    return text.toString();
-  }
+    /*-PRIVATE-METHODS----------------------------------------------------------*/
 
-  /**
-   * Creates an insert operation.
-   *
-   * @param revB revision B
-   * @param curB Reference to the block B
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   */
-  private void insert(final char[] revB, final DiffBlock curB) throws UnsupportedEncodingException {
+    /**
+     * Copies the specified interval of characters for the array.
+     *
+     * @return specified interval
+     */
+    private String copy(final char[] array, final int start, final int end)
+    {
+        StringBuilder text = new StringBuilder();
+        for (int j = start; j < end; j++) {
+            text.append(array[j]);
+        }
 
-    String text = copy(revB, curB.getRevBStart(), curB.getRevBEnd());
+        return text.toString();
+    }
 
-    // Insert (C S L T)
-    DiffPart action = new DiffPart(DiffAction.INSERT);
+    /**
+     * Creates an insert operation.
+     *
+     * @param revB
+     *            revision B
+     * @param curB
+     *            Reference to the block B
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     */
+    private void insert(final char[] revB, final DiffBlock curB) throws UnsupportedEncodingException
+    {
 
-    // S
-    action.setStart(version.length());
-    codecData.checkBlocksizeS(version.length());
+        String text = copy(revB, curB.getRevBStart(), curB.getRevBEnd());
 
-    // L T
-    action.setText(text);
-    codecData.checkBlocksizeL(text.getBytes(WIKIPEDIA_ENCODING).length);
+        // Insert (C S L T)
+        DiffPart action = new DiffPart(DiffAction.INSERT);
 
-    diff.add(action);
+        // S
+        action.setStart(version.length());
+        codecData.checkBlocksizeS(version.length());
 
-    version.append(text);
-  }
+        // L T
+        action.setText(text);
+        codecData.checkBlocksizeL(text.getBytes(WIKIPEDIA_ENCODING).length);
 
-  /**
-   * Creates a delete operation.
-   *
-   * @param curA Reference to the block A
-   */
-  private void delete(final DiffBlock curA) {
+        diff.add(action);
 
-    // Delete (C S E)
-    DiffPart action = new DiffPart(DiffAction.DELETE);
+        version.append(text);
+    }
 
-    // S
-    action.setStart(version.length());
-    codecData.checkBlocksizeS(version.length());
+    /**
+     * Creates a delete operation.
+     *
+     * @param curA
+     *            Reference to the block A
+     */
+    private void delete(final DiffBlock curA)
+    {
 
-    // E
-    action.setLength(curA.getRevAEnd() - curA.getRevAStart());
-    codecData.checkBlocksizeE(action.getLength());
+        // Delete (C S E)
+        DiffPart action = new DiffPart(DiffAction.DELETE);
 
-    diff.add(action);
-  }
+        // S
+        action.setStart(version.length());
+        codecData.checkBlocksizeS(version.length());
 
-  /**
-   * Creates a replace operation.
-   *
-   * @param revA Reference to revision A
-   * @param revB Reference to revision B
-   * @param curA Reference to current block A
-   * @param curB Reference to current block B
-   * @throws UnsupportedEncodingException if the character encoding is unsupported
-   */
-  private void replace(final char[] revA, final char[] revB, final DiffBlock curA, final DiffBlock curB)
-          throws UnsupportedEncodingException {
+        // E
+        action.setLength(curA.getRevAEnd() - curA.getRevAStart());
+        codecData.checkBlocksizeE(action.getLength());
 
-    // Replace (C S E L T)
-    String text = copy(revB, curB.getRevBStart(), curB.getRevBEnd());
+        diff.add(action);
+    }
 
-    DiffPart action = new DiffPart(DiffAction.REPLACE);
+    /**
+     * Creates a replace operation.
+     *
+     * @param revA
+     *            Reference to revision A
+     * @param revB
+     *            Reference to revision B
+     * @param curA
+     *            Reference to current block A
+     * @param curB
+     *            Reference to current block B
+     * @throws UnsupportedEncodingException
+     *             if the character encoding is unsupported
+     */
+    private void replace(final char[] revA, final char[] revB, final DiffBlock curA,
+            final DiffBlock curB)
+        throws UnsupportedEncodingException
+    {
 
-    // S
-    action.setStart(version.length());
-    codecData.checkBlocksizeS(version.length());
+        // Replace (C S E L T)
+        String text = copy(revB, curB.getRevBStart(), curB.getRevBEnd());
 
-    // E
-    action.setLength(curA.getRevAEnd() - curA.getRevAStart());
-    codecData.checkBlocksizeE(action.getLength());
+        DiffPart action = new DiffPart(DiffAction.REPLACE);
 
-    // L T
-    action.setText(text);
-    codecData.checkBlocksizeL(text.getBytes(WIKIPEDIA_ENCODING).length);
+        // S
+        action.setStart(version.length());
+        codecData.checkBlocksizeS(version.length());
 
-    diff.add(action);
+        // E
+        action.setLength(curA.getRevAEnd() - curA.getRevAStart());
+        codecData.checkBlocksizeE(action.getLength());
 
-    version.append(text);
-  }
+        // L T
+        action.setText(text);
+        codecData.checkBlocksizeL(text.getBytes(WIKIPEDIA_ENCODING).length);
 
-  /**
-   * Creates a cut operation.
-   *
-   * @param revA Reference to revision A
-   * @param curA Reference to current block A
-   */
-  private void cut(final char[] revA, final DiffBlock curA) {
+        diff.add(action);
 
-    String text = copy(revA, curA.getRevAStart(), curA.getRevAEnd());
+        version.append(text);
+    }
 
-    // Cut (C S E B)
-    DiffPart action = new DiffPart(DiffAction.CUT);
+    /**
+     * Creates a cut operation.
+     *
+     * @param revA
+     *            Reference to revision A
+     * @param curA
+     *            Reference to current block A
+     */
+    private void cut(final char[] revA, final DiffBlock curA)
+    {
 
-    // S
-    action.setStart(version.length());
-    codecData.checkBlocksizeS(version.length());
+        String text = copy(revA, curA.getRevAStart(), curA.getRevAEnd());
 
-    // E
-    action.setLength(curA.getRevAEnd() - curA.getRevAStart());
-    codecData.checkBlocksizeE(action.getLength());
+        // Cut (C S E B)
+        DiffPart action = new DiffPart(DiffAction.CUT);
 
-    // B
-    action.setText(Integer.toString(curA.getId()));
-    codecData.checkBlocksizeB(curA.getId());
+        // S
+        action.setStart(version.length());
+        codecData.checkBlocksizeS(version.length());
 
-    diff.add(action);
+        // E
+        action.setLength(curA.getRevAEnd() - curA.getRevAStart());
+        codecData.checkBlocksizeE(action.getLength());
 
-    bufferMap.put(curA.getId(), text);
-  }
+        // B
+        action.setText(Integer.toString(curA.getId()));
+        codecData.checkBlocksizeB(curA.getId());
 
-  /**
-   * Creates a paste operation.
-   *
-   * @param curB Reference to current block B
-   */
-  private void paste(final DiffBlock curB) {
+        diff.add(action);
 
-    String text = bufferMap.remove(curB.getId());
+        bufferMap.put(curA.getId(), text);
+    }
 
-    // Paste (C S B)
-    DiffPart action = new DiffPart(DiffAction.PASTE);
+    /**
+     * Creates a paste operation.
+     *
+     * @param curB
+     *            Reference to current block B
+     */
+    private void paste(final DiffBlock curB)
+    {
 
-    // S
-    action.setStart(version.length());
-    codecData.checkBlocksizeS(version.length());
+        String text = bufferMap.remove(curB.getId());
 
-    // B
-    action.setText(Integer.toString(curB.getId()));
-    codecData.checkBlocksizeB(curB.getId());
+        // Paste (C S B)
+        DiffPart action = new DiffPart(DiffAction.PASTE);
 
-    diff.add(action);
+        // S
+        action.setStart(version.length());
+        codecData.checkBlocksizeS(version.length());
 
-    version.append(text);
-  }
+        // B
+        action.setText(Integer.toString(curB.getId()));
+        codecData.checkBlocksizeB(curB.getId());
+
+        diff.add(action);
+
+        version.append(text);
+    }
 }

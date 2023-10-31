@@ -20,62 +20,69 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 /**
  * This class represents configuration verfication messages.
  */
-public class ConfigItem {
+public class ConfigItem
+{
 
-  /**
-   * Type of message
-   */
-  private final ConfigItemTypes type;
+    /**
+     * Type of message
+     */
+    private final ConfigItemTypes type;
 
-  /**
-   * Type of error
-   */
-  private final ConfigErrorKeys key;
+    /**
+     * Type of error
+     */
+    private final ConfigErrorKeys key;
 
-  /**
-   * Message
-   */
-  private final String message;
+    /**
+     * Message
+     */
+    private final String message;
 
-  /**
-   * (Constructor) Creates a new ConfigItem
-   *
-   * @param type    Type of message
-   * @param key     Type of error
-   * @param message Message
-   */
-  public ConfigItem(final ConfigItemTypes type, final ConfigErrorKeys key,
-                    final String message) {
+    /**
+     * (Constructor) Creates a new ConfigItem
+     *
+     * @param type
+     *            Type of message
+     * @param key
+     *            Type of error
+     * @param message
+     *            Message
+     */
+    public ConfigItem(final ConfigItemTypes type, final ConfigErrorKeys key, final String message)
+    {
 
-    this.type = type;
-    this.key = key;
-    this.message = message;
-  }
+        this.type = type;
+        this.key = key;
+        this.message = message;
+    }
 
-  /**
-   * Returns the type of error.
-   *
-   * @return type of error
-   */
-  public ConfigErrorKeys getKey() {
-    return key;
-  }
+    /**
+     * Returns the type of error.
+     *
+     * @return type of error
+     */
+    public ConfigErrorKeys getKey()
+    {
+        return key;
+    }
 
-  /**
-   * Returns the message.
-   *
-   * @return message
-   */
-  public String getMessage() {
-    return message;
-  }
+    /**
+     * Returns the message.
+     *
+     * @return message
+     */
+    public String getMessage()
+    {
+        return message;
+    }
 
-  /**
-   * Returns the item type.
-   *
-   * @return item type
-   */
-  public ConfigItemTypes getType() {
-    return type;
-  }
+    /**
+     * Returns the item type.
+     *
+     * @return item type
+     */
+    public ConfigItemTypes getType()
+    {
+        return type;
+    }
 }

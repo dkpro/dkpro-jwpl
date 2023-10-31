@@ -32,84 +32,100 @@ import org.dkpro.jwpl.revisionmachine.index.indices.RevisionIndex;
 /**
  * This class writes the output of the index generator to an SQL file.
  */
-public class DataFileWriter implements IndexWriterInterface {
+public class DataFileWriter
+    implements IndexWriterInterface
+{
 
-  /**
-   * Reference to the Writer object
-   */
-  private final Writer chronoIdxWriter;
-  private final Writer revisionIdxWriter;
-  private final Writer articleIdxWriter;
+    /**
+     * Reference to the Writer object
+     */
+    private final Writer chronoIdxWriter;
+    private final Writer revisionIdxWriter;
+    private final Writer articleIdxWriter;
 
-  /**
-   * Creates a new SQLFileWriter.
-   *
-   * @param config Reference to the configuration parameters
-   * @throws IOException if an error occurred while writing the file
-   */
-  public DataFileWriter(final RevisionAPIConfiguration config) throws IOException {
+    /**
+     * Creates a new SQLFileWriter.
+     *
+     * @param config
+     *            Reference to the configuration parameters
+     * @throws IOException
+     *             if an error occurred while writing the file
+     */
+    public DataFileWriter(final RevisionAPIConfiguration config) throws IOException
+    {
 
-    File path = new File(config.getOutputPath());
-    chronoIdxWriter = new BufferedWriter(new FileWriter(new File(path, "chronoIndex.csv")));
-    revisionIdxWriter = new BufferedWriter(new FileWriter(new File(path, "revisionIndex.csv")));
-    articleIdxWriter = new BufferedWriter(new FileWriter(new File(path, "articleIndex.csv")));
-  }
-
-  /**
-   * Writes the buffered finalized queries to the output.
-   *
-   * @param index Reference to an index
-   * @throws IOException if an error occurred while writing the output
-   */
-  @Override
-  public void write(final AbstractIndex index) throws IOException {
-
-    StringBuilder cmd;
-
-    while (index.size() > 0) {
-      System.out.println("Transmit Index [" + index + "]");
-      cmd = index.remove();
-      if (index instanceof ArticleIndex) {
-        articleIdxWriter.write(cmd.toString());
-      } else if (index instanceof ChronoIndex) {
-        chronoIdxWriter.write(cmd.toString());
-      } else if (index instanceof RevisionIndex) {
-        revisionIdxWriter.write(cmd.toString());
-      }
-
+        File path = new File(config.getOutputPath());
+        chronoIdxWriter = new BufferedWriter(new FileWriter(new File(path, "chronoIndex.csv")));
+        revisionIdxWriter = new BufferedWriter(new FileWriter(new File(path, "revisionIndex.csv")));
+        articleIdxWriter = new BufferedWriter(new FileWriter(new File(path, "articleIndex.csv")));
     }
 
-    if (index instanceof ArticleIndex) {
-      articleIdxWriter.flush();
-    } else if (index instanceof ChronoIndex) {
-      chronoIdxWriter.flush();
-    } else if (index instanceof RevisionIndex) {
-      revisionIdxWriter.flush();
+    /**
+     * Writes the buffered finalized queries to the output.
+     *
+     * @param index
+     *            Reference to an index
+     * @throws IOException
+     *             if an error occurred while writing the output
+     */
+    @Override
+    public void write(final AbstractIndex index) throws IOException
+    {
+
+        StringBuilder cmd;
+
+        while (index.size() > 0) {
+            System.out.println("Transmit Index [" + index + "]");
+            cmd = index.remove();
+            if (index instanceof ArticleIndex) {
+                articleIdxWriter.write(cmd.toString());
+            }
+            else if (index instanceof ChronoIndex) {
+                chronoIdxWriter.write(cmd.toString());
+            }
+            else if (index instanceof RevisionIndex) {
+                revisionIdxWriter.write(cmd.toString());
+            }
+
+        }
+
+        if (index instanceof ArticleIndex) {
+            articleIdxWriter.flush();
+        }
+        else if (index instanceof ChronoIndex) {
+            chronoIdxWriter.flush();
+        }
+        else if (index instanceof RevisionIndex) {
+            revisionIdxWriter.flush();
+        }
     }
-  }
 
-  /**
-   * Closes the file or the database connection.
-   *
-   * @throws IOException if an error occurred while closing the file
-   */
-  @Override
-  public void close() throws IOException {
-    articleIdxWriter.close();
-    chronoIdxWriter.close();
-    revisionIdxWriter.close();
-  }
+    /**
+     * Closes the file or the database connection.
+     *
+     * @throws IOException
+     *             if an error occurred while closing the file
+     */
+    @Override
+    public void close() throws IOException
+    {
+        articleIdxWriter.close();
+        chronoIdxWriter.close();
+        revisionIdxWriter.close();
+    }
 
-  /**
-   * Wraps up the index generation process and writes all remaining statements
-   * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
-   *
-   * @throws IOException if an error occurred while writing to the file
-   */
-  @Override
-  public void finish() throws IOException {
-    articleIdxWriter.flush();
-    chronoIdxWriter.flush();
-    revisionIdxWriter.flush();
-  }
+    /**
+     * Wraps up the index generation process and writes all remaining statements e.g. concerning
+     * UNCOMPRESSED-Indexes on the created tables.
+     *
+     * @throws IOException
+     *             if an error occurred while writing to the file
+     */
+    @Override
+    public void finish() throws IOException
+    {
+        articleIdxWriter.flush();
+        chronoIdxWriter.flush();
+        revisionIdxWriter.flush();
+    }
 }

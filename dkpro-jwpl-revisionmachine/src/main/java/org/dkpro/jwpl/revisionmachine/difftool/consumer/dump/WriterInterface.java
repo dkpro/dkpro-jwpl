@@ -28,27 +28,31 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * Represents the link to the output writer.
  */
-public interface WriterInterface {
+public interface WriterInterface
+{
 
-  /**
-   * This method will process the given DiffTask and send him to the specified
-   * output.
-   *
-   * @param task DiffTask
-   * @throws ConfigurationException if problems occurred while initializing the components
-   * @throws IOException            if problems occurred while writing the output (to file or
-   *                                archive)
-   * @throws SQLConsumerException   if problems occurred while writing the output (to the sql
-   *                                producer database)
-   */
-  void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException;
+    /**
+     * This method will process the given DiffTask and send him to the specified output.
+     *
+     * @param task
+     *            DiffTask
+     * @throws ConfigurationException
+     *             if problems occurred while initializing the components
+     * @throws IOException
+     *             if problems occurred while writing the output (to file or archive)
+     * @throws SQLConsumerException
+     *             if problems occurred while writing the output (to the sql producer database)
+     */
+    void process(final Task<Diff> task)
+        throws ConfigurationException, IOException, SQLConsumerException;
 
-  /**
-   * This method will close the connection to the output.
-   *
-   * @throws IOException  if problems occurred while closing the file or process.
-   * @throws SQLException if problems occurred while closing the connection to the
-   *                      database.
-   */
-  void close() throws IOException, SQLException;
+    /**
+     * This method will close the connection to the output.
+     *
+     * @throws IOException
+     *             if problems occurred while closing the file or process.
+     * @throws SQLException
+     *             if problems occurred while closing the connection to the database.
+     */
+    void close() throws IOException, SQLException;
 }

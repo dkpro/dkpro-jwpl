@@ -20,49 +20,58 @@ package org.dkpro.jwpl.revisionmachine.index.indices;
 /**
  * Index for revision information.
  */
-public class RevisionIndex extends AbstractIndex {
+public class RevisionIndex
+    extends AbstractIndex
+{
 
-  /**
-   * Creates a new RevisionIndex object.
-   */
-  public RevisionIndex() {
-    super();
-  }
-
-  /**
-   * Creates a new RevisionIndex object.
-   *
-   * @param MAX_ALLOWED_PACKET MAX_ALLOWED_PACKET
-   */
-  public RevisionIndex(final long MAX_ALLOWED_PACKET) {
-
-    super("INSERT INTO index_revisionID VALUES ", MAX_ALLOWED_PACKET);
-  }
-
-  /**
-   * Adds the information for an new entry in the revision index.
-   *
-   * @param revisionID             ID of the revision
-   * @param revisionPrimaryKey     PK of the revison
-   * @param fullRevisionPrimaryKey PK of the related full revison
-   */
-  public void add(final int revisionID, final long revisionPrimaryKey,
-                  final long fullRevisionPrimaryKey) {
-
-    boolean sql = !insertStatement.isEmpty();
-    if (sql && buffer.length() != insertStatement.length()) {
-      this.buffer.append(",");
+    /**
+     * Creates a new RevisionIndex object.
+     */
+    public RevisionIndex()
+    {
+        super();
     }
 
-    this.buffer.append((sql ? "(" : "") + revisionID + "," + revisionPrimaryKey + ","
-            + fullRevisionPrimaryKey + (sql ? ")" : ""));
+    /**
+     * Creates a new RevisionIndex object.
+     *
+     * @param MAX_ALLOWED_PACKET
+     *            MAX_ALLOWED_PACKET
+     */
+    public RevisionIndex(final long MAX_ALLOWED_PACKET)
+    {
 
-    if (!sql) {
-      buffer.append("\n");
+        super("INSERT INTO index_revisionID VALUES ", MAX_ALLOWED_PACKET);
     }
 
-    if (buffer.length() + 100 >= MAX_ALLOWED_PACKET) {
-      storeBuffer();
+    /**
+     * Adds the information for an new entry in the revision index.
+     *
+     * @param revisionID
+     *            ID of the revision
+     * @param revisionPrimaryKey
+     *            PK of the revison
+     * @param fullRevisionPrimaryKey
+     *            PK of the related full revison
+     */
+    public void add(final int revisionID, final long revisionPrimaryKey,
+            final long fullRevisionPrimaryKey)
+    {
+
+        boolean sql = !insertStatement.isEmpty();
+        if (sql && buffer.length() != insertStatement.length()) {
+            this.buffer.append(",");
+        }
+
+        this.buffer.append((sql ? "(" : "") + revisionID + "," + revisionPrimaryKey + ","
+                + fullRevisionPrimaryKey + (sql ? ")" : ""));
+
+        if (!sql) {
+            buffer.append("\n");
+        }
+
+        if (buffer.length() + 100 >= MAX_ALLOWED_PACKET) {
+            storeBuffer();
+        }
     }
-  }
 }

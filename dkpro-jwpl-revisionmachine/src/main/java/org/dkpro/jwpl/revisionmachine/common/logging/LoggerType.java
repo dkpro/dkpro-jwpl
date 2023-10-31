@@ -20,55 +20,56 @@ package org.dkpro.jwpl.revisionmachine.common.logging;
 /**
  * This class contains all keys for diff tool loggers.
  */
-public enum LoggerType {
+public enum LoggerType
+{
 
-  /**
-   * DiffTool Error Logger
-   */
-  DIFF_TOOL_ERROR,
+    /**
+     * DiffTool Error Logger
+     */
+    DIFF_TOOL_ERROR,
 
-  /**
-   * DiffTool Logger
-   */
-  DIFF_TOOL,
+    /**
+     * DiffTool Logger
+     */
+    DIFF_TOOL,
 
-  /**
-   * Article Output Logger
-   */
-  ARTICLE_OUTPUT,
+    /**
+     * Article Output Logger
+     */
+    ARTICLE_OUTPUT,
 
-  /**
-   * UNCOMPRESSED Consumer Logger
-   */
-  CONSUMER_SQL,
+    /**
+     * UNCOMPRESSED Consumer Logger
+     */
+    CONSUMER_SQL,
 
-  /**
-   * Diff Consumer Logger
-   */
-  CONSUMER_DIFF,
+    /**
+     * Diff Consumer Logger
+     */
+    CONSUMER_DIFF,
 
-  /**
-   * Task Consumer Logger
-   */
-  CONSUMER_TASK,
+    /**
+     * Task Consumer Logger
+     */
+    CONSUMER_TASK,
 
-  /**
-   * Artcile Producer Logger
-   */
-  PRODUCER_ARTICLES,
+    /**
+     * Artcile Producer Logger
+     */
+    PRODUCER_ARTICLES,
 
-  /**
-   * Producer Archives Logger
-   */
-  PRODUCER_ARCHIVES,
+    /**
+     * Producer Archives Logger
+     */
+    PRODUCER_ARCHIVES,
 
-  /**
-   * Diff Producer Logger
-   */
-  PRODUCER_DIFFS,
+    /**
+     * Diff Producer Logger
+     */
+    PRODUCER_DIFFS,
 
-  /**
-   * Consumer Producer Logger
-   */
-  PRODUCER_CONSUMERS
+    /**
+     * Consumer Producer Logger
+     */
+    PRODUCER_CONSUMERS
 }

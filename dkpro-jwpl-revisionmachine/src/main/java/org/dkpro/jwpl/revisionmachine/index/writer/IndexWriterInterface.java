@@ -25,31 +25,39 @@ import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 /**
  * Interface for the IndexWriter
  */
-public interface IndexWriterInterface {
+public interface IndexWriterInterface
+{
 
-  /**
-   * Writes the buffered finalized queries to the output.
-   *
-   * @param index Reference to an index
-   * @throws IOException  if an error occurred while writing the output
-   * @throws SQLException if an error occurred while transmitting the output
-   */
-  void write(final AbstractIndex index) throws IOException, SQLException;
+    /**
+     * Writes the buffered finalized queries to the output.
+     *
+     * @param index
+     *            Reference to an index
+     * @throws IOException
+     *             if an error occurred while writing the output
+     * @throws SQLException
+     *             if an error occurred while transmitting the output
+     */
+    void write(final AbstractIndex index) throws IOException, SQLException;
 
-  /**
-   * Closes the file or the database connection.
-   *
-   * @throws IOException  if an error occurred while closing the file
-   * @throws SQLException if an error occurred while closing the database connection
-   */
-  void close() throws IOException, SQLException;
+    /**
+     * Closes the file or the database connection.
+     *
+     * @throws IOException
+     *             if an error occurred while closing the file
+     * @throws SQLException
+     *             if an error occurred while closing the database connection
+     */
+    void close() throws IOException, SQLException;
 
-  /**
-   * Wraps up the index generation process and writes all remaining statements
-   * e.g. concerning UNCOMPRESSED-Indexes on the created tables.
-   *
-   * @throws SQLException if an error occurred while accessing the database
-   * @throws IOException  if an error occurred while accessing the sql file
-   */
-  void finish() throws IOException, SQLException;
+    /**
+     * Wraps up the index generation process and writes all remaining statements e.g. concerning
+     * UNCOMPRESSED-Indexes on the created tables.
+     *
+     * @throws SQLException
+     *             if an error occurred while accessing the database
+     * @throws IOException
+     *             if an error occurred while accessing the sql file
+     */
+    void finish() throws IOException, SQLException;
 }

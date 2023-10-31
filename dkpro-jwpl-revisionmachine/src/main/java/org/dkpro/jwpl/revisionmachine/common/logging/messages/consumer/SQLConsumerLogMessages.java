@@ -27,68 +27,85 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for SQLConsumers.
  * <p>
+ * 
  * @deprecated To be removed without replacement.
  */
 // TODO: This file should be replaced with resource files.
 @Deprecated(since = "1.1", forRemoval = true)
-public class SQLConsumerLogMessages {
+public class SQLConsumerLogMessages
+{
 
-  /**
-   * Logs the processing of a diff task.
-   *
-   * @param logger reference to the logger
-   * @param diff   reference to the task
-   * @param time   time
-   */
-  public static void logDiffProcessed(final Logger logger,
-                                      final Task<Diff> diff, final long time) {
+    /**
+     * Logs the processing of a diff task.
+     *
+     * @param logger
+     *            reference to the logger
+     * @param diff
+     *            reference to the task
+     * @param time
+     *            time
+     */
+    public static void logDiffProcessed(final Logger logger, final Task<Diff> diff, final long time)
+    {
 
-    logger.logMessage(Level.INFO, "Generated Entry\t" + Time.toClock(time) + "\t" + diff.toString());
-  }
-
-  /**
-   * Logs the creation of an output file.
-   *
-   * @param logger reference to the logger
-   * @param path   path of the output file
-   */
-  public static void logFileCreation(final Logger logger, final String path) {
-
-    logger.logMessage(Level.INFO, "New File created:\t" + path);
-  }
-
-  /**
-   * Logs the occurrence of an OutOfMemoryError while reading a task.
-   *
-   * @param logger reference to the logger
-   * @param task   reference to the revision task
-   * @param e      reference to the error
-   */
-  public static void logReadTaskOutOfMemoryError(final Logger logger,
-                                                 final Task<Diff> task, final OutOfMemoryError e) {
-
-    if (task != null) {
-      logger.logError(Level.WARN, "Error while reading a task: " + task, e);
-    } else {
-      logger.logError(Level.WARN, "Error while reading an unknown task", e);
+        logger.logMessage(Level.INFO,
+                "Generated Entry\t" + Time.toClock(time) + "\t" + diff.toString());
     }
-  }
 
-  /**
-   * Logs the occurrence of an SqlConsumerException.
-   *
-   * @param logger reference to the logger
-   * @param e      reference to the exception
-   */
-  public static void logSQLConsumerException(final Logger logger,
-                                             final SQLConsumerException e) {
+    /**
+     * Logs the creation of an output file.
+     *
+     * @param logger
+     *            reference to the logger
+     * @param path
+     *            path of the output file
+     */
+    public static void logFileCreation(final Logger logger, final String path)
+    {
 
-    logger.logException(Level.ERROR, "SQLConsumerException", e);
-  }
+        logger.logMessage(Level.INFO, "New File created:\t" + path);
+    }
 
-  /**
-   * No object - utility class
-   */
-  private SQLConsumerLogMessages() {
-  }
+    /**
+     * Logs the occurrence of an OutOfMemoryError while reading a task.
+     *
+     * @param logger
+     *            reference to the logger
+     * @param task
+     *            reference to the revision task
+     * @param e
+     *            reference to the error
+     */
+    public static void logReadTaskOutOfMemoryError(final Logger logger, final Task<Diff> task,
+            final OutOfMemoryError e)
+    {
+
+        if (task != null) {
+            logger.logError(Level.WARN, "Error while reading a task: " + task, e);
+        }
+        else {
+            logger.logError(Level.WARN, "Error while reading an unknown task", e);
+        }
+    }
+
+    /**
+     * Logs the occurrence of an SqlConsumerException.
+     *
+     * @param logger
+     *            reference to the logger
+     * @param e
+     *            reference to the exception
+     */
+    public static void logSQLConsumerException(final Logger logger, final SQLConsumerException e)
+    {
+
+        logger.logException(Level.ERROR, "SQLConsumerException", e);
+    }
+
+    /**
+     * No object - utility class
+     */
+    private SQLConsumerLogMessages()
+    {
+    }
 }
