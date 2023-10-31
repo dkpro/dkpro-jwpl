@@ -5,6 +5,7 @@ target
 ### Rules for Eclipse environments
 .settings
 .classpath
+.factorypath
 .project
 
 ### Rules for IntelliJ IDEA environments
