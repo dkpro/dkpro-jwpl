@@ -246,6 +246,7 @@
   </dependencyManagement>
 
   <modules>
+    <module>dkpro-jwpl-build</module>
     <module>dkpro-jwpl-api</module>
     <module>dkpro-jwpl-datamachine</module>
     <module>dkpro-jwpl-timemachine</module>
@@ -263,7 +264,92 @@
     <url>https://github.com/dkpro/dkpro-jwpl/issues</url>
   </issueManagement>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.14.2</version>
+          <configuration>
+            <rulesUri>file:${session.executionRootDirectory}/dkpro-jwpl-build/src/main/resources/dkpro-jwpl/version-rules.xml</rulesUri>
+          </configuration>
+          <dependencies>
+            <dependency>
+              <groupId>org.dkpro.jwpl</groupId>
+              <artifactId>dkpro-jwpl-build</artifactId>
+              <version>${project.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
   <profiles>
+    <profile>
+      <id>checkstyle</id>
+      <activation>
+        <file>
+          <exists>src</exists>
+        </file>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+          </plugin>
+        </plugins>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-checkstyle-plugin</artifactId>
+              <version>3.3.0</version>
+              <inherited>true</inherited>
+              <dependencies>
+                <dependency>
+                  <groupId>org.dkpro.jwpl</groupId>
+                  <artifactId>dkpro-jwpl-build</artifactId>
+                  <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>10.12.3</version>
+                </dependency>
+              </dependencies>
+              <configuration>
+                <!-- See: https://github.com/m2e-code-quality/m2e-code-quality/issues/117#issuecomment-380022879 -->
+                <sourceDirectories>${project.compileSourceRoots}</sourceDirectories>
+                <testSourceDirectories>${project.testCompileSourceRoots}</testSourceDirectories>
+                <configLocation>dkpro-jwpl/checkstyle.xml</configLocation>
+                <propertyExpansion>basedir=${project.basedir}</propertyExpansion>
+                <consoleOutput>true</consoleOutput>
+                <failOnViolation>true</failOnViolation>
+                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                <includeResources>false</includeResources>
+                <includeTestResources>false</includeTestResources>
+                <logViolationsToConsole>true</logViolationsToConsole>
+                <maxAllowedViolations>0</maxAllowedViolations>
+                <violationSeverity>error</violationSeverity>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>checkstyle-check</id>
+                  <phase>verify</phase>
+                  <goals>
+                    <goal>check</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    
     <profile>
       <id>rat-check</id>
       <activation>
