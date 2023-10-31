@@ -26,8 +26,6 @@ import java.text.SimpleDateFormat;
  */
 public abstract class TimestampUtil
 {
-
-    // @SuppressWarnings("deprecation")
     public static Timestamp parse(String mediaWikiString)
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -36,7 +34,9 @@ public abstract class TimestampUtil
             time = sdf.parse(mediaWikiString).getTime();
         }
         catch (ParseException e) {
+            // Ignore
         }
+
         return new Timestamp(time);
     }
 

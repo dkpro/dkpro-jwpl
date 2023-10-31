@@ -121,6 +121,7 @@ public class SQLEncoding
      *
      * @return string representation
      */
+    @Override
     public String toString()
     {
 
@@ -136,7 +137,7 @@ public class SQLEncoding
 
         }
         catch (Exception e) {
-
+            // Ignore
         }
 
         return "<" + list.size() + ">\r\n" + query;

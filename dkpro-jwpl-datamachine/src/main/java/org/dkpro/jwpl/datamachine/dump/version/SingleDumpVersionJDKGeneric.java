@@ -228,7 +228,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
             int page_id = textIdPageIdMap.get(text_id);
             String page_idValueP = pPageIdNameMap.get(page_id);
-            if (page_idValueP != null) {// pages
+            if (page_idValueP != null) { // pages
                 page.addRow(page_id, page_id, page_idValueP, textParser.getOldText(),
                         formatBoolean(disambiguations.contains(page_id)));
                 pageMapLine.addRow(page_id, page_idValueP, page_id, SQL_NULL, SQL_NULL);
@@ -236,7 +236,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
             }
             else {
                 String page_idValueR = rPageIdNameMap.get(page_id);
-                if (page_idValueR != null) {// Redirects
+                if (page_idValueR != null) { // Redirects
                     String destination = Redirects.getRedirectDestination(textParser.getOldText());
                     if (destination != null) {
                         KeyType destinationHash = (KeyType) hashAlgorithm.hashCode(destination);
@@ -252,20 +252,18 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
                 }
             }
         }
-
     }
 
     @Override
     public void writeMetaData() throws IOException
     {
-        TxtFileWriter outputFile = new TxtFileWriter(versionFiles.getOutputMetadata());
-        // ID,LANGUAGE,DISAMBIGUATION_CATEGORY,MAIN_CATEGORY,nrOfPages,nrOfRedirects,nrOfDisambiguationPages,nrOfCategories
-        outputFile.addRow(metaData.getId(), metaData.getLanguage(),
-                metaData.getDisambiguationCategory(), metaData.getMainCategory(),
-                metaData.getNrOfPages(), metaData.getNrOfRedirects(),
-                metaData.getNrOfDisambiguations(), metaData.getNrOfCategories());
-        outputFile.flush();
-        outputFile.close();
+        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
+            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
+            // nrOfDisambiguationPages, nrOfCategories
+            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
+                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
+                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
+                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories());
+        }
     }
-
 }

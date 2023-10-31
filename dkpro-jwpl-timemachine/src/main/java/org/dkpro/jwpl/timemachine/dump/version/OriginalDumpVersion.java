@@ -173,14 +173,16 @@ public class OriginalDumpVersion
         page_namespace = pageParser.getPageNamespace();
         // handle categories
         if (page_namespace == 14) {
-            if (skipCategory && pageParser.getPageIsRedirect())
+            if (skipCategory && pageParser.getPageIsRedirect()) {
                 // skip categories that are redirects
                 return;
+            }
             // retrieve page id and page title
             page_id = pageParser.getPageId();
             // ignore categories, which have no revisions before the timestamp
-            if (!pageIdRevMap.containsKey(page_id))
+            if (!pageIdRevMap.containsKey(page_id)) {
                 return;
+            }
 
             page_title = pageParser.getPageTitle();
 
@@ -198,8 +200,9 @@ public class OriginalDumpVersion
             page_id = pageParser.getPageId();
             page_title = pageParser.getPageTitle();
             // ignore pages, which habe no revisions prior to the timestamp
-            if (!pageIdRevMap.containsKey(page_id))
+            if (!pageIdRevMap.containsKey(page_id)) {
                 return;
+            }
             // distinguish redirects
             if (pageParser.getPageIsRedirect()) {
                 recordRedirect(page_id, page_title);
@@ -250,12 +253,11 @@ public class OriginalDumpVersion
 
         cl_from = clParser.getClFrom();
         cl_to = clParser.getClTo();
-        if (!existsCategory(cl_to)) {// discard links with non registred targets
+        if (!existsCategory(cl_to)) { // discard links with non registred targets
             return;
         }
         // if the link source is a page then write the link in category_pages
-        // and
-        // page_categories
+        // and page_categories
         if (existsPage(cl_from)) {
 
             categoryPages.addRow(getCategoryPageId(cl_to), cl_from);
@@ -347,20 +349,22 @@ public class OriginalDumpVersion
         int text_id;
         int page_id;
         text_id = textParser.getOldId();
-        if (!textIdPageIdMap.containsKey(text_id))
+        if (!textIdPageIdMap.containsKey(text_id)) {
             return;
+        }
         page_id = textIdPageIdMap.get(text_id);
-        if (existsPagePageId(page_id)) {// pages
+        if (existsPagePageId(page_id)) { // pages
             page.addRow(page_id, page_id, getPageName(page_id), textParser.getOldText(),
                     formatBoolean(disambiguations.contains(page_id)));
             pageMapLine.addRow(page_id, getPageName(page_id), page_id, "NULL", "NULL");
             metaData.addPage();
             return;
         }
-        if (existsRedirect(page_id)) {// Redirects
+        if (existsRedirect(page_id)) { // Redirects
             destination = Redirects.getRedirectDestination(textParser.getOldText());
-            if (!existsPageName(destination))
+            if (!existsPageName(destination)) {
                 return;
+            }
             pageRedirects.addRow(getPagePageId(destination), getRedirectName(page_id));
             pageMapLine.addRow(page_id, getRedirectName(page_id), getPagePageId(destination),
                     "NULL", "NULL");
@@ -384,7 +388,8 @@ public class OriginalDumpVersion
         // TxtFileWriter metaData_ = new TxtFileWriter(outputPath + File.separator +
         // "MetaData.txt");
         try (TxtFileWriter metaData_ = new TxtFileWriter(versionFiles.getOutputMetadata())) {
-            // ID,LANGUAGE,DISAMBIGUATION_CATEGORY,MAIN_CATEGORY,nrOfPages,nrOfRedirects,nrOfDisambiguationPages,nrOfCategories,timestamp
+            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
+            // nrOfDisambiguationPages, nrOfCategories, timestamp
             metaData_.addRow(metaData.getId(), metaData.getLanguage(),
                     metaData.getDisambiguationCategory(), metaData.getMainCategory(),
                     metaData.getNrOfPages(), metaData.getNrOfRedirects(),

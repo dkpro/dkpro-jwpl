@@ -918,15 +918,15 @@ public class Wikipedia
         return sb.toString();
     }
 
-}
-
-class ValueComparator
-    implements Comparator<Entry<Integer, Double>>
-{
-
-    @Override
-    public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2)
+    private static class ValueComparator
+        implements Comparator<Entry<Integer, Double>>
     {
-        return Double.compare(e2.getValue(), e1.getValue());
+
+        @Override
+        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2)
+        {
+            return Double.compare(e2.getValue(), e1.getValue());
+        }
     }
+
 }

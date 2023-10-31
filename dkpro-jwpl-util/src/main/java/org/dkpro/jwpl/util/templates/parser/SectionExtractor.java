@@ -200,8 +200,8 @@ public class SectionExtractor
             }
         }
         catch (LinkTargetException e) {
+            // Ignore
         }
-
     }
 
     public void visit(WtDefinitionList n)

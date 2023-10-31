@@ -362,15 +362,14 @@ public class DumpVersionFastUtilIntKey
     @Override
     public void writeMetaData() throws IOException
     {
-        TxtFileWriter outputFile = new TxtFileWriter(versionFiles.getOutputMetadata());
-        // ID,LANGUAGE,DISAMBIGUATION_CATEGORY,MAIN_CATEGORY,nrOfPages,nrOfRedirects,nrOfDisambiguationPages,nrOfCategories,timestamp
-        outputFile.addRow(metaData.getId(), metaData.getLanguage(),
-                metaData.getDisambiguationCategory(), metaData.getMainCategory(),
-                metaData.getNrOfPages(), metaData.getNrOfRedirects(),
-                metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
-                TimestampUtil.toMediaWikiString(metaData.getTimestamp()));
-        outputFile.flush();
-        outputFile.close();
+        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
+            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
+            // nrOfDisambiguationPages, nrOfCategories, timestamp
+            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
+                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
+                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
+                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
+                    TimestampUtil.toMediaWikiString(metaData.getTimestamp()));
+        }
     }
-
 }

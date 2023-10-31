@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -304,21 +305,19 @@ public class TextPair
     }
 
     @Override
-    public boolean equals(Object anObject)
+    public boolean equals(final Object other)
     {
-        if (!(anObject instanceof TextPair)) {
+        if (!(other instanceof TextPair)) {
             return false;
         }
-        else {
-            TextPair otherPair = (TextPair) anObject;
-            if (this.getBeforeText().equals(otherPair.getBeforeText())
-                    && this.getAfterText().equals(otherPair.getAfterText())) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+        TextPair castOther = (TextPair) other;
+        return Objects.equals(beforeText, castOther.beforeText)
+                && Objects.equals(afterText, castOther.afterText);
     }
 
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(beforeText, afterText);
+    }
 }

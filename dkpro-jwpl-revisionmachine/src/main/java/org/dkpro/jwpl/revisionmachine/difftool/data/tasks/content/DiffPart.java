@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * The DiffPart class represents the operation used to create a new revision from an older revision.
@@ -167,32 +168,20 @@ public class DiffPart
         return 9 + text.length();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     *
-     * DiffParts are equal if their text, actions and spans are equal
-     */
     @Override
-    public boolean equals(Object anObject)
+    public boolean equals(final Object other)
     {
-
-        if (!(anObject instanceof DiffPart)) {
+        if (!(other instanceof DiffPart)) {
             return false;
         }
-        else {
-            DiffPart otherRev = (DiffPart) anObject;
-            if (this.getText().equals(otherRev.getText())
-                    && this.getAction() == otherRev.getAction()
-                    && this.getStart() == otherRev.getStart()
-                    && this.getEnd() == otherRev.getEnd()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+        DiffPart castOther = (DiffPart) other;
+        return Objects.equals(start, castOther.start) && Objects.equals(length, castOther.length)
+                && Objects.equals(action, castOther.action) && Objects.equals(text, castOther.text);
     }
 
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(start, length, action, text);
+    }
 }

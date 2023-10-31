@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.util.templates.parser.ParseUtils;
@@ -186,24 +187,20 @@ public class RevisionPair
     }
 
     @Override
-    public boolean equals(Object anObject)
+    public boolean equals(final Object other)
     {
-        if (!(anObject instanceof RevisionPair)) {
+        if (!(other instanceof RevisionPair)) {
             return false;
         }
-        else {
-            RevisionPair otherPair = (RevisionPair) anObject;
-            if (this.getBeforeRevision().getRevisionID() == otherPair.getBeforeRevision()
-                    .getRevisionID()
-                    && this.getAfterRevision().getRevisionID() == otherPair.getAfterRevision()
-                            .getRevisionID()
-                    && this.getTemplate().equals(otherPair.getTemplate())
-                    && this.getType() == otherPair.getType()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+        RevisionPair castOther = (RevisionPair) other;
+        return Objects.equals(before, castOther.before) && Objects.equals(after, castOther.after)
+                && Objects.equals(template, castOther.template)
+                && Objects.equals(revPairType, castOther.revPairType);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(before, after, template, revPairType);
     }
 }

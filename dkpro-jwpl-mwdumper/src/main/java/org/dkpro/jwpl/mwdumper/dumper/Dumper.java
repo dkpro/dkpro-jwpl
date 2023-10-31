@@ -24,37 +24,37 @@
  */
 
 /*
-	-> read header info
-	site name, url, language, namespace keys
-	
-	-> read pages.....
-	<page>
-		-> get title, etc
-		<revision>
-			-> store each revision
-			on next one or end of sequence, write out
-			[so for 1.4 schema we can be friendly]
-	
-	progress report: [TODO]
-		if possible, a percentage through file. this might not be possible.
-		rates and counts definitely
-	
-	input:
-		stdin or file
-		gzip and bzip2 decompression on files with standard extensions
-	
-	output:
-		stdout
-		file
-		gzip file
-		bzip2 file
-		future: SQL directly to a server?
-	
-	output formats:
-		XML export format 0.3
-		1.4 SQL schema
-		1.5 SQL schema
-		
+  -> read header info
+  site name, url, language, namespace keys
+  
+  -> read pages.....
+  <page>
+    -> get title, etc
+    <revision>
+      -> store each revision
+      on next one or end of sequence, write out
+      [so for 1.4 schema we can be friendly]
+  
+  progress report: [TODO]
+    if possible, a percentage through file. this might not be possible.
+    rates and counts definitely
+  
+  input:
+    stdin or file
+    gzip and bzip2 decompression on files with standard extensions
+  
+  output:
+    stdout
+    file
+    gzip file
+    bzip2 file
+    future: SQL directly to a server?
+  
+  output formats:
+    XML export format 0.3
+    1.4 SQL schema
+    1.5 SQL schema
+    
 */
 
 package org.dkpro.jwpl.mwdumper.dumper;
@@ -106,24 +106,28 @@ class Dumper
                 if (opt.equals("output")) {
                     if (output != null) {
                         // Finish constructing the previous output...
-                        if (sink == null)
+                        if (sink == null) {
                             sink = new XmlDumpWriter(output.getFileStream());
+                        }
                         writers.add(sink);
                         sink = null;
                     }
                     output = openOutputFile(val, param);
                 }
                 else if (opt.equals("format")) {
-                    if (output == null)
+                    if (output == null) {
                         output = new OutputWrapper(Tools.openStandardOutput());
-                    if (sink != null)
+                    }
+                    if (sink != null) {
                         throw new IllegalArgumentException("Only one format per output allowed.");
+                    }
                     sink = openOutputSink(output, val, param);
                 }
                 else if (opt.equals("filter")) {
                     if (sink == null) {
-                        if (output == null)
+                        if (output == null) {
                             output = new OutputWrapper(Tools.openStandardOutput());
+                        }
                         sink = new XmlDumpWriter(output.getFileStream());
                     }
                     sink = addFilter(sink, val, param);
@@ -139,24 +143,29 @@ class Dumper
                 }
             }
             else if (arg.equals("-")) {
-                if (input != null)
+                if (input != null) {
                     throw new IllegalArgumentException("Input already set; can't set to stdin");
+                }
                 input = Tools.openStandardInput();
             }
             else {
-                if (input != null)
+                if (input != null) {
                     throw new IllegalArgumentException("Input already set; can't set to " + arg);
+                }
                 input = Tools.openInputFile(arg);
             }
         }
 
-        if (input == null)
+        if (input == null) {
             input = Tools.openStandardInput();
-        if (output == null)
+        }
+        if (output == null) {
             output = new OutputWrapper(Tools.openStandardOutput());
+        }
         // Finish stacking the last output sink
-        if (sink == null)
+        if (sink == null) {
             sink = new XmlDumpWriter(output.getFileStream());
+        }
         writers.add(sink);
 
         DumpWriter outputSink = (progressInterval > 0)
@@ -174,8 +183,9 @@ class Dumper
      */
     static String[] splitArg(String arg)
     {
-        if (!arg.startsWith("--"))
+        if (!arg.startsWith("--")) {
             return null;
+        }
 
         String opt;
         String val = "";
@@ -187,8 +197,9 @@ class Dumper
         if (bits.length > 1) {
             String[] bits2 = bits[1].split(":", 2);
             val = bits2[0];
-            if (bits2.length > 1)
+            if (bits2.length > 1) {
                 param = bits2[1];
+            }
         }
 
         return new String[] { opt, val, param };
@@ -213,20 +224,24 @@ class Dumper
 
         OutputStream getFileStream()
         {
-            if (fileStream != null)
+            if (fileStream != null) {
                 return fileStream;
-            if (sqlConnection != null)
+            }
+            if (sqlConnection != null) {
                 throw new IllegalArgumentException("Expected file stream, got SQL connection?");
+            }
             throw new IllegalArgumentException(
                     "Have neither file nor SQL connection. Very confused!");
         }
 
         SqlStream getSqlStream() throws IOException
         {
-            if (fileStream != null)
+            if (fileStream != null) {
                 return new SqlFileStream(fileStream);
-            if (sqlConnection != null)
+            }
+            if (sqlConnection != null) {
                 return new SqlServerStream(sqlConnection);
+            }
             throw new IllegalArgumentException(
                     "Have neither file nor SQL connection. Very confused!");
         }
@@ -234,20 +249,27 @@ class Dumper
 
     static OutputWrapper openOutputFile(String dest, String param) throws IOException
     {
-        if (dest.equals("stdout"))
+        if (dest.equals("stdout")) {
             return new OutputWrapper(Tools.openStandardOutput());
-        else if (dest.equals("file"))
+        }
+        else if (dest.equals("file")) {
             return new OutputWrapper(Tools.createOutputFile(param));
-        else if (dest.equals("gzip"))
+        }
+        else if (dest.equals("gzip")) {
             return new OutputWrapper(new GZIPOutputStream(Tools.createOutputFile(param)));
-        else if (dest.equals("bzip2"))
+        }
+        else if (dest.equals("bzip2")) {
             return new OutputWrapper(Tools.createBZip2File(param));
-        else if (dest.equals("mysql"))
+        }
+        else if (dest.equals("mysql")) {
             return connectMySql(param);
-        else if (dest.equals("postgresql"))
+        }
+        else if (dest.equals("postgresql")) {
             return connectPostgres(param);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Destination sink not implemented: " + dest);
+        }
     }
 
     private static OutputWrapper connectMySql(String param) throws IOException
@@ -277,31 +299,39 @@ class Dumper
     static DumpWriter openOutputSink(OutputWrapper output, String format, String param)
         throws IOException
     {
-        if (format.equals("xml"))
+        if (format.equals("xml")) {
             return new XmlDumpWriter(output.getFileStream());
-        else if (format.equals("sphinx"))
+        }
+        else if (format.equals("sphinx")) {
             return new SphinxWriter(output.getFileStream());
+        }
         else if (format.equals("mysql") || format.equals("pgsql") || format.equals("sql")) {
             SqlStream sqlStream = output.getSqlStream();
             SqlWriter ret;
 
             SqlWriter.Traits tr;
-            if (format.equals("pgsql"))
+            if (format.equals("pgsql")) {
                 tr = new SqlWriter.PostgresTraits();
-            else
+            }
+            else {
                 tr = new SqlWriter.MySQLTraits();
+            }
 
-            if (param.equals("1.4"))
+            if (param.equals("1.4")) {
                 ret = new SqlWriter14(tr, sqlStream);
-            else if (param.equals("1.5"))
+            }
+            else if (param.equals("1.5")) {
                 ret = new SqlWriter15(tr, sqlStream);
-            else
+            }
+            else {
                 throw new IllegalArgumentException("SQL version not known: " + param);
+            }
 
             return ret;
         }
-        else
+        else {
             throw new IllegalArgumentException("Output format not known: " + format);
+        }
     }
 
     // ----------------
@@ -309,25 +339,35 @@ class Dumper
     static DumpWriter addFilter(DumpWriter sink, String filter, String param)
         throws IOException, ParseException
     {
-        if (filter.equals("latest"))
+        if (filter.equals("latest")) {
             return new LatestFilter(sink);
-        else if (filter.equals("namespace"))
+        }
+        else if (filter.equals("namespace")) {
             return new NamespaceFilter(sink, param);
-        else if (filter.equals("notalk"))
+        }
+        else if (filter.equals("notalk")) {
             return new NotalkFilter(sink);
-        else if (filter.equals("titlematch"))
+        }
+        else if (filter.equals("titlematch")) {
             return new TitleMatchFilter(sink, param);
-        else if (filter.equals("list"))
+        }
+        else if (filter.equals("list")) {
             return new ListFilter(sink, param);
-        else if (filter.equals("exactlist"))
+        }
+        else if (filter.equals("exactlist")) {
             return new ExactListFilter(sink, param);
-        else if (filter.equals("revlist"))
+        }
+        else if (filter.equals("revlist")) {
             return new RevisionListFilter(sink, param);
-        else if (filter.equals("before"))
+        }
+        else if (filter.equals("before")) {
             return new BeforeTimeStampFilter(sink, param);
-        else if (filter.equals("after"))
+        }
+        else if (filter.equals("after")) {
             return new AfterTimeStampFilter(sink, param);
-        else
+        }
+        else {
             throw new IllegalArgumentException("Filter unknown: " + filter);
+        }
     }
 }

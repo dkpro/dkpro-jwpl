@@ -437,6 +437,7 @@ public class ModularParser
                 }
             }
             catch (IndexOutOfBoundsException e) {
+                // Ignore
             }
 
             sm.delete(start, end);

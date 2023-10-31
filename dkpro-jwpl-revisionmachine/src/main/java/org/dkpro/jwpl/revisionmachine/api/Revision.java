@@ -22,6 +22,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.ISizeable;
@@ -474,29 +475,19 @@ public class Revision
         out.defaultWriteObject();
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     *
-     * Revisions are equal if their ids are equal
-     */
     @Override
-    public boolean equals(Object anObject)
+    public boolean equals(final Object other)
     {
-
-        if (!(anObject instanceof Revision)) {
+        if (!(other instanceof Revision)) {
             return false;
         }
-        else {
-            Revision otherRev = (Revision) anObject;
-            if (this.getRevisionID() == otherRev.getRevisionID()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
+        Revision castOther = (Revision) other;
+        return Objects.equals(revisionId, castOther.revisionId);
     }
 
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(revisionId);
+    }
 }

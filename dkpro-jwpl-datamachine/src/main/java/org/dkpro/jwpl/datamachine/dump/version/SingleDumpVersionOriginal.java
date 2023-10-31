@@ -305,9 +305,10 @@ public class SingleDumpVersionOriginal
         // handle categories
         if (page_namespace == 14) {
             if (skipCategory) {
-                if (pageParser.getPageIsRedirect())
+                if (pageParser.getPageIsRedirect()) {
                     // skip categories that are redirects
                     return;
+                }
             }
             // retrieve page id and page title
             page_id = pageParser.getPageId();
@@ -358,25 +359,26 @@ public class SingleDumpVersionOriginal
         int page_id;
 
         text_id = textParser.getOldId();
-        if (!textIdPageIdMap.containsKey(text_id))
+        if (!textIdPageIdMap.containsKey(text_id)) {
             return;
+        }
         page_id = textIdPageIdMap.get(text_id);
-        if (pPageIdNameMap.containsKey(page_id)) {// pages
+        if (pPageIdNameMap.containsKey(page_id)) { // pages
             page.addRow(page_id, page_id, pPageIdNameMap.get(page_id), textParser.getOldText(),
                     formatBoolean(disambiguations.contains(page_id)));
             pageMapLine.addRow(page_id, pPageIdNameMap.get(page_id), page_id, "NULL", "NULL");
             return;
         }
-        if (rPageIdNameMap.containsKey(page_id)) {// Redirects
+        if (rPageIdNameMap.containsKey(page_id)) { // Redirects
             destination = Redirects.getRedirectDestination(textParser.getOldText());
-            if (!pNamePageIdMap.containsKey(destination))
+            if (!pNamePageIdMap.containsKey(destination)) {
                 return;
+            }
             pageRedirects.addRow(pNamePageIdMap.get(destination), rPageIdNameMap.get(page_id));
             pageMapLine.addRow(page_id, rPageIdNameMap.get(page_id),
                     pNamePageIdMap.get(destination), "NULL", "NULL");
             nrOfRedirects++;
         }
-
     }
 
     @Override
@@ -406,7 +408,8 @@ public class SingleDumpVersionOriginal
     {
         try (TxtFileWriter metaData = new TxtFileWriter(
                 outputDir + File.separator + "MetaData.txt")) {
-            // ID,LANGUAGE,DISAMBIGUATION_CATEGORY,MAIN_CATEGORY,nrOfPages,nrOfRedirects,nrOfDisambiguationPages,nrOfCategories
+            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
+            // nrOfDisambiguationPages, nrOfCategories
             metaData.addRow("null", language, disambiguationsCategory, mainCategory, nrOfPages,
                     nrOfRedirects, nrOfDisambiguations, nrOfCategories);
             metaData.export();
