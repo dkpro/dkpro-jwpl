@@ -49,7 +49,7 @@ import java.util.Properties;
 public class UniversalDecompressor implements IDecompressor {
 
   /**
-   * Place holder for compressed file path in external command
+   * Placeholder for compressed file path in external command
    */
   public static final String FILEPLACEHOLDER = "%f";
   /**

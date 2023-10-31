@@ -22,11 +22,10 @@ package org.dkpro.jwpl.revisionmachine.common.exceptions;
  * diff.
  */
 @SuppressWarnings("serial")
-public class DiffException
-        extends Exception {
+public class DiffException extends Exception {
 
   /**
-   * (Constructor) Creates a new DiffException.
+   * Creates a new DiffException.
    *
    * @param description message
    */
@@ -35,7 +34,7 @@ public class DiffException
   }
 
   /**
-   * (Constructor) Creates a new DiffException.
+   * Creates a new DiffException.
    *
    * @param e inner exception
    */
@@ -44,7 +43,7 @@ public class DiffException
   }
 
   /**
-   * (Constructor) Creates a new DiffException.
+   * Creates a new DiffException.
    *
    * @param description message
    * @param e           inner exception

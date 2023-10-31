@@ -20,19 +20,17 @@ package org.dkpro.jwpl.revisionmachine.index.indices;
 /**
  * Index for revision information.
  */
-public class RevisionIndex
-        extends AbstractIndex {
+public class RevisionIndex extends AbstractIndex {
 
   /**
-   * (Constructor) Creates a new RevisionIndex object.
+   * Creates a new RevisionIndex object.
    */
   public RevisionIndex() {
-
     super();
   }
 
   /**
-   * (Constructor) Creates a new RevisionIndex object.
+   * Creates a new RevisionIndex object.
    *
    * @param MAX_ALLOWED_PACKET MAX_ALLOWED_PACKET
    */

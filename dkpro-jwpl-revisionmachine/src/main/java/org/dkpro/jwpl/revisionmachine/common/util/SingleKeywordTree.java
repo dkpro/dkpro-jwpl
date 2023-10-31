@@ -38,7 +38,7 @@ public class SingleKeywordTree<V> {
   private LetterNode<V> current;
 
   /**
-   * (Constructor) Creates an empty SingleKeywordTree object.
+   * Creates an empty SingleKeywordTree object.
    */
   public SingleKeywordTree() {
     root = new LetterNode<>();

@@ -33,8 +33,7 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
  * Iterates over the database to retrieve the necessary information for the
  * index generation.
  */
-public class IndexIterator
-        implements Iterator<Revision> {
+public class IndexIterator implements Iterator<Revision> {
 
   /**
    * Reference to the database connection
@@ -62,13 +61,12 @@ public class IndexIterator
   private final int MAX_NUMBER_RESULTS;
 
   /**
-   * (Constructor) Creates the IndexIterator object.
+   * Creates the IndexIterator object.
    *
    * @param config Reference to the configuration
    * @throws WikiApiException if an error occurs
    */
-  public IndexIterator(final RevisionAPIConfiguration config)
-          throws WikiApiException {
+  public IndexIterator(final RevisionAPIConfiguration config) throws WikiApiException {
 
     try {
       this.primaryKey = -1;
@@ -93,16 +91,14 @@ public class IndexIterator
   /**
    * Queries the database for more revision information.
    *
-   * @return TRUE if the resultset contains elements FALSE otherwise
+   * @return TRUE if the result set contains elements FALSE otherwise
    * @throws SQLException if an error occurs while accessing the database
    */
-  private boolean query()
-          throws SQLException {
+  private boolean query() throws SQLException {
     statement = this.connection.createStatement();
 
     String query = "SELECT PrimaryKey, RevisionCounter,"
-            + " RevisionID, ArticleID, Timestamp, FullRevisionID "
-            + "FROM revisions";
+            + " RevisionID, ArticleID, Timestamp, FullRevisionID FROM revisions";
 
     if (primaryKey > 0) {
       query += " WHERE PrimaryKey > " + primaryKey;
@@ -122,6 +118,7 @@ public class IndexIterator
    *
    * @return Revision
    */
+  @Override
   public Revision next() {
     try {
       Revision revision = new Revision(result.getInt(2));
@@ -137,9 +134,6 @@ public class IndexIterator
       return revision;
 
     } catch (Exception e) {
-
-      e.printStackTrace();
-
       throw new RuntimeException(e);
     }
   }
@@ -149,6 +143,7 @@ public class IndexIterator
    *
    * @return TRUE | FALSE
    */
+  @Override
   public boolean hasNext() {
     try {
       if (result != null && result.next()) {
@@ -173,9 +168,9 @@ public class IndexIterator
    * unsupported method
    *
    * @throws UnsupportedOperationException
-   * @deprecated
+   * @deprecated Don't cal this method as it will throw an exception at runtime.
    */
-  @Deprecated
+  @Deprecated(since = "1.1")
   public void remove() {
     throw new UnsupportedOperationException();
   }

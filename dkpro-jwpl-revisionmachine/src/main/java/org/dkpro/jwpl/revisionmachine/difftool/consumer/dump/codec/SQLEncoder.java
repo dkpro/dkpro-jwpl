@@ -46,8 +46,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This creates the SQL statements
  */
-public class SQLEncoder
-        implements SQLEncoderInterface {
+public class SQLEncoder implements SQLEncoderInterface {
 
   /**
    * UNCOMPRESSED Statement for tables containing binary encoded diff information
@@ -119,7 +118,7 @@ public class SQLEncoder
    * @throws LoggingException       if an error occurred while accessing the logger
    */
   public SQLEncoder(final Logger logger)
-          throws ConfigurationException, LoggingException {
+          throws ConfigurationException {
 
     this.logger = logger;
 
@@ -183,16 +182,6 @@ public class SQLEncoder
 
   }
 
-  /**
-   * @param task
-   * @param diff
-   * @return
-   * @throws ConfigurationException
-   * @throws UnsupportedEncodingException
-   * @throws DecodingException
-   * @throws EncodingException
-   * @throws SQLConsumerException
-   */
   protected byte[] binaryDiff(final Task<Diff> task, final Diff diff)
           throws ConfigurationException, UnsupportedEncodingException,
           DecodingException, EncodingException, SQLConsumerException {
@@ -211,18 +200,13 @@ public class SQLEncoder
     return encoding;
   }
 
-  /* (non-Javadoc)
-   * @see org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoderInterface#binaryTask(org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task)
-   */
   @Override
   public SQLEncoding[] binaryTask(final Task<Diff> task)
           throws ConfigurationException, UnsupportedEncodingException,
           DecodingException, EncodingException, SQLConsumerException {
 
     // this.task = task;
-    if (task.getTaskType() == TaskTypes.TASK_FULL
-            || task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST) {
-
+    if (task.getTaskType() == TaskTypes.TASK_FULL || task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST) {
       this.lastFullRevID = -1;
     }
 
@@ -324,17 +308,13 @@ public class SQLEncoder
     return encoding;
   }
 
-  /* (non-Javadoc)
-   * @see org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoderInterface#encodeTask(org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task)
-   */
   @Override
   public SQLEncoding[] encodeTask(final Task<Diff> task)
           throws ConfigurationException, UnsupportedEncodingException,
           DecodingException, EncodingException, SQLConsumerException {
 
     // this.task = task;
-    if (task.getTaskType() == TaskTypes.TASK_FULL
-            || task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST) {
+    if (task.getTaskType() == TaskTypes.TASK_FULL || task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST) {
 
       this.lastFullRevID = -1;
     }
@@ -402,22 +382,15 @@ public class SQLEncoder
     return list.toArray(queries);
   }
 
-  /* (non-Javadoc)
-   * @see org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoderInterface#getBinaryTable()
-   */
   @Override
   public String[] getBinaryTable() {
     return new String[]{binaryTableRevision};
   }
 
-  /* (non-Javadoc)
-   * @see org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoderInterface#getTable()
-   */
   @Override
   public String[] getTable() {
     return new String[]{tableRevision};
   }
-
 
   /**
    * Verifies that the decoded diff is identical to the original diff.
@@ -427,8 +400,7 @@ public class SQLEncoder
    * @param originalDiff original diff
    * @throws SQLConsumerException if an error occurs
    */
-  private void verify(final Task<Diff> task, final Diff decodedDiff,
-                      final Diff originalDiff)
+  private void verify(final Task<Diff> task, final Diff decodedDiff, final Diff originalDiff)
           throws SQLConsumerException {
 
     String orig = originalDiff.toString();
@@ -453,12 +425,9 @@ public class SQLEncoder
       if (MODE_DEBUG_OUTPUT_ACTIVATED) {
 
         try {
-          // System.out.println("DEBUG\t" + task.toString());
 
-          WikipediaXMLWriter writer = new WikipediaXMLWriter(
-                  LOGGING_PATH_DIFFTOOL + LOGGING_PATH_DEBUG
-                          + task.getHeader().getArticleName()
-                          + ".dbg");
+          WikipediaXMLWriter writer = new WikipediaXMLWriter(LOGGING_PATH_DIFFTOOL + LOGGING_PATH_DEBUG
+                          + task.getHeader().getArticleName() + ".dbg");
 
           switch (task.getTaskType()) {
             case TASK_FULL:
@@ -501,13 +470,9 @@ public class SQLEncoder
         }
       }
 
-      throw ErrorFactory
-              .createSQLConsumerException(
-                      ErrorKeys.DIFFTOOL_SQLCONSUMER_ENCODING_VERIFICATION_FAILED,
-                      "Redecoding of "
-                              + task.getHeader().getArticleName()
-                              + " failed at revision "
-                              + originalDiff.getRevisionCounter() + ".");
+      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_ENCODING_VERIFICATION_FAILED,
+                      "Redecoding of " + task.getHeader().getArticleName()
+                              + " failed at revision " + originalDiff.getRevisionCounter() + ".");
     }
   }
 

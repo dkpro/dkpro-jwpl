@@ -345,7 +345,9 @@ public class Wikipedia implements WikiConstants {
    * @param title The title of the page for which the discussions should be retrieved.
    * @return The page object for the discussion page.
    * @throws WikiApiException If no page or redirect with this title exists or title could not be properly parsed.
+   * @deprecated Use {@link #getDiscussionArchives(int)} or {@link #getDiscussionArchives(Page)} instead.
    */
+  @Deprecated(since="2.0.0", forRemoval=true)
   public Iterable<Page> getDiscussionArchives(String title) throws WikiApiException  {
     //Retrieve discussion archive pages with page title
     return getDiscussionArchives(getPage(title));

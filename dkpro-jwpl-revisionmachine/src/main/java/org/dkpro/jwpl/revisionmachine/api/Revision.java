@@ -34,8 +34,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
  * The revision text is loaded upon first access (lazy loading).
  * When serializing a Revision, the revisionText will be loaded first.
  */
-public class Revision
-        implements ISizeable, Comparable<Revision>, RevisionDataInterface, Serializable {
+public class Revision implements ISizeable, Comparable<Revision>, RevisionDataInterface, Serializable {
 
   private static final long serialVersionUID = 7955292965697731279L;
 

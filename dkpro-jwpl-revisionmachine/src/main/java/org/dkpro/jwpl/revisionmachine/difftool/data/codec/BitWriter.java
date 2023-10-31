@@ -127,7 +127,7 @@ public class BitWriter {
 
   /**
    * Writes the byte array to the buffer. The currently used buffer will be
-   * filled with zero bits before is is written in front of the byte-array.
+   * filled with zero bits before it is written in front of the byte-array.
    *
    * @param bText byte array
    * @throws EncodingException if the writing fails
@@ -144,7 +144,7 @@ public class BitWriter {
   }
 
   /**
-   * The currently used buffer will be filled with zero bits before is is
+   * The currently used buffer will be filled with zero bits before it is
    * written in the buffer.
    *
    * @throws EncodingException if the writing fails

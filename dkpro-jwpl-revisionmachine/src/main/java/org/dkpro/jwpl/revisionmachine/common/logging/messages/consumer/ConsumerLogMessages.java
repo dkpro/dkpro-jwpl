@@ -26,8 +26,10 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for Consumers.
  * <p>
- * TODO: This file should be replaced with resource files.
+ * @deprecated To be removed without replacement.
  */
+// TODO: This file should be replaced with resource files.
+@Deprecated(since = "1.1", forRemoval = true)
 public final class ConsumerLogMessages {
 
   /**
@@ -127,8 +129,7 @@ public final class ConsumerLogMessages {
   public static void logStatus(final Logger logger, final long startTime,
                                final long sleepingTime, final long workingTime) {
 
-    logger.logMessage(
-            Level.DEBUG,
+    logger.logMessage(Level.DEBUG,
             "Consumer-Status-Report ["
                     + Time.toClock(System.currentTimeMillis() - startTime)
                     + "]" + "\tEFFICIENCY\t "

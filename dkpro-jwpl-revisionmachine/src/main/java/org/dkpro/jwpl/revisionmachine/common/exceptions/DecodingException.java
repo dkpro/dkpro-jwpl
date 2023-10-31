@@ -22,11 +22,10 @@ package org.dkpro.jwpl.revisionmachine.common.exceptions;
  * diff information.
  */
 @SuppressWarnings("serial")
-public class DecodingException
-        extends Exception {
+public class DecodingException extends Exception {
 
   /**
-   * (Constructor) Creates a new DecodingException.
+   * Creates a new DecodingException.
    *
    * @param description message
    */
@@ -35,7 +34,7 @@ public class DecodingException
   }
 
   /**
-   * (Constructor) Creates a new DecodingException.
+   * Creates a new DecodingException.
    *
    * @param e inner exception
    */
@@ -44,7 +43,7 @@ public class DecodingException
   }
 
   /**
-   * (Constructor) Creates a new DecodingException.
+   * Creates a new DecodingException.
    *
    * @param description message
    * @param e           inner exception

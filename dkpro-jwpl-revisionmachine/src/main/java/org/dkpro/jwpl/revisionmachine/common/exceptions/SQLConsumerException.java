@@ -26,7 +26,7 @@ public class SQLConsumerException
         extends Exception {
 
   /**
-   * (Constructor) Creates a new SQLConsumerException.
+   * Creates a new SQLConsumerException.
    *
    * @param description message
    */
@@ -35,7 +35,7 @@ public class SQLConsumerException
   }
 
   /**
-   * (Constructor) Creates a new SQLConsumerException.
+   * Creates a new SQLConsumerException.
    *
    * @param e inner exception
    */
@@ -44,7 +44,7 @@ public class SQLConsumerException
   }
 
   /**
-   * (Constructor) Creates a new SQLConsumerException.
+   * Creates a new SQLConsumerException.
    *
    * @param description message
    * @param e           inner exception

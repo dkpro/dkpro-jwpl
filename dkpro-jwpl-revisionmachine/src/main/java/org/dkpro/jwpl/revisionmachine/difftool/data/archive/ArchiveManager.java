@@ -39,8 +39,7 @@ public class ArchiveManager {
    *
    * @throws ConfigurationException if an error occurs while accessing the configuration
    */
-  public ArchiveManager()
-          throws ConfigurationException {
+  public ArchiveManager() throws ConfigurationException {
 
     ConfigurationManager config = ConfigurationManager.getInstance();
     this.archives = config.getArchiveList();

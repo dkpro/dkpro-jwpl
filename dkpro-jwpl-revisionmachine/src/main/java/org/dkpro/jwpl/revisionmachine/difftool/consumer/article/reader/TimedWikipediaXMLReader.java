@@ -31,8 +31,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformatio
  * This version of the WikipediaXMLReader collects statistical information
  * when it is running. Besides that, it does the same as WikipediaXMLReader.
  */
-public class TimedWikipediaXMLReader
-        extends WikipediaXMLReader {
+public class TimedWikipediaXMLReader extends WikipediaXMLReader {
 
   /**
    * Temporary variable - start position of the article
@@ -71,8 +70,7 @@ public class TimedWikipediaXMLReader
    * @param input Reference to the reader
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public TimedWikipediaXMLReader(final Reader input)
-          throws ConfigurationException {
+  public TimedWikipediaXMLReader(final Reader input) throws ConfigurationException {
 
     super(input);
     this.lastTaskCompleted = true;
@@ -85,8 +83,7 @@ public class TimedWikipediaXMLReader
    * @param articleNameChecker Reference to a name checker
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public TimedWikipediaXMLReader(final Reader input,
-                                 final ArticleFilter articleNameChecker)
+  public TimedWikipediaXMLReader(final Reader input, final ArticleFilter articleNameChecker)
           throws ConfigurationException {
 
     super(input, articleNameChecker);
@@ -102,8 +99,7 @@ public class TimedWikipediaXMLReader
    * @throws ArticleReaderException if an error occurs while parsing the input
    */
   @Override
-  protected boolean readHeader()
-          throws IOException, ArticleReaderException {
+  protected boolean readHeader() throws IOException, ArticleReaderException {
     this.enteringTime = startTime;
     return super.readHeader();
   }
@@ -116,8 +112,7 @@ public class TimedWikipediaXMLReader
    * @throws ArticleReaderException if an error occurs while parsing the input
    */
   @Override
-  protected Revision readRevision()
-          throws IOException, ArticleReaderException {
+  protected Revision readRevision() throws IOException, ArticleReaderException {
 
     Revision rev = super.readRevision();
     this.readRevisionCounter++;
@@ -133,8 +128,7 @@ public class TimedWikipediaXMLReader
    * @throws ArticleReaderException if the parsing of the input fails
    */
   @Override
-  public boolean hasNext()
-          throws ArticleReaderException {
+  public boolean hasNext() throws ArticleReaderException {
 
     if (super.hasNext()) {
 
@@ -157,8 +151,7 @@ public class TimedWikipediaXMLReader
    * @throws ArticleReaderException if the parsing of the input fails
    */
   @Override
-  public Task<Revision> next()
-          throws ArticleReaderException {
+  public Task<Revision> next() throws ArticleReaderException {
     this.startTime = System.currentTimeMillis();
 
     Task<Revision> task = super.next();

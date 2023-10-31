@@ -50,7 +50,6 @@ public interface SQLEncoderInterface {
    */
   String[] getBinaryTable();
 
-
   /**
    * Returns the binary encoding of the given DiffTask.
    * <p>

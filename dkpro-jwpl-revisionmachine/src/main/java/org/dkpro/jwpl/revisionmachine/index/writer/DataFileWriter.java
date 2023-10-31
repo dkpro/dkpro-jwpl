@@ -30,10 +30,9 @@ import org.dkpro.jwpl.revisionmachine.index.indices.ChronoIndex;
 import org.dkpro.jwpl.revisionmachine.index.indices.RevisionIndex;
 
 /**
- * This class writes the output of the index generator to an sql file.
+ * This class writes the output of the index generator to an SQL file.
  */
-public class DataFileWriter
-        implements IndexWriterInterface {
+public class DataFileWriter implements IndexWriterInterface {
 
   /**
    * Reference to the Writer object
@@ -43,65 +42,33 @@ public class DataFileWriter
   private final Writer articleIdxWriter;
 
   /**
-   * (Constructor) Creates a new SQLFileWriter.
+   * Creates a new SQLFileWriter.
    *
-   * @param config Reference to the configuration paramters
+   * @param config Reference to the configuration parameters
    * @throws IOException if an error occurred while writing the file
    */
-  public DataFileWriter(final RevisionAPIConfiguration config)
-          throws IOException {
+  public DataFileWriter(final RevisionAPIConfiguration config) throws IOException {
 
     File path = new File(config.getOutputPath());
     chronoIdxWriter = new BufferedWriter(new FileWriter(new File(path, "chronoIndex.csv")));
     revisionIdxWriter = new BufferedWriter(new FileWriter(new File(path, "revisionIndex.csv")));
     articleIdxWriter = new BufferedWriter(new FileWriter(new File(path, "articleIndex.csv")));
-
-//		writer.write("CREATE TABLE index_articleID_rc_ts ("
-//				+ "ArticleID INTEGER UNSIGNED NOT NULL, "
-//				+ "FullRevisionPKs MEDIUMTEXT NOT NULL, "
-//				+ "RevisionCounter MEDIUMTEXT NOT NULL, "
-//				+ "FirstAppearance BIGINT NOT NULL, "
-//				+ "LastAppearance BIGINT NOT NULL, "
-//				+ "PRIMARY KEY(ArticleID));");
-//
-//		writer.write("CREATE TABLE index_revisionID ("
-//				+ "RevisionID INTEGER UNSIGNED NOT NULL, "
-//				+ "RevisionPK INTEGER UNSIGNED NOT NULL, "
-//				+ "FullRevisionPK INTEGER UNSIGNED NOT NULL, "
-//				+ "PRIMARY KEY(RevisionID));");
-//
-//		writer.write("CREATE TABLE index_chronological ("
-//				+ "ArticleID INTEGER UNSIGNED NOT NULL, "
-//				+ "Mapping MEDIUMTEXT NOT NULL, "
-//				+ "ReverseMapping MEDIUMTEXT NOT NULL, "
-//				+ "PRIMARY KEY(ArticleID));");
-//		writer.write("\r\n");
-//
-//		//disable keys now - reenable at the end of the sql file
-//		writer.write("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;\r\n");
-//		writer.write("ALTER TABLE index_revisionID DISABLE KEYS;\r\n");
-//		writer.write("ALTER TABLE index_chronological DISABLE KEYS;\r\n");
-//
-//		writer.flush();
   }
 
   /**
-   * Writes the buffered finalzed queries to the output.
+   * Writes the buffered finalized queries to the output.
    *
    * @param index Reference to an index
    * @throws IOException if an error occurred while writing the output
    */
-  public void write(final AbstractIndex index)
-          throws IOException {
+  @Override
+  public void write(final AbstractIndex index) throws IOException {
 
     StringBuilder cmd;
 
     while (index.size() > 0) {
-
       System.out.println("Transmit Index [" + index + "]");
-
       cmd = index.remove();
-
       if (index instanceof ArticleIndex) {
         articleIdxWriter.write(cmd.toString());
       } else if (index instanceof ChronoIndex) {
@@ -126,8 +93,8 @@ public class DataFileWriter
    *
    * @throws IOException if an error occurred while closing the file
    */
-  public void close()
-          throws IOException {
+  @Override
+  public void close() throws IOException {
     articleIdxWriter.close();
     chronoIdxWriter.close();
     revisionIdxWriter.close();
@@ -139,6 +106,7 @@ public class DataFileWriter
    *
    * @throws IOException if an error occurred while writing to the file
    */
+  @Override
   public void finish() throws IOException {
     articleIdxWriter.flush();
     chronoIdxWriter.flush();

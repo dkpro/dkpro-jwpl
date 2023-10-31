@@ -36,7 +36,7 @@ public class RevisionAPIConfiguration extends DatabaseConfiguration {
   private String characterSet;
 
   /**
-   * Memory size for the storage of revisions for the chonological iteration
+   * Memory size for the storage of revisions for the chronological iteration
    */
   private long chronoStorageSpace;
 

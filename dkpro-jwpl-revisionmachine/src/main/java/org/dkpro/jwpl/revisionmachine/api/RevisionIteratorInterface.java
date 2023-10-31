@@ -22,14 +22,12 @@ import java.sql.SQLException;
 import java.util.Iterator;
 
 /**
- * The RevisionIteratorInterface extends the generic {@link java.util.Iterator}
- * Interface with a close() function.
+ * Extends the generic {@link java.util.Iterator} interface with a {@link #close()} method.
  * <p>
  * Since the {@link IOException} does not have inner exception in JAVA 1.5 the close
  * method has to throw both exception for both input components.
  */
-public interface RevisionIteratorInterface
-        extends Iterator<Revision> {
+public interface RevisionIteratorInterface extends Iterator<Revision> {
 
   /**
    * Closes the reader or connection to the input component.
@@ -37,6 +35,5 @@ public interface RevisionIteratorInterface
    * @throws IOException  if an error occurs while reading from the input archive.
    * @throws SQLException if an error occurs while accessing the sql database.
    */
-  void close()
-          throws IOException, SQLException;
+  void close() throws IOException, SQLException;
 }

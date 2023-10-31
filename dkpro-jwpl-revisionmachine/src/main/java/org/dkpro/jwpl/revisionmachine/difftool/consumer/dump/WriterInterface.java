@@ -26,7 +26,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * The WriterInterface symbolizes the link to the output writer.
+ * Represents the link to the output writer.
  */
 public interface WriterInterface {
 
@@ -41,8 +41,7 @@ public interface WriterInterface {
    * @throws SQLConsumerException   if problems occurred while writing the output (to the sql
    *                                producer database)
    */
-  void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException;
+  void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException;
 
   /**
    * This method will close the connection to the output.
@@ -51,6 +50,5 @@ public interface WriterInterface {
    * @throws SQLException if problems occurred while closing the connection to the
    *                      database.
    */
-  void close()
-          throws IOException, SQLException;
+  void close() throws IOException, SQLException;
 }

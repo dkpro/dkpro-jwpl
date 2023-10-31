@@ -38,7 +38,7 @@ import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 /**
- * <i>Please be sure, that {@code hashCode(String)} of the provided HashAlgorithm type returns the
+ * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} of the provided HashAlgorithm type returns the
  * same type as KeyType</i>
  *
  * @param <KeyType>       the type of the HashMap's key

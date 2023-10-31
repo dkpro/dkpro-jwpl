@@ -52,26 +52,8 @@ public class DataFileEncoder {
    *
    * @throws ConfigurationException if an error occurred while accessing the configuration
    */
-  public DataFileEncoder()
-          throws ConfigurationException {
+  public DataFileEncoder() throws ConfigurationException {
     this.encoder = new RevisionEncoder();
-
-//		tableRevision = "CREATE TABLE IF NOT EXISTS revisions ("
-//				+ "PrimaryKey INT UNSIGNED NOT NULL AUTO_INCREMENT, "
-//				+ "FullRevisionID INTEGER UNSIGNED NOT NULL, "
-//				+ "RevisionCounter INTEGER UNSIGNED NOT NULL, "
-//				+ "RevisionID INTEGER UNSIGNED NOT NULL, "
-//				+ "ArticleID INTEGER UNSIGNED NOT NULL, "
-//				+ "Timestamp BIGINT NOT NULL, "
-//				+ "Revision MEDIUMTEXT NOT NULL, "
-//				+ "Comment MEDIUMTEXT, "
-//				+ "Minor TINYINT NOT NULL, "
-//				+ "ContributorName TEXT NOT NULL, "
-//				+ "ContributorId INTEGER UNSIGNED, "
-//				+ "ContributorIsRegistered TINYINT NOT NULL, "
-//				+ "PRIMARY KEY(PrimaryKey)"
-//				+ ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
-
   }
 
   /**
@@ -80,28 +62,17 @@ public class DataFileEncoder {
    * @param task Reference to the DiffTask
    * @param diff Diff to encode
    * @return Base 64 encoded Diff
-   * @throws ConfigurationException       if an error occurred while accessing the configuration
    * @throws UnsupportedEncodingException if the character encoding is unsupported
-   * @throws DecodingException            if the decoding failed
    * @throws EncodingException            if the encoding failed
-   * @throws SQLConsumerException         if an error occurred while encoding the diff
    */
   protected String encodeDiff(final Task<Diff> task, final Diff diff)
-          throws ConfigurationException, UnsupportedEncodingException,
-          DecodingException, EncodingException, SQLConsumerException {
+          throws UnsupportedEncodingException, EncodingException {
 
-    RevisionCodecData codecData = diff.getCodecData();
-    String encoding = encoder.encodeDiff(codecData, diff);
-
-    return encoding;
+    return encoder.encodeDiff(diff.getCodecData(), diff);
   }
 
-  /* (non-Javadoc)
-   * @see org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoderInterface#encodeTask(org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task)
-   */
   public List<String> encodeTask(final Task<Diff> task)
-          throws ConfigurationException, UnsupportedEncodingException,
-          DecodingException, EncodingException, SQLConsumerException {
+          throws UnsupportedEncodingException, DecodingException, EncodingException {
 
     // this.task = task;
     if (task.getTaskType() == TaskTypes.TASK_FULL

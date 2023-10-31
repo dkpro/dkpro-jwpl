@@ -28,7 +28,9 @@ public class CommonUtilities {
    *
    * @param s Must not be {@code null}.
    * @return The resulting String of the contents of {@code s}.
+   * @deprecated To be removed without replacement.
    */
+  @Deprecated(since="2.0.0", forRemoval=true)
   public static String getSetContents(Set<?> s) {
     Object[] sortedArray = s.toArray();
     Arrays.sort(sortedArray);

@@ -26,7 +26,7 @@ public class TimeoutException
         extends Exception {
 
   /**
-   * (Constructor) Creates a new TimeoutException.
+   * Creates a new TimeoutException.
    *
    * @param description message
    */
@@ -35,7 +35,7 @@ public class TimeoutException
   }
 
   /**
-   * (Constructor) Creates a new TimeoutException.
+   * Creates a new TimeoutException.
    *
    * @param e inner exception
    */
@@ -44,7 +44,7 @@ public class TimeoutException
   }
 
   /**
-   * (Constructor) Creates a new TimeoutException.
+   * Creates a new TimeoutException.
    *
    * @param description message
    * @param e           inner exception

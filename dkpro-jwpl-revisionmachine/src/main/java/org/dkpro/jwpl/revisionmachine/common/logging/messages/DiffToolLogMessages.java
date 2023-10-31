@@ -24,8 +24,10 @@ import org.slf4j.event.Level;
 /**
  * This class contains the english localized log messages for DiffTool.
  * <p>
- * TODO: This file should be replaced with resource files.
+ * @deprecated To be removed without replacement.
  */
+// TODO: This file should be replaced with resource files.
+@Deprecated(since = "1.1", forRemoval = true)
 public class DiffToolLogMessages {
 
   /**

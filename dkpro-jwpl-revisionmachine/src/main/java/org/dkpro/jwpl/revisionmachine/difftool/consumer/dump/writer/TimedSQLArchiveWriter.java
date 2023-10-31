@@ -35,8 +35,7 @@ import org.slf4j.event.Level;
  * This class writes the output to an archive while collecting statistical
  * information.
  */
-public class TimedSQLArchiveWriter
-        extends SQLArchiveWriter {
+public class TimedSQLArchiveWriter extends SQLArchiveWriter {
 
   /**
    * Reference to the logger
@@ -66,8 +65,7 @@ public class TimedSQLArchiveWriter
           throws IOException, ConfigurationException, LoggingException {
 
     super(outputName, logger);
-    this.outputLogger = LoggingFactory
-            .getLogger(LoggingFactory.NAME_ARTICLE_OUTPUT_LOGGER);
+    this.outputLogger = LoggingFactory.getLogger(LoggingFactory.NAME_ARTICLE_OUTPUT_LOGGER);
   }
 
   /*--------------------------------------------------------------------------*/
@@ -79,8 +77,7 @@ public class TimedSQLArchiveWriter
    * @throws LoggingException       if an error occurred while accessing the logger
    */
   @Override
-  protected void init()
-          throws ConfigurationException, LoggingException {
+  protected void init() throws ConfigurationException, LoggingException {
 
     this.sqlEncoder = new TimedSQLEncoder(logger);
     super.sqlEncoder = this.sqlEncoder;
@@ -136,8 +133,7 @@ public class TimedSQLArchiveWriter
    * @throws IOException if problems occurred while closing the file or process.
    */
   @Override
-  public void close()
-          throws IOException {
+  public void close() throws IOException {
     try {
       super.close();
     } finally {

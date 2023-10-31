@@ -43,8 +43,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 /**
  * This class writes the output to a database.
  */
-public class SQLDatabaseWriter
-        implements WriterInterface {
+public class SQLDatabaseWriter implements WriterInterface {
 
   /**
    * Reference to the database connection
@@ -68,21 +67,16 @@ public class SQLDatabaseWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws LoggingException       if an error occurred while accessing the logger
    */
-  public SQLDatabaseWriter(final Logger logger)
-          throws ConfigurationException, LoggingException {
+  public SQLDatabaseWriter(final Logger logger) throws ConfigurationException, LoggingException {
 
     this.logger = logger;
 
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    String host = (String) config
-            .getConfigParameter(ConfigurationKeys.SQL_HOST);
-    String user = (String) config
-            .getConfigParameter(ConfigurationKeys.SQL_USERNAME);
-    String password = (String) config
-            .getConfigParameter(ConfigurationKeys.SQL_PASSWORD);
-    String sTable = (String) config
-            .getConfigParameter(ConfigurationKeys.SQL_DATABASE);
+    String host = (String) config.getConfigParameter(ConfigurationKeys.SQL_HOST);
+    String user = (String) config.getConfigParameter(ConfigurationKeys.SQL_USERNAME);
+    String password = (String) config.getConfigParameter(ConfigurationKeys.SQL_PASSWORD);
+    String sTable = (String) config.getConfigParameter(ConfigurationKeys.SQL_DATABASE);
 
     try {
       String driverDB = "com.mysql.jdbc.Driver";
@@ -106,8 +100,7 @@ public class SQLDatabaseWriter
    *                      database.
    */
   @Override
-  public void close()
-          throws SQLException {
+  public void close() throws SQLException {
     this.connection.close();
     this.connection = null;
   }
@@ -118,9 +111,7 @@ public class SQLDatabaseWriter
    * @throws ConfigurationException if an error occurred while accessing the configuration
    * @throws LoggingException       if an error occurred while accessing the logger
    */
-  protected void init()
-          throws ConfigurationException, LoggingException {
-
+  protected void init() throws ConfigurationException, LoggingException {
     this.sqlEncoder = new SQLEncoder(logger);
   }
 
@@ -136,8 +127,7 @@ public class SQLDatabaseWriter
    *                                producer database)
    */
   @Override
-  public void process(final Task<Diff> task)
-          throws ConfigurationException, IOException, SQLConsumerException {
+  public void process(final Task<Diff> task) throws ConfigurationException, IOException, SQLConsumerException {
 
     int i = -1;
     SQLEncoding[] queries = null;
@@ -163,20 +153,11 @@ public class SQLDatabaseWriter
       } else {
         q = queries[i].toString();
       }
-
-      throw ErrorFactory.createSQLConsumerException(
-              ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION, q,
-              e);
-
+      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION, q, e);
     } catch (DecodingException e) {
-
-      throw ErrorFactory.createSQLConsumerException(
-              ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION, e);
-
+      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION, e);
     } catch (EncodingException e) {
-
-      throw ErrorFactory.createSQLConsumerException(
-              ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
+      throw ErrorFactory.createSQLConsumerException(ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
     }
   }
 
@@ -185,8 +166,7 @@ public class SQLDatabaseWriter
    *
    * @throws SQLException if an error occurred while accessing the database
    */
-  private void writeHeader()
-          throws SQLException {
+  private void writeHeader() throws SQLException {
 
     Statement query;
     String[] revTableHeaderQueries;

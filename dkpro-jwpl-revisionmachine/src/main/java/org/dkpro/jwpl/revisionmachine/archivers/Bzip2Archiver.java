@@ -17,7 +17,6 @@
  */
 package org.dkpro.jwpl.revisionmachine.archivers;
 
-
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 
@@ -29,7 +28,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-
 
 /**
  * Class provides basic bzip2 compression/decompression functionality
@@ -93,27 +91,24 @@ public class Bzip2Archiver {
    * @return compression stream
    * @throws IOException
    */
-  public OutputStream getCompressionStream(String path)
-          throws IOException {
+  public OutputStream getCompressionStream(String path) throws IOException {
     File archivedFile = new File(path);
 
     archivedFile.createNewFile();
-
     FileOutputStream fos = new FileOutputStream(archivedFile);
 
     BufferedOutputStream bufStr = new BufferedOutputStream(fos);
     // added bzip2 prefix
     fos.write("BZ".getBytes());
 
-    BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr);
-    return bzip2;
+    return new BZip2CompressorOutputStream(bufStr);
   }
 
   /**
    * Creates Stream for decompression
    *
-   * @param path     path to file to uncompress
-   * @param encoding ecoding to use
+   * @param path     path to file to decompress
+   * @param encoding encoding to use
    * @return decompression stream
    * @throws IOException
    */
@@ -128,7 +123,6 @@ public class Bzip2Archiver {
     fileStream.read();
 
     BufferedInputStream bufferedStream = new BufferedInputStream(fileStream);
-
     BZip2CompressorInputStream input = new BZip2CompressorInputStream(bufferedStream);
 
     return new InputStreamReader(input, encoding);

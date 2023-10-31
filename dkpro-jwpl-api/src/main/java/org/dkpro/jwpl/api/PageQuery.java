@@ -278,7 +278,9 @@ public class PageQuery implements WikiConstants {
 
   /**
    * @return A string that shows the current values of the query members.
+   * @deprecated To be removed without replacement.
    */
+  @Deprecated(since="2.0.0", forRemoval=true)
   public String getQueryInfo() {
     StringBuilder sb = new StringBuilder();
 

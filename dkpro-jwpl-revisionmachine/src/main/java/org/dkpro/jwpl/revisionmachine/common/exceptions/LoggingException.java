@@ -21,11 +21,10 @@ package org.dkpro.jwpl.revisionmachine.common.exceptions;
  * LoggingException Describes an exception that occurred during the logging.
  */
 @SuppressWarnings("serial")
-public class LoggingException
-        extends Exception {
+public class LoggingException extends Exception {
 
   /**
-   * (Constructor) Creates a new LoggingException.
+   * Creates a new LoggingException.
    *
    * @param description message
    */
@@ -34,7 +33,7 @@ public class LoggingException
   }
 
   /**
-   * (Constructor) Creates a new LoggingException.
+   * Creates a new LoggingException.
    *
    * @param e inner exception
    */
@@ -43,7 +42,7 @@ public class LoggingException
   }
 
   /**
-   * (Constructor) Creates a new LoggingException.
+   * Creates a new LoggingException.
    *
    * @param description message
    * @param e           inner exception

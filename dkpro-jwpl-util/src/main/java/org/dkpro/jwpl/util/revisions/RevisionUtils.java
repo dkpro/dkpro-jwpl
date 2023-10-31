@@ -33,8 +33,11 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 /**
  * Provides several revision-related utilities that should not be part of the RevisionMachine
  * package because of dependencies to the JWPL API. RevisionMachine should stay independent
- * from the RevisionMachine
+ * of the RevisionMachine
+ *
+ * @deprecated To be removed in future releases.
  */
+@Deprecated(since = "2.0.0", forRemoval = true)
 public class RevisionUtils {
   private RevisionApi revApi;
   private Wikipedia wiki;

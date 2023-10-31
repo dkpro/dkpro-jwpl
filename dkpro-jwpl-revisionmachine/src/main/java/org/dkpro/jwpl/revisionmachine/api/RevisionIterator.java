@@ -85,7 +85,7 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   private int currentRevCounter;
 
   /**
-   * Configuration parameter - indicates the maximum size of a querry.
+   * Configuration parameter - indicates the maximum size of a query.
    */
   private final int MAX_NUMBER_RESULTS;
 
@@ -95,7 +95,7 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   private boolean shouldLoadRevisionText;
 
   /**
-   * The revisionapi for this iterator - used by the Revision object
+   * The revision-api for this iterator - used by the Revision object
    * in case of lazy loading
    */
   private RevisionApi revApi = null;
@@ -109,7 +109,7 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   }
 
   /**
-   * (Constructor) Creates a new RevisionIterator object.
+   * Creates a new RevisionIterator object.
    *
    * @param config     Reference to the configuration object
    * @param startPK    Start index
@@ -117,9 +117,8 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
    * @param connection Reference to the connection
    * @throws WikiApiException if an error occurs
    */
-  public RevisionIterator(final RevisionAPIConfiguration config,
-                          final int startPK, final int endPK, final Connection connection)
-          throws WikiApiException {
+  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
+                          final Connection connection) throws WikiApiException {
 
     if (startPK < 0 || endPK < 0 || startPK > endPK || connection == null) {
       throw new IllegalArgumentException("Illegal argument");
@@ -138,14 +137,13 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   }
 
   /**
-   * (Constructor) Creates a new RevisionIterator object.
+   * Creates a new RevisionIterator object.
    *
    * @param config  Reference to the configuration object
    * @param startPK Start index
    * @throws WikiApiException if an error occurs
    */
-  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK)
-          throws WikiApiException {
+  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK) throws WikiApiException {
 
     this(config);
 
@@ -157,15 +155,14 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   }
 
   /**
-   * (Constructor) Creates a new RevisionIterator object.
+   * Creates a new RevisionIterator object.
    *
    * @param config  Reference to the configuration object
    * @param startPK Start index
    * @param endPK   End index
    * @throws WikiApiException if an error occurs
    */
-  public RevisionIterator(final RevisionAPIConfiguration config,
-                          final int startPK, final int endPK)
+  public RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK)
           throws WikiApiException {
 
     this(config, startPK);
@@ -178,13 +175,12 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   }
 
   /**
-   * (Constructor) Creates a new RevisionIterator object.
+   * Creates a new RevisionIterator object.
    *
    * @param config Reference to the configuration object
    * @throws WikiApiException if an error occurs
    */
-  public RevisionIterator(final RevisionAPIConfiguration config)
-          throws WikiApiException {
+  public RevisionIterator(final RevisionAPIConfiguration config) throws WikiApiException {
 
     this.config = config;
     this.primaryKey = -1;
@@ -199,26 +195,23 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   }
 
   /**
-   * (Constructor) Creates a new RevisionIterator object.
+   * Creates a new RevisionIterator object.
    *
    * @param config                 Reference to the configuration object
    * @param shouldLoadRevisionText should load revision text
    * @throws WikiApiException if an error occurs
    */
-  public RevisionIterator(final RevisionAPIConfiguration config,
-                          boolean shouldLoadRevisionText)
+  public RevisionIterator(final RevisionAPIConfiguration config, boolean shouldLoadRevisionText)
           throws WikiApiException {
     this(config);
     this.shouldLoadRevisionText = shouldLoadRevisionText;
   }
 
-  public RevisionIterator(final DatabaseConfiguration db)
-          throws WikiApiException {
+  public RevisionIterator(final DatabaseConfiguration db) throws WikiApiException {
     this(getRevisionAPIConfig(db));
   }
 
-  private static RevisionAPIConfiguration getRevisionAPIConfig(
-          final DatabaseConfiguration db) {
+  private static RevisionAPIConfiguration getRevisionAPIConfig(final DatabaseConfiguration db) {
     RevisionAPIConfiguration revAPIConfig = new RevisionAPIConfiguration();
 
     revAPIConfig.setHost(db.getHost());
@@ -239,8 +232,7 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
    * @return {@code true}, if the result set has another element {@code false}, otherwise
    * @throws SQLException if an error occurs while accessing the database.
    */
-  private boolean query()
-          throws SQLException {
+  private boolean query() throws SQLException {
     String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
             + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered "
             + "FROM revisions";
@@ -409,19 +401,17 @@ public class RevisionIterator extends AbstractRevisionService implements Revisio
   /**
    * This method is unsupported and will result in a {@link UnsupportedOperationException}.
    *
-   * @deprecated
+   * @deprecated Don't call this method as it will result in an exception at runtime.
    */
   @Override
-  @Deprecated
+  @Deprecated(since = "1.1")
   public void remove() {
     throw new UnsupportedOperationException();
   }
 
-
+  @Deprecated(since = "1.1", forRemoval = true)
   // TODO This should go into a demo or test class separated from the code here...
-  @Deprecated
-  public static void main(final String[] args)
-          throws Exception {
+  public static void main(final String[] args) throws Exception {
 
     RevisionAPIConfiguration config = new RevisionAPIConfiguration();
     config.setHost("localhost");

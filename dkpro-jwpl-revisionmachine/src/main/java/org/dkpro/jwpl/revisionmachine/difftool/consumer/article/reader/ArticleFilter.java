@@ -66,10 +66,8 @@ public class ArticleFilter {
    * @throws ConfigurationException
    */
   @SuppressWarnings("unchecked")
-  public ArticleFilter()
-          throws ConfigurationException {
-    this((Set<Integer>) config
-            .getConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP));
+  public ArticleFilter() throws ConfigurationException {
+    this((Set<Integer>) config.getConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP));
   }
 
   /**
@@ -105,8 +103,8 @@ public class ArticleFilter {
   private void initializePrefixes() {
     if (namespaceMap == null) {
       // TODO use logger
-      System.err
-              .println("Cannot use whitespace filter without initializing the namespace-prefix map for the current Wikipedia language version. DISABLING FILTER.");
+      System.err.println("Cannot use whitespace filter without initializing the namespace-prefix map for the " +
+              "current Wikipedia language version. DISABLING FILTER.");
     } else {
       prefixesToAllow = new HashSet<>();
       prefixesToReject = new HashSet<>();

@@ -26,6 +26,10 @@ import org.hibernate.Session;
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 
+/**
+ * @deprecated To be removed without replacement.
+ */
+@Deprecated(since="2.0.0", forRemoval=true)
 public class HibernateUtilities implements WikiConstants {
 
   private final DatabaseConfiguration dbConfig;

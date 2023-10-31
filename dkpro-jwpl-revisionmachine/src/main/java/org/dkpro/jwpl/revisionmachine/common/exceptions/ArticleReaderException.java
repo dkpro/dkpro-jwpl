@@ -22,11 +22,10 @@ package org.dkpro.jwpl.revisionmachine.common.exceptions;
  * articles.
  */
 @SuppressWarnings("serial")
-public class ArticleReaderException
-        extends Exception {
+public class ArticleReaderException extends Exception {
 
   /**
-   * (Constructor) Creates a new ArticleReaderException.
+   * Creates a new ArticleReaderException.
    *
    * @param description message
    */
@@ -35,7 +34,7 @@ public class ArticleReaderException
   }
 
   /**
-   * (Constructor) Creates a new ArticleReaderException.
+   * Creates a new ArticleReaderException.
    *
    * @param e inner exception
    */
@@ -44,7 +43,7 @@ public class ArticleReaderException
   }
 
   /**
-   * (Constructor) Creates a new ArticleReaderException.
+   * Creates a new ArticleReaderException.
    *
    * @param description message
    * @param e           inner exception

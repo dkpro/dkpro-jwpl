@@ -89,8 +89,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @throws WikiApiException if an error occurs
    */
   public Set<Integer> getArticleIDsWithNumberOfRevisions(final int minNumberRevisions,
-                                                         int maxNumberRevisions)
-          throws WikiApiException {
+                                                         int maxNumberRevisions) throws WikiApiException {
 
     try {
       if (minNumberRevisions < 0) {
@@ -161,9 +160,10 @@ public class RevisionApi extends AbstractRevisionService {
    * @param articleID ID of the article
    * @return PK of the first revision
    * @throws WikiApiException if an error occurs
+   * @deprecated To be removed without replacement.
    */
-  public int getFirstRevisionPK(final int articleID)
-          throws WikiApiException {
+  @Deprecated(since="2.0.0", forRemoval=true)
+  public int getFirstRevisionPK(final int articleID) throws WikiApiException {
 
     try {
       if (articleID < 1) {
@@ -215,8 +215,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return number of revisions
    * @throws WikiApiException if an error occurs
    */
-  public int getNumberOfRevisions(final int articleID)
-          throws WikiApiException {
+  public int getNumberOfRevisions(final int articleID) throws WikiApiException {
 
     try {
       if (articleID < 1) {
@@ -327,8 +326,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return List of revisions by each corresponding {@link Timestamp}.
    * @throws WikiApiException if an error occurs
    */
-  public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId)
-          throws WikiApiException {
+  public List<Timestamp> getRevisionTimestampsBeforeRevision(final int revisionId) throws WikiApiException {
     List<Timestamp> timestamps = new LinkedList<>();
 
     int articleID = getPageIdForRevisionId(revisionId); // TODO do this in the SQL query
@@ -384,11 +382,10 @@ public class RevisionApi extends AbstractRevisionService {
    * revisions-table.
    *
    * @param articleID ID of the article
-   * @return collection of timestampf of all revisions
+   * @return collection of timestampp of all revisions
    * @throws WikiApiException if an error occurs
    */
-  public List<Timestamp> getRevisionTimestamps(final int articleID)
-          throws WikiApiException {
+  public List<Timestamp> getRevisionTimestamps(final int articleID) throws WikiApiException {
 
     List<Timestamp> timestamps = new LinkedList<>();
 
@@ -451,8 +448,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return the number of unique contributors to the article
    * @throws WikiApiException if an error occurs
    */
-  public int getNumberOfUniqueContributors(final int articleID)
-          throws WikiApiException {
+  public int getNumberOfUniqueContributors(final int articleID) throws WikiApiException {
     return getNumberOfUniqueContributors(articleID, false);
   }
 
@@ -470,8 +466,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return the number of unique contributors to the article
    * @throws WikiApiException if an error occurs
    */
-  public int getNumberOfUniqueContributors(final int articleID, boolean onlyRegistered)
-          throws WikiApiException {
+  public int getNumberOfUniqueContributors(final int articleID, boolean onlyRegistered) throws WikiApiException {
 
     try {
       if (articleID < 1) {
@@ -539,8 +534,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return the number of unique contributors to the article
    * @throws WikiApiException if an error occurs
    */
-  public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID)
-          throws WikiApiException {
+  public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID) throws WikiApiException {
     return getNumberOfUniqueContributorsBeforeRevision(revisionID, false);
   }
 
@@ -556,8 +550,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return the number of unique contributors to the article
    * @throws WikiApiException if an error occurs
    */
-  public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID,
-                                                         boolean onlyRegistered)
+  public int getNumberOfUniqueContributorsBeforeRevision(final int revisionID, boolean onlyRegistered)
           throws WikiApiException {
 
     try {
@@ -629,8 +622,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return map of Timestamp-DiffPart-Collection pairs
    * @throws WikiApiException if an error occurs
    */
-  public Map<String, Timestamp> getUserContributionMap(final int articleID)
-          throws WikiApiException {
+  public Map<String, Timestamp> getUserContributionMap(final int articleID) throws WikiApiException {
     return getUserContributionMap(articleID, null);
   }
 
@@ -672,10 +664,8 @@ public class RevisionApi extends AbstractRevisionService {
    * @return map of Timestamp-DiffPart-Collection pairs
    * @throws WikiApiException if an error occurs
    */
-  @SuppressWarnings("unused")
   public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter,
-                                                       boolean onlyRegistered)
-          throws WikiApiException {
+                                                       boolean onlyRegistered) throws WikiApiException {
 
     Map<String, Timestamp> authorTSMap = new HashMap<>();
 
@@ -767,8 +757,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return collection of user groups
    * @throws WikiApiException if an error occurs
    */
-  public List<String> getUserGroups(final int userID)
-          throws WikiApiException {
+  public List<String> getUserGroups(final int userID) throws WikiApiException {
 
     List<String> groups = new LinkedList<>();
 
@@ -786,8 +775,7 @@ public class RevisionApi extends AbstractRevisionService {
       ResultSet result = null;
 
       try {
-        statement = connection.prepareStatement("SELECT ug_group "
-                + "FROM user_groups WHERE ug_user=?");
+        statement = connection.prepareStatement("SELECT ug_group FROM user_groups WHERE ug_user=?");
         statement.setInt(1, userID);
         result = statement.executeQuery();
 
@@ -826,8 +814,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return Map of revision ids
    * @throws WikiApiException if an error occurs
    */
-  public Map<Integer, List<Integer>> getUserRevisionIds(int userid)
-          throws WikiApiException {
+  public Map<Integer, List<Integer>> getUserRevisionIds(int userid) throws WikiApiException {
 
     Map<Integer, List<Integer>> revIds = new HashMap<>();
 
@@ -902,8 +889,7 @@ public class RevisionApi extends AbstractRevisionService {
       }
 
       if (!indexExists("revisions", "usernames")) {
-        System.err
-                .println("You should create and index for the field ContributorName: create index usernames ON revisions(ContributorName(50));");
+        System.err.println("You should create and index for the field ContributorName: create index usernames ON revisions(ContributorName(50));");
       }
 
       PreparedStatement statement = null;
@@ -962,8 +948,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return map of Timestamp-DiffPart-Collection pairs
    * @throws WikiApiException if an error occurs
    */
-  public Map<Timestamp, Collection<DiffPart>> getTimestampToRevisionMap(final int articleID)
-          throws WikiApiException {
+  public Map<Timestamp, Collection<DiffPart>> getTimestampToRevisionMap(final int articleID) throws WikiApiException {
 
     Map<Timestamp, Collection<DiffPart>> tsDiffPartsMap = new HashMap<>();
 
@@ -1040,8 +1025,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return first date of appearance or the article does not exist
    * @throws WikiApiException if an error occurs
    */
-  public Timestamp getFirstDateOfAppearance(final int articleID)
-          throws WikiApiException {
+  public Timestamp getFirstDateOfAppearance(final int articleID) throws WikiApiException {
     return getDateOfAppearance(articleID, "FirstAppearance");
   }
 
@@ -1052,8 +1036,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return last date of appearance or the article does not exist
    * @throws WikiApiException if an error occurs
    */
-  public Timestamp getLastDateOfAppearance(final int articleID)
-          throws WikiApiException {
+  public Timestamp getLastDateOfAppearance(final int articleID) throws WikiApiException {
     return getDateOfAppearance(articleID, "LastAppearance");
   }
 
@@ -1066,8 +1049,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return first date of appearance or the article does not exist
    * @throws WikiApiException if an error occurs
    */
-  private Timestamp getDateOfAppearance(final int articleID, final String firstOrLast)
-          throws WikiApiException {
+  private Timestamp getDateOfAppearance(final int articleID, final String firstOrLast) throws WikiApiException {
 
     try {
       if (articleID < 1) {
@@ -1117,8 +1099,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return Revision
    * @throws WikiApiException if an error occurs or the revision does not exists.
    */
-  public Revision getRevision(final int revisionID)
-          throws WikiApiException {
+  public Revision getRevision(final int revisionID) throws WikiApiException {
 
     try {
       if (revisionID < 1) {
@@ -1171,8 +1152,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return the page if for the given revision
    * @throws WikiApiException if an error occurs or the revision does not exists.
    */
-  public int getPageIdForRevisionId(final int revisionID)
-          throws WikiApiException {
+  public int getPageIdForRevisionId(final int revisionID) throws WikiApiException {
 
     try {
       if (revisionID < 1) {
@@ -1225,8 +1205,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return Revision
    * @throws WikiApiException if an error occurs or the revision does not exists.
    */
-  public Revision getRevision(final int articleID, final int revisionCounter)
-          throws WikiApiException {
+  public Revision getRevision(final int articleID, final int revisionCounter) throws WikiApiException {
 
     try {
       if (articleID < 1 || revisionCounter < 1) {
@@ -1282,8 +1261,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return Revision
    * @throws WikiApiException if an error occurs or the revision does not exists.
    */
-  public Revision getRevision(final int articleID, final Timestamp time)
-          throws WikiApiException {
+  public Revision getRevision(final int articleID, final Timestamp time) throws WikiApiException {
 
     try {
 
@@ -1298,8 +1276,7 @@ public class RevisionApi extends AbstractRevisionService {
 
       int firstPK, lastPK;
       try {
-        statement = this.connection
-                .prepareStatement("SELECT FullRevisionPKs, RevisionCounter,"
+        statement = this.connection.prepareStatement("SELECT FullRevisionPKs, RevisionCounter,"
                         + " FirstAppearance " + "FROM index_articleID_rc_ts "
                         + "WHERE ArticleID=? LIMIT 1");
         statement.setInt(1, articleID);
@@ -1321,17 +1298,13 @@ public class RevisionApi extends AbstractRevisionService {
           firstPK = Integer.parseInt(fullRevisions.substring(0, index));
 
           index = revisionCounters.lastIndexOf(' ') + 1;
-          lastPK = firstPK
-                  + Integer.parseInt(revisionCounters.substring(index,
-                  revisionCounters.length()));
+          lastPK = firstPK + Integer.parseInt(revisionCounters.substring(index, revisionCounters.length()));
 
           if (time.getTime() < firstDate) {
-            throw new WikiPageNotFoundException("No revision before the "
-                    + "specified date [" + time + "]");
+            throw new WikiPageNotFoundException("No revision before the specified date [" + time + "]");
           }
         } else {
-          throw new WikiPageNotFoundException("The article with the ID " + articleID
-                  + " was not found.");
+          throw new WikiPageNotFoundException("The article with the ID " + articleID + " was not found.");
         }
       } finally {
         if (statement != null) {
@@ -1342,8 +1315,8 @@ public class RevisionApi extends AbstractRevisionService {
         }
       }
       try {
-        statement = this.connection
-                .prepareStatement("SELECT RevisionCounter FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ? AND Timestamp <= ? ORDER BY Timestamp DESC LIMIT 1");
+        statement = this.connection.prepareStatement(
+                "SELECT RevisionCounter FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ? AND Timestamp <= ? ORDER BY Timestamp DESC LIMIT 1");
         statement.setInt(1, firstPK);
         statement.setInt(2, lastPK);
         statement.setLong(3, time.getTime());
@@ -1351,11 +1324,9 @@ public class RevisionApi extends AbstractRevisionService {
 
         if (result.next()) {
           int revisionCount = result.getInt(1);
-          return getReferencedRevision(articleID, revisionCount, fullRevisions,
-                  revisionCounters);
+          return getReferencedRevision(articleID, revisionCount, fullRevisions, revisionCounters);
         } else {
-          throw new WikiPageNotFoundException(
-                  "The revision with the specified timestamp was not found.");
+          throw new WikiPageNotFoundException("The revision with the specified timestamp was not found.");
         }
       } finally {
         if (statement != null) {
@@ -1383,10 +1354,9 @@ public class RevisionApi extends AbstractRevisionService {
    * @param articleID       ID of the article
    * @param revisionCounter chronological position
    * @return position in the chronological order
-   * @throws SQLException if an error occurs while accesing the database.
+   * @throws SQLException if an error occurs while accessing the database.
    */
-  protected int checkMapping(final int articleID, final int revisionCounter)
-          throws SQLException {
+  protected int checkMapping(final int articleID, final int revisionCounter) throws SQLException {
 
     PreparedStatement statement = null;
     ResultSet result = null;
@@ -1422,20 +1392,19 @@ public class RevisionApi extends AbstractRevisionService {
    * @param articleID       ID of the article
    * @param revisionCounter chronological position
    * @return position in the chronological order
-   * @throws SQLException if an error occurs while accesing the database.
+   * @throws SQLException if an error occurs while accessing the database.
    * @deprecated this method should only be used for internal processes
    */
   @Deprecated
-  public int checkReverseMapping(final int articleID, final int revisionCounter)
-          throws SQLException {
+  public int checkReverseMapping(final int articleID, final int revisionCounter) throws SQLException {
 
     PreparedStatement statement = null;
     ResultSet result = null;
 
     // Check for the correct revisionCounter mapping
     try {
-      statement = this.connection
-              .prepareStatement("SELECT ReverseMapping FROM index_chronological WHERE ArticleID=? LIMIT 1");
+      statement = this.connection.prepareStatement(
+              "SELECT ReverseMapping FROM index_chronological WHERE ArticleID=? LIMIT 1");
       statement.setInt(1, articleID);
       result = statement.executeQuery();
 
@@ -1512,9 +1481,8 @@ public class RevisionApi extends AbstractRevisionService {
    * @return Revision
    * @throws WikiApiException if an error occurs
    */
-  private Revision getReferencedRevision(final int articleID, final int revisionIndex,
-                                         final String fullRevisions, final String revCounters)
-          throws WikiApiException {
+  private Revision getReferencedRevision(final int articleID, final int revisionIndex, final String fullRevisions,
+                                         final String revCounters) throws WikiApiException {
 
     try {
       int fullRevPK;
@@ -1596,8 +1564,7 @@ public class RevisionApi extends AbstractRevisionService {
           limit = (result.getInt(2) - fullRevPK) + 1;
 
         } else {
-          throw new WikiPageNotFoundException("The revision with the ID "
-                  + revision.getRevisionID() + " was not found.");
+          throw new WikiPageNotFoundException("The revision with ID " + revision.getRevisionID() + " was not found.");
         }
       } finally {
         if (statement != null) {
@@ -1609,8 +1576,8 @@ public class RevisionApi extends AbstractRevisionService {
       }
 
       try {
-        statement = this.connection
-                .prepareStatement("SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+        statement = this.connection.prepareStatement(
+                "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
                         + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit);
         statement.setInt(1, fullRevPK);
         result = statement.executeQuery();
@@ -1732,8 +1699,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return {@code true} if index exists, false else
    * @throws SQLException if an error occurs connecting to or querying the db
    */
-  private boolean indexExists(String table)
-          throws SQLException {
+  private boolean indexExists(String table) throws SQLException {
     return indexExists(table, null);
   }
 
@@ -1745,8 +1711,7 @@ public class RevisionApi extends AbstractRevisionService {
    * @return {@code true} if index exists, false else
    * @throws SQLException if an error occurs connecting to or querying the db
    */
-  private boolean indexExists(String table, String indexName)
-          throws SQLException {
+  private boolean indexExists(String table, String indexName) throws SQLException {
 
     try (PreparedStatement statement = this.connection.prepareStatement("SHOW INDEX FROM " + table
             + " WHERE Key_name!= 'PRIMARY'"); ResultSet result = statement.executeQuery()) {
@@ -1785,16 +1750,16 @@ public class RevisionApi extends AbstractRevisionService {
   }
 
   /**
-   * Checks if a specific table exists
+   * Checks if a specific table exists.
    *
    * @param table the table to check
    * @return {@code true} if table exists, false else
    * @throws SQLException if an error occurs connecting to or querying the db
    */
-  private boolean tableExists(String table)
-          throws SQLException {
+  private boolean tableExists(String table) throws SQLException {
 
-    try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;"); ResultSet result = statement.executeQuery()) {
+    try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;");
+         ResultSet result = statement.executeQuery()) {
 
       if (result == null) {
         return false;
@@ -1811,6 +1776,7 @@ public class RevisionApi extends AbstractRevisionService {
 
   }
 
+  @Deprecated(since = "1.1", forRemoval = true)
   public RevisionAPIConfiguration getRevisionApiConfiguration() {
     return this.config;
   }
@@ -1819,9 +1785,9 @@ public class RevisionApi extends AbstractRevisionService {
     return this.connection;
   }
 
-  @Deprecated // This should go into a demo or test class separated from the code here...
-  public static void main(String[] args)
-          throws Exception {
+  @Deprecated(since = "1.1", forRemoval = true)
+  // TODO This should go into a demo or test class separated from the code here...
+  public static void main(String[] args) throws Exception {
 
     RevisionAPIConfiguration config = new RevisionAPIConfiguration();
 

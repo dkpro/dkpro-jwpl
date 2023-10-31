@@ -175,7 +175,7 @@ public class WikipediaInfo {
   }
 
   /**
-   * Get various graph parameters like diameter, average out-degree etc of the categroy graph.
+   * Get various graph parameters like diameter, average out-degree etc. of the category graph.
    *
    * @param catGraph The category graph.
    */

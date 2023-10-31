@@ -32,9 +32,6 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
  * ChronoIterator Iterates articles in chronological order.
- * <p>
- * <p>
- * 1
  */
 public class ChronoIterator {
 

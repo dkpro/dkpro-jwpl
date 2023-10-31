@@ -50,23 +50,21 @@ public class RevisionDecoder {
   private final String WIKIPEDIA_ENCODING;
 
   /**
-   * (Constructor) Creates a new RevisionDecoder object.
+   * Creates a new RevisionDecoder object.
    *
    * @throws ConfigurationException if an error occurs while accessing the configuration
    *                                parameters
    */
-  private RevisionDecoder()
-          throws ConfigurationException {
+  private RevisionDecoder() throws ConfigurationException {
 
     // Load config parameters
     ConfigurationManager config = ConfigurationManager.getInstance();
 
-    WIKIPEDIA_ENCODING = (String) config
-            .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
+    WIKIPEDIA_ENCODING = (String) config.getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
   }
 
   /**
-   * (Constructor) Creates a new RevisionDecoder object.
+   * Creates a new RevisionDecoder object.
    *
    * @param wikipediaEncoding Character encoding
    */
@@ -76,7 +74,7 @@ public class RevisionDecoder {
   }
 
   /**
-   * (Constructor) Creates a new RevisionDecoder object.
+   * Creates a new RevisionDecoder object.
    *
    * @param input binary encoded diff
    * @throws ConfigurationException if an error occurs while accessing the configuration
@@ -100,8 +98,7 @@ public class RevisionDecoder {
    * @throws UnsupportedEncodingException if the character encoding is unsupported
    * @throws DecodingException            if the decoding failed
    */
-  public Diff decode()
-          throws UnsupportedEncodingException, DecodingException {
+  public Diff decode() throws UnsupportedEncodingException, DecodingException {
 
     int header = r.read(3);
     if (DiffAction.parse(header) != DiffAction.DECODER_DATA) {
