@@ -27,42 +27,46 @@ import org.dkpro.jwpl.api.exception.WikiInitializationException;
 /**
  * Tutorial 1c
  * <p>
- * Get the text of a wikipedia article.
- * The text will be formatted with MediaWiki markup.
+ * Get the text of a wikipedia article. The text will be formatted with MediaWiki markup.
  * <p>
  * Handle exceptions.
  */
-public class T1c_HelloWorld implements WikiConstants {
+public class T1c_HelloWorld
+    implements WikiConstants
+{
 
-  public static void main(String[] args) {
+    public static void main(String[] args)
+    {
 
-    // configure the database connection parameters
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setHost("SERVER_URL");
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.german);
+        // configure the database connection parameters
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setHost("SERVER_URL");
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.german);
 
-    // Create a new German wikipedia.
-    Wikipedia wiki = null;
-    try {
-      wiki = new Wikipedia(dbConfig);
-    } catch (WikiInitializationException e1) {
-      System.out.println("Could not initialize Wikipedia.");
-      e1.printStackTrace();
-      System.exit(1);
+        // Create a new German wikipedia.
+        Wikipedia wiki = null;
+        try {
+            wiki = new Wikipedia(dbConfig);
+        }
+        catch (WikiInitializationException e1) {
+            System.out.println("Could not initialize Wikipedia.");
+            e1.printStackTrace();
+            System.exit(1);
+        }
+
+        // Get the page with title "Hello world".
+        String title = "Hello world";
+        try {
+            Page page = wiki.getPage(title);
+            System.out.println(page.getText());
+        }
+        catch (WikiApiException e) {
+            System.out.println("Page " + title + " does not exist");
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
-
-    // Get the page with title "Hello world".
-    String title = "Hello world";
-    try {
-      Page page = wiki.getPage(title);
-      System.out.println(page.getText());
-    } catch (WikiApiException e) {
-      System.out.println("Page " + title + " does not exist");
-      e.printStackTrace();
-      System.exit(1);
-    }
-  }
 }

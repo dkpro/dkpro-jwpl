@@ -23,29 +23,27 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 
 /**
- * This is a little demo, to show how the parsedpage and parsedpage.parser package
- * works.
+ * This is a little demo, to show how the parsedpage and parsedpage.parser package works.
  */
 
-public class T3_LinkContexts {
+public class T3_LinkContexts
+{
 
-  public static void main(String[] args) {
+    public static void main(String[] args)
+    {
 
-    // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
-    String documentText = TestFile.getFileText();
+        // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
+        String documentText = TestFile.getFileText();
 
-    // get a ParsedPage object
-    MediaWikiParserFactory pf = new MediaWikiParserFactory();
-    MediaWikiParser parser = pf.createParser();
-    ParsedPage pp = parser.parse(documentText);
+        // get a ParsedPage object
+        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        MediaWikiParser parser = pf.createParser();
+        ParsedPage pp = parser.parse(documentText);
 
-    // Link Context (return 1 token left, 2 token right of the link)
-    for (Link link : pp.getLinks()) {
-      System.out.println(
-              link.getContext(1, 0) + "<" +
-                      link.getText().toString().toUpperCase() + ">" +
-                      link.getContext(0, 2)
-      );
+        // Link Context (return 1 token left, 2 token right of the link)
+        for (Link link : pp.getLinks()) {
+            System.out.println(link.getContext(1, 0) + "<" + link.getText().toString().toUpperCase()
+                    + ">" + link.getContext(0, 2));
+        }
     }
-  }
 }

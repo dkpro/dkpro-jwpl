@@ -26,23 +26,25 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
  * This class shows how to use the HtmlTools.class...<br>
  * Mainly, you can create an HtmlFile of a {@link ParsedPage}.
  */
-public class T7_HtmlFileDemo {
+public class T7_HtmlFileDemo
+{
 
-  public static void main(String[] argv) {
+    public static void main(String[] argv)
+    {
 
-    // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
-    String documentText = TestFile.getFileText();
+        // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
+        String documentText = TestFile.getFileText();
 
-    // set up an individually parametrized MediaWikiParser
-    MediaWikiParserFactory pf = new MediaWikiParserFactory();
-    pf.getImageIdentifers().add("Image");
-    MediaWikiParser parser = pf.createParser();
+        // set up an individually parametrized MediaWikiParser
+        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        pf.getImageIdentifers().add("Image");
+        MediaWikiParser parser = pf.createParser();
 
-    ParsedPage pp = parser.parse(documentText);
+        ParsedPage pp = parser.parse(documentText);
 
-    String outFileName = "htmlFileDemo.html";
-    HtmlWriter.writeFile(outFileName, "UTF8", HtmlWriter.parsedPageToHtml(pp));
+        String outFileName = "htmlFileDemo.html";
+        HtmlWriter.writeFile(outFileName, "UTF8", HtmlWriter.parsedPageToHtml(pp));
 
-    System.out.println("Writing output to file: " + outFileName);
-  }
+        System.out.println("Writing output to file: " + outFileName);
+    }
 }

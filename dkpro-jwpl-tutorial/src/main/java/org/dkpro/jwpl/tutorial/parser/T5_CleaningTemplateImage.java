@@ -31,38 +31,41 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
  * Shows how to clean an article text from "TEMPLATE" and "Image" elements
  */
 
-public class T5_CleaningTemplateImage {
+public class T5_CleaningTemplateImage
+{
 
-  public static void main(String[] args) throws WikiApiException {
+    public static void main(String[] args) throws WikiApiException
+    {
 
-    //db connection settings
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setHost("HOST");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.english);
+        // db connection settings
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setHost("HOST");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.english);
 
-    //initialize a wiki
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // initialize a wiki
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    //get the page 'Dog'
-    Page p = wiki.getPage("Dog");
+        // get the page 'Dog'
+        Page p = wiki.getPage("Dog");
 
-    //get a ParsedPage object
-    MediaWikiParserFactory pf = new MediaWikiParserFactory();
-    pf.setTemplateParserClass(FlushTemplates.class); // Filtering TEMPLATE-Elements
+        // get a ParsedPage object
+        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        pf.setTemplateParserClass(FlushTemplates.class); // Filtering TEMPLATE-Elements
 
-    String IMAGE = "Image"; // Replace it with the image template name in your Wiki language edition,
-    // e.g. "Image" in English
+        String IMAGE = "Image"; // Replace it with the image template name in your Wiki language
+                                // edition,
+        // e.g. "Image" in English
 
-    // filtering Image-Elements
-    pf.getImageIdentifers().add(IMAGE);
+        // filtering Image-Elements
+        pf.getImageIdentifers().add(IMAGE);
 
-    // parse page text
-    MediaWikiParser parser = pf.createParser();
-    ParsedPage pp = parser.parse(p.getText());
+        // parse page text
+        MediaWikiParser parser = pf.createParser();
+        ParsedPage pp = parser.parse(p.getText());
 
-    System.out.println(pp.getText());
-  }
+        System.out.println(pp.getText());
+    }
 }

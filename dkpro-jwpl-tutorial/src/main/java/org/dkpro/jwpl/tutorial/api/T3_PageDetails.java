@@ -31,63 +31,67 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
  * <p>
  * Even more things to do with a Wikipedia page.
  */
-public class T3_PageDetails implements WikiConstants {
+public class T3_PageDetails
+    implements WikiConstants
+{
 
-  public static void main(String[] args) throws WikiApiException {
+    public static void main(String[] args) throws WikiApiException
+    {
 
-    // configure the database connection parameters
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setHost("SERVER_URL");
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.german);
+        // configure the database connection parameters
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setHost("SERVER_URL");
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.german);
 
-    // Create a new German wikipedia.
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // Create a new German wikipedia.
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    String title = "Hello world";
-    Page page;
-    try {
-      page = wiki.getPage(title);
-    } catch (WikiPageNotFoundException e) {
-      throw new WikiApiException("Page " + title + " does not exist");
+        String title = "Hello world";
+        Page page;
+        try {
+            page = wiki.getPage(title);
+        }
+        catch (WikiPageNotFoundException e) {
+            throw new WikiApiException("Page " + title + " does not exist");
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        // the title of the page
+        sb.append("Queried string : " + title + LF);
+        sb.append("Title          : " + page.getTitle() + LF);
+        sb.append(LF);
+
+        // output the page's redirects
+        sb.append("Redirects" + LF);
+        for (String redirect : page.getRedirects()) {
+            sb.append("  " + new Title(redirect).getPlainTitle() + LF);
+        }
+        sb.append(LF);
+
+        // output the page's categories
+        sb.append("Categories" + LF);
+        for (Category category : page.getCategories()) {
+            sb.append("  " + category.getTitle() + LF);
+        }
+        sb.append(LF);
+
+        // output the ingoing links
+        sb.append("In-Links" + LF);
+        for (Page inLinkPage : page.getInlinks()) {
+            sb.append("  " + inLinkPage.getTitle() + LF);
+        }
+        sb.append(LF);
+
+        // output the outgoing links
+        sb.append("Out-Links" + LF);
+        for (Page outLinkPage : page.getOutlinks()) {
+            sb.append("  " + outLinkPage.getTitle() + LF);
+        }
+
+        System.out.println(sb);
     }
-
-    StringBuilder sb = new StringBuilder();
-
-    // the title of the page
-    sb.append("Queried string : " + title + LF);
-    sb.append("Title          : " + page.getTitle() + LF);
-    sb.append(LF);
-
-    // output the page's redirects
-    sb.append("Redirects" + LF);
-    for (String redirect : page.getRedirects()) {
-      sb.append("  " + new Title(redirect).getPlainTitle() + LF);
-    }
-    sb.append(LF);
-
-    // output the page's categories
-    sb.append("Categories" + LF);
-    for (Category category : page.getCategories()) {
-      sb.append("  " + category.getTitle() + LF);
-    }
-    sb.append(LF);
-
-    // output the ingoing links
-    sb.append("In-Links" + LF);
-    for (Page inLinkPage : page.getInlinks()) {
-      sb.append("  " + inLinkPage.getTitle() + LF);
-    }
-    sb.append(LF);
-
-    // output the outgoing links
-    sb.append("Out-Links" + LF);
-    for (Page outLinkPage : page.getOutlinks()) {
-      sb.append("  " + outLinkPage.getTitle() + LF);
-    }
-
-    System.out.println(sb);
-  }
 }

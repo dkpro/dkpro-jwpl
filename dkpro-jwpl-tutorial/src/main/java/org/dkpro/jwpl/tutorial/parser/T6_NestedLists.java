@@ -32,63 +32,69 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
  * Displays all nested lists of a page.
  */
 
-public class T6_NestedLists {
+public class T6_NestedLists
+{
 
-  public static void main(String[] args) throws WikiApiException {
+    public static void main(String[] args) throws WikiApiException
+    {
 
-    //db connection settings
-    DatabaseConfiguration dbConfig = new DatabaseConfiguration();
-    dbConfig.setDatabase("DATABASE");
-    dbConfig.setHost("HOST");
-    dbConfig.setUser("USER");
-    dbConfig.setPassword("PASSWORD");
-    dbConfig.setLanguage(Language.english);
+        // db connection settings
+        DatabaseConfiguration dbConfig = new DatabaseConfiguration();
+        dbConfig.setDatabase("DATABASE");
+        dbConfig.setHost("HOST");
+        dbConfig.setUser("USER");
+        dbConfig.setPassword("PASSWORD");
+        dbConfig.setLanguage(Language.english);
 
-    //initialize a wiki
-    Wikipedia wiki = new Wikipedia(dbConfig);
+        // initialize a wiki
+        Wikipedia wiki = new Wikipedia(dbConfig);
 
-    MediaWikiParserFactory pf = new MediaWikiParserFactory(Language.english);
-    MediaWikiParser parser = pf.createParser();
+        MediaWikiParserFactory pf = new MediaWikiParserFactory(Language.english);
+        MediaWikiParser parser = pf.createParser();
 
-    //get the page 'House_(disambiguation)'
-    ParsedPage pp = parser.parse(wiki.getPage("House_(disambiguation)").getText());
+        // get the page 'House_(disambiguation)'
+        ParsedPage pp = parser.parse(wiki.getPage("House_(disambiguation)").getText());
 
-    int i = 1;
-    // print out all nested lists of the page
-    for (NestedList nl : pp.getNestedLists()) {
-      System.out.println(i + ": \n" + outputNestedList(nl, 0));
-      i++;
-    }
-  }
-
-  /**
-   * Returns String with all elements of a NestedList
-   *
-   * @param nl    NestedList
-   * @param depth Current depth of the Nestedlist
-   * @return
-   */
-  public static String outputNestedList(NestedList nl, int depth) {
-    String result = "";
-    if (nl == null) {
-      return result; // If null return empty string
+        int i = 1;
+        // print out all nested lists of the page
+        for (NestedList nl : pp.getNestedLists()) {
+            System.out.println(i + ": \n" + outputNestedList(nl, 0));
+            i++;
+        }
     }
 
-    for (int i = 0; i < depth; i++) {
-      result += " ";    // insert indentation according to depth
-    }
+    /**
+     * Returns String with all elements of a NestedList
+     *
+     * @param nl
+     *            NestedList
+     * @param depth
+     *            Current depth of the Nestedlist
+     * @return
+     */
+    public static String outputNestedList(NestedList nl, int depth)
+    {
+        String result = "";
+        if (nl == null) {
+            return result; // If null return empty string
+        }
 
-    if (nl.getClass() == NestedListElement.class) { // If it is a NestedListElement,
-      // we reached a leaf, return its contents
-      result += nl.getText();
-    } else {
-      result += "---";  // If it is not a NestedListElement, it is a NestedListContainer
-      // print out all its childs, increment depth
-      for (NestedList nl2 : ((NestedListContainer) nl).getNestedLists()) {
-        result += "\n" + outputNestedList(nl2, depth + 1);
-      }
-    }
+        for (int i = 0; i < depth; i++) {
+            result += " "; // insert indentation according to depth
+        }
 
-    return result;
-  }
+        if (nl.getClass() == NestedListElement.class) { // If it is a NestedListElement,
+            // we reached a leaf, return its contents
+            result += nl.getText();
+        }
+        else {
+            result += "---"; // If it is not a NestedListElement, it is a NestedListContainer
+            // print out all its childs, increment depth
+            for (NestedList nl2 : ((NestedListContainer) nl).getNestedLists()) {
+                result += "\n" + outputNestedList(nl2, depth + 1);
+            }
+        }
+
+        return result;
+    }
 }

@@ -27,29 +27,31 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 /**
  * Displays informations about the inner structure of a page.
  */
-public class T1_SimpleParserDemo {
+public class T1_SimpleParserDemo
+{
 
-  /**
-   * @param args
-   * @throws IOException
-   */
-  public static void main(String[] args) throws IOException {
+    /**
+     * @param args
+     * @throws IOException
+     */
+    public static void main(String[] args) throws IOException
+    {
 
-    // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
-    String documentText = TestFile.getFileText();
+        // load a sample document (the contents are equal to "DarmstadtWikipediaArticle.txt")
+        String documentText = TestFile.getFileText();
 
-    //get a ParsedPage object
-    MediaWikiParserFactory pf = new MediaWikiParserFactory();
-    MediaWikiParser parser = pf.createParser();
-    ParsedPage pp = parser.parse(documentText);
+        // get a ParsedPage object
+        MediaWikiParserFactory pf = new MediaWikiParserFactory();
+        MediaWikiParser parser = pf.createParser();
+        ParsedPage pp = parser.parse(documentText);
 
-    //get the sections
-    for (Section section : pp.getSections()) {
-      System.out.println("section : " + section.getTitle());
-      System.out.println(" nr of paragraphs      : " + section.nrOfParagraphs());
-      System.out.println(" nr of tables          : " + section.nrOfTables());
-      System.out.println(" nr of nested lists    : " + section.nrOfNestedLists());
-      System.out.println(" nr of definition lists: " + section.nrOfDefinitionLists());
+        // get the sections
+        for (Section section : pp.getSections()) {
+            System.out.println("section : " + section.getTitle());
+            System.out.println(" nr of paragraphs      : " + section.nrOfParagraphs());
+            System.out.println(" nr of tables          : " + section.nrOfTables());
+            System.out.println(" nr of nested lists    : " + section.nrOfNestedLists());
+            System.out.println(" nr of definition lists: " + section.nrOfDefinitionLists());
+        }
     }
-  }
 }
