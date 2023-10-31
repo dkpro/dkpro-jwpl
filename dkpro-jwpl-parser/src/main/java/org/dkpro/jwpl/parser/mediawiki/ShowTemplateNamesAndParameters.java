@@ -21,34 +21,38 @@ import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 
 /**
- * This TemplateParser simply shows the name of the Template with all
- * parameters, without any exception.
+ * This TemplateParser simply shows the name of the Template with all parameters, without any
+ * exception.
  */
-public class ShowTemplateNamesAndParameters implements MediaWikiTemplateParser {
+public class ShowTemplateNamesAndParameters
+    implements MediaWikiTemplateParser
+{
 
-  private final String templatePrefix = "TEMPLATE[";
-  private final String templatePostfix = "]";
-  private final String parameterDivisor = ", ";
+    private final String templatePrefix = "TEMPLATE[";
+    private final String templatePostfix = "]";
+    private final String parameterDivisor = ", ";
 
-  public ResolvedTemplate parseTemplate(Template t, ParsedPage pp) {
-    ResolvedTemplate result = new ResolvedTemplate(t);
-    result.setPreParseReplacement(ResolvedTemplate.TEMPLATESPACER);
+    public ResolvedTemplate parseTemplate(Template t, ParsedPage pp)
+    {
+        ResolvedTemplate result = new ResolvedTemplate(t);
+        result.setPreParseReplacement(ResolvedTemplate.TEMPLATESPACER);
 
-    StringBuilder sb = new StringBuilder();
-    sb.append(templatePrefix);
-    sb.append(t.getName() + parameterDivisor);
-    for (String s : t.getParameters()) {
-      sb.append(s + parameterDivisor);
+        StringBuilder sb = new StringBuilder();
+        sb.append(templatePrefix);
+        sb.append(t.getName() + parameterDivisor);
+        for (String s : t.getParameters()) {
+            sb.append(s + parameterDivisor);
+        }
+        sb.delete(sb.length() - parameterDivisor.length(), sb.length());
+        sb.append(templatePostfix);
+        result.setPostParseReplacement(sb.toString());
+
+        result.setParsedObject(t);
+        return result;
     }
-    sb.delete(sb.length() - parameterDivisor.length(), sb.length());
-    sb.append(templatePostfix);
-    result.setPostParseReplacement(sb.toString());
 
-    result.setParsedObject(t);
-    return result;
-  }
-
-  public String configurationInfo() {
-    return "shows the Template names and all parameters";
-  }
+    public String configurationInfo()
+    {
+        return "shows the Template names and all parameters";
+    }
 }

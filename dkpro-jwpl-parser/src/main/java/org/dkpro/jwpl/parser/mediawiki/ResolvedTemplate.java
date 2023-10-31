@@ -19,95 +19,105 @@ package org.dkpro.jwpl.parser.mediawiki;
 
 import org.dkpro.jwpl.parser.Template;
 
-public class ResolvedTemplate {
+public class ResolvedTemplate
+{
 
-  public final static String TEMPLATESPACER = "(TEMPLATE)";
+    public final static String TEMPLATESPACER = "(TEMPLATE)";
 
-  private final Template template;
-  private String preParseReplacement;
-  private String postParseReplacement;
+    private final Template template;
+    private String preParseReplacement;
+    private String postParseReplacement;
 
-  /**
-   * is the Object which the Template Parser has been parsed, and will be
-   * integrated by the ContentElementParseing process. <br>
-   * If parsedObject == null, the template will be discarded...
-   */
-  private Object parsedObject;
+    /**
+     * is the Object which the Template Parser has been parsed, and will be integrated by the
+     * ContentElementParseing process. <br>
+     * If parsedObject == null, the template will be discarded...
+     */
+    private Object parsedObject;
 
-  /**
-   * Creates a new ResolvedTemplate linked to the original template.
-   *
-   * @param template the original template
-   */
-  public ResolvedTemplate(Template template) {
-    this.template = template;
-    this.postParseReplacement = "";
-    checkPreParseReplacement();
-  }
-
-  private void checkPreParseReplacement() {
-    if (preParseReplacement == null || preParseReplacement.length() == 0) {
-      preParseReplacement = TEMPLATESPACER;
+    /**
+     * Creates a new ResolvedTemplate linked to the original template.
+     *
+     * @param template
+     *            the original template
+     */
+    public ResolvedTemplate(Template template)
+    {
+        this.template = template;
+        this.postParseReplacement = "";
+        checkPreParseReplacement();
     }
-  }
 
-  /**
-   * Will be called by the parser after the parsing process and will replace
-   * the TEXT which is within the bounds of the original template src. <br>
-   * If NULL is returned, the parser won't do anything.
-   */
-  public String getPostParseReplacement() {
-    return postParseReplacement;
-  }
+    private void checkPreParseReplacement()
+    {
+        if (preParseReplacement == null || preParseReplacement.length() == 0) {
+            preParseReplacement = TEMPLATESPACER;
+        }
+    }
 
-  /**
-   * Look at getPostParseReplacement...
-   */
-  public void setPostParseReplacement(String postParseReplacement) {
-    this.postParseReplacement = postParseReplacement;
-  }
+    /**
+     * Will be called by the parser after the parsing process and will replace the TEXT which is
+     * within the bounds of the original template src. <br>
+     * If NULL is returned, the parser won't do anything.
+     */
+    public String getPostParseReplacement()
+    {
+        return postParseReplacement;
+    }
 
-  /**
-   * will be called by the parser before the Parsing process and replaces the original
-   * template code. MediaWiki code which is returned here, will be parsed.<br>
-   * length() &gt; 0 ! empty stings would not be accepted.
-   */
-  public String getPreParseReplacement() {
-    return preParseReplacement;
-  }
+    /**
+     * Look at getPostParseReplacement...
+     */
+    public void setPostParseReplacement(String postParseReplacement)
+    {
+        this.postParseReplacement = postParseReplacement;
+    }
 
-  /**
-   * Look at getPreParseReplacement...
-   */
-  public void setPreParseReplacement(String preParseReplacement) {
-    this.preParseReplacement = preParseReplacement;
-    checkPreParseReplacement();
-  }
+    /**
+     * will be called by the parser before the Parsing process and replaces the original template
+     * code. MediaWiki code which is returned here, will be parsed.<br>
+     * length() &gt; 0 ! empty stings would not be accepted.
+     */
+    public String getPreParseReplacement()
+    {
+        return preParseReplacement;
+    }
 
-  /**
-   * In case of an Error the Parser will use the Original Template
-   * as parsed object.
-   */
-  public Template getTemplate() {
-    return template;
-  }
+    /**
+     * Look at getPreParseReplacement...
+     */
+    public void setPreParseReplacement(String preParseReplacement)
+    {
+        this.preParseReplacement = preParseReplacement;
+        checkPreParseReplacement();
+    }
 
-  /**
-   * Returns the Object which is representative for the Template Code.
-   * It can be a Template or any object the parser knows.<br>
-   * If the Template is e.g. a Link the Link will be returned here.
-   */
-  public Object getParsedObject() {
-    return parsedObject;
-  }
+    /**
+     * In case of an Error the Parser will use the Original Template as parsed object.
+     */
+    public Template getTemplate()
+    {
+        return template;
+    }
 
-  /**
-   * Look at getParsedObject for Details.
-   *
-   * @param parsedObject
-   */
-  public void setParsedObject(Object parsedObject) {
-    this.parsedObject = parsedObject;
-  }
+    /**
+     * Returns the Object which is representative for the Template Code. It can be a Template or any
+     * object the parser knows.<br>
+     * If the Template is e.g. a Link the Link will be returned here.
+     */
+    public Object getParsedObject()
+    {
+        return parsedObject;
+    }
+
+    /**
+     * Look at getParsedObject for Details.
+     *
+     * @param parsedObject
+     */
+    public void setParsedObject(Object parsedObject)
+    {
+        this.parsedObject = parsedObject;
+    }
 
 }

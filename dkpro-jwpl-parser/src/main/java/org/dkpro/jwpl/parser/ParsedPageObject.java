@@ -18,21 +18,23 @@
 package org.dkpro.jwpl.parser;
 
 /**
- * All clases in parsedpage package, which can be created by a
- * parser, extending this class. So it is possible for these
- * classes to refer to a SourceCode.
+ * All clases in parsedpage package, which can be created by a parser, extending this class. So it
+ * is possible for these classes to refer to a SourceCode.
  */
-public abstract class ParsedPageObject {
-  private SrcSpan srcSpan;
+public abstract class ParsedPageObject
+{
+    private SrcSpan srcSpan;
 
-  /**
-   * Returns a Span refering to a SourceCode.
-   */
-  public SrcSpan getSrcSpan() {
-    return srcSpan;
-  }
+    /**
+     * Returns a Span refering to a SourceCode.
+     */
+    public SrcSpan getSrcSpan()
+    {
+        return srcSpan;
+    }
 
-  public void setSrcSpan(SrcSpan srcSpan) {
-    this.srcSpan = srcSpan;
-  }
+    public void setSrcSpan(SrcSpan srcSpan)
+    {
+        this.srcSpan = srcSpan;
+    }
 }

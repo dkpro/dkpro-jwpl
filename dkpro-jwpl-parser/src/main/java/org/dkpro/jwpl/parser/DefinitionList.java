@@ -23,88 +23,110 @@ import java.util.List;
 /**
  * In a definition List exist a Defined Term with Zero or more Definitions.
  */
-public class DefinitionList extends ContentContainer {
+public class DefinitionList
+    extends ContentContainer
+{
 
-  private ContentElement definedTerm;
-  private final List<ContentElement> definitions;
+    private ContentElement definedTerm;
+    private final List<ContentElement> definitions;
 
-  public DefinitionList() {
-    this.ccl = new ArrayList<>();
-    this.definedTerm = null;
-    this.definitions = new ArrayList<>();
-  }
-
-  public DefinitionList(ContentElement definedTerm, List<ContentElement> definitions) {
-    this.ccl = new ArrayList<>();
-    this.definedTerm = definedTerm;
-    this.definitions = definitions;
-    ccl.add(definedTerm);
-    ccl.addAll(definitions);
-  }
-
-  /**
-   * content = definedTerm[+definition]*
-   */
-  public DefinitionList(List<ContentElement> content) {
-    this.ccl = new ArrayList<>(content);
-    this.definitions = new ArrayList<>();
-
-    if (content.size() > 0) {
-      this.definedTerm = content.get(0);
-      if (content.size() > 1) {
-        this.definitions.addAll(content);
-        this.definitions.remove(0);
-      }
-    } else this.definedTerm = null;
-  }
-
-  public String toString() {
-    StringBuilder result = new StringBuilder();
-
-    result.append("DL_DEFINEDTERM:\n");
-    result.append(definedTerm);
-
-    if (definitions.size() != 0) {
-      result.append("\nDL_DEFINITIONS:");
-      for (ContentElement ce : definitions) result.append("\n" + ce);
+    public DefinitionList()
+    {
+        this.ccl = new ArrayList<>();
+        this.definedTerm = null;
+        this.definitions = new ArrayList<>();
     }
 
-    return result.toString();
-  }
+    public DefinitionList(ContentElement definedTerm, List<ContentElement> definitions)
+    {
+        this.ccl = new ArrayList<>();
+        this.definedTerm = definedTerm;
+        this.definitions = definitions;
+        ccl.add(definedTerm);
+        ccl.addAll(definitions);
+    }
 
-  public ContentElement getDefinedTerm() {
-    return definedTerm;
-  }
+    /**
+     * content = definedTerm[+definition]*
+     */
+    public DefinitionList(List<ContentElement> content)
+    {
+        this.ccl = new ArrayList<>(content);
+        this.definitions = new ArrayList<>();
 
-  public void setDefinedTerm(ContentElement definedTerm) {
-    if (definedTerm != null) {
-      if (this.definedTerm == null) ccl.add(0, definedTerm);
-      else ccl.set(0, definedTerm);
-    } else if (this.definedTerm != null) ccl.remove(this.definedTerm);
+        if (content.size() > 0) {
+            this.definedTerm = content.get(0);
+            if (content.size() > 1) {
+                this.definitions.addAll(content);
+                this.definitions.remove(0);
+            }
+        }
+        else
+            this.definedTerm = null;
+    }
 
-    this.definedTerm = definedTerm;
-  }
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder();
 
-  public int nrOfDefinitions() {
-    return definitions.size();
-  }
+        result.append("DL_DEFINEDTERM:\n");
+        result.append(definedTerm);
 
-  public void removeDefinition(ContentElement ce) {
-    definitions.remove(ce);
-    ccl.remove(ce);
-  }
+        if (definitions.size() != 0) {
+            result.append("\nDL_DEFINITIONS:");
+            for (ContentElement ce : definitions)
+                result.append("\n" + ce);
+        }
 
-  public void addDefiniton(ContentElement ce) {
-    definitions.add(ce);
-    ccl.add(ce);
-  }
+        return result.toString();
+    }
 
-  public ContentElement getDefinition(int i) {
-    if (definitions.size() > i) return definitions.get(i);
-    else return null;
-  }
+    public ContentElement getDefinedTerm()
+    {
+        return definedTerm;
+    }
 
-  public List<ContentElement> getDefinitions() {
-    return new ArrayList<>(definitions);
-  }
+    public void setDefinedTerm(ContentElement definedTerm)
+    {
+        if (definedTerm != null) {
+            if (this.definedTerm == null)
+                ccl.add(0, definedTerm);
+            else
+                ccl.set(0, definedTerm);
+        }
+        else if (this.definedTerm != null)
+            ccl.remove(this.definedTerm);
+
+        this.definedTerm = definedTerm;
+    }
+
+    public int nrOfDefinitions()
+    {
+        return definitions.size();
+    }
+
+    public void removeDefinition(ContentElement ce)
+    {
+        definitions.remove(ce);
+        ccl.remove(ce);
+    }
+
+    public void addDefiniton(ContentElement ce)
+    {
+        definitions.add(ce);
+        ccl.add(ce);
+    }
+
+    public ContentElement getDefinition(int i)
+    {
+        if (definitions.size() > i)
+            return definitions.get(i);
+        else
+            return null;
+    }
+
+    public List<ContentElement> getDefinitions()
+    {
+        return new ArrayList<>(definitions);
+    }
 }
