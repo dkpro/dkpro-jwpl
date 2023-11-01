@@ -331,10 +331,8 @@
             <!--
               - JAXB is used via reflection and cannot be detected by Maven
             -->
-            <dependency>javax.xml.bind:jaxb-api</dependency>
-            <dependency>com.sun.xml.bind:jaxb-core</dependency>
-            <dependency>com.sun.xml.bind:jaxb-impl</dependency>
-            <dependency>javax.activation:javax.activation-api</dependency>
+            <dependency>jakarta.xml.bind:jakarta.xml.bind-api</dependency>
+            <dependency>org.glassfish.jaxb</dependency>
             <!-- 
               - Common test dependencies
             -->
