@@ -47,11 +47,6 @@
     <dependency>
       <groupId>com.googlecode.java-diff-utils</groupId>
       <artifactId>diffutils</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
     </dependency>
     <dependency>
       <groupId>org.dkpro.jwpl</groupId>
@@ -79,6 +74,15 @@
     <dependency>
       <groupId>org.sweble.wikitext</groupId>
       <artifactId>swc-parser-lazy</artifactId>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
   </dependencies>
 
