@@ -373,7 +373,7 @@ public class Wikipedia
      * {@link #getDiscussionPage(Page)}.
      *
      * @param articlePageId
-     *            The id of the page for which to the the discussion archives
+     *            The id of the page for which to fetch the discussion archives
      * @return The page object for the discussion page.
      * @throws WikiApiException
      *             If no page or redirect with this title exists or title could not be properly

@@ -141,7 +141,6 @@ public class RevisionApi
                 statement.execute();
             }
 
-            ResultSet result = null;
             HashSet<Integer> articles = new HashSet<>();
 
             // make query
@@ -159,7 +158,7 @@ public class RevisionApi
                     statement.setInt(1, minNumberRevisions);
                     statement.setInt(2, maxNumberRevisions);
                 }
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 while (result.next()) {
                     articles.add(result.getInt(1));
@@ -168,9 +167,6 @@ public class RevisionApi
             finally {
                 if (statement != null) {
                     statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
             return articles;
@@ -199,33 +195,20 @@ public class RevisionApi
                 throw new IllegalArgumentException();
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
             String firstRevPK;
+            // Retrieve the fullRevisionPK and calculate the limit
+            final String sql = "SELECT PrimaryKey FROM revisions WHERE ArticleID=? AND RevisionCounter =1 LIMIT 1";
 
-            try {
-                // Retrieve the fullRevisionPK and calculate the limit
-                statement = this.connection.prepareStatement("SELECT PrimaryKey "
-                        + "FROM revisions " + "WHERE ArticleID=? AND RevisionCounter =1 LIMIT 1");
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
-
                     firstRevPK = result.getString(1);
-
                 }
                 else {
                     throw new WikiPageNotFoundException(
                             "The article with the ID " + articleID + " was not found.");
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -257,33 +240,20 @@ public class RevisionApi
                 throw new IllegalArgumentException();
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
             String revCounters;
+            // Retrieve the fullRevisionPK and calculate the limit
+            final String sql = "SELECT RevisionCounter FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1";
 
-            try {
-                // Retrieve the fullRevisionPK and calculate the limit
-                statement = this.connection.prepareStatement("SELECT RevisionCounter "
-                        + "FROM index_articleID_rc_ts " + "WHERE ArticleID=? LIMIT 1");
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
-
                     revCounters = result.getString(1);
-
                 }
                 else {
                     throw new WikiPageNotFoundException(
                             "The article with the ID " + articleID + " was not found.");
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -319,22 +289,18 @@ public class RevisionApi
         List<Timestamp> timestamps = new LinkedList<>();
 
         try {
-            PreparedStatement statement = null;
-            ResultSet result = null;
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
+            final String sql = "SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp >= ? AND Timestamp <= ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            try {
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
-                statement = connection.prepareStatement(
-                        "SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp >= ? AND Timestamp <= ?");
                 statement.setInt(1, articleID);
                 statement.setLong(2, from.getTime());
                 statement.setLong(3, to.getTime());
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -343,14 +309,6 @@ public class RevisionApi
                 }
                 while (result.next()) {
                     timestamps.add(new Timestamp(result.getLong(1)));
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -383,21 +341,17 @@ public class RevisionApi
         Timestamp ts = getRevision(revisionId).getTimeStamp(); // TODO do this in the SQL query
 
         try {
-            PreparedStatement statement = null;
-            ResultSet result = null;
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
+            final String sql = "SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp < ?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            try {
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
-                statement = connection.prepareStatement(
-                        "SELECT Timestamp FROM revisions WHERE ArticleID=? AND Timestamp < ?");
                 statement.setInt(1, articleID);
                 statement.setLong(2, ts.getTime());
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -406,14 +360,6 @@ public class RevisionApi
                 }
                 while (result.next()) {
                     timestamps.add(new Timestamp(result.getLong(1)));
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -436,7 +382,7 @@ public class RevisionApi
      *
      * @param articleID
      *            ID of the article
-     * @return collection of timestampp of all revisions
+     * @return collection of timestamp of all revisions
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -449,21 +395,16 @@ public class RevisionApi
             if (articleID < 1) {
                 throw new IllegalArgumentException();
             }
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
+            final String sql = "SELECT Timestamp " + "FROM revisions WHERE ArticleID=?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
-                statement = connection
-                        .prepareStatement("SELECT Timestamp " + "FROM revisions WHERE ArticleID=?");
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -474,14 +415,6 @@ public class RevisionApi
 
                     timestamps.add(new Timestamp(result.getLong(1)));
 
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -538,29 +471,24 @@ public class RevisionApi
             if (articleID < 1) {
                 throw new IllegalArgumentException();
             }
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
 
             int contrCount = 0;
-            PreparedStatement statement = null;
-            ResultSet result = null;
 
-            try {
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
+            StringBuilder sqlString = new StringBuilder();
+            sqlString.append("SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=?");
+            if (onlyRegistered) {
+                sqlString.append(" AND ContributorIsRegistered=1");
+            }
 
-                StringBuffer sqlString = new StringBuffer();
-                sqlString.append(
-                        "SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=?");
-                if (onlyRegistered) {
-                    sqlString.append(" AND ContributorIsRegistered=1");
-                }
-
-                statement = connection.prepareStatement(sqlString.toString());
+            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
 
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -570,14 +498,6 @@ public class RevisionApi
 
                 if (result.next()) {
                     contrCount = result.getInt(1);
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -635,33 +555,28 @@ public class RevisionApi
             if (revisionID < 1) {
                 throw new IllegalArgumentException();
             }
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
 
             int articleID = getPageIdForRevisionId(revisionID);
             Timestamp ts = getRevision(revisionID).getTimeStamp();
 
             int contrCount = 0;
-            PreparedStatement statement = null;
-            ResultSet result = null;
+            StringBuffer sqlString = new StringBuffer();
+            sqlString.append(
+                    "SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=? AND Timestamp<?");
+            if (onlyRegistered) {
+                sqlString.append(" AND ContributorIsRegistered=1");
+            }
 
-            try {
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
-                StringBuffer sqlString = new StringBuffer();
-                sqlString.append(
-                        "SELECT COUNT(DISTINCT ContributorName) FROM revisions WHERE ArticleID=? AND Timestamp<?");
-                if (onlyRegistered) {
-                    sqlString.append(" AND ContributorIsRegistered=1");
-                }
-
-                statement = connection.prepareStatement(sqlString.toString());
+            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
 
                 statement.setInt(1, articleID);
                 statement.setLong(2, ts.getTime());
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -671,14 +586,6 @@ public class RevisionApi
 
                 if (result.next()) {
                     contrCount = result.getInt(1);
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -728,16 +635,16 @@ public class RevisionApi
      *
      * @param articleID
      *            ID of the article
-     * @param groupfilter
+     * @param groupFilter
      *            a list of unwanted user groups
      * @return map of Timestamp-DiffPart-Collection pairs
      * @throws WikiApiException
      *             if an error occurs
      */
-    public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter)
+    public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupFilter)
         throws WikiApiException
     {
-        return getUserContributionMap(articleID, groupfilter, false);
+        return getUserContributionMap(articleID, groupFilter, false);
     }
 
     /**
@@ -751,7 +658,7 @@ public class RevisionApi
      *
      * @param articleID
      *            ID of the article
-     * @param groupfilter
+     * @param groupFilter
      *            a list of unwanted user groups
      * @param onlyRegistered
      *            {@code true} if result should only contain registered users. {@code false}
@@ -760,7 +667,7 @@ public class RevisionApi
      * @throws WikiApiException
      *             if an error occurs
      */
-    public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupfilter,
+    public Map<String, Timestamp> getUserContributionMap(final int articleID, String[] groupFilter,
             boolean onlyRegistered)
         throws WikiApiException
     {
@@ -771,21 +678,17 @@ public class RevisionApi
             if (articleID < 1) {
                 throw new IllegalArgumentException();
             }
-
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
             PreparedStatement statement = null;
-            ResultSet result = null;
 
             try {
-
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
                 StringBuilder statementStr = new StringBuilder();
 
-                if (groupfilter == null || groupfilter.length < 1 || !tableExists("user_groups")) {
+                if (groupFilter == null || groupFilter.length < 1 || !tableExists("user_groups")) {
                     // create statement WITHOUT filter
                     statementStr.append(
                             "SELECT ContributorName, Timestamp FROM revisions WHERE ArticleID=?");
@@ -797,7 +700,7 @@ public class RevisionApi
                     statementStr.append(
                             "SELECT ContributorName, Timestamp FROM revisions AS rev, user_groups AS ug  WHERE ArticleID=?");
                     statementStr.append(" AND rev.ContributorId=ug.ug_user");
-                    for (String element : groupfilter) {
+                    for (String element : groupFilter) {
                         statementStr.append(" AND NOT ug.ug_group=?");
                     }
                     // and combine with results from unregistered users
@@ -812,7 +715,7 @@ public class RevisionApi
 
                     // insert filtered groups in prepared statement
                     int curPrepStatValueIdx = 2;
-                    for (String group : groupfilter) {
+                    for (String group : groupFilter) {
                         statement.setString(curPrepStatValueIdx++, group);
                     }
                     if (!onlyRegistered) {
@@ -822,7 +725,7 @@ public class RevisionApi
 
                 }
 
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result == null) {
                     throw new WikiPageNotFoundException(
@@ -836,9 +739,6 @@ public class RevisionApi
             finally {
                 if (statement != null) {
                     statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -874,17 +774,13 @@ public class RevisionApi
 
             if (!tableExists("user_groups")) {
                 throw new WikiInitializationException(
-                        "User group assignment data is missing. Please download user_groups.sql for this Wikipedia from http://dumps.wikimedia.org and import the data into this database.");
+                        "User group assignment data is missing. Please download user_groups.sql for this Wikipedia from https://dumps.wikimedia.org and import the data into this database.");
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = connection
-                        .prepareStatement("SELECT ug_group FROM user_groups WHERE ug_user=?");
+            final String sql = "SELECT ug_group FROM user_groups WHERE ug_user=?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, userID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -892,17 +788,7 @@ public class RevisionApi
                             "The user  with the ID " + userID + " was not found.");
                 }
                 while (result.next()) {
-
                     groups.add(result.getString(1));
-
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -918,10 +804,10 @@ public class RevisionApi
     }
 
     /**
-     * Returns the revisionIds of all revisions created by given user
+     * Returns the revisionIds of all revisions created by given user.
      *
      * @param userid
-     *            id of the user (NOT USER NAME)
+     *            id of the user (NOT username)
      * @return Map of revision ids
      * @throws WikiApiException
      *             if an error occurs
@@ -937,18 +823,14 @@ public class RevisionApi
             }
 
             if (!indexExists("revisions", "userids")) {
-                System.err.println(
+                throw new WikiInitializationException(
                         "You should create and index for the field ContributorID: create index userids ON revisions(ContributorId(15));");
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = connection.prepareStatement(
-                        "SELECT ArticleID, RevisionID " + "FROM revisions WHERE ContributorId=?");
+            final String sql = "SELECT ArticleID, RevisionID FROM revisions WHERE ContributorId=?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, userid);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -967,14 +849,6 @@ public class RevisionApi
                         revList.add(revId);
                         revIds.put(artId, revList);
                     }
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -1010,18 +884,14 @@ public class RevisionApi
             }
 
             if (!indexExists("revisions", "usernames")) {
-                System.err.println(
+                throw new WikiInitializationException(
                         "You should create and index for the field ContributorName: create index usernames ON revisions(ContributorName(50));");
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = connection.prepareStatement("SELECT ArticleID, RevisionID "
-                        + "FROM revisions WHERE ContributorName=? LIMIT " + limit);
+            final String sql = "SELECT ArticleID, RevisionID  FROM revisions WHERE ContributorName=? LIMIT " + limit;
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setString(1, username);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 // Make the query
                 if (result == null) {
@@ -1043,15 +913,7 @@ public class RevisionApi
 
                 }
             }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-            }
-
+            
             return revIds;
 
         }
@@ -1086,23 +948,18 @@ public class RevisionApi
             if (articleID < 1) {
                 throw new IllegalArgumentException();
             }
+            // Check if necessary index exists
+            if (!indexExists("revisions")) {
+                throw new WikiInitializationException(
+                        "Please create an index on revisions(ArticleID) in order to make this query feasible.");
+            }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
             RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
-
-            try {
-
-                // Check if necessary index exists
-                if (!indexExists("revisions")) {
-                    throw new WikiInitializationException(
-                            "Please create an index on revisions(ArticleID) in order to make this query feasible.");
-                }
-
-                statement = connection.prepareStatement(
-                        "SELECT Timestamp, Revision " + "FROM revisions WHERE ArticleID=?");
+            
+            final String sql = "SELECT Timestamp, Revision " + "FROM revisions WHERE ArticleID=?";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result == null) {
                     throw new WikiPageNotFoundException(
@@ -1131,14 +988,6 @@ public class RevisionApi
                     // Write data from current revision to Map
                     tsDiffPartsMap.put(new Timestamp(result.getLong(1)), parts);
 
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -1202,15 +1051,12 @@ public class RevisionApi
                 throw new IllegalArgumentException();
             }
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
             long time;
 
-            try {
-                statement = this.connection.prepareStatement("SELECT " + firstOrLast
-                        + " FROM index_articleID_rc_ts " + "WHERE ArticleID=? LIMIT 1");
+            final String sql = "SELECT " + firstOrLast + " FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
 
@@ -1220,14 +1066,6 @@ public class RevisionApi
                 else {
                     throw new WikiPageNotFoundException(
                             "The article with the ID " + articleID + " was not found.");
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -1249,7 +1087,7 @@ public class RevisionApi
      *            ID of the revision
      * @return Revision
      * @throws WikiApiException
-     *             if an error occurs or the revision does not exists.
+     *             if an error occurs or the revision does not exist.
      */
     public Revision getRevision(final int revisionID) throws WikiApiException
     {
@@ -1262,14 +1100,10 @@ public class RevisionApi
             int fullRevPK;
             int limit;
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = this.connection.prepareStatement("SELECT FullRevisionPK, RevisionPK "
-                        + "FROM index_revisionID " + "WHERE revisionID=? LIMIT 1");
+            final String sql = "SELECT FullRevisionPK, RevisionPK FROM index_revisionID WHERE revisionID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, revisionID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
                     fullRevPK = result.getInt(1);
@@ -1282,15 +1116,7 @@ public class RevisionApi
                 }
 
             }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-            }
-
+            
             return buildRevisionMetaData(fullRevPK, limit);
 
         }
@@ -1309,7 +1135,7 @@ public class RevisionApi
      *            ID of the revision
      * @return the page if for the given revision
      * @throws WikiApiException
-     *             if an error occurs or the revision does not exists.
+     *             if an error occurs or the revision does not exist.
      */
     public int getPageIdForRevisionId(final int revisionID) throws WikiApiException
     {
@@ -1321,15 +1147,11 @@ public class RevisionApi
 
             int pageId;
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = this.connection.prepareStatement(
-                        "SELECT r.ArticleID " + "FROM revisions as r, index_revisionID as idx "
-                                + "WHERE idx.RevisionID=? AND idx.RevisionPK=r.PrimaryKey LIMIT 1");
+            final String sql = "SELECT r.ArticleID FROM revisions as r, index_revisionID as idx "
+                    + "WHERE idx.RevisionID=? AND idx.RevisionPK=r.PrimaryKey LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, revisionID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
                     pageId = result.getInt(1);
@@ -1339,14 +1161,6 @@ public class RevisionApi
                             "The revision with the ID " + revisionID + " was not found.");
                 }
 
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
             }
 
             return pageId;
@@ -1370,7 +1184,7 @@ public class RevisionApi
      *            number of revision
      * @return Revision
      * @throws WikiApiException
-     *             if an error occurs or the revision does not exists.
+     *             if an error occurs or the revision does not exist.
      */
     public Revision getRevision(final int articleID, final int revisionCounter)
         throws WikiApiException
@@ -1384,14 +1198,10 @@ public class RevisionApi
             int revisionIndex = checkMapping(articleID, revisionCounter);
             String fullRevisions, revCounters;
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            try {
-                statement = this.connection.prepareStatement(
-                        "SELECT FullRevisionPKs, RevisionCounter FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1");
+            final String sql = "SELECT FullRevisionPKs, RevisionCounter FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
 
@@ -1402,14 +1212,6 @@ public class RevisionApi
                 else {
                     throw new WikiPageNotFoundException(
                             "The article with the ID " + articleID + " was not found.");
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -1426,7 +1228,7 @@ public class RevisionApi
 
     /**
      * Returns the by the article ID and timestamp specified revision. Note that the timestamp is
-     * not an unique identifier of a revision related to an article. The returned revision should be
+     * not a unique identifier of a revision related to an article. The returned revision should be
      * the first revision that can be found inside the database.
      *
      * @param articleID
@@ -1435,15 +1237,13 @@ public class RevisionApi
      *            Timestamp
      * @return Revision
      * @throws WikiApiException
-     *             if an error occurs or the revision does not exists.
+     *             if an error occurs or the revision does not exist.
      */
     public Revision getRevision(final int articleID, final Timestamp time) throws WikiApiException
     {
 
         try {
 
-            PreparedStatement statement = null;
-            ResultSet result = null;
             String fullRevisions;
             String revisionCounters;
 
@@ -1452,12 +1252,11 @@ public class RevisionApi
             }
 
             int firstPK, lastPK;
-            try {
-                statement = this.connection.prepareStatement(
-                        "SELECT FullRevisionPKs, RevisionCounter," + " FirstAppearance "
-                                + "FROM index_articleID_rc_ts " + "WHERE ArticleID=? LIMIT 1");
+            final String sql = "SELECT FullRevisionPKs, RevisionCounter, FirstAppearance " +
+                    "FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, articleID);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
 
@@ -1488,21 +1287,14 @@ public class RevisionApi
                             "The article with the ID " + articleID + " was not found.");
                 }
             }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-            }
-            try {
-                statement = this.connection.prepareStatement(
-                        "SELECT RevisionCounter FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ? AND Timestamp <= ? ORDER BY Timestamp DESC LIMIT 1");
+            
+            final String query = "SELECT RevisionCounter FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ? " +
+                    "AND Timestamp <= ? ORDER BY Timestamp DESC LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(query)) {
                 statement.setInt(1, firstPK);
                 statement.setInt(2, lastPK);
                 statement.setLong(3, time.getTime());
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
                     int revisionCount = result.getInt(1);
@@ -1512,14 +1304,6 @@ public class RevisionApi
                 else {
                     throw new WikiPageNotFoundException(
                             "The revision with the specified timestamp was not found.");
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
                 }
             }
 
@@ -1550,29 +1334,17 @@ public class RevisionApi
     protected int checkMapping(final int articleID, final int revisionCounter) throws SQLException
     {
 
-        PreparedStatement statement = null;
-        ResultSet result = null;
-
         // Check for the correct revisionCounter mapping
-        try {
-            statement = this.connection.prepareStatement(
-                    "SELECT Mapping " + "FROM index_chronological " + "WHERE ArticleID=? LIMIT 1");
+        final String sql = "SELECT Mapping FROM index_chronological WHERE ArticleID=? LIMIT 1";
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setInt(1, articleID);
-            result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
             if (result.next()) {
 
                 String mapping = result.getString(1);
                 return getMapping(mapping, revisionCounter);
 
-            }
-        }
-        finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (result != null) {
-                result.close();
             }
         }
 
@@ -1596,29 +1368,17 @@ public class RevisionApi
         throws SQLException
     {
 
-        PreparedStatement statement = null;
-        ResultSet result = null;
-
         // Check for the correct revisionCounter mapping
-        try {
-            statement = this.connection.prepareStatement(
-                    "SELECT ReverseMapping FROM index_chronological WHERE ArticleID=? LIMIT 1");
+        final String sql = "SELECT ReverseMapping FROM index_chronological WHERE ArticleID=? LIMIT 1";
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
             statement.setInt(1, articleID);
-            result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
             if (result.next()) {
 
                 String mapping = result.getString(1);
                 return getMapping(mapping, revisionCounter);
 
-            }
-        }
-        finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (result != null) {
-                result.close();
             }
         }
 
@@ -1758,18 +1518,14 @@ public class RevisionApi
     public void setRevisionTextAndParts(Revision revision)
     {
 
+        int fullRevPK;
+        int limit;
+
         try {
-
-            PreparedStatement statement = null;
-            ResultSet result = null;
-
-            int fullRevPK;
-            int limit;
-            try {
-                statement = this.connection.prepareStatement("SELECT FullRevisionPK, RevisionPK "
-                        + "FROM index_revisionID " + "WHERE revisionID=? LIMIT 1");
+            final String sql = "SELECT FullRevisionPK, RevisionPK FROM index_revisionID  WHERE revisionID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, revision.getRevisionID());
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
                     fullRevPK = result.getInt(1);
@@ -1781,21 +1537,12 @@ public class RevisionApi
                             "The revision with ID " + revision.getRevisionID() + " was not found.");
                 }
             }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-            }
-
-            try {
-                statement = this.connection.prepareStatement(
-                        "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-                                + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit);
+            
+            final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+                            + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
+            try (PreparedStatement statement = this.connection.prepareStatement(query)) {
                 statement.setInt(1, fullRevPK);
-                result = statement.executeQuery();
+                ResultSet result = statement.executeQuery();
 
                 String previousRevision = null, currentRevision = null;
 
@@ -1831,14 +1578,6 @@ public class RevisionApi
                 revision.setRevisionText(currentRevision);
 
             }
-            finally {
-                if (statement != null) {
-                    statement.close();
-                }
-                if (result != null) {
-                    result.close();
-                }
-            }
         }
         catch (WikiPageNotFoundException | DecodingException | SQLException | IOException e) {
             throw new RuntimeException(e);
@@ -1863,25 +1602,21 @@ public class RevisionApi
     private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException
     {
 
-        PreparedStatement statement = null;
-        ResultSet result = null;
+        final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
+                + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
+        /*
+         * As HSQL does not support ResultSet.last() per default, we have to specify these extra
+         * parameters here.
+         *
+         * With these parameters in place, the 'last()' call works as expected.
+         *
+         * See also: https://stackoverflow.com/q/19533991
+         */
+        try (PreparedStatement statement = this.connection.prepareStatement(query,
+                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
 
-        try {
-            String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-                    + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
-
-            /*
-             * As HSQL does not support ResultSet.last() per default, we have to specify these extra
-             * parameters here.
-             *
-             * With these parameters in place, the 'last()' call works as expected.
-             *
-             * See also: https://stackoverflow.com/q/19533991
-             */
-            statement = this.connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
             statement.setInt(1, fullRevPK);
-            result = statement.executeQuery();
+            ResultSet result = statement.executeQuery();
 
             Revision revision = null;
 
@@ -1907,14 +1642,6 @@ public class RevisionApi
             return revision;
 
         }
-        finally {
-            if (statement != null) {
-                statement.close();
-            }
-            if (result != null) {
-                result.close();
-            }
-        }
 
     }
 
@@ -1938,7 +1665,7 @@ public class RevisionApi
      * @param table
      *            the table to check
      * @param indexName
-     *            the name of the index (may be null)
+     *            the name of the index (might be {@code null})
      * @return {@code true} if index exists, false else
      * @throws SQLException
      *             if an error occurs connecting to or querying the db
@@ -1946,11 +1673,11 @@ public class RevisionApi
     private boolean indexExists(String table, String indexName) throws SQLException
     {
 
-        try (PreparedStatement statement = this.connection
-                .prepareStatement("SHOW INDEX FROM " + table + " WHERE Key_name!= 'PRIMARY'");
-                ResultSet result = statement.executeQuery()) {
+        final String sql = "SHOW INDEX FROM " + table + " WHERE Key_name!= 'PRIMARY'";
+        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+            ResultSet result = statement.executeQuery();
 
-            // Check if an index exists (because otherwise the query would
+            // Check if an index exists because otherwise the query would
             // be awfully slow. Note that the existence of ANY index will
             // suffice - we might want to check for a specific index.
             if (result == null || !result.next()) {
@@ -1996,9 +1723,8 @@ public class RevisionApi
     private boolean tableExists(String table) throws SQLException
     {
 
-        try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;");
-                ResultSet result = statement.executeQuery()) {
-
+        try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;")) {
+            ResultSet result = statement.executeQuery();
             if (result == null) {
                 return false;
             }

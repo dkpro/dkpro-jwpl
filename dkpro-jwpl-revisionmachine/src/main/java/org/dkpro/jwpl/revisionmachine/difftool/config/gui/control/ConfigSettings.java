@@ -132,7 +132,7 @@ public class ConfigSettings
     }
 
     /**
-     * Assigns the given value to the the given key.
+     * Assigns the given value to the given key.
      *
      * @param key
      *            configuration key
