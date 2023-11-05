@@ -155,7 +155,7 @@ public class UniversalDecompressor
     }
 
     /**
-     * Start an external utility to unpack the the archive
+     * Start an external utility to unpack the archive.
      *
      * @param fileName
      * @return InputStream to read the decompressed data

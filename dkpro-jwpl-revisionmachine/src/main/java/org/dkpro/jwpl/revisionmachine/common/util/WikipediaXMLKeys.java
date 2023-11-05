@@ -84,7 +84,7 @@ public enum WikipediaXMLKeys
     KEY_END_IP("</ip>"),
 
     /**
-     * Indicates the start of the the contributor username
+     * Indicates the start of the contributor username
      */
     KEY_START_USERNAME("<username>"),
 
