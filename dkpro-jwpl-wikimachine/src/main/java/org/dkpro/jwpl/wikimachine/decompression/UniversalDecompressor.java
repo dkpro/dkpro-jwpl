@@ -22,22 +22,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
- * Factory to create <code>java.io.InputStream</code> depending on the filename's extension. If
- * there are a supported archive type we decorate <code>FileInputStream</code> with special
- * <code>InputStream</code> derivatives to uncompress it on the fly. Otherwise the possible
+ * Factory to create {@link InputStream} depending on the filename's extension. If
+ * there are a supported archive type we decorate {@link FileInputStream} with special
+ * {@link InputStream} derivatives to decompress it on the fly. Otherwise, the possible
  * compression will be ignored and the plain unmodified byte stream will be returned. <br>
  * <br>
  * <p>
  * Current supported archives are: GZip, BZip2. Each other archive type can be added using the file
  * "decompressor.xml" where you should specify the file extension as a key and the according utility
  * (incl. parameters), that have to be started. Please note that the unpack utility has to use the
- * standard output and external unpack utilities are in preference to the internal. Also there could
+ * standard output and external unpack utilities are in preference to the internal. Also, there could
  * be more heap memory necessary to use start external programs. The compressed file should be
- * specified with the place holder <code>%f</code>. <br>
+ * specified with the placeholder <code>%f</code>. <br>
  * E.g. the entry for the 7z utility could look like that: <br>
  * {@code <entry
  * key="7z">7z e -so %f</entry>}. The properties file should conform to
@@ -53,26 +57,23 @@ public class UniversalDecompressor
      * Placeholder for compressed file path in external command
      */
     public static final String FILEPLACEHOLDER = "%f";
-    /**
-     * File path to decompressor properties files
-     */
-    private static final String PROPERTIES_PATH = "src/main/resources/decompressor.xml";
 
     /**
      * Archive extensions which are supported by external utilities
      */
-    private final HashMap<String, String> externalSupport;
+    private final Map<String, String> externalSupport;
 
     /**
      * Archive extensions which are supported by <code>ReaderFactory</code>
      */
-    private final HashMap<String, IDecompressor> internalSupport;
+    private final Map<String, IDecompressor> internalSupport;
 
     /**
      * Check if the file extension is supported by the external utility
      *
-     * @param extension
-     * @return true if this extension is supported with external utilities
+     * @param extension The file extension to check for.
+     * @return {@code True} if this extension is supported with external utilities,
+     *         {@code false} otherwise.
      */
     private boolean isExternalSupported(String extension)
     {
@@ -80,50 +81,83 @@ public class UniversalDecompressor
     }
 
     /**
-     * Check if the file extension is supported by the internal <code>IDecompressor</code>
+     * Check if the file extension is supported by the internal {@link IDecompressor}.
      *
-     * @param extension
-     * @return
+     * @param extension The file extension to check for.
+     * @return {@code True} if supported with internal utilities,
+     *         {@code false} otherwise.
      */
     private boolean isInternalSupported(String extension)
     {
         return internalSupport.containsKey(extension);
     }
 
-    /**
-     * Don't let anyone instantiate this class - set the constructor to private
-     */
+  /**
+   * Instantiates a {@link UniversalDecompressor} via bundled "decompressor.xml"
+   * file which is expected in the classpath of the surrounding environment.
+   */
     public UniversalDecompressor()
     {
         internalSupport = new HashMap<>();
         internalSupport.put("bz2", new BZip2Decompressor());
         internalSupport.put("gz", new GZipDecompressor());
-
         externalSupport = new HashMap<>();
-        loadExternal();
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        loadExternal(cl.getResourceAsStream("decompressor.xml"));
     }
 
     /**
-     * Load the properties for external utilities from a XML file
+     * Instantiates a {@link UniversalDecompressor} via an external
+     * {@link Path} reference to a custom "decompressor.xml" file.
+     *
+     * @param externalXML A valid {@link Path} reference to a
+     *                    "decompressor.xml" file.
      */
-    private void loadExternal()
+    public UniversalDecompressor(Path externalXML)
+    {
+        internalSupport = new HashMap<>();
+        internalSupport.put("bz2", new BZip2Decompressor());
+        internalSupport.put("gz", new GZipDecompressor());
+        externalSupport = new HashMap<>();
+        loadExternal(externalXML);
+    }
+
+    /**
+     * Load the properties for external utilities from an XML file.
+     */
+    private void loadExternal(Path externalConfig)
+    {
+        try {
+          loadExternal(Files.newInputStream(externalConfig, StandardOpenOption.READ));
+        }
+        catch (IOException ignore) {
+          // silently ignore it
+        }
+    }
+
+    /**
+     * Load the properties for external utilities from an XML file
+     */
+    private void loadExternal(InputStream externalConfig)
     {
         Properties properties = new Properties();
         try {
-            properties.loadFromXML(new FileInputStream(PROPERTIES_PATH));
-            for (String key : properties.stringPropertyNames()) {
-                externalSupport.put(key, properties.getProperty(key));
-            }
+          properties.loadFromXML(externalConfig);
+          for (String key : properties.stringPropertyNames()) {
+            externalSupport.put(key, properties.getProperty(key));
+          }
         }
         catch (IOException ignore) {
+            // silently ignore it
         }
     }
+
 
     /**
      * Return the extension of the filename
      *
      * @param fileName
-     *            that should be inputed
+     *            that should be input
      * @return file extension or null
      */
     private String getExtension(String fileName)
@@ -145,7 +179,7 @@ public class UniversalDecompressor
      * Check if the file is supported by the internal or external decompressor
      *
      * @param fileName
-     * @return true if the file extension is supported
+     * @return {@code True} if the file extension is supported, {@code false} otherwise.
      */
     public boolean isSupported(String fileName)
     {
@@ -170,6 +204,7 @@ public class UniversalDecompressor
             result = externalProcess.getInputStream();
         }
         catch (IOException ignore) {
+          ignore.printStackTrace();
         }
         return result;
     }
@@ -193,36 +228,34 @@ public class UniversalDecompressor
     }
 
     /**
-     * Creates a InputStream where the unpacked data could be read from. Internal GZip and BZip2
+     * Creates a {@link InputStream} where the unpacked data could be read from. Internal GZip and BZip2
      * archive formats are supported. The list archive formats can be increased with settings file
      * decompressor.xml. Thereby
      * <ul>
      * <li>key is the archive extension</li>
      * <li>value is the external command. The archive file should be specified with an place holder
-     * <code>UniversalDecompressor.FILEPLACEHOLDER</code></li>
+     * {@link UniversalDecompressor#FILEPLACEHOLDER}</li>
      * </ul>
      * External decompression utilities are in preference to the internal. If there is nether
      * external nor internal possibilities to unpack the file - the standard
-     * <code>FileInputSteam</code> will be returned
+     * {@link FileInputStream} will be returned
      *
      * @see UniversalDecompressor
      */
     @Override
     public InputStream getInputStream(String fileName) throws IOException
     {
-        InputStream inputStream = null;
-        if (fileExists(fileName)) {
-            String extension = getExtension(fileName);
+        InputStream inputStream;
+        String extension = getExtension(fileName);
 
-            if (isExternalSupported(extension)) {
-                inputStream = startExternal(fileName);
-            }
-            else if (isInternalSupported(extension)) {
-                inputStream = internalSupport.get(extension).getInputStream(fileName);
-            }
-            else {
-                inputStream = getDefault(fileName);
-            }
+        if (isExternalSupported(extension) && fileExists(fileName)) {
+            inputStream = startExternal(fileName);
+        }
+        else if (isInternalSupported(extension)) {
+            inputStream = internalSupport.get(extension).getInputStream(fileName);
+        }
+        else {
+            inputStream = getDefault(fileName);
         }
         return inputStream;
     }
