@@ -27,6 +27,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.util.ApiUtilities;
 import org.dkpro.jwpl.util.StringUtils;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,7 @@ public class PageQueryIterable
 
         this.wiki = wiki;
         this.pageIdList = new ArrayList<>();
+        boolean hasTitlePattern = false;
 
         // get a list with all pageIDs of the pages conforming with the query
         String hql = "select p.pageId from Page as p ";
@@ -58,18 +60,23 @@ public class PageQueryIterable
         if (q.onlyArticlePages()) {
             conditions.add("p.isDisambiguation = 0");
         }
-        if (!"".equals(q.getTitlePattern())) {
-            conditions.add("p.name like '" + q.getTitlePattern() + "'");
+        if (q.getTitlePattern() != null && !q.getTitlePattern().isBlank()) {
+            conditions.add("p.name like :name");
+            hasTitlePattern = true;
         }
 
         String conditionString = StringUtils.join(conditions, " AND ");
-        if (conditionString.length() > 0) {
+        if (!conditionString.isEmpty()) {
             hql += "where " + conditionString;
         }
 
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        List<Integer> idList = session.createQuery(hql, Integer.class).list();
+        Query<Integer> query = session.createQuery(hql, Integer.class);
+        if (hasTitlePattern) {
+            query.setParameter("name", q.getTitlePattern());
+        }
+        List<Integer> idList = query.list();
         session.getTransaction().commit();
 
         int progress = 0;
@@ -95,13 +102,9 @@ public class PageQueryIterable
                 page = wiki.getPage(pageID);
             }
             catch (WikiPageNotFoundException e) {
-                logger.error("Page with pageID {} could not be found. Fatal error. Terminating.",
+                logger.warn("Page with pageID {} could not be found. Fatal error. Terminating.",
                         pageID);
-                e.printStackTrace();
-                System.exit(1);
             }
-
-            String[] tokens = page.getPlainText().split(" ");
 
             if (!(q.getMinIndegree() >= 0 && q.getMaxIndegree() >= 0
                     && q.getMinIndegree() <= q.getMaxIndegree())) {
@@ -157,6 +160,8 @@ public class PageQueryIterable
             if (categoriesSize < q.getMinCategories() || categoriesSize > q.getMaxCategories()) {
                 continue;
             }
+
+            String[] tokens = page.getPlainText().split(" ");
             if (tokens.length < q.getMinTokens() || tokens.length > q.getMaxTokens()) {
                 continue;
             }

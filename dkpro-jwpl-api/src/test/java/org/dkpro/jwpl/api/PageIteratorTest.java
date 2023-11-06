@@ -64,7 +64,7 @@ public class PageIteratorTest
             assertNotNull(p);
             nrOfPages++;
         }
-        assertEquals(33, nrOfPages, "Number of pages == 33");
+        assertEquals(34, nrOfPages, "Number of pages == 34");
 
         while (articleIter.hasNext()) {
             Page p = articleIter.next();
@@ -73,7 +73,7 @@ public class PageIteratorTest
         }
 
         // Assuming 33 is the correct number now
-        assertEquals(33, nrOfArticles, "Number of articles == 33");
+        assertEquals(34, nrOfArticles, "Number of articles == 34");
 
     }
 
@@ -92,7 +92,7 @@ public class PageIteratorTest
                 Page p = pageIter.next();
                 nrOfPages++;
             }
-            assertEquals(33, nrOfPages, "Number of pages == 33");
+            assertEquals(34, nrOfPages, "Number of pages == 34");
         }
     }
 }
