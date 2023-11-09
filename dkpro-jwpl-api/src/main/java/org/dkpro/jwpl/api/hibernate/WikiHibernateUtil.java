@@ -75,7 +75,7 @@ public class WikiHibernateUtil
         boolean useMySQL = false;
         boolean useMariaDB = false;
         boolean useHSQL = false;
-        // XXX other dialects might be interesting here as well...
+        // XXX other backends might be interesting here as well...
         if (jdbcURL.toLowerCase().contains("mysql")) {
             useMySQL = true;
         }
@@ -84,17 +84,6 @@ public class WikiHibernateUtil
         }
         else if (jdbcURL.toLowerCase().contains("hsql")) {
             useHSQL = true;
-        }
-
-        // SQL dialect
-        if (useMySQL) {
-            p.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
-        }
-        else if (useMariaDB) {
-            p.setProperty("hibernate.dialect", "org.hibernate.dialect.MariaDBDialect");
-        }
-        else if (useHSQL) {
-            p.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
         }
 
         // Database connection settings
@@ -130,12 +119,10 @@ public class WikiHibernateUtil
             p.setProperty("hibernate.hbm2ddl.auto", "none");
         }
 
-        // Avoid long running connection acquisition:
-        // Important performance fix to obtain jdbc connections a lot faster by avoiding metadata
-        // fetching
-        p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "false");
+        // Leave this set 'true' as this is required for dynamic Dialect resolution!
+        p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
-        if (useMySQL) {
+        if (useMySQL || useMariaDB) {
             // Set C3P0 Connection Pool in case somebody wants to use it in production settings
             // if no C3P0 is available at runtime, related warnings can be ignored safely as the
             // built-in CP will be used.
