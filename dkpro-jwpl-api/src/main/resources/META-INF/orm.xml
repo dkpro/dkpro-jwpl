@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+                 https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd"
+                 version="3.0">
+  <entity class="org.dkpro.jwpl.api.hibernate.Category" metadata-complete="true">
+    <attributes>
+      <id name="id">
+        <generated-value strategy="AUTO"/>
+      </id>
+      <basic name="pageId">
+        <column unique="true"/>
+      </basic>
+      <basic name="name">
+        TODO index...
+      </basic>
+      <one-to-many name="inLinks">
+      </one-to-many>
+    </attributes>
+  </entity>
+</entity-mappings>

@@ -592,23 +592,24 @@ public class Wikipedia
             throw new WikiPageNotFoundException();
         }
 
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
-        String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
-        List<Integer> categoryHibernateIds = session.createQuery(sql, Integer.class)
-                .setParameter("pageTitle", pageTitle).list();
-        session.getTransaction().commit();
+        try (Session session = this.__getHibernateSession()) {
+            session.beginTransaction();
+            String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
+            List<Integer> categoryHibernateIds = session.createQuery(sql, Integer.class)
+                    .setParameter("pageTitle", pageTitle).list();
+            session.getTransaction().commit();
 
-        Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
-        for (int hibernateId : categoryHibernateIds) {
-            try {
-                categorySet.add(new Category(this, hibernateId));
+            Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
+            for (int hibernateId : categoryHibernateIds) {
+                try {
+                    categorySet.add(new Category(this, hibernateId));
+                }
+                catch (WikiPageNotFoundException e) {
+                    logger.warn("Could not load Category by it's HibernateId = '" + hibernateId + "'");
+                }
             }
-            catch (WikiPageNotFoundException e) {
-                logger.warn("Could not load Category by it's HibernateId = '" + hibernateId + "'");
-            }
+            return categorySet;
         }
-        return categorySet;
     }
 
     /**

@@ -276,18 +276,19 @@ public class Page
      */
     public Set<Category> getCategories()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-        Set<Integer> tmp = new UnmodifiableArraySet<>(hibernatePage.getCategories());
-        session.getTransaction().commit();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+            Set<Integer> tmp = new UnmodifiableArraySet<>(hibernatePage.getCategories());
+            session.getTransaction().commit();
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmp) {
-            categories.add(wiki.getCategory(pageID));
+            Set<Category> categories = new HashSet<>();
+            for (int pageID : tmp) {
+                categories.add(wiki.getCategory(pageID));
+            }
+
+            return categories;
         }
-
-        return categories;
     }
 
     /**
@@ -325,25 +326,26 @@ public class Page
      */
     public Set<Page> getInlinks()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> pageIDs = new UnmodifiableArraySet<>(hibernatePage.getInLinks());
-        session.getTransaction().commit();
+        try (Session session = wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+            // Have to copy links here since getPage later will close the session.
+            Set<Integer> pageIDs = new UnmodifiableArraySet<>(hibernatePage.getInLinks());
+            session.getTransaction().commit();
 
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : pageIDs) {
-            try {
-                pages.add(wiki.getPage(pageID));
+            Set<Page> pages = new HashSet<>();
+            for (int pageID : pageIDs) {
+                try {
+                    pages.add(wiki.getPage(pageID));
+                }
+                catch (WikiApiException e) {
+                    // Silently ignore if a page could not be found
+                    // There may be inlinks that do not come from an existing page.
+                }
             }
-            catch (WikiApiException e) {
-                // Silently ignore if a page could not be found
-                // There may be inlinks that do not come from an existing page.
-            }
+
+            return pages;
         }
-
-        return pages;
     }
 
     /**
@@ -378,14 +380,15 @@ public class Page
      */
     public Set<Integer> getInlinkIDs()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        try (Session session = wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-        Set<Integer> tmpSet = new HashSet<>(hibernatePage.getInLinks());
+            Set<Integer> tmpSet = new HashSet<>(hibernatePage.getInLinks());
 
-        session.getTransaction().commit();
-        return tmpSet;
+            session.getTransaction().commit();
+            return tmpSet;
+        }
     }
 
     /**
@@ -398,25 +401,26 @@ public class Page
      */
     public Set<Page> getOutlinks()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        // session.lock(hibernatePage, LockMode.NONE);
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> tmpSet = new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
-        session.getTransaction().commit();
+        try (Session session = wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            // session.lock(hibernatePage, LockMode.NONE);
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+            // Have to copy links here since getPage later will close the session.
+            Set<Integer> tmpSet = new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
+            session.getTransaction().commit();
 
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : tmpSet) {
-            try {
-                pages.add(wiki.getPage(pageID));
+            Set<Page> pages = new HashSet<>();
+            for (int pageID : tmpSet) {
+                try {
+                    pages.add(wiki.getPage(pageID));
+                }
+                catch (WikiApiException e) {
+                    // Silently ignore if a page could not be found.
+                    // There may be outlinks pointing to non-existing pages.
+                }
             }
-            catch (WikiApiException e) {
-                // Silently ignore if a page could not be found.
-                // There may be outlinks pointing to non-existing pages.
-            }
+            return pages;
         }
-        return pages;
     }
 
     /**
@@ -451,15 +455,15 @@ public class Page
      */
     public Set<Integer> getOutlinkIDs()
     {
+        try (Session session = wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
 
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+            Set<Integer> tmpSet = new HashSet<>(hibernatePage.getOutLinks());
 
-        Set<Integer> tmpSet = new HashSet<>(hibernatePage.getOutLinks());
-
-        session.getTransaction().commit();
-        return tmpSet;
+            session.getTransaction().commit();
+            return tmpSet;
+        }
     }
 
     /**
@@ -481,12 +485,13 @@ public class Page
      */
     public Set<String> getRedirects()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
-        Set<String> tmpSet = new HashSet<>(hibernatePage.getRedirects());
-        session.getTransaction().commit();
-        return tmpSet;
+        try (Session session = wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+            Set<String> tmpSet = new HashSet<>(hibernatePage.getRedirects());
+            session.getTransaction().commit();
+            return tmpSet;
+        }
     }
 
     /**

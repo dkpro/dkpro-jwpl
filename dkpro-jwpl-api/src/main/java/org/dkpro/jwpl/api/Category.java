@@ -181,17 +181,18 @@ public class Category
      */
     public Set<Category> getParents()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
-        session.getTransaction().commit();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.lock(hibernateCategory, LockMode.NONE);
+            Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
+            session.getTransaction().commit();
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmpSet) {
-            categories.add(this.wiki.getCategory(pageID));
+            Set<Category> categories = new HashSet<>();
+            for (int pageID : tmpSet) {
+                categories.add(this.wiki.getCategory(pageID));
+            }
+            return categories;
         }
-        return categories;
     }
 
     /**
@@ -223,12 +224,13 @@ public class Category
      */
     public Set<Integer> getParentIDs()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
-        session.getTransaction().commit();
-        return tmpSet;
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.lock(hibernateCategory, LockMode.NONE);
+            Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getInLinks());
+            session.getTransaction().commit();
+            return tmpSet;
+        }
     }
 
     /**
@@ -236,17 +238,18 @@ public class Category
      */
     public Set<Category> getChildren()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getOutLinks());
-        session.getTransaction().commit();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.lock(hibernateCategory, LockMode.NONE);
+            Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getOutLinks());
+            session.getTransaction().commit();
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmpSet) {
-            categories.add(this.wiki.getCategory(pageID));
+            Set<Category> categories = new HashSet<>();
+            for (int pageID : tmpSet) {
+                categories.add(this.wiki.getCategory(pageID));
+            }
+            return categories;
         }
-        return categories;
     }
 
     /**
@@ -322,13 +325,14 @@ public class Category
      */
     public Set<Integer> getArticleIds()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateCategory, LockMode.NONE);
-        Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getPages());
-        session.getTransaction().commit();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            session.lock(hibernateCategory, LockMode.NONE);
+            Set<Integer> tmpSet = new HashSet<>(hibernateCategory.getPages());
+            session.getTransaction().commit();
 
-        return tmpSet;
+            return tmpSet;
+        }
     }
 
     /**

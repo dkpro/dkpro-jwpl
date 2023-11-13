@@ -100,11 +100,6 @@ public class Page
         return outLinks;
     }
 
-    public int getOutDegree()
-    {
-        return outLinks.size();
-    }
-
     public void setOutLinks(Set<Integer> outLinks)
     {
         this.outLinks = outLinks;
