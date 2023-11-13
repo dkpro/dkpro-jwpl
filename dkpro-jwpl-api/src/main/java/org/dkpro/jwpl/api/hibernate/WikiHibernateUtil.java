@@ -41,7 +41,7 @@ public class WikiHibernateUtil
      *
      * @param config The {@link DatabaseConfiguration} to obtain the factory for. Must not be {@code null}.
      * @return A fully initialized {@link SessionFactory} instance.
-     * 
+     *
      * @throws ExceptionInInitializerError Thrown if the {@code config} instance was incorrect or incomplete.
      */
     public static SessionFactory getSessionFactory(DatabaseConfiguration config)
@@ -133,6 +133,9 @@ public class WikiHibernateUtil
         // Leave this set 'true' as this is required for dynamic Dialect resolution!
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
+        // TODO @rzo1: The topic / party starts with this 'new' magic property
+        p.setProperty("hibernate.transform_hbm_xml.enabled", "true");
+
         if (useMySQL || useMariaDB) {
             // Set C3P0 Connection Pool in case somebody wants to use it in production settings
             // if no C3P0 is available at runtime, related warnings can be ignored safely as the
@@ -149,10 +152,11 @@ public class WikiHibernateUtil
 
     private static Configuration getConfiguration(DatabaseConfiguration config)
     {
-        return new Configuration().addClass(Category.class).addClass(MetaData.class)
-                .addClass(Page.class).addClass(PageMapLine.class)
-                // .addClass(RelatednessCacheLine.class)
-                .addProperties(getProperties(config));
+        Configuration cfg = new Configuration();
+        cfg.addProperties(getProperties(config));
+        cfg.addURL(WikiHibernateUtil.class.getResource("jwpl-orm.hbm.xml"));
+        // cfg.addClass(Category.class).addClass(MetaData.class).addClass(Page.class).addClass(PageMapLine.class);
+        return cfg;
     }
 
 }
