@@ -17,23 +17,26 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
-import java.io.FileInputStream;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 /**
- * GZip Decompressor (based on Singleton Design Pattern). Uses getInputStream to set up the archive
- * path and returns the InputStream to read from
+ * GZip Decompressor (based on Singleton Design Pattern).
+ * Uses {@link IDecompressor#getInputStream(String)} to set up the archive
+ * path and returns the {@link InputStream} to read from.
+ *
+ * @see IDecompressor
  */
-public class GZipDecompressor
-    implements IDecompressor
+public final class GZipDecompressor
+    extends AbstractDecompressor implements IDecompressor
 {
 
     @Override
     public InputStream getInputStream(String fileName) throws IOException
     {
-        return new GZIPInputStream(new FileInputStream(fileName));
+        return new GZIPInputStream(new BufferedInputStream(openStream(fileName)));
     }
 
 }

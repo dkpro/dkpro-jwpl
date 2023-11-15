@@ -55,8 +55,8 @@ public class Template
     }
 
     /**
-     * Returns the Position Span of this Template refering to the ContentElement in which the
-     * Template occures. This is mainly the same like Link.getPos(), but a Template does�n know it�s
+     * Returns the Position Span of this Template referring to the ContentElement in which the
+     * Template occurs. This is mainly the same as {@link Link#getPos()}, but a Template doesn't know it's
      * HomeElement.
      */
     public Span getPos()
@@ -72,14 +72,15 @@ public class Template
         this.pos = pos;
     }
 
+    @Override
     public String toString()
     {
         StringBuilder result = new StringBuilder();
-        result.append("TE_NAME: \"" + name + "\"");
-        result.append("\nTE_PARAMETERS: " + parameters.size());
+        result.append("TE_NAME: \"").append(name).append("\"");
+        result.append("\nTE_PARAMETERS: ").append(parameters.size());
         for (String parameter : parameters)
-            result.append("\nTE_PARAMETER: \"" + parameter + "\"");
-        result.append("\nTE_POS: " + pos);
+            result.append("\nTE_PARAMETER: \"").append(parameter).append("\"");
+        result.append("\nTE_POS: ").append(pos);
         return result.toString();
     }
 }
