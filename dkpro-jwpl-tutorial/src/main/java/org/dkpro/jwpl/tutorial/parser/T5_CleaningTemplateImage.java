@@ -60,7 +60,7 @@ public class T5_CleaningTemplateImage
         // e.g. "Image" in English
 
         // filtering Image-Elements
-        pf.getImageIdentifers().add(IMAGE);
+        pf.getImageIdentifiers().add(IMAGE);
 
         // parse page text
         MediaWikiParser parser = pf.createParser();

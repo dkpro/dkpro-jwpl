@@ -94,7 +94,7 @@ public class ParsedPage
      * Sets the category element of a parsed page.
      *
      * @param categories
-     *            A ContentElement containg the categories of a page.
+     *            A ContentElement containing the categories of a page.
      */
     public void setCategoryElement(ContentElement categories)
     {
@@ -113,7 +113,7 @@ public class ParsedPage
 
     /**
      * Returns a list of category Link objects. This is a shortcut for writing
-     * getCategoryElemement.getLinks();
+     * getCategoryElement.getLinks();
      *
      * @return A list of category links.
      */
@@ -161,7 +161,7 @@ public class ParsedPage
      * Sets the language element of a parsed page.
      *
      * @param languages
-     *            A ContentElement containg the languages of a page.
+     *            A ContentElement containing the languages of a page.
      */
     public void setLanguagesElement(ContentElement languages)
     {
@@ -169,8 +169,6 @@ public class ParsedPage
     }
 
     /**
-     * Returns a ContentElement containing the languages that are linked inside the article.
-     *
      * @return A ContentElement containing the languages that are linked inside the article.
      */
     public ContentElement getLanguagesElement()
@@ -179,29 +177,13 @@ public class ParsedPage
     }
 
     /**
-     * Returns a list of language Link objects. This is a shortcut for writing
+     * @return A list of language Link objects. This is a shortcut for writing
      * getLanguagesElement().getLinks();
      */
     public List<Link> getLanguages()
     {
         return languages.getLinks();
     }
-
-    //// I do not think that this should be a core api method, as it is language and template
-    //// dependend. (TZ)
-    // /**
-    // * Returns a ContentElement with the Content of "Dieser Artikel" Template
-    // */
-    // public ContentElement aboutArticle(){
-    // return aboutArticle;
-    // }
-    //
-    // /**
-    // * See aboutArticle() for Details...
-    // */
-    // public void setAboutArticle(ContentElement aboutArticle){
-    // this.aboutArticle = aboutArticle;
-    // }
 
     /**
      * Sets the Sections of a ParsedPage.

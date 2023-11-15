@@ -21,10 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This is the Simple implementation of the Content Inteface, and is used for nearly all content
+ * This is the Simple implementation of the Content Interface, and is used for nearly all content
  * containing classes...
  * <p>
- * Be aware, that all retured Spans refer to the String returned by getText()<br>
+ * Be aware, that all returned Spans refer to the String returned by getText()<br>
  */
 public class ContentElement
     extends ParsedPageObject
