@@ -37,7 +37,7 @@ public class T7_HtmlFileDemo
 
         // set up an individually parametrized MediaWikiParser
         MediaWikiParserFactory pf = new MediaWikiParserFactory();
-        pf.getImageIdentifers().add("Image");
+        pf.getImageIdentifiers().add("Image");
         MediaWikiParser parser = pf.createParser();
 
         ParsedPage pp = parser.parse(documentText);

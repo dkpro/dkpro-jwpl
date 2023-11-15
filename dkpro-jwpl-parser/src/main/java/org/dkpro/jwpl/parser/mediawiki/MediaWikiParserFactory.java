@@ -34,14 +34,14 @@ public class MediaWikiParserFactory
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    private Class parserClass;
-    private Class templateParserClass;
+    private Class<?> parserClass;
+    private Class<?> templateParserClass;
     private String lineSeparator;
     private List<String> deleteTemplates;
     private List<String> parseTemplates;
-    private List<String> categoryIdentifers;
-    private List<String> languageIdentifers;
-    private List<String> imageIdentifers;
+    private List<String> categoryIdentifiers;
+    private List<String> languageIdentifiers;
+    private List<String> imageIdentifiers;
     private boolean showImageText;
     private boolean deleteTags;
     private boolean showMathTagContent;
@@ -53,6 +53,7 @@ public class MediaWikiParserFactory
     public MediaWikiParserFactory()
     {
         initVariables();
+        initLanguages();
     }
 
     /**
@@ -63,6 +64,7 @@ public class MediaWikiParserFactory
     public MediaWikiParserFactory(Language language)
     {
         initVariables();
+        initLanguages();
         if (language.equals(Language.german)) {
             initGermanVariables();
         }
@@ -79,9 +81,9 @@ public class MediaWikiParserFactory
     {
         lineSeparator = "LF";
         parserClass = ModularParser.class;
-        imageIdentifers = new ArrayList<>();
-        categoryIdentifers = new ArrayList<>();
-        languageIdentifers = new ArrayList<>();
+        imageIdentifiers = new ArrayList<>();
+        categoryIdentifiers = new ArrayList<>();
+        languageIdentifiers = new ArrayList<>();
         deleteTemplates = new ArrayList<>();
         parseTemplates = new ArrayList<>();
         showImageText = false;
@@ -89,250 +91,28 @@ public class MediaWikiParserFactory
         showMathTagContent = true;
         calculateSrcSpans = false;
         templateParserClass = ShowTemplateNamesAndParameters.class;
-
-        initLanguages();
     }
 
     private void initLanguages()
     {
         // Init the Languages...
-        languageIdentifers.add("aa");
-        languageIdentifers.add("ab");
-        languageIdentifers.add("af");
-        languageIdentifers.add("am");
-        languageIdentifers.add("an");
-        languageIdentifers.add("ar");
-        languageIdentifers.add("as");
-        languageIdentifers.add("av");
-        languageIdentifers.add("ay");
-        languageIdentifers.add("az");
-
-        languageIdentifers.add("ba");
-        languageIdentifers.add("be");
-        languageIdentifers.add("bg");
-        languageIdentifers.add("bh");
-        languageIdentifers.add("bi");
-        languageIdentifers.add("bm");
-        languageIdentifers.add("bn");
-        languageIdentifers.add("bo");
-        languageIdentifers.add("br");
-        languageIdentifers.add("bs");
-
-        languageIdentifers.add("ca");
-        languageIdentifers.add("ce");
-        languageIdentifers.add("ch");
-        languageIdentifers.add("co");
-        languageIdentifers.add("cr");
-        languageIdentifers.add("cs");
-        languageIdentifers.add("cv");
-        languageIdentifers.add("cy");
-
-        languageIdentifers.add("da");
-        languageIdentifers.add("de");
-        languageIdentifers.add("dk");
-        languageIdentifers.add("dv");
-        languageIdentifers.add("dz");
-
-        languageIdentifers.add("ee");
-        languageIdentifers.add("el");
-        languageIdentifers.add("en");
-        languageIdentifers.add("eo");
-        languageIdentifers.add("es");
-        languageIdentifers.add("et");
-        languageIdentifers.add("eu");
-
-        languageIdentifers.add("fa");
-        languageIdentifers.add("ff");
-        languageIdentifers.add("fi");
-        languageIdentifers.add("fj");
-        languageIdentifers.add("fo");
-        languageIdentifers.add("fr");
-        languageIdentifers.add("fy");
-
-        languageIdentifers.add("ga");
-        languageIdentifers.add("gd");
-        languageIdentifers.add("gl");
-        languageIdentifers.add("gn");
-        languageIdentifers.add("gu");
-        languageIdentifers.add("gv");
-
-        languageIdentifers.add("ha");
-        languageIdentifers.add("he");
-        languageIdentifers.add("hi");
-        languageIdentifers.add("hr");
-        languageIdentifers.add("ht");
-        languageIdentifers.add("hu");
-        languageIdentifers.add("hy");
-
-        languageIdentifers.add("ia");
-        languageIdentifers.add("id");
-        languageIdentifers.add("ie");
-        languageIdentifers.add("ig");
-        languageIdentifers.add("ii");
-        languageIdentifers.add("ik");
-        languageIdentifers.add("io");
-        languageIdentifers.add("is");
-        languageIdentifers.add("it");
-        languageIdentifers.add("iu");
-
-        languageIdentifers.add("ja");
-        languageIdentifers.add("jv");
-
-        languageIdentifers.add("ka");
-        languageIdentifers.add("kg");
-        languageIdentifers.add("ki");
-        languageIdentifers.add("kk");
-        languageIdentifers.add("kl");
-        languageIdentifers.add("km");
-        languageIdentifers.add("kn");
-        languageIdentifers.add("ko");
-        languageIdentifers.add("ks");
-        languageIdentifers.add("ku");
-        languageIdentifers.add("kv");
-        languageIdentifers.add("kw");
-        languageIdentifers.add("ky");
-
-        languageIdentifers.add("la");
-        languageIdentifers.add("lb");
-        languageIdentifers.add("li");
-        languageIdentifers.add("ln");
-        languageIdentifers.add("lo");
-        languageIdentifers.add("lt");
-        languageIdentifers.add("lv");
-
-        languageIdentifers.add("mg");
-        languageIdentifers.add("mh");
-        languageIdentifers.add("mi");
-        languageIdentifers.add("mk");
-        languageIdentifers.add("ml");
-        languageIdentifers.add("mn");
-        languageIdentifers.add("mo");
-        languageIdentifers.add("mr");
-        languageIdentifers.add("ms");
-        languageIdentifers.add("mt");
-        languageIdentifers.add("my");
-
-        languageIdentifers.add("na");
-        languageIdentifers.add("nb");
-        languageIdentifers.add("ne");
-        languageIdentifers.add("ng");
-        languageIdentifers.add("nl");
-        languageIdentifers.add("nn");
-        languageIdentifers.add("no");
-        languageIdentifers.add("nv");
-        languageIdentifers.add("ny");
-
-        languageIdentifers.add("oc");
-        languageIdentifers.add("os");
-        languageIdentifers.add("pa");
-        languageIdentifers.add("pl");
-        languageIdentifers.add("ps");
-        languageIdentifers.add("pt");
-
-        languageIdentifers.add("qu");
-
-        languageIdentifers.add("rm");
-        languageIdentifers.add("rn");
-        languageIdentifers.add("ro");
-        languageIdentifers.add("ru");
-        languageIdentifers.add("rw");
-
-        languageIdentifers.add("sa");
-        languageIdentifers.add("sc");
-        languageIdentifers.add("sd");
-        languageIdentifers.add("se");
-        languageIdentifers.add("sg");
-        languageIdentifers.add("sh");
-        languageIdentifers.add("si");
-        languageIdentifers.add("sk");
-        languageIdentifers.add("sl");
-        languageIdentifers.add("sm");
-        languageIdentifers.add("sn");
-        languageIdentifers.add("so");
-        languageIdentifers.add("sq");
-        languageIdentifers.add("sr");
-        languageIdentifers.add("ss");
-        languageIdentifers.add("st");
-        languageIdentifers.add("su");
-        languageIdentifers.add("sv");
-        languageIdentifers.add("sw");
-
-        languageIdentifers.add("ta");
-        languageIdentifers.add("te");
-        languageIdentifers.add("tg");
-        languageIdentifers.add("th");
-        languageIdentifers.add("ti");
-        languageIdentifers.add("tk");
-        languageIdentifers.add("tl");
-        languageIdentifers.add("tn");
-        languageIdentifers.add("to");
-        languageIdentifers.add("tr");
-        languageIdentifers.add("ts");
-        languageIdentifers.add("tt");
-        languageIdentifers.add("tw");
-        languageIdentifers.add("ty");
-
-        languageIdentifers.add("ug");
-        languageIdentifers.add("uk");
-        languageIdentifers.add("ur");
-        languageIdentifers.add("uz");
-
-        languageIdentifers.add("ve");
-        languageIdentifers.add("vi");
-        languageIdentifers.add("vo");
-
-        languageIdentifers.add("wa");
-        languageIdentifers.add("wo");
-
-        languageIdentifers.add("xh");
-
-        languageIdentifers.add("yi");
-        languageIdentifers.add("yo");
-
-        languageIdentifers.add("za");
-        languageIdentifers.add("zh");
-        languageIdentifers.add("zu");
-
-        languageIdentifers.add("als");
-        languageIdentifers.add("ang");
-        languageIdentifers.add("arc");
-        languageIdentifers.add("ast");
-        languageIdentifers.add("bug");
-        languageIdentifers.add("ceb");
-        languageIdentifers.add("chr");
-        languageIdentifers.add("chy");
-        languageIdentifers.add("csb");
-        languageIdentifers.add("frp");
-        languageIdentifers.add("fur");
-        languageIdentifers.add("got");
-        languageIdentifers.add("haw");
-        languageIdentifers.add("ilo");
-        languageIdentifers.add("jbo");
-        languageIdentifers.add("ksh");
-        languageIdentifers.add("lad");
-        languageIdentifers.add("lmo");
-        languageIdentifers.add("nah");
-        languageIdentifers.add("nap");
-        languageIdentifers.add("nds");
-        languageIdentifers.add("nrm");
-        languageIdentifers.add("pam");
-        languageIdentifers.add("pap");
-        languageIdentifers.add("pdc");
-        languageIdentifers.add("pih");
-        languageIdentifers.add("pms");
-        languageIdentifers.add("rmy");
-        languageIdentifers.add("scn");
-        languageIdentifers.add("sco");
-        languageIdentifers.add("tet");
-        languageIdentifers.add("tpi");
-        languageIdentifers.add("tum");
-        languageIdentifers.add("udm");
-        languageIdentifers.add("vec");
-        languageIdentifers.add("vls");
-        languageIdentifers.add("war");
-        languageIdentifers.add("xal");
-
-        languageIdentifers.add("simple");
+        languageIdentifiers.addAll(List.of("aa","ab","af","am","an","ar","as",
+                "av","ay","az","ba","be","bg","bh","bi","bm","bn","bo","br","bs","ca",
+                "ce","ch","co","cr","cs","cv","cy","da","de","dk","dv","dz","ee","el",
+                "en","eo","es","et","eu","fa","ff","fi","fj","fo","fr","fy","ga","gd",
+                "gl","gn","gu","gv","ha","he","hi","hr","ht","hu","hy","ia","id","ie",
+                "ig","ii","ik","io","is","it","iu","ja","jv","ka","kg","ki","kk","kl",
+                "km","kn","ko","ks","ku","kv","kw","ky","la","lb","li","ln","lo","lt",
+                "lv","mg","mh","mi","mk","ml","mn","mo","mr","ms","mt","my","na","nb",
+                "ne","ng","nl","nn","no","nv","ny","oc","os","pa","pl","ps","pt","qu",
+                "rm","rn","ro","ru","rw","sa","sc","sd","se","sg","sh","si","sk","sl",
+                "sm","sn","so","sq","sr","ss","st","su","sv","sw","ta","te","tg","th",
+                "ti","tk","tl","tn","to","tr","ts","tt","tw","ty","ug","uk","ur","uz",
+                "ve","vi","vo","wa","wo","xh","yi","yo","za","zh","zu","als","ang",
+                "arc","ast","bug","ceb","chr","chy","csb","frp","fur","got","haw",
+                "ilo","jbo","ksh","lad","lmo","nah","nap","nds","nrm","pam","pap",
+                "pdc","pih","pms","rmy","scn","sco","tet","tpi","tum","udm","vec",
+                "vls","war","xal","simple"));
     }
 
     private void initGermanVariables()
@@ -342,22 +122,22 @@ public class MediaWikiParserFactory
         // parseTemplates.add( "Dieser Artikel" );
         // parseTemplates.add( "Audio" );
         // parseTemplates.add( "Video" );
-        imageIdentifers.add("Bild");
-        imageIdentifers.add("Image");
-        imageIdentifers.add("Datei");
-        categoryIdentifers.add("Kategorie");
-        languageIdentifers.remove("de");
+        imageIdentifiers.add("Bild");
+        imageIdentifiers.add("Image");
+        imageIdentifiers.add("Datei");
+        categoryIdentifiers.add("Kategorie");
+        languageIdentifiers.remove("de");
     }
 
     private void initEnglishVariables()
     {
         templateParserClass = FlushTemplates.class;
 
-        imageIdentifers.add("Image");
-        imageIdentifers.add("File");
-        imageIdentifers.add("media");
-        categoryIdentifers.add("Category");
-        languageIdentifers.remove("en");
+        imageIdentifiers.add("Image");
+        imageIdentifiers.add("File");
+        imageIdentifiers.add("media");
+        categoryIdentifiers.add("Category");
+        languageIdentifiers.remove("en");
     }
 
     private String resolveLineSeparator()
@@ -385,21 +165,21 @@ public class MediaWikiParserFactory
         if (parserClass == ModularParser.class) {
             ModularParser mwgp = new ModularParser(
                     // resolveLineSeparator(),
-                    "\n", languageIdentifers, categoryIdentifers, imageIdentifers, showImageText,
+                    "\n", languageIdentifiers, categoryIdentifiers, imageIdentifiers, showImageText,
                     deleteTags, showMathTagContent, calculateSrcSpans, null);
 
             StringBuilder sb = new StringBuilder();
-            sb.append(lineSeparator + "languageIdentifers: ");
-            for (String s : languageIdentifers) {
-                sb.append(s + " ");
+            sb.append(lineSeparator).append("languageIdentifiers: ");
+            for (String s : languageIdentifiers) {
+                sb.append(s).append(" ");
             }
-            sb.append(lineSeparator + "categoryIdentifers: ");
-            for (String s : categoryIdentifers) {
-                sb.append(s + " ");
+            sb.append(lineSeparator).append("categoryIdentifiers: ");
+            for (String s : categoryIdentifiers) {
+                sb.append(s).append(" ");
             }
-            sb.append(lineSeparator + "imageIdentifers: ");
-            for (String s : imageIdentifers) {
-                sb.append(s + " ");
+            sb.append(lineSeparator).append("imageIdentifiers: ");
+            for (String s : imageIdentifiers) {
+                sb.append(s).append(" ");
             }
             logger.debug(sb.toString());
 
@@ -455,15 +235,15 @@ public class MediaWikiParserFactory
     /**
      * Retuns the Class of the selected Parser.
      */
-    public Class getParserClass()
+    public Class<?> getParserClass()
     {
         return parserClass;
     }
 
     /**
-     * Set the Parser which should be configurated and returned by createParser().
+     * Set the Parser which should be configured and returned by createParser().
      */
-    public void setParserClass(Class parserClass)
+    public void setParserClass(Class<?> parserClass)
     {
         this.parserClass = parserClass;
     }
@@ -471,7 +251,7 @@ public class MediaWikiParserFactory
     /**
      * Returns the Class of the selected TemplateParser.
      */
-    public Class getTemplateParserClass()
+    public Class<?> getTemplateParserClass()
     {
         return templateParserClass;
     }
@@ -479,13 +259,13 @@ public class MediaWikiParserFactory
     /**
      * Set the Parser which should be used for Template parsing.
      */
-    public void setTemplateParserClass(Class templateParserClass)
+    public void setTemplateParserClass(Class<?> templateParserClass)
     {
         this.templateParserClass = templateParserClass;
     }
 
     /**
-     * Retuns the List of templates which should be deleted in the parseing process.
+     * Returns the List of templates which should be deleted in the parsing process.
      */
     public List<String> getDeleteTemplates()
     {
@@ -493,7 +273,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Set the List of templates which should be deleted in the parseing process.
+     * Set the List of templates which should be deleted in the parsing process.
      */
     public void setDeleteTemplates(List<String> deleteTemplates)
     {
@@ -517,7 +297,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Returns the List of templates which should be "parsed" in the parseing process.
+     * Returns the List of templates which should be "parsed" in the parsing process.
      */
     public List<String> getParseTemplates()
     {
@@ -525,7 +305,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Sets the List of templates which should be "parsed" in the parseing process.
+     * Sets the List of templates which should be "parsed" in the parsing process.
      */
     public void setParseTemplates(List<String> parseTemplates)
     {
@@ -533,61 +313,61 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Returns the List of Strings which are used to specifiy that a link is a link to a wikipedia i
+     * Returns the List of Strings which are used to specify that a link is a link to a wikipedia i
      * another language.
      */
-    public List<String> getLanguageIdentifers()
+    public List<String> getLanguageIdentifiers()
     {
-        return languageIdentifers;
+        return languageIdentifiers;
     }
 
     /**
      * Sets the list of language identifiers.
      */
-    public void setLanguageIdentifers(List<String> languageIdentifers)
+    public void setLanguageIdentifiers(List<String> languageIdentifiers)
     {
-        this.languageIdentifers = languageIdentifers;
+        this.languageIdentifiers = languageIdentifiers;
     }
 
     /**
-     * Returns the List of Strings which are used to specifiy that a link is a link to a cathegory.
-     * E.g. in german "Kathegorie" is used. But it could be usefull to use more than one identifier,
-     * mainly the english identifier "cathegory" should be used too.
+     * Returns the List of Strings which are used to specify that a link is a link to a category.
+     * E.g. in german "Kategorie" is used. But it could be useful to use more than one identifier,
+     * mainly the english identifier "category" should be used too.
      */
-    public List<String> getCategoryIdentifers()
+    public List<String> getCategoryIdentifiers()
     {
-        return categoryIdentifers;
+        return categoryIdentifiers;
     }
 
     /**
-     * Set the list of cathegory identifers.
+     * Set the list of category identifiers.
      */
-    public void setCategoryIdentifers(List<String> categoryIdentifers)
+    public void setCategoryIdentifiers(List<String> categoryIdentifiers)
     {
-        this.categoryIdentifers = categoryIdentifers;
+        this.categoryIdentifiers = categoryIdentifiers;
     }
 
     /**
-     * Returns the List of Strings which are used to specifiy that a link is an Image.
+     * Returns the List of Strings which are used to specify that a link is an Image.
      */
-    public List<String> getImageIdentifers()
+    public List<String> getImageIdentifiers()
     {
-        return imageIdentifers;
+        return imageIdentifiers;
     }
 
     /**
-     * Sets the image identifer list.
+     * Sets the image identifier list.
      */
-    public void setImageIdentifers(List<String> imageIdentifers)
+    public void setImageIdentifiers(List<String> imageIdentifiers)
     {
-        this.imageIdentifers = imageIdentifers;
+        this.imageIdentifiers = imageIdentifiers;
     }
 
     /**
      * Returns if the Parser should show the Text of an Image, or delete it. If the Text is deleted,
      * it will be added as a Parameter to the Link.
      *
-     * @return true, if the Text should be shown.
+     * @return {@code true}, if the Text should be shown.
      */
     public boolean getShowImageText()
     {
@@ -603,9 +383,9 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Returns if &lt; * &gt; tags should be deleted or annotaded.
+     * Returns if &lt; * &gt; tags should be deleted or annotated.
      *
-     * @return true if the tags should be deleted.
+     * @return {@code true}, if the tags should be deleted.
      */
     public boolean getDeleteTags()
     {
@@ -613,7 +393,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Sets if &lt; * &gt; tags should be deleted or annotaded.
+     * Sets if &lt; * &gt; tags should be deleted or annotated.
      */
     public void setDeleteTags(boolean deleteTags)
     {
@@ -624,7 +404,7 @@ public class MediaWikiParserFactory
      * Retruns if the Content of math tags (&lt;math&gt;&lt;CONTENT/math&gt;) should be deleted or
      * annotated.
      *
-     * @return true, if the tag content should be annotated.
+     * @return {@code true}, if the tag content should be annotated.
      */
     public boolean getShowMathTagContent()
     {
@@ -632,7 +412,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Set if the Contetn of math tags should be deleted or annotated.
+     * Set if the Content of math tags should be deleted or annotated.
      */
     public void setShowMathTagContent(boolean showMathTagContent)
     {
@@ -643,7 +423,7 @@ public class MediaWikiParserFactory
      * Returns if the Parser should calculate the positions in the original source of the elements
      * which are parsed.
      *
-     * @return true, if the positions should be calulated.
+     * @return {@code true}, if the positions should be calculated.
      */
     public boolean getCalculateSrcSpans()
     {

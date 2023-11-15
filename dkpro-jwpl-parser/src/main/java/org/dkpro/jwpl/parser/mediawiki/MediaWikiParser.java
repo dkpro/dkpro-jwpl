@@ -31,7 +31,7 @@ public interface MediaWikiParser
     ParsedPage parse(String src);
 
     /**
-     * Retruns information abour the configuration of the parser.
+     * Retruns information about the configuration of the parser.
      */
     String configurationInfo();
 

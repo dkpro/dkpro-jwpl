@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 /**
  * This is a parser for MediaWiki Source.
  * <p>
- * It exist a {@link MediaWikiParserFactory}, to get an instance of this Parser.<br>
+ * If a {@link MediaWikiParserFactory} exists, get an instance of this Parser.<br>
  */
 public class ModularParser
     implements MediaWikiParser, MediaWikiContentElementParser
@@ -57,9 +57,9 @@ public class ModularParser
 
     // Options, set by the ParserFactory
     private String lineSeparator;
-    private List<String> categoryIdentifers;
-    private List<String> languageIdentifers;
-    private List<String> imageIdentifers;
+    private List<String> categoryIdentifiers;
+    private List<String> languageIdentifiers;
+    private List<String> imageIdentifiers;
     private MediaWikiTemplateParser templateParser;
     private boolean showImageText = false;
     private boolean deleteTags = true;
@@ -76,16 +76,16 @@ public class ModularParser
     /**
      * Creates a fully configured {@link ModularParser}...
      */
-    public ModularParser(String lineSeparator, List<String> languageIdentifers,
-            List<String> categoryIdentifers, List<String> imageIdentifers, boolean showImageText,
-            boolean deleteTags, boolean showMathTagContent, boolean calculateSrcSpans,
-            MediaWikiTemplateParser templateParser)
+    public ModularParser(String lineSeparator, List<String> languageIdentifiers,
+                         List<String> categoryIdentifiers, List<String> imageIdentifiers, boolean showImageText,
+                         boolean deleteTags, boolean showMathTagContent, boolean calculateSrcSpans,
+                         MediaWikiTemplateParser templateParser)
     {
 
         setLineSeparator(lineSeparator);
-        setLanguageIdentifers(languageIdentifers);
-        setCategoryIdentifers(categoryIdentifers);
-        setImageIdentifers(imageIdentifers);
+        setLanguageIdentifiers(languageIdentifiers);
+        setCategoryIdentifiers(categoryIdentifiers);
+        setImageIdentifiers(imageIdentifiers);
         setShowImageText(showImageText);
         setDeleteTags(deleteTags);
         setShowMathTagContent(showMathTagContent);
@@ -113,49 +113,49 @@ public class ModularParser
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public List<String> getLanguageIdentifers()
+    public List<String> getLanguageIdentifiers()
     {
-        return languageIdentifers;
+        return languageIdentifiers;
     }
 
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public void setLanguageIdentifers(List<String> languageIdentifers)
+    public void setLanguageIdentifiers(List<String> languageIdentifiers)
     {
-        this.languageIdentifers = listToLowerCase(languageIdentifers);
+        this.languageIdentifiers = listToLowerCase(languageIdentifiers);
     }
 
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public List<String> getCategoryIdentifers()
+    public List<String> getCategoryIdentifiers()
     {
-        return categoryIdentifers;
+        return categoryIdentifiers;
     }
 
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public void setCategoryIdentifers(List<String> categoryIdentifers)
+    public void setCategoryIdentifiers(List<String> categoryIdentifiers)
     {
-        this.categoryIdentifers = listToLowerCase(categoryIdentifers);
+        this.categoryIdentifiers = listToLowerCase(categoryIdentifiers);
     }
 
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public List<String> getImageIdentifers()
+    public List<String> getImageIdentifiers()
     {
-        return imageIdentifers;
+        return imageIdentifiers;
     }
 
     /**
      * Look at {@link MediaWikiParserFactory} for a description...
      */
-    public void setImageIdentifers(List<String> imageIdentifers)
+    public void setImageIdentifiers(List<String> imageIdentifiers)
     {
-        this.imageIdentifers = listToLowerCase(imageIdentifers);
+        this.imageIdentifiers = listToLowerCase(imageIdentifiers);
     }
 
     /**
@@ -259,31 +259,31 @@ public class ModularParser
         StringBuilder result = new StringBuilder();
 
         result.append("MediaWikiParser configuration:\n");
-        result.append("ParserClass: " + this.getClass() + "\n");
-        result.append("ShowImageText: " + showImageText + "\n");
-        result.append("DeleteTags: " + deleteTags + "\n");
-        result.append("ShowMathTagContent: " + showMathTagContent + "\n");
-        result.append("CalculateSrcSpans: " + calculateSrcSpans + "\n");
+        result.append("ParserClass: ").append(this.getClass()).append("\n");
+        result.append("ShowImageText: ").append(showImageText).append("\n");
+        result.append("DeleteTags: ").append(deleteTags).append("\n");
+        result.append("ShowMathTagContent: ").append(showMathTagContent).append("\n");
+        result.append("CalculateSrcSpans: ").append(calculateSrcSpans).append("\n");
 
-        result.append("LanguageIdentifers: ");
-        for (String s : languageIdentifers) {
-            result.append(s + " ");
+        result.append("LanguageIdentifiers: ");
+        for (String s : languageIdentifiers) {
+            result.append(s).append(" ");
         }
         result.append("\n");
 
-        result.append("CategoryIdentifers: ");
-        for (String s : categoryIdentifers) {
-            result.append(s + " ");
+        result.append("CategoryIdentifiers: ");
+        for (String s : categoryIdentifiers) {
+            result.append(s).append(" ");
         }
         result.append("\n");
 
-        result.append("ImageIdentifers: ");
-        for (String s : imageIdentifers) {
-            result.append(s + " ");
+        result.append("ImageIdentifiers: ");
+        for (String s : imageIdentifiers) {
+            result.append(s).append(" ");
         }
         result.append("\n");
 
-        result.append("TemplateParser: " + templateParser.getClass() + "\n");
+        result.append("TemplateParser: ").append(templateParser.getClass()).append("\n");
         result.append(templateParser.configurationInfo());
 
         return result.toString();
@@ -298,16 +298,16 @@ public class ModularParser
             logger.debug("Set lineSeparator");
             return false;
         }
-        if (categoryIdentifers == null) {
-            logger.warn("Set categoryIdentifers");
+        if (categoryIdentifiers == null) {
+            logger.warn("Set categoryIdentifiers");
             return false;
         }
-        if (languageIdentifers == null) {
-            logger.warn("Set languageIdentifers");
+        if (languageIdentifiers == null) {
+            logger.warn("Set languageIdentifiers");
             return false;
         }
-        if (imageIdentifers == null) {
-            logger.warn("Set imageIdentifers");
+        if (imageIdentifiers == null) {
+            logger.warn("Set imageIdentifiers");
             return false;
         }
         if (templateParser == null) {
@@ -342,7 +342,7 @@ public class ModularParser
         }
 
         // Creating a new ParsePage, which will be filled with information in
-        // the parseing process.
+        // the parsing process.
         ParsedPage ppResult = new ParsedPage();
 
         // Creating a new Parameter Container
@@ -351,7 +351,7 @@ public class ModularParser
         // Deletes comments out of the Source
         deleteComments(sm);
 
-        // Deletes any TOC Tags, these are not usesd in this parser.
+        // Deletes any TOC Tags, these are not used in this parser.
         deleteTOCTag(sm);
 
         // Removing the Content which should not parsed but integrated later in
@@ -363,14 +363,14 @@ public class ModularParser
             sm.removeManagedList(cepp.noWikiSpans);
         }
 
-        // Parseing the Math Tags...
+        // Parsing the Math Tags...
         sm.manageList(cepp.mathSpans);
         parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
         if (cepp.mathSpans.size() == 0) {
             sm.removeManagedList(cepp.mathSpans);
         }
 
-        // Parseing the Templates (the Span List will be added to the managed
+        // Parsing the Templates (the Span List will be added to the managed
         // lists by the function)
         parseTemplates(sm, cepp.templateSpans, cepp.templates, ppResult);
 
@@ -378,7 +378,7 @@ public class ModularParser
         parseTags(sm, cepp.tagSpans);
 
         // Converting &lt;gallery>s to normal Images, this is not beautiful, but
-        // a simple solution..
+        // a simple solution...
         convertGalleriesToImages(sm, cepp.tagSpans);
 
         // Parsing Links and Images.
@@ -392,19 +392,19 @@ public class ModularParser
         // Removing the Category Links from the Links list, and crating an
         // ContentElement for these links...
         ppResult.setCategoryElement(
-                getSpecialLinks(sm, cepp.linkSpans, cepp.links, " - ", categoryIdentifers));
+                getSpecialLinks(sm, cepp.linkSpans, cepp.links, " - ", categoryIdentifiers));
 
         // Removing the Language Links from the Links list, and crating an
         // ContentElement for these links...
         ppResult.setLanguagesElement(
-                getSpecialLinks(sm, cepp.linkSpans, cepp.links, " - ", languageIdentifers));
+                getSpecialLinks(sm, cepp.linkSpans, cepp.links, " - ", languageIdentifiers));
 
         // Parsing and Setting the Sections... the main work is done in parse
         // sections!
         ppResult.setSections(
                 EmptyStructureRemover.eliminateEmptyStructures(parseSections(sm, cepp, lineSpans)));
 
-        // Finding and Setting the paragraph which is concidered as the "First"
+        // Finding and Setting the paragraph which is considered as the "First"
         setFirstParagraph(ppResult);
 
         // check the calculated source positions, and reset them if necessary.
@@ -445,7 +445,7 @@ public class ModularParser
     }
 
     /**
-     * Deleteing ALL TOC Tags
+     * Deleting ALL TOC Tags
      */
     private void deleteTOCTag(SpanManager sm)
     {
@@ -463,23 +463,23 @@ public class ModularParser
     }
 
     private ContentElement getSpecialLinks(SpanManager sm, List<Span> linkSpans, List<Link> links,
-            String linkSpacer, List<String> identifers)
+            String linkSpacer, List<String> identifiers)
     {
         ContentElement result = new ContentElement();
         StringBuilder text = new StringBuilder();
         List<Link> localLinks = new ArrayList<>();
 
         for (int i = links.size() - 1; i >= 0; i--) {
-            String identifer = getLinkNameSpace(links.get(i).getTarget());
+            String identifier = getLinkNameSpace(links.get(i).getTarget());
 
-            if (identifer != null && identifers.indexOf(identifer) != -1) {
+            if (identifier != null && identifiers.contains(identifier)) {
                 Link l = links.remove(i);
                 Span s = linkSpans.remove(i);
                 String linkText = sm.substring(s);
                 sm.delete(s);
                 l.setHomeElement(result);
                 s.adjust(-s.getStart() + text.length());
-                text.append(linkText + linkSpacer);
+                text.append(linkText).append(linkSpacer);
                 localLinks.add(l);
                 // TODO add type?
             }
@@ -493,12 +493,7 @@ public class ModularParser
         result.setText(text.toString());
         result.setLinks(localLinks);
 
-        if (result.empty()) {
-            return null;
-        }
-        else {
-            return result;
-        }
+        return result; // may be empty in case no (other) languages could be found
     }
 
     private void getLineSpans(SpanManager sm, LinkedList<Span> lineSpans)
@@ -558,7 +553,7 @@ public class ModularParser
                 break;
 
             case HR:
-                // remove the HR (----) and handle the rest as a parapraph line
+                // remove the HR (----) and handle the rest as a paragraph line
                 removeHr(sm, s);
                 t = lineType.PARAGRAPH;
             case PARAGRAPH:
@@ -828,7 +823,7 @@ public class ModularParser
 
                 if (e == null) {
                     /*
-                     * OF: Setting e to sm.length()results in ArrayIndexOutOfBoundsExeption if
+                     * OF: Setting e to sm.length()results in ArrayIndexOutOfBoundsException if
                      * calculateSrcSpans=true
                      */
                     // e = new Span(sm.length(), sm.length());
@@ -929,7 +924,7 @@ public class ModularParser
 
     private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans)
     {
-        // Quick Hack, not very efficent, should be improved, wont work with
+        // Quick Hack, not very efficient, should be improved, wont work with
         // calculateSrcSpans == true !
 
         for (int i = 0; i < tagSpans.size() - 1; i++) {
@@ -1254,7 +1249,7 @@ public class ModularParser
         while ((extLinkTargetStart = sm.indexOf(protocol, extLinkSpan.getEnd(),
                 s.getEnd())) != -1) {
 
-            // Allowed char before the protocol identifer ?
+            // Allowed char before the protocol identifier ?
             if (extLinkTargetStart > s.getStart()
                     && (" [").indexOf(sm.charAt(extLinkTargetStart - 1)) == -1) {
                 extLinkSpan = new Span(0, extLinkTargetStart + 1);
@@ -1282,7 +1277,7 @@ public class ModularParser
 
                 if (extLinkCloseTag != -1) {
                     extLinkTextStart = extLinkTargetEnd;
-                    // nicht wie bei "normalen" links durhc | getrennt sondenr
+                    // nicht wie bei "normalen" links durhc | getrennt sondern
                     // durhc leerzeichen !!! schei�e !!!
                     while (sm.charAt(extLinkTextStart) == ' ') {
                         extLinkTextStart++;
@@ -1338,7 +1333,7 @@ public class ModularParser
     }
 
     /**
-     * There is not much differences between links an images, so they are parsed in a single step
+     * There aren't many differences between links an images, so they are parsed in a single step
      */
     private void parseImagesAndInternalLinks(SpanManager sm, List<Span> linkSpans, List<Link> links)
     {
@@ -1386,7 +1381,7 @@ public class ModularParser
 
             String namespace = getLinkNameSpace(linkTarget);
             if (namespace != null) {
-                if (imageIdentifers.indexOf(namespace) != -1) {
+                if (imageIdentifiers.indexOf(namespace) != -1) {
                     if (linkOptionTag != -1) {
                         int temp;
                         while ((temp = sm.indexOf("|", linkTextStart, linkEndTag)) != -1) {
@@ -1493,13 +1488,13 @@ public class ModularParser
     }
 
     /**
-     * Searches a line for Bold and Italic quotations, this has to be done linewhise.
+     * Searches a line for Bold and Italic quotations, this has to be done line-wise.
      */
     private void parseBoldAndItalicSpans(SpanManager sm, Span line, List<Span> boldSpans,
             List<Span> italicSpans)
     {
-        // Das suchen nach BOLD und ITALIC muss in den Jeweiligen
-        // Zeilen geschenhen, da ein LineSeparator immer BOLD und
+        // Das suchen nach BOLD und ITALIC muss in den jeweiligen
+        // Zeilen geschehen, da ein LineSeparator immer BOLD und
         // Italic Tags schliesst.
 
         // Bold Spans
@@ -1579,7 +1574,7 @@ public class ModularParser
     }
 
     /**
-     * Building a ContentElement, this funciton is calles by all the other parseContentElement(..)
+     * Building a ContentElement, this function is calls by all the other parseContentElement(..)
      * functions
      */
     private ContentElement parseContentElement(SpanManager sm, ContentElementParsingParameters cepp,
@@ -1619,7 +1614,7 @@ public class ModularParser
             parseExternalLinks(sm, line, "ftp://", managedSpans, localLinks, result);
             parseExternalLinks(sm, line, "mailto:", managedSpans, localLinks, result);
 
-            // end of linewhise opperations
+            // end of line-wise operations
             lineSpans.removeFirst();
         }
         sm.removeManagedList(lineSpans);
@@ -1853,7 +1848,7 @@ public class ModularParser
 
             // if the result is not an empty string, we got the number of the
             // first paragraph
-            if (!ptext.toString().trim().equals("")) {
+            if (!ptext.toString().trim().isEmpty()) {
                 pp.setFirstParagraphNr(i);
                 return;
             }
@@ -1861,9 +1856,9 @@ public class ModularParser
     }
 
     /**
-     * Container for all the Parameters needed in the parseing process
+     * Container for all the Parameters needed in the parsing process
      */
-    class ContentElementParsingParameters
+    static class ContentElementParsingParameters
     {
         final List<Span> noWikiSpans;
         final List<String> noWikiStrings;
