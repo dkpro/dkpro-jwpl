@@ -1,22 +1,121 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<entity-mappings xmlns="https://jakarta.ee/xml/ns/persistence/orm"
-                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                 xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
-                 https://jakarta.ee/xml/ns/persistence/orm/orm_3_0.xsd"
-                 version="3.0">
-  <entity class="org.dkpro.jwpl.api.hibernate.Category" metadata-complete="true">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<entity-mappings xmlns="http://www.hibernate.org/xsd/orm/mapping">
+  <description>mapping.xml document auto-generated from legacy hbm.xml format via transformation</description>
+  <persistence-unit-metadata/>
+  <attribute-accessor>field</attribute-accessor>
+  <default-cascade>none</default-cascade>
+  <default-lazy>true</default-lazy>
+  <entity class="org.dkpro.jwpl.api.hibernate.Category" access="FIELD" metadata-complete="true">
+    <table name="Category"/>
+    <dynamic-insert>false</dynamic-insert>
+    <dynamic-update>false</dynamic-update>
+    <select-before-update>false</select-before-update>
+    <batch-size>-1</batch-size>
+    <mutable>true</mutable>
+    <optimistic-lock>version</optimistic-lock>
+    <polymorphism>implicit</polymorphism>
     <attributes>
-      <id name="id">
-        <generated-value strategy="AUTO"/>
+      <id name="id" access="FIELD">
+        <column name="id"/>
       </id>
-      <basic name="pageId">
-        <column unique="true"/>
-      </basic>
-      <basic name="name">
-        TODO index...
-      </basic>
-      <one-to-many name="inLinks">
-      </one-to-many>
+      <basic name="pageId" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="name" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <element-collection name="inLinks" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="inLinks" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="category_inlinks"/>
+      </element-collection>
+      <element-collection name="outLinks" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="outLinks" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="category_outlinks"/>
+      </element-collection>
+      <element-collection name="pages" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="pages" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="category_pages"/>
+      </element-collection>
+    </attributes>
+  </entity>
+  <entity class="org.dkpro.jwpl.api.hibernate.MetaData" access="FIELD" metadata-complete="true">
+    <table name="MetaData"/>
+    <dynamic-insert>false</dynamic-insert>
+    <dynamic-update>false</dynamic-update>
+    <select-before-update>false</select-before-update>
+    <batch-size>-1</batch-size>
+    <mutable>true</mutable>
+    <optimistic-lock>version</optimistic-lock>
+    <polymorphism>implicit</polymorphism>
+    <attributes>
+      <id name="id" access="FIELD">
+        <column name="id"/>
+      </id>
+      <basic name="language" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="disambiguationCategory" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="mainCategory" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="nrofPages" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="nrofRedirects" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="nrofDisambiguationPages" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="nrofCategories" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="version" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+    </attributes>
+  </entity>
+  <entity class="org.dkpro.jwpl.api.hibernate.Page" access="FIELD" metadata-complete="true">
+    <table name="Page"/>
+    <dynamic-insert>false</dynamic-insert>
+    <dynamic-update>false</dynamic-update>
+    <select-before-update>false</select-before-update>
+    <batch-size>-1</batch-size>
+    <mutable>true</mutable>
+    <optimistic-lock>version</optimistic-lock>
+    <polymorphism>implicit</polymorphism>
+    <attributes>
+      <id name="id" access="FIELD">
+        <column name="id"/>
+      </id>
+      <basic name="pageId" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="name" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="text" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="isDisambiguation" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <element-collection name="inLinks" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="inLinks" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="page_inlinks"/>
+      </element-collection>
+      <element-collection name="outLinks" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="outLinks" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="page_outlinks"/>
+      </element-collection>
+      <element-collection name="categories" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="pages" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="page_categories"/>
+      </element-collection>
+      <element-collection name="redirects" fetch="EAGER" access="FIELD">
+        <sort>unsorted</sort>
+        <column name="redirects" unique="false" nullable="true" insertable="true" updatable="true"/>
+        <collection-table name="page_redirects"/>
+      </element-collection>
+    </attributes>
+  </entity>
+  <entity class="org.dkpro.jwpl.api.hibernate.PageMapLine" access="FIELD" metadata-complete="true">
+    <table name="PageMapLine"/>
+    <dynamic-insert>false</dynamic-insert>
+    <dynamic-update>false</dynamic-update>
+    <select-before-update>false</select-before-update>
+    <batch-size>-1</batch-size>
+    <mutable>true</mutable>
+    <optimistic-lock>version</optimistic-lock>
+    <polymorphism>implicit</polymorphism>
+    <attributes>
+      <id name="id" access="FIELD">
+        <column name="id"/>
+      </id>
+      <basic name="name" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="pageID" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="stem" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
+      <basic name="lemma" fetch="EAGER" optional="true" access="FIELD" optimistic-lock="true"/>
     </attributes>
   </entity>
 </entity-mappings>

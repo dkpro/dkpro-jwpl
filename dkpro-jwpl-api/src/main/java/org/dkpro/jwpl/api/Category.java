@@ -106,13 +106,14 @@ public class Category
      */
     private void createCategory(long id) throws WikiPageNotFoundException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        hibernateCategory = catDAO.findById(id);
-        session.getTransaction().commit();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
+            hibernateCategory = catDAO.findById(id);
+            session.getTransaction().commit();
 
-        if (hibernateCategory == null) {
-            throw new WikiPageNotFoundException("No category with id " + id + " was found.");
+            if (hibernateCategory == null) {
+                throw new WikiPageNotFoundException("No category with id " + id + " was found.");
+            }
         }
     }
 
@@ -130,27 +131,28 @@ public class Category
     private void createCategory(Title title) throws WikiPageNotFoundException
     {
         String name = title.getWikiStyleTitle();
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
+        try (Session session = this.wiki.__getHibernateSession()) {
+            session.beginTransaction();
 
-        Integer returnValue;
+            Integer returnValue;
 
-        String query = "select cat.pageId from Category as cat where cat.name = :name";
-        if (wiki.getDatabaseConfiguration().supportsCollation()) {
-            query += Wikipedia.SQL_COLLATION;
-        }
-        returnValue = session.createNativeQuery(query, Integer.class)
-                .setParameter("name", name, StandardBasicTypes.STRING).uniqueResult();
-        session.getTransaction().commit();
+            String query = "select cat.pageId from Category as cat where cat.name = :name";
+            if (wiki.getDatabaseConfiguration().supportsCollation()) {
+                query += Wikipedia.SQL_COLLATION;
+            }
+            returnValue = session.createNativeQuery(query, Integer.class)
+                    .setParameter("name", name, StandardBasicTypes.STRING).uniqueResult();
+            session.getTransaction().commit();
 
-        // if there is no category with this name, the hibernateCategory is null
-        if (returnValue == null) {
-            hibernateCategory = null;
-            throw new WikiPageNotFoundException("No category with name " + name + " was found.");
-        }
-        else {
-            int pageID = returnValue;
-            createCategory(pageID);
+            // if there is no category with this name, the hibernateCategory is null
+            if (returnValue == null) {
+                hibernateCategory = null;
+                throw new WikiPageNotFoundException("No category with name " + name + " was found.");
+            }
+            else {
+                int pageID = returnValue;
+                createCategory(pageID);
+            }
         }
     }
 

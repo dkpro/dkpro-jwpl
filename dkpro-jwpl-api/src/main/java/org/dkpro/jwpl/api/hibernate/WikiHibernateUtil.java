@@ -133,9 +133,6 @@ public class WikiHibernateUtil
         // Leave this set 'true' as this is required for dynamic Dialect resolution!
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
-        // TODO @rzo1: The topic / party starts with this 'new' magic property
-        p.setProperty("hibernate.transform_hbm_xml.enabled", "true");
-
         if (useMySQL || useMariaDB) {
             // Set C3P0 Connection Pool in case somebody wants to use it in production settings
             // if no C3P0 is available at runtime, related warnings can be ignored safely as the
@@ -147,6 +144,10 @@ public class WikiHibernateUtil
             p.setProperty("hibernate.c3p0.max_statements", "100");
             p.setProperty("hibernate.c3p0.timeout", "1000");
         }
+
+        // TODO @rzo1: Required if the old-fashioned HBM-XML approach shall be demonstrated.
+        // p.setProperty("hibernate.transform_hbm_xml.enabled", "true");
+
         return p;
     }
 
@@ -154,7 +155,13 @@ public class WikiHibernateUtil
     {
         Configuration cfg = new Configuration();
         cfg.addProperties(getProperties(config));
-        cfg.addURL(WikiHibernateUtil.class.getResource("jwpl-orm.hbm.xml"));
+        // Variant-1: Modernized, scanning via orm.xml file
+        cfg.addURL(WikiHibernateUtil.class.getResource("/META-INF/orm.xml"));
+
+        // Variant-2: Scanning via combined HBM xml files
+        // cfg.addURL(WikiHibernateUtil.class.getResource("jwpl-orm.hbm.xml"));
+
+        // Variant-3: Auto-Scanning via class files + xml at runtime (DEPRECATED / not flexible)
         // cfg.addClass(Category.class).addClass(MetaData.class).addClass(Page.class).addClass(PageMapLine.class);
         return cfg;
     }
