@@ -26,7 +26,6 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.EncodingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
-import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.common.logging.messages.consumer.ConsumerLogMessages;
@@ -118,8 +117,6 @@ public class SQLEncoder
      *            Reference to the logger
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
-     * @throws LoggingException
-     *             if an error occurred while accessing the logger
      */
     public SQLEncoder(final Logger logger) throws ConfigurationException
     {

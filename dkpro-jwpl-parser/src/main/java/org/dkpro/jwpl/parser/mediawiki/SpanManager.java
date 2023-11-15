@@ -225,14 +225,13 @@ public class SpanManager
     }
 
     /**
-     * <font color="#ff0000">This function is not implemented !!!</font>
+     * Note: This function is not implemented!
      */
     public CharSequence subSequence(int start, int end)
     {
         // TODO Implementieren
-        System.err.println("CharSequence subSequence(int start, int end)\nSorry, not Implemented");
-        sb.charAt(-1); // causes an error
-        return null;
+        throw new UnsupportedOperationException("CharSequence subSequence(int start, int end) "
+                + "- Sorry, not implemented!");
     }
 
     public int length()
