@@ -40,7 +40,7 @@ import org.dkpro.jwpl.parser.mediawiki.ShowTemplateNamesAndParameters;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
-import org.dkpro.jwpl.util.StringUtils;
+import org.dkpro.jwpl.api.util.StringUtils;
 import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo;
 import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.slf4j.Logger;

@@ -24,8 +24,8 @@ import java.util.List;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
-import org.dkpro.jwpl.util.ApiUtilities;
-import org.dkpro.jwpl.util.StringUtils;
+import org.dkpro.jwpl.api.util.ApiUtilities;
+import org.dkpro.jwpl.api.util.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;

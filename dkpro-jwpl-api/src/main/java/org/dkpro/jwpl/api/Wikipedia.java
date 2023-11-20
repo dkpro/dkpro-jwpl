@@ -34,7 +34,7 @@ import org.dkpro.jwpl.api.exception.WikiInitializationException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
-import org.dkpro.jwpl.util.distance.LevenshteinStringDistance;
+import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
