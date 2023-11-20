@@ -1,17 +1,73 @@
-Known Issues
+# Config Examples
 
-Please also see the issues on Google Code 
-http://code.google.com/p/jwpl/issues/list
+## Diff Tool Config
 
+```xml
+<config>
+	<values>
+		<VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING>12</VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING>
+		<COUNTER_FULL_REVISION>1000</COUNTER_FULL_REVISION>
+	</values>
+	<externals>
+		<sevenzip>"D:\Programme\Utilities\7-Zip\7z.exe"</sevenzip>
+	</externals>
+	<input>
+		<MODE_SURROGATES>DISCARD_REVISION</MODE_SURROGATES>
+		<WIKIPEDIA_ENCODING>UTF-8</WIKIPEDIA_ENCODING>
+		<archive>
+			<type>SEVENZIP</type>
+			<path>"D:\simplewiki.7z"</path>
+			<start>0</start>
+		</archive>
+	</input>
+	<output>
+		<OUTPUT_MODE>SQL</OUTPUT_MODE>
+		<PATH>""</PATH>
+		<LIMIT_SQL_FILE_SIZE>1000000000</LIMIT_SQL_FILE_SIZE>
+		<MODE_ZIP_COMPRESSION_ENABLED>true</MODE_ZIP_COMPRESSION_ENABLED>
+	</output>
+	<cache>
+		<LIMIT_TASK_SIZE_REVISIONS>5000000</LIMIT_TASK_SIZE_REVISIONS>
+		<LIMIT_TASK_SIZE_DIFFS>1000000</LIMIT_TASK_SIZE_DIFFS>
+		<LIMIT_SQLSERVER_MAX_ALLOWED_PACKET>1000000</LIMIT_SQLSERVER_MAX_ALLOWED_PACKET>
+	</cache>
+	<logging>
+		<root_folder>""</root_folder>
+		<diff_tool>
+			<level>INFO</level>
+		</diff_tool>
+	</logging>
+	<debug>
+		<verification_diff>false</verification_diff>
+		<verification_encoding>false</verification_encoding>
+		<statistical_output>false</statistical_output>
+		<debug_output>
+			<enabled>false</enabled>
+			<path>""</path>
+		</debug_output>
+	</debug>
+	<filter>
+		<namespaces>
+			<!-- White list of namespaces; if nothing here then all namespaces are allowed -->
+			<ns>0</ns>
+			<ns>1</ns>
+		</namespaces>
+	</filter>
+</config>
 
-I) 
-Handling of surrogate characters
+```
 
-There are 4 possible modes of handling UTF8 surrogate characters.
-Currently, the only reliable mode is "Discard Revision", in which any revision that contains surrogate characters is discarded.
-The other three modes in "org.dkpro.jwpl.revisionmachine.difftool.data.SurrogateModes" have been disabled for now.
-The corresponding config-section in the config tool has also been made invisible (org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels.InputPanel)
-The disabled parts are marked with TODO-markers
+## Index Generator Config
 
-In order to use the other three surrogate modes, which try to handle surrogate characters differently,
-the corresponding code has to be checked. Afterwards, the modes can be reenables in the config tool (InputPanel.java) and the SurrogateModes-class
+```
+host=localhost
+db=wiki_en_20110405_rev
+user=student
+password=student
+output=target
+outputDatabase=false
+outputDatafile=false
+charset=UTF8
+buffer=15000
+maxAllowedPackets=16760832
+```

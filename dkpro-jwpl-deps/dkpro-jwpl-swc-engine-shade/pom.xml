@@ -124,6 +124,10 @@
                   <pattern>javax.xml.bind</pattern>
                   <shadedPattern>jakarta.xml.bind</shadedPattern>
                 </relocation>
+                <relocation>
+                  <pattern>org.sweble.wikitext.engine</pattern>
+                  <shadedPattern>org.dkpro.jwpl.shade.org.sweble.wikitext.engine</shadedPattern>
+                </relocation>
               </relocations>
             </configuration>
           </execution>
@@ -146,7 +150,6 @@
         -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>3.4.0</version>
         <executions>
           <execution>
             <id>workaround-makeItVisibleOnIntellij</id>

@@ -22,9 +22,9 @@ import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
-import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
 import org.xml.sax.SAXException;
 
 import com.neovisionaries.i18n.LanguageCode;

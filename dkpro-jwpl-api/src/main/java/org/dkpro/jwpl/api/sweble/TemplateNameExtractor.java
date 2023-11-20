@@ -29,8 +29,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtNode;
 import org.sweble.wikitext.parser.nodes.WtTemplate;
 

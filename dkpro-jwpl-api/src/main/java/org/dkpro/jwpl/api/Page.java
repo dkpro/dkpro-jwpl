@@ -25,14 +25,14 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.PageDAO;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
-import org.dkpro.jwpl.util.UnmodifiableArraySet;
+import org.dkpro.jwpl.api.util.UnmodifiableArraySet;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.PageId;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.PageTitle;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.WtEngineImpl;
+import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.nodes.EngProcessedPage;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
-import org.sweble.wikitext.engine.PageId;
-import org.sweble.wikitext.engine.PageTitle;
-import org.sweble.wikitext.engine.WtEngineImpl;
-import org.sweble.wikitext.engine.nodes.EngProcessedPage;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
 

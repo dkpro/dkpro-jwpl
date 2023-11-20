@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.util.GraphUtilities;
+import org.dkpro.jwpl.api.util.GraphUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
