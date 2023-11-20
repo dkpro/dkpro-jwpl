@@ -182,13 +182,6 @@
           <include>**/*</include>
         </includes>
       </resource>
-      <resource>
-        <directory>src/it/resources</directory>
-        <filtering>true</filtering>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
     </resources>
     <plugins>
       <plugin>
@@ -266,24 +259,6 @@
             </goals>
             <configuration>
               <skipITs>${skip.integration.tests}</skipITs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>create-executable-jar</id>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <attach>false</attach>
-              <descriptorRefs>
-                <descriptor>jar-with-dependencies</descriptor>
-              </descriptorRefs>
             </configuration>
           </execution>
         </executions>
