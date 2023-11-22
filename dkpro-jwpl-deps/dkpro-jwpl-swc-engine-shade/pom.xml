@@ -115,9 +115,18 @@
                   <include>org.sweble.wikitext:swc-engine:*</include> 
                 </includes>
               </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                    <exclude>META-INF/maven/**</exclude>
+                    <exclude>org.sweble.wikitext/swc-engine/git.properties</exclude>
+                  </excludes>
+                </filter>
+              </filters>
               <transformers>
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
               </transformers>
               <relocations>
                 <relocation>
