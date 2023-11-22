@@ -1,3 +1,16 @@
+# JWPL Util
+
+## Template Schema
+
+```sql
+CREATE TABLE IF NOT EXISTS templateId_pageId (templateId INTEGER UNSIGNED NOT NULL,pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId)) ENGINE = MYISAM;
+CREATE TABLE IF NOT EXISTS templates (templateId INTEGER NOT NULL AUTO_INCREMENT,templateName TEXT NOT NULL,PRIMARY KEY(templateId)) ENGINE = MYISAM;
+CREATE TABLE IF NOT EXISTS templateId_revisionId(templateId INTEGER UNSIGNED NOT NULL,revisionId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, revisionId)) ENGINE = MYISAM;
+```
+
+## Properties Sample
+
+```
 #host=dbhost
 #db=revisiondb
 #user=username
@@ -34,3 +47,4 @@ revisions_white_list=official_schprooche
 revisions_white_prefix_list=
 revisions_black_prefix_list=
 revisions_black_list=
+```
