@@ -17,13 +17,13 @@ permalink: "/TimeMachine/"
   * Create a configuration file.
     * You may edit one of the sample configuration files, which come with the source code of the TimeMachine.
     * The configuration file must be UTF8 encoded.
-    * Running `de.tudarmstadt.ukp.wikipedia.timemachine.domain.SettingsXML` will generate a sample file that can be edited.
-    * The elements of the configuration file are further explained below or in the [readme](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.timemachine/README.TXT) in the TimeMachine Sources.
+    * Running `org.dkpro.jwpl.wikipedia.timemachine.domain.SettingsXML` will generate a sample file that can be edited.
+    * The elements of the configuration file are further explained below or in the [readme](https://github.com/dkpro/dkpro-jwpl/blob/master/org.dkpro.jwpl.wikipedia.timemachine/README.TXT) in the TimeMachine Sources.
   * Start the TimeMachine
-    * `de.tudarmstadt.ukp.wikipedia.timemachine.domain.JWPLTimeMachine CONFIG_FILE`
+    * `org.dkpro.jwpl.wikipedia.timemachine.domain.JWPLTimeMachine CONFIG_FILE`
     * Allocate enough heap size to speed up the execution (use the `-Xmx` JVM parameter to increase heap space; e.g. `-Xmx512m` gives you 512MB heap space).
   * If everything went well (it will take a while), the extracted data files are now available in the output directory (each in a directory with the corresponding timestamp as name).
-  * For each directory. create a database with the necessary tables  using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql)
+  * For each directory. create a database with the necessary tables  using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/org.dkpro.jwpl.wikipedia.wikimachine/jwpl_tables.sql)
   * Import the data files into the databases: `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} ````pwd`````/*.txt``    
   * Now you are ready to use the databases with the JWPL Core API (also see [JWPLCore:GettingStarted](/dkpro-jwpl/JWPLCore_GettingStarted)).
    When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.

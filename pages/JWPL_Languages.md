@@ -4,7 +4,7 @@ title: "Languages"
 permalink: "/JWPL_Languages/"
 ---
 
-The supported languages are defined in `de.tudarmstadt.ukp.wikipedia.api.WikiConstants`. 
+The supported languages are defined in `org.dkpro.jwpl.wikipedia.api.WikiConstants`. 
 This list reflects the languages supported in August 2011.
 As the API is largely language independent, adding additional languages should not be a problem.
 

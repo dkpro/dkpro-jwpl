@@ -16,7 +16,7 @@ permalink: "/DataMachine/"
     * **Note**: If you want to add discussion pages to the database, use `[LANGCODE]wiki-[DATE]-pages-meta-current.xml.bz2`, otherwise `[LANGCODE]wiki-[DATE]-pages-articles.xml.bz2` suffices.
   * Run the transformation: 
     * `java -jar JWPLDataMachine.jar [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]` or 
-    * `de.tudarmstadt.ukp.wikipedia.datamachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
+    * `org.dkpro.jwpl.wikipedia.datamachine.domain.JWPLDataMachine [LANGUAGE] [MAIN_CATEGORY_NAME] [DISAMBIGUATION_CATEGORY_NAME] [SOURCE_DIRECTORY]`
     * **Attention:** For large dumps you need to increase the amount of memory assigned to the JVM using e.g. the "-Xmx2g" flag to assign 2GB of memory. For the recent English dump you will need at least 4GB. If your system uses a different file encoding you might need to add the `-Dfile.encoding=utf8` flag.
       * LANGUAGE - a language string matching one the [JWPL\_Languages](/dkpro-jwpl/JWPL_Languages).
       * MAIN\_CATEGORY\_NAME - the name of the main (top) category of the Wikipedia category hierarchy
@@ -28,7 +28,7 @@ permalink: "/DataMachine/"
     * If you are using MySQL 4.x or previous - please see [JWPL\_MySQL4](/dkpro-jwpl/JWPL_MySQL4).
     * Make sure the database encoding is set to UTF8.
     * Create a database: `mysqladmin -u[USER] -p create [DB_NAME] DEFAULT CHARACTER SET utf8;`, or, when on the mysql shell: `CREATE DATABASE [DB_NAME] DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;`
-    * Create all necessary tables using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/de.tudarmstadt.ukp.wikipedia.wikimachine/jwpl_tables.sql)
+    * Create all necessary tables using [jwpl\_tables.sql](https://github.com/dkpro/dkpro-jwpl/blob/master/org.dkpro.jwpl.wikipedia.wikimachine/jwpl_tables.sql)
   * Import the data files into the database: `mysqlimport -uUSER -p --local --default-character-set=utf8 {database_name} *.txt`
   * Now you are ready to use the database with the JWPL Core API (also see [JWPLCore:GettingStarted](/dkpro-jwpl/JWPLCore_GettingStarted)). When first connecting to a newly imported database, indexes are created. This takes some time (up to 30 minutes), depending on the server and the size of your Wikipedia. Subsequent connects won't have this delay.
 

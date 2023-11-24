@@ -22,5 +22,5 @@
 - version: 1.1.0
   date: 2016-04-25
   status: stable
-  groupId: de.tudarmstadt.ukp.wikipedia
-  artifactId: de.tudarmstadt.ukp.wikipedia
+  groupId: org.dkpro.jwpl.wikipedia
+  artifactId: org.dkpro.jwpl.wikipedia

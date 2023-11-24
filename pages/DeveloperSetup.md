@@ -8,54 +8,54 @@ permalink: "/DeveloperSetup/"
 
 # Maven Setup
 
-As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cde.tudarmstadt.ukp.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
+As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Corg.dkpro.jwpl.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
 
 For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your `pom.xml`:
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.api</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.api</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.datamachine</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.datamachine</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.revisionmachine</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.revisionmachine</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.timemachine</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.timemachine</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.util</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.util</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
 
 {% highlight xml %}
 <dependency>
-  <groupId>de.tudarmstadt.ukp.wikipedia</groupId>
-  <artifactId>de.tudarmstadt.ukp.wikipedia.parser</artifactId>
+  <groupId>org.dkpro.jwpl.wikipedia</groupId>
+  <artifactId>org.dkpro.jwpl.wikipedia.parser</artifactId>
   <version>1.0.0</version>
 </dependency>
 {% endhighlight xml %}
