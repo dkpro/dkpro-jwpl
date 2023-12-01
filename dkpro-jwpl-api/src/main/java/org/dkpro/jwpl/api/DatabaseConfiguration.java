@@ -32,6 +32,12 @@ public class DatabaseConfiguration
     private String jdbcURL;
     private String databaseDriver;
 
+    /**
+     * A no-arg constructor required by frameworks.
+     * It is recommended to use
+     * {@link DatabaseConfiguration#DatabaseConfiguration(String, String, String, String,
+     * String, String, WikiConstants.Language)} instead.
+     */
     public DatabaseConfiguration()
     {
     }

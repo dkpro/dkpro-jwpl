@@ -52,7 +52,7 @@ public class TemplateNameExtractor
 
     /**
      * Creates a new visitor that extracts anchors of internal links from a parsed Wikipedia article
-     * using the default Sweble config as defined in WikiConstants.SWEBLE_CONFIG.
+     * using the default Sweble config as defined in {@link org.dkpro.jwpl.api.WikiConstants#SWEBLE_CONFIG}.
      */
     public TemplateNameExtractor()
     {
@@ -87,11 +87,21 @@ public class TemplateNameExtractor
 
     // =========================================================================
 
+    /**
+     * Called when a {@link WtNode node} instance is processed.
+     * @param n The node which is visited.
+     */
     public void visit(WtNode n)
     {
         iterate(n);
     }
 
+    /**
+     * Called when a {@link WtTemplate template} instance is processed.
+     * @param tmpl The template which is visited.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
     public void visit(WtTemplate tmpl) throws IOException
     {
         for (AstNode n : tmpl.getName()) {

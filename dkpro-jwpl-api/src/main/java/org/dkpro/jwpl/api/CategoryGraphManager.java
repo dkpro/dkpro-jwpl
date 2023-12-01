@@ -29,9 +29,15 @@ import org.dkpro.jwpl.api.util.GraphSerialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides ways to create and retrieve {@link CategoryGraph graphs} from the Wikipedia backend.
+ *
+ * @see Wikipedia
+ * @see CategoryGraph
+ */
 // TODO category graph manager implements real singletons for category graphs
-// up to now, it is only used in LSR
-// There should be no way to construct a category graph that circumvents the manager.
+//  up to now, it is only used in LSR.
+//  There should be no way to construct a category graph that circumvents the manager.
 public class CategoryGraphManager
 {
 
@@ -42,23 +48,70 @@ public class CategoryGraphManager
 
     private final static String catGraphSerializationFilename = "catGraphSer";
 
+    /**
+     * Retrieves a {@link CategoryGraph} instance for all categories in a {@link Wikipedia} instance.
+     * Additionally, the graph is persisted if it could be constructed successfully.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @return A graph representation of all categories in {@code wiki}.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
+     */
     public static CategoryGraph getCategoryGraph(Wikipedia wiki) throws WikiApiException
     {
         return getCategoryGraph(wiki, null, true);
     }
 
+    /**
+     * Retrieves a {@link CategoryGraph} instance for all categories in a {@link Wikipedia} instance.
+     * Additionally, the graph is persisted if it could be constructed successfully.
+     * 
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param serialize If {@code true}, attempts to load a serialized version of the graph,
+     *                  {@code false} otherwise. If {@code true} and no previous version of exists,
+     *                  a completely new graph instance is created and retrieved via {@code wiki}.
+     * @return A graph representation of all categories in {@code wiki}.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
+     */
     public static CategoryGraph getCategoryGraph(Wikipedia wiki, boolean serialize)
         throws WikiApiException
     {
         return getCategoryGraph(wiki, null, serialize);
     }
 
+
+    /**
+     * Retrieves a {@link CategoryGraph} instance for all categories in a {@link Wikipedia} instance.
+     * Additionally, the graph is persisted if it could be constructed successfully.
+     * 
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param pageIds A set of page ids (of category pages) that should be used to build the category
+     *                graph from.
+     * @return A graph representation of all categories in {@code wiki}.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
+     */
     public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds)
         throws WikiApiException
     {
         return getCategoryGraph(wiki, pageIds, true);
     }
 
+    /**
+     * Retrieves a {@link CategoryGraph} instance for all categories in a {@link Wikipedia} instance.
+     * Additionally, the graph is persisted if it could be constructed successfully.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param pageIds A set of page ids (of category pages) that should be used to build the category
+     *                graph from.
+     * @param serialize If {@code true}, attempts to load a serialized version of the graph,
+     *                  {@code false} otherwise. If {@code true} and no previous version of exists,
+     *                  a completely new graph instance is created and retrieved via {@code wiki}.
+     * @return A graph representation of all categories in {@code wiki}.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
+     */
     public static CategoryGraph getCategoryGraph(Wikipedia wiki, Set<Integer> pageIds,
             boolean serialize)
         throws WikiApiException

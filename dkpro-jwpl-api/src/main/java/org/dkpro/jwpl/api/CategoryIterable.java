@@ -35,11 +35,23 @@ public class CategoryIterable
      */
     private int bufferSize = 500;
 
+    /**
+     * Initializes a {@link CategoryIterable} instance. Uses a default buffer size of {@code 500}.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     */
     public CategoryIterable(Wikipedia wiki)
     {
         this.wiki = wiki;
     }
 
+    /**
+     * Initializes a {@link CategoryIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     public CategoryIterable(Wikipedia wiki, int bufferSize)
     {
         this.wiki = wiki;

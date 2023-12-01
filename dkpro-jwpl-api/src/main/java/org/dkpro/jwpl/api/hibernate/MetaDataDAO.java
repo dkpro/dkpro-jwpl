@@ -27,8 +27,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Data access object for class {@link MetaData}.
  *
- * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.MetaData
+ * @see org.dkpro.jwpl.api.hibernate.MetaData
  */
 public class MetaDataDAO
     extends GenericDAO<MetaData>
@@ -38,6 +38,11 @@ public class MetaDataDAO
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Instantiates a {@link MetaDataDAO}.
+     *
+     * @param wiki A valid {@link Wikipedia} instance. Must not be {@code null}.
+     */
     public MetaDataDAO(Wikipedia wiki)
     {
         super(wiki, MetaData.class);

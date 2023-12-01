@@ -28,6 +28,16 @@ import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
 
+/**
+ * Represents a category as conceptually defined by Wikipedia.
+ * Each category can group several {@link Page pages}.
+ * <p>
+ * It can be subdivided further, that is, every category can have descendents or siblings.
+ * Structurally, Wikipedia defined categories to be represented as a graph. Consequently,
+ * a category can have multiple parent categories.
+ *
+ * @see Page
+ */
 public class Category
     implements WikiConstants
 {
@@ -382,6 +392,10 @@ public class Category
 
     /**
      * Returns *all* recursively collected descendants (=subcategories) of this category.
+     *
+     * @param bufferSize The size of the page buffer. With {@code bufferSize = 1}, a database connection is needed for
+     *                   retrieving a single article. Higher {@code bufferSize} values gives better performance,
+     *                   but require more memory. Must not be less or equal to {@code 0}.
      *
      * @return An iterable of all descendants (=subcategories) of this category.
      */

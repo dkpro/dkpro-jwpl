@@ -38,13 +38,16 @@ public final class SerializableDirectedGraph
      */
     private static final long serialVersionUID = -192220033577521277L;
 
+    /**
+     * The directed graph instance.
+     */
     private final DefaultDirectedGraph<Integer, DefaultEdge> graph;
 
     /**
-     * This Constructor is intended to be used before the serialization of the <br>
-     * directed graph.
+     * Instantiates a new {@link SerializableDirectedGraph} object.
+     * This Constructor is intended to be used before the serialization of the directed graph.
      *
-     * @param graph
+     * @param graph The {@link DefaultDirectedGraph directed graph} to serialize
      */
     public SerializableDirectedGraph(DefaultDirectedGraph<Integer, DefaultEdge> graph)
     {
@@ -52,7 +55,7 @@ public final class SerializableDirectedGraph
     }
 
     /**
-     * @return A {@link DefaultDirectedGraph graph} instance.
+     * @return Returns the wrapped {@link DefaultDirectedGraph graph} instance.
      */
     public DefaultDirectedGraph<Integer, DefaultEdge> getGraph()
     {

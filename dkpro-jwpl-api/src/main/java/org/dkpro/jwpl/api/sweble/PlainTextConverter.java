@@ -212,16 +212,34 @@ public class PlainTextConverter
      * // write("<"); // write(n.getNodeName()); // write(" />"); }
      */
 
+    /**
+     * Called when a {@link WtNodeList node list} is about to be processed.
+     *
+     * @param n
+     *            A node representing a node list.
+     */
     public void visit(WtNodeList n)
     {
         iterate(n);
     }
 
+    /**
+     * Called when a {@link WtPage page} is about to be processed.
+     *
+     * @param p
+     *            A node representing a page element.
+     */
     public void visit(WtPage p)
     {
         iterate(p);
     }
 
+    /**
+     * Called when a {@link AstText text element} is about to be processed.
+     *
+     * @param text
+     *            A node representing a text element.
+     */
     public void visit(AstText text)
     {
         if (currentCell != null) {
@@ -235,11 +253,23 @@ public class PlainTextConverter
 
     }
 
+    /**
+     * Called when a {@link WtItalics whitespace} is about to be processed.
+     *
+     * @param w
+     *            A node representing a whitespace element.
+     */
     public void visit(WtWhitespace w)
     {
         write(" ");
     }
 
+    /**
+     * Called when a {@link WtItalics bold element} is about to be processed.
+     *
+     * @param b
+     *            A node representing a bold formatted element.
+     */
     public void visit(WtBold b)
     {
         // write("**");
@@ -247,6 +277,12 @@ public class PlainTextConverter
         // write("**");
     }
 
+    /**
+     * Called when an {@link WtItalics italic element} is about to be processed.
+     *
+     * @param i
+     *            A node representing an italic formatted element.
+     */
     public void visit(WtItalics i)
     {
         // write("//");
@@ -254,14 +290,25 @@ public class PlainTextConverter
         // write("//");
     }
 
+    /**
+     * Called when a {@link WtXmlCharRef character reference} is about to be processed.
+     *
+     * @param cr
+     *            A node representing a character reference.
+     */
     public void visit(WtXmlCharRef cr)
     {
         write(Character.toChars(cr.getCodePoint()));
     }
 
+    /**
+     * Called when a {@link WtXmlEntityRef entity reference} is about to be processed.
+     *
+     * @param er
+     *            A node representing an entity reference.
+     */
     public void visit(WtXmlEntityRef er)
     {
-
         String ch = er.getResolved();
         if (ch == null) {
             write('&');
@@ -273,6 +320,12 @@ public class PlainTextConverter
         }
     }
 
+    /**
+     * Called when a {@link WtUrl URL} is about to be processed.
+     *
+     * @param url
+     *            A node representing a URL.
+     */
     public void visit(WtUrl url)
     {
         write(url.getProtocol());
@@ -280,6 +333,12 @@ public class PlainTextConverter
         write(url.getPath());
     }
 
+    /**
+     * Called when an {@link WtExternalLink external link} is about to be processed.
+     *
+     * @param link
+     *            A node representing an external link.
+     */
     public void visit(WtExternalLink link)
     {
         // TODO How should we represent external links in the plain text output?
@@ -288,6 +347,12 @@ public class PlainTextConverter
         write(']');
     }
 
+    /**
+     * Called when an {@link WtInternalLink internal link} is about to be processed.
+     *
+     * @param link
+     *            A node representing an internal link.
+     */
     public void visit(WtInternalLink link)
     {
         currentLinkTitleInCell = null;
@@ -323,6 +388,12 @@ public class PlainTextConverter
         write(link.getPostfix());
     }
 
+    /**
+     * Called when a {@link WtSection section} is about to be processed.
+     *
+     * @param s
+     *            A node representing a section.
+     */
     public void visit(WtSection s)
     {
         finishLine();
@@ -381,12 +452,24 @@ public class PlainTextConverter
         sections.add(sections.removeLast() + 1);
     }
 
+    /**
+     * Called when a {@link WtParagraph paragraph} is about to be processed.
+     *
+     * @param p
+     *            A node representing a paragraph.
+     */
     public void visit(WtParagraph p)
     {
         iterate(p);
         newline(1);
     }
 
+    /**
+     * Called when a {@link WtHorizontalRule rule} is about to be processed.
+     *
+     * @param hr
+     *            A node representing a horizontal rule.
+     */
     public void visit(WtHorizontalRule hr)
     {
         newline(1);
@@ -394,6 +477,13 @@ public class PlainTextConverter
         // newline(1);
     }
 
+
+    /**
+     * Called when an {@link WtXmlElement XML element} is about to be processed.
+     *
+     * @param e
+     *            A node representing an XML element.
+     */
     public void visit(WtXmlElement e)
     {
         if (e.getName().equalsIgnoreCase("br")) {
@@ -404,16 +494,34 @@ public class PlainTextConverter
         }
     }
 
+    /**
+     * Called when an {@link WtXmlEndTag XML end tag} is about to be processed.
+     *
+     * @param t
+     *            A node representing an XML end tag.
+     */
     public void visit(WtXmlEndTag t)
     {
         iterate(t);
     }
 
+    /**
+     * Called when an {@link WtXmlAttribute XML attribute} is about to be processed.
+     *
+     * @param n
+     *            A node representing an XML attribute.
+     */
     public void visit(WtXmlAttribute n)
     {
         // ignore formatting information from xml attributes as the result is expected in plain text
     }
 
+    /**
+     * Called when a {@link WtListItem list item} is about to be processed.
+     *
+     * @param n
+     *            A node representing a list item.
+     */
     public void visit(WtListItem n)
     {
         iterate(n);
@@ -521,30 +629,72 @@ public class PlainTextConverter
     // =========================================================================
     // Stuff we want to hide
 
+    /**
+     * Called when an {@link WtImageLink image link} is about to be processed.
+     *
+     * @param n
+     *            A node representing an image link.
+     */
     public void visit(WtImageLink n)
     {
     }
 
+    /**
+     * Called when an {@link WtIllegalCodePoint illegal code point} is about to be processed.
+     *
+     * @param n
+     *            A node representing an illegal code point.
+     */
     public void visit(WtIllegalCodePoint n)
     {
     }
 
+    /**
+     * Called when an {@link WtXmlComment XML comment} is about to be processed.
+     *
+     * @param n
+     *            A node representing an XML comment.
+     */
     public void visit(WtXmlComment n)
     {
     }
 
+    /**
+     * Called when a {@link WtTemplate template} is about to be processed.
+     *
+     * @param n
+     *            A node representing a template.
+     */
     public void visit(WtTemplate n)
     {
     }
 
+    /**
+     * Called when a {@link WtTemplateArgument template argument} is about to be processed.
+     *
+     * @param n
+     *            A node representing a template argument.
+     */
     public void visit(WtTemplateArgument n)
     {
     }
 
+    /**
+     * Called when a {@link WtTemplateArgument template parameter} is about to be processed.
+     *
+     * @param n
+     *            A node representing a template parameter.
+     */
     public void visit(WtTemplateParameter n)
     {
     }
 
+    /**
+     * Called when a {@link WtTagExtension tag extension} is about to be processed.
+     *
+     * @param n
+     *            A node representing a tag extension.
+     */
     public void visit(WtTagExtension n)
     {
     }

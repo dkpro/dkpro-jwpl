@@ -20,6 +20,14 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * An object-relational entity which maps a {@link org.dkpro.jwpl.api.Category}
+ * to data attributes in a database. Those are persisted and retrieved by
+ * an OR mapper, such as Hibernate.
+ * <p>
+ * It is accessed via an equally named class in the {@code api} package
+ * to hide session management from the user.
+ */
 public class Category
 {
     private long id;
@@ -36,6 +44,9 @@ public class Category
     {
     }
 
+    /**
+     * @return Retrieves the primary key identifying this persistent object.
+     */
     public long getId()
     {
         return id;
@@ -47,51 +58,81 @@ public class Category
         this.id = id;
     }
 
+    /**
+     * @return Retrieves the page identifier as used in Wikipedia.
+     */
     public int getPageId()
     {
         return pageId;
     }
 
+    /**
+     * @param pageId The page identifier as used in Wikipedia.
+     */
     public void setPageId(int pageId)
     {
         this.pageId = pageId;
     }
 
+    /**
+     * @return Retrieves a set of {@link Page pageIds} a {@link Category} is referenced from.
+     */
     public Set<Integer> getInLinks()
     {
         return inLinks;
     }
 
+    /**
+     * @param inLinks A set of {@link Page pageIds} this {@link Category} is referenced from.
+     */
     public void setInLinks(Set<Integer> inLinks)
     {
         this.inLinks = inLinks;
     }
 
+    /**
+     * @return Retrieves the category title as used in Wikipedia.
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * @param name The category title as used in Wikipedia.
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /**
+     * @return Retrieves a set of {@link Page pageIds} a {@link Category} references to.
+     */
     public Set<Integer> getOutLinks()
     {
         return outLinks;
     }
 
+    /**
+     * @param outLinks A set of {@link Page pageIds} a {@link Category} references to.
+     */
     public void setOutLinks(Set<Integer> outLinks)
     {
         this.outLinks = outLinks;
     }
 
+    /**
+     * @return Retrieves a set of {@link Page pages} a {@link Category} groups together.
+     */
     public Set<Integer> getPages()
     {
         return pages;
     }
 
+    /**
+     * @param pages The set of {@link Page pages} a {@link Category} groups together.
+     */
     public void setPages(Set<Integer> pages)
     {
         this.pages = pages;

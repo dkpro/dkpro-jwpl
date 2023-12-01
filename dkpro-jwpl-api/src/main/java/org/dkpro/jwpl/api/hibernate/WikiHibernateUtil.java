@@ -27,12 +27,23 @@ import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 
+/**
+ * A utility class which provides access to underlying Hibernate session factories.
+ */
 public class WikiHibernateUtil
     implements WikiConstants
 {
 
     private static final Map<String, SessionFactory> sessionFactoryMap = new HashMap<>();
 
+    /**
+     * Retrieves (and creates) a {@link SessionFactory} for a specified {@link DatabaseConfiguration}.
+     *
+     * @param config The {@link DatabaseConfiguration} to obtain the factory for. Must not be {@code null}.
+     * @return A fully initialized {@link SessionFactory} instance.
+     * 
+     * @throws ExceptionInInitializerError Thrown if the {@code config} instance was incorrect or incomplete.
+     */
     public static SessionFactory getSessionFactory(DatabaseConfiguration config)
     {
 

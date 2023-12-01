@@ -27,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A common base class for DAO classes.
+ * An abstract, common base class for DAO classes.
  *
  * @param <T>
  *            The entity type to provide persistence features for.
@@ -65,11 +65,19 @@ public abstract class GenericDAO<T>
         return sessionFactory;
     }
 
+    /**
+     * @return Retrieves the current {@link Session} instance.
+     */
     protected Session getSession()
     {
         return getSessionFactory().getCurrentSession();
     }
 
+    /**
+     * Persists a transient or existing instance of {@link T}.
+     *
+     * @param transientInstance The instance of {@link T} to persist.
+     */
     public void persist(T transientInstance)
     {
         logger.debug("persisting MetaData instance");
@@ -83,6 +91,11 @@ public abstract class GenericDAO<T>
         }
     }
 
+    /**
+     * Deletes an existing instance of {@link T} from the persistence store.
+     *
+     * @param persistentInstance The instance of {@link T} to delete.
+     */
     public void delete(T persistentInstance)
     {
         try {
@@ -95,6 +108,13 @@ public abstract class GenericDAO<T>
         }
     }
 
+    /**
+     * Reattaches (merges) a detached instance of {@link T} to a session context.
+     *
+     * @param detachedInstance The instance of {@link T} to re-attach, aka merge.
+     * @return A merged representation of the specified {@code detachedInstance}, reflecting the last valid
+     *         state in the current session, aka persistence context.
+     */
     public T merge(T detachedInstance)
     {
         try {
@@ -108,6 +128,11 @@ public abstract class GenericDAO<T>
         }
     }
 
+    /**
+     * Attaches and locks a new (clean) instance of {@link T} to a session context.
+     *
+     * @param instance The instance of {@link T} to attach.
+     */
     public void attachClean(T instance)
     {
         try {
@@ -120,6 +145,11 @@ public abstract class GenericDAO<T>
         }
     }
 
+    /**
+     * Reattaches (merges) an existing instance of {@link T} to a session context.
+     *
+     * @param instance The instance of {@link T} to attach.
+     */
     public void attachDirty(T instance)
     {
         try {
@@ -132,6 +162,12 @@ public abstract class GenericDAO<T>
         }
     }
 
+    /**
+     * Retrieves an instance of {@link T} via its primary key, specified by {@code id}.
+     *
+     * @param id The primary key associated with the instance of {@link T}.
+     * @return A valid instance of {@link T} or {@code null} if no match can be retrieved for {@code id}.
+     */
     public T findById(Long id)
     {
         try {

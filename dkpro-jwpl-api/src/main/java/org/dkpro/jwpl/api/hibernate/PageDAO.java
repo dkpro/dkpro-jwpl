@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Data access object for class {@link Page}.
  *
- * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.Page
+ * @see org.dkpro.jwpl.api.hibernate.Page
  */
 public class PageDAO
     extends GenericDAO<Page>
@@ -36,9 +36,14 @@ public class PageDAO
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    public PageDAO(Wikipedia pWiki)
+    /**
+     * Instantiates a {@link PageDAO}.
+     *
+     * @param wiki A valid {@link Wikipedia} instance. Must not be {@code null}.
+     */
+    public PageDAO(Wikipedia wiki)
     {
-        super(pWiki, Page.class);
+        super(wiki, Page.class);
     }
 
     @Override

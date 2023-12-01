@@ -22,6 +22,9 @@ import java.lang.invoke.MethodHandles;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides extra method(s) for working with the JWPL API.
+ */
 public class ApiUtilities
 {
 
@@ -29,11 +32,18 @@ public class ApiUtilities
             .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * DOTS - print progress dots. TEXT - print a message with progress in percent.
+     * The mode of printing progress.
      */
     public enum ProgressInfoMode
     {
-        DOTS, TEXT
+        /**
+         * DOTS - print progress dots.
+         */
+        DOTS,
+        /**
+         * TEXT - print a message with progress in percent.
+         */
+        TEXT
     }
 
     /**

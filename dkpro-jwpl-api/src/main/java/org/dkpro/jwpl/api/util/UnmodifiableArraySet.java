@@ -22,17 +22,33 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ * An implementation of {@link Set} which is based on an array and can not be modified 
+ * via {@link Set#add(Object)} or {@link Set#remove(Object)}, or similar bulk-wise methods.
+ *
+ * @param <E> The type for the elements contained in the {@link Set}, kept by the underlying array.
+ */
 public class UnmodifiableArraySet<E>
     implements Set<E>
 {
     private final Object[] data;
 
+    /**
+     * Instantiates a new {@link UnmodifiableArraySet} via the specified array of {@link E} elements.
+     *
+     * @param aData A non-empty array of {@link E} elements.
+     */
     public UnmodifiableArraySet(E[] aData)
     {
         data = new Object[aData.length];
         System.arraycopy(aData, 0, data, 0, data.length);
     }
 
+    /**
+     * Instantiates a new {@link UnmodifiableArraySet} via the specified set of {@link E} elements.
+     *
+     * @param aData A non-empty {@link Set} of {@link E} elements.
+     */
     public UnmodifiableArraySet(Set<E> aData)
     {
         data = new Object[aData.size()];

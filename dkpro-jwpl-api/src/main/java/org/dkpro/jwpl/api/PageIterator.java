@@ -43,11 +43,29 @@ public class PageIterator
 
     private final PageBuffer buffer;
 
+    /**
+     * Initializes a {@link PageIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param ids  A set of page ids to iterate over. Must not be {@code null}.
+     * @param titles  A set of page titles to iterate over. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     public PageIterator(Wikipedia wiki, Set<String> ids, Set<String> titles, int bufferSize)
     {
         buffer = new PageBuffer(bufferSize, wiki, ids, titles);
     }
 
+    /**
+     * Initializes a {@link PageIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param onlyArticles {@code True} if only full article pages shall be processed, yet no disambiguation pages.
+     *                     {@code False} if disambiguation pages shall considered as well.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize)
     {
         buffer = new PageBuffer(bufferSize, wiki, onlyArticles);
@@ -121,10 +139,10 @@ public class PageIterator
         }
 
         /**
-         * If there are elements in the buffer left, then return true. If the end of the filled
+         * If there are elements in the buffer left, then return {@code true}. If the end of the filled
          * buffer is reached, then try to load new buffer.
          *
-         * @return True, if there are pages left. False otherwise.
+         * @return {@code True} if there are pages left, {@code false} otherwise.
          */
         public boolean hasNext()
         {

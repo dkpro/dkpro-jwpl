@@ -33,6 +33,13 @@ public class TitleIterator
 
     private final TitleBuffer buffer;
 
+    /**
+     * Initializes a {@link TitleIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     public TitleIterator(Wikipedia wiki, int bufferSize)
     {
         buffer = new TitleBuffer(bufferSize, wiki);

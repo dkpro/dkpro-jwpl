@@ -21,11 +21,14 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Provides utility methods to extract certain information from collections.
+ */
 public class CommonUtilities
 {
 
     /**
-     * Debug output an internal set structure.
+     * Debug output an internal {@link Set} structure.
      *
      * @param s
      *            Must not be {@code null}.
@@ -53,7 +56,7 @@ public class CommonUtilities
     }
 
     /**
-     * Debug output an internal map structure as key-value pairs.
+     * Debug output an internal {@link Map} structure as key-value pairs.
      *
      * @param m
      *            Must not be {@code null}.

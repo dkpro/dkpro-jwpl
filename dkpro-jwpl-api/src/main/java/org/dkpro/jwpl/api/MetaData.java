@@ -23,6 +23,8 @@ import org.hibernate.Session;
 
 /**
  * Provides access to meta-data about a certain {@link Wikipedia} instance.
+ *
+ * @see Wikipedia
  */
 public class MetaData
     implements WikiConstants
@@ -32,7 +34,9 @@ public class MetaData
     private final org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
 
     /**
-     * Creates a meta data object.
+     * Instantiates a new {@link MetaData} object.
+     *
+     * @param wiki A valid {@link Wikipedia} reference. Must no be {@code null}.
      */
     protected MetaData(Wikipedia wiki)
     {

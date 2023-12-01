@@ -36,12 +36,26 @@ public class CategoryDescendantsIterable
      */
     private int bufferSize = 25;
 
+    /**
+     * Initializes a {@link CategoryDescendantsIterable} instance. Uses a default buffer size of {@code 25}.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param startCategory The Wikipedia category to start descending from. Must not be {@code null}.
+     */
     public CategoryDescendantsIterable(Wikipedia wiki, Category startCategory)
     {
         this.wiki = wiki;
         this.startCategory = startCategory;
     }
 
+    /**
+     * Initializes a {@link CategoryDescendantsIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     * @param startCategory The Wikipedia category to start descending from. Must not be {@code null}.
+     */
     public CategoryDescendantsIterable(Wikipedia wiki, int bufferSize, Category startCategory)
     {
         this.wiki = wiki;

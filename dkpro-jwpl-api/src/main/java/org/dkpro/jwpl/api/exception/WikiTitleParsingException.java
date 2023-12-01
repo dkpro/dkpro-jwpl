@@ -26,21 +26,40 @@ public class WikiTitleParsingException
 
     private static final long serialVersionUID = 7152744066557304950L;
 
+    /**
+     * Creates an empty message {@link WikiTitleParsingException}.
+     */
     public WikiTitleParsingException()
     {
         super();
     }
 
-    public WikiTitleParsingException(String txt)
+    /**
+     * Creates a {@link WikiTitleParsingException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     */
+    public WikiTitleParsingException(String message)
     {
-        super(txt);
+        super(message);
     }
 
+    /**
+     * Creates a {@link WikiTitleParsingException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiTitleParsingException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
+    /**
+     * Creates a {@link WikiTitleParsingException} detailed by {@code message}.
+     *
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiTitleParsingException(Throwable cause)
     {
         super(cause);

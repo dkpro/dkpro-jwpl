@@ -26,21 +26,40 @@ public class WikiPageNotFoundException
 
     private static final long serialVersionUID = -3676016515948761351L;
 
+    /**
+     * Creates an empty message {@link WikiPageNotFoundException}.
+     */
     public WikiPageNotFoundException()
     {
         super();
     }
 
-    public WikiPageNotFoundException(String txt)
+    /**
+     * Creates a {@link WikiPageNotFoundException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     */
+    public WikiPageNotFoundException(String message)
     {
-        super(txt);
+        super(message);
     }
 
+    /**
+     * Creates a {@link WikiPageNotFoundException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiPageNotFoundException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
+    /**
+     * Creates a {@link WikiPageNotFoundException} detailed by {@code cause}.
+     *
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiPageNotFoundException(Throwable cause)
     {
         super(cause);

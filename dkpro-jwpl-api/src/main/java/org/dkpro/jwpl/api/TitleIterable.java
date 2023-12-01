@@ -35,11 +35,23 @@ public class TitleIterable
      */
     private int bufferSize = 5000;
 
+    /**
+     * Initializes a {@link TitleIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     */
     public TitleIterable(Wikipedia wiki)
     {
         this.wiki = wiki;
     }
 
+    /**
+     * Initializes a {@link TitleIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     public TitleIterable(Wikipedia wiki, int bufferSize)
     {
         this.wiki = wiki;

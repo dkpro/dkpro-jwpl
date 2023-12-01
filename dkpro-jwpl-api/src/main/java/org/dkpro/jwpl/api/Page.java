@@ -37,7 +37,12 @@ import org.hibernate.type.StandardBasicTypes;
 import de.fau.cs.osr.ptk.common.AstVisitor;
 
 /**
- * Represents a Wikipedia article page.
+ * Represents an article page as conceptually defined by Wikipedia.
+ * Each page can link to other {@link Page pages} or be referenced to.
+ * <p>
+ * Moreover, a page can be contained in one or more {@link Category categories}.
+ *
+ * @see Category
  */
 // Adapter class for hiding hibernate session management from the user.
 public class Page
@@ -58,12 +63,10 @@ public class Page
     private boolean isRedirect = false;
 
     /**
-     * Creates a page object.
+     * Instantiates a {@link Page} object.
      *
-     * @param wiki
-     *            The wikipedia object.
-     * @param id
-     *            The hibernate id of the page.
+     * @param wiki  A valid {@link Wikipedia} reference. Must no be {@code null}.
+     * @param id    The hibernate id of the page.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
