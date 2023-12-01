@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +30,6 @@ import java.util.Set;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +51,7 @@ public class WikipediaInfo
     private Map<Integer, Integer> degreeDistribution;
     private Set<Integer> categorizedArticleSet;
 
-    private Wikipedia wiki;
+    private final Wikipedia wiki;
 
     /**
      * Get infos for the whole wikipedia.
@@ -63,9 +63,7 @@ public class WikipediaInfo
      */
     public WikipediaInfo(Wikipedia pWiki) throws WikiApiException
     {
-        this.wiki = pWiki;
-        new WikipediaInfo(this.wiki.getPages());
-
+        this(pWiki.getPages(), pWiki);
     }
 
     /**
@@ -73,15 +71,21 @@ public class WikipediaInfo
      *
      * @param pPages
      *            A set of pages. Only this subset of wiki pages is used in the info object.
-     *
+     * @param pWiki
+     *            The wiki object.
      * @throws WikiApiException Thrown if errors occurred.
      */
-    public WikipediaInfo(Iterable<Page> pPages) throws WikiApiException
+    public WikipediaInfo(Iterable<Page> pPages, Wikipedia pWiki) throws WikiApiException
     {
         if (pPages == null) {
             throw new WikiApiException("The page set has to be initialized.");
         }
 
+        if (pWiki == null) {
+            throw new WikiApiException("The wiki instance is not set.");
+        }
+
+        wiki = pWiki;
         pages = pPages;
         averageFanOut = -1.0; // lazy initialization => it is computed and stored when it is
                               // accessed
@@ -91,11 +95,11 @@ public class WikipediaInfo
 
         // get number of pages
         numberOfPages = 0;
-        while (pages.iterator().hasNext()) {
+        Iterator<Page> it = pages.iterator();
+        while (it.hasNext()) {
             numberOfPages++;
-            pages.iterator().next();
+            it.next();
         }
-
     }
 
     /**
@@ -109,34 +113,14 @@ public class WikipediaInfo
     private double computeAverageFanOut(Iterable<Page> pages)
     {
 
-        Set<Integer> pageIDs = new HashSet<>();
-        while (pages.iterator().hasNext()) {
-            pageIDs.add(pages.iterator().next().getPageId());
+        final Iterator<Page> it = pages.iterator();
+
+        double sum = 0;
+        while (it.hasNext()) {
+            sum += it.next().getOutlinks().size();
         }
 
-        if (pageIDs.isEmpty()) {
-            logger.warn("Cannot compute average fan-out of an empty page set.");
-            return 0.0;
-        }
-
-        int fanOutCounter = 0;
-
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        for (Object o : session.createQuery("select page.outLinks, page.pageId from Page as page")
-                .list()) {
-            Object[] row = (Object[]) o;
-            Set outLinks = (Set) row[0];
-            Integer pageId = (Integer) row[1];
-
-            // if the current page ID is in the desired result set => add outlink value
-            if (pageIDs.contains(pageId)) {
-                fanOutCounter += outLinks.size();
-            }
-        }
-        session.getTransaction().commit();
-
-        return (double) fanOutCounter / this.getNumberOfPages();
+        return sum / this.getNumberOfPages();
     }
 
     /**
@@ -489,5 +473,4 @@ public class WikipediaInfo
         }
         return shortestPathLengthSum;
     }
-
 }

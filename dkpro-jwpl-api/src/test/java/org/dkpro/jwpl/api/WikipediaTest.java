@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +35,8 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -435,6 +438,20 @@ public class WikipediaTest
     public void testGetLanguage()
     {
         assertNotNull(wiki.getLanguage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "Wikipedia_AP",
+            "Wikipedia_API"
+    })
+    public void testGetSimilarPages(String val) throws WikiApiException {
+        final Map<Page, Double> similarPages = wiki.getSimilarPages(val, 1);
+        assertNotNull(similarPages);
+        assertEquals(1, similarPages.size());
+        Map.Entry<Page, Double> entry = similarPages.entrySet().iterator().next();
+        assertTrue(entry.getKey().getTitle().getRawTitleText().startsWith(val));
+        assertTrue(entry.getValue() <= 1);
     }
 
     /* INTERNAL TEST HELPER METHODS */
