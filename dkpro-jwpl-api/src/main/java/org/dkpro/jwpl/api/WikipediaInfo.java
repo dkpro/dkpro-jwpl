@@ -58,6 +58,8 @@ public class WikipediaInfo
      *
      * @param pWiki
      *            The wiki object.
+     *            
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public WikipediaInfo(Wikipedia pWiki) throws WikiApiException
     {
@@ -71,6 +73,8 @@ public class WikipediaInfo
      *
      * @param pPages
      *            A set of pages. Only this subset of wiki pages is used in the info object.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public WikipediaInfo(Iterable<Page> pPages) throws WikiApiException
     {
@@ -163,10 +167,8 @@ public class WikipediaInfo
      * @param pNodes
      *            The category nodes that should be used to build the map.
      * @return A mapping from categories to article sets.
-     * @throws WikiPageNotFoundException
      */
     private Map<Integer, Set<Integer>> getCategoryArticleMap(Wikipedia pWiki, Set<Integer> pNodes)
-        throws WikiPageNotFoundException
     {
         Map<Integer, Set<Integer>> categoryArticleMap = new HashMap<>();
 
@@ -212,7 +214,7 @@ public class WikipediaInfo
      *            The wikipedia object.
      * @param catGraph
      *            The category graph.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public void getOverlapping(Wikipedia pWiki, CategoryGraph catGraph) throws WikiApiException
     {
@@ -239,10 +241,8 @@ public class WikipediaInfo
      * @param pGraph
      *            The category graph.
      * @return The number of articles that have at least one category in common.
-     * @throws WikiPageNotFoundException
      */
     private int getArticlesWithOverlappingCategories(Wikipedia pWiki, CategoryGraph pGraph)
-        throws WikiPageNotFoundException
     {
         Set<Integer> overlappingArticles = new HashSet<>();
 
@@ -284,28 +284,44 @@ public class WikipediaInfo
         return overlappingArticles.size();
     }
 
-    public void getCategorizedArticles(Wikipedia pWiki, CategoryGraph catGraph)
+    /**
+     * Retrieves categorized articles and prints the result as a summary.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param catGraph A {@link CategoryGraph} to be used for traversal and report generation.
+     * @throws WikiApiException Thrown if errors occurred.
+     */
+    public void getCategorizedArticles(Wikipedia wiki, CategoryGraph catGraph)
         throws WikiApiException
     {
         double startTime = System.currentTimeMillis();
 
-        int numberOfCategorizedArticles = getNumberOfCategorizedArticles(pWiki, catGraph);
+        int numberOfCategorizedArticles = getNumberOfCategorizedArticles(wiki, catGraph);
         double categorizedArticlesRatio = (double) numberOfCategorizedArticles
-                / (double) pWiki.getMetaData().getNumberOfPages();
+                / (double) wiki.getMetaData().getNumberOfPages();
 
         logger.info("Categorized articles: {}", numberOfCategorizedArticles);
-        logger.info("All articles:         {}", pWiki.getMetaData().getNumberOfPages());
+        logger.info("All articles:         {}", wiki.getMetaData().getNumberOfPages());
         logger.info("Ratio:                {}", categorizedArticlesRatio);
 
         double endTime = (System.currentTimeMillis() - startTime) / 1000.0;
         logger.debug("{}ms", endTime);
     }
 
-    public double getAveragePathLengthFromRoot(Wikipedia pWiki, CategoryGraph connectedCatGraph)
+    /**
+     * Computes the average path length starting from a root page.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param connectedCatGraph A {@link CategoryGraph} to be used for traversal.
+     *                          
+     * @return The averaged path length computed for {@code connectedCatGraph}.
+     * @throws WikiApiException Thrown if errors occurred.
+     */
+    public double getAveragePathLengthFromRoot(Wikipedia wiki, CategoryGraph connectedCatGraph)
         throws WikiApiException
     {
         // get root node
-        Category rootCategory = pWiki.getMetaData().getMainCategory();
+        Category rootCategory = wiki.getMetaData().getMainCategory();
         int root = rootCategory.getPageId();
 
         int pathLengthSum = computeShortestPathLenghts(root, connectedCatGraph);
@@ -322,6 +338,7 @@ public class WikipediaInfo
      * @param catGraph
      *            The category graph.
      * @return The number of categorized articles, i.e. articles that have at least one category.
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public int getNumberOfCategorizedArticles(Wikipedia pWiki, CategoryGraph catGraph)
         throws WikiApiException
@@ -342,7 +359,7 @@ public class WikipediaInfo
      *            The category graph.
      * @return A map containing the distribution mapping from a degree to the number of times this
      *         degree is found in the category graph.
-     * @throws WikiPageNotFoundException
+     * @throws WikiPageNotFoundException Thrown if parts in {@code catGraph} could not be found.
      */
     public Map<Integer, Integer> getDistributionOfArticlesByCategory(Wikipedia pWiki,
             CategoryGraph catGraph)

@@ -39,6 +39,12 @@ public class PageQueryIterator
     private int iterPosition;
     private final List<Integer> pageIDs;
 
+    /**
+     * Instantiates a new {@link PageQueryIterable} via a {@link PageQuery}.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param pPageIDs A {@link List} of page ids to process. Must not be {@code null}.
+     */
     public PageQueryIterator(Wikipedia wiki, List<Integer> pPageIDs)
     {
         this.wiki = wiki;

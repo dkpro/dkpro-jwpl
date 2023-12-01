@@ -21,8 +21,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * The page class that is actually persisted by Hibernate. It is accessed via a equally named class
- * in the api package to hide session management from the user.
+ * An object-relational entity which maps a {@link org.dkpro.jwpl.api.Page}
+ * to data attributes in a database. Those are persisted and retrieved by
+ * an OR mapper, such as Hibernate.
+ * <p>
+ * It is accessed via an equally named class in the {@code api} package
+ * to hide session management from the user.
  */
 public class Page
 {
@@ -44,6 +48,9 @@ public class Page
     {
     }
 
+    /**
+     * @return Retrieves the primary key identifying this persistent object.
+     */
     public long getId()
     {
         return id;
@@ -55,86 +62,137 @@ public class Page
         this.id = id;
     }
 
+    /**
+     * @return Retrieves the page identifier as used in Wikipedia.
+     */
     public int getPageId()
     {
         return pageId;
     }
 
+    /**
+     * @param pageId The page identifier as used in Wikipedia.
+     */
     public void setPageId(int pageId)
     {
         this.pageId = pageId;
     }
 
+    /**
+     * @return Retrieves a set of {@link Category categoryIDs} a {@link Page} is found in.
+     */
     public Set<Integer> getCategories()
     {
         return categories;
     }
 
+    /**
+     * @param categories A set of {@link Category categoryIDs} a {@link Page} is found in.
+     */
     public void setCategories(Set<Integer> categories)
     {
         this.categories = categories;
     }
 
+    /**
+     * @return Retrieves a set of {@link Page pageIds} a {@link Page} is referenced from.
+     */
     public Set<Integer> getInLinks()
     {
         return inLinks;
     }
 
+    /**
+     * @param inLinks set of {@link Page pageIds} this {@link Page} is referenced from.
+     */
     public void setInLinks(Set<Integer> inLinks)
     {
         this.inLinks = inLinks;
     }
 
+    /**
+     * @return Retrieves the page title as used in Wikipedia.
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * @param name The page title as used in Wikipedia.
+     */
     public void setName(String name)
     {
         this.name = name;
     }
 
+    /**
+     * @return Retrieves a set of {@link Page pageIds} a {@link Page} references to.
+     */
     public Set<Integer> getOutLinks()
     {
         return outLinks;
     }
 
+    /**
+     * @return Retrieves the cardinality of outgoing page references.
+     */
     public int getOutDegree()
     {
         return outLinks.size();
     }
 
+    /**
+     * @param outLinks A set of {@link Page pageIds} a {@link Page} references to.
+     */
     public void setOutLinks(Set<Integer> outLinks)
     {
         this.outLinks = outLinks;
     }
 
+    /**
+     * @return Retrieves a set of {@link String redirects} which exist for a {@link Page}.
+     */
     public Set<String> getRedirects()
     {
         return redirects;
     }
 
+    /**
+     * @param redirects  A set of {@link String redirects} which exist for a {@link Page}.
+     */
     public void setRedirects(Set<String> redirects)
     {
         this.redirects = redirects;
     }
 
+    /**
+     * @return Retrieves a page's content (text) as used in Wikipedia.
+     */
     public String getText()
     {
         return text;
     }
 
+    /**
+     * @param text The page's content (text) as used in Wikipedia.
+     */
     public void setText(String text)
     {
         this.text = text;
     }
 
+    /**
+     * @return {@code True} if a page is a disambiguation page, {@code false} otherwise.
+     */
     public boolean getIsDisambiguation()
     {
         return isDisambiguation;
     }
 
+    /**
+     * @param isDisambiguation  {@code True} if a page is a disambiguation page, {@code false} otherwise.
+     */
     public void setIsDisambiguation(Boolean isDisambiguation)
     {
         if (isDisambiguation == null) {

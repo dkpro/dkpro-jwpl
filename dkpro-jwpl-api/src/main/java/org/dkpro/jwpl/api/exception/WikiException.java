@@ -17,27 +17,49 @@
  */
 package org.dkpro.jwpl.api.exception;
 
+/**
+ * Represents a generic exceptional situation which occurred using JWPL.
+ */
 public class WikiException
     extends Exception
 {
 
     private static final long serialVersionUID = 3891003920835683241L;
 
+    /**
+     * Creates an empty message {@link WikiApiException}.
+     */
     public WikiException()
     {
         super();
     }
 
-    public WikiException(String txt)
+    /**
+     * Creates a {@link WikiException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     */
+    public WikiException(String message)
     {
-        super(txt);
+        super(message);
     }
 
+    /**
+     * Creates a {@link WikiException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
+    /**
+     * Creates a {@link WikiException} detailed by {@code cause}.
+     *
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiException(Throwable cause)
     {
         super(cause);

@@ -52,6 +52,14 @@ public class CategoryDescendantsIterator
      */
     private final Set<Integer> expandedCategoryIds;
 
+    /**
+     * Initializes a {@link CategoryDescendantsIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     * @param startCategory The Wikipedia category to start descending from. Must not be {@code null}.
+     */
     public CategoryDescendantsIterator(Wikipedia wiki, int bufferSize, Category startCategory)
     {
         this.wiki = wiki;

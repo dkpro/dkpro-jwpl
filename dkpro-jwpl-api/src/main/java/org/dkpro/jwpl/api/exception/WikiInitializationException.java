@@ -18,7 +18,7 @@
 package org.dkpro.jwpl.api.exception;
 
 /**
- * Thrown, when the Wikipedia object could not be properly initialized.
+ * Thrown, when the {@link org.dkpro.jwpl.api.Wikipedia} object could not be properly initialized.
  */
 public class WikiInitializationException
     extends WikiApiException
@@ -26,21 +26,40 @@ public class WikiInitializationException
 
     private static final long serialVersionUID = 7240072132466204183L;
 
+    /**
+     * Creates an empty message {@link WikiInitializationException}.
+     */
     public WikiInitializationException()
     {
         super();
     }
 
-    public WikiInitializationException(String txt)
+    /**
+     * Creates an empty message {@link WikiInitializationException}.
+     *
+     * @param message The textual notification for the cause or error information.
+     */
+    public WikiInitializationException(String message)
     {
-        super(txt);
+        super(message);
     }
 
+    /**
+     * Creates a {@link WikiInitializationException} detailed by {@code message}.
+     *
+     * @param message The textual notification for the cause or error information.
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiInitializationException(String message, Throwable cause)
     {
         super(message, cause);
     }
 
+    /**
+     * Creates a {@link WikiInitializationException} detailed by {@code cause}.
+     *
+     * @param cause The original {@link Throwable cause} that caused an exceptional situation.
+     */
     public WikiInitializationException(Throwable cause)
     {
         super(cause);

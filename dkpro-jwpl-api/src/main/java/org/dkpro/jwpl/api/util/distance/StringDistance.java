@@ -17,9 +17,18 @@
  */
 package org.dkpro.jwpl.api.util.distance;
 
+/**
+ * Provides methods to compute the editing distance among strings.
+ */
 public interface StringDistance
 {
 
+    /**
+     * Computes the editing distance between {@code s1} and {@code s2}.
+     * @param s1 A non-empty string. Must not be {@code null}.
+     * @param s2 A non-empty string. Must not be {@code null}.
+     * @return The editing distance between {@code s1} and {@code s2}.
+     */
     double distance(String s1, String s2);
 
 }

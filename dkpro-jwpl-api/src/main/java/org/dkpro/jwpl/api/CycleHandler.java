@@ -28,7 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Methods for handling cycles in the category graph.
+ * Provides methods for handling cycles in the category graph.
+ *
+ * @see CategoryGraph
  */
 public class CycleHandler
 {

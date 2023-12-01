@@ -26,6 +26,8 @@ import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.hibernate.Session;
 
 /**
+ * Provides helpful methods for working with the ORM Hibernate.
+ * 
  * @deprecated To be removed without replacement.
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
@@ -35,7 +37,13 @@ public class HibernateUtilities
 
     private final DatabaseConfiguration dbConfig;
 
-    public HibernateUtilities(Language pLanguage, DatabaseConfiguration dbConfig)
+    /**
+     * Instantiates {@link HibernateUtilities} via a {@code dbConfig} for a certain {@code language}.
+     *
+     * @param language The language to use as a constraint.
+     * @param dbConfig A valid {@link DatabaseConfiguration} instance, ready to use.
+     */
+    public HibernateUtilities(Language language, DatabaseConfiguration dbConfig)
     {
         this.dbConfig = dbConfig;
     }

@@ -85,6 +85,9 @@ public class PageQuery
      */
     private int maxTokens;
 
+    /**
+     * Instantiates a new {@link PageQuery} with default values.
+     */
     public PageQuery()
     {
         onlyDisambiguationPages = false;
@@ -108,66 +111,105 @@ public class PageQuery
 
     }
 
+    /**
+     * @return Retrieves the upper category limit.
+     */
     protected int getMaxCategories()
     {
         return maxCategories;
     }
 
+    /**
+     * @return Retrieves the upper in-degree limit.
+     */
     protected int getMaxIndegree()
     {
         return maxIndegree;
     }
 
+    /**
+     * @return Retrieves the upper out-degree limit.
+     */
     protected int getMaxOutdegree()
     {
         return maxOutdegree;
     }
 
+    /**
+     * @return Retrieves the upper redirect limit.
+     */
     protected int getMaxRedirects()
     {
         return maxRedirects;
     }
 
+    /**
+     * @return Retrieves the lower category limit.
+     */
     protected int getMinCategories()
     {
         return minCategories;
     }
 
+    /**
+     * @return Retrieves the lower in-degree limit.
+     */
     protected int getMinIndegree()
     {
         return minIndegree;
     }
 
+    /**
+     * @return Retrieves the lower out-degree limit.
+     */
     protected int getMinOutdegree()
     {
         return minOutdegree;
     }
 
+    /**
+     * @return Retrieves the lower redirect limit.
+     */
     protected int getMinRedirects()
     {
         return minRedirects;
     }
 
+    /**
+     * @return {@code True} if only full article pages shall be fetched, {@code false} otherwise.
+     */
     protected boolean onlyArticlePages()
     {
         return onlyArticlePages;
     }
 
+    /**
+     * @return {@code True} if only disambiguation pages shall be fetched, {@code false} otherwise.
+     */
     protected boolean onlyDisambiguationPages()
     {
         return onlyDisambiguationPages;
     }
 
+    /**
+     * @return Retrieves the lower token limit.
+     */
     protected int getMinTokens()
     {
         return minTokens;
     }
 
+    /**
+     * @return Retrieves the upper token limit.
+     */
     protected int getMaxTokens()
     {
         return maxTokens;
     }
 
+    /**
+     * @return Retrieves the pattern for titles.
+     */
     protected String getTitlePattern()
     {
         return titlePattern;

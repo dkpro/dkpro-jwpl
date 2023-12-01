@@ -44,6 +44,14 @@ public class PageQueryIterable
     private final Wikipedia wiki;
     private final List<Integer> pageIdList;
 
+    /**
+     * Instantiates a new {@link PageQueryIterable} via a {@link PageQuery}.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param q The {@link PageQuery} to process. Must not be {@code null}.
+     *
+     * @throws WikiApiException Thrown if errors occurred.
+     */
     public PageQueryIterable(Wikipedia wiki, PageQuery q) throws WikiApiException
     {
 

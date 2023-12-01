@@ -26,6 +26,11 @@ import org.dkpro.jwpl.api.Page;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Provides helpful methods for traversing or sampling page graphs.
+ *
+ * @deprecated To be removed without replacement.
+ */
 public class GraphUtilities
 {
 
@@ -33,6 +38,15 @@ public class GraphUtilities
             .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
+     * Get a random subset (of {@code pResultSetSize}) of the page set passed to the method.
+     *
+     * @param pages
+     *            The pages.
+     * @param pResultSetSize
+     *            The size of the result set.
+     * @return A random subset of the original page set of the given size or null, if the requested
+     *         subset size is larger than the original page set.
+     *            
      * @deprecated Use {@link #getRandomPageSubset(Set, int)} instead.
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
@@ -46,7 +60,7 @@ public class GraphUtilities
     }
 
     /**
-     * Get a random subset (of size pSize) of the page set passed to the method.
+     * Get a random subset (of {@code pResultSetSize}) of the page set passed to the method.
      *
      * @param pPageIDs
      *            The pages.

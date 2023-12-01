@@ -183,6 +183,16 @@
     </resources>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <sourceFileExcludes>
+            <!-- exclude this specific file to avoid creating useless enum value javadoc for languages -->
+            <sourceFileExclude>org/dkpro/jwpl/api/WikiConstants.java</sourceFileExclude>
+          </sourceFileExcludes>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <version>${maven.build.helper.plugin}</version>

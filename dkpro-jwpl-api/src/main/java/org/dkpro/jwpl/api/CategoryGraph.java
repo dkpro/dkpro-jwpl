@@ -63,49 +63,73 @@ public class CategoryGraph
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    static final long serialVersionUID = 1L;
-
-    // the wikipedia object
-    private Wikipedia wiki;
-
-    // the category graph
-    private DefaultDirectedGraph<Integer, DefaultEdge> graph;
-    // the category graph
-    private AsUndirectedGraph<Integer, DefaultEdge> undirectedGraph;
-
-    // a map holding the degree distribution of the graph
-    private Map<Integer, Integer> degreeDistribution;
-
-    // number of nodes in the graph
-    private int numberOfNodes;
-
-    // number of edges in the graph
-    private int numberOfEdges;
-
-    // A map holding the (recursive) number of hyponyms for each node.
-    // Recursive means that the hyponyms of hyponyms are also taken into account.
-    private Map<Integer, Integer> hyponymCountMap = null;
-    private final String hyponymCountMapFilename = "hypoCountMap";
-
-    // a mapping from all nodes to a list of nodes on the path to the root
-    private Map<Integer, List<Integer>> rootPathMap = null;
-    private final String rootPathMapFilename = "rootPathMap";
-
-    private double averageShortestPathLength = Double.NEGATIVE_INFINITY;
-    private double diameter = Double.NEGATIVE_INFINITY;
-    private double averageDegree = Double.NEGATIVE_INFINITY;
-    private double clusterCoefficient = Double.NEGATIVE_INFINITY;
-    private double depth = Double.NEGATIVE_INFINITY;
+    private static final long serialVersionUID = 1L;
 
     /**
-     * Creates an empty {@link CategoryGraph}. You cannot do much with such a graph. Sometimes an
-     * empty category graph can be useful if you just need a CategoryGraph object, but do not care
-     * about its content.
+     * The wikipedia object
      */
-    public CategoryGraph() throws WikiApiException
-    {
-        logger.warn("Attention. You created an empty category graph. Intentionally?");
-    }
+    private Wikipedia wiki;
+
+    /**
+     * The category graph, directed.
+     */
+    private DefaultDirectedGraph<Integer, DefaultEdge> graph;
+
+    /**
+     * The category graph, undirected.
+     */
+    private AsUndirectedGraph<Integer, DefaultEdge> undirectedGraph;
+
+    /**
+     * A map holding the degree distribution of the graph
+     */
+    private Map<Integer, Integer> degreeDistribution;
+
+    /**
+     * Number of nodes in the graph
+     */
+    private int numberOfNodes;
+
+    /**
+     * Number of edges in the graph
+     */
+    private int numberOfEdges;
+
+    /**
+     * A map holding the (recursive) number of hyponyms for each node.
+     * Recursive means that the hyponyms of hyponyms are also taken into account.
+     */
+    private Map<Integer, Integer> hyponymCountMap = null;
+
+    /**
+     * A mapping from all nodes to a list of nodes on the path to the root
+     */
+    private Map<Integer, List<Integer>> rootPathMap = null;
+
+    /**
+     * The average shortest path length. Initially: {@link Double#NEGATIVE_INFINITY}.
+     */
+    private double averageShortestPathLength = Double.NEGATIVE_INFINITY;
+
+    /**
+     * The diameter of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
+     */
+    private double diameter = Double.NEGATIVE_INFINITY;
+
+    /**
+     * The average degree of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
+     */
+    private double averageDegree = Double.NEGATIVE_INFINITY;
+
+    /**
+     * The cluster coefficient of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
+     */
+    private double clusterCoefficient = Double.NEGATIVE_INFINITY;
+
+    /**
+     * The depth of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
+     */
+    private double depth = Double.NEGATIVE_INFINITY;
 
     /**
      * Creates an {@link CategoryGraph} using a serialized DirectedGraph object.
@@ -216,15 +240,20 @@ public class CategoryGraph
         constructCategoryGraph(pWiki, pPageIDs, null);
     }
 
+    /**
+     * Creates a category graph using a subset (that may also be the full set :) of the categories.
+     *
+     * @param pWiki
+     *            The wiki object.
+     * @param pGraph A valid {@link DefaultDirectedGraph} representation.
+     */
     public CategoryGraph(Wikipedia pWiki, DefaultDirectedGraph<Integer, DefaultEdge> pGraph)
-        throws WikiApiException
     {
         constructCategoryGraph(pWiki, pGraph);
     }
 
     private void constructCategoryGraph(Wikipedia pWiki,
             DefaultDirectedGraph<Integer, DefaultEdge> pGraph)
-        throws WikiApiException
     {
         this.wiki = pWiki;
         this.graph = pGraph;
@@ -339,86 +368,6 @@ public class CategoryGraph
 
     }
 
-    //// older version without filterList
-    // private void constructCategoryGraph(Wikipedia pWiki, Set<Integer> pPageIDs) throws
-    //// WikiApiException {
-    // // create the graph as a directed Graph
-    // // algorithms that need to be called on a undirected graph or should ignore direction
-    // // can be called on an AsUndirectedGraph view of the directed graph
-    // graph = new DefaultDirectedGraph<Integer, DefaultEdge>(DefaultEdge.class);
-    //
-    // wiki = pWiki;
-    //
-    // degreeDistribution = new HashMap<Integer,Integer>();
-    //
-    // for (int pageID : pPageIDs) {
-    // graph.addVertex(pageID);
-    // }
-    //
-    // // add edges
-    // logger.info(OS.getUsedMemory() + " MB memory used.");
-    // int progress = 0;
-    // for (int pageID : pPageIDs) {
-    // progress++;
-    // ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
-    //// ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
-    //
-    // long hibernateID = pWiki.__getHibernateId(pageID);
-    // if (hibernateID == -1) {
-    // throw new WikiApiException(pageID + " is not a valid pageID");
-    // }
-    //
-    // // get the category
-    // Category cat;
-    // try {
-    // cat = new Category(this.wiki, hibernateID);
-    // } catch (WikiPageNotFoundException e) {
-    // throw new WikiApiException("Category not found");
-    // }
-    //
-    // // get parents and children
-    // // if the corresponding nodes are in the graph (it could be a subset) => add them to the
-    //// graph
-    // Set<Integer> inLinks = cat.__getInlinkIDs();
-    // Set<Integer> outLinks = cat.__getOutlinkIDs();
-    //
-    // // add edges
-    // // If an edge already exits, it is silenty ignored by JGraphT. So we do not have to check
-    //// this.
-    // for (int inLink : inLinks) {
-    // if (pPageIDs.contains(inLink)) {
-    // if (inLink == pageID) {
-    // logger.warn("Self-loop for node " + pageID + " (" + cat.getTitle() + ")");
-    // }
-    // else {
-    // graph.addEdge(inLink, pageID);
-    // }
-    // }
-    // }
-    // for (int outLink : outLinks) {
-    // if (pPageIDs.contains(outLink)) {
-    // if (outLink == pageID) {
-    // logger.warn("Self-loop for node " + pageID + " (" + cat.getTitle() + ")");
-    // }
-    // else {
-    // graph.addEdge(pageID, outLink);
-    // }
-    // }
-    // }
-    // }
-    //
-    // logger.info("Added " + this.getNumberOfNodes() + " nodes.");
-    // logger.info("Added " + this.getNumberOfEdges() + " edges.");
-    //
-    // CycleHandler cycleHandler = new CycleHandler(wiki, this);
-    // logger.info("Graph contains cycles: " + cycleHandler.containsCycle());
-    // cycleHandler.removeCycles();
-    // logger.info("Graph contains cycles: " + cycleHandler.containsCycle());
-    //
-    // this.depth = getDepth();
-    // logger.info(this.depth);
-    // }
-
     /**
      * Checks whether the category title matches the filter (a filter matches a string, if the
      * string starts with the filter expression).
@@ -455,6 +404,9 @@ public class CategoryGraph
      * @param category2
      *            The second category node.
      * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     *
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     public Category getLCS(Category category1, Category category2) throws WikiApiException
     {
@@ -472,6 +424,9 @@ public class CategoryGraph
      *            The pageid of the second category node.
      * @return The pageId of the lowest common subsumer of the two nodes, or null if there is no
      *         LCS.
+     *
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     public int getLCSId(int categoryPageId1, int categoryPageId2) throws WikiApiException
     {
@@ -535,132 +490,15 @@ public class CategoryGraph
      * @param categoryPageId2
      *            The pageid of the second category node.
      * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     *
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException
     {
         int lcsid = getLCSId(categoryPageId1, categoryPageId2);
         return lcsid > -1 ? wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)) : null;
     }
-
-    // /**
-    // * Gets the lowest common subsumer (LCS) of two nodes.
-    // * The LCS of two nodes is first node on their paths to the root that is shared between the
-    // nodes.
-    // * Nodes that are not in the same connected component as the root node are defined to have no
-    // LCS.
-    // * @param rootCategory The root node of the category hierarchy.
-    // * @param category1 The first category node.
-    // * @param category2 The second category node.
-    // * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
-    // */
-    // public Category getLCS(Category rootCategory, Category category1, Category category2) throws
-    // WikiApiException {
-    //
-    // int root = rootCategory.getPageId();
-    // int node1 = category1.getPageId();
-    // int node2 = category2.getPageId();
-    //
-    //// TODO here might be a problem concerning multiple inheritence in the category graph, if
-    // there is more than one path of equal length to the root, the method will only find one, but
-    // may be the other (not found) LCS has a higher information content
-    //
-    // logger.debug("root: " + root);
-    // logger.debug("n1: " + node1);
-    // logger.debug("n2: " + node2);
-    //
-    // // if one of the nodes is not in the same connected component as the root node, we cannot get
-    // the LCS
-    // if (!undirectedGraph.containsVertex(node1) || !undirectedGraph.containsVertex(node2)) {
-    // logger.warn("Cannot get lowest common subsumer because the nodes are not in the same
-    // connected component.");
-    // return null;
-    // }
-    //
-    //// TODO due to multiple inheritance there may be a non-shortest path that leads to a lcs below
-    // the root
-    //// this should be considered here!!
-    // // get the path from root node to node 1
-    // List<DefaultEdge> edgeList1 = DijkstraShortestPath.findPathBetween(undirectedGraph, node1,
-    // root);
-    //
-    // // get the path from root node to node 2
-    // List<DefaultEdge> edgeList2 = DijkstraShortestPath.findPathBetween(undirectedGraph, node2,
-    // root);
-    //
-    // // if one of the nodes is not in the same connected component as the root node, there is no
-    // path
-    // // return -1 in this case
-    // if (edgeList1 == null || edgeList2 == null) {
-    // return null;
-    // }
-    //
-    // // convert the edge lists to node sets
-    // List<Integer> nodeList1 = edgeList2nodeList(edgeList1, root, node1);
-    // List<Integer> nodeList2 = edgeList2nodeList(edgeList2, root, node2);
-    //
-    // logger.debug(edgeList1);
-    // logger.debug(edgeList2);
-    // logger.debug(nodeList1);
-    // logger.debug(nodeList2);
-    //
-    // // node 1 subsumes node 2 ?
-    // for (int tmpNode2 : nodeList2) {
-    // if (tmpNode2 == node1) {
-    // return wiki.__getCategory(node1);
-    // }
-    // }
-    //
-    // // node 2 subsumes node 1 ?
-    // for (int tmpNode1 : nodeList1) {
-    // if (tmpNode1 == node2) {
-    // return wiki.__getCategory(node2);
-    // }
-    // }
-    // // they have a lcs ?
-    // for (int tmpNode1 : nodeList1) {
-    // for (int tmpNode2 : nodeList2) {
-    // if (tmpNode1 == tmpNode2) {
-    // return wiki.__getCategory(tmpNode1);
-    // }
-    // }
-    // }
-    //
-    // return null;
-    // }
-
-    // /**
-    // * Converts an edgeList as returned by the Dijkstra-Shortest-Path algorithm into a list of
-    // nodes on this path.
-    // * @param edgeList The list of edges of this path running from the searched node to the root
-    // node.
-    // * @return The corresponding list of nodes on the path running from the searched node to the
-    // root node.
-    // */
-    // private List<Integer> edgeList2nodeList(List<DefaultEdge> edgeList, int root, int node)
-    // throws WikiApiException {
-    // Iterator<DefaultEdge> it = edgeList.iterator();
-    //
-    // List<Integer> nodeList = new ArrayList<Integer>();
-    // // init with start node
-    // nodeList.add(node);
-    // int currentNode = node;
-    //
-    // while(it.hasNext()) {
-    // DefaultEdge currentEdge = it.next();
-    // if (graph.getEdgeSource(currentEdge) != currentNode) {
-    // nodeList.add(graph.getEdgeSource(currentEdge));
-    // currentNode = graph.getEdgeSource(currentEdge);
-    // }
-    // else if (graph.getEdgeTarget(currentEdge) != currentNode) {
-    // nodeList.add(graph.getEdgeTarget(currentEdge));
-    // currentNode = graph.getEdgeTarget(currentEdge);
-    // }
-    // else {
-    // throw new WikiApiException("Path is broken");
-    // }
-    // }
-    // return nodeList;
-    // }
 
     /**
      * Returns the shortest path from node to root as a list of pageIds of the nodes on the path.
@@ -861,25 +699,6 @@ public class CategoryGraph
         return -1;
     }
 
-    public int getTaxonomicallyBoundPathLengthInNodes(Category cat1, Category cat2)
-        throws WikiApiException
-    {
-        int retValue = getTaxonomicallyBoundPathLengthInEdges(cat1, cat2);
-
-        if (retValue == 0) {
-            return 0;
-        }
-        else if (retValue > 0) {
-            return (--retValue);
-        }
-        else if (retValue == -1) {
-            return -1;
-        }
-        else {
-            throw new WikiApiException("Unknown return value.");
-        }
-    }
-
     /**
      * Gets the path length between two category nodes - measured in "nodes".
      *
@@ -889,6 +708,9 @@ public class CategoryGraph
      *            The second node.
      * @return The number of nodes of the path between node1 and node2. 0, if the nodes are
      *         identical or neighbors. -1, if no path exists.
+     *         
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     public int getPathLengthInNodes(Category node1, Category node2) throws WikiApiException
     {
@@ -914,6 +736,7 @@ public class CategoryGraph
      * each node. "recursive" means that the hyponyms of hyponyms are also taken into account.
      *
      * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     private void createHyponymCountMap() throws WikiApiException
     {
@@ -922,6 +745,7 @@ public class CategoryGraph
             return;
         }
 
+        String hyponymCountMapFilename = "hypoCountMap";
         File hyponymCountMapSerializedFile = new File(
                 wiki.getWikipediaId() + "_" + hyponymCountMapFilename);
         hyponymCountMap = new HashMap<>();
@@ -977,7 +801,7 @@ public class CategoryGraph
             }
 
             if (invalid) {
-                // One of the childs is not in the hyponymCountMap yet
+                // One of the children is not in the hyponymCountMap yet
                 // Re-Enter the node into the queue and continue with next node
                 queue.add(currNode);
                 continue;
@@ -1039,6 +863,7 @@ public class CategoryGraph
     /**
      * @return The leaf nodes of the graph, i.e. nodes with outdegree = 0.
      * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     protected Set<Integer> __getLeafNodes() throws WikiApiException
     {
@@ -1117,7 +942,8 @@ public class CategoryGraph
             return;
         }
 
-        File rootPathFile = new File(wiki.getWikipediaId() + "_" + this.rootPathMapFilename);
+        String rootPathMapFilename = "rootPathMap";
+        File rootPathFile = new File(wiki.getWikipediaId() + "_" + rootPathMapFilename);
 
         // try to load rootPathMap from precomputed file
         if (rootPathFile.exists()) {
@@ -1165,22 +991,6 @@ public class CategoryGraph
 
         logger.info("Serializing rootPathMap");
         this.serializeMap(rootPathMap, rootPathFile);
-    }
-
-    // TODO the method is only public, because the test deletes the file after creating it - I have
-    // no idea at the moment how to do it
-
-    /**
-     * Deleted the root path map file.
-     *
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
-     */
-    public void deleteRootPathMap() throws WikiApiException
-    {
-        File rootPathFile = new File(this.rootPathMapFilename + "_" + wiki.getLanguage() + "_"
-                + wiki.getMetaData().getVersion());
-        rootPathFile.delete();
     }
 
     private void fillRootPathMap(List<Integer> queue) throws WikiApiException
@@ -1292,6 +1102,9 @@ public class CategoryGraph
     /**
      * @return Returns the largest connected component as a new graph. If the base graph already is
      *         connected, it simply returns the whole graph.
+     *         
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
      */
     public CategoryGraph getLargestConnectedComponent() throws WikiApiException
     {
@@ -1575,79 +1388,6 @@ public class CategoryGraph
         this.clusterCoefficient = clusterCoefficientSum / nodes.size();
     }
 
-    // /**
-    // * Computes and sets the diameter, the average degree and the average shortest path length of
-    // the graph.
-    // * Do not call this in the constructor. May run a while.
-    // * It is called in the getters, if parameters are not yet initialized when retrieved.
-    // */
-    // public void setGraphParameters_slow() {
-    //
-    // // Diameter is the maximum of all shortest path lengths
-    // // Average shortest path length is (as the name says) the average of the shortest path length
-    // between all node pairs
-    //
-    // double maxDiameter = 0.0;
-    // double shortestPathLengthSum = 0.0;
-    // double degreeSum = 0.0;
-    // double clusterCoefficientSum = 0.0;
-    //
-    // // iterate over all node pairs
-    // Set<Integer> nodes = undirectedGraph.vertexSet();
-    // Object[] nodeArray = nodes.toArray();
-    // // sort the Array so we can use a simple iteration with two for loops to access all pairs
-    // Arrays.sort(nodeArray);
-    //
-    // int progress = 0;
-    // for (int i=0; i<nodes.size(); i++) {
-    // progress++;
-    // logger.info(progress);
-    //// ApiUtilities.printProgressInfo(progress, nodes.size(), 100, "Getting graph parameters");
-    //
-    // int outerNode = (Integer) nodeArray[i];
-    //
-    // degreeSum += undirectedGraph.degreeOf(outerNode);
-    //
-    // // cluster coefficient of a node is C_v is the fraction of the connections that exist between
-    // the neighbor nodes (k_v) of a this node and all allowable connections between the neighbors
-    // (k_v(k_v -1)/2)
-    // // for degrees 0 or 1 there is no cluster coefficient, as there can be no connections between
-    // neighbors
-    // if (undirectedGraph.degreeOf(outerNode) > 1) {
-    // clusterCoefficientSum += getNumberOfNeighborConnections(outerNode, undirectedGraph) /
-    // (undirectedGraph.degreeOf(outerNode) * (undirectedGraph.degreeOf(outerNode)-1));
-    // }
-    //
-    // for (int j=i+1; j<nodes.size(); j++) {
-    // int innerNode = (Integer) nodeArray[j];
-    //
-    // // compute shortest path length
-    // // fourth parameter limits search to a certain radius
-    // // Double.POSITIVE_INFINITY means unbounded search
-    // // Because there is no algorithm solving the single-pair problem that is asymptotically
-    // faster
-    // // than any algorithm solving the single-source problem, this is a very stupid solution!
-    // DijkstraShortestPath path = new DijkstraShortestPath(
-    // undirectedGraph,
-    // outerNode,
-    // innerNode,
-    // Double.POSITIVE_INFINITY);
-    //
-    // double pathLength = path.getPathLength();
-    // shortestPathLengthSum += pathLength;
-    // if (pathLength > maxDiameter) {
-    // maxDiameter = pathLength;
-    // }
-    // }
-    // }
-    //
-    // this.averageShortestPathLength = shortestPathLengthSum / ( nodes.size() * (nodes.size()-1) /
-    // 2 ); // sum of path lengths / (number of node pairs)
-    // this.diameter = maxDiameter;
-    // this.averageDegree = degreeSum / nodes.size();
-    // this.clusterCoefficient = clusterCoefficientSum / nodes.size();
-    // }
-
     /**
      * Computes the shortest path from node to all other nodes. Paths to nodes that have already
      * been the source of the shortest path computation are omitted (the path was already added to
@@ -1658,12 +1398,12 @@ public class CategoryGraph
      * @param pStartNode
      *            The start node of the search.
      * @param pShortestPathLengthSum
-     *            The sum of the shortes path lengths.
+     *            The sum of the shortest path lengths.
      * @param pMaxPathLength
      *            The maximum path length found so far.
      * @param pWasSource
      *            A set of nodes which have been the start node of the computation process. For such
-     *            nodes all path lengths have beeen already computed.
+     *            nodes all path lengths have been already computed.
      * @return An array of double values. The first value is the shortestPathLengthSum and the
      *         second value is the maxPathLength. They are returned as an double array for
      *         performance reasons. I do not want to create an object, as this function is called
@@ -1727,13 +1467,12 @@ public class CategoryGraph
                 }
             }
         }
-        double[] returnArray = { pShortestPathLengthSum, pMaxPathLength };
-        return returnArray;
+      return new double[]{ pShortestPathLengthSum, pMaxPathLength };
     }
 
     /**
      * This parameter is already set in the constructor as it is needed for computation of
-     * relatedness values. Therefore its computation does not trigger setGraphParameters (it is too
+     * relatedness values. Therefore, its computation does not trigger setGraphParameters (it is too
      * slow), even if the depth is implicitly determined there, too.
      *
      * @return The depth of the category graph, i.e. the maximum path length starting with the root
@@ -1759,7 +1498,7 @@ public class CategoryGraph
 
     /**
      * This parameter is already set in the constructor as it is needed for computation of
-     * relatedness values. Therefore its computation does not trigger setGraphParameters (it is too
+     * relatedness values. Therefore, its computation does not trigger setGraphParameters (it is too
      * slow), even if the depth is implicitly determined there, too.
      *
      * @return The depth of the category graph, i.e. the maximum path length starting with the root
@@ -1815,36 +1554,46 @@ public class CategoryGraph
         return maxPathLength;
     }
 
+    /**
+     * @return Creates and returns a graph properties information string.
+     */
     public String getGraphInfo()
     {
         StringBuffer sb = new StringBuffer(1000);
         Map<Integer, Integer> degreeDistribution = getDegreeDistribution();
 
-        sb.append("Number of Nodes:     " + getNumberOfNodes() + LF);
-        sb.append("Number of Edges:     " + getNumberOfEdges() + LF);
-        sb.append("Avg. path length:    " + getAverageShortestPathLength() + LF);
-        sb.append("Diameter:            " + getDiameter() + LF);
-        sb.append("Average degree:      " + getAverageDegree() + LF);
-        sb.append("Cluster coefficient: " + getClusterCoefficient() + LF);
-        sb.append(
-                "Degree distribution: " + CommonUtilities.getMapContents(degreeDistribution) + LF);
+        sb.append("Number of Nodes:     ").append(getNumberOfNodes()).append(LF);
+        sb.append("Number of Edges:     ").append(getNumberOfEdges()).append(LF);
+        sb.append("Avg. path length:    ").append(getAverageShortestPathLength()).append(LF);
+        sb.append("Diameter:            ").append(getDiameter()).append(LF);
+        sb.append("Average degree:      ").append(getAverageDegree()).append(LF);
+        sb.append("Cluster coefficient: ").append(getClusterCoefficient()).append(LF);
+        sb.append("Degree distribution: ").append(CommonUtilities.getMapContents(degreeDistribution)).append(LF);
 
         return sb.toString();
     }
 
     /**
-     * @return Returns the graph.
+     * @return Returns the {@link DefaultDirectedGraph directed graph}.
      */
     public DefaultDirectedGraph<Integer, DefaultEdge> getGraph()
     {
         return graph;
     }
 
+    /**
+     * @return Returns the {@link AsUndirectedGraph undirected graph}.
+     */
     public AsUndirectedGraph<Integer, DefaultEdge> getUndirectedGraph()
     {
         return undirectedGraph;
     }
 
+    /**
+     * @return Retrieves a map for the frequencies (value) of hyponyms (key).
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
+     */
     public Map<Integer, Integer> getHyponymCountMap() throws WikiApiException
     {
         if (hyponymCountMap == null) {
@@ -1853,6 +1602,11 @@ public class CategoryGraph
         return this.hyponymCountMap;
     }
 
+    /**
+     * @return Retrieves a map of root paths.
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
+     */
     public Map<Integer, List<Integer>> getRootPathMap() throws WikiApiException
     {
         if (rootPathMap == null) {
@@ -1862,12 +1616,12 @@ public class CategoryGraph
     }
 
     /**
-     * Serialize a Map.
+     * Serializes the specified {@link Map map} to a {@code file}.
      *
      * @param map
-     *            The map to serialize.
+     *            The map to serialize. Must not be {@code null}.
      * @param file
-     *            The file for saving the map.
+     *            The file for saving the map. Must not be {@code null}.
      */
     private void serializeMap(Map<?, ?> map, File file)
     {
@@ -1881,10 +1635,11 @@ public class CategoryGraph
     }
 
     /**
-     * Deserialize a map
+     * Deserializes a {@link Map map} from the specified {@code file}.
      *
      * @param file
-     *            The file with the map.
+     *            The file with the map. Must not be {@code null}.
+     * @return The reconstructed {@link Map} or {@code null} if errors occurred.
      */
     private Map<?, ?> deserializeMap(File file)
     {
@@ -1908,7 +1663,6 @@ public class CategoryGraph
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
-    // TODO should be refactored a bit.
     public void saveGraph(String destination) throws WikiApiException
     {
         try {

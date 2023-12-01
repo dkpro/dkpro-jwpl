@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.api.util.distance;
 
+/**
+ * Provides an implementation of {@link StringDistance} to compute
+ * the editing according to Levenshtein.
+ */
 public class LevenshteinStringDistance
     implements StringDistance
 {

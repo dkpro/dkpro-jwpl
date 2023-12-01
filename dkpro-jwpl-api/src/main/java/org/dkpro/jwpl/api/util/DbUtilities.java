@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * Provides extra method(s) for working directly with a database.
+ *
  * @deprecated To be removed without replacement.
  */
 @Deprecated(since = "2.0.0", forRemoval = true)
@@ -38,11 +40,22 @@ public class DbUtilities
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Instantiates a {@link DbUtilities} object.
+     *
+     * @param conn A valid {@link Connection} instance. Must not be {@code null}.
+     */
     public DbUtilities(Connection conn)
     {
         this.conn = conn;
     }
 
+    /**
+     * Checks if a table identified by {@code tableName} exists on the currently connected database.
+     *
+     * @param tableName The name of the table to check for. Must not be {@code null}.
+     * @return {@code True} if it exists, {@code false} otherwise.
+     */
     public boolean tableExists(String tableName)
     {
 

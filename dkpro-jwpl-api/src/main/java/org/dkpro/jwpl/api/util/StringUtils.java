@@ -20,6 +20,9 @@ package org.dkpro.jwpl.api.util;
 import java.util.Collection;
 import java.util.Iterator;
 
+/**
+ * Provides methods to manipulate strings for special use cases.
+ */
 public class StringUtils
 {
 

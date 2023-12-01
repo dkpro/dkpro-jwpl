@@ -40,12 +40,28 @@ public class PageIterable
      */
     private int bufferSize = 500;
 
+    /**
+     * Initializes a {@link PageIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param onlyArticles {@code True} if only full article pages shall be processed, yet no disambiguation pages.
+     *                     {@code False} if disambiguation pages shall considered as well.
+     */
     public PageIterable(Wikipedia wiki, boolean onlyArticles)
     {
         this.wiki = wiki;
         this.onlyArticles = onlyArticles;
     }
 
+    /**
+     * Initializes a {@link PageIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param onlyArticles {@code True} if only full article pages shall be processed, yet no disambiguation pages.
+     *                     {@code False} if disambiguation pages shall considered as well.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     */
     protected PageIterable(Wikipedia wiki, boolean onlyArticles, int bufferSize)
     {
         this.wiki = wiki;

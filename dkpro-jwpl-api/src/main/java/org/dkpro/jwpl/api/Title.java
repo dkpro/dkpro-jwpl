@@ -173,13 +173,16 @@ public class Title
     }
 
     /**
-     * @return The wikistyle title, with spaces replaced by underscores.
+     * @return The wikistyle title with spaces replaced by underscores.
      */
     public String getWikiStyleTitle()
     {
         return wikiStyleTitle;
     }
 
+    /**
+     * @return The raw title with no replacements applied.
+     */
     protected String getRawTitleText()
     {
         return rawTitleText;

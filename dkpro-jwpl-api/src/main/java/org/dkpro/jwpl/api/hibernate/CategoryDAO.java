@@ -26,8 +26,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Data access object for class {@link Category}
  *
- * @author Hibernate Tools
  * @see org.dkpro.jwpl.api.Category
+ * @see org.dkpro.jwpl.api.hibernate.Category
  */
 public class CategoryDAO
     extends GenericDAO<Category>
@@ -36,9 +36,14 @@ public class CategoryDAO
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    public CategoryDAO(Wikipedia pWiki)
+    /**
+     * Instantiates a {@link CategoryDAO}.
+     *
+     * @param wiki A valid {@link Wikipedia} instance. Must not be {@code null}.
+     */
+    public CategoryDAO(Wikipedia wiki)
     {
-        super(pWiki, Category.class);
+        super(wiki, Category.class);
     }
 
     @Override

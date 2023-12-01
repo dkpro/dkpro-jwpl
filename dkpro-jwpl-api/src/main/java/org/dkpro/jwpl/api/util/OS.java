@@ -17,6 +17,11 @@
  */
 package org.dkpro.jwpl.api.util;
 
+/**
+ * Provides helpful methods for working with runtime environment on a certain operating system (OS).
+ *
+ * @deprecated To be removed without replacement.
+ */
 public class OS
 {
 
