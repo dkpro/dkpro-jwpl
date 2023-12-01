@@ -69,14 +69,14 @@ public class LevenshteinStringDistance
                     cost = 1;
                 }
                 // Step 6
-                d[i][j] = Minimum(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
+                d[i][j] = minimum(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + cost);
             }
         }
         // Step 7
         return Integer.valueOf(d[n][m]).doubleValue();
     }
 
-    private int Minimum(int a, int b, int c)
+    private int minimum(int a, int b, int c)
     {
         int min;
         min = a;

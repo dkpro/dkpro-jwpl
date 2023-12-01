@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 // TODO better JavaDocs!
 public class Wikipedia
-    implements WikiConstants
-{
+        implements WikiConstants {
 
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
@@ -81,14 +80,11 @@ public class Wikipedia
      * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig
      * parameter.
      *
-     * @param dbConfig
-     *            A {@link DatabaseConfiguration} object telling the {@link Wikipedia} object where
-     *            the data is stored and how it can be accessed.
-     * @throws WikiInitializationException
-     *             Thrown if errors occurred while bootstrapping the {@link Wikipedia} instance.
+     * @param dbConfig A {@link DatabaseConfiguration} object telling the {@link Wikipedia} object where
+     *                 the data is stored and how it can be accessed.
+     * @throws WikiInitializationException Thrown if errors occurred while bootstrapping the {@link Wikipedia} instance.
      */
-    public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException
-    {
+    public Wikipedia(DatabaseConfiguration dbConfig) throws WikiInitializationException {
 
         logger.trace("Creating Wikipedia object.");
 
@@ -103,15 +99,13 @@ public class Wikipedia
 
         if (dbConfig.supportsCollation()) {
             logger.info("Wikipedia database backend supports character collation features.");
-        }
-        else {
+        } else {
             logger.debug(
                     "Wikipedia database backend does NOT support character collation features.");
         }
     }
 
-    WikiConfig getWikConfig()
-    {
+    WikiConfig getWikConfig() {
         return wikiConfig;
     }
 
@@ -125,35 +119,29 @@ public class Wikipedia
      * For example, the article "Steam boat" could be queried with - "Steam boat" - "steam boat" -
      * "Steam_boat" - "steam_boat" and additionally all redirects that might point to that article.
      *
-     * @param title
-     *            The title of the page.
+     * @param title The title of the page.
      * @return The page object for a given title.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or the title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly
+     *                          parsed.
      */
-    public Page getPage(String title) throws WikiApiException
-    {
+    public Page getPage(String title) throws WikiApiException {
         return new Page(this, title, false);
     }
 
     /**
      * Gets the page with exactly the given title.<br>
-     *
+     * <p>
      * Note that when using this method you are responsible for converting a normal search string
      * into the right wiki-style.<br>
-     *
+     * <p>
      * If the title is a redirect, the corresponding page is returned.<br>
      *
-     * @param exactTitle
-     *            The exact title of the page.
+     * @param exactTitle The exact title of the page.
      * @return The page object for a given title.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or the title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly
+     *                          parsed.
      */
-    public Page getPageByExactTitle(String exactTitle) throws WikiApiException
-    {
+    public Page getPageByExactTitle(String exactTitle) throws WikiApiException {
         return new Page(this, exactTitle, true);
     }
 
@@ -163,15 +151,12 @@ public class Wikipedia
      * Spaces in the title are converted to underscores, as this is a convention for Wikipedia
      * article titles.
      *
-     * @param title
-     *            The title of the page.
+     * @param title The title of the page.
      * @return A set of page objects matching this title.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or the title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly
+     *                          parsed.
      */
-    public Set<Page> getPages(String title) throws WikiApiException
-    {
+    public Set<Page> getPages(String title) throws WikiApiException {
         Set<Integer> ids = new HashSet<>(getPageIdsCaseInsensitive(title));
 
         Set<Page> pages = new HashSet<>();
@@ -184,28 +169,22 @@ public class Wikipedia
     /**
      * Gets the page for a given pageId.
      *
-     * @param pageId
-     *            The id of the page.
+     * @param pageId The id of the page.
      * @return The page object for a given pageId.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public Page getPage(int pageId) throws WikiApiException
-    {
+    public Page getPage(int pageId) throws WikiApiException {
         return new Page(this, pageId);
     }
 
     /**
      * Gets the title for a given pageId.
      *
-     * @param pageId
-     *            The id of the page.
+     * @param pageId The id of the page.
      * @return The title for the given pageId.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public Title getTitle(int pageId) throws WikiApiException
-    {
+    public Title getTitle(int pageId) throws WikiApiException {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         String sql = "select p.name from PageMapLine as p where p.pageId= :pId";
@@ -221,15 +200,12 @@ public class Wikipedia
 
     /**
      * Gets the page ids for a given title.
-     * 
-     * @param title
-     *            The title of the page.
+     *
+     * @param title The title of the page.
      * @return The id for the page with the given title.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public List<Integer> getPageIds(String title) throws WikiApiException
-    {
+    public List<Integer> getPageIds(String title) throws WikiApiException {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         String sql = "select p.pageID from PageMapLine as p where p.name = :pName";
@@ -251,14 +227,11 @@ public class Wikipedia
     /**
      * Gets the page ids for a given title with case insensitive matching.<br>
      *
-     * @param title
-     *            The title of the page.
+     * @param title The title of the page.
      * @return The ids of the pages with the given title.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException
-    {
+    public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
         title = title.toLowerCase();
         title = title.replaceAll(" ", "_");
 
@@ -283,15 +256,12 @@ public class Wikipedia
     /**
      * Returns the article page for a given discussion page.
      *
-     * @param discussionPage
-     *            the discussion page object
+     * @param discussionPage the discussion page object
      * @return The page object of the article associated with the discussion. If the parameter
-     *         already was an article, it is returned directly.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * already was an article, it is returned directly.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public Page getArticleForDiscussionPage(Page discussionPage) throws WikiApiException
-    {
+    public Page getArticleForDiscussionPage(Page discussionPage) throws WikiApiException {
         if (discussionPage.isDiscussion()) {
             String title = discussionPage.getTitle().getPlainTitle()
                     .replaceAll(WikiConstants.DISCUSSION_PREFIX, "");
@@ -304,8 +274,7 @@ public class Wikipedia
                 title = title.split("/")[0];
             }
             return getPage(title);
-        }
-        else {
+        } else {
             return discussionPage;
         }
 
@@ -314,14 +283,11 @@ public class Wikipedia
     /**
      * Gets the discussion page for an article page with the given pageId.
      *
-     * @param articlePageId
-     *            The id of the page.
+     * @param articlePageId The id of the page.
      * @return The page object for a given pageId.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public Page getDiscussionPage(int articlePageId) throws WikiApiException
-    {
+    public Page getDiscussionPage(int articlePageId) throws WikiApiException {
         // Retrieve discussion page with article title
         // TODO not the prettiest solution, but currently discussions are only marked in the title
         return getDiscussionPage(getPage(articlePageId));
@@ -331,15 +297,12 @@ public class Wikipedia
      * Gets the discussion page for the page with the given title. The page retrieval works as
      * defined in {@link #getPage(String title)}
      *
-     * @param title
-     *            The title of the page for which the discussions should be retrieved.
+     * @param title The title of the page for which the discussions should be retrieved.
      * @return The page object for the discussion page.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly
+     *                          parsed.
      */
-    public Page getDiscussionPage(String title) throws WikiApiException
-    {
+    public Page getDiscussionPage(String title) throws WikiApiException {
         return getDiscussionPage(getPage(title));
     }
 
@@ -347,20 +310,16 @@ public class Wikipedia
      * Gets the discussion page for the given article page The provided page must not be a
      * discussion page
      *
-     * @param articlePage
-     *            the article page for which a discussion page should be retrieved
+     * @param articlePage the article page for which a discussion page should be retrieved
      * @return The discussion page object for the given article page object
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly
+     *                          parsed.
      */
-    public Page getDiscussionPage(Page articlePage) throws WikiApiException
-    {
+    public Page getDiscussionPage(Page articlePage) throws WikiApiException {
         String articleTitle = articlePage.getTitle().toString();
         if (articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)) {
             return articlePage;
-        }
-        else {
+        } else {
             return new Page(this, WikiConstants.DISCUSSION_PREFIX + articleTitle);
         }
     }
@@ -372,15 +331,12 @@ public class Wikipedia
      * The most recent discussion page is NOT included here! It can be obtained with
      * {@link #getDiscussionPage(Page)}.
      *
-     * @param articlePageId
-     *            The id of the page for which to fetch the discussion archives
+     * @param articlePageId The id of the page for which to fetch the discussion archives
      * @return The page object for the discussion page.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly
+     *                          parsed.
      */
-    public Iterable<Page> getDiscussionArchives(int articlePageId) throws WikiApiException
-    {
+    public Iterable<Page> getDiscussionArchives(int articlePageId) throws WikiApiException {
         // Retrieve discussion archive pages with page id
         return getDiscussionArchives(getPage(articlePageId));
     }
@@ -392,18 +348,15 @@ public class Wikipedia
      * The most recent discussion page is NOT included here! It can be obtained with
      * {@link #getDiscussionPage(Page)}.
      *
-     * @param title
-     *            The title of the page for which the discussions should be retrieved.
+     * @param title The title of the page for which the discussions should be retrieved.
      * @return The page object for the discussion page.
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or title could not be properly
-     *             parsed.
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly
+     *                          parsed.
      * @deprecated Use {@link #getDiscussionArchives(int)} or {@link #getDiscussionArchives(Page)}
-     *             instead.
+     * instead.
      */
     @Deprecated(since = "2.0.0", forRemoval = true)
-    public Iterable<Page> getDiscussionArchives(String title) throws WikiApiException
-    {
+    public Iterable<Page> getDiscussionArchives(String title) throws WikiApiException {
         // Retrieve discussion archive pages with page title
         return getDiscussionArchives(getPage(title));
     }
@@ -415,16 +368,13 @@ public class Wikipedia
      * The provided page Object must not be a discussion page itself! If it is a discussion page, is
      * returned unchanged.
      *
-     * @param articlePage
-     *            the article page for which a discussion archives should be retrieved
+     * @param articlePage the article page for which a discussion archives should be retrieved
      * @return An iterable with the discussion archive page objects for the given article page
-     *         object
-     * @throws WikiApiException
-     *             If no page or redirect with this title exists or title could not be properly
-     *             parsed.
+     * object
+     * @throws WikiApiException If no page or redirect with this title exists or title could not be properly
+     *                          parsed.
      */
-    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException
-    {
+    public Iterable<Page> getDiscussionArchives(Page articlePage) throws WikiApiException {
         String articleTitle = articlePage.getTitle().getWikiStyleTitle();
         if (!articleTitle.startsWith(WikiConstants.DISCUSSION_PREFIX)) {
             articleTitle = WikiConstants.DISCUSSION_PREFIX + articleTitle;
@@ -452,20 +402,15 @@ public class Wikipedia
     /**
      * Gets the pages or redirects with a name similar to the pattern. Calling this method is quite
      * costly, as similarity is computed for all names.
-     * 
-     * @param pPattern
-     *            The pattern.
-     * @param pSize
-     *            The maximum size of the result list. Only the most similar results will be
-     *            included.
+     *
+     * @param pPattern The pattern.
+     * @param pSize    The maximum size of the result list. Only the most similar results will be
+     *                 included.
      * @return A map of pages with names similar to the pattern and their distance values. Smaller
-     *         distances are more similar.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * distances are more similar.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    //// I do not want to make this public at the moment (TZ, March, 2007)
-    protected Map<Page, Double> getSimilarPages(String pPattern, int pSize) throws WikiApiException
-    {
+    public Map<Page, Double> getSimilarPages(String pPattern, int pSize) throws WikiApiException {
         Title title = new Title(pPattern);
         String pattern = title.getWikiStyleTitle();
 
@@ -476,20 +421,19 @@ public class Wikipedia
         // holds a mapping of the best distance values to page IDs
         Map<Integer, Double> distanceMap = new HashMap<>();
 
+        final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
         Session session = this.__getHibernateSession();
         session.beginTransaction();
-        for (Object o : session.createQuery("select pml.pageID, pml.name from PageMapLine as pml")
+        final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
+                + " from PageMapLine as pml";
+        for (PageTuple o : session.createQuery(query, PageTuple.class)
                 .list()) {
-            Object[] row = (Object[]) o;
-            int pageID = (Integer) row[0];
-            String pageName = (String) row[1];
 
             // this returns a similarity - if we want to use it, we have to change the semantics the
             // ordering of the results
-            // double distance = new Levenshtein().getSimilarity(pageName, pPattern);
-            double distance = new LevenshteinStringDistance().distance(pageName, pattern);
+            double distance = lsd.distance(o.name(), pattern);
 
-            distanceMap.put(pageID, distance);
+            distanceMap.put(o.id(), distance);
 
             // if there are more than "pSize" entries in the map remove the last one (it has the
             // biggest distance)
@@ -510,12 +454,8 @@ public class Wikipedia
             Page page = null;
             try {
                 page = this.getPage(pageID);
-            }
-            catch (WikiPageNotFoundException e) {
-                logger.error("Page with pageID " + pageID
-                        + " could not be found. Fatal error. Terminating.");
-                e.printStackTrace();
-                System.exit(1);
+            } catch (WikiPageNotFoundException e) {
+                logger.error("Page with pageID {} could not be found. Fatal error. Terminating.", pageID, e);
             }
             pageMap.put(page, distanceMap.get(pageID));
         }
@@ -531,27 +471,22 @@ public class Wikipedia
      * <p>
      * For example, the (possible) category "Famous steamboats" could be queried with - "Famous
      * steamboats" - "Famous_steamboats" - "famous steamboats" - "famous_steamboats"
-     * 
-     * @param title
-     *            The title of the category.
+     *
+     * @param title The title of the category.
      * @return The category object with the given title.
-     * @throws WikiApiException
-     *             If no category with the given title exists.
+     * @throws WikiApiException If no category with the given title exists.
      */
-    public Category getCategory(String title) throws WikiApiException
-    {
+    public Category getCategory(String title) throws WikiApiException {
         return new Category(this, title);
     }
 
     /**
      * Gets the category for a given pageId.
-     * 
-     * @param pageId
-     *            The id of the {@link Category}.
+     *
+     * @param pageId The id of the {@link Category}.
      * @return The category object or null if no category with this pageId exists.
      */
-    public Category getCategory(int pageId)
-    {
+    public Category getCategory(int pageId) {
         long hibernateId = __getCategoryHibernateId(pageId);
         if (hibernateId == -1) {
             return null;
@@ -559,8 +494,7 @@ public class Wikipedia
 
         try {
             return new Category(this, hibernateId);
-        }
-        catch (WikiPageNotFoundException e) {
+        } catch (WikiPageNotFoundException e) {
             return null;
         }
     }
@@ -568,26 +502,22 @@ public class Wikipedia
     /**
      * This returns an iterable over all {@link Category categories}, as returning all category
      * objects would be much too expensive.
-     * 
+     *
      * @return An iterable over all categories.
      */
-    public Iterable<Category> getCategories()
-    {
+    public Iterable<Category> getCategories() {
         return new CategoryIterable(this);
     }
 
     /**
      * Gets the {@link Category categories} for a given {@link Page} identified by its
      * {@code pageTitle}.
-     * 
-     * @param pageTitle
-     *            The title of a {@link Page}, not a category.
+     *
+     * @param pageTitle The title of a {@link Page}, not a category.
      * @return The category objects which are associated with the given {@code pageTitle}.
-     * @throws WikiPageNotFoundException
-     *             Thrown if no {@link Page} exists for the given {@code pageTitle}.
+     * @throws WikiPageNotFoundException Thrown if no {@link Page} exists for the given {@code pageTitle}.
      */
-    public Set<Category> getCategories(String pageTitle) throws WikiPageNotFoundException
-    {
+    public Set<Category> getCategories(String pageTitle) throws WikiPageNotFoundException {
         if (pageTitle == null || pageTitle.length() == 0) {
             throw new WikiPageNotFoundException();
         }
@@ -603,8 +533,7 @@ public class Wikipedia
         for (int hibernateId : categoryHibernateIds) {
             try {
                 categorySet.add(new Category(this, hibernateId));
-            }
-            catch (WikiPageNotFoundException e) {
+            } catch (WikiPageNotFoundException e) {
                 logger.warn("Could not load Category by it's HibernateId = '" + hibernateId + "'");
             }
         }
@@ -614,13 +543,11 @@ public class Wikipedia
     /**
      * Get all wikipedia {@link Category categories}. Returns only an iterable, as a collection may
      * not fit into memory for a large wikipedia.
-     * 
-     * @param bufferSize
-     *            The size of the internal page buffer.
+     *
+     * @param bufferSize The size of the internal page buffer.
      * @return An iterable over all categories.
      */
-    protected Iterable<Category> getCategories(int bufferSize)
-    {
+    protected Iterable<Category> getCategories(int bufferSize) {
         return new CategoryIterable(this, bufferSize);
     }
 
@@ -628,13 +555,12 @@ public class Wikipedia
      * Protected method that is much faster than the public version, but exposes too much
      * implementation details. Get a set with all category pageIDs. Returning all category objects
      * is much too expensive.
-     * 
+     *
      * @return A set with all category pageIDs
      */
     // TODO this should be replaced with the buffered category iterator, as it might produce an
     // HeapSpace Overflow, if there are too many categories.
-    protected Set<Integer> __getCategories()
-    {
+    protected Set<Integer> __getCategories() {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         String sql = "select cat.pageId from Category as cat";
@@ -647,24 +573,21 @@ public class Wikipedia
     /**
      * Get all wikipedia pages. Does not include redirects, as they are only pointers to real pages.
      * Returns only an iterable, as a collection may not fit into memory for a large wikipedia.
-     * 
+     *
      * @return An iterable over all pages.
      */
-    public Iterable<Page> getPages()
-    {
+    public Iterable<Page> getPages() {
         return new PageIterable(this, false);
     }
 
     /**
      * Get all wikipedia pages. Does not include redirects, as they are only pointers to real pages.
      * Returns only an iterable, as a collection may not fit into memory for a large wikipedia.
-     * 
-     * @param bufferSize
-     *            The size of the internal page buffer.
+     *
+     * @param bufferSize The size of the internal page buffer.
      * @return An iterable over all pages.
      */
-    protected Iterable<Page> getPages(int bufferSize)
-    {
+    protected Iterable<Page> getPages(int bufferSize) {
         return new PageIterable(this, false, bufferSize);
     }
 
@@ -678,8 +601,7 @@ public class Wikipedia
      *
      * @return A set with all {@code pageIDs}. Returning all pages is much to expensive.
      */
-    protected Set<Integer> __getPages()
-    {
+    protected Set<Integer> __getPages() {
         Session session = this.__getHibernateSession();
         session.beginTransaction();
         String sql = "select page.pageId from Page as page";
@@ -692,8 +614,7 @@ public class Wikipedia
     /**
      * @return an iterable over all {@code pageIDs} (without redirects)
      */
-    public Iterable<Integer> getPageIds()
-    {
+    public Iterable<Integer> getPageIds() {
         return this.__getPages();
     }
 
@@ -701,45 +622,39 @@ public class Wikipedia
      * Get the pages that match the given query. Does not include redirects, as they are only
      * pointers to real pages. Attention: may be running very slow, depending on the size of the
      * Wikipedia!
-     * 
-     * @param query
-     *            A query object containing the query conditions.
+     *
+     * @param query A query object containing the query conditions.
      * @return A set of pages that match the given query.
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @throws WikiApiException Thrown if errors occurred.
      */
-    public Iterable<Page> getPages(PageQuery query) throws WikiApiException
-    {
+    public Iterable<Page> getPages(PageQuery query) throws WikiApiException {
         return new PageQueryIterable(this, query);
     }
 
     /**
      * Get all articles (pages MINUS disambiguationPages MINUS redirects). Returns only an iterable,
      * as a collection may not fit into memory for a large wikipedia.
-     * 
+     *
      * @return An iterable of all article pages.
      */
-    public Iterable<Page> getArticles()
-    {
+    public Iterable<Page> getArticles() {
         return new PageIterable(this, true);
     }
 
     /**
      * Get all titles including disambiguation pages and redirects). Returns only an iterable, as a
      * collection may not fit into memory for a large wikipedia.
-     * 
+     *
      * @return An iterable of all article pages.
      */
-    public Iterable<Title> getTitles()
-    {
+    public Iterable<Title> getTitles() {
         return new TitleIterable(this);
     }
 
     /**
      * @return The {@link Language} of this Wikipedia.
      */
-    public Language getLanguage()
-    {
+    public Language getLanguage() {
         return this.language;
     }
 
@@ -747,13 +662,11 @@ public class Wikipedia
      * Tests, whether a page or redirect with the given title exists. Trying to retrieve a page that
      * does not exist in Wikipedia throws an exception. You may catch the exception or use this
      * test, depending on your task.
-     * 
-     * @param title
-     *            The title of the page.
+     *
+     * @param title The title of the page.
      * @return {@code True}, if a page or redirect with that title exits, {@code false} otherwise.
      */
-    public boolean existsPage(String title)
-    {
+    public boolean existsPage(String title) {
         if (title == null || title.isEmpty()) {
             return false;
         }
@@ -761,8 +674,7 @@ public class Wikipedia
         Title t;
         try {
             t = new Title(title);
-        }
-        catch (WikiTitleParsingException e) {
+        } catch (WikiTitleParsingException e) {
             return false;
         }
 
@@ -782,8 +694,7 @@ public class Wikipedia
                     .setParameter("pName", encodedTitle, StandardBasicTypes.STRING);
             var returnValue = nativeQuery.uniqueResult();
             return returnValue != null;
-        }
-        finally {
+        } finally {
             session.getTransaction().commit();
         }
     }
@@ -792,12 +703,10 @@ public class Wikipedia
      * Tests, whether a page with the given pageID exists. Trying to retrieve a pageID that does not
      * exist in Wikipedia throws an exception.
      *
-     * @param pageID
-     *            A pageID.
+     * @param pageID A pageID.
      * @return {@code True}, if a page with that pageID exits, {@code false} otherwise.
      */
-    public boolean existsPage(int pageID)
-    {
+    public boolean existsPage(int pageID) {
 
         // This is a hack to provide a much quicker way to test whether a page exists.
         // Encoding the title in this way surpasses the normal way of creating a title first.
@@ -820,12 +729,10 @@ public class Wikipedia
      * Get the hibernate ID to a given pageID of a page. We need different methods for pages and
      * categories here, as a page and a category can have the same ID.
      *
-     * @param pageID
-     *            A pageID that should be mapped to the corresponding hibernate ID.
+     * @param pageID A pageID that should be mapped to the corresponding hibernate ID.
      * @return The hibernateID of the page with pageID or -1, if the pageID is not valid
      */
-    protected long __getPageHibernateId(int pageID)
-    {
+    protected long __getPageHibernateId(int pageID) {
         long hibernateID = -1;
 
         // first look in the id mapping cache
@@ -855,12 +762,10 @@ public class Wikipedia
      * Get the hibernate ID to a given pageID of a category. We need different methods for pages and
      * categories here, as a page and a category can have the same ID.
      *
-     * @param pageID
-     *            A pageID that should be mapped to the corresponding hibernate ID.
+     * @param pageID A pageID that should be mapped to the corresponding hibernate ID.
      * @return The hibernateID of the page with pageID or -1, if the pageID is not valid
      */
-    protected long __getCategoryHibernateId(int pageID)
-    {
+    protected long __getCategoryHibernateId(int pageID) {
         long hibernateID = -1;
 
         // first look in the id mapping cache
@@ -888,36 +793,32 @@ public class Wikipedia
     /**
      * @return A {@link MetaData} object containing all meta data about this instance of Wikipedia.
      */
-    public MetaData getMetaData()
-    {
+    public MetaData getMetaData() {
         return this.metaData;
     }
 
     /**
      * @return The {@link DatabaseConfiguration} object that was used to create the Wikipedia
-     *         object.
+     * object.
      */
-    public DatabaseConfiguration getDatabaseConfiguration()
-    {
+    public DatabaseConfiguration getDatabaseConfiguration() {
         return this.dbConfig;
     }
 
     /**
      * @return Shortcut for getting a hibernate session.
      */
-    protected Session __getHibernateSession()
-    {
+    protected Session __getHibernateSession() {
         return WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
     }
 
     /**
      * The ID consists of the host, the database, and the language. This should be unique in most
      * cases.
-     * 
+     *
      * @return Returns a unique ID for this Wikipedia object.
      */
-    public String getWikipediaId()
-    {
+    public String getWikipediaId() {
         StringBuilder sb = new StringBuilder();
         sb.append(this.getDatabaseConfiguration().getHost());
         sb.append("_");
@@ -928,14 +829,15 @@ public class Wikipedia
     }
 
     private static class ValueComparator
-        implements Comparator<Entry<Integer, Double>>
-    {
+            implements Comparator<Entry<Integer, Double>> {
 
         @Override
-        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2)
-        {
+        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
             return Double.compare(e2.getValue(), e1.getValue());
         }
     }
 
+    private record PageTuple(int id, String name) {
+
+    }
 }
