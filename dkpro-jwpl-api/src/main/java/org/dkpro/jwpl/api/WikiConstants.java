@@ -108,6 +108,7 @@ public interface WikiConstants
                     System.out.println(String.format(
                             "Failed to create WikiConfig for language for %s, using default instead",
                             langName));
+                    e.printStackTrace();
                 }
             }
             return config;
