@@ -15,6 +15,9 @@
 
 name: Java CI
 
+env:
+  BUILD_ENV: 'GitHub'
+
 on: [push, pull_request]
 
 jobs:
