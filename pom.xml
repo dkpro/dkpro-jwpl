@@ -40,7 +40,11 @@
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
     <spring.version>6.2.6</spring.version>
+    <commons.codec.version>1.18.0</commons.codec.version>
+    <commons.compress.version>1.27.1</commons.compress.version>
+    <commons.io.version>2.19.0</commons.io.version>
     <commons.lang3.version>3.17.0</commons.lang3.version>
+    <commons.logging.version>1.2</commons.logging.version>
 
     <!-- DB specific dependency versions -->
     <hibernate.version>6.1.7.Final</hibernate.version>
@@ -213,12 +217,17 @@
       <dependency>
         <groupId>commons-codec</groupId>
         <artifactId>commons-codec</artifactId>
-        <version>1.16.0</version>
+        <version>${commons.codec.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-compress</artifactId>
-        <version>1.26.0</version>
+        <version>${commons.compress.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons.io.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -228,7 +237,7 @@
       <dependency>
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
-        <version>1.2</version>
+        <version>${commons.logging.version}</version>
       </dependency>
       <dependency>
         <groupId>it.unimi.dsi</groupId>
