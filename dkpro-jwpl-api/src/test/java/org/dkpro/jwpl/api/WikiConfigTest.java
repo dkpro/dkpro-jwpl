@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 
 import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 
 public class WikiConfigTest
 {
@@ -31,11 +32,21 @@ public class WikiConfigTest
         WikiConfig portugueseConf = WikiConstants.Language.portuguese.getWikiconfig();
         WikiConfig englishConf = WikiConstants.Language.english.getWikiconfig();
         WikiConfig testConf = WikiConstants.Language._test.getWikiconfig();
-        WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
         // assertion block
         assertSame("pt", portugueseConf.getContentLanguage());
         assertSame("en", englishConf.getContentLanguage());
         assertSame("en", testConf.getContentLanguage());
+    }
+
+    /*
+     * Note:
+     * This is not working in a GitHub build env due to an HTTP 429 response by french Wikipedia - reason is unclear?!
+     */
+    @Test
+    @DisabledIfEnvironmentVariable(named = "BUILD_ENV", matches = "GitHub")
+    public void testGetWikiConfFrench()
+    {
+        WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
         assertSame("fr", frenchConf.getContentLanguage());
     }
 }
