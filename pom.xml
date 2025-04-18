@@ -40,7 +40,7 @@
     <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
 
     <spring.version>6.1.14</spring.version>
-    <commons.lang3.version>3.13.0</commons.lang3.version>
+    <commons.lang3.version>3.17.0</commons.lang3.version>
 
     <!-- DB specific dependency versions -->
     <hibernate.version>6.1.7.Final</hibernate.version>
