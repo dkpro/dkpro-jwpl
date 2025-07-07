@@ -49,7 +49,7 @@
     <!-- DB specific dependency versions -->
     <hibernate.version>6.1.7.Final</hibernate.version>
     <mysql.version>8.0.30</mysql.version>
-    <mariadb.version>3.5.3</mariadb.version>
+    <mariadb.version>3.5.4</mariadb.version>
     <postgresql.version>42.6.0</postgresql.version>
     <hsqldb.version>2.7.4</hsqldb.version>
 
