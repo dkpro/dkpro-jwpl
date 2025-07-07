@@ -58,7 +58,7 @@
     <log4j2.version>2.25.0</log4j2.version>
 
     <!-- Test specific dependencies -->
-    <junit.jupiter.version>5.13.2</junit.jupiter.version>
+    <junit.jupiter.version>5.13.3</junit.jupiter.version>
 
     <!-- Maven plugin versions -->
     <maven.failsafe.plugin>3.5.3</maven.failsafe.plugin>
