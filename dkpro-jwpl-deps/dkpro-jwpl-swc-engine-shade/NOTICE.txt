@@ -1,8 +1,0 @@
-All classes from this module are taken from third parties.
-
-The classes were published by the Sweble project provided
-via https://github.com/sweble/sweble-wikitext
-by the Open Source Research Group, University of Erlangen-Nürnberg
-
-under the Apache License, Version 2.0
-(http://www.apache.org/licenses/LICENSE-2.0)

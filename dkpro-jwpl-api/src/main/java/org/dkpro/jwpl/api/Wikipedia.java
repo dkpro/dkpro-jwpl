@@ -35,12 +35,12 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 /**
  * Provides access to Wikipedia articles and categories.

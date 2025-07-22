@@ -23,11 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.PageTitle;
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtBold;
 import org.sweble.wikitext.parser.nodes.WtExternalLink;
 import org.sweble.wikitext.parser.nodes.WtHorizontalRule;

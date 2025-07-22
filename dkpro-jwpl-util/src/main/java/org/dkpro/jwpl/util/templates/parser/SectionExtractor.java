@@ -44,9 +44,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.PageTitle;
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.engine.PageTitle;
+import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtBold;
 import org.sweble.wikitext.parser.nodes.WtDefinitionList;
 import org.sweble.wikitext.parser.nodes.WtDefinitionListDef;
