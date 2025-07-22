@@ -37,7 +37,7 @@
     
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
-    <org.sweble.wikitext.version>3.1.9</org.sweble.wikitext.version>
+    <org.sweble.wikitext.version>4.0.0</org.sweble.wikitext.version>
 
     <spring.version>6.2.9</spring.version>
     <commons.codec.version>1.18.0</commons.codec.version>
@@ -250,12 +250,17 @@
         <version>3.30.2-GA</version>
       </dependency>
       <dependency>
-        <groupId>org.sweble.wikitext</groupId>
+        <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
         <artifactId>swc-parser-lazy</artifactId>
         <version>${org.sweble.wikitext.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.sweble.wom3</groupId>
+        <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
+        <artifactId>swc-engine</artifactId>
+        <version>${org.sweble.wikitext.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.github.rzo1.org.sweble.wom3</groupId>
         <artifactId>sweble-wom3-parent</artifactId>
         <version>${org.sweble.wikitext.version}</version>
       </dependency>
@@ -303,7 +308,6 @@
     <module>dkpro-jwpl-util</module>
     <module>dkpro-jwpl-parser</module>
     <module>dkpro-jwpl-tutorial</module>
-    <module>dkpro-jwpl-deps</module>
   </modules>
 
   <issueManagement>

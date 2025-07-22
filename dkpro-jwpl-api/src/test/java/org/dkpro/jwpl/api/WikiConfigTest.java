@@ -19,9 +19,9 @@ package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-import org.dkpro.jwpl.shade.org.sweble.wikitext.engine.config.WikiConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 public class WikiConfigTest
 {

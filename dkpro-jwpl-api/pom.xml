@@ -54,23 +54,12 @@
       <artifactId>ptk-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.sweble.wikitext</groupId>
+      <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
       <artifactId>swc-parser-lazy</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.dkpro.jwpl</groupId>
-      <artifactId>dkpro-jwpl-swc-engine-shade</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.sweble.wikitext</groupId>
-          <artifactId>swc-engine</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.sweble.wikitext</groupId>
-          <artifactId>swc-parser-lazy</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
+      <artifactId>swc-engine</artifactId>
     </dependency>
     <dependency>
       <groupId>com.neovisionaries</groupId>
