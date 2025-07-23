@@ -63,10 +63,10 @@ public class PageQueryIterable
         String hql = "select p.pageId from Page as p ";
         List<String> conditions = new ArrayList<>();
         if (q.onlyDisambiguationPages()) {
-            conditions.add("p.isDisambiguation = 1");
+            conditions.add("p.isDisambiguation = true");
         }
         if (q.onlyArticlePages()) {
-            conditions.add("p.isDisambiguation = 0");
+            conditions.add("p.isDisambiguation = false");
         }
         if (q.getTitlePattern() != null && !q.getTitlePattern().isBlank()) {
             conditions.add("p.name like :name");

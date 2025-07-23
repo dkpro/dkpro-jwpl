@@ -47,7 +47,7 @@
     <commons.logging.version>1.3.5</commons.logging.version>
 
     <!-- DB specific dependency versions -->
-    <hibernate.version>6.1.7.Final</hibernate.version>
+    <hibernate.version>6.6.22.Final</hibernate.version>
     <mysql.version>8.0.30</mysql.version>
     <mariadb.version>3.5.4</mariadb.version>
     <postgresql.version>42.6.0</postgresql.version>
@@ -162,9 +162,29 @@
         <version>${log4j2.version}</version>
       </dependency>
       <dependency>
+        <groupId>jakarta.persistence</groupId>
+        <artifactId>jakarta.persistence-api</artifactId>
+        <version>3.1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>4.0.2</version>
+      </dependency>
+      <dependency>
         <groupId>org.hibernate.orm</groupId>
         <artifactId>hibernate-core</artifactId>
         <version>${hibernate.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-core</artifactId>
+        <version>4.0.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>4.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.jgrapht</groupId>
@@ -225,11 +245,6 @@
         <version>${commons.compress.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-io</groupId>
-        <artifactId>commons-io</artifactId>
-        <version>${commons.io.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
         <version>${commons.lang3.version}</version>
@@ -243,11 +258,6 @@
         <groupId>it.unimi.dsi</groupId>
         <artifactId>fastutil-core</artifactId>
         <version>8.5.16</version>
-      </dependency>
-      <dependency>
-        <groupId>org.javassist</groupId>
-        <artifactId>javassist</artifactId>
-        <version>3.30.2-GA</version>
       </dependency>
       <dependency>
         <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
@@ -275,24 +285,14 @@
         <version>${fau.utils.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-lang</groupId>
-        <artifactId>commons-lang</artifactId>
-        <version>2.6</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.persistence</groupId>
-        <artifactId>jakarta.persistence-api</artifactId>
-        <version>3.0.0</version>
-      </dependency>
-      <dependency>
-        <groupId>jakarta.xml.bind</groupId>
-        <artifactId>jakarta.xml.bind-api</artifactId>
-        <version>4.0.2</version>
-      </dependency>
-      <dependency>
         <groupId>com.googlecode.java-diff-utils</groupId>
         <artifactId>diffutils</artifactId>
         <version>1.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>xtc</groupId>
+        <artifactId>rats-runtime</artifactId>
+        <version>2.4.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
