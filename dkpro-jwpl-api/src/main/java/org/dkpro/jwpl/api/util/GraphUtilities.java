@@ -44,7 +44,7 @@ public class GraphUtilities
      *            The pages.
      * @param pResultSetSize
      *            The size of the result set.
-     * @return A random subset of the original page set of the given size or null, if the requested
+     * @return A random subset of the original page set of the given size or {@code null}, if the requested
      *         subset size is larger than the original page set.
      *            
      * @deprecated Use {@link #getRandomPageSubset(Set, int)} instead.
@@ -66,7 +66,7 @@ public class GraphUtilities
      *            The pages.
      * @param pResultSetSize
      *            The size of the result set.
-     * @return A random subset of the original page set of the given size or null, if the requested
+     * @return A random subset of the original page set of the given size or {@code null}, if the requested
      *         subset size is larger than the original page set.
      */
     public static Set<Integer> getRandomPageSubset(Set<Integer> pPageIDs, int pResultSetSize)

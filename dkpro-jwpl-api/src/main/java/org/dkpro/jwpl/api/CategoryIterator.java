@@ -112,7 +112,7 @@ public class CategoryIterator
         }
 
         /**
-         * @return The next Category or null if no more categories are available.
+         * @return The next Category or {@code null} if no more categories are available.
          */
         public Category next()
         {

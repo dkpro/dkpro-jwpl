@@ -407,7 +407,7 @@ public class Category
     /**
      * Returns the siblings of this category.
      *
-     * @return Returns the siblings of this category or null, if there are none.
+     * @return Returns the siblings of this category or {@code null}, if there are none.
      */
     public Set<Category> getSiblings()
     {

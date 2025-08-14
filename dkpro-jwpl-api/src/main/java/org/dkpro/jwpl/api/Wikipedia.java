@@ -484,7 +484,7 @@ public class Wikipedia
      * Gets the category for a given pageId.
      *
      * @param pageId The id of the {@link Category}.
-     * @return The category object or null if no category with this pageId exists.
+     * @return The category object or {@code null} if no category with this pageId exists.
      */
     public Category getCategory(int pageId) {
         long hibernateId = __getCategoryHibernateId(pageId);

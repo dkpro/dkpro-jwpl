@@ -159,11 +159,11 @@ public class ConfigSettings
     }
 
     /**
-     * Returns the value related to the configuration key or null if the key is not contained.
+     * Returns the value related to the configuration key or {@code null} if the key is not contained.
      *
      * @param configParameter
      *            configuration key
-     * @return value or null
+     * @return value or {@code null}
      */
     public Object getConfigParameter(final ConfigurationKeys configParameter)
     {

@@ -158,7 +158,7 @@ public class UniversalDecompressor
      *
      * @param fileName
      *            that should be input
-     * @return file extension or null
+     * @return file extension or {@code null}
      */
     private String getExtension(String fileName)
     {

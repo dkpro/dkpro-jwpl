@@ -105,7 +105,7 @@ public class TitleIterator
         }
 
         /**
-         * @return The next Title or null if no more categories are available.
+         * @return The next Title or {@code null} if no more categories are available.
          */
         public Title next()
         {
