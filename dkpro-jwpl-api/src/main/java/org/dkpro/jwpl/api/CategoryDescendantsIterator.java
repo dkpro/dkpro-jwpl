@@ -133,7 +133,7 @@ public class CategoryDescendantsIterator
         }
 
         /**
-         * @return The next Category or null if no more categories are available.
+         * @return The next Category or {@code null} if no more categories are available.
          */
         public Category next()
         {

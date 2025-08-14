@@ -179,7 +179,7 @@ class Dumper
     /**
      * @param arg
      *            string in format "--option=value:parameter"
-     * @return array of option, value, and parameter, or null if no match
+     * @return array of option, value, and parameter, or {@code null} if no match
      */
     static String[] splitArg(String arg)
     {

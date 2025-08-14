@@ -23,7 +23,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 
 /**
- * DiffManager Manages the data contained by the ArchiveProducer
+ * Manages the data contained by the ArchiveProducer
  *
  * @version 0.5.0
  */
@@ -36,7 +36,7 @@ public class ArchiveManager
     private final List<ArchiveDescription> archives;
 
     /**
-     * (Constructor) Creates the ArchiveManager.
+     * Creates the ArchiveManager.
      *
      * @throws ConfigurationException
      *             if an error occurs while accessing the configuration
@@ -61,7 +61,7 @@ public class ArchiveManager
     /**
      * Returns an archive.
      *
-     * @return ArchiveDescription or NULL if no archive is available
+     * @return ArchiveDescription or {@code null} if no archive is available
      */
     public synchronized ArchiveDescription getArchive()
     {

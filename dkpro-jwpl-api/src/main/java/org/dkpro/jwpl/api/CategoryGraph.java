@@ -403,7 +403,7 @@ public class CategoryGraph
      *            The first category node.
      * @param category2
      *            The second category node.
-     * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     * @return The lowest common subsumer of the two nodes, or {@code null} if there is no LCS.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.
@@ -422,7 +422,7 @@ public class CategoryGraph
      *            The pageid of the first category node.
      * @param categoryPageId2
      *            The pageid of the second category node.
-     * @return The pageId of the lowest common subsumer of the two nodes, or null if there is no
+     * @return The pageId of the lowest common subsumer of the two nodes, or {@code null} if there is no
      *         LCS.
      *
      * @throws WikiApiException
@@ -489,7 +489,7 @@ public class CategoryGraph
      *            The pageid of the first category node.
      * @param categoryPageId2
      *            The pageid of the second category node.
-     * @return The lowest common subsumer of the two nodes, or null if there is no LCS.
+     * @return The lowest common subsumer of the two nodes, or {@code null} if there is no LCS.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.

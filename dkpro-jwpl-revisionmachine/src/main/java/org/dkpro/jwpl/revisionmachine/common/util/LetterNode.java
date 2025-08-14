@@ -49,7 +49,7 @@ public class LetterNode<V>
     private V value;
 
     /**
-     * (Constructor) Creates a empty LetterNode.
+     * Creates a empty LetterNode.
      */
     public LetterNode()
     {
@@ -59,7 +59,7 @@ public class LetterNode<V>
     }
 
     /**
-     * (Constructor) Creates a LetterNode with a keyword.
+     * Creates a LetterNode with a keyword.
      *
      * @param word
      *            keyword
@@ -124,7 +124,7 @@ public class LetterNode<V>
      *
      * @param c
      *            character
-     * @return successor node or NULL if the specified node is not available
+     * @return successor node or {@code null} if the specified node is not available
      */
     public LetterNode<V> get(char c)
     {
