@@ -61,7 +61,7 @@
     <junit.jupiter.version>5.13.4</junit.jupiter.version>
 
     <!-- Maven plugin versions -->
-    <maven.failsafe.plugin>3.5.3</maven.failsafe.plugin>
+    <maven.failsafe.plugin>3.5.4</maven.failsafe.plugin>
     <maven.build.helper.plugin>3.6.1</maven.build.helper.plugin>
   </properties>
 
