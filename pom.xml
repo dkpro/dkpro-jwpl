@@ -37,7 +37,7 @@
     
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
-    <org.sweble.wikitext.version>4.0.0</org.sweble.wikitext.version>
+    <org.sweble.wikitext.version>4.0.1</org.sweble.wikitext.version>
 
     <spring.version>6.2.10</spring.version>
     <commons.codec.version>1.19.0</commons.codec.version>
