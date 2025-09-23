@@ -27,7 +27,7 @@
   <description>A free, Java-based application programming interface that allows to access all information contained in Wikipedia.</description>
   <groupId>org.dkpro.jwpl</groupId>
   <artifactId>dkpro-jwpl</artifactId>
-  <version>2.0.1</version>
+  <version>2.0.2-SNAPSHOT</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
