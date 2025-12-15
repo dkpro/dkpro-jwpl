@@ -39,7 +39,7 @@
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>4.0.1</org.sweble.wikitext.version>
 
-    <spring.version>6.2.12</spring.version>
+    <spring.version>7.0.2</spring.version>
     <commons.codec.version>1.20.0</commons.codec.version>
     <commons.compress.version>1.28.0</commons.compress.version>
     <commons.io.version>2.20.0</commons.io.version>
