@@ -27,14 +27,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-beans</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-context</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.dkpro.jwpl</groupId>
       <artifactId>dkpro-jwpl-mwdumper</artifactId>
       <version>${project.version}</version>

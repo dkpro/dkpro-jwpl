@@ -17,26 +17,35 @@
  */
 package org.dkpro.jwpl.timemachine.domain;
 
+import java.util.Optional;
+import java.util.ServiceLoader;
+
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
-import org.dkpro.jwpl.wikimachine.factory.SpringFactory;
 
 /**
- * This is the main class of the DBMapping Tool of the JWPL.<br>
- * The <code>main</code> method gets the path of a configuration file as argument<br>
- * <br>
- * <p>
- * Refactored on 16 April 2009 by Ivan Galkin .
+ * The command line tool of the DBMapping Tool of the JWPL.<br>
+ * The {@link #main(String[])} method gets the path of a configuration file as argument.
  */
 public class JWPLTimeMachine
 {
 
-    private static final IEnvironmentFactory environmentFactory = SpringFactory.getInstance();
+    private static final IEnvironmentFactory environmentFactory;
+    private static final ILogger logger;
+
+    static {
+        Optional<IEnvironmentFactory> candidate = ServiceLoader.load(IEnvironmentFactory.class).findFirst();
+        environmentFactory = candidate.orElseThrow(
+                () -> new RuntimeException("Error detecting required runtime environment components! " +
+                        "Check your classpath and/or configuration."));
+        logger = environmentFactory.getLogger();
+        logger.log("Initializing environment with JWPL's internal bean factory: "
+                + environmentFactory.getClass().getName());
+    }
 
     private static final long startTime = System.currentTimeMillis();
-    private static final ILogger logger = environmentFactory.getLogger();
 
     /**
      * Checks given arguments
@@ -44,7 +53,7 @@ public class JWPLTimeMachine
      * @param args
      *            <br>
      *            args[0] the settings file like described in {@link SettingsXML}<br>
-     * @return true if all necessary arguments are given and false otherwise
+     * @return {@code true} if all necessary arguments are given and {@code false} otherwise.
      * @see SettingsXML
      */
     private static boolean checkArgs(String[] args)
