@@ -34,7 +34,8 @@
     <maven.compiler.target>17</maven.compiler.target>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.release>17</maven.compiler.release>
-    
+
+    <fastutil.version>8.5.18</fastutil.version>
     <fau.ptk.version>3.0.8</fau.ptk.version>
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>4.0.1</org.sweble.wikitext.version>
@@ -234,14 +235,9 @@
         <version>${commons.lang3.version}</version>
       </dependency>
       <dependency>
-        <groupId>commons-logging</groupId>
-        <artifactId>commons-logging</artifactId>
-        <version>${commons.logging.version}</version>
-      </dependency>
-      <dependency>
         <groupId>it.unimi.dsi</groupId>
         <artifactId>fastutil-core</artifactId>
-        <version>8.5.18</version>
+        <version>${fastutil.version}</version>
       </dependency>
       <dependency>
         <groupId>io.github.rzo1.org.sweble.wikitext</groupId>
