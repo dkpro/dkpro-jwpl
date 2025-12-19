@@ -17,14 +17,17 @@
  */
 package org.dkpro.jwpl.datamachine.domain;
 
+import java.util.Optional;
+import java.util.ServiceLoader;
+
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
-import org.dkpro.jwpl.wikimachine.factory.SpringFactory;
 
 /**
- * Starts the transformation from Mediawiki dump format to JWPL dump format.
+ * The command line tool that starts the transformation
+ * of a Mediawiki dump archive into JWPL format.
  */
 public class JWPLDataMachine
 {
@@ -43,9 +46,19 @@ public class JWPLDataMachine
 
     private static final long startTime = System.currentTimeMillis();
 
-    private static final IEnvironmentFactory environmentFactory = SpringFactory.getInstance();
+    private static final IEnvironmentFactory environmentFactory;
+    private static final ILogger logger;
 
-    private static final ILogger logger = environmentFactory.getLogger();
+    static {
+        Optional<IEnvironmentFactory> candidate = ServiceLoader.load(IEnvironmentFactory.class).findFirst();
+        environmentFactory = candidate.orElseThrow(
+                () -> new RuntimeException("Error detecting required runtime environment components! " +
+                        "Check your classpath and/or configuration."));
+        logger = environmentFactory.getLogger();
+        logger.log("Initializing environment with JWPL's internal bean factory: "
+                + environmentFactory.getClass().getName());
+    }
+
 
     public static void main(String[] args)
     {

@@ -23,9 +23,9 @@
 	
 	<!-- APPLICATION CONTEXT TEMPLATE FOR DATA & TIME MACHINE -->
 	<!-- single variant
-		org.dkpro.jwpl.wikimachine.factory.SpringFactory
+		org.dkpro.jwpl.wikimachine.factory.DefaultEnvironmentFactorynmentFactory
 	-->
-	<bean id="environmentFactory" class="org.dkpro.jwpl.wikimachine.factory.SpringFactory" >
+	<bean id="environmentFactory" class="org.dkpro.jwpl.wikimachine.factory.AbstractEnvironmentFactory" >
 	</bean>
 
 	<!-- variants: use one or several loggers from the list

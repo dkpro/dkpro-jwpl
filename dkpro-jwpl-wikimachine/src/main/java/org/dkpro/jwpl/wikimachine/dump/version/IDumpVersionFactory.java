@@ -19,5 +19,9 @@ package org.dkpro.jwpl.wikimachine.dump.version;
 
 public interface IDumpVersionFactory
 {
+    enum FactoryType {
+      JDK_INT_KEY, JDK_LONG_KEY, JDK_STRING_KEY;
+    }
+
     IDumpVersion getDumpVersion();
 }

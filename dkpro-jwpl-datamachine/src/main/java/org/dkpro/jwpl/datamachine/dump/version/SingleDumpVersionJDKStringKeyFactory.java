@@ -18,11 +18,11 @@
 package org.dkpro.jwpl.datamachine.dump.version;
 
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
-import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionFactory;
+import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionDataFactory;
 import org.dkpro.jwpl.wikimachine.hashing.StringHashCodeDisabled;
 
 public class SingleDumpVersionJDKStringKeyFactory
-    implements IDumpVersionFactory
+    implements IDumpVersionDataFactory
 {
 
     @Override

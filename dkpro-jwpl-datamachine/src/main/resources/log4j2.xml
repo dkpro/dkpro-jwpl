@@ -24,7 +24,11 @@
     </Appenders>
 
     <Loggers>
-        <Logger name="org.dkpro.jwpl.datamachine" level="INFO">
+        <Logger name="org.dkpro.jwpl.datamachine" level="INFO" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+        </Logger>
+
+        <Logger name="org.dkpro.jwpl.wikimachine.debug" level="INFO" additivity="false">
             <AppenderRef ref="STDOUT"/>
         </Logger>
 
