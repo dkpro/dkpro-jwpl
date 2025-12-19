@@ -290,26 +290,14 @@ public abstract class AbstractXmlDumpReader
             }
 
             // frequent tags:
-            if (Objects.equals(qName, REVISION)) {
-                openRevision();
-            }
-            else if (Objects.equals(qName, CONTRIBUTOR)) {
-                openContributor();
-            }
-            else if (Objects.equals(qName, PAGE)) {
-                openPage();
-            }
-            else if (Objects.equals(qName, MEDIAWIKI)) {
-                openMediaWiki();
-            }
-            else if (Objects.equals(qName, SITEINFO)) {
-                openSiteinfo();
-            }
-            else if (Objects.equals(qName, NAMESPACES)) {
-                openNamespaces();
-            }
-            else if (Objects.equals(qName, NAMESPACE)) {
-                openNamespace(attributes);
+            switch (qName) {
+                case REVISION -> openRevision();
+                case CONTRIBUTOR -> openContributor();
+                case PAGE -> openPage();
+                case MEDIAWIKI -> openMediaWiki();
+                case SITEINFO -> openSiteinfo();
+                case NAMESPACES -> openNamespaces();
+                case NAMESPACE -> openNamespace(attributes);
             }
         }
         catch (IOException e) {

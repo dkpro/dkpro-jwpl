@@ -189,10 +189,9 @@ public class RevisionPair
     @Override
     public boolean equals(final Object other)
     {
-        if (!(other instanceof RevisionPair)) {
+        if (!(other instanceof RevisionPair castOther)) {
             return false;
         }
-        RevisionPair castOther = (RevisionPair) other;
         return Objects.equals(before, castOther.before) && Objects.equals(after, castOther.after)
                 && Objects.equals(template, castOther.template)
                 && Objects.equals(revPairType, castOther.revPairType);

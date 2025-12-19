@@ -279,21 +279,15 @@ public class ChronoRevisionIterator
     public Revision next()
     {
         try {
-            switch (modus) {
-            case INIT:
-                return init();
-
-            case ITERATE_WITH_MAPPING:
-                return chronoIterator.next();
+          return switch (modus) {
+            case INIT -> init();
+            case ITERATE_WITH_MAPPING -> chronoIterator.next();
 
             // revisionEncoder.getRevision(currentArticleID, revisionIndex);
 
-            case ITERATE_WITHOUT_MAPPING:
-                return revisionIterator.next();
-
-            default:
-                throw new RuntimeException("Illegal mode");
-            }
+            case ITERATE_WITHOUT_MAPPING -> revisionIterator.next();
+            default -> throw new RuntimeException("Illegal mode");
+          };
         }
         catch (Exception e) {
             throw new RuntimeException(e);

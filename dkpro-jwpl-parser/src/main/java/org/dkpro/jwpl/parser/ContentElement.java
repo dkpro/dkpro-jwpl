@@ -135,20 +135,14 @@ public class ContentElement
      */
     public List<Span> getFormatSpans(FormatType t)
     {
-        switch (t) {
-        case BOLD:
-            return boldSpans;
-        case ITALIC:
-            return italicSpans;
-        case TAG:
-            return tags;
-        case MATH:
-            return mathSpans;
-        case NOWIKI:
-            return noWikiSpans;
-        default:
-            return null;
-        }
+        return switch (t) {
+            case BOLD -> boldSpans;
+            case ITALIC -> italicSpans;
+            case TAG -> tags;
+            case MATH -> mathSpans;
+            case NOWIKI -> noWikiSpans;
+            default -> null;
+        };
     }
 
     /**

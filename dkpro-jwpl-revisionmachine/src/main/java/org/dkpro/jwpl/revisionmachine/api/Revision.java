@@ -478,10 +478,9 @@ public class Revision
     @Override
     public boolean equals(final Object other)
     {
-        if (!(other instanceof Revision)) {
+        if (!(other instanceof Revision castOther)) {
             return false;
         }
-        Revision castOther = (Revision) other;
         return Objects.equals(revisionId, castOther.revisionId);
     }
 
