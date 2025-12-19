@@ -281,7 +281,7 @@ public class Page
     {
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
         Set<Integer> tmp = new UnmodifiableArraySet<>(hibernatePage.getCategories());
         session.getTransaction().commit();
 
@@ -330,7 +330,7 @@ public class Page
     {
         Session session = wiki.__getHibernateSession();
         session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
         // Have to copy links here since getPage later will close the session.
         Set<Integer> pageIDs = new UnmodifiableArraySet<>(hibernatePage.getInLinks());
         session.getTransaction().commit();
@@ -383,7 +383,7 @@ public class Page
     {
         Session session = wiki.__getHibernateSession();
         session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
 
         Set<Integer> tmpSet = new HashSet<>(hibernatePage.getInLinks());
 
@@ -404,7 +404,7 @@ public class Page
         Session session = wiki.__getHibernateSession();
         session.beginTransaction();
         // session.lock(hibernatePage, LockMode.NONE);
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
         // Have to copy links here since getPage later will close the session.
         Set<Integer> tmpSet = new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
         session.getTransaction().commit();
@@ -457,7 +457,7 @@ public class Page
 
         Session session = wiki.__getHibernateSession();
         session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
 
         Set<Integer> tmpSet = new HashSet<>(hibernatePage.getOutLinks());
 
@@ -486,7 +486,7 @@ public class Page
     {
         Session session = wiki.__getHibernateSession();
         session.beginTransaction();
-        session.buildLockRequest(LockOptions.NONE).lock(hibernatePage);
+        session.lock(hibernatePage, LockOptions.NONE);
         Set<String> tmpSet = new HashSet<>(hibernatePage.getRedirects());
         session.getTransaction().commit();
         return tmpSet;
