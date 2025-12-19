@@ -171,10 +171,9 @@ public class DiffPart
     @Override
     public boolean equals(final Object other)
     {
-        if (!(other instanceof DiffPart)) {
+        if (!(other instanceof DiffPart castOther)) {
             return false;
         }
-        DiffPart castOther = (DiffPart) other;
         return Objects.equals(start, castOther.start) && Objects.equals(length, castOther.length)
                 && Objects.equals(action, castOther.action) && Objects.equals(text, castOther.text);
     }

@@ -170,22 +170,13 @@ public class InputFactory
     public static ArticleReaderInterface getTaskReader(final ArchiveDescription archive)
         throws ConfigurationException, ArticleReaderException
     {
-        Reader reader;
-
-        switch (archive.getType()) {
-        case XML:
-            reader = readXMLFile(archive.getPath());
-            break;
-        case SEVENZIP:
-            reader = decompressWith7Zip(archive.getPath());
-            break;
-        case BZIP2:
-            reader = decompressWithBZip2(archive.getPath());
-            break;
-        default:
-            throw ErrorFactory.createArticleReaderException(
-                    ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
-        }
+        Reader reader = switch (archive.getType()) {
+            case XML -> readXMLFile(archive.getPath());
+            case SEVENZIP -> decompressWith7Zip(archive.getPath());
+            case BZIP2 -> decompressWithBZip2(archive.getPath());
+            default -> throw ErrorFactory.createArticleReaderException(
+                  ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
+        };
 
         if (MODE_STATISTICAL_OUTPUT) {
             return new TimedWikipediaXMLReader(reader);
@@ -210,25 +201,17 @@ public class InputFactory
             final ArticleFilter checker)
         throws ConfigurationException, ArticleReaderException
     {
-        Reader reader;
+        Reader reader = switch (archive.getType()) {
+          case XML -> readXMLFile(archive.getPath());
+          case SEVENZIP -> decompressWith7Zip(archive.getPath());
+          case BZIP2 -> decompressWithBZip2(archive.getPath());
+          default -> throw ErrorFactory.createArticleReaderException(
+                  ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
+        };
 
         // TODO add support for (compressed) XMLdumps that are stored in multiple archives
-        switch (archive.getType()) {
-        case XML:
-            reader = readXMLFile(archive.getPath());
-            break;
-        case SEVENZIP:
-            reader = decompressWith7Zip(archive.getPath());
-            break;
-        case BZIP2:
-            reader = decompressWithBZip2(archive.getPath());
-            break;
-        default:
-            throw ErrorFactory.createArticleReaderException(
-                    ErrorKeys.DELTA_CONSUMERS_TASK_READER_INPUTFACTORY_ILLEGAL_INPUTMODE_VALUE);
-        }
 
-        if (MODE_STATISTICAL_OUTPUT) {
+      if (MODE_STATISTICAL_OUTPUT) {
             return new TimedWikipediaXMLReader(reader, checker);
         }
         return new WikipediaXMLReader(reader, checker);

@@ -116,15 +116,12 @@ public class ConfigVerification
 
         ConfigItem item = this.list.get(row);
 
-        switch (column) {
-        case 0:
-            return item.getType();
-        case 1:
-            return item.getKey();
-        case 2:
-            return item.getMessage();
-        }
-        return null;
+        return switch (column) {
+            case 0 -> item.getType();
+            case 1 -> item.getKey();
+            case 2 -> item.getMessage();
+            default -> null;
+        };
     }
 
     /**

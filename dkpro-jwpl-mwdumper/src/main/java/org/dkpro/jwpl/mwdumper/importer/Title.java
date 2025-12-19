@@ -106,8 +106,7 @@ public class Title
     {
         if (other == this)
             return true;
-        if (other instanceof Title) {
-            Title ot = (Title) other;
+        if (other instanceof Title ot) {
             return Namespace.equals(ot.Namespace) && Text.equals(ot.Text);
         }
         return false;

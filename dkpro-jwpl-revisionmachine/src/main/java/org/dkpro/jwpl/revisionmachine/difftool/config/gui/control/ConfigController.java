@@ -443,7 +443,7 @@ public class ConfigController
      *
      * @param path
      *            output path
-     * @return TRUE if the configuration was succesfully exported FALSE otherwise
+     * @return TRUE if the configuration was successfully exported FALSE otherwise
      */
     public boolean saveConfiguration(final String path)
     {
@@ -452,27 +452,14 @@ public class ConfigController
 
             boolean success = true;
 
-            FileWriter writer = null;
-            try {
-                writer = new FileWriter(path);
-                writer.write(xmlConfig.toString());
-                writer.flush();
+          try (FileWriter writer = new FileWriter(path)) {
+            writer.write(xmlConfig.toString());
+            writer.flush();
 
-            }
-            catch (IOException ioe) {
-                ioe.printStackTrace();
-                success = false;
-            }
-            finally {
-                if (writer != null) {
-                    try {
-                        writer.close();
-                    }
-                    catch (IOException ioe) {
-                        success = false;
-                    }
-                }
-            }
+          } catch (IOException ioe) {
+            ioe.printStackTrace();
+            success = false;
+          }
 
             return success;
         }

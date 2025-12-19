@@ -99,16 +99,13 @@ public class ArchiveRegistry
     public Object getValueAt(final int row, final int col)
     {
 
-        switch (col) {
-        case 0:
-            return archives.get(row).getType();
-        case 1:
-            return archives.get(row).getStartPosition();
-        case 2:
-            return archives.get(row).getPath();
-        }
+        return switch (col) {
+            case 0 -> archives.get(row).getType();
+            case 1 -> archives.get(row).getStartPosition();
+            case 2 -> archives.get(row).getPath();
+            default -> "---";
+        };
 
-        return "---";
     }
 
     /**

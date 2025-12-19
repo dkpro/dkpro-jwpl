@@ -18,7 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.data;
 
 /**
- * This class represents configuration verfication messages.
+ * This class represents configuration verification messages.
  */
 public class ConfigItem
 {

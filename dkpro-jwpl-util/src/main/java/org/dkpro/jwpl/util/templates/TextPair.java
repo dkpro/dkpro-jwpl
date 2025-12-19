@@ -307,11 +307,10 @@ public class TextPair
     @Override
     public boolean equals(final Object other)
     {
-        if (!(other instanceof TextPair)) {
+        if (!(other instanceof TextPair castOther)) {
             return false;
         }
-        TextPair castOther = (TextPair) other;
-        return Objects.equals(beforeText, castOther.beforeText)
+      return Objects.equals(beforeText, castOther.beforeText)
                 && Objects.equals(afterText, castOther.afterText);
     }
 

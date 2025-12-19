@@ -107,25 +107,17 @@ public enum DiffAction
     public static DiffAction parse(final int val) throws DecodingException
     {
 
-        switch (val) {
-        case 0:
-            return DECODER_DATA;
-        case 1:
-            return FULL_REVISION_UNCOMPRESSED;
-        case 2:
-            return INSERT;
-        case 3:
-            return DELETE;
-        case 4:
-            return REPLACE;
-        case 5:
-            return CUT;
-        case 6:
-            return PASTE;
-        // case 7: return FULL_REVISION_COMPRESSED;
-        default:
-            throw ErrorFactory.createDecodingException(ErrorKeys.DIFFTOOL_ENCODING_INVALID_VALUE,
+        return switch (val) {
+            case 0 -> DECODER_DATA;
+            case 1 -> FULL_REVISION_UNCOMPRESSED;
+            case 2 -> INSERT;
+            case 3 -> DELETE;
+            case 4 -> REPLACE;
+            case 5 -> CUT;
+            case 6 -> PASTE;
+            // case 7: return FULL_REVISION_COMPRESSED;
+            default -> throw ErrorFactory.createDecodingException(ErrorKeys.DIFFTOOL_ENCODING_INVALID_VALUE,
                     "Invalid value: " + val);
-        }
+        };
     }
 }
