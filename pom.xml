@@ -318,13 +318,18 @@
             <dependency>org.apache.logging.log4j:log4j-slf4j2-impl</dependency>
             <dependency>org.apache.logging.log4j:log4j-core</dependency>
             <dependency>org.slf4j:log4j-over-slf4j</dependency>
-            <dependency>commons-logging:commons-logging</dependency>
             <!--
               - JAXB is used via reflection and cannot be detected by Maven
             -->
             <dependency>jakarta.xml.bind:jakarta.xml.bind-api</dependency>
             <dependency>org.glassfish.jaxb</dependency>
-            <!-- 
+            <!--
+              - org tukaani.xz is required for 7z support via commons-compress,
+                in runtime scope and thus not detected as strictly required,
+                see: https://commons.apache.org/proper/commons-compress/limitations.html
+            -->
+            <dependency>org.tukaani:xz</dependency>
+            <!--
               - Common test dependencies
             -->
             <dependency>org.hsqldb:hsqldb</dependency>

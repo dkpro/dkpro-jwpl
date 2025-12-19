@@ -36,15 +36,18 @@ import java.util.Properties;
  * compression will be ignored and the plain unmodified byte stream will be returned. <br>
  * <br>
  * <p>
- * Current supported archives are: GZip, BZip2. Each other archive type can be added using the file
- * "decompressor.xml" where you should specify the file extension as a key and the according utility
- * (incl. parameters), that have to be started. Please note that the unpack utility has to use the
- * standard output and external unpack utilities are in preference to the internal. Also, there could
- * be more heap memory necessary to use start external programs. The compressed file should be
- * specified with the placeholder <code>%f</code>. <br>
- * E.g. the entry for the 7z utility could look like that: <br>
- * {@code <entry
- * key="7z">7z e -so %f</entry>}. The properties file should conform to
+ * Current supported archives are: GZip, BZip2, and 7Zip. Each other archive type can be added
+ * using the file "decompressor.xml" where you should specify the file extension as a key and the
+ * according utility (incl. parameters), that have to be started.
+ * <p>
+ * Please note that the unpack utility has to use the standard output and external unpack
+ * utilities are in preference to the internal.
+ * Also, there could be more heap memory necessary to use start external programs.
+ * <p>
+ * The compressed file should be specified with the placeholder <code>%f</code>. <br>
+ * For instance, the entry for the native 7z utility could look like that: <br>
+ * {@code <entry key="7z">C:/Program Files/7-Zip/7z.exe e -so %f</entry>}. <br>
+ * The properties file should conform to
  * <a href="http://java.sun.com/dtd/properties.dtd">Java Properties DTD</a>
  *
  * @see UniversalDecompressor#getInputStream(String)
@@ -93,32 +96,30 @@ public class UniversalDecompressor
     }
 
   /**
-   * Instantiates a {@link UniversalDecompressor} via bundled "decompressor.xml"
-   * file which is expected in the classpath of the surrounding environment.
+   * Instantiates a {@link UniversalDecompressor} supporting bz2, gz and 7z
+   * compressed archives.
    */
     public UniversalDecompressor()
     {
         internalSupport = new HashMap<>();
         internalSupport.put("bz2", new BZip2Decompressor());
         internalSupport.put("gz", new GZipDecompressor());
+        internalSupport.put("7z", new SevenZipDecompressor());
         externalSupport = new HashMap<>();
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        loadExternal(cl.getResourceAsStream("decompressor.xml"));
     }
 
     /**
      * Instantiates a {@link UniversalDecompressor} via an external
      * {@link Path} reference to a custom "decompressor.xml" file.
+     * <p>
+     * By default, bz2, gz and 7z compressed archives are supported.
      *
      * @param externalXML A valid {@link Path} reference to a
      *                    "decompressor.xml" file.
      */
     public UniversalDecompressor(Path externalXML)
     {
-        internalSupport = new HashMap<>();
-        internalSupport.put("bz2", new BZip2Decompressor());
-        internalSupport.put("gz", new GZipDecompressor());
-        externalSupport = new HashMap<>();
+        this();
         loadExternal(externalXML);
     }
 
@@ -136,7 +137,7 @@ public class UniversalDecompressor
     }
 
     /**
-     * Load the properties for external utilities from an XML file
+     * Load the properties for external utilities from an XML file.
      */
     private void loadExternal(InputStream externalConfig)
     {
@@ -154,10 +155,9 @@ public class UniversalDecompressor
 
 
     /**
-     * Return the extension of the filename
+     * Return the extension of the filename.
      *
-     * @param fileName
-     *            that should be input
+     * @param fileName The file's name or (relative) path to get the extension of.
      * @return file extension or {@code null}
      */
     private String getExtension(String fileName)
@@ -176,9 +176,9 @@ public class UniversalDecompressor
     }
 
     /**
-     * Check if the file is supported by the internal or external decompressor
+     * Check if the file is supported by the internal or external decompressor.
      *
-     * @param fileName
+     * @param fileName The file's name or (relative) path to check support for.
      * @return {@code True} if the file extension is supported, {@code false} otherwise.
      */
     public boolean isSupported(String fileName)
@@ -189,9 +189,9 @@ public class UniversalDecompressor
     }
 
     /**
-     * Start an external utility to unpack the archive.
+     * Start an external utility to read the archive.
      *
-     * @param fileName
+     * @param fileName The file's name or (relative) path to read the archive from.
      * @return InputStream to read the decompressed data
      */
     private InputStream startExternal(String fileName)
@@ -212,7 +212,7 @@ public class UniversalDecompressor
     /**
      * Get default InputStream to read the data from the file
      *
-     * @param fileName
+     * @param fileName The file's name or (relative) path to read the archive from.
      * @return FileInputStream(fileName)
      */
     private InputStream getDefault(String fileName)
@@ -228,19 +228,19 @@ public class UniversalDecompressor
     }
 
     /**
-     * Creates a {@link InputStream} where the unpacked data could be read from. Internal GZip and BZip2
-     * archive formats are supported. The list archive formats can be increased with settings file
-     * decompressor.xml. Thereby
+     * Creates a {@link InputStream} where the unpacked data could be read from. Internal GZip, BZip2,
+     * and 7z archive formats are supported.
+     * The list of archive formats can be increased with the {@code decompressor.xml}. Thereby
      * <ul>
      * <li>key is the archive extension</li>
      * <li>value is the external command. The archive file should be specified with a place holder
      * {@link UniversalDecompressor#FILEPLACEHOLDER}</li>
      * </ul>
-     * External decompression utilities are in preference to the internal. If there is nether
+     * External decompression utilities are in preference to the internal. If there is neither
      * external nor internal possibilities to unpack the file - the standard
      * {@link FileInputStream} will be returned
      *
-     * @see UniversalDecompressor
+     * @param fileName The file's name or (relative) path to read the archive from.
      */
     @Override
     public InputStream getInputStream(String fileName) throws IOException
@@ -261,11 +261,11 @@ public class UniversalDecompressor
     }
 
     /**
-     * Check if the specified file exists
+     * Check if the {@link File} specified via {@code fileName} exists.
      *
      * @param fileName
      *            file path to check
-     * @return bool if the file exists and can be read
+     * @return {@code true} if the file exists and can be read, {@code false} otherwise.
      */
     private boolean fileExists(String fileName)
     {

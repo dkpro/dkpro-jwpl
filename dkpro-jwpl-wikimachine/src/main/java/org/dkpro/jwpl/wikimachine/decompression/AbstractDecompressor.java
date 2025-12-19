@@ -19,9 +19,14 @@ package org.dkpro.jwpl.wikimachine.decompression;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.channels.FileChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public abstract class AbstractDecompressor implements IDecompressor {
 
@@ -51,6 +56,37 @@ public abstract class AbstractDecompressor implements IDecompressor {
             in = getContextClassLoader().getResourceAsStream(resource);
         }
         return in;
+    }
+
+    /**
+     * Attempts to open a {@link SeekableByteChannel} to an external or internal resource.
+     * In this context, external resources a referenced via a relative or absolute path, including
+     * the actual file name of that resource.
+     * In case only a plain file name is given and no directory or path elements are contained
+     * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
+     *
+     * @param resource References a resource via a path or by its file name only.
+     *                 If {@code null}, this will result in an {@link IOException}.
+     * @return An open {@link SeekableByteChannel} or {@code null} if {@code resource}
+     *         could not be found.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
+    protected SeekableByteChannel openChannel(String resource) throws IOException {
+        if (resource == null) {
+            throw new IOException("Can't load a 'null' resource!");
+        }
+        final Path file = Paths.get(resource).toAbsolutePath();
+        if (Files.exists(file)) {
+            return Files.newByteChannel(file, StandardOpenOption.READ);
+        } else {
+            URL in = getContextClassLoader().getResource(resource);
+            try {
+                return FileChannel.open(Path.of(in.toURI()), StandardOpenOption.READ);
+            } catch (URISyntaxException e) {
+                throw new IOException(e);
+            }
+        }
     }
 
     private ClassLoader getContextClassLoader()

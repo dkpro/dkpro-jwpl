@@ -72,12 +72,13 @@ public class UniversalDecompressorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"archive.txt.gz", "archive.txt.bz2",
-            "src/test/resources/archive.txt.gz", "src/test/resources/archive.txt.bz2"})
+    @ValueSource(strings = {"archive.txt.gz", "archive.txt.bz2", "archive.txt.7z",
+            "src/test/resources/archive.txt.gz", "src/test/resources/archive.txt.bz2",
+            "src/test/resources/archive.txt.7z"})
     public void testGetInputStream(String input) throws IOException {
-        try (BufferedInputStream in = new BufferedInputStream(udc.getInputStream(input))) {
+        try (InputStream in = new BufferedInputStream(udc.getInputStream(input))) {
             assertNotNull(in);
-            String content = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            String content = new String(in.readAllBytes(), StandardCharsets.UTF_8).trim();
             assertNotNull(content);
             assertEquals(EXPECTED_CONTENT, content);
         }
