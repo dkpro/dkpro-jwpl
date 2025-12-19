@@ -136,7 +136,7 @@ public abstract class GenericDAO<T>
     public void attachClean(T instance)
     {
         try {
-            getSession().buildLockRequest(LockOptions.NONE).lock(instance);
+            getSession().lock(instance, LockOptions.NONE);
             logger.trace("attach successful");
         }
         catch (RuntimeException re) {

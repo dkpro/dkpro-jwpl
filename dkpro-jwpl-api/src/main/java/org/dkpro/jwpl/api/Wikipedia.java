@@ -36,7 +36,6 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.hibernate.Session;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -690,7 +689,7 @@ public class Wikipedia
 
             // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
             // NativeQuery...
-            var nativeQuery = (NativeQuery) session.createNativeQuery(query) //
+            var nativeQuery = session.createNativeQuery(query, Long.class)
                     .setParameter("pName", encodedTitle, StandardBasicTypes.STRING);
             var returnValue = nativeQuery.uniqueResult();
             return returnValue != null;
