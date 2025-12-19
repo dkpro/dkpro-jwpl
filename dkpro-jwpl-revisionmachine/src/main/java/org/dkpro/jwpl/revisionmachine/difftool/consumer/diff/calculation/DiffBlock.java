@@ -101,7 +101,7 @@ public class DiffBlock
     /**
      * Returns whether the block is valid or not.
      *
-     * @return TRUE if the block has a ID of the value -1 FALSE otherwise
+     * @return {@code true} if the block has an ID of the value {@code -1} {@code false} otherwise
      */
     public boolean isUnknown()
     {

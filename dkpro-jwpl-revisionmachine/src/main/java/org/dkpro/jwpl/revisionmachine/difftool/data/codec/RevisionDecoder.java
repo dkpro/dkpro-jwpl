@@ -144,13 +144,13 @@ public class RevisionDecoder
      * @param blockSize_C
      *            length of a C block
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_E
-     *            length of a E block
+     *            length of an E block
      * @param blockSize_B
      *            length of a B block
      * @param blockSize_L
-     *            length of a L block
+     *            length of an L block
      * @return Diff
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
@@ -202,9 +202,9 @@ public class RevisionDecoder
      * Decodes an Add operation.
      *
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_L
-     *            length of a L block
+     *            length of an L block
      * @return DiffPart, Add operation
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
@@ -239,9 +239,9 @@ public class RevisionDecoder
      * Decodes a Cut operation.
      *
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_E
-     *            length of a E block
+     *            length of an E block
      * @param blockSize_B
      *            length of a B block
      * @return DiffPart, Cut operation
@@ -275,9 +275,9 @@ public class RevisionDecoder
      * Decodes a Delete operation.
      *
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_E
-     *            length of a E block
+     *            length of an E block
      * @return DiffPart, Delete operation
      * @throws DecodingException
      *             if the decoding failed
@@ -307,7 +307,7 @@ public class RevisionDecoder
      * Decodes a FullRevision operation.
      *
      * @param blockSize_L
-     *            length of a L block
+     *            length of an L block
      * @return DiffPart, FullRevision
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
@@ -338,7 +338,7 @@ public class RevisionDecoder
      * Decodes a Paste operation.
      *
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_B
      *            length of a B block
      * @return DiffPart, Paste operation
@@ -370,11 +370,11 @@ public class RevisionDecoder
      * Decodes a Replace operation.
      *
      * @param blockSize_S
-     *            length of a S block
+     *            length of an S block
      * @param blockSize_E
-     *            length of a E block
+     *            length of an E block
      * @param blockSize_L
-     *            length of a L block
+     *            length of an L block
      * @return DiffPart, Replace operation
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported

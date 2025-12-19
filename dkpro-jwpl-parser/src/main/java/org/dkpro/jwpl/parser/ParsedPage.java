@@ -35,7 +35,6 @@ public class ParsedPage
     private ContentElement languages;
 
     private int firstParagraphNr;
-    // private ContentElement aboutArticle;
 
     /**
      * Constructor for a blank ParsedPage.<br>
@@ -380,12 +379,6 @@ public class ParsedPage
         return superSection.getText();
     }
 
-    //// TODO we should not need that as we could call getText on the span itself.
-    // /**
-    // * Look at the SAME function in SectionContainer for Details...
-    // */
-    // public String getText( List<Span> sl ){ return superSection.getText( sl ); }
-
     /**
      * Returns the length of the text in characters.
      *
@@ -401,32 +394,15 @@ public class ParsedPage
         return superSection.getFormats();
     }
 
-    //// I do not know what these are for and they are never used (TZ).
-    // public List<FormatType> getFormats(int begin, int end){ return
-    //// superSection.getFormats(begin,end); }
-    // public List<FormatType> getFormats(Span s){ return superSection.getFormats(s); }
-
     public List<Span> getFormatSpans(FormatType t)
     {
         return superSection.getFormatSpans(t);
     }
 
-    //// I do not know what these are for and they are never used (TZ).
-    // public List<Span> getFormatSpans(FormatType t, int start, int end ){ return
-    //// superSection.getFormatSpans(t, start, end); }
-    // public List<Span> getFormatSpans(FormatType t, Span s){ return superSection.getFormatSpans(t,
-    //// s); }
-
     public List<Link> getLinks()
     {
         return superSection.getLinks();
     }
-
-    //// I do not know what these are for and they are never used (TZ).
-    // public List<Link> getLinks(Link.type t){ return superSection.getLinks(t); }
-    // public List<Link> getLinks(Link.type t, int begin, int end){ return superSection.getLinks(t,
-    //// begin, end); }
-    // public List<Link> getLinks(Link.type t, Span s){ return superSection.getLinks(t, s); }
 
     /**
      * Returns a list of templates that are used in the page.
@@ -438,8 +414,4 @@ public class ParsedPage
         return superSection.getTemplates();
     }
 
-    //// I do not know what these are for and they are never used (TZ).
-    // public List<Template> getTemplates(int start, int end){ return
-    //// superSection.getTemplates(start, end); }
-    // public List<Template> getTemplates(Span s){ return superSection.getTemplates(s); }
 }

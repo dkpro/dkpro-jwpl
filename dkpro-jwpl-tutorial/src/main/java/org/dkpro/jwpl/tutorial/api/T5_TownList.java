@@ -35,7 +35,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
  * thesaurus like structure.
  * <p>
  * If we get all pages assigned to categories in the sub-tree under the category for "Towns in
- * Germany", we can get a quite long list of towns in Germany.
+ * Germany", we can get quite long list of towns in Germany.
  */
 public class T5_TownList
     implements WikiConstants

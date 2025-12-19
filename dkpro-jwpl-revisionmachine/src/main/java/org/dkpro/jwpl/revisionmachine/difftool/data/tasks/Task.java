@@ -182,7 +182,7 @@ public class Task<D>
     /**
      * Returns the data at the specified index.
      * <p>
-     * The index will not be check whether it is out of range or not. If you do not know the
+     * The index will be checked whether it is out of range or not. If you do not know the
      * appropriate index call the size() method before calling this method.
      *
      * @param index

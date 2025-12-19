@@ -66,7 +66,7 @@ public class DataFileArchiveWriter
     private OutputStream output;
 
     /**
-     * Name of the related sql consumer - used as prefix for the output filenames
+     * Name of the related SQL consumer - used as prefix for the output filenames
      */
     private String outputName;
 
@@ -104,7 +104,7 @@ public class DataFileArchiveWriter
         MODE_STATISTICAL_OUTPUT = (Boolean) config
                 .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
 
-        // Create sql file
+        // Create SQL file
         counter = 0;
     }
 
@@ -112,7 +112,7 @@ public class DataFileArchiveWriter
      * Creates a new SQLArchiveWriter object.
      *
      * @param outputName
-     *            Name of the sql consumer
+     *            Name of the SQL consumer
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
      * @throws LoggingException
@@ -143,7 +143,7 @@ public class DataFileArchiveWriter
     }
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -166,7 +166,7 @@ public class DataFileArchiveWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

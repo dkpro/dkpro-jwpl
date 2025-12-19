@@ -48,6 +48,11 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SelectiveAccessHandler
 {
 
+    public static final String COLON = ":";
+    public static final String TAB = "\t";
+    public static final String LINE_BREAK = "\n";
+    public static final String WHITESPACE = " ";
+
     enum CIT
     {
         TEXT, BOLD, ITALIC, LINK
@@ -77,7 +82,7 @@ public class SelectiveAccessHandler
     }
 
     /**
-     * Creates an SelectiveAccessHandler and loads the config from an XMLFile
+     * Creates an SelectiveAccessHandler and loads the config from an XML file.
      */
     public SelectiveAccessHandler(String XMLFile)
     {
@@ -120,7 +125,7 @@ public class SelectiveAccessHandler
 
     /**
      * if pageHandling is null, there will be no special handling for the WHOLE PAGE, this means,
-     * the handling will be sectionwhise...
+     * the handling will be section-wise...
      */
     public void setPageHandling(EnumMap<CIT, Boolean> pageHandling)
     {
@@ -152,7 +157,7 @@ public class SelectiveAccessHandler
     }
 
     /**
-     * adds section handling for a specila section name...
+     * adds section handling for a special section name...
      */
     public void addSectionHandling(String name, EnumMap<SIT, EnumMap<CIT, Boolean>> sh)
     {
@@ -168,30 +173,30 @@ public class SelectiveAccessHandler
     }
 
     /**
-     * Returns information which infomations are selected by the actual configuration
+     * Returns information which information are selected by the actual configuration
      */
     public String getSelectionInfo()
     {
         StringBuilder result = new StringBuilder();
 
-        result.append("SelectionInfo: " + this.getClass() + "\n");
-        result.append("Page:" + CITInfo(pageHandling) + "\n");
-        result.append("FirstParagraph:" + CITInfo(firstParagraphHandling) + "\n");
+        result.append("SelectionInfo: " + this.getClass() + LINE_BREAK);
+        result.append("Page:" + CITInfo(pageHandling) + LINE_BREAK);
+        result.append("FirstParagraph:" + CITInfo(firstParagraphHandling) + LINE_BREAK);
         for (String key : sectionHandling.keySet()) {
             final String uss = SectionType.USER_SECTION.toString();
             if (key.startsWith(uss))
                 result.append(uss + "[" + key.substring(uss.length()) + "]:\n");
             else
-                result.append(key + ":\n");
+                result.append(key + COLON + LINE_BREAK);
 
-            result.append(SITInfo(sectionHandling.get(key)) + "\n");
+            result.append(SITInfo(sectionHandling.get(key)) + LINE_BREAK);
         }
 
         return result.toString();
     }
 
     /**
-     * Converts a CITMap into a human readable String
+     * Converts a CITMap into a human-readable String
      */
     public static String CITInfo(EnumMap<CIT, Boolean> hp)
     {
@@ -199,7 +204,7 @@ public class SelectiveAccessHandler
         result.append("[");
         if (hp != null) {
             for (CIT key : hp.keySet())
-                result.append(key.toString() + ":" + hp.get(key) + ", ");
+                result.append(key.toString() + COLON + hp.get(key) + ", ");
             result.delete(result.length() - 2, result.length());
         }
         result.append("]");
@@ -207,13 +212,13 @@ public class SelectiveAccessHandler
     }
 
     /**
-     * Converts a SITMap into a human readable String
+     * Converts a SITMap into a human-readable String
      */
     public static String SITInfo(EnumMap<SIT, EnumMap<CIT, Boolean>> shp)
     {
         StringBuilder result = new StringBuilder();
         for (SIT key : shp.keySet()) {
-            result.append("\t" + key.toString() + ":" + CITInfo(shp.get(key)) + "\n");
+            result.append(TAB + key.toString() + COLON + CITInfo(shp.get(key)) + LINE_BREAK);
         }
         return result.toString();
     }
@@ -284,7 +289,7 @@ public class SelectiveAccessHandler
     {
         if (hp != null) {
             if (hp.get(CIT.TEXT))
-                sb.append(c.getText() + " ");
+                sb.append(c.getText() + WHITESPACE);
             else {
                 if (hp.get(CIT.BOLD))
                     handleSpans(c.getFormatSpans(FormatType.BOLD), c.getText(), sb);
@@ -350,7 +355,7 @@ public class SelectiveAccessHandler
     private static void handleSpans(List<Span> spans, String text, StringBuilder sb)
     {
         for (Span s : spans)
-            sb.append(text.substring(s.getStart(), s.getEnd()) + " ");
+            sb.append(text.substring(s.getStart(), s.getEnd()) + WHITESPACE);
     }
 
     private static void handleLinks(List<Link> links, boolean linktext, StringBuilder sb)
@@ -361,12 +366,12 @@ public class SelectiveAccessHandler
                 String lText = l.getText();
                 String lTarget = l.getTarget();
                 if (linktext)
-                    sb.append(lText + " ");
+                    sb.append(lText + WHITESPACE);
                 if (!lText.equals(lTarget))
-                    sb.append(lTarget + " ");
+                    sb.append(lTarget + WHITESPACE);
                 break;
             case EXTERNAL:
-                sb.append(l.getText() + " ");
+                sb.append(l.getText() + WHITESPACE);
                 break;
             case IMAGE:
             case AUDIO:
@@ -414,7 +419,7 @@ public class SelectiveAccessHandler
         result.append("<cit");
         if (em != null)
             for (CIT key : em.keySet())
-                result.append(" " + key.toString() + "=\"" + em.get(key) + "\"");
+                result.append(WHITESPACE + key.toString() + "=\"" + em.get(key) + "\"");
         result.append("/>");
         return result.toString();
     }

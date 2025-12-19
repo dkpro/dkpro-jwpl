@@ -73,7 +73,7 @@ public class SQLFileWriter
     private final boolean MODE_STATISTICAL_OUTPUT;
 
     /**
-     * Name of the related sql consumer - used as prefix for the output filenames
+     * Name of the related SQL consumer - used as prefix for the output filenames
      */
     private String outputName;
 
@@ -120,7 +120,7 @@ public class SQLFileWriter
         WIKIPEDIA_ENCODING = (String) config
                 .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
-        // Create sql file
+        // Create SQL file
         fileCounter = 0;
     }
 
@@ -128,7 +128,7 @@ public class SQLFileWriter
      * Creates a new SQLFileWriter object.
      *
      * @param outputName
-     *            Name of the sql consumer
+     *            Name of the SQL consumer
      * @param logger
      *            Reference to a logger
      * @throws ConfigurationException
@@ -162,7 +162,7 @@ public class SQLFileWriter
     }
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -185,7 +185,7 @@ public class SQLFileWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

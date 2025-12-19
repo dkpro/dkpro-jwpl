@@ -50,7 +50,7 @@ public class TimedSQLDatabaseWriter
     private long processingTimeSQL;
 
     /**
-     * Reference to the sql encoder
+     * Reference to the SQL encoder
      */
     private TimedSQLEncoder sqlEncoder;
 
@@ -75,7 +75,7 @@ public class TimedSQLDatabaseWriter
     /*--------------------------------------------------------------------------*/
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -102,7 +102,7 @@ public class TimedSQLDatabaseWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

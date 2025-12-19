@@ -22,12 +22,12 @@ import java.util.List;
 
 /**
  * A Section consists at first of a Title. In MediaWiki a Title can contain e.g. Links, Images or
- * ItalicText. Therefore a simple ContentElement is used as Section Title.<br>
- * The next Point is the hirachical Section Level, which every Section has.<br>
+ * ItalicText. Therefore, a simple ContentElement is used as Section Title.<br>
+ * The next Point is the hierarchical Section Level, which every Section has.<br>
  * <br>
  * Further, a Section can contain other Sections or Content, but not both. This is a difference
- * between the API and MediaWiki. In return, the accsess to the Elements is possible with just a few
- * functions. This fact makes the accest to the provieded Structures very simple.<br>
+ * between the API and MediaWiki. In return, the access to the Elements is possible with just a few
+ * functions. This fact makes the access to the provided Structures very simple.<br>
  * <br>
  * These structure requirements are implemented as SectionContainer an SectionContent.
  */
@@ -56,7 +56,7 @@ public abstract class Section
     }
 
     /**
-     * Retruns the hirachical Level of this Section.
+     * @return the hierarchical Level of this Section.
      */
     public int getLevel()
     {
@@ -92,8 +92,8 @@ public abstract class Section
     }
 
     /**
-     * Returns a ContentElement representing the content, originally given as MediaWiki SourcCode,
-     * beween one ore more equality chars at the beginning of a line. This is known as Title.
+     * @return a ContentElement representing the content, originally given as MediaWiki source code,
+     * between one or more equality chars at the beginning of a line. This is known as Title.
      */
     public ContentElement getTitleElement()
     {
@@ -101,72 +101,72 @@ public abstract class Section
     }
 
     /**
-     * Return a List with all Content of any Type in Order of appearance.
+     * @return a List with all Content of any Type in Order of appearance.
      */
     public abstract List<Content> getContentList();
 
     /**
-     * Returns the Number of Paragraphs in this Section.
+     * @return the Number of Paragraphs in this Section.
      */
     public abstract int nrOfParagraphs();
 
     /**
-     * Returns the i-th Paragraph of this Section.
+     * @return the i-th Paragraph of this Section.
      */
     public abstract Paragraph getParagraph(int i);
 
     /**
-     * Retuns a List of all Paragraphs of this Section.
+     * @return a List of all Paragraphs of this Section.
      */
     public abstract List<Paragraph> getParagraphs();
 
     /**
-     * Returns the Number of Tables of this Section.
+     * @return the Number of Tables of this Section.
      */
     public abstract int nrOfTables();
 
     /**
-     * Returns the i-th Table of this Section.
+     * @return the i-th Table of this Section.
      */
     public abstract Table getTable(int i);
 
     /**
-     * Returns a List of all Tables of this Section.
+     * @return a List of all Tables of this Section.
      */
     public abstract List<Table> getTables();
 
     /**
-     * Returns the Number of NestedLists of this Section.
+     * @return the Number of NestedLists of this Section.
      */
     public abstract int nrOfNestedLists();
 
     /**
-     * Returns the i-th NestedList of this Section as NestedListContainer.
+     * @return the i-th NestedList of this Section as NestedListContainer.
      */
     public abstract NestedListContainer getNestedList(int i);
 
     /**
-     * Returns a List of all NestedLists of this Section.
+     * @return a List of all NestedLists of this Section.
      */
     public abstract List<NestedListContainer> getNestedLists();
 
     /**
-     * Returns the Number of DefinitionLists of this Section.
+     * @return the Number of DefinitionLists of this Section.
      */
     public abstract int nrOfDefinitionLists();
 
     /**
-     * Returns the i-th Table of this Section.
+     * @return the i-th Table of this Section.
      */
     public abstract DefinitionList getDefinitionList(int i);
 
     /**
-     * Returns a List of all DefinitionLists of this Section.
+     * @return a List of all DefinitionLists of this Section.
      */
     public abstract List<DefinitionList> getDefinitionLists();
 
     /**
-     * Returns a sequence of Chars followed by ZERO. For easy handling the result is of the Type
+     * @return a sequence of Chars followed by ZERO. For easy handling the result is of the Type
      * String.
      */
     public abstract String toString();

@@ -57,7 +57,7 @@ public class Title
         }
 
         /*
-         * Do not convert first character to upper case. We perform case insensitive querying
+         * Do not convert first character to upper case. We perform case-insensitive querying
          */
         if (titleText.substring(0, 1).toLowerCase().equals(titleText.substring(0, 1))) {
             this.rawTitleText = titleText.substring(0, 1).toUpperCase()

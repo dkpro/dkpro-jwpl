@@ -34,7 +34,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.consumer.article.ArticleReaderInt
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
 
 /**
- * This factory class contains methods to access a input medium.
+ * This factory class contains methods to access an input medium.
  * <p>
  * TODO: Add support for alternative commandlines
  */
@@ -137,10 +137,10 @@ public class InputFactory
     }
 
     /**
-     * Creates a reader for the xml file.
+     * Creates a reader for the XML file.
      *
      * @param archivePath
-     *            path to the xml file
+     *            path to the XML file
      * @return InputStreamReader
      */
     private static InputStreamReader readXMLFile(final String archivePath)

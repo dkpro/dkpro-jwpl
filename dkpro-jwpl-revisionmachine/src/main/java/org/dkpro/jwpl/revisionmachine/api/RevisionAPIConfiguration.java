@@ -28,7 +28,7 @@ public class RevisionAPIConfiguration
 {
 
     /**
-     * Number of maximum size of an result set
+     * Number of maximum size of a {@link java.sql.ResultSet result set}.
      */
     private int bufferSize;
 
@@ -43,8 +43,8 @@ public class RevisionAPIConfiguration
     private long chronoStorageSpace;
 
     /**
-     * MAX_ALLOWED_PACKET - parameter of the MySQL Server This value indicates the maximum size of
-     * an sql query.
+     * MAX_ALLOWED_PACKET - parameter of the MySQL Server; this value indicates the maximum size of
+     * an SQL query.
      */
     private long maxAllowedPacket;
 

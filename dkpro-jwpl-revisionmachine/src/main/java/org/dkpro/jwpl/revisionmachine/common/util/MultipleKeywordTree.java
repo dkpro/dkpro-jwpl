@@ -79,7 +79,7 @@ public class MultipleKeywordTree<V>
      *
      * @param c
      *            character
-     * @return TRUE if successor nodes could be identified FALSE otherwise
+     * @return TRUE if successor nodes could be identified {@code false} otherwise
      */
     public boolean check(final char c)
     {

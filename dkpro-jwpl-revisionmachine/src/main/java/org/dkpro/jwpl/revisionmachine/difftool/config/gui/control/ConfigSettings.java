@@ -175,7 +175,7 @@ public class ConfigSettings
     }
 
     /**
-     * Applies the default single thread configuration of the DiffTool to this settings.
+     * Applies the default single thread configuration of the DiffTool to these settings.
      */
     public void defaultConfiguration()
     {

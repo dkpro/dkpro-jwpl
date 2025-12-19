@@ -25,7 +25,7 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 
 /**
- * Displays informations about the inner structure of a page.
+ * Displays information about the inner structure of a page.
  */
 public class T1_SimpleParserDemo
 {

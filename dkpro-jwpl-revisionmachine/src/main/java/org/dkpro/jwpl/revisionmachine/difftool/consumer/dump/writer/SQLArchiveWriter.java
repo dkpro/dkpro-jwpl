@@ -74,7 +74,7 @@ public class SQLArchiveWriter
     private OutputStream output;
 
     /**
-     * Name of the related sql consumer - used as prefix for the output filenames
+     * Name of the related SQL consumer - used as prefix for the output filenames
      */
     private String outputName;
 
@@ -119,7 +119,7 @@ public class SQLArchiveWriter
         WIKIPEDIA_ENCODING = (String) config
                 .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
-        // Create sql file
+        // Create SQL file
         counter = 0;
     }
 
@@ -127,7 +127,7 @@ public class SQLArchiveWriter
      * Creates a new SQLArchiveWriter object.
      *
      * @param outputName
-     *            Name of the sql consumer
+     *            Name of the SQL consumer
      * @param logger
      *            Reference to a logger
      * @throws ConfigurationException
@@ -162,7 +162,7 @@ public class SQLArchiveWriter
     }
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -185,7 +185,7 @@ public class SQLArchiveWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

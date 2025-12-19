@@ -249,7 +249,7 @@ public class ChronoRevisionIterator
                     int currentPK = Integer.parseInt(fullRevisionPKs.substring(0, index));
 
                     // TODO CHECK! -2 instead of -1 gets rid of the extra
-                    // resivsion from the next article
+                    // revision from the next article
                     this.revisionIterator = new RevisionIterator(config, currentPK,
                             currentPK + maxRevision - 2, connection);
 

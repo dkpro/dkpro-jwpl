@@ -224,7 +224,7 @@ public class Wikipedia
     }
 
     /**
-     * Gets the page ids for a given title with case insensitive matching.<br>
+     * Gets the page ids for a given title with case-insensitive matching.<br>
      *
      * @param title The title of the page.
      * @return The ids of the pages with the given title.
@@ -595,7 +595,7 @@ public class Wikipedia
      * implementation details. Get a set with all {@code pageIDs}. Returning all page objects is
      * much too expensive. Does not include redirects, as they are only pointers to real pages.
      * <p>
-     * As ids can be useful for several application (e.g. in combination with the RevisionMachine,
+     * As ids can be useful for several application (e.g. in combination with the RevisionMachine),
      * they have been made publicly available via {@link #getPageIds()}.
      *
      * @return A set with all {@code pageIDs}. Returning all pages is much to expensive.
@@ -641,8 +641,8 @@ public class Wikipedia
     }
 
     /**
-     * Get all titles including disambiguation pages and redirects). Returns only an iterable, as a
-     * collection may not fit into memory for a large wikipedia.
+     * Get all titles (including disambiguation pages and redirects). Returns only an iterable, as a
+     * collection may not fit into memory for a large Wikipedia instance.
      *
      * @return An iterable of all article pages.
      */
@@ -790,7 +790,7 @@ public class Wikipedia
     }
 
     /**
-     * @return A {@link MetaData} object containing all meta data about this instance of Wikipedia.
+     * @return A {@link MetaData} object containing all metadata about this instance of Wikipedia.
      */
     public MetaData getMetaData() {
         return this.metaData;

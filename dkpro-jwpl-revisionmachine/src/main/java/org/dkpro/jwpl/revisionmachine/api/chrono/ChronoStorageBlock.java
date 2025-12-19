@@ -26,7 +26,7 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
  * <p>
  * - links to the previous and next index block an index reference describes the chronological order
  * <p>
- * - links to the previous and next counter block an counter reference describes the normal order
+ * - links to the previous and next counter block a counter reference describes the normal order
  */
 public class ChronoStorageBlock
 {

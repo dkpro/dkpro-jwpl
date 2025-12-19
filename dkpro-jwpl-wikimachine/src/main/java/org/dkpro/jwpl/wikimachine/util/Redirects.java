@@ -35,6 +35,8 @@ public class Redirects
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
+    private static final Pattern PATTERN = Pattern.compile("\\[\\[\\s*(.+?)\\s*]]");
+
     private Redirects()
     {
     }
@@ -71,7 +73,7 @@ public class Redirects
      *
      * @param text
      *            The text fragment to check. Must not be {@code null}.
-     * @return {@code true} if text starts with #REDIRECT, false otherwise
+     * @return {@code true} if text starts with #REDIRECT, {@code false} otherwise
      */
     public static boolean isRedirect(String text)
     {
@@ -96,9 +98,7 @@ public class Redirects
     {
         String redirectString = null;
         try {
-            String regex = "\\[\\[\\s*(.+?)\\s*]]";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(pageText);
+            Matcher matcher = PATTERN.matcher(pageText);
 
             // group 0 is the whole match
             if (matcher.find()) {

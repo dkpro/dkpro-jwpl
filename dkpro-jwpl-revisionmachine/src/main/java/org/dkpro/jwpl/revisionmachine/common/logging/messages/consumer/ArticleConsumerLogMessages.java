@@ -54,7 +54,7 @@ public final class ArticleConsumerLogMessages
     }
 
     /**
-     * Logs the reading of an revision task.
+     * Logs the reading of a revision task.
      *
      * @param logger
      *            reference to the logger
@@ -72,7 +72,7 @@ public final class ArticleConsumerLogMessages
     }
 
     /**
-     * Logs the reading of an revision task.
+     * Logs the reading of a revision task.
      *
      * @param logger
      *            reference to the logger

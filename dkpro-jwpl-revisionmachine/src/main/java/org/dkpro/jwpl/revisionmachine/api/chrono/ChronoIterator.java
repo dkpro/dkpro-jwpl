@@ -221,12 +221,12 @@ public class ChronoIterator
         Revision revision;
         if (chronoStorage.isTop(revisionIndex)) {
 
-            // If this is the case the revision will removed from the storage
+            // If this is the case the revision will be removed from the storage
             return chronoStorage.remove();
         }
 
         // Otherwise the chronological order counter will be mapped to the
-        // revsision counter
+        // revision counter
         int revCount = revisionIndex;
         if (mappingStorage.containsKey(revisionIndex)) {
             revCount = mappingStorage.get(revisionIndex);

@@ -174,7 +174,7 @@ public class ArticleInformation
     }
 
     /**
-     * Returns the size of the article after the sql encoding.
+     * Returns the size of the article after the SQL encoding.
      *
      * @return size after encoding
      */
@@ -244,7 +244,7 @@ public class ArticleInformation
     }
 
     /**
-     * Returns the time used for the sql encoding.
+     * Returns the time used for the SQL encoding.
      *
      * @return processing time encoding
      */
@@ -329,7 +329,7 @@ public class ArticleInformation
     }
 
     /**
-     * Sets the size of the article after the sql encoding.
+     * Sets the size of the article after the SQL encoding.
      *
      * @param encodedSQLSize
      *            size after encoding
@@ -406,7 +406,7 @@ public class ArticleInformation
     }
 
     /**
-     * Sets the time used for the sql encoding.
+     * Sets the time used for the SQL encoding.
      *
      * @param processingTimeSQL
      *            processing time encoding

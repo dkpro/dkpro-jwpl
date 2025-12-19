@@ -67,7 +67,7 @@ public class SingleKeywordTree<V>
      *
      * @param c
      *            character
-     * @return TRUE if the current node contains a keyword FALSE otherwise
+     * @return {@code true} if the current node contains a keyword {@code false} otherwise
      */
     public boolean check(final char c)
     {

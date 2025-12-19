@@ -27,7 +27,7 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 
 /**
- * This class writes the output of the index generator to an sql file.
+ * This class writes the output of the index generator to an SQL file.
  */
 public class SQLFileWriter
     implements IndexWriterInterface
@@ -66,7 +66,7 @@ public class SQLFileWriter
                 + "PRIMARY KEY(ArticleID));");
         writer.write("\r\n");
 
-        // disable keys now - reenable at the end of the sql file
+        // disable keys now - re-enable at the end of the SQL file
         writer.write("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_revisionID DISABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_chronological DISABLE KEYS;\r\n");

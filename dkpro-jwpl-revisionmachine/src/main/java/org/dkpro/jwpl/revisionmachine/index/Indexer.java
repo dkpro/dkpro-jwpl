@@ -103,7 +103,7 @@ public class Indexer
     private final Connection connection = null;
 
     /**
-     * (Constructor) Creates a Index object.
+     * (Constructor) Creates an Index object.
      *
      * @param config
      *            Reference to the configuration
@@ -251,7 +251,7 @@ public class Indexer
     }
 
     /**
-     * Finalizes the indices and sends the rest of the data to the output. Afterwards the database
+     * Finalizes the indices and sends the rest of the data to the output. Afterward, the database
      * connection will be closed.
      *
      * @throws WikiApiException

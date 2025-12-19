@@ -51,10 +51,9 @@ public class TimeMachineFiles
     }
 
     /**
-     * Add a sub-directory called "timestamp" to the current output directory
+     * Add a subdirectory called "timestamp" to the current output directory
      *
-     * @param timestamp
-     *            - name of a new sub-directory
+     * @param timestamp Corresponds to the name of a new subdirectory.
      */
     public void setTimestamp(Timestamp timestamp)
     {

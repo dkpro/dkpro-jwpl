@@ -25,7 +25,6 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 /**
  * This is a little demo, to show how the parsedpage and parsedpage.parser package works.
  */
-
 public class T3_LinkContexts
 {
 

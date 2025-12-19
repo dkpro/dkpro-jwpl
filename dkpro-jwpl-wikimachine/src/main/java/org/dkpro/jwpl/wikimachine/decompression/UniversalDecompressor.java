@@ -233,7 +233,7 @@ public class UniversalDecompressor
      * decompressor.xml. Thereby
      * <ul>
      * <li>key is the archive extension</li>
-     * <li>value is the external command. The archive file should be specified with an place holder
+     * <li>value is the external command. The archive file should be specified with a place holder
      * {@link UniversalDecompressor#FILEPLACEHOLDER}</li>
      * </ul>
      * External decompression utilities are in preference to the internal. If there is nether

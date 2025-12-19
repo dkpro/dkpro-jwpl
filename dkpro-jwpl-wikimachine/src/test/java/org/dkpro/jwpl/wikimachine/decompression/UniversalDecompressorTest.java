@@ -56,7 +56,7 @@ public class UniversalDecompressorTest {
     public void testInitializeWithExternalConfig(String input) throws IOException {
         Path defaultTestConfig = Path.of("src/test/resources/" + input);
         Path externalConfig = tmpDir.resolve(input);
-        /* Copy project local xml config file to external tmp path */
+        /* Copy project local XML config file to external tmp path */
         Files.copy(defaultTestConfig, externalConfig, StandardCopyOption.REPLACE_EXISTING);
         UniversalDecompressor udc = new UniversalDecompressor(externalConfig);
         assertNotNull(udc);

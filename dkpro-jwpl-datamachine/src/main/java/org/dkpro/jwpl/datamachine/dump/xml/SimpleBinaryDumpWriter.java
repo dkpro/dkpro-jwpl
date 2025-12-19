@@ -92,7 +92,7 @@ public class SimpleBinaryDumpWriter
         throws IOException
     {
         Path binaryOutputFilePath = Paths.get(filePath);
-        // JavaDoc says:
+        // Javadoc says:
         // "truncate and overwrite an existing file, or create the file if it doesn't initially
         // exist"
         OutputStream fileOutputStream = Files.newOutputStream(binaryOutputFilePath);

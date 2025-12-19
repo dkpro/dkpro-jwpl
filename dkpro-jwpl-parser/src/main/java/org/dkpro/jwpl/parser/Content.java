@@ -47,7 +47,7 @@ public interface Content
          */
         NOWIKI,
         /**
-         * The begin and end position of an unknown Tag defined by &lt; and &gt;
+         * The start and end position of an unknown Tag defined by &lt; and &gt;
          */
         TAG,
     }

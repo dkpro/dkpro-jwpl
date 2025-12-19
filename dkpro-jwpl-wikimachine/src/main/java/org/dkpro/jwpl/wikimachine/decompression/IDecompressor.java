@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Uses a archive file path and returns an {@link InputStream}.
+ * Uses an archive file path and returns an {@link InputStream}.
  */
 public interface IDecompressor
 {

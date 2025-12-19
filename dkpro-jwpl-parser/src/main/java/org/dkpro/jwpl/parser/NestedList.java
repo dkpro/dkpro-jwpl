@@ -18,10 +18,10 @@
 package org.dkpro.jwpl.parser;
 
 /**
- * A NestedList can contain ContentElements or other NestedLists, for this purpose and to avoid a
- * improper use, this interface has been created.<br>
+ * A NestedList can contain ContentElements or other {@link NestedList nested lists},
+ * for this purpose and to avoid an improper use, this interface has been created.
  * <p>
- * Now, we got a NestedListContainer wich contains NestedLists<br>
+ * Now, we got a NestedListContainer which contains NestedLists.<br>
  * A NestedList can be a NestedListContainer or a NestedListElement.
  */
 public interface NestedList

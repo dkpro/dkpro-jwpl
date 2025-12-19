@@ -24,7 +24,7 @@ public enum OutputType
 {
 
     /**
-     * The output will consist of a single or multiple sql files
+     * The output will consist of a single or multiple SQL files
      */
     UNCOMPRESSED,
 

@@ -64,7 +64,7 @@ public class CycleHandler
 
     /**
      * The JGraphT cycle detection seems not to find all cycles. Thus, I wrote my own cycle
-     * detection. It is a colored DFS and should find all (viscious :) cycles.
+     * detection. It is a colored DFS and should find all (vicious) cycles.
      *
      * @return True, if the graph contains a cycle.
      * @throws WikiApiException

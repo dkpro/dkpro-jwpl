@@ -33,7 +33,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformation;
 
 /**
- * The WikipediaXMLWriter writes xml representations of task objects to an output file.
+ * The WikipediaXMLWriter writes XML representations of task objects to an output file.
  * <p>
  * This class is used for debug purposes.
  */
@@ -60,7 +60,7 @@ public class WikipediaXMLWriter
     }
 
     /**
-     * Writes the diff task to the output using wikipedia xml notation.
+     * Writes the diff task to the output using Wikipedia XML notation.
      *
      * @param diff
      *            Reference to a diff task
@@ -74,7 +74,7 @@ public class WikipediaXMLWriter
 
     /**
      * Writes a part of the diff task, starting with the given element, to the output using
-     * wikipedia xml notation.
+     * Wikipedia XML notation.
      *
      * @param diff
      *            Reference to a diff task
@@ -138,7 +138,7 @@ public class WikipediaXMLWriter
     }
 
     /**
-     * Writes the diff task to the output using an xml representation of the diff information.
+     * Writes the diff task to the output using an XML representation of the diff information.
      *
      * @param diff
      *            Reference to a diff task
@@ -228,7 +228,7 @@ public class WikipediaXMLWriter
     }
 
     /**
-     * Writes the revision task to the output using wikipedia xml notation.
+     * Writes the revision task to the output using Wikipedia XML notation.
      *
      * @param task
      *            Reference to a revision task

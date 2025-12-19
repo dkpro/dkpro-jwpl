@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A Parser for the sql file that defines the table categorylinks.
+ * A Parser for the SQL file that defines the table categorylinks.
  * <p>
  * A fix for Issue 102 has been provided by Google Code user astronautguo
  */
@@ -31,7 +31,7 @@ public class CategorylinksParser
 
     /**
      * The fields of the table categorylinks.<br>
-     * These fields are updated on each readen value.
+     * These fields are updated on each read value.
      */
     private int clFrom;
     private String clTo;

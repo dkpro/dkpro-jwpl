@@ -1344,7 +1344,7 @@ public class WikipediaTemplateInfo
 
                     if (type == RevisionPairType.deleteTemplate) {
                         // We want revs in which a template has just been removed.
-                        // Check succeeding revision. If template is not present there any more,
+                        // Check succeeding revision. If template is not present there anymore,
                         // it has been deleted. If so, add pair to list.
                         try {
                             // TODO retrieve succeeding revId without creating Revision object

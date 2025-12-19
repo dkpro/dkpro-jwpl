@@ -58,8 +58,8 @@ public class UTFDataOutputStream
     }
 
     /**
-     * The UTF-8 encoding uses sequences of 1, 2, or 3 bytes per character. With he maximal length
-     * of the fragment we want to ensure, that there are no overflow of 65536 byte sized buffer
+     * The UTF-8 encoding uses sequences of 1, 2, or 3 bytes per character. With the maximal length
+     * of the fragment we want to ensure, that there is no overflow of 6the 5536 byte sized buffer
      *
      * @param str
      *            String to be written in the output stream

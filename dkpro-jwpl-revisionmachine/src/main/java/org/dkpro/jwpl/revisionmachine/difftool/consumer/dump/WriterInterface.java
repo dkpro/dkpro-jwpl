@@ -41,7 +41,7 @@ public interface WriterInterface
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     void process(final Task<Diff> task)
         throws ConfigurationException, IOException, SQLConsumerException;

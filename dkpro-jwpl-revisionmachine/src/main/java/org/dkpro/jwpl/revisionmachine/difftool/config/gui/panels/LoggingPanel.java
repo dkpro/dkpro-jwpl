@@ -120,7 +120,7 @@ public class LoggingPanel
     // --------------------------------------------------------------------------//
 
     /**
-     * Reads the configuration parameters described in the panel from the ConfigSettings and and
+     * Reads the configuration parameters described in the panel from the ConfigSettings and
      * sets the contained values.
      *
      * @param config
@@ -146,8 +146,8 @@ public class LoggingPanel
     }
 
     /**
-     * Adds the xml description of the panels content to the StringBuilder. Errors which occur
-     * during the xml transformation will be added to the ConfigVerification.
+     * Adds the XML description of the panels content to the StringBuilder. Errors which occur
+     * during the XML transformation will be added to the ConfigVerification.
      *
      * @param builder
      *            Reference to a StringBuilder object

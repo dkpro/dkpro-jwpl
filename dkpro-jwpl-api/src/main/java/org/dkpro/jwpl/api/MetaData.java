@@ -36,7 +36,7 @@ public class MetaData
     /**
      * Instantiates a new {@link MetaData} object.
      *
-     * @param wiki A valid {@link Wikipedia} reference. Must no be {@code null}.
+     * @param wiki A valid {@link Wikipedia} reference. Must not be {@code null}.
      */
     protected MetaData(Wikipedia wiki)
     {

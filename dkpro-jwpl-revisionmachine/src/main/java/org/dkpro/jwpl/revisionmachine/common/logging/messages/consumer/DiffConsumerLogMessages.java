@@ -137,7 +137,7 @@ public class DiffConsumerLogMessages
     }
 
     /**
-     * Logs the start of the processing of an revision task.
+     * Logs the start of the processing of a revision task.
      *
      * @param logger
      *            reference to the logger
