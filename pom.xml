@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.dkpro</groupId>
     <artifactId>dkpro-parent-pom</artifactId>
-    <version>33</version>
+    <version>34</version>
   </parent>
   <packaging>pom</packaging>
   <name>JWPL</name>
@@ -445,25 +445,25 @@
                   <goal>check</goal>
                 </goals>
                 <configuration>
-                  <excludes>
+                  <inputExcludes>
                     <!-- release generated artifact -->
-                    <exclude>release.properties</exclude>
-                    <exclude>CHANGES</exclude>
-                    <exclude>CONTRIBUTING.md</exclude>
-                    <exclude>CONTRIBUTORS.txt</exclude>
-                    <exclude>LICENSE.txt</exclude>
-                    <exclude>NOTICE</exclude>
-                    <exclude>NOTICE.txt</exclude>
-                    <exclude>README.md</exclude>
-                    <exclude>README</exclude>
-                    <exclude>installEclipseSettings.sh</exclude>
-                    <exclude>db/**/*</exclude>
-                    <exclude>src/main/java/org/dkpro/jwpl/tutorial/parser/DarmstadtWikipediaArticle.txt</exclude>
-                    <exclude>src/main/resources/**/*</exclude>
-                    <exclude>src/test/resources/**/*</exclude>
-                    <exclude>.activate_rat-check</exclude>
-                    <exclude>.github/**/*</exclude>
-                  </excludes>
+                    <inputExclude>release.properties</inputExclude>
+                    <inputExclude>CHANGES</inputExclude>
+                    <inputExclude>CONTRIBUTING.md</inputExclude>
+                    <inputExclude>CONTRIBUTORS.txt</inputExclude>
+                    <inputExclude>LICENSE.txt</inputExclude>
+                    <inputExclude>NOTICE</inputExclude>
+                    <inputExclude>NOTICE.txt</inputExclude>
+                    <inputExclude>README.md</inputExclude>
+                    <inputExclude>README</inputExclude>
+                    <inputExclude>installEclipseSettings.sh</inputExclude>
+                    <inputExclude>db/**/*</inputExclude>
+                    <inputExclude>src/main/java/org/dkpro/jwpl/tutorial/parser/DarmstadtWikipediaArticle.txt</inputExclude>
+                    <inputExclude>src/main/resources/**/*</inputExclude>
+                    <inputExclude>src/test/resources/**/*</inputExclude>
+                    <inputExclude>.activate_rat-check</inputExclude>
+                    <inputExclude>.github/**/*</inputExclude>
+                  </inputExcludes>
                 </configuration>
               </execution>
             </executions>
