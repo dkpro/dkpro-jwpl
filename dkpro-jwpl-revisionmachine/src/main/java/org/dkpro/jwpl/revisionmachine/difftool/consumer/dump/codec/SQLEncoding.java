@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used to store the sql statements.
+ * This class is used to store the SQL statements.
  */
 public class SQLEncoding
 {

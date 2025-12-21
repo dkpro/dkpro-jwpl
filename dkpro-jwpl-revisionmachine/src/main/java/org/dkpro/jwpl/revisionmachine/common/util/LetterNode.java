@@ -49,7 +49,7 @@ public class LetterNode<V>
     private V value;
 
     /**
-     * Creates a empty LetterNode.
+     * Creates an empty LetterNode.
      */
     public LetterNode()
     {

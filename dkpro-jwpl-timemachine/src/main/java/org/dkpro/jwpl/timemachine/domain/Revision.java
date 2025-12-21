@@ -28,7 +28,7 @@ public class Revision
      */
     private static final Long TIME_ZERO = 946724195435L;
     /**
-     * We measure the time not from 1th January 1900 but from 1th January 2000
+     * We measure the time not from 1st January 1900 but from 1st January 2000
      */
     private static final Integer MS_IN_SEC = 1000;
 
@@ -39,7 +39,7 @@ public class Revision
 
     /**
      * Compress time from long- to the integer-format: reduce the resolution to "seconds" and zero
-     * time to 1th January 2000
+     * time to 1st January 2000.
      *
      * @param date
      *            date/time in the long format

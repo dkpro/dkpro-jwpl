@@ -96,7 +96,7 @@ public class IndexIterator
     /**
      * Queries the database for more revision information.
      *
-     * @return TRUE if the result set contains elements FALSE otherwise
+     * @return {@code true} if the result set contains elements {@code false} otherwise
      * @throws SQLException
      *             if an error occurs while accessing the database
      */

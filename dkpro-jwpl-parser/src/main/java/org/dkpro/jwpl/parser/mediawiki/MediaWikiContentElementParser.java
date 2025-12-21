@@ -20,8 +20,8 @@ package org.dkpro.jwpl.parser.mediawiki;
 import org.dkpro.jwpl.parser.ContentElement;
 
 /**
- * This Interface makes it possible to parse a single content element. Some TemplateParses might
- * uses this Feauture.
+ * This interface makes it possible to parse a single content element.
+ * Some TemplateParses might use this feature.
  */
 interface MediaWikiContentElementParser
 {

@@ -27,17 +27,17 @@ public class RevisionCodecData
 {
 
     /**
-     * Maximum size of a S block
+     * Maximum size of an S block
      */
     private int blocksize_S;
 
     /**
-     * Maximum size of a E block
+     * Maximum size of an E block
      */
     private int blocksize_E;
 
     /**
-     * Maximum size of an B block
+     * Maximum size of a B block
      */
     private int blocksize_B;
 
@@ -77,7 +77,7 @@ public class RevisionCodecData
     private int countT;
 
     /**
-     * Whether the information has already been converted or not
+     * Whether the information has already been converted or not.
      */
     private boolean converted;
 
@@ -213,8 +213,8 @@ public class RevisionCodecData
     }
 
     /**
-     * Returns the number of bits used to encode a E block. This method is intended to be used after
-     * the conversion.
+     * Returns the number of bits used to encode an E block.
+     * This method is intended to be used after the conversion.
      *
      * @return block bit-length
      */
@@ -224,8 +224,8 @@ public class RevisionCodecData
     }
 
     /**
-     * Returns the number of bits used to encode a L block. This method is intended to be used after
-     * the conversion.
+     * Returns the number of bits used to encode an L block.
+     * This method is intended to be used after the conversion.
      *
      * @return block bit-length
      */
@@ -235,8 +235,8 @@ public class RevisionCodecData
     }
 
     /**
-     * Returns the number of bits used to encode a S block. This method is intended to be used after
-     * the conversion.
+     * Returns the number of bits used to encode an S block.
+     * This method is intended to be used after the conversion.
      *
      * @return block bit-length
      */

@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class generates data to write into sql dump file
+ * This class generates data to write into SQL dump file
  */
 public class WikipediaTemplateInfoDumpWriter
 {
@@ -56,14 +56,14 @@ public class WikipediaTemplateInfoDumpWriter
     }
 
     /**
-     * Generate sql statement for data defined in {@code dataSourceToUse} and for table in
+     * Generate SQL statement for data defined in {@code dataSourceToUse} and for table in
      * {@code tableToWrite}
      *
      * @param dataSourceToUse
      *            source to use for string generation
      * @param tableToWrite
      *            table to use to store data
-     * @return generated sql string
+     * @return generated SQL string
      */
     private String generateSQLStatementForDataInTable(Map<String, Set<Integer>> dataSourceToUse,
             String tableToWrite)
@@ -130,7 +130,7 @@ public class WikipediaTemplateInfoDumpWriter
                 GeneratorConstants.TABLE_TPLID_PAGEID));
 
         if (!tableExists) {
-            // Create index statement if table does not exists
+            // Create index statement if table does not exist
             output.append("CREATE INDEX pageIdx ON " + GeneratorConstants.TABLE_TPLID_PAGEID
                     + "(pageId);");
             output.append("\r\n");
@@ -141,10 +141,10 @@ public class WikipediaTemplateInfoDumpWriter
     }
 
     /**
-     * Generate sql statement for table template id -> template name
+     * Generate SQL statement for table template id -> template name
      *
      * @param tableExists
-     *            if this table does not exists create index
+     *            if this table does not exist create index
      * @return sql statement
      */
     private String generateTemplateIdSQLStatement(boolean tableExists)
@@ -166,13 +166,13 @@ public class WikipediaTemplateInfoDumpWriter
     }
 
     /**
-     * Generate sql statement for table template id -> revision id
+     * Generate SQL statement for table template id -> revision id
      *
      * @param tableExists
      *            if table does not exist create index for this table
      * @param dataSourceToUse
-     *            data source to use for sql statement generation
-     * @return sql statement string
+     *            data source to use for SQL statement generation
+     * @return The SQL statement string
      */
     private String generateRevisionSQLStatement(boolean tableExists,
             Map<String, Set<Integer>> dataSourceToUse)
@@ -199,7 +199,7 @@ public class WikipediaTemplateInfoDumpWriter
     }
 
     /**
-     * Generate and write sql statements to output file
+     * Generate and write SQL statements to output file.
      *
      * @param revTableExists
      *            if revision table does not exist -&gt; create index

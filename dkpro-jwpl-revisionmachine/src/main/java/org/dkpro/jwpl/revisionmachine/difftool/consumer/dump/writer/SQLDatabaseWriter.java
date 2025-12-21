@@ -58,7 +58,7 @@ public class SQLDatabaseWriter
     protected final Logger logger;
 
     /**
-     * Reference to the sql encoder
+     * Reference to the SQL encoder
      */
     protected SQLEncoderInterface sqlEncoder;
 
@@ -114,7 +114,7 @@ public class SQLDatabaseWriter
     }
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -136,7 +136,7 @@ public class SQLDatabaseWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)
@@ -183,7 +183,7 @@ public class SQLDatabaseWriter
     }
 
     /**
-     * Retrieves the encoded sql orders and executes them.
+     * Retrieves the encoded SQL orders and executes them.
      *
      * @throws SQLException
      *             if an error occurred while accessing the database

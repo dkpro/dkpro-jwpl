@@ -29,12 +29,12 @@ public enum TaskTypes
     DUMMY,
 
     /**
-     * if this task is received from a consumer, it will shutdown afterwards
+     * if this task is received from a consumer, it will shut down afterwards
      */
     ENDTASK,
 
     /**
-     * if the article id is black listed
+     * if the article id is blacklisted
      */
     BANNED_TASK,
 

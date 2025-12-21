@@ -47,7 +47,7 @@ public class ArticleIndex
     }
 
     /**
-     * Adds the information for an new entry in the article index.
+     * Adds the information for a new entry in the article index.
      *
      * @param currentArticleID
      *            ID of the currently used article

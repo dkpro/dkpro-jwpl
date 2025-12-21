@@ -42,7 +42,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.TaskTypes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
- * This class writes the output to a data file (not an sql file)
+ * This class writes the output to a data file (not an SQL file)
  */
 public class DataFileWriter
     implements WriterInterface
@@ -65,7 +65,7 @@ public class DataFileWriter
     private final boolean MODE_STATISTICAL_OUTPUT;
 
     /**
-     * Name of the related sql consumer - used as prefix for the output filenames
+     * Name of the related SQL consumer - used as prefix for the output filenames
      */
     private String outputName;
 
@@ -112,7 +112,7 @@ public class DataFileWriter
         WIKIPEDIA_ENCODING = (String) config
                 .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
 
-        // Create sql file
+        // Create SQL file
         fileCounter = 0;
     }
 
@@ -120,7 +120,7 @@ public class DataFileWriter
      * Creates a new SQLFileWriter object.
      *
      * @param outputName
-     *            Name of the sql consumer
+     *            Name of the SQL consumer
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
      * @throws LoggingException
@@ -150,7 +150,7 @@ public class DataFileWriter
     }
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -173,7 +173,7 @@ public class DataFileWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

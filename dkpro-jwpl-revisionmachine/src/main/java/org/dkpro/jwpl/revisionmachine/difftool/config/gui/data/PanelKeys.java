@@ -44,7 +44,7 @@ public enum PanelKeys
     PANEL_OUTPUT,
 
     /**
-     * Key for the sql panel
+     * Key for the SQL panel
      */
     PANEL_SQL,
 

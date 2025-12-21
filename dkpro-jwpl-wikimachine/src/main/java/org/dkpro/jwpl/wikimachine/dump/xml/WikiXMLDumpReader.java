@@ -22,7 +22,7 @@ import java.io.InputStream;
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 
 /**
- * Universal XML Dump Parser. Set of start and end xml tags comply with XmlDumpReader.
+ * Universal XML Dump Parser. Set of start and end XML tags comply with XmlDumpReader.
  */
 public class WikiXMLDumpReader
     extends AbstractXmlDumpReader

@@ -58,7 +58,7 @@ abstract class SQLFileParser
     }
 
     /**
-     * Skip the sql statements for table creation and the prefix <br>
+     * Skip the SQL statements for table creation and the prefix <br>
      * INSERT INTO TABLE .... VALUES for values insertion.<br>
      * Read tokens until the word 'VALUES' is reached or the EOF.
      *
@@ -70,7 +70,7 @@ abstract class SQLFileParser
         while (true) {
             st.nextToken();
             if (null != st.sval && st.sval.equalsIgnoreCase("VALUES")) {
-                // the next token is the begin of a value
+                // the next token is the start of a value
                 break;
             }
             if (st.ttype == StreamTokenizer.TT_EOF) {
@@ -90,7 +90,7 @@ abstract class SQLFileParser
      * This method must be implemented by the PagelinksParser and the CategorylinksParser<br>
      * classes.
      *
-     * @return Returns true if a new value is now available und false otherwise.
+     * @return Returns true if a new value is now available und {@code false} otherwise.
      * @throws IOException
      *             Thrown if IO errors occurred.
      */

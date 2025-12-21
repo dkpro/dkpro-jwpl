@@ -39,7 +39,7 @@ public class NestedListContainer
     }
 
     /**
-     * Returns if the NestedList is a numbered or a unnumbered/pointed NestedList
+     * @return {@code true} if the NestedList is a numbered or an unnumbered/pointed NestedList
      */
     public boolean isNumbered()
     {

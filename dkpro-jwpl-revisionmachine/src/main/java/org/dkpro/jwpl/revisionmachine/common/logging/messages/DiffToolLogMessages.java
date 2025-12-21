@@ -63,9 +63,9 @@ public class DiffToolLogMessages
      * @param diffConsumer
      *            number of active diff consumers
      * @param sqlConsumer
-     *            number of active sql consumers
+     *            number of active SQL consumers
      * @param archiveState
-     *            state of the arcive producer
+     *            state of the archive producer
      * @param articleState
      *            state of the article producer
      * @param diffState

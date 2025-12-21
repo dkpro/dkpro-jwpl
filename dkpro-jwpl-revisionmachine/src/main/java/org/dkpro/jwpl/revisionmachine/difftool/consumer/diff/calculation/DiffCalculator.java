@@ -698,7 +698,7 @@ public class DiffCalculator
      *            previous revision
      * @param index
      *            start index previous revision
-     * @return TRUE if a legal substring was found FALSE otherwise
+     * @return TRUE if a legal substring was found {@code false} otherwise
      */
     private boolean findLongestMatch(final char[] revA, final ArrayList<Integer> list,
             final char[] revB, final int index)

@@ -513,7 +513,7 @@ public class PlainTextConverter
      */
     public void visit(WtXmlAttribute n)
     {
-        // ignore formatting information from xml attributes as the result is expected in plain text
+        // ignore formatting information from XML attributes as the result is expected in plain text
     }
 
     /**

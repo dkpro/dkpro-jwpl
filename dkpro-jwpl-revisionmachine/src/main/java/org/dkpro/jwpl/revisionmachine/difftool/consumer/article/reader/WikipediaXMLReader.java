@@ -48,7 +48,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * This class parses the wikipedia xml format.
+ * This class parses the Wikipedia XML format.
  */
 public class WikipediaXMLReader
     implements ArticleReaderInterface
@@ -60,12 +60,12 @@ public class WikipediaXMLReader
     private Reader input;
 
     /**
-     * Current position in the xml content
+     * Current position in the XML content
      */
     private long bytePosition;
 
     /**
-     * Reference to the xml keyword tree
+     * Reference to the XML keyword tree
      */
     private SingleKeywordTree<WikipediaXMLKeys> keywords;
 
@@ -141,7 +141,7 @@ public class WikipediaXMLReader
     }
 
     /**
-     * Creates and initializes the xml keyword tree.
+     * Creates and initializes the XML keyword tree.
      */
     private void initXMLKeys()
     {

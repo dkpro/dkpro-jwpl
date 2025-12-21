@@ -126,7 +126,7 @@ public enum ConfigurationKeys
     /**
      * Type: String Used by: SQLConsumer - SQLFileWriter
      * <p>
-     * Description: Output-Directory for the sql files
+     * Description: Output-Directory for the SQL files
      * <p>
      * Recommendation / Default: No default value - has to be configured!
      * <p>
@@ -137,7 +137,7 @@ public enum ConfigurationKeys
     /**
      * Type: Long Used by: SQLConsumer - SQLFileWriter
      * <p>
-     * Description: Maximum size of an sql file (in bytes)
+     * Description: Maximum size of an SQL file (in bytes)
      * <p>
      * Recommendation / Default: Currently 100 MB
      */
@@ -146,7 +146,7 @@ public enum ConfigurationKeys
     /**
      * Type: Long Used by: SQLConsumer - SevenZipSQLWriter
      * <p>
-     * Description: Maximum size of an sql archive file (in bytes)
+     * Description: Maximum size of an SQL archive file (in bytes)
      * <p>
      * Recommendation / Default: Currently not implemented
      */
@@ -155,7 +155,7 @@ public enum ConfigurationKeys
     /**
      * Type: Boolean Used by: DiffConsumer - DiffCalculator
      * <p>
-     * Description: Enabels the verification of the diff generation
+     * Description: Enables the verification of the diff generation
      * <p>
      * Recommendation / Default: Should only be used for debug purposes
      */
@@ -178,7 +178,7 @@ public enum ConfigurationKeys
      * Type: Long Used by: ArticleConsumers
      * <p>
      * Description: This value indicates the maximum size of an article task (in bytes). If the
-     * limit is reached the task will be splitted into parts.
+     * limit is reached the task will be split into parts.
      * <p>
      * Recommendation / Default: Currently 10 MB
      * <p>
@@ -190,7 +190,7 @@ public enum ConfigurationKeys
      * Type: Long Used by: DiffConsumers
      * <p>
      * Description: This value indicates the maximum size of a diff task (in bytes). If the limit is
-     * reached the task will be splitted into parts.
+     * reached the task will be split into parts.
      * <p>
      * Recommendation / Default: Currently 10 MB
      * <p>
@@ -221,7 +221,7 @@ public enum ConfigurationKeys
     /**
      * Type: String Used by: SQLConsumers - SQLDatabaseWriter
      * <p>
-     * Description: Name of the sql database
+     * Description: Name of the SQL database
      * <p>
      * Recommendation / Default: currently not used
      */

@@ -45,14 +45,14 @@ public class RevisionIndex
     }
 
     /**
-     * Adds the information for an new entry in the revision index.
+     * Adds the information for a new entry in the revision index.
      *
      * @param revisionID
      *            ID of the revision
      * @param revisionPrimaryKey
-     *            PK of the revison
+     *            PK of the revision
      * @param fullRevisionPrimaryKey
-     *            PK of the related full revison
+     *            PK of the related full revision
      */
     public void add(final int revisionID, final long revisionPrimaryKey,
             final long fullRevisionPrimaryKey)

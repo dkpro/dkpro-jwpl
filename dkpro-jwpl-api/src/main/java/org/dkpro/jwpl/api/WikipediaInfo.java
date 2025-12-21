@@ -357,7 +357,7 @@ public class WikipediaInfo
 
     /**
      * Methods computing stuff that have to iterate over all categories and access category articles
-     * can plug-in here. Recently plugin-in: numberOfCategorizedArticles
+     * can plug in here. Recently plugin-in: numberOfCategorizedArticles
      * distributionOfArticlesByCategory
      *
      * @param pWiki

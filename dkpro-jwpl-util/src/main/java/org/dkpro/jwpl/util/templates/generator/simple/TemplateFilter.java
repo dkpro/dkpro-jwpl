@@ -20,7 +20,7 @@ package org.dkpro.jwpl.util.templates.generator.simple;
 import java.util.Set;
 
 /**
- * This class is used for filtering templates by they names using different white/black lists
+ * This class is used for filtering templates by the names using different white/black lists
  */
 public class TemplateFilter
 {

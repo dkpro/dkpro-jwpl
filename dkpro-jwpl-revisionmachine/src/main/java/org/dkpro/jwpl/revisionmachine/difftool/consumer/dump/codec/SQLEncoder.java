@@ -65,7 +65,7 @@ public class SQLEncoder
     private int lastFullRevID = -1;
 
     /**
-     * Configuration parameter - Maximum size of a sql statement
+     * Configuration parameter - Maximum size of an SQL statement
      */
     private final long LIMIT_SQL_STATEMENT_SIZE;
 

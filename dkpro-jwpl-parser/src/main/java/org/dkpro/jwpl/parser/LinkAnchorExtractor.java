@@ -106,7 +106,7 @@ public class LinkAnchorExtractor
             if (!l.getType().equals(Link.type.EXTERNAL) && !l.getType().equals(Link.type.IMAGE)
                     && !l.getType().equals(Link.type.AUDIO) && !l.getType().equals(Link.type.VIDEO)
                     && !targetTitle.contains(":")) // Wikipedia titles only contain colons if they
-            // are categories or other meta data
+            // are categories or other metadata
             {
                 String anchorText = l.getText();
                 if (!anchorText.equals(targetTitle)) {

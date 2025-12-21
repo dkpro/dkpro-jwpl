@@ -40,12 +40,12 @@ public class TimedSQLEncoder
     private long encodedSize;
 
     /**
-     * Temporary variable - used for storing the encoded sql size
+     * Temporary variable - used for storing the encoded SQL size
      */
     private long encodedSQLSize;
 
     /**
-     * (Constructor) Creates a new TimedSQLEncoder object.
+     * Creates a new TimedSQLEncoder object.
      *
      * @param logger
      *            Reference to the logger

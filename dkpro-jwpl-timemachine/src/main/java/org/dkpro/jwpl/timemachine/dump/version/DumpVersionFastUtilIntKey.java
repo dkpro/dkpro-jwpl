@@ -201,7 +201,7 @@ public class DumpVersionFastUtilIntKey
         String pl_to = plParser.getPlTo();
         if (pl_to != null) {
             int pl_toHashcode = pl_to.hashCode();
-            // if page name and page page id exists
+            // if page name and page id exists
 
             if ((!skipPage || pPageIdNameMap.containsKey(pl_from))
                     && pNamePageIdMap.containsKey(pl_toHashcode)) {
@@ -317,7 +317,7 @@ public class DumpVersionFastUtilIntKey
 
         if (textIdPageIdMap.containsKey(text_id)) {
             int page_id = textIdPageIdMap.get(text_id);
-            // if exists page page id -> page
+            // if exists page id -> page
             if (pPageIdNameMap.containsKey(page_id)) {
                 processTextRowPage(textParser, page_id);
             }

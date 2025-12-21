@@ -174,7 +174,7 @@ public class Diff
     }
 
     /**
-     * Returns an estimation of the size used to stored the data.
+     * Returns an estimation of the size used to store the data.
      *
      * @return estimated size
      */

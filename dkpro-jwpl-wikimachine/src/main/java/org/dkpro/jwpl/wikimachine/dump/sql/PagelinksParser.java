@@ -22,17 +22,17 @@ import java.io.InputStream;
 import java.io.StreamTokenizer;
 
 /**
- * A Parser for the sql file that defines the table pagelinks.
+ * A Parser for the SQL file that defines the table {@code pagelinks}.
  * <p>
- * A fix for Issue 102 has been provided by Google Code user astronautguo
+ * A fix for Issue 102 has been provided by Google Code user {@code astronautguo}.
  */
 public class PagelinksParser
     extends SQLFileParser
 {
 
     /**
-     * The fields of the table pagelinks.<br>
-     * These fields are updated on each readen value.
+     * The fields of the table {@code pagelinks}.<br>
+     * These fields are updated on each read value.
      */
     private int plFrom;
     private int plNamespace;

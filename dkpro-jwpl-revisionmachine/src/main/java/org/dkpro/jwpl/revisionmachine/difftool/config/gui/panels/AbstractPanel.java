@@ -91,7 +91,7 @@ public abstract class AbstractPanel
     public abstract void toXML(final StringBuilder builder, final ConfigVerification errors);
 
     /**
-     * Reads the configuration parameters described in the panel from the ConfigSettings and and
+     * Reads the configuration parameters described in the panel from the ConfigSettings and
      * sets the contained values.
      *
      * @param config

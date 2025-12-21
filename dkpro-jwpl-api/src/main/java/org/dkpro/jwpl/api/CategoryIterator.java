@@ -99,7 +99,7 @@ public class CategoryIterator
          * If there are elements in the buffer left, then return true. If the end of the filled
          * buffer is reached, then try to load new buffer.
          *
-         * @return True, if there are pages left. False otherwise.
+         * @return True, if there are pages left. {@code false} otherwise.
          */
         public boolean hasNext()
         {

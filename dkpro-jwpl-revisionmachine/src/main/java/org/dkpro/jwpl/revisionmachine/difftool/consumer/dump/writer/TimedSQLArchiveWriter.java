@@ -49,15 +49,15 @@ public class TimedSQLArchiveWriter
     private long processingTimeSQL;
 
     /**
-     * Reference to the sql encoder
+     * Reference to the SQL encoder
      */
     private TimedSQLEncoder sqlEncoder;
 
     /**
-     * (Constructor) Creates a new TimedSQLFileWriter object.
+     * Creates a new TimedSQLFileWriter object.
      *
      * @param outputName
-     *            Name of the sql consumer
+     *            Name of the SQL consumer
      * @param logger
      *            Reference to a logger
      * @throws ConfigurationException
@@ -76,7 +76,7 @@ public class TimedSQLArchiveWriter
     /*--------------------------------------------------------------------------*/
 
     /**
-     * Creates the sql encoder.
+     * Creates the SQL encoder.
      *
      * @throws ConfigurationException
      *             if an error occurred while accessing the configuration
@@ -103,7 +103,7 @@ public class TimedSQLArchiveWriter
      * @throws IOException
      *             if problems occurred while writing the output (to file or archive)
      * @throws SQLConsumerException
-     *             if problems occurred while writing the output (to the sql producer database)
+     *             if problems occurred while writing the output (to the SQL producer database)
      */
     @Override
     public void process(final Task<Diff> task)

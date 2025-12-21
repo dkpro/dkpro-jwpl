@@ -1597,7 +1597,7 @@ public class RevisionApi
      *            number of revision to query
      * @return Revision
      * @throws SQLException
-     *             if an error occurs while retrieving data from the sql database.
+     *             if an error occurs while retrieving data from the SQL database.
      */
     private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException
     {

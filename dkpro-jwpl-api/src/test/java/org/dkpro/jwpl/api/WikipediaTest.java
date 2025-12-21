@@ -72,7 +72,7 @@ public class WikipediaTest
 
     /*
      * We test the returned pages with testing their pageId and their title. We also expect a
-     * WikiApiException to be thrown when trying to get non existing page.
+     * WikiApiException to be thrown when trying to get non-existing page.
      */
     @Test
     public void testGetPageByTitleVariations()

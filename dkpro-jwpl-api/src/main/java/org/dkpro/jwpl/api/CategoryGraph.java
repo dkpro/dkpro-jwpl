@@ -225,7 +225,7 @@ public class CategoryGraph
     }
 
     /**
-     * Creates a category graph using a subset (that may also be the full set :) of the categories.
+     * Creates a category graph using a subset (that may also be the full set) of the categories.
      *
      * @param pWiki
      *            The wiki object.
@@ -241,7 +241,7 @@ public class CategoryGraph
     }
 
     /**
-     * Creates a category graph using a subset (that may also be the full set :) of the categories.
+     * Creates a category graph using a subset (that may also be the full set) of the categories.
      *
      * @param pWiki
      *            The wiki object.
@@ -267,7 +267,7 @@ public class CategoryGraph
         throws WikiApiException
     {
         // create the graph as a directed Graph
-        // algorithms that need to be called on a undirected graph or should ignore direction
+        // algorithms that need to be called on an undirected graph or should ignore direction
         // can be called on an AsUndirectedGraph view of the directed graph
         graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
@@ -329,7 +329,7 @@ public class CategoryGraph
             Set<Integer> outLinks = cat.getChildrenIDs();
 
             // add edges
-            // If an edge already exits, it is silenty ignored by JGraphT. So we do not have to
+            // If an edge already exits, it is silently ignored by JGraphT. So we do not have to
             // check this.
             for (int inLink : inLinks) {
                 if (graph.vertexSet().contains(inLink)) {
@@ -535,7 +535,7 @@ public class CategoryGraph
         // add the current node to the path
         currentPath.add(currentNode);
 
-        // if root node reached, check whether it is a shortest path
+        // if root node reached, check whether it is the shortest path
         if (currentNode == root) {
             logger.debug("found root");
 
@@ -623,8 +623,8 @@ public class CategoryGraph
      * use this information to speed up computation dramatically. However, we might miss some
      * shortest path to a node if there are multiple paths to the root.
      * <p>
-     * It is very similar to finding the LCS. If there is no LCS, than there also is no path. If one
-     * of the nodes is on the path to the root, than we already know the distance. Otherwise the
+     * It is very similar to finding the LCS. If there is no LCS, then there also is no path. If one
+     * of the nodes is on the path to the root, then we already know the distance. Otherwise, the
      * distance can be computed as the sum of the distance of node1 to the LCS + the distance of
      * node2 to the LCS.
      *
@@ -928,8 +928,8 @@ public class CategoryGraph
     /**
      * Computes the paths from each category node to the root. Computing n paths will take some
      * time. Thus, efficient computing is based on the assumption that all subpaths in the shortest
-     * path to the root, are also shortest paths for the corresponding nodes. Starting with the leaf
-     * nodes gives the longest initial paths with most subpaths.
+     * path to the root, are also the shortest paths for the corresponding nodes. Starting with the
+     * leaf nodes gives the longest initial paths with most subpaths.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.
@@ -968,7 +968,7 @@ public class CategoryGraph
 
         queue.clear(); // queue should be empty now, but clear anyway
 
-        // add non-leaf nodes that have not been on a shortest, yet
+        // add non-leaf nodes that have not been on the shortest, yet
         for (Category cat : wiki.getCategories()) {
             if (!rootPathMap.containsKey(cat.getPageId())) {
                 queue.add(cat.getPageId());
@@ -1005,7 +1005,7 @@ public class CategoryGraph
 
             logger.debug("Queue size: " + queue.size());
 
-            // if we have already insert a path for this node => continue with the next
+            // if we have already inserted a path for this node => continue with the next
             if (getRootPathMap().containsKey(currentNode)) {
                 continue;
             }
@@ -1035,7 +1035,7 @@ public class CategoryGraph
 
             int i = 0;
             for (int nodeOnPath : nodesOnPath) {
-                // if we have already insert a path for this node => continue with the next
+                // if we have already inserted a path for this node => continue with the next
                 if (getRootPathMap().containsKey(nodeOnPath)) {
                     continue;
                 }
@@ -1178,7 +1178,7 @@ public class CategoryGraph
 
     /**
      * Computes the diameter of the graph (the maximum of the shortest path length between all pairs
-     * of nodes) The graph is treated as a undirected graph. Computing graph parameters requires
+     * of nodes) The graph is treated as an undirected graph. Computing graph parameters requires
      * touching all node pairs. Therefore, if one is called the others are computed as well and
      * stored for later retrieval.
      *
@@ -1194,7 +1194,7 @@ public class CategoryGraph
     }
 
     /**
-     * Computes the average degree. The degree of a node is the number of edges edges that it is
+     * Computes the average degree. The degree of a node is the number of edges that it is
      * connected with. The graph is treated as an undirected graph. Computing graph parameters
      * requires touching all node pairs. Therefore, if one is called the others are computed as well
      * and stored for later retrieval.
@@ -1353,7 +1353,7 @@ public class CategoryGraph
             updateDegreeDistribution(nodeDegree);
 
             // cluster coefficient of a node is C_v is the fraction of the connections that exist
-            // between the neighbor nodes (k_v) of a this node and all allowable connections between
+            // between the neighbor nodes (k_v) of this node and all allowable connections between
             // the neighbors (k_v(k_v -1)/2)
             // for degrees 0 or 1 there is no cluster coefficient, as there can be no connections
             // between neighbors
@@ -1364,7 +1364,7 @@ public class CategoryGraph
             }
 
             // Returns the new shortestPathLengthSum and the new maxPathLength.
-            // They are returned as an double array for performance reasons.
+            // They are returned as a double array for performance reasons.
             // I do not want to create an object, as this function is called *very* often
             double[] returnValues = computeShortestPathLenghts(node, shortestPathLengthSum,
                     maxPathLength, wasSource);
@@ -1405,7 +1405,7 @@ public class CategoryGraph
      *            A set of nodes which have been the start node of the computation process. For such
      *            nodes all path lengths have been already computed.
      * @return An array of double values. The first value is the shortestPathLengthSum and the
-     *         second value is the maxPathLength. They are returned as an double array for
+     *         second value is the maxPathLength. They are returned as a double array for
      *         performance reasons. I do not want to create an object, as this function is called
      *         *very* often.
      */

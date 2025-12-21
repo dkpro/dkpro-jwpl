@@ -57,7 +57,7 @@ public interface IndexWriterInterface
      * @throws SQLException
      *             if an error occurred while accessing the database
      * @throws IOException
-     *             if an error occurred while accessing the sql file
+     *             if an error occurred while accessing the SQL file
      */
     void finish() throws IOException, SQLException;
 }

@@ -36,25 +36,25 @@ public interface SQLEncoderInterface
     /**
      * Returns the tables for textual output.
      * <p>
-     * Each Array entry will contain a single sql command.
+     * Each array entry will contain a single SQL command.
      *
-     * @return sql command to create the tables
+     * @return SQL command to create the tables
      */
     String[] getTable();
 
     /**
      * Returns the tables for binary output.
      * <p>
-     * Each Array entry will contain a single sql command.
+     * Each array entry will contain a single SQL command.
      *
-     * @return sql command to create the tables
+     * @return SQL command to create the tables
      */
     String[] getBinaryTable();
 
     /**
      * Returns the binary encoding of the given DiffTask.
      * <p>
-     * Each Array entry will contain a single sql command.
+     * Each array entry will contain a single SQL command.
      *
      * @param task
      *            DiffTask
@@ -62,7 +62,7 @@ public interface SQLEncoderInterface
      * @throws ConfigurationException
      *             if problems occurred while initializing the components
      * @throws UnsupportedEncodingException
-     *             if the CharacterSet defined in the configuration is not supported by JAVA.
+     *             if the CharacterSet defined in the configuration is not supported by Java.
      * @throws DecodingException
      *             if the decoding process fails (during the verification process)
      * @throws EncodingException
@@ -77,7 +77,7 @@ public interface SQLEncoderInterface
     /**
      * Returns the textual encoding of the given DiffTask.
      * <p>
-     * Each Array entry will contain a single sql command.
+     * Each Array entry will contain a single SQL command.
      *
      * @param task
      *            DiffTask

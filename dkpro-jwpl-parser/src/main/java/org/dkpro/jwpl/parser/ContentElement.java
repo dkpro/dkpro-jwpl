@@ -53,7 +53,7 @@ public class ContentElement
     }
 
     /**
-     * Look at getText() for Details...
+     * See {@link #getText()} for details.
      */
     public void setText(String text)
     {
@@ -61,8 +61,9 @@ public class ContentElement
     }
 
     /**
-     * Returns the Text on wich all elements of this ContentElement are bases on.
+     * @return The Text on which all elements of this ContentElement are bases on.
      */
+    @Override
     public String getText()
     {
         return text;
@@ -86,16 +87,18 @@ public class ContentElement
     }
 
     /**
-     * Retruns the length of the Text. Alternativ you can use getText().length()
+     * @return the length of the Text. Alternatively, you can use getText().length()
      */
+    @Override
     public int length()
     {
         return text.length();
     }
 
     /**
-     * Returns true if there is no Content in this ContentElement.
+     * @return {@code true} if there is no Content in this ContentElement.
      */
+    @Override
     public boolean empty()
     {
         return text.length() == 0 && links.size() == 0 && templates.size() == 0 && tags.size() == 0
@@ -131,8 +134,9 @@ public class ContentElement
     }
 
     /**
-     * Returns all the Spans of the Format type t.
+     * @return all the Spans of the Format type t.
      */
+    @Override
     public List<Span> getFormatSpans(FormatType t)
     {
         return switch (t) {
@@ -146,16 +150,18 @@ public class ContentElement
     }
 
     /**
-     * Returns all the Spans of the Format type t in the Range of start to end
+     * @return all the Spans of the Format type t in the Range of start to end
      */
+    @Override
     public List<Span> getFormatSpans(FormatType t, int start, int end)
     {
         return getFormatSpans(t, new Span(start, end));
     }
 
     /**
-     * Returns all the Spans of the Format type t in the Range of the Span s
+     * @return all the Spans of the Format type t in the Range of the Span s
      */
+    @Override
     public List<Span> getFormatSpans(FormatType t, Span s)
     {
         List<Span> result = new ArrayList<>();
@@ -166,8 +172,9 @@ public class ContentElement
     }
 
     /**
-     * Returns the Formats wich are used in this ContentElement in a List.
+     * @return the Formats which are used in this ContentElement in a List.
      */
+    @Override
     public List<FormatType> getFormats()
     {
         List<FormatType> ftl = new ArrayList<>();
@@ -185,18 +192,20 @@ public class ContentElement
     }
 
     /**
-     * Returns the Formats wich are used in this ContentElement, in the Range from start to end, in
+     * @return The Formats which are used in this ContentElement, in the Range from start to end, in
      * a List.
      */
+    @Override
     public List<FormatType> getFormats(int start, int end)
     {
         return getFormats(new Span(start, end));
     }
 
     /**
-     * Returns the Formats wich are used in this ContentElement, in the Range of the Span s, in a
+     * @return The Formats which are used in this ContentElement, in the Range of the Span s, in a
      * List.
      */
+    @Override
     public List<FormatType> getFormats(Span s)
     {
         List<FormatType> result = new ArrayList<>();
@@ -216,7 +225,7 @@ public class ContentElement
     }
 
     /**
-     * Look at getLinks() for Details...
+     * See {@link #getLinks()} for details.
      */
     public void setLinks(List<Link> links)
     {
@@ -224,16 +233,18 @@ public class ContentElement
     }
 
     /**
-     * Retruns a List of the Links of this ContentElement
+     * @return A List of the links of this ContentElement
      */
+    @Override
     public List<Link> getLinks()
     {
         return links;
     }
 
     /**
-     * Returns a List of the Links of this ContentElement of the Specified Link.type t
+     * @return A List of links of this ContentElement for the specified {@link Link.type t}
      */
+    @Override
     public List<Link> getLinks(Link.type t)
     {
         List<Link> result = new ArrayList<>();
@@ -244,9 +255,10 @@ public class ContentElement
     }
 
     /**
-     * Returns a List of the Links of this ContentElement of the Specified Link.type t in the Range
-     * of s
+     * @return A List of links of this ContentElement for the specified {@link Link.type t}
+     * in the range of {@code s}.
      */
+    @Override
     public List<Link> getLinks(Link.type t, Span s)
     {
         List<Link> result = new ArrayList<>();
@@ -257,9 +269,10 @@ public class ContentElement
     }
 
     /**
-     * Returns a List of the Links of this ContentElement of the Specified Link.type t in the Range
-     * of start to end
+     * @return A list of the links of this ContentElement of the specified {@link Link.type t}
+     * in the range of {@code begin} to {@code end}.
      */
+    @Override
     public List<Link> getLinks(Link.type t, int begin, int end)
     {
         return getLinks(t, new Span(begin, end));
@@ -274,24 +287,27 @@ public class ContentElement
     }
 
     /**
-     * Returns a List of the Templates of this ContentElement.
+     * @return A list of {@link Template templates} of this ContentElement.
      */
+    @Override
     public List<Template> getTemplates()
     {
         return templates;
     }
 
     /**
-     * Returns a List of the Templates of this ContentElement in the Range from start to end
+     * @return A list of {@link Template templates} of this ContentElement in the Range from start to end
      */
+    @Override
     public List<Template> getTemplates(int start, int end)
     {
         return getTemplates(new Span(start, end));
     }
 
     /**
-     * Returns a List of the Templates of this ContentElement in the Range of s
+     * @return A list of {@link Template templates} of this ContentElement in the Range of s
      */
+    @Override
     public List<Template> getTemplates(Span s)
     {
         List<Template> result = new ArrayList<>();
@@ -304,6 +320,7 @@ public class ContentElement
     /**
      * Try and find out ;-)
      */
+    @Override
     public String toString()
     {
         StringBuilder result = new StringBuilder();

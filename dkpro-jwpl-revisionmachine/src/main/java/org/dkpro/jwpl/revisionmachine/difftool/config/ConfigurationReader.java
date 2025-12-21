@@ -39,7 +39,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * This Reader reads the xml-configuration files for the DiffTool.
+ * This Reader reads the XML-configuration files for the DiffTool.
  */
 public class ConfigurationReader
 {
@@ -340,7 +340,7 @@ public class ConfigurationReader
      * Parses the filter parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -368,7 +368,7 @@ public class ConfigurationReader
      * Parses the namespaces parameter section. This is the subsection of filter.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -402,7 +402,7 @@ public class ConfigurationReader
      * Parses the mode parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -439,7 +439,7 @@ public class ConfigurationReader
      * Parses the externals parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -470,7 +470,7 @@ public class ConfigurationReader
      * Parses the input parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -511,7 +511,7 @@ public class ConfigurationReader
      * Parses the input archive subsection.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -566,7 +566,7 @@ public class ConfigurationReader
      * Parses the output parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -638,7 +638,7 @@ public class ConfigurationReader
      * Parses the sql parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -684,7 +684,7 @@ public class ConfigurationReader
      * Parses the cache parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -727,7 +727,7 @@ public class ConfigurationReader
      * Parses the logging parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -764,7 +764,7 @@ public class ConfigurationReader
      * Parses the information for a logger.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      * @param logPath
@@ -805,7 +805,7 @@ public class ConfigurationReader
      * Parses the debug parameter section.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */
@@ -852,7 +852,7 @@ public class ConfigurationReader
      * Parses the debug output parameter subsection.
      *
      * @param node
-     *            Reference to the current used xml node
+     *            Reference to the current used XML node
      * @param config
      *            Reference to the ConfigSettings
      */

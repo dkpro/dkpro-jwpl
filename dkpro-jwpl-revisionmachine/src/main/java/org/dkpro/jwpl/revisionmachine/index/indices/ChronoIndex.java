@@ -64,7 +64,7 @@ public class ChronoIndex
     }
 
     /**
-     * Adds the information for an new entry in the chrono index.
+     * Adds the information for a new entry in the chrono index.
      *
      * @param articleID
      *            ID of the article
@@ -91,7 +91,7 @@ public class ChronoIndex
 
     /**
      * Creates the mapping and the reverse mapping. The generated information will be added to the
-     * query buffer. This list will be cleared afterwards.
+     * query buffer. This list will be cleared afterward.
      */
     private void addToBuffer()
     {

@@ -216,7 +216,7 @@ public class Logger
     }
 
     /**
-     * This method will be called with a message and the related log level. It be verified if the
+     * This method will be called with a message and the related log level. It is verified if the
      * message should be logged or not.
      * <p>
      * The format of the logged message is: \t consumerName [ Type of Logger ] \t message \r\n

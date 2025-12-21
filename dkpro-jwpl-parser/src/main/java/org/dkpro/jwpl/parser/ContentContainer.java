@@ -22,8 +22,8 @@ import java.util.List;
 
 /**
  * A ContentContainer is used to combine more than one Content element (not only
- * ContentElement.class!) in a new Content element.<br>
- * For a description of the Functions of the Content Interface, take a look at the Content.class
+ * {@link ContentElement}!) in a new Content element.<br>
+ * For a description of the Functions of the Content Interface, take a look at {@link ContentElement}
  * documentation.<br>
  */
 public abstract class ContentContainer

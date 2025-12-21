@@ -39,12 +39,12 @@ public enum ErrorKeys
     CONFIGURATION_PARAMETER_UNDEFINED,
 
     /**
-     * An IOException occurred while parsing the xml input
+     * An IOException occurred while parsing the XML input
      */
     DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_IOEXCEPTION,
 
     /**
-     * An keyword was found were it was not supposed to be
+     * A keyword was found were it was not supposed to be
      */
     DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD,
 

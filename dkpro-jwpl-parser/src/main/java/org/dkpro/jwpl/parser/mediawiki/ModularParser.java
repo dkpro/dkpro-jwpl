@@ -611,7 +611,7 @@ public class ModularParser
     }
 
     /**
-     * Retunrns the Type of a line, this is mainly done by the First Char of the Line...
+     * @return The type of a line, this is mainly done by the first Char of the Line.
      */
     private lineType getLineType(SpanManager sm, Span lineSpan)
     {
@@ -924,7 +924,7 @@ public class ModularParser
 
     private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans)
     {
-        // Quick Hack, not very efficient, should be improved, wont work with
+        // Quick Hack, not very efficient, should be improved, won't work with
         // calculateSrcSpans == true !
 
         for (int i = 0; i < tagSpans.size() - 1; i++) {
@@ -1277,8 +1277,8 @@ public class ModularParser
 
                 if (extLinkCloseTag != -1) {
                     extLinkTextStart = extLinkTargetEnd;
-                    // nicht wie bei "normalen" links durhc | getrennt sondern
-                    // durhc leerzeichen !!! schei�e !!!
+                    // nicht wie bei "normalen" links durch | getrennt sondern
+                    // durch leerzeichen !!! scheixxe !!!
                     while (sm.charAt(extLinkTextStart) == ' ') {
                         extLinkTextStart++;
                     }
@@ -1838,7 +1838,7 @@ public class ModularParser
                 ptext.delete(delete.remove(j));
             }
 
-            // removing line separators if exist, so the result can be trimmed
+            // removing line separators if existed, so the result can be trimmed
             // in the next step
             int pos = ptext.indexOf(lineSeparator);
             while (pos != -1) {

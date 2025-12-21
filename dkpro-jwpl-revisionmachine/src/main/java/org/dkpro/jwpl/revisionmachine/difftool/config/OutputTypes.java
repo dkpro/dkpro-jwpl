@@ -29,7 +29,7 @@ public enum OutputTypes
     DATABASE,
 
     /**
-     * Output as single sql file.
+     * Output as single SQL file.
      */
     SQL,
 

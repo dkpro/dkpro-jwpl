@@ -223,7 +223,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
         if (pl_to != null) {
             KeyType pl_toHashcode = (KeyType) hashAlgorithm.hashCode(pl_to);
 
-            // if page name and page page id exists
+            // if page name and page id exists
             Integer id = pNamePageIdMap.get(pl_toHashcode);
             if (id != null && (!skipPage || pPageIdNameMap.containsKey(pl_from))) {
                 pageOutlinks.addRow(pl_from, id);
@@ -344,7 +344,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
         if (textIdPageIdMap.containsKey(text_id)) {
             int page_id = textIdPageIdMap.get(text_id);
-            // if exists page page id -> page
+            // if exists page id -> page
             if (pPageIdNameMap.containsKey(page_id)) {
                 processTextRowPage(textParser, page_id);
             }

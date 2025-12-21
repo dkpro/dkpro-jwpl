@@ -78,7 +78,7 @@ public class ConfigController
 
     /**
      * Configuration settings - Flag that indicates whether output should be a datafile instead of
-     * an sql dump
+     * an SQL dump
      */
     private boolean enableDataFileOutput;
 
@@ -178,9 +178,9 @@ public class ConfigController
     }
 
     /**
-     * Creates the xml content representation of the currently used settings.
+     * Creates the XML content representation of the currently used settings.
      *
-     * @return TRUE if the ConfigVerfication contains no items, FALSE otherwise
+     * @return {@code true} if the ConfigVerfication contains no items, {@code false} otherwise
      */
     public boolean createConfigurationXML()
     {
@@ -443,7 +443,7 @@ public class ConfigController
      *
      * @param path
      *            output path
-     * @return TRUE if the configuration was successfully exported FALSE otherwise
+     * @return {@code true} if the configuration was successfully exported {@code false} otherwise
      */
     public boolean saveConfiguration(final String path)
     {
@@ -470,8 +470,8 @@ public class ConfigController
     /**
      * Enables or disables the 7Zip support.
      * <p>
-     * If the support is disabled the and the OutputCompression Mode was 7Zip the Mode will be
-     * reseted to None.
+     * If the support is disabled and the OutputCompression Mode was 7Zip the Mode will be
+     * reset to None.
      *
      * @param enable7Zip
      *            7Zip support flag

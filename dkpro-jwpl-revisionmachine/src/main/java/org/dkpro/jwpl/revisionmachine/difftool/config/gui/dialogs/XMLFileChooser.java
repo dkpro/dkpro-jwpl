@@ -23,7 +23,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 /**
- * This object represents a xml file filter.
+ * This object represents an XML file filter.
  */
 @SuppressWarnings("serial")
 public class XMLFileChooser
@@ -31,11 +31,10 @@ public class XMLFileChooser
 {
 
     /**
-     * (Constructor) Creates an FileChooser with a xml file filter.
+     * Creates an FileChooser with an XML file filter.
      */
     public XMLFileChooser()
     {
-
         setFileFilter(new FileFilter()
         {
 
@@ -56,7 +55,7 @@ public class XMLFileChooser
 
                 int p = f.getName().indexOf(".");
 
-                // Files need a ending
+                // Files need an ending
                 if (p == -1) {
                     return false;
                 }
