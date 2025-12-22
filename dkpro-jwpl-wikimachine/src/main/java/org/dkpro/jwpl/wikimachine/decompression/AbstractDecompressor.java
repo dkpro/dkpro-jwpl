@@ -25,7 +25,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 public abstract class AbstractDecompressor implements IDecompressor {
@@ -37,23 +36,23 @@ public abstract class AbstractDecompressor implements IDecompressor {
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
-     * @param resource References a resource via a path or by its file name only.
+     * @param resource References a resource via a {@link Path} or by its file name only.
      *                 If {@code null}, this will result in an {@link IOException}.
      * @return An open {@link InputStream} or {@code null} if {@code resource} could not be found.
      * 
+     * @throws IllegalArgumentException Thrown if the parameters were invalid.
      * @throws IOException Thrown if IO errors occurred.
      */
-    protected InputStream openStream(String resource) throws IOException
+    protected InputStream openStream(Path resource) throws IOException
     {
-        if (resource == null) {
-            throw new IOException("Can't load a 'null' resource!");
+        if (resource == null || resource.toString().isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' resource!");
         }
         final InputStream in;
-        final Path file = Paths.get(resource).toAbsolutePath();
-        if (Files.exists(file)) {
-            in = Files.newInputStream(file);
+        if (Files.exists(resource)) {
+            in = Files.newInputStream(resource);
         } else {
-            in = getContextClassLoader().getResourceAsStream(resource);
+            in = getContextClassLoader().getResourceAsStream(resource.toString());
         }
         return in;
     }
@@ -65,24 +64,28 @@ public abstract class AbstractDecompressor implements IDecompressor {
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
-     * @param resource References a resource via a path or by its file name only.
+     * @param resource References a resource via a {@link Path} or by its file name only.
      *                 If {@code null}, this will result in an {@link IOException}.
      * @return An open {@link SeekableByteChannel} or {@code null} if {@code resource}
      *         could not be found.
      *
+     * @throws IllegalArgumentException Thrown if the parameters were invalid.
      * @throws IOException Thrown if IO errors occurred.
      */
-    protected SeekableByteChannel openChannel(String resource) throws IOException {
-        if (resource == null) {
-            throw new IOException("Can't load a 'null' resource!");
+    protected SeekableByteChannel openChannel(Path resource) throws IOException {
+        if (resource == null || resource.toString().isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
         }
-        final Path file = Paths.get(resource).toAbsolutePath();
-        if (Files.exists(file)) {
-            return Files.newByteChannel(file, StandardOpenOption.READ);
+        if (Files.exists(resource)) {
+            return Files.newByteChannel(resource, StandardOpenOption.READ);
         } else {
-            URL in = getContextClassLoader().getResource(resource);
+            final URL in = getContextClassLoader().getResource(resource.toString());
             try {
-                return FileChannel.open(Path.of(in.toURI()), StandardOpenOption.READ);
+                if (in != null) {
+                    return FileChannel.open(Path.of(in.toURI()), StandardOpenOption.READ);
+                } else {
+                    return null;
+                }
             } catch (URISyntaxException e) {
                 throw new IOException(e);
             }

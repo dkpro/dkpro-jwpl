@@ -19,12 +19,27 @@ package org.dkpro.jwpl.wikimachine.decompression;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 /**
  * Uses an archive file path and returns an {@link InputStream}.
  */
 public interface IDecompressor
 {
+    /**
+     * Attempts to open an {@link InputStream} to a compressed archive.
+     * In this context, external archives a referenced via a relative or absolute path, including
+     * the actual file name of that resource.
+     * In case only a plain file name is given and no directory or path elements are contained
+     * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
+     *
+     * @param resource References an archive via a path or by its file name only.
+     *                 If {@code null}, this will result in an {@link IOException}.
+     * @return An open {@link InputStream} or {@code null} if the archive could not be found.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
+    InputStream getInputStream(String resource) throws IOException;
 
     /**
      * Attempts to open an {@link InputStream} to a compressed archive.
@@ -33,11 +48,11 @@ public interface IDecompressor
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
-     * @param fileName References an archive via a path or by its file name only.
+     * @param resource References an archive via a {@link Path} or by its file name only.
      *                 If {@code null}, this will result in an {@link IOException}.
      * @return An open {@link InputStream} or {@code null} if the archive could not be found.
      *
      * @throws IOException Thrown if IO errors occurred.
      */
-    InputStream getInputStream(String fileName) throws IOException;
+    InputStream getInputStream(Path resource) throws IOException;
 }

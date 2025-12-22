@@ -45,12 +45,12 @@ import java.util.Properties;
  * Also, there could be more heap memory necessary to use start external programs.
  * <p>
  * The compressed file should be specified with the placeholder <code>%f</code>. <br>
- * For instance, the entry for the native 7z utility could look like that: <br>
- * {@code <entry key="7z">C:/Program Files/7-Zip/7z.exe e -so %f</entry>}. <br>
+ * For instance, the entry for the native RAR utility could look like this: <br>
+ * {@code <entry key="rar">C:/Program Files/WinRAR/UnRAR.exe e p %f</entry>}. <br>
  * The properties file should conform to
  * <a href="http://java.sun.com/dtd/properties.dtd">Java Properties DTD</a>
  *
- * @see UniversalDecompressor#getInputStream(String)
+ * @see IDecompressor
  */
 public class UniversalDecompressor
     implements IDecompressor
@@ -67,7 +67,7 @@ public class UniversalDecompressor
     private final Map<String, String> externalSupport;
 
     /**
-     * Archive extensions which are supported by <code>ReaderFactory</code>
+     * Archive extensions which are supported by {@code }UniversalDecompressor
      */
     private final Map<String, IDecompressor> internalSupport;
 
@@ -155,12 +155,12 @@ public class UniversalDecompressor
 
 
     /**
-     * Return the extension of the filename.
+     * Detects the extension of the file resource.
      *
      * @param fileName The file's name or (relative) path to get the extension of.
      * @return file extension or {@code null}
      */
-    private String getExtension(String fileName)
+    private String detectExtension(String fileName)
     {
         if (fileName == null) {
             return null;
@@ -183,8 +183,7 @@ public class UniversalDecompressor
      */
     public boolean isSupported(String fileName)
     {
-        String extension = getExtension(fileName);
-
+        String extension = detectExtension(fileName);
         return isInternalSupported(extension) || isExternalSupported(extension);
     }
 
@@ -192,13 +191,13 @@ public class UniversalDecompressor
      * Start an external utility to read the archive.
      *
      * @param fileName The file's name or (relative) path to read the archive from.
-     * @return InputStream to read the decompressed data
+     * @return An InputStream to read the decompressed data from.
      */
     private InputStream startExternal(String fileName)
     {
         InputStream result = null;
         try {
-            String extension = getExtension(fileName);
+            String extension = detectExtension(fileName);
             String command = externalSupport.get(extension).replace(FILEPLACEHOLDER, fileName);
             Process externalProcess = Runtime.getRuntime().exec(command);
             result = externalProcess.getInputStream();
@@ -228,6 +227,17 @@ public class UniversalDecompressor
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStream(String resource) throws IOException {
+      if (resource == null || resource.isBlank()) {
+        throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
+      }
+        return getInputStream(Path.of(resource));
+    }
+    
+    /**
      * Creates a {@link InputStream} where the unpacked data could be read from. Internal GZip, BZip2,
      * and 7z archive formats are supported.
      * The list of archive formats can be increased with the {@code decompressor.xml}. Thereby
@@ -240,22 +250,32 @@ public class UniversalDecompressor
      * external nor internal possibilities to unpack the file - the standard
      * {@link FileInputStream} will be returned
      *
-     * @param fileName The file's name or (relative) path to read the archive from.
+     * @param resource The file's name or (relative) path to read the archive from.
+     *
+     * @throws IllegalArgumentException Thrown if parameters were invalid.
+     * @throws IOException Thrown if IO errors occurred.
      */
     @Override
-    public InputStream getInputStream(String fileName) throws IOException
+    public InputStream getInputStream(Path resource) throws IOException
     {
-        InputStream inputStream;
-        String extension = getExtension(fileName);
+        if (resource == null || resource.toString().isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' resource!");
+        }
+        if (Files.isDirectory(resource)) {
+            throw new IOException("Can't load a 'directory' as resource!");
+        }
+        final String file = resource.toAbsolutePath().toString();
+        final String extension = detectExtension(file);
 
-        if (isExternalSupported(extension) && fileExists(fileName)) {
-            inputStream = startExternal(fileName);
+        final InputStream inputStream;
+        if (isExternalSupported(extension) && fileExists(resource)) {
+            inputStream = startExternal(file);
         }
         else if (isInternalSupported(extension)) {
-            inputStream = internalSupport.get(extension).getInputStream(fileName);
+            inputStream = internalSupport.get(extension).getInputStream(resource);
         }
         else {
-            inputStream = getDefault(fileName);
+            inputStream = getDefault(file);
         }
         return inputStream;
     }
@@ -263,13 +283,12 @@ public class UniversalDecompressor
     /**
      * Check if the {@link File} specified via {@code fileName} exists.
      *
-     * @param fileName
-     *            file path to check
+     * @param resource file path to check
      * @return {@code true} if the file exists and can be read, {@code false} otherwise.
      */
-    private boolean fileExists(String fileName)
+    private boolean fileExists(Path resource)
     {
-        return new File(fileName).exists();
+        return Files.exists(resource);
     }
 
 }

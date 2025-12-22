@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
@@ -28,11 +29,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 7z Decompressor (based on Singleton Design Pattern).
- * Uses {@link IDecompressor#getInputStream(String)} to set up the archive
- * path and returns the {@link InputStream} to read from.
+ * A {@link IDecompressor decompressor} implementation for archives in {@code 7z} format.
+ * Uses {@link IDecompressor#getInputStream(Path)} to set up the archive
+ * path and returns the first valid {@link InputStream} to read from.
  *
  * @see IDecompressor
+ * @see AbstractDecompressor
  */
 public final class SevenZipDecompressor
     extends AbstractDecompressor implements IDecompressor
@@ -42,8 +44,16 @@ public final class SevenZipDecompressor
             .getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
-    public InputStream getInputStream(String fileName) throws IOException {
-        final SeekableByteChannel sbc = openChannel(fileName);
+    public InputStream getInputStream(String resource) throws IOException {
+        if (resource == null || resource.isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
+        }
+        return getInputStream(Path.of(resource));
+    }
+
+    @Override
+    public InputStream getInputStream(Path resource) throws IOException {
+        final SeekableByteChannel sbc = openChannel(resource);
         if (sbc != null && sbc.isOpen()) {
             final SevenZFile archive = SevenZFile.builder().setSeekableByteChannel(sbc).get();
             // ensure the processed archive file is properly closed silently on JVM shutdown
@@ -57,8 +67,10 @@ public final class SevenZipDecompressor
             if (archive != null) {
                 // Assuming mediawiki 7z dump has only one XML entry...
                 final SevenZArchiveEntry entry = archive.getNextEntry();
-                if (entry.hasStream()) {
+                if (entry != null && entry.hasStream()) {
                     return archive.getInputStream(entry);
+                } else {
+                    return null;
                 }
             }
         }

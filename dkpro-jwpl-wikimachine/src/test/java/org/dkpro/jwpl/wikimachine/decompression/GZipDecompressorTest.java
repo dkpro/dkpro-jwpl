@@ -17,25 +17,20 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-class SevenZipDecompressorTest extends AbstractDecompressorTest {
+class GZipDecompressorTest extends AbstractDecompressorTest {
 
     // SUT
     private IDecompressor decomp;
 
     @BeforeEach
     public void setUp() {
-        decomp = new SevenZipDecompressor();
+        decomp = new GZipDecompressor();
     }
 
     @Override
@@ -44,14 +39,8 @@ class SevenZipDecompressorTest extends AbstractDecompressorTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"archive.txt.7z", "src/test/resources/archive.txt.7z"})
+    @ValueSource(strings = {"archive.txt.gz", "src/test/resources/archive.txt.gz"})
     void testGetInputStream(String input) throws IOException {
         getAndCheck(input);
-    }
-
-    @Test
-    void testGetInputStreamWithRandomResourceName() throws IOException {
-        final InputStream in = getDecompressor().getInputStream(UUID.randomUUID().toString());
-        assertNull(in);
     }
 }

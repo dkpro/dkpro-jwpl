@@ -48,7 +48,6 @@
       <artifactId>xz</artifactId>
       <version>${xz.version}</version>
       <scope>runtime</scope>
-      <optional>true</optional>
     </dependency>
 
     <!-- logger dependencies -->
