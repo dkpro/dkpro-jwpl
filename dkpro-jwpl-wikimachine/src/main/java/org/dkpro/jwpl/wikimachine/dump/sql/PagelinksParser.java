@@ -78,14 +78,14 @@ public class PagelinksParser
         plTo = SQLEscape.escape(st.sval);
         // pre July 2014 dumpo: read ')' / post July 2014 dump read ','
         st.nextToken();
-        if (st.toString().substring(7, 8).equals(",")) {
+        if (st.toString().charAt(7) == ',') {
             // we have a post July 2014 dump and thus have to skip the pl_from_namespace field
             st.nextToken(); // skip pl_from_namespace value
             st.nextToken(); // skip ')'
         }
-        // read ',' or ';'. If ';' is found then skip statement or espect eof.
+        // read ',' or ';'. If ';' is found then skip statement or expect eof.
         st.nextToken();
-        if (st.toString().substring(7, 8).equals(";")) {
+        if (st.toString().charAt(7) == ';') {
             skipStatements();
         }
         return true;

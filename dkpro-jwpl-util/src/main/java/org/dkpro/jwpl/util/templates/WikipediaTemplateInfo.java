@@ -24,7 +24,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -528,8 +527,7 @@ public class WikipediaTemplateInfo
         templateName = templateName.trim().replaceAll(" ", "_");
 
         List<Integer> revisionIds = new LinkedList<>();
-        List<Integer> pageIds = getPageIdsContainingTemplateNames(
-                Arrays.asList(new String[] { templateName }));
+        List<Integer> pageIds = getPageIdsContainingTemplateNames(List.of(templateName));
         if (pageIds.isEmpty()) {
             return revisionIds;
         }
@@ -1175,29 +1173,27 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Determines whether a given revision contains a given template name
+     * Determines whether a given revision contains a given template name.
      *
-     * @param revId
-     * @param templateName
-     *            a template name
+     * @param revId The revision identifier to use.
+     * @param templateName A template name to check for.
      * @return {@code true} if the revision contains {@code templateName}, {@code false} otherwise.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean revisionContainsTemplateName(int revId, String templateName)
         throws WikiApiException
     {
-        return revisionContainsTemplateNames(revId, Arrays.asList(new String[] { templateName }));
+        return revisionContainsTemplateNames(revId, List.of(templateName));
     }
 
     /**
-     * Determines whether a given revision contains a given template name
+     * Determines whether a given revision contains a given template name.
      *
-     * @param revId
-     * @param templateNames
-     *            a list of template names
+     * @param revId The revision identifier to use.
+     * @param templateNames A list of template names.
      * @return {@code true} if the revision contains one element in {@code templateNames},
      *         {@code false} otherwise.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean revisionContainsTemplateNames(int revId, List<String> templateNames)
         throws WikiApiException
@@ -1214,13 +1210,13 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Determines whether a given revision contains a template starting with the given fragment
+     * Determines whether a given revision contains a template starting with the given fragment.
      *
-     * @param revId
-     * @param templateFragment
+     * @param revId The revision identifier to use.
+     * @param templateFragment A (partial) template name to check for.
      * @return {@code true} if the revision contains {@code templateFragment}, {@code false}
      *         otherwise.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean revisionContainsTemplateFragment(int revId, String templateFragment)
         throws WikiApiException
@@ -1238,10 +1234,10 @@ public class WikipediaTemplateInfo
      * Does the same as {@link #revisionContainsTemplateFragment(int, String)} without using a
      * template index
      *
-     * @param revId
-     * @param templateName
+     * @param revId The revision identifier to use.
+     * @param templateName A template name to check for.
      * @return {@code true} if the revision contains {@code templateName}, {@code false} otherwise.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean revisionContainsTemplateNameWithoutIndex(int revId, String templateName)
         throws WikiApiException
@@ -1251,8 +1247,7 @@ public class WikipediaTemplateInfo
         }
         if (parser == null) {
             // TODO switch to SWEBLE
-            MediaWikiParserFactory pf = new MediaWikiParserFactory(
-                    wiki.getDatabaseConfiguration().getLanguage());
+            MediaWikiParserFactory pf = new MediaWikiParserFactory(wiki.getDatabaseConfiguration().getLanguage());
             pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
             parser = pf.createParser();
         }
@@ -1271,11 +1266,11 @@ public class WikipediaTemplateInfo
      * Does the same as {@link #revisionContainsTemplateNameWithoutIndex(int, String)} without
      * using a template index
      *
-     * @param revId
-     * @param templateFragment
+     * @param revId The revision identifier to use.
+     * @param templateFragment A (partial) template name to check for.
      * @return {@code true} if the revision contains {@code templateFragment}, {@code false}
      *         otherwise.
-     * @throws WikiApiException
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public boolean revisionContainsTemplateFragmentWithoutIndex(int revId, String templateFragment)
         throws WikiApiException
@@ -1310,7 +1305,8 @@ public class WikipediaTemplateInfo
      *            a template to look for
      * @param type
      *            the type of template change (add or remove) that should be extracted
-     * @return list of revision pairs containing the desired template changes
+     * @return list of revision pairs containing the desired template changes.
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public List<RevisionPair> getArticleRevisionPairs(String template,
             RevisionPair.RevisionPairType type)
@@ -1320,8 +1316,7 @@ public class WikipediaTemplateInfo
             revApi = new RevisionApi(wiki.getDatabaseConfiguration());
         }
         // get revisions via index (this COULD take a while)
-        List<Integer> revIds = getRevisionIdsContainingTemplateNames(
-                Arrays.asList(new String[] { template }));
+        List<Integer> revIds = getRevisionIdsContainingTemplateNames(List.of(template));
         System.out.println(revIds.size() + " revisions with given template found"); // TODO
                                                                                     // DEBUGCODE
         List<RevisionPair> resultList = new LinkedList<>();
@@ -1402,7 +1397,8 @@ public class WikipediaTemplateInfo
      *            the template to look for
      * @param type
      *            the type of template change (add or remove) that should be extracted
-     * @return list of revision pairs containing the desired template changes
+     * @return list of revision pairs containing the desired template changes.
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public List<RevisionPair> getRevisionPairs(int pageId, String template,
             RevisionPair.RevisionPairType type)
@@ -1421,8 +1417,7 @@ public class WikipediaTemplateInfo
                     revApi.getRevision(pageId, ts).getRevisionID(), template));
         }
 
-        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(
-                Comparator.comparing(Entry::getKey));
+        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(Entry.comparingByKey());
         entries.addAll(tplIndexMap.entrySet());
 
         Entry<Timestamp, Boolean> prev = null;
@@ -1462,13 +1457,15 @@ public class WikipediaTemplateInfo
      * @param type
      *            the type of template change (add or remove) that should be extracted
      * @return list of revision pairs containing the desired template changes
+     * @throws WikiApiException Thrown if errors occurred.
      */
     public List<RevisionPair> getRevisionPairsWithoutIndex(int pageId, String template,
             RevisionPair.RevisionPairType type)
         throws WikiApiException
     {
         System.err.println(
-                "This methods has to parse each revision of the given page. If you have a revision-template index, please use getRevisionPairs().");
+                "This methods has to parse each revision of the given page. " +
+                        "If you have a revision-template index, please use getRevisionPairs().");
         if (revApi == null) {
             revApi = new RevisionApi(wiki.getDatabaseConfiguration());
         }
@@ -1482,8 +1479,7 @@ public class WikipediaTemplateInfo
                     revApi.getRevision(pageId, ts).getRevisionID(), template));
         }
 
-        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(
-                Comparator.comparing(Entry::getKey));
+        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(Entry.comparingByKey());
         entries.addAll(tplIndexMap.entrySet());
 
         Entry<Timestamp, Boolean> prev = null;
@@ -1515,15 +1511,16 @@ public class WikipediaTemplateInfo
     /**
      * Checks if a specific table exists
      *
-     * @param table
-     *            the table to check
-     * @return true, if table exists, false else
+     * @param table the table's name to check.
+     * @return {@code true} if table exists, {@code false} otherwise.
      * @throws SQLException
-     *             if an error occurs connecting to or querying the db
+     *             if an error occurs connecting to or querying the db.
      */
     public boolean tableExists(String table) throws SQLException
     {
-
+        if (table == null || table.isBlank()) {
+            return false;
+        }
         try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;");
                 ResultSet result = execute(statement)) {
 
@@ -1551,8 +1548,7 @@ public class WikipediaTemplateInfo
             String driverDB = "com.mysql.jdbc.Driver";
             Class.forName(driverDB);
 
-            c = DriverManager
-                    .getConnection(
+            c = DriverManager.getConnection(
                             "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase()
                                     + "?autoReconnect=true",
                             config.getUser(), config.getPassword());

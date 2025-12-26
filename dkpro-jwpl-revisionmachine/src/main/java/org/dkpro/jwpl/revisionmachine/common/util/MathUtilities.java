@@ -53,7 +53,7 @@ public class MathUtilities
      */
     public static double percentPlus(final double a, final double b)
     {
-        return round((double) a / (double) (a + b));
+        return round(a / (a + b));
     }
 
     /**

@@ -228,7 +228,7 @@ public class SQLPanel
     {
 
         Object o = config.getConfigParameter(ConfigurationKeys.MODE_OUTPUT);
-        if ((OutputType) o == OutputType.DATABASE) {
+        if (o == OutputType.DATABASE) {
             controller.setEnableSQLDatabaseOutput(true);
         }
 

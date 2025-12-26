@@ -101,7 +101,7 @@ public class CategorylinksParser
         // read ',' or ';'. If ';' is found then skip statement or expect eof.
         st.nextToken();
 
-        if (st.toString().substring(7, 8).equals(";")) {
+        if (st.toString().charAt(7) == ';') {
             skipStatements();
         }
         return true;

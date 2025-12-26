@@ -118,7 +118,7 @@ public abstract class GenericDAO<T>
     public T merge(T detachedInstance)
     {
         try {
-            T result = (T) getSession().merge(detachedInstance);
+            T result = getSession().merge(detachedInstance);
             logger.trace("merge successful");
             return result;
         }
