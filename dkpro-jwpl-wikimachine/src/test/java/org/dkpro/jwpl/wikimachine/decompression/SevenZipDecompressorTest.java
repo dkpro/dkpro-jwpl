@@ -18,7 +18,9 @@
 package org.dkpro.jwpl.wikimachine.decompression;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -47,6 +49,12 @@ class SevenZipDecompressorTest extends AbstractDecompressorTest {
     @ValueSource(strings = {"archive.txt.7z", "src/test/resources/archive.txt.7z"})
     void testGetInputStream(String input) throws IOException {
         getAndCheck(input);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"empty.txt.7z", "src/test/resources/empty.txt.7z"})
+    void testGetInputStreamWithEmptyArchive(String input) {
+        assertThrows(EOFException.class, () -> getDecompressor().getInputStream(input));
     }
 
     @Test
