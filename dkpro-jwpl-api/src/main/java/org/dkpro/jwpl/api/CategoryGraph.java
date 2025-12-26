@@ -579,7 +579,6 @@ public class CategoryGraph
             currentPath.addAll(savedPath);
         }
 
-        return;
     }
 
     /**

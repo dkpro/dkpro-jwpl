@@ -72,14 +72,12 @@ public class ParsedPageCSS
         sb.append("table.Section{ width: 100%; }");
         sb.append("th.Section{ margin: 0px; padding: 0px; background-color: #FFFF00; }");
         sb.append(" table.SectionTh{ margin: 0px;}");
-        sb.append(
-                " th.SectionTh{ border-width: 0px; border-style:none; background-color: #FFFF00; vertical-align: middle; }");
+        sb.append(" th.SectionTh{ border-width: 0px; border-style:none; background-color: #FFFF00; vertical-align: middle; }");
         sb.append("td.Section{ background-color: #EEEEEE; }");
         sb.append(LF);
         sb.append("table.Template{ margin: 2px; }");
         sb.append("th.Template{ font-size: 7pt; padding: 1px; background-color: #99CCCC; }");
         sb.append("td.Template{ padding: 5px; }");
-        sb.append("");
         sb.append("table.Table{ margin: 2px; background-color: #EEEEEE; }");
         sb.append("th.Table{ font-size: 7pt; padding: 1px; background-color: #FF0000; }");
         sb.append("td.Table{ padding: 5px; background-color: #FFCCCC;}");

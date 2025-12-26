@@ -111,10 +111,10 @@ public class RevisionPair
                 // add inline marker for the template
                 beforeSections = ParseUtils.getSections(before.getRevisionText(),
                         before.getRevisionID() + "", before.getRevisionID(),
-                        Arrays.asList(new String[] { template }));
+                        Arrays.asList(template));
                 afterSections = ParseUtils.getSections(after.getRevisionText(),
                         after.getRevisionID() + "", after.getRevisionID(),
-                        Arrays.asList(new String[] { template }));
+                        Arrays.asList(template));
             }
             else {
                 // no inline markers

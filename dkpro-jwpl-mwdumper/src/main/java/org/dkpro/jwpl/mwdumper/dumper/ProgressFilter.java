@@ -95,6 +95,6 @@ public class ProgressFilter
 
     private static Object rate(long delta, int count)
     {
-        return (delta > 0.001) ? (Double) (1000.0 * (double) count / (double) delta) : (Object) "-";
+        return (delta > 0.001) ? (Double) (1000.0 * (double) count / (double) delta) : "-";
     }
 }

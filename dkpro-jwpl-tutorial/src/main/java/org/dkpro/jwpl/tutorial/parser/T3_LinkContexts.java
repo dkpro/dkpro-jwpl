@@ -41,7 +41,7 @@ public class T3_LinkContexts
 
         // Link Context (return 1 token left, 2 token right of the link)
         for (Link link : pp.getLinks()) {
-            System.out.println(link.getContext(1, 0) + "<" + link.getText().toString().toUpperCase()
+            System.out.println(link.getContext(1, 0) + "<" + link.getText().toUpperCase()
                     + ">" + link.getContext(0, 2));
         }
     }

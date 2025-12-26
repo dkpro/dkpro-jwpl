@@ -968,9 +968,6 @@ public class ModularParser
                     // replace the source and remove the tags
                     sm.replace(startSpan.getStart(), endSpan.getEnd(), sb.toString());
                 }
-                else {
-                    continue;
-                }
             }
         }
     }
