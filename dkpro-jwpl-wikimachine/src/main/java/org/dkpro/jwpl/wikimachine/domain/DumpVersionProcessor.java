@@ -66,7 +66,7 @@ public class DumpVersionProcessor
     public void processRevision(RevisionParser revisionParser) throws IOException
     {
         for (IDumpVersion version : versions) {
-            version.initRevisionParsion();
+            version.initRevisionParsing();
         }
         int counter = 0;
         while (revisionParser.next()) {
@@ -79,7 +79,7 @@ public class DumpVersionProcessor
 
         for (IDumpVersion version : versions) {
             version.exportAfterRevisionParsing();
-            version.freeAfterRevisonParsing();
+            version.freeAfterRevisionParsing();
         }
 
         revisionParser.close();
@@ -186,7 +186,7 @@ public class DumpVersionProcessor
         }
     }
 
-    private void logAndClear(int counter, String event) throws IOException
+    private void logAndClear(int counter, String event)
     {
         if (step2Log != 0 && counter % step2Log == 0) {
             String message = event + " " + counter;

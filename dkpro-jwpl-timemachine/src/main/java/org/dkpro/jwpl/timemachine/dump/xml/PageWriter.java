@@ -36,7 +36,7 @@ public class PageWriter
     private Revision lastRevision;
     private final UTFDataOutputStream stream;
 
-    public PageWriter(OutputStream output) throws IOException
+    public PageWriter(OutputStream output)
     {
         this.stream = new UTFDataOutputStream(output);
     }
@@ -67,9 +67,7 @@ public class PageWriter
     @Override
     public void writeRevision(Revision revision) throws IOException
     {
-
         lastRevision = revision;
-
     }
 
     @Override

@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.timemachine.dump.version;
 
+import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
@@ -122,7 +124,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @Override
-    public void freeAfterRevisonParsing()
+    public void freeAfterRevisionParsing()
     {
         pageIdRevList = new HashSet<>(pageIdRevMap.keySet().size());
         pageIdRevList.addAll(pageIdRevMap.keySet());
@@ -170,7 +172,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
+    public void processCategoryLinksRow(CategorylinksParser clParser)
     {
         String cl_to_text = clParser.getClTo();
         if (cl_to_text != null) {
@@ -195,7 +197,6 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
     private void processCategoryLinksRowPageExists(Integer cl_from, Integer cl_to,
             String cl_to_text)
-        throws IOException
     {
         categoryPages.addRow(cl_to, cl_from);
         pageCategories.addRow(cl_from, cl_to);
@@ -205,7 +206,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
         }
     }
 
-    private void processCateforyLinksRowPageMiss(Integer cl_from, Integer cl_to) throws IOException
+    private void processCateforyLinksRowPageMiss(Integer cl_from, Integer cl_to)
     {
         // if category page id exists
         if (cNamePageIdMap.containsValue(cl_from)) {
@@ -216,7 +217,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processPageLinksRow(PagelinksParser plParser) throws IOException
+    public void processPageLinksRow(PagelinksParser plParser)
     {
         int pl_from = plParser.getPlFrom();
         String pl_to = plParser.getPlTo();
@@ -233,7 +234,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @Override
-    public void processPageRow(PageParser pageParser) throws IOException
+    public void processPageRow(PageParser pageParser)
     {
         switch (pageParser.getPageNamespace()) {
         case NS_CATEGORY: {
@@ -249,7 +250,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @SuppressWarnings("unchecked")
-    private void processPageRowCategory(PageParser pageParser) throws IOException
+    private void processPageRowCategory(PageParser pageParser)
     {
         if (!(skipCategory && pageParser.getPageIsRedirect())) {
             // retrieve page id and page title
@@ -272,7 +273,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @SuppressWarnings("unchecked")
-    private void processPageRowPage(PageParser pageParser) throws IOException
+    private void processPageRowPage(PageParser pageParser)
     {
         // retrieve page id and title
         int page_id = pageParser.getPageId();
@@ -338,7 +339,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @Override
-    public void processTextRow(TextParser textParser) throws IOException
+    public void processTextRow(TextParser textParser)
     {
         int text_id = textParser.getOldId();
 
@@ -356,7 +357,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
     }
 
-    private void processTextRowPage(TextParser textParser, int page_id) throws IOException
+    private void processTextRowPage(TextParser textParser, int page_id)
     {
         // get page name
         String pageName = pPageIdNameMap.get(page_id);
@@ -368,7 +369,7 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
     }
 
     @SuppressWarnings("unchecked")
-    private void processTextRowRedirect(TextParser textParser, int page_id) throws IOException
+    private void processTextRowRedirect(TextParser textParser, int page_id)
     {
         String destination = Redirects.getRedirectDestination(textParser.getOldText());
 

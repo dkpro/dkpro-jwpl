@@ -33,7 +33,7 @@ public class RevisionWriter
     private Page currentPage;
     private final DataOutputStream stream;
 
-    public RevisionWriter(OutputStream output) throws IOException
+    public RevisionWriter(OutputStream output)
     {
         this.stream = new DataOutputStream(output);
     }

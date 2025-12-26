@@ -46,23 +46,27 @@ public class SphinxWriter
         writer = new XmlWriter(stream);
     }
 
+    @Override
     public void close() throws IOException
     {
         writer.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         writer.openXml();
         // No containing element to open
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         // No containing element to close
         writer.closeXml();
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         // Nothing!
@@ -76,6 +80,7 @@ public class SphinxWriter
     /**
      * FIXME What's the "group" number here do? FIXME preprocess the text to strip some formatting?
      */
+    @Override
     public void writeEndPage() throws IOException
     {
         writer.openElement("document");
@@ -89,6 +94,7 @@ public class SphinxWriter
         _page = null;
     }
 
+    @Override
     public void writeRevision(Revision rev) throws IOException
     {
         _rev = rev;

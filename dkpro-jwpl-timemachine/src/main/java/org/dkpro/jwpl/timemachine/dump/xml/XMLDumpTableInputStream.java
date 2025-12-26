@@ -28,11 +28,9 @@ import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 
 /**
  * Decorator for an {@link InputStream}. Converts an XML source to SQL result in a separated thread
- * via <code>org.mediawiki.importer.XmlDumpReader</code>
+ * via {@code org.mediawiki.importer.XmlDumpReader}
  *
- * <ul>
- * <li>update 18.11.2009 : constructor is replaced by initialize method</li>
- * </ul>
+ * @see DumpTableInputStream
  */
 public class XMLDumpTableInputStream
     extends DumpTableInputStream
@@ -49,11 +47,11 @@ public class XMLDumpTableInputStream
     private XMLDumpTableInputStreamThread xmlInputThread;
 
     /**
-     * Decorator for InputStream, which allows to convert an XML input stream to SQL
+     * Decorator for InputStream, which allows to convert an XML input stream to SQL.
      *
-     * @param inputStream
-     *            XML input stream
-     * @throws IOException
+     * @param inputStream The XML input stream to process.
+     * @param table The type of table to dump.
+     * @throws IOException Thrown if IO errors occurred.
      */
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
