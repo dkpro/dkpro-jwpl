@@ -25,10 +25,6 @@
   <artifactId>dkpro-jwpl-wikimachine</artifactId>
   <name>WikiMachine</name>
 
-  <properties>
-    <xz.version>1.11</xz.version>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.dkpro.jwpl</groupId>
@@ -40,8 +36,8 @@
       <artifactId>commons-compress</artifactId>
     </dependency>
     <!--
-      Required for 7z support via commons-compress,
-      see: https://commons.apache.org/proper/commons-compress/limitations.html
+      Required for 7z support in commons-compress, see:
+      https://commons.apache.org/proper/commons-compress/limitations.html
      -->
     <dependency>
       <groupId>org.tukaani</groupId>

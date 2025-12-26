@@ -67,7 +67,7 @@ public class UniversalDecompressor
     private final Map<String, String> externalSupport;
 
     /**
-     * Archive extensions which are supported by {@code }UniversalDecompressor
+     * Holds extensions which are supported by {@link UniversalDecompressor}.
      */
     private final Map<String, IDecompressor> internalSupport;
 

@@ -65,8 +65,15 @@ public final class SevenZipDecompressor
                 }
             }
         } catch (IOException e) {
-            sbc.close();
+            try {
+                sbc.close();
+            } catch (IOException suppressed) {
+                e.addSuppressed(suppressed);
+            }
             throw e;
+        }
+        if (sbc.isOpen()) {
+            sbc.close();
         }
         return null;
     }

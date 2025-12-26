@@ -28,8 +28,8 @@ public interface IDecompressor
 {
     /**
      * Attempts to open an {@link InputStream} to a compressed archive.
-     * In this context, external archives a referenced via a relative or absolute path, including
-     * the actual file name of that resource.
+     * In this context, external archives are referenced via a relative or absolute path,
+     * including the actual file name of that resource.
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
@@ -43,8 +43,8 @@ public interface IDecompressor
 
     /**
      * Attempts to open an {@link InputStream} to a compressed archive.
-     * In this context, external archives a referenced via a relative or absolute path, including
-     * the actual file name of that resource.
+     * In this context, external archives are referenced via a relative or absolute path,
+     * including the actual file name of that resource.
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *

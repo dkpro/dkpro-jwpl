@@ -27,12 +27,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
+/**
+ * A common base {@link IDecompressor} implementation that provides methods to open
+ * resources via a specified {@link Path}.
+ *
+ * @see IDecompressor
+ */
 public abstract class AbstractDecompressor implements IDecompressor {
 
     /**
      * Attempts to open an {@link InputStream} to an external or internal resource.
-     * In this context, external resources a referenced via a relative or absolute path, including
-     * the actual file name of that resource.
+     * In this context, external resources are referenced via a relative or absolute path,
+     * including the actual file name of that resource.
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
@@ -59,8 +65,8 @@ public abstract class AbstractDecompressor implements IDecompressor {
 
     /**
      * Attempts to open a {@link SeekableByteChannel} to an external or internal resource.
-     * In this context, external resources a referenced via a relative or absolute path, including
-     * the actual file name of that resource.
+     * In this context, external resources are referenced via a relative or absolute path,
+     * including the actual file name of that resource.
      * In case only a plain file name is given and no directory or path elements are contained
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
