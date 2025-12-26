@@ -67,10 +67,8 @@ public class DataMachineFiles
 
     private File setOutputDirectory(File parentDirectory)
     {
-        File result = new File(
-                parentDirectory.getAbsolutePath() + File.separator + OUTPUT_DIRECTORY);
-
-        return result;
+        return new File(
+               parentDirectory.getAbsolutePath() + File.separator + OUTPUT_DIRECTORY);
     }
 
     public void setDataDirectory(String newDataDirectory)

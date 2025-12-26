@@ -123,7 +123,7 @@ public class Page
      */
     public Page(Wikipedia wiki, String pName, boolean useExactTitle) throws WikiApiException
     {
-        if (pName == null || pName.length() == 0) {
+        if (pName == null || pName.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
         this.wiki = wiki;

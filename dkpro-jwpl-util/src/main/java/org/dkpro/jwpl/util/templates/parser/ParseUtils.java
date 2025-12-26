@@ -115,9 +115,8 @@ public class ParseUtils
      * Returns CompiledPage produced by the SWEBLE parser using the SimpleWikiConfiguration.
      *
      * @return the parsed page
-     * @throws LinkTargetException
-     * @throws EngineException
-     *             if the wiki page could not be compiled by the parser
+     * @throws LinkTargetException Thrown if problems occurred during creation of the {@link PageTitle}.
+     * @throws EngineException Thrown if the wiki page could not be compiled by the parser.
      */
     private static EngProcessedPage getCompiledPage(String text, String title, long revision)
         throws LinkTargetException, EngineException
@@ -168,7 +167,6 @@ public class ParseUtils
             tpl = matcher.group(1);
         }
         return tpl;
-
     }
 
 }

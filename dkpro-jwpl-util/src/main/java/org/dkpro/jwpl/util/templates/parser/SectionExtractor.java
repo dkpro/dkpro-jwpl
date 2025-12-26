@@ -185,9 +185,9 @@ public class SectionExtractor
             }
             else {
                 String curLinkTitle = "";
-                for (AstNode n : link.getTitle()) {
+                for (AstNode<?> n : link.getTitle()) {
                     if (n instanceof AstText) {
-                        curLinkTitle = ((AstText) n).getContent().trim();
+                        curLinkTitle = ((AstText<?>) n).getContent().trim();
                     }
                 }
                 if (curLinkTitle.isEmpty()) {
@@ -231,7 +231,7 @@ public class SectionExtractor
     {
     }
 
-    public void visit(AstNode n)
+    public void visit(AstNode<?> n)
     {
     }
 
@@ -247,9 +247,9 @@ public class SectionExtractor
 
     public void visit(WtTemplate tmpl) throws IOException
     {
-        for (AstNode n : tmpl.getName()) {
+        for (AstNode<?> n : tmpl.getName()) {
             if (n instanceof AstText) {
-                String s = ((AstText) n).getContent();
+                String s = ((AstText<?>) n).getContent();
                 s = s.replace("\n", "").replace("\r", "");
                 if (!s.trim().isEmpty()) {
                     curTpls.add(s);
@@ -266,7 +266,7 @@ public class SectionExtractor
         }
     }
 
-    public void visit(AstText n)
+    public void visit(AstText<?> n)
     {
         bodyBuilder.append(n.getContent());
     }
@@ -276,9 +276,9 @@ public class SectionExtractor
 
         String title = null;
 
-        for (AstNode n : sect.getBody()) {
+        for (AstNode<?> n : sect.getBody()) {
             if (n instanceof AstText) {
-                title = ((AstText) n).getContent();
+                title = ((AstText<?>) n).getContent();
             }
         }
         iterate(sect.getBody());

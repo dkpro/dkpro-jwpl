@@ -56,7 +56,7 @@ public class InputPanel
      * <p>
      * Contains the settings related to the surrogate mode
      */
-    private class SurrogatePanel
+    private static class SurrogatePanel
         extends AbstractPanel
     {
 
@@ -424,7 +424,7 @@ public class InputPanel
         SurrogateModes surMode = controller.getSurrogates();
 
         String wikiEncoding = encodingField.getText();
-        if (wikiEncoding.length() == 0) {
+        if (wikiEncoding.isEmpty()) {
 
             errors.add(new ConfigItem(ConfigItemTypes.WARNING, ConfigErrorKeys.MISSING_VALUE,
                     "The CharacterEncoding was not set."));
@@ -469,7 +469,7 @@ public class InputPanel
             }
 
             archivePath = archive.getPath();
-            if (archivePath.length() == 0) {
+            if (archivePath.isEmpty()) {
                 errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.PATH_NOT_SET,
                         "The archive path is missing"));
             }

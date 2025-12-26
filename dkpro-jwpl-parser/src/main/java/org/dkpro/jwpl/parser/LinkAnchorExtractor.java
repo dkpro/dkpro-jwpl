@@ -98,7 +98,7 @@ public class LinkAnchorExtractor
             return outAnchors;
         }
         for (Link l : pp.getLinks()) {
-            if (l.getTarget().length() == 0) {
+            if (l.getTarget().isEmpty()) {
                 continue;
             }
 

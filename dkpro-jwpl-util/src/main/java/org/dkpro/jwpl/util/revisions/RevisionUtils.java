@@ -40,16 +40,15 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 @Deprecated(since = "2.0.0", forRemoval = true)
 public class RevisionUtils
 {
-    private RevisionApi revApi;
-    private Wikipedia wiki;
+    private final RevisionApi revApi;
+    private final Wikipedia wiki;
 
     public RevisionUtils(DatabaseConfiguration conf) throws WikiApiException
     {
-        wiki = new Wikipedia(conf);
-        revApi = new RevisionApi(conf);
+        this(new Wikipedia(conf), new RevisionApi(conf));
     }
 
-    public RevisionUtils(Wikipedia wiki, RevisionApi revApi) throws WikiApiException
+    public RevisionUtils(Wikipedia wiki, RevisionApi revApi)
     {
         this.revApi = revApi;
         this.wiki = wiki;
@@ -108,7 +107,7 @@ public class RevisionUtils
      *         article revision
      */
     public List<Revision> getDiscussionArchiveRevisionsForArticleRevision(int revisionId)
-        throws WikiApiException, WikiPageNotFoundException
+        throws WikiApiException
     {
         List<Revision> result = new LinkedList<>();
 

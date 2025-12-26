@@ -304,32 +304,16 @@ public class ConfigurationReader
         int length = list.getLength();
         for (int i = 0; i < length; i++) {
             node = list.item(i);
-
             name = node.getNodeName().toUpperCase();
-
-            if (name.equals(SECTION_MODE)) {
-                parseModeConfig(node, config);
-            }
-            else if (name.equals(SECTION_EXTERNALS)) {
-                parseExternalsConfig(node, config);
-            }
-            else if (name.equals(SECTION_INPUT)) {
-                parseInputConfig(node, config);
-            }
-            else if (name.equals(SECTION_OUTPUT)) {
-                parseOutputConfig(node, config);
-            }
-            else if (name.equals(SECTION_CACHE)) {
-                parseCacheConfig(node, config);
-            }
-            else if (name.equals(SECTION_LOGGING)) {
-                parseLoggingConfig(node, config);
-            }
-            else if (name.equals(SECTION_DEBUG)) {
-                parseDebugConfig(node, config);
-            }
-            else if (name.equals(SECTION_FILTER)) {
-                parseFilterConfig(node, config);
+            switch (name) {
+                case SECTION_MODE -> parseModeConfig(node, config);
+                case SECTION_EXTERNALS -> parseExternalsConfig(node, config);
+                case SECTION_INPUT -> parseInputConfig(node, config);
+                case SECTION_OUTPUT -> parseOutputConfig(node, config);
+                case SECTION_CACHE -> parseCacheConfig(node, config);
+                case SECTION_LOGGING -> parseLoggingConfig(node, config);
+                case SECTION_DEBUG -> parseDebugConfig(node, config);
+                case SECTION_FILTER -> parseFilterConfig(node, config);
             }
         }
 
@@ -486,23 +470,17 @@ public class ConfigurationReader
             nnode = list.item(i);
 
             name = nnode.getNodeName().toUpperCase();
-            if (name.equals(KEY_WIKIPEDIA_ENCODING)) {
-
-                value = nnode.getChildNodes().item(0).getNodeValue();
-                config.setConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING, value);
-
-            }
-            else if (name.equals(KEY_MODE_SURROGATES)) {
-
-                SurrogateModes oValue = SurrogateModes
-                        .parse(nnode.getChildNodes().item(0).getNodeValue());
-                config.setConfigParameter(ConfigurationKeys.MODE_SURROGATES, oValue);
-
-            }
-            else if (name.equals(SUBSECTION_ARCHIVE)) {
-
-                parseInputArchive(nnode, config);
-
+            switch (name) {
+                case KEY_WIKIPEDIA_ENCODING -> {
+                  value = nnode.getChildNodes().item(0).getNodeValue();
+                  config.setConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING, value);
+                }
+                case KEY_MODE_SURROGATES -> {
+                  SurrogateModes oValue = SurrogateModes
+                          .parse(nnode.getChildNodes().item(0).getNodeValue());
+                  config.setConfigParameter(ConfigurationKeys.MODE_SURROGATES, oValue);
+                }
+                case SUBSECTION_ARCHIVE -> parseInputArchive(nnode, config);
             }
         }
     }

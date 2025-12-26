@@ -138,8 +138,8 @@ public class ArticleFilter
     public boolean checkArticle(String title)
     {
         // if filter isn't initialized, do not filter at all
-        if (namespaceMap == null || namespaceMap.size() == 0 || allowedNamespaces == null
-                || allowedNamespaces.size() == 0) {
+        if (namespaceMap == null || namespaceMap.isEmpty() || allowedNamespaces == null
+                || allowedNamespaces.isEmpty()) {
             return true;
         }
         // else, do filter

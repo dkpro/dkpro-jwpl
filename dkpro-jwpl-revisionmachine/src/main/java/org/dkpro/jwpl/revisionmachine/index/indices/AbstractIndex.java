@@ -44,23 +44,15 @@ public abstract class AbstractIndex
     /**
      * MAX_ALLOWED_PACKET
      */
-    protected long MAX_ALLOWED_PACKET;
+    protected final long MAX_ALLOWED_PACKET;
 
     /**
      * (Constructor) Creates an index object.
      */
     public AbstractIndex()
     {
-
-        this.bufferList = new ArrayList<>();
-        this.buffer = null;
-
-        // does not really matter here- should be big to speed up data file creation
-        this.MAX_ALLOWED_PACKET = 16760832;
-
-        this.insertStatement = "";
-
-        storeBuffer();
+        // does not really matter here - should be big to speed up data file creation
+        this ("", 16760832);
     }
 
     /**
@@ -73,12 +65,10 @@ public abstract class AbstractIndex
      */
     public AbstractIndex(final String insertStatement, final long MAX_ALLOWED_PACKET)
     {
-
         this.bufferList = new ArrayList<>();
         this.buffer = null;
 
         this.MAX_ALLOWED_PACKET = MAX_ALLOWED_PACKET;
-
         this.insertStatement = insertStatement;
 
         storeBuffer();
@@ -129,7 +119,6 @@ public abstract class AbstractIndex
      */
     protected void storeBuffer()
     {
-
         if (buffer != null && buffer.length() > insertStatement.length()) {
             if (!insertStatement.isEmpty()) {
                 // only do this in SQL/DATABASE MODE

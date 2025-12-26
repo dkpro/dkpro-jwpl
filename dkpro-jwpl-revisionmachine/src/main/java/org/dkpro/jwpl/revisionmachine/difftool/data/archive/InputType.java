@@ -51,17 +51,12 @@ public enum InputType
     {
 
         String t = s.toUpperCase();
+        return switch (t) {
+            case "XML" -> XML;
+            case "SEVENZIP" -> SEVENZIP;
+            case "BZIP2" -> BZIP2;
+            default -> throw new IllegalArgumentException("Unknown InputType : " + s);
+        };
 
-        if (t.equals("XML")) {
-            return XML;
-        }
-        else if (t.equals("SEVENZIP")) {
-            return SEVENZIP;
-        }
-        else if (t.equals("BZIP2")) {
-            return BZIP2;
-        }
-
-        throw new IllegalArgumentException("Unknown InputType : " + s);
     }
 }

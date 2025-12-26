@@ -90,7 +90,7 @@ public class WikipediaTemplateInfoDumpWriter
 
                 StringBuilder curValues = new StringBuilder();
                 for (Integer pId : curPageIds) {
-                    if (curValues.length() > 0) {
+                    if (!curValues.isEmpty()) {
                         curValues.append(",");
                     }
                     curValues.append("(" + id + ", ");

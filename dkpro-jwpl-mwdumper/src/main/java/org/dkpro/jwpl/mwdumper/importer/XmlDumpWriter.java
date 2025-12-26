@@ -107,7 +107,7 @@ public class XmlDumpWriter
         writer.textElement("title", page.Title.toString());
         if (page.Id != 0)
             writer.textElement("id", Integer.toString(page.Id));
-        if (page.Restrictions != null && page.Restrictions.length() != 0)
+        if (page.Restrictions != null && !page.Restrictions.isEmpty())
             writer.textElement("restrictions", page.Restrictions);
     }
 
@@ -134,7 +134,7 @@ public class XmlDumpWriter
         if (rev.Comment == null) {
             writer.emptyElement("comment", deletedAttrib);
         }
-        else if (rev.Comment.length() != 0) {
+        else if (!rev.Comment.isEmpty()) {
             writer.textElement("comment", rev.Comment);
         }
 

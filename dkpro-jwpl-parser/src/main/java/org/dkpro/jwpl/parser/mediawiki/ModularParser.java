@@ -54,6 +54,7 @@ public class ModularParser
 
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
+    public static final String SYMBOL_PIPE = "|";
 
     // Options, set by the ParserFactory
     private String lineSeparator;
@@ -259,31 +260,32 @@ public class ModularParser
         StringBuilder result = new StringBuilder();
 
         result.append("MediaWikiParser configuration:\n");
-        result.append("ParserClass: ").append(this.getClass()).append("\n");
-        result.append("ShowImageText: ").append(showImageText).append("\n");
-        result.append("DeleteTags: ").append(deleteTags).append("\n");
-        result.append("ShowMathTagContent: ").append(showMathTagContent).append("\n");
-        result.append("CalculateSrcSpans: ").append(calculateSrcSpans).append("\n");
+        final String lBreak = "\n";
+        result.append("ParserClass: ").append(this.getClass()).append(lBreak);
+        result.append("ShowImageText: ").append(showImageText).append(lBreak);
+        result.append("DeleteTags: ").append(deleteTags).append(lBreak);
+        result.append("ShowMathTagContent: ").append(showMathTagContent).append(lBreak);
+        result.append("CalculateSrcSpans: ").append(calculateSrcSpans).append(lBreak);
 
         result.append("LanguageIdentifiers: ");
         for (String s : languageIdentifiers) {
             result.append(s).append(" ");
         }
-        result.append("\n");
+        result.append(lBreak);
 
         result.append("CategoryIdentifiers: ");
         for (String s : categoryIdentifiers) {
             result.append(s).append(" ");
         }
-        result.append("\n");
+        result.append(lBreak);
 
         result.append("ImageIdentifiers: ");
         for (String s : imageIdentifiers) {
             result.append(s).append(" ");
         }
-        result.append("\n");
+        result.append(lBreak);
 
-        result.append("TemplateParser: ").append(templateParser.getClass()).append("\n");
+        result.append("TemplateParser: ").append(templateParser.getClass()).append(lBreak);
         result.append(templateParser.configurationInfo());
 
         return result.toString();
@@ -330,7 +332,7 @@ public class ModularParser
 
         // check if the is something to parse. sometimes there is an empty string
         // due to an error of other classes...
-        if (src == null || src.length() == 0) {
+        if (src == null || src.isEmpty()) {
             return null;
         }
 
@@ -359,14 +361,14 @@ public class ModularParser
         sm.manageList(cepp.noWikiSpans);
         parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "PRE", " ");
         parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "NOWIKI");
-        if (cepp.noWikiSpans.size() == 0) {
+        if (cepp.noWikiSpans.isEmpty()) {
             sm.removeManagedList(cepp.noWikiSpans);
         }
 
         // Parsing the Math Tags...
         sm.manageList(cepp.mathSpans);
         parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
-        if (cepp.mathSpans.size() == 0) {
+        if (cepp.mathSpans.isEmpty()) {
             sm.removeManagedList(cepp.mathSpans);
         }
 
@@ -856,7 +858,7 @@ public class ModularParser
             spans.add(s);
         }
 
-        if (spans.size() == 0) {
+        if (spans.isEmpty()) {
             sm.removeManagedList(spans);
         }
     }
@@ -883,13 +885,13 @@ public class ModularParser
                 continue;
             }
 
-            int templateOptionTag = sm.indexOf("|", templateOpenTag, templateCloseTag);
+            int templateOptionTag = sm.indexOf(SYMBOL_PIPE, templateOpenTag, templateCloseTag);
             int templateNameEnd;
             List<String> templateOptions;
 
             if (templateOptionTag != -1) {
                 templateNameEnd = templateOptionTag;
-                templateOptions = tokenize(sm, templateOptionTag + 1, templateCloseTag, "|");
+                templateOptions = tokenize(sm, templateOptionTag + 1, templateCloseTag, SYMBOL_PIPE);
             }
             else {
                 templateNameEnd = templateCloseTag;
@@ -1042,7 +1044,7 @@ public class ModularParser
                         s.setEnd(multipleCols);
                     }
 
-                    int optionTagPos = sm.indexOf("|", s.getStart() + pos + 1, s.getEnd());
+                    int optionTagPos = sm.indexOf(SYMBOL_PIPE, s.getStart() + pos + 1, s.getEnd());
 
                     if (optionTagPos != -1) {
                         s.setStart(optionTagPos + 1).trim(sm);
@@ -1062,7 +1064,7 @@ public class ModularParser
             tableDataSpans.addLast(s);
         }
 
-        if (tableDataSpans.size() != 0) {
+        if (!tableDataSpans.isEmpty()) {
 
             SrcSpan ei = null;
             if (calculateSrcSpans) {
@@ -1225,7 +1227,7 @@ public class ModularParser
             // rs = new Span(s, e).trim( sm );
             // if( rs.length()>0 ) result.add( sm.substring( rs ) );
             token = sm.substring(s, e).trim();
-            if (token.length() > 0) {
+            if (!token.isEmpty()) {
                 result.add(token);
             }
             s = e + delim.length();
@@ -1233,7 +1235,7 @@ public class ModularParser
         // rs = new Span(s, end).trim( sm );
         // if( rs.length()>0 ) result.add( sm.substring( rs ) );
         token = sm.substring(s, end).trim();
-        if (token.length() > 0) {
+        if (!token.isEmpty()) {
             result.add(token);
         }
 
@@ -1356,7 +1358,7 @@ public class ModularParser
                 continue;
             }
 
-            int linkOptionTag = sm.indexOf("|", linkStartTag, linkEndTag);
+            int linkOptionTag = sm.indexOf(SYMBOL_PIPE, linkStartTag, linkEndTag);
 
             int linkTextStart;
             String linkTarget;
@@ -1381,14 +1383,14 @@ public class ModularParser
 
             String namespace = getLinkNameSpace(linkTarget);
             if (namespace != null) {
-                if (imageIdentifiers.indexOf(namespace) != -1) {
+                if (imageIdentifiers.contains(namespace)) {
                     if (linkOptionTag != -1) {
                         int temp;
-                        while ((temp = sm.indexOf("|", linkTextStart, linkEndTag)) != -1) {
+                        while ((temp = sm.indexOf(SYMBOL_PIPE, linkTextStart, linkEndTag)) != -1) {
                             linkTextStart = temp + 1;
                         }
 
-                        parameters = tokenize(sm, linkOptionTag + 1, linkEndTag, "|");
+                        parameters = tokenize(sm, linkOptionTag + 1, linkEndTag, SYMBOL_PIPE);
 
                         // maybe there is an external link at the end of the
                         // image description...
@@ -1441,17 +1443,13 @@ public class ModularParser
     }
 
     /**
-     * Searches the Range given by the Span s for the double occurence of "quotation" and puts the
+     * Searches the Range given by the Span s for the double occurrence of "quotation" and puts the
      * results in the List quotedSpans. The Quotation tags will be deleted.
      *
-     * @param sm
-     *            , the Source in which will be searched
-     * @param s
-     *            , the range in which will be searched
-     * @param quotedSpans
-     *            , the List where the Spans will be placed, should be managed by the SpanManager sm
-     * @param quotation
-     *            , the start and end tag as String
+     * @param sm the Source in which will be searched
+     * @param s  the range in which will be searched
+     * @param quotedSpans the List where the Spans will be placed, should be managed by the SpanManager sm
+     * @param quotation the start and end tag as String
      */
     private void parseQuotedSpans(SpanManager sm, Span s, List<Span> quotedSpans, String quotation)
     {
@@ -1575,7 +1573,7 @@ public class ModularParser
 
     /**
      * Building a ContentElement, this function is calls by all the other parseContentElement(..)
-     * functions
+     * functions.
      */
     private ContentElement parseContentElement(SpanManager sm, ContentElementParsingParameters cepp,
             LinkedList<Span> lineSpans, ContentElement result)

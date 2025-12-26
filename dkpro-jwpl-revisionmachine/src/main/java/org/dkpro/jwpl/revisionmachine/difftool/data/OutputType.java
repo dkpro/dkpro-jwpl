@@ -59,23 +59,14 @@ public enum OutputType
     {
 
         String t = s.toUpperCase();
+        return switch (t) {
+            case "UNCOMPRESSED" -> OutputType.UNCOMPRESSED;
+            case "SEVENZIP" -> OutputType.SEVENZIP;
+            case "BZIP2" -> OutputType.BZIP2;
+            case "DATABASE" -> OutputType.DATABASE;
+            case "ALTERNATE" -> OutputType.ALTERNATE;
+            default -> throw new IllegalArgumentException("Unknown OutputType : " + s);
+        };
 
-        if (t.equals("UNCOMPRESSED")) {
-            return OutputType.UNCOMPRESSED;
-        }
-        else if (t.equals("SEVENZIP")) {
-            return OutputType.SEVENZIP;
-        }
-        else if (t.equals("BZIP2")) {
-            return OutputType.BZIP2;
-        }
-        else if (t.equals("DATABASE")) {
-            return OutputType.DATABASE;
-        }
-        else if (t.equals("ALTERNATE")) {
-            return OutputType.ALTERNATE;
-        }
-
-        throw new IllegalArgumentException("Unknown OutputType : " + s);
     }
 }

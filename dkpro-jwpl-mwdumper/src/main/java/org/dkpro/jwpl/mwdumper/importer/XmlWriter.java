@@ -143,7 +143,7 @@ public class XmlWriter
 
     public void textElement(String element, String text, String[][] attributes) throws IOException
     {
-        if (text == null || text.length() == 0) {
+        if (text == null || text.isEmpty()) {
             emptyElement(element, attributes);
         }
         else {

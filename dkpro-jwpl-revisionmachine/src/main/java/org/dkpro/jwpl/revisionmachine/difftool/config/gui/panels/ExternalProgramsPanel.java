@@ -216,7 +216,7 @@ public class ExternalProgramsPanel
 
             if (sevenzip) {
                 cmd = sevenZipPathField.getText();
-                if (cmd.length() == 0) {
+                if (cmd.isEmpty()) {
                     errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.PATH_NOT_SET,
                             "The path to the 7Zip executable" + " is missing."));
                 }

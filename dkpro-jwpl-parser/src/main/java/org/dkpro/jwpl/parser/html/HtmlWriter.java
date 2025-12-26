@@ -239,18 +239,18 @@ public class HtmlWriter
                 + convertTags(ce.getText()) + "\"\n" + "</td></tr>\n");
 
         String BoldWords = ce.getText(ce.getFormatSpans(FormatType.BOLD));
-        if (BoldWords.length() > 0) {
+        if (!BoldWords.isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">BoldWords: " + convertTags(BoldWords)
                     + "</td></tr>\n");
         }
 
         String ItalicWords = ce.getText(ce.getFormatSpans(FormatType.ITALIC));
-        if (ItalicWords.length() > 0) {
+        if (!ItalicWords.isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">italicWords: "
                     + convertTags(ItalicWords) + "</td></tr>\n");
         }
 
-        if (ce.getFormatSpans(FormatType.MATH).size() != 0) {
+        if (!ce.getFormatSpans(FormatType.MATH).isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">MathTags\n");
             for (Span s : ce.getFormatSpans(FormatType.MATH)) {
                 result.append(s.toString() + "\n");
@@ -258,7 +258,7 @@ public class HtmlWriter
             result.append("</td></tr>\n");
         }
 
-        if (ce.getFormatSpans(FormatType.TAG).size() != 0) {
+        if (!ce.getFormatSpans(FormatType.TAG).isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">Tags:\n");
             for (Span s : ce.getFormatSpans(FormatType.TAG)) {
                 result.append(s.toString() + "\n");
@@ -266,7 +266,7 @@ public class HtmlWriter
             result.append("</td></tr>\n");
         }
 
-        if (ce.getLinks().size() != 0) {
+        if (!ce.getLinks().isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">\n");
             for (Link l : ce.getLinks()) {
                 result.append(linkToHtml(l));
@@ -274,7 +274,7 @@ public class HtmlWriter
             result.append("</td></tr>\n");
         }
 
-        if (ce.getTemplates().size() != 0) {
+        if (!ce.getTemplates().isEmpty()) {
             result.append("<tr><td class=\"" + cssClass + "\">\n");
             for (Template t : ce.getTemplates()) {
                 result.append(templateToHtml(t));
@@ -429,7 +429,7 @@ public class HtmlWriter
         result.append("<div class=\"Link\"><b class=\"Link\">Link:</b>" + l.getType() + ": \""
                 + convertTags(l.getText()) + "\" -> \"" + convertTags(l.getTarget()) + "\"");
 
-        if (l.getParameters().size() != 0) {
+        if (!l.getParameters().isEmpty()) {
             for (String parameter : l.getParameters()) {
                 result.append("<br>\nPARAMETER: \"" + convertTags(parameter) + "\"");
             }
@@ -455,7 +455,7 @@ public class HtmlWriter
                 + "<tr><th class=\"Template\">Template</th></tr>\n" + "<tr><td class=\"Template\">"
                 + "Name: \"" + convertTags(t.getName()) + "\"<br>" + "</td></tr>\n");
 
-        if (t.getParameters().size() != 0) {
+        if (!t.getParameters().isEmpty()) {
             result.append("<tr><td class=\"Template\">");
             for (String parameter : t.getParameters()) {
                 result.append("Parameter: \"" + convertTags(parameter) + "\"<br>");

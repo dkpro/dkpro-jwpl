@@ -59,25 +59,16 @@ public enum SurrogateModes
 
         String t = s.toUpperCase();
 
-        if (t.equals("REPLACE")) {
-            // return REPLACE;
-            throw new UnsupportedOperationException(
-                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-        }
-        else if (t.equals("THROW_ERROR")) {
-            // return THROW_ERROR;
-            throw new UnsupportedOperationException(
-                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-        }
-        else if (t.equals("DISCARD_REST")) {
-            // return DISCARD_REST;
-            throw new UnsupportedOperationException(
-                    "This mode is currently not supported. Please check the implementation first. For now, you can use the default mode DISCARD_REVISION");
-        }
-        else if (t.equals("DISCARD_REVISION")) {
-            return DISCARD_REVISION;
-        }
+        final String msg = "This mode is currently not supported. " +
+                "Please check the implementation first. For now, you can use the default mode DISCARD_REVISION";
+        // return REPLACE;
+        // return THROW_ERROR;
+        // return DISCARD_REST;
+        return switch (t) {
+            case "REPLACE", "THROW_ERROR", "DISCARD_REST" -> throw new UnsupportedOperationException(msg);
+            case "DISCARD_REVISION" -> DISCARD_REVISION;
+            default -> throw new IllegalArgumentException("Unknown SurrogateModes : " + s);
+        };
 
-        throw new IllegalArgumentException("Unknown SurrogateModes : " + s);
     }
 }

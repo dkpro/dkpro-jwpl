@@ -35,7 +35,7 @@ public abstract class ContentContainer
 
     public boolean empty()
     {
-        return ccl.size() == 0;
+        return ccl.isEmpty();
     }
 
     public String getText()

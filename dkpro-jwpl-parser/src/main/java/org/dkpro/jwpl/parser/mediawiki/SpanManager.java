@@ -280,7 +280,7 @@ public class SpanManager
             for (int k = 0; k < managedLists.size(); k++) {
                 List<Span> sl = managedLists.get(k);
                 result.append("{");
-                if (sl.size() != 0) {
+                if (!sl.isEmpty()) {
                     for (int i = 1; i < sl.size() - 1; i++)
                         result.append(sl.get(i) + ", ");
                     result.append(sl.get(sl.size() - 1));

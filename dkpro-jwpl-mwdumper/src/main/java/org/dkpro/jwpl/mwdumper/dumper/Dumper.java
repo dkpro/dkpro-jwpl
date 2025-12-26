@@ -103,43 +103,39 @@ class Dumper
             String[] bits = splitArg(arg);
             if (bits != null) {
                 String opt = bits[0], val = bits[1], param = bits[2];
-                if (opt.equals("output")) {
-                    if (output != null) {
+                switch (opt) {
+                    case "output" -> {
+                      if (output != null) {
                         // Finish constructing the previous output...
                         if (sink == null) {
-                            sink = new XmlDumpWriter(output.getFileStream());
+                          sink = new XmlDumpWriter(output.getFileStream());
                         }
                         writers.add(sink);
                         sink = null;
+                      }
+                      output = openOutputFile(val, param);
                     }
-                    output = openOutputFile(val, param);
-                }
-                else if (opt.equals("format")) {
-                    if (output == null) {
+                    case "format" -> {
+                      if (output == null) {
                         output = new OutputWrapper(Tools.openStandardOutput());
-                    }
-                    if (sink != null) {
+                      }
+                      if (sink != null) {
                         throw new IllegalArgumentException("Only one format per output allowed.");
+                      }
+                      sink = openOutputSink(output, val, param);
                     }
-                    sink = openOutputSink(output, val, param);
-                }
-                else if (opt.equals("filter")) {
-                    if (sink == null) {
+                    case "filter" -> {
+                      if (sink == null) {
                         if (output == null) {
-                            output = new OutputWrapper(Tools.openStandardOutput());
+                          output = new OutputWrapper(Tools.openStandardOutput());
                         }
                         sink = new XmlDumpWriter(output.getFileStream());
+                      }
+                      sink = addFilter(sink, val, param);
                     }
-                    sink = addFilter(sink, val, param);
-                }
-                else if (opt.equals("progress")) {
-                    progressInterval = Integer.parseInt(val);
-                }
-                else if (opt.equals("quiet")) {
-                    progressInterval = 0;
-                }
-                else {
-                    throw new IllegalArgumentException("Unrecognized option " + opt);
+                    case "progress" -> progressInterval = Integer.parseInt(val);
+                    case "quiet" -> progressInterval = 0;
+                    default -> throw new IllegalArgumentException("Unrecognized option " + opt);
                 }
             }
             else if (arg.equals("-")) {
@@ -168,10 +164,7 @@ class Dumper
         }
         writers.add(sink);
 
-        DumpWriter outputSink = (progressInterval > 0)
-                ? new ProgressFilter(writers, progressInterval)
-                : writers;
-
+        DumpWriter outputSink = (progressInterval > 0) ? new ProgressFilter(writers, progressInterval) : writers;
         XmlDumpReader reader = new XmlDumpReader(input, outputSink);
         reader.readDump();
     }
@@ -249,27 +242,15 @@ class Dumper
 
     static OutputWrapper openOutputFile(String dest, String param) throws IOException
     {
-        if (dest.equals("stdout")) {
-            return new OutputWrapper(Tools.openStandardOutput());
-        }
-        else if (dest.equals("file")) {
-            return new OutputWrapper(Tools.createOutputFile(param));
-        }
-        else if (dest.equals("gzip")) {
-            return new OutputWrapper(new GZIPOutputStream(Tools.createOutputFile(param)));
-        }
-        else if (dest.equals("bzip2")) {
-            return new OutputWrapper(Tools.createBZip2File(param));
-        }
-        else if (dest.equals("mysql")) {
-            return connectMySql(param);
-        }
-        else if (dest.equals("postgresql")) {
-            return connectPostgres(param);
-        }
-        else {
-            throw new IllegalArgumentException("Destination sink not implemented: " + dest);
-        }
+        return switch (dest) {
+            case "stdout" -> new OutputWrapper(Tools.openStandardOutput());
+            case "file" -> new OutputWrapper(Tools.createOutputFile(param));
+            case "gzip" -> new OutputWrapper(new GZIPOutputStream(Tools.createOutputFile(param)));
+            case "bzip2" -> new OutputWrapper(Tools.createBZip2File(param));
+            case "mysql" -> connectMySql(param);
+            case "postgresql" -> connectPostgres(param);
+            default -> throw new IllegalArgumentException("Destination sink not implemented: " + dest);
+        };
     }
 
     private static OutputWrapper connectMySql(String param) throws IOException
@@ -299,39 +280,36 @@ class Dumper
     static DumpWriter openOutputSink(OutputWrapper output, String format, String param)
         throws IOException
     {
-        if (format.equals("xml")) {
-            return new XmlDumpWriter(output.getFileStream());
-        }
-        else if (format.equals("sphinx")) {
-            return new SphinxWriter(output.getFileStream());
-        }
-        else if (format.equals("mysql") || format.equals("pgsql") || format.equals("sql")) {
-            SqlStream sqlStream = output.getSqlStream();
-            SqlWriter ret;
+        switch (format) {
+            case "xml" -> {
+              return new XmlDumpWriter(output.getFileStream());
+            }
+            case "sphinx" -> {
+              return new SphinxWriter(output.getFileStream());
+            }
+            case "mysql", "pgsql", "sql" -> {
+              SqlStream sqlStream = output.getSqlStream();
+              SqlWriter ret;
 
-            SqlWriter.Traits tr;
-            if (format.equals("pgsql")) {
+              SqlWriter.Traits tr;
+              if (format.equals("pgsql")) {
                 tr = new SqlWriter.PostgresTraits();
-            }
-            else {
+              } else {
                 tr = new SqlWriter.MySQLTraits();
-            }
+              }
 
-            if (param.equals("1.4")) {
+              if (param.equals("1.4")) {
                 ret = new SqlWriter14(tr, sqlStream);
-            }
-            else if (param.equals("1.5")) {
+              } else if (param.equals("1.5")) {
                 ret = new SqlWriter15(tr, sqlStream);
-            }
-            else {
+              } else {
                 throw new IllegalArgumentException("SQL version not known: " + param);
-            }
+              }
 
-            return ret;
-        }
-        else {
-            throw new IllegalArgumentException("Output format not known: " + format);
-        }
+              return ret;
+            }
+            default -> throw new IllegalArgumentException("Output format not known: " + format);
+      }
     }
 
     // ----------------
@@ -339,35 +317,17 @@ class Dumper
     static DumpWriter addFilter(DumpWriter sink, String filter, String param)
         throws IOException, ParseException
     {
-        if (filter.equals("latest")) {
-            return new LatestFilter(sink);
-        }
-        else if (filter.equals("namespace")) {
-            return new NamespaceFilter(sink, param);
-        }
-        else if (filter.equals("notalk")) {
-            return new NotalkFilter(sink);
-        }
-        else if (filter.equals("titlematch")) {
-            return new TitleMatchFilter(sink, param);
-        }
-        else if (filter.equals("list")) {
-            return new ListFilter(sink, param);
-        }
-        else if (filter.equals("exactlist")) {
-            return new ExactListFilter(sink, param);
-        }
-        else if (filter.equals("revlist")) {
-            return new RevisionListFilter(sink, param);
-        }
-        else if (filter.equals("before")) {
-            return new BeforeTimeStampFilter(sink, param);
-        }
-        else if (filter.equals("after")) {
-            return new AfterTimeStampFilter(sink, param);
-        }
-        else {
-            throw new IllegalArgumentException("Filter unknown: " + filter);
-        }
+        return switch (filter) {
+            case "latest" -> new LatestFilter(sink);
+            case "namespace" -> new NamespaceFilter(sink, param);
+            case "notalk" -> new NotalkFilter(sink);
+            case "titlematch" -> new TitleMatchFilter(sink, param);
+            case "list" -> new ListFilter(sink, param);
+            case "exactlist" -> new ExactListFilter(sink, param);
+            case "revlist" -> new RevisionListFilter(sink, param);
+            case "before" -> new BeforeTimeStampFilter(sink, param);
+            case "after" -> new AfterTimeStampFilter(sink, param);
+            default -> throw new IllegalArgumentException("Filter unknown: " + filter);
+        };
     }
 }

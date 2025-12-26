@@ -174,7 +174,7 @@ public class FilterPanel
     /**
      * Custom model for JTable that contains a list of namespaces to filter
      */
-    class FilterTableModel
+    static class FilterTableModel
         extends AbstractTableModel
     {
         private final String[] columnNames = { "Namespace", "Allow", "#" };

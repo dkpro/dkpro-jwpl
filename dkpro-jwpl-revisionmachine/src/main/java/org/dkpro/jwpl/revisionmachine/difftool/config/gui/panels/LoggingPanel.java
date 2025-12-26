@@ -162,7 +162,7 @@ public class LoggingPanel
 
         // DIFFTOOL
         String pathDiffTool = diffToolField.getText();
-        if (pathDiffTool.length() == 0) {
+        if (pathDiffTool.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.WARNING, ConfigErrorKeys.PATH_NOT_SET,
                     "The root folder for all logs and debug" + " information has not been set."));
         }

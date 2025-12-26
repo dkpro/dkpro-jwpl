@@ -84,7 +84,7 @@ public class XmlDumpReader
      * Reads through the entire XML dump on the input stream, sending events to the DumpWriter as it
      * goes. May throw exceptions on invalid input or due to problems with the output.
      *
-     * @throws IOException
+     * @throws IOException Thrown if IO errors occurred reading the dump.
      */
     public void readDump() throws IOException
     {
@@ -177,27 +177,24 @@ public class XmlDumpReader
             if (qName == null)
                 return;
             // frequent tags:
-            if (qName == "revision")
-                openRevision();
-            else if (qName == "contributor")
-                openContributor();
-            else if (qName == "page")
-                openPage();
-            // rare tags:
-            else if (qName == "mediawiki")
-                openMediaWiki();
-            else if (qName == "siteinfo")
-                openSiteinfo();
-            else if (qName == "namespaces")
-                openNamespaces();
-            else if (qName == "namespace")
-                openNamespace(attributes);
+            switch (qName) {
+                case "revision" -> openRevision();
+                case "contributor" -> openContributor();
+                case "page" -> openPage();
+
+                // rare tags:
+                case "mediawiki" -> openMediaWiki();
+                case "siteinfo" -> openSiteinfo();
+                case "namespaces" -> openNamespaces();
+                case "namespace" -> openNamespace(attributes);
+            }
         }
         catch (IOException e) {
             throw new SAXException(e);
         }
     }
 
+    @Override
     public void characters(char[] ch, int start, int length)
     {
         if (buffer.length < len + length) {
@@ -213,6 +210,7 @@ public class XmlDumpReader
         hasContent = true;
     }
 
+    @Override
     public void endElement(String uri, String localname, String qName) throws SAXException
     {
         try {
@@ -449,7 +447,7 @@ public class XmlDumpReader
 
     void closeContributor()
     {
-        // NOTE: if the contributor was supressed, nither username nor id have been set in the
+        // NOTE: if the contributor was suppressed, neither username nor id have been set in the
         // Contributor object
         rev.Contributor = contrib;
         contrib = null;

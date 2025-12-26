@@ -207,7 +207,7 @@ public class CachePanel
 
         // Check the ArticleTask size input
         String text = this.articleTaskLimitField.getText();
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                     "The value for the size of ArticleTasks" + " is missing."));
         }
@@ -228,7 +228,7 @@ public class CachePanel
 
         // Check the DiffTask size input
         text = this.diffTaskLimitField.getText();
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                     "The value for the size of DiffTasks" + " is missing."));
         }
@@ -250,7 +250,7 @@ public class CachePanel
 
         // Check the SQLProducer MaxAllowedPacket input
         text = this.maxAllowedPacketField.getText();
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                     "The value for SQLProducer MaxAllowedPacket" + " is missing."));
         }

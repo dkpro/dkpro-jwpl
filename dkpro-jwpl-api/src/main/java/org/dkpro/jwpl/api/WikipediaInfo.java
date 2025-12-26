@@ -43,7 +43,7 @@ public class WikipediaInfo
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    private Iterable<Page> pages;
+    private final Iterable<Page> pages;
     private double averageFanOut;
 
     private int numberOfPages;
@@ -95,10 +95,8 @@ public class WikipediaInfo
 
         // get number of pages
         numberOfPages = 0;
-        Iterator<Page> it = pages.iterator();
-        while (it.hasNext()) {
+        for (Page page : pages) {
             numberOfPages++;
-            it.next();
         }
     }
 

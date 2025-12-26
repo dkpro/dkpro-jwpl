@@ -286,7 +286,7 @@ public class DebugPanel
             if (debugOutput) {
 
                 String path = debugOutputField.getText();
-                if (path.length() == 0) {
+                if (path.isEmpty()) {
                     errors.add(new ConfigItem(ConfigItemTypes.WARNING, ConfigErrorKeys.PATH_NOT_SET,
                             "The folder of the debug output is not specified."));
                 }

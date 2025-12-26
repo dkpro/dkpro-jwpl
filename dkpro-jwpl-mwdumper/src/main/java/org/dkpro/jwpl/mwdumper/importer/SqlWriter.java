@@ -339,7 +339,7 @@ public abstract class SqlWriter
 
     protected static String sqlEscape(String str)
     {
-        if (str.length() == 0)
+        if (str.isEmpty())
             return "''"; // TODO "NULL",too ?
         final int len = str.length();
         StringBuffer sql = new StringBuffer(len * 2);

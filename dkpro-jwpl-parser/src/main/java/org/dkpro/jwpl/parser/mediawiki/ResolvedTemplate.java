@@ -50,7 +50,7 @@ public class ResolvedTemplate
 
     private void checkPreParseReplacement()
     {
-        if (preParseReplacement == null || preParseReplacement.length() == 0) {
+        if (preParseReplacement == null || preParseReplacement.isEmpty()) {
             preParseReplacement = TEMPLATESPACER;
         }
     }

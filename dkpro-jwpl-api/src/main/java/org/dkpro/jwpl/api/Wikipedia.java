@@ -517,7 +517,7 @@ public class Wikipedia
      * @throws WikiPageNotFoundException Thrown if no {@link Page} exists for the given {@code pageTitle}.
      */
     public Set<Category> getCategories(String pageTitle) throws WikiPageNotFoundException {
-        if (pageTitle == null || pageTitle.length() == 0) {
+        if (pageTitle == null || pageTitle.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
 
