@@ -93,9 +93,6 @@ public class PerformanceIT
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
     }
 
-    @BeforeEach
-    public void setup() {}
-
     @Test
     public void testPerformanceLoadPagesIntern() throws WikiApiException
     {

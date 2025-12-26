@@ -38,7 +38,7 @@ public interface IDumpVersion
     /**
      * Formats the value of the bit to a String representation.
      * <p>
-     * This the way bit values are written<br> in .txt dump files.
+     * This is the way bit values are written in {@code .txt} dump files.
      *
      * @param b The boolean value to format.
      * @return {@code 1} if the given boolean is {@code true} or an empty String otherwise.
