@@ -54,7 +54,7 @@ public class ListFilter
                 if (title.startsWith(":"))
                     title = line.substring(1);
 
-                if (title.length() > 0)
+                if (!title.isEmpty())
                     list.put(title, title);
             }
             line = input.readLine();

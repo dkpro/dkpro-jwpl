@@ -156,7 +156,7 @@ public class TitleIterator
 
             titleStringBuffer.addAll(returnList);
 
-            if (titleStringBuffer.size() > 0) {
+            if (!titleStringBuffer.isEmpty()) {
                 bufferFillSize = titleStringBuffer.size();
                 return true;
             }

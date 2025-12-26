@@ -153,7 +153,7 @@ public class InputDialog
             addButton.setBounds(10, 170, 120, 25);
             addButton.addActionListener(e -> {
                 String path = pathField.getText();
-                if (path.length() == 0) {
+                if (path.isEmpty()) {
                     return;
                 }
 

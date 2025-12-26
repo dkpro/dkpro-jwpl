@@ -146,7 +146,7 @@ public class Redirects
             redirectString = redirectString.replace(" ", "_");
 
             // page titles always start with a capital letter
-            if (redirectString.length() > 0) {
+            if (!redirectString.isEmpty()) {
                 redirectString = redirectString.substring(0, 1).toUpperCase()
                         + redirectString.substring(1, redirectString.length());
             }

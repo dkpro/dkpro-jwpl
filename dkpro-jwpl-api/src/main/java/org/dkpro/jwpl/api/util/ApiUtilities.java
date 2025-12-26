@@ -68,7 +68,7 @@ public class ApiUtilities
         }
 
         if (counter % (size / step) == 0) {
-            double progressPercent = counter * 100 / size;
+            double progressPercent = (double) (counter * 100) / size;
             progressPercent = 1 + Math.round(progressPercent * 100) / 100.0;
             if (mode.equals(ApiUtilities.ProgressInfoMode.TEXT)) {
                 logger.info(text + ": " + progressPercent + " - " + OS.getUsedMemory() + " MB");

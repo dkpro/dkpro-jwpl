@@ -171,7 +171,7 @@ public class CategoryIterator
                     }
                 }
             }
-            if (buffer.size() > 0) {
+            if (!buffer.isEmpty()) {
                 bufferFillSize = buffer.size();
                 return true;
             }

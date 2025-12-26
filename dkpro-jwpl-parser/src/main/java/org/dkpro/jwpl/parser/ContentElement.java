@@ -101,8 +101,8 @@ public class ContentElement
     @Override
     public boolean empty()
     {
-        return text.length() == 0 && links.size() == 0 && templates.size() == 0 && tags.size() == 0
-                && mathSpans.size() == 0;
+        return text.isEmpty() && links.isEmpty() && templates.isEmpty() && tags.isEmpty()
+                && mathSpans.isEmpty();
     }
 
     /**
@@ -178,15 +178,15 @@ public class ContentElement
     public List<FormatType> getFormats()
     {
         List<FormatType> ftl = new ArrayList<>();
-        if (boldSpans.size() != 0)
+        if (!boldSpans.isEmpty())
             ftl.add(FormatType.BOLD);
-        if (italicSpans.size() != 0)
+        if (!italicSpans.isEmpty())
             ftl.add(FormatType.ITALIC);
-        if (tags.size() != 0)
+        if (!tags.isEmpty())
             ftl.add(FormatType.TAG);
-        if (mathSpans.size() != 0)
+        if (!mathSpans.isEmpty())
             ftl.add(FormatType.MATH);
-        if (noWikiSpans.size() != 0)
+        if (!noWikiSpans.isEmpty())
             ftl.add(FormatType.NOWIKI);
         return ftl;
     }

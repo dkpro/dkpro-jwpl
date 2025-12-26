@@ -171,7 +171,7 @@ public class ModePanel
 
         // Check the FullRevisionCounter input
         String text = this.minimumCommonSequenceField.getText();
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                     "The value for minimum " + "LongestCommonSubsequence is missing."));
         }
@@ -197,7 +197,7 @@ public class ModePanel
 
         // Check the FullRevisionCounter input
         text = this.fullRevisionField.getText();
-        if (text.length() == 0) {
+        if (text.isEmpty()) {
             errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                     "The value for FullRevision Counter" + " is missing."));
         }

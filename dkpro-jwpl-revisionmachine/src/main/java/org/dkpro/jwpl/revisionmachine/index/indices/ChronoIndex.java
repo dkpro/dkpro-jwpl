@@ -112,7 +112,7 @@ public class ChronoIndex
                 info = list.get(i - 1);
                 if (info.getRevisionCounter() != i) {
 
-                    if (reverseMapping.length() > 0) {
+                    if (!reverseMapping.isEmpty()) {
                         reverseMapping.append(" ");
                     }
 
@@ -135,7 +135,7 @@ public class ChronoIndex
                 info = list.remove(0);
                 if (info.getRevisionCounter() != info.getIndex()) {
 
-                    if (mapping.length() > 0) {
+                    if (!mapping.isEmpty()) {
                         mapping.append(" ");
                     }
 
@@ -145,7 +145,7 @@ public class ChronoIndex
                 }
             }
 
-            if (mapping.length() > 0) {
+            if (!mapping.isEmpty()) {
 
                 boolean sql = !insertStatement.isEmpty();
                 String val = (sql ? "(" : "") + articleID + (sql ? ",'" : ",\"") + mapping

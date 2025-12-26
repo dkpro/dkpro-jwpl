@@ -220,7 +220,7 @@ public class PageIterator
                     }
                 }
 
-                if (buffer.size() > 0) {
+                if (!buffer.isEmpty()) {
                     bufferFillSize = buffer.size();
                     return true;
                 }
@@ -278,7 +278,7 @@ public class PageIterator
                         lastPage = id;
                     }
                 }
-                if (buffer.size() > 0) {
+                if (!buffer.isEmpty()) {
                     bufferFillSize = buffer.size();
                     return true;
                 }

@@ -193,7 +193,7 @@ public class CategoryDescendantsIterator
                 }
             }
 
-            if (buffer.size() > 0) {
+            if (!buffer.isEmpty()) {
                 bufferFillSize = buffer.size();
                 return true;
             }

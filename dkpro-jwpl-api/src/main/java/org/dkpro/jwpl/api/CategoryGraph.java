@@ -444,8 +444,8 @@ public class CategoryGraph
         List<Integer> nodeList2 = getRootPathMap().get(categoryPageId2);
 
         // if one of the paths is null => return -1
-        if (nodeList1 == null || nodeList2 == null || nodeList1.size() == 0
-                || nodeList2.size() == 0) {
+        if (nodeList1 == null || nodeList2 == null || nodeList1.isEmpty()
+                || nodeList2.isEmpty()) {
             logger.debug("One of the node lists is null or empty!");
             return -1;
         }
@@ -520,7 +520,7 @@ public class CategoryGraph
 
         expandPath(root, node, pathToRoot, shortestPath);
 
-        if (shortestPath.size() == 0) {
+        if (shortestPath.isEmpty()) {
             return null;
         }
         else {
@@ -539,7 +539,7 @@ public class CategoryGraph
         if (currentNode == root) {
             logger.debug("found root");
 
-            if (shortestPath.size() != 0) {
+            if (!shortestPath.isEmpty()) {
                 if (currentPath.size() < shortestPath.size()) {
                     logger.debug("setting new shortest path");
                     shortestPath.clear();
@@ -554,14 +554,14 @@ public class CategoryGraph
 
         // do not expand paths that are longer or equal than the current shortest path
         // this is a runtime efficiency optimization!
-        if (shortestPath.size() != 0 && currentPath.size() >= shortestPath.size()) {
+        if (!shortestPath.isEmpty() && currentPath.size() >= shortestPath.size()) {
             return;
         }
 
         Set<DefaultEdge> incomingEdges = this.graph.incomingEdgesOf(currentNode);
 
         // no incoming edges => return path without adding this node
-        if (incomingEdges == null || incomingEdges.size() == 0) {
+        if (incomingEdges == null || incomingEdges.isEmpty()) {
             logger.debug("found non-root source");
             return;
         }
@@ -656,8 +656,8 @@ public class CategoryGraph
         List<Integer> nodeList2 = getRootPathMap().get(node2);
 
         // if one of the paths is null => return null
-        if (nodeList1 == null || nodeList2 == null || nodeList1.size() == 0
-                || nodeList2.size() == 0) {
+        if (nodeList1 == null || nodeList2 == null || nodeList1.isEmpty()
+                || nodeList2.isEmpty()) {
             logger.debug("One of the node lists is null or empty!");
             return -1;
         }
@@ -1259,7 +1259,7 @@ public class CategoryGraph
         // get the set of neighbors
         Set<Integer> neighbors = getNeighbors(node);
 
-        if (neighbors.size() > 0) {
+        if (!neighbors.isEmpty()) {
             // for each pair of neighbors, test if there is a connection
             Object[] nodeArray = neighbors.toArray();
             // sort the Array so we can use a simple iteration with two for loops to access all

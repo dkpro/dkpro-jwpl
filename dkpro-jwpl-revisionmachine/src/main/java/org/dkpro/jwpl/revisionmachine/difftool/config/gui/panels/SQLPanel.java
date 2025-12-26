@@ -291,25 +291,25 @@ public class SQLPanel
             String database, user, password, host;
 
             host = sqlHostField.getText();
-            if (host.length() == 0) {
+            if (host.isEmpty()) {
                 errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                         "The name of the sqlproducer-host is missing."));
             }
 
             database = sqlDatabaseField.getText();
-            if (database.length() == 0) {
+            if (database.isEmpty()) {
                 errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                         "The name of the sqlproducer-database is missing."));
             }
 
             user = sqlUserField.getText();
-            if (database.length() == 0) {
+            if (database.isEmpty()) {
                 errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                         "The name of the sqlproducer-user is missing."));
             }
 
             password = sqlPasswordField.getText();
-            if (password.length() == 0) {
+            if (password.isEmpty()) {
                 errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                         "The password of the sqlproducer-user is missing."));
             }

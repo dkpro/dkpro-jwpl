@@ -92,7 +92,7 @@ public class Category
      */
     public Category(Wikipedia wiki, String pName) throws WikiApiException
     {
-        if (pName == null || pName.length() == 0) {
+        if (pName == null || pName.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
         this.wiki = wiki;
@@ -308,8 +308,7 @@ public class Category
         session.lock(hibernateCategory, LockMode.NONE);
         String name = hibernateCategory.getName();
         session.getTransaction().commit();
-        Title title = new Title(name);
-        return title;
+        return new Title(name);
     }
 
     /**

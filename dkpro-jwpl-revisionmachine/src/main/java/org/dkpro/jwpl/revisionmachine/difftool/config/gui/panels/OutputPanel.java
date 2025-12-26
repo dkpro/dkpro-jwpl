@@ -407,7 +407,7 @@ public class OutputPanel
                 long sizeLimit = -1;
 
                 String text = outputSizeLimitField.getText();
-                if (text.length() == 0) {
+                if (text.isEmpty()) {
                     errors.add(new ConfigItem(ConfigItemTypes.ERROR, ConfigErrorKeys.MISSING_VALUE,
                             "The output limit is missing."));
                 }

@@ -54,7 +54,7 @@ public class DefinitionList
         this.ccl = new ArrayList<>(content);
         this.definitions = new ArrayList<>();
 
-        if (content.size() > 0) {
+        if (!content.isEmpty()) {
             this.definedTerm = content.get(0);
             if (content.size() > 1) {
                 this.definitions.addAll(content);
@@ -72,7 +72,7 @@ public class DefinitionList
         result.append("DL_DEFINEDTERM:\n");
         result.append(definedTerm);
 
-        if (definitions.size() != 0) {
+        if (!definitions.isEmpty()) {
             result.append("\nDL_DEFINITIONS:");
             for (ContentElement ce : definitions)
                 result.append("\n" + ce);

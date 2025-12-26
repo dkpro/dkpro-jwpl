@@ -240,7 +240,7 @@ public class PlainTextConverter
      * @param text
      *            A node representing a text element.
      */
-    public void visit(AstText text)
+    public void visit(AstText<?> text)
     {
         if (currentCell != null) {
             // handles table cell content
@@ -428,7 +428,7 @@ public class PlainTextConverter
                     sb2.append('.');
                 }
 
-                if (sb2.length() > 0) {
+                if (!sb2.isEmpty()) {
                     sb2.append(' ');
                 }
                 sb2.append(title);
@@ -571,7 +571,7 @@ public class PlainTextConverter
         if (currentRow == null) {
             currentRow = new ArrayList<>();
             iterate(n);
-            if (currentRow.size() > 0) {
+            if (!currentRow.isEmpty()) {
                 rows.add(currentRow);
             }
             if (currentRow.size() == n.getBody().size()) {
@@ -743,7 +743,7 @@ public class PlainTextConverter
                 length += 1;
             }
 
-            if (line.length() + length >= wrapCol && line.length() > 0) {
+            if (line.length() + length >= wrapCol && !line.isEmpty()) {
                 writeNewlines(1);
             }
         }

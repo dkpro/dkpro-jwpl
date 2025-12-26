@@ -115,7 +115,7 @@ public class PageTest
         try {
             String textWithMarkup = page.getText();
             assertNotNull(textWithMarkup);
-            assertTrue(textWithMarkup.length() > 0);
+            assertTrue(!textWithMarkup.isEmpty());
             assertEquals(expectedMarkupText, textWithMarkup);
         }
         catch (RuntimeException e) {
@@ -339,7 +339,7 @@ public class PageTest
         try {
             String pageInfo = page.getPageInfo();
             assertNotNull(pageInfo);
-            assertTrue(pageInfo.length() > 0);
+            assertTrue(!pageInfo.isEmpty());
         }
         catch (WikiApiException e) {
             fail("A WikiApiException occurred while getting the page info: "

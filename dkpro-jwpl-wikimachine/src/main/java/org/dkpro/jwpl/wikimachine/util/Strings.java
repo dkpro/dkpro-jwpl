@@ -85,7 +85,7 @@ public abstract class Strings
 
     public static boolean isEmpty(String s)
     {
-        return s.length() == 0;
+        return s.isEmpty();
     }
 
     public static boolean isCapitalized(String s)

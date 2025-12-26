@@ -104,9 +104,9 @@ public class TemplateNameExtractor
      */
     public void visit(WtTemplate tmpl) throws IOException
     {
-        for (AstNode n : tmpl.getName()) {
+        for (AstNode<?> n : tmpl.getName()) {
             if (n instanceof AstText) {
-                add(((AstText) n).getContent());
+                add(((AstText<?>) n).getContent());
             }
         }
     }

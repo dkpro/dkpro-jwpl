@@ -380,7 +380,7 @@ public class CategoryTest
             assertNotNull(p);
             String categoryInfo = p.getCategoryInfo();
             assertNotNull(categoryInfo);
-            assertTrue(categoryInfo.length() > 0);
+            assertTrue(!categoryInfo.isEmpty());
         }
         catch (WikiApiException e) {
             fail("A WikiApiException occurred while getting the page info: "
@@ -403,7 +403,7 @@ public class CategoryTest
             expectedPageIds.add(9);
             Set<Category> siblings = cat.getSiblings();
             assertNotNull(siblings);
-            assertTrue(siblings.size() > 0);
+            assertTrue(!siblings.isEmpty());
             for (Category sibling : siblings) {
                 isIds.add(sibling.getPageId());
             }

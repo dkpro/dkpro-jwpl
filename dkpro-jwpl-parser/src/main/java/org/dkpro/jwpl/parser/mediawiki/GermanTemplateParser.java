@@ -56,6 +56,7 @@ public class GermanTemplateParser
         // this.parser = parser;
     }
 
+    @Override
     public String configurationInfo()
     {
         StringBuilder result = new StringBuilder();
@@ -71,6 +72,7 @@ public class GermanTemplateParser
         return result.toString();
     }
 
+    @Override
     public ResolvedTemplate parseTemplate(Template t, ParsedPage pp)
     {
 
@@ -101,13 +103,14 @@ public class GermanTemplateParser
         }
 
         // Parse Template if it is in the List
-        for (String s : parseTemplates) {
-            List<String> templateParameters = t.getParameters();
+      label:
+      for (String s : parseTemplates) {
+          List<String> templateParameters = t.getParameters();
 
-            if (s.equals(templateName)) {
-                logger.info("ParseTemplate: {}", templateName);
-                if (templateName.equals("Dieser Artikel")) {
-
+          if (s.equals(templateName)) {
+              logger.info("ParseTemplate: {}", templateName);
+            switch (templateName) {
+                case "Dieser Artikel" -> {
                     // I removed that from the core API, as it is not likely to be present in most
                     // non-German articles. (TZ)
                     // pp.setAboutArticle( parser.parseContentElement( templateParameters.get(0) ));
@@ -115,13 +118,13 @@ public class GermanTemplateParser
                     result.setPostParseReplacement("");
                     result.setParsedObject(null);
                     return result;
-                }
-                else if (templateName.equals("Audio") || templateName.equals("Audio genau")) {
-                    if (templateParameters.size() == 0) {
-                        break;
+                    }
+                    case "Audio", "Audio genau" -> {
+                    if (templateParameters.isEmpty()) {
+                      break label;
                     }
                     if (templateParameters.size() == 1) {
-                        templateParameters.add(emptyLinkText);
+                      templateParameters.add(emptyLinkText);
                     }
                     result.setPostParseReplacement(t.getParameters().get(1));
                     result.setParsedObject(new Link(null, t.getPos(), templateParameters.get(0),
@@ -129,26 +132,27 @@ public class GermanTemplateParser
 
                     return result;
                 }
-                else if (templateName.equals("Video")) {
-                    if (templateParameters.size() == 0) {
-                        break;
+                case "Video" -> {
+                    if (templateParameters.isEmpty()) {
+                      break label;
                     }
                     if (templateParameters.size() == 1) {
-                        templateParameters.add(emptyLinkText);
+                      templateParameters.add(emptyLinkText);
                     }
                     result.setPostParseReplacement(t.getParameters().get(1));
                     result.setParsedObject(new Link(null, t.getPos(), t.getParameters().get(0),
                             Link.type.VIDEO, null));
                     return result;
                 }
-                else {
+                default -> {
                     result.setPostParseReplacement(templateNotImplementedPrefix + templateName
                             + templateNotImplementedPostfix);
                     return result;
                 }
             }
-        }
+          }
+      }
 
-        return result;
+      return result;
     }
 }

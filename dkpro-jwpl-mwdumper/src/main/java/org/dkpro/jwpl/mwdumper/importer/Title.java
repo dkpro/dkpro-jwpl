@@ -76,7 +76,7 @@ public class Title
 
     public boolean isTalk()
     {
-        return !isSpecial() && (Namespace.intValue() % 2 == 1);
+        return !isSpecial() && (Namespace % 2 == 1);
     }
 
     public Title talkPage()

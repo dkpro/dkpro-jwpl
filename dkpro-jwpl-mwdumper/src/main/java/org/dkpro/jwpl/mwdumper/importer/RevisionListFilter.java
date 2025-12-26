@@ -52,7 +52,7 @@ public class RevisionListFilter
         String line = input.readLine();
         while (line != null) {
             line = line.trim();
-            if (line.length() > 0 && !line.startsWith("#")) {
+            if (!line.isEmpty() && !line.startsWith("#")) {
                 revIds.add(line);
             }
             line = input.readLine();

@@ -52,7 +52,7 @@ public class Title
      */
     public Title(String titleText) throws WikiTitleParsingException
     {
-        if (titleText.length() == 0) {
+        if (titleText.isEmpty()) {
             throw new WikiTitleParsingException("Title is empty.");
         }
 

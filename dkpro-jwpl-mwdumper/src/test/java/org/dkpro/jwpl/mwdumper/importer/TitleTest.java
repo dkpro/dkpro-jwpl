@@ -68,7 +68,7 @@ public class TitleTest
         namespaces = null;
     }
 
-    private class TestItem
+    private static class TestItem
     {
         public final int ns;
         public final String text;
@@ -88,12 +88,12 @@ public class TitleTest
         }
     }
 
-    final TestItem[] tests = { new TestItem(0, "Page title", "Page title"),
+    final TestItem[] tests = {new TestItem(0, "Page title", "Page title"),
             new TestItem(1, "Page title", "Talk:Page title"),
             new TestItem(-1, "Recentchanges", "Special:Recentchanges"),
             new TestItem(13, "Logging in", "Help talk:Logging in"),
             new TestItem(0, "2001: A Space Odyssey", "2001: A Space Odyssey"),
-            new TestItem(0, "2:2", "2:2") };
+            new TestItem(0, "2:2", "2:2")};
 
     /*
      * Test method for 'org.dkpro.jwpl.mwdumper.importer.Title.Title(int, String, NamespaceSet)'
