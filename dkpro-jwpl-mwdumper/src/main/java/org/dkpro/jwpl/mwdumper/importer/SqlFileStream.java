@@ -17,7 +17,6 @@
  */
 package org.dkpro.jwpl.mwdumper.importer;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -27,22 +26,25 @@ public class SqlFileStream
 {
     protected final PrintStream stream;
 
-    public SqlFileStream(OutputStream output) throws IOException
+    public SqlFileStream(OutputStream output)
     {
         this.stream = new PrintStream(output, false, StandardCharsets.UTF_8);
     }
 
+    @Override
     public void writeComment(CharSequence sql)
     {
         stream.println(sql.toString());
     }
 
+    @Override
     public void writeStatement(CharSequence sql)
     {
         stream.print(sql.toString());
         stream.println(';');
     }
 
+    @Override
     public void close()
     {
         stream.flush();

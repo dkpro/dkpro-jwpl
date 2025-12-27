@@ -114,7 +114,7 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void exportAfterPageParsing() throws IOException
+    public void exportAfterPageParsing()
     {
         txtFW.flush();
         txtFW.close();
@@ -131,7 +131,7 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void exportAfterCategoryLinksParsing() throws IOException
+    public void exportAfterCategoryLinksParsing()
     {
         pageCategories.flush();
         pageCategories.close();
@@ -154,7 +154,7 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void exportAfterPageLinksParsing() throws IOException
+    public void exportAfterPageLinksParsing()
     {
         // export the written tables
         pageInlinks.flush();
@@ -174,7 +174,7 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void exportAfterTextParsing() throws IOException
+    public void exportAfterTextParsing()
     {
         page.flush();
         page.close();
@@ -186,7 +186,7 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void flushByTextParsing() throws IOException
+    public void flushByTextParsing()
     {
         page.flush();
         pageMapLine.flush();
@@ -200,21 +200,9 @@ public abstract class AbstractDumpVersion
     }
 
     @Override
-    public void initRevisionParsion()
+    public void initRevisionParsing()
     {
 
     }
 
-    /**
-     * Returns the String value of the bit 1 if the given boolean is true<br>
-     * and an empty String otherwise. This the way bit values are written<br>
-     * in .txt dump files.
-     *
-     * @param b
-     * @return
-     */
-    protected String formatBoolean(boolean b)
-    {
-        return b ? new String(new byte[] { 1 }) : "";
-    }
 }

@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.datamachine.dump.version;
 
+import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
@@ -92,7 +94,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     }
 
     @Override
-    public void freeAfterRevisonParsing()
+    public void freeAfterRevisionParsing()
     {
         // nothing to free
     }
@@ -159,7 +161,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processPageLinksRow(PagelinksParser plParser) throws IOException
+    public void processPageLinksRow(PagelinksParser plParser)
     {
         int pl_from = plParser.getPlFrom();
         String pl_to = plParser.getPlTo();
@@ -176,7 +178,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processPageRow(PageParser pageParser) throws IOException
+    public void processPageRow(PageParser pageParser)
     {
         int page_namespace = pageParser.getPageNamespace();
         int page_id = pageParser.getPageId();
@@ -221,7 +223,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processTextRow(TextParser textParser) throws IOException
+    public void processTextRow(TextParser textParser)
     {
         int text_id = textParser.getOldId();
         if (textIdPageIdMap.containsKey(text_id)) {

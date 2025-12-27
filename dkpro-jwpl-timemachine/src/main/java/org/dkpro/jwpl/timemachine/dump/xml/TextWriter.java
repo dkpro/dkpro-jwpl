@@ -33,7 +33,7 @@ public class TextWriter
 
     private final UTFDataOutputStream stream;
 
-    public TextWriter(OutputStream output) throws IOException
+    public TextWriter(OutputStream output)
     {
         this.stream = new UTFDataOutputStream(output);
     }

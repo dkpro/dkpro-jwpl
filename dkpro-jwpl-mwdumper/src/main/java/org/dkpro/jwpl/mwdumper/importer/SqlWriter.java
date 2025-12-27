@@ -65,21 +65,25 @@ public abstract class SqlWriter
     {
         // UTC_TIMESTAMP() is new in MySQL 4.1 or 5.0, so using this
         // godawful hack found in documentation comments:
+        @Override
         public SqlLiteral getCurrentTime()
         {
             return new SqlLiteral("DATE_ADD('1970-01-01', INTERVAL UNIX_TIMESTAMP() SECOND)+0");
         }
 
+        @Override
         public SqlLiteral getRandom()
         {
             return new SqlLiteral("RAND()");
         }
 
+        @Override
         public boolean supportsMultiRowInsert()
         {
             return true;
         }
 
+        @Override
         public String getTextTable()
         {
             return "text";
@@ -88,6 +92,7 @@ public abstract class SqlWriter
         private static final MessageFormat timestampFormatter = new MessageFormat(
                 "{0,number,0000}{1,number,00}{2,number,00}{3,number,00}{4,number,00}{5,number,00}");
 
+        @Override
         public MessageFormat getTimestampFormatter()
         {
             return timestampFormatter;
@@ -97,21 +102,25 @@ public abstract class SqlWriter
     public static class PostgresTraits
         extends Traits
     {
+        @Override
         public SqlLiteral getCurrentTime()
         {
             return new SqlLiteral("current_timestamp AT TIME ZONE 'UTC'");
         }
 
+        @Override
         public SqlLiteral getRandom()
         {
             return new SqlLiteral("RANDOM()");
         }
 
+        @Override
         public boolean supportsMultiRowInsert()
         {
             return false;
         }
 
+        @Override
         public String getTextTable()
         {
             return "pagecontent";
@@ -120,17 +129,20 @@ public abstract class SqlWriter
         private static final MessageFormat timestampFormatter = new MessageFormat(
                 "{0,number,0000}-{1,number,00}-{2,number,00} {3,number,00}:{4,number,00}:{5,number,00}");
 
+        @Override
         public MessageFormat getTimestampFormatter()
         {
             return timestampFormatter;
         }
 
+        @Override
         public String getWikiPrologue()
         {
             return "ALTER TABLE revision DISABLE TRIGGER ALL;"
                     + "ALTER TABLE page DISABLE TRIGGER ALL;";
         }
 
+        @Override
         public String getWikiEpilogue()
         {
             return "ALTER TABLE revision ENABLE TRIGGER ALL;"
@@ -158,11 +170,13 @@ public abstract class SqlWriter
         traits = tr;
     }
 
+    @Override
     public void close() throws IOException
     {
         stream.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         stream.writeComment("-- MediaWiki XML dump converted to SQL by mwdumper");
@@ -173,6 +187,7 @@ public abstract class SqlWriter
             stream.writeStatement(prologue);
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         flushInsertBuffers();
@@ -184,6 +199,7 @@ public abstract class SqlWriter
         stream.writeComment("-- DONE");
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         stream.writeComment("");
@@ -201,10 +217,13 @@ public abstract class SqlWriter
         stream.writeComment("");
     }
 
+    @Override
     public abstract void writeStartPage(Page page) throws IOException;
 
+    @Override
     public abstract void writeEndPage() throws IOException;
 
+    @Override
     public abstract void writeRevision(Revision revision) throws IOException;
 
     protected String commentSafe(String text)

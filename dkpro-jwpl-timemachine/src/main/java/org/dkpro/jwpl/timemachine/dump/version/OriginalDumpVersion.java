@@ -17,7 +17,8 @@
  */
 package org.dkpro.jwpl.timemachine.dump.version;
 
-import java.io.File;
+import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
+
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -49,10 +50,6 @@ public class OriginalDumpVersion
     private Timestamp timestamp;
     private MetaData metaData;
 
-    // XXX ivan.galkin
-    @SuppressWarnings("unused")
-    private String outputPath;
-    // XXX ivan.galkin
     // private Map<Integer, Revision> pageIdRevMap; // maps page id's to
     // Revision
     // objects
@@ -86,7 +83,7 @@ public class OriginalDumpVersion
     public OriginalDumpVersion(Timestamp timestamp)
     {
         // XXX ivan.galkin
-        // this.timestamp = timestamp;
+        this.timestamp = timestamp;
         // pageIdRevMap = new HashMap<Integer, Revision>();
         pageIdRevMap = new HashMap<>();
         disambiguations = new HashSet<>();
@@ -103,13 +100,6 @@ public class OriginalDumpVersion
     public void setMetaData(MetaData metaData)
     {
         this.metaData = metaData;
-    }
-
-    public void setOutputPath(String outputPath) throws IOException
-    {
-        this.outputPath = outputPath;
-        File directory = new File(outputPath);
-        directory.mkdir();
     }
 
     @Override
@@ -136,8 +126,7 @@ public class OriginalDumpVersion
                 // is it a better time stamp ?
                 if (rev_timestamp.after(old_timestamp)) {
                     pageIdRevMap.remove(rev_page);
-                    pageIdRevMap.put(rev_page,
-                            Revision.createRevision(revisionParser.getRevTextId(),
+                    pageIdRevMap.put(rev_page, Revision.createRevision(revisionParser.getRevTextId(),
                                     Revision.compressTime(rev_timestamp.getTime())));
                     textIdPageIdMap.remove(old_text_id);
                     textIdPageIdMap.put(revisionParser.getRevTextId(), rev_page);
@@ -158,13 +147,11 @@ public class OriginalDumpVersion
     @Override
     public void initPageParsing() throws IOException
     {
-        // XXX ivan.galkin
-        // txtFW = new TxtFileWriter(outputPath + "/Category.txt");
         txtFW = new TxtFileWriter(versionFiles.getOutputCategory());
     }
 
     @Override
-    public void processPageRow(PageParser pageParser) throws IOException
+    public void processPageRow(PageParser pageParser)
     {
 
         int page_id;
@@ -215,7 +202,7 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void exportAfterPageParsing() throws IOException
+    public void exportAfterPageParsing()
     {
         txtFW.export();
     }
@@ -228,16 +215,6 @@ public class OriginalDumpVersion
     @Override
     public void initCategoryLinksParsing() throws IOException
     {
-        // XXX ivan.galkin
-        // pageCategories = new TxtFileWriter(outputPath + File.separator
-        // + "page_categories.txt");
-        // categoryPages = new TxtFileWriter(outputPath + File.separator
-        // + "category_pages.txt");
-        // categoryInlinks = new TxtFileWriter(outputPath + File.separator
-        // + "category_inlinks.txt");
-        // categoryOutlinks = new TxtFileWriter(outputPath + File.separator
-        // + "category_outlinks.txt");
-
         pageCategories = new TxtFileWriter(versionFiles.getOutputPageCategories());
         categoryPages = new TxtFileWriter(versionFiles.getOutputCategoryPages());
         categoryInlinks = new TxtFileWriter(versionFiles.getOutputCategoryInlinks());
@@ -246,14 +223,14 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
+    public void processCategoryLinksRow(CategorylinksParser clParser)
     {
         int cl_from;
         String cl_to;
 
         cl_from = clParser.getClFrom();
         cl_to = clParser.getClTo();
-        if (!existsCategory(cl_to)) { // discard links with non registred targets
+        if (!existsCategory(cl_to)) { // discard links with non-registered targets
             return;
         }
         // if the link source is a page then write the link in category_pages
@@ -278,7 +255,7 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void exportAfterCategoryLinksParsing() throws IOException
+    public void exportAfterCategoryLinksParsing()
     {
         // Export the written tables
         pageCategories.export();
@@ -293,17 +270,12 @@ public class OriginalDumpVersion
     @Override
     public void initPageLinksParsing() throws IOException
     {
-        // XXX ivan.galkin
-        // pageInlinks = new TxtFileWriter(outputPath + File.separator
-        // + "page_inlinks.txt");
-        // pageOutlinks = new TxtFileWriter(outputPath + File.separator
-        // + "page_outlinks.txt");
         pageInlinks = new TxtFileWriter(versionFiles.getOutputPageInlinks());
         pageOutlinks = new TxtFileWriter(versionFiles.getOutputPageOutlinks());
     }
 
     @Override
-    public void processPageLinksRow(PagelinksParser plParser) throws IOException
+    public void processPageLinksRow(PagelinksParser plParser)
     {
         int pl_from;
         String pl_to;
@@ -317,7 +289,7 @@ public class OriginalDumpVersion
         pageInlinks.addRow(getPagePageId(pl_to), pl_from);
     }
 
-    public void exportAfterPageLinksProcessing() throws IOException
+    public void exportAfterPageLinksProcessing()
     {
         // export the written tables
         pageInlinks.export();
@@ -331,19 +303,13 @@ public class OriginalDumpVersion
     @Override
     public void initTextParsing() throws IOException
     {
-        // XXX ivan.galkin
-        // page = new TxtFileWriter(outputPath + File.separator + "Page.txt");
-        // pageMapLine = new TxtFileWriter(outputPath + File.separator
-        // + "PageMapLine.txt");
-        // pageRedirects = new TxtFileWriter(outputPath + File.separator
-        // + "page_redirects.txt");
         page = new TxtFileWriter(versionFiles.getOutputPage());
         pageMapLine = new TxtFileWriter(versionFiles.getOutputPageMapLine());
         pageRedirects = new TxtFileWriter(versionFiles.getOutputPageRedirects());
     }
 
     @Override
-    public void processTextRow(TextParser textParser) throws IOException
+    public void processTextRow(TextParser textParser)
     {
         String destination;
         int text_id;
@@ -373,7 +339,7 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void exportAfterTextParsing() throws IOException
+    public void exportAfterTextParsing()
     {
         // export the written tables
         page.export();
@@ -384,9 +350,6 @@ public class OriginalDumpVersion
     @Override
     public void writeMetaData() throws IOException
     {
-        // XXX ivan.galkin
-        // TxtFileWriter metaData_ = new TxtFileWriter(outputPath + File.separator +
-        // "MetaData.txt");
         try (TxtFileWriter metaData_ = new TxtFileWriter(versionFiles.getOutputMetadata())) {
             // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
             // nrOfDisambiguationPages, nrOfCategories, timestamp
@@ -403,19 +366,6 @@ public class OriginalDumpVersion
             System.out.println("nrOfDisambiguations: " + metaData.getNrOfDisambiguations());
             metaData_.export();
         }
-    }
-
-    /**
-     * Returns the String value of the bit 1 if the given boolean is true<br>
-     * and an empty String otherwise. This the way bit values are written<br>
-     * in .txt dump files.
-     *
-     * @param b
-     * @return
-     */
-    private String formatBoolean(boolean b)
-    {
-        return b ? new String(new byte[] { 1 }) : "";
     }
 
     public void recordCategory(int page_id, String page_title)
@@ -506,17 +456,17 @@ public class OriginalDumpVersion
      */
 
     @Override
-    public void exportAfterPageLinksParsing() throws IOException
+    public void exportAfterPageLinksParsing()
     {
     }
 
     @Override
-    public void exportAfterRevisionParsing() throws IOException
+    public void exportAfterRevisionParsing()
     {
     }
 
     @Override
-    public void flushByTextParsing() throws IOException
+    public void flushByTextParsing()
     {
     }
 
@@ -536,7 +486,7 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void freeAfterRevisonParsing()
+    public void freeAfterRevisionParsing()
     {
     }
 
@@ -546,7 +496,7 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void initRevisionParsion()
+    public void initRevisionParsing()
     {
     }
 

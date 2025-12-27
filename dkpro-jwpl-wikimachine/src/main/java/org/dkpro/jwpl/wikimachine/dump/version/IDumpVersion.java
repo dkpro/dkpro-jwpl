@@ -35,6 +35,19 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 public interface IDumpVersion
 {
 
+    /**
+     * Formats the value of the bit to a String representation.
+     * <p>
+     * This is the way bit values are written in {@code .txt} dump files.
+     *
+     * @param b The boolean value to format.
+     * @return {@code 1} if the given boolean is {@code true} or an empty String otherwise.
+     */
+    static String formatBoolean(boolean b)
+    {
+        return b ? new String(new byte[] { 1 }) : "";
+    }
+
     void setLogger(ILogger logger);
 
     void setCategoryRedirectsSkip(boolean skipCategory);
@@ -49,20 +62,20 @@ public interface IDumpVersion
     void setFiles(Files versionFiles);
 
     // parse revisions
-    void initRevisionParsion();
+    void initRevisionParsing();
 
     void processRevisionRow(RevisionParser revisionParser);
 
-    void exportAfterRevisionParsing() throws IOException;
+    void exportAfterRevisionParsing();
 
-    void freeAfterRevisonParsing();
+    void freeAfterRevisionParsing();
 
     // parse pages
     void initPageParsing() throws IOException;
 
-    void processPageRow(PageParser pageParser) throws IOException;
+    void processPageRow(PageParser pageParser);
 
-    void exportAfterPageParsing() throws IOException;
+    void exportAfterPageParsing();
 
     void freeAfterPageParsing();
 
@@ -71,27 +84,27 @@ public interface IDumpVersion
 
     void processCategoryLinksRow(CategorylinksParser clParser) throws IOException;
 
-    void exportAfterCategoryLinksParsing() throws IOException;
+    void exportAfterCategoryLinksParsing();
 
     void freeAfterCategoryLinksParsing();
 
     // parse page links
     void initPageLinksParsing() throws IOException;
 
-    void processPageLinksRow(PagelinksParser plParser) throws IOException;
+    void processPageLinksRow(PagelinksParser plParser);
 
-    void exportAfterPageLinksParsing() throws IOException;
+    void exportAfterPageLinksParsing();
 
     void freeAfterPageLinksParsing();
 
     // parse text
     void initTextParsing() throws IOException;
 
-    void processTextRow(TextParser textParser) throws IOException;
+    void processTextRow(TextParser textParser);
 
-    void flushByTextParsing() throws IOException;
+    void flushByTextParsing();
 
-    void exportAfterTextParsing() throws IOException;
+    void exportAfterTextParsing();
 
     void freeAfterTextParsing();
 

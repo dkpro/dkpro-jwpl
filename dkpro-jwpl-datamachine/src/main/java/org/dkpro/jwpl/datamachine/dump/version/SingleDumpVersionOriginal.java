@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.datamachine.dump.version;
 
+import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -43,9 +45,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Transforms a database from mediawiki format to JWPL format.<br>
  * The transformation produces .txt files for the different tables<br>
  * in the JWPL database.<br>
- * <br>
- * <p>
- * Adopted to IDumpVersion by Galkin
  */
 public class SingleDumpVersionOriginal
     implements IDumpVersion
@@ -97,21 +96,8 @@ public class SingleDumpVersionOriginal
     private boolean skipPage = true;
     private boolean skipCategory = true;
 
-    /**
-     * Returns the String value of the bit 1 if the given boolean is true<br>
-     * and an empty String otherwise. This the way bit values are written<br>
-     * in .txt dump files.
-     *
-     * @param b
-     * @return
-     */
-    private String formatBoolean(boolean b)
-    {
-        return b ? new String(new byte[] { 1 }) : "";
-    }
-
     @Override
-    public void exportAfterCategoryLinksParsing() throws IOException
+    public void exportAfterCategoryLinksParsing()
     {
         pageCategories.export();
         categoryPages.export();
@@ -120,14 +106,14 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void exportAfterPageLinksParsing() throws IOException
+    public void exportAfterPageLinksParsing()
     {
         pageInlinks.export();
         pageOutlinks.export();
     }
 
     @Override
-    public void exportAfterPageParsing() throws IOException
+    public void exportAfterPageParsing()
     {
         txtFW.export();
 
@@ -136,12 +122,12 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void exportAfterRevisionParsing() throws IOException
+    public void exportAfterRevisionParsing()
     {
     }
 
     @Override
-    public void exportAfterTextParsing() throws IOException
+    public void exportAfterTextParsing()
     {
         page.export();
         pageRedirects.export();
@@ -149,7 +135,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void flushByTextParsing() throws IOException
+    public void flushByTextParsing()
     {
         page.flush();
         pageRedirects.flush();
@@ -175,7 +161,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void freeAfterRevisonParsing()
+    public void freeAfterRevisionParsing()
     {
     }
 
@@ -211,7 +197,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void initRevisionParsion()
+    public void initRevisionParsing()
     {
 
     }
@@ -274,7 +260,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void processPageLinksRow(PagelinksParser plParser) throws IOException
+    public void processPageLinksRow(PagelinksParser plParser)
     {
 
         int pl_from;
@@ -294,7 +280,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void processPageRow(PageParser pageParser) throws IOException
+    public void processPageRow(PageParser pageParser)
     {
 
         int page_id;
@@ -351,7 +337,7 @@ public class SingleDumpVersionOriginal
     }
 
     @Override
-    public void processTextRow(TextParser textParser) throws IOException
+    public void processTextRow(TextParser textParser)
     {
 
         String destination;

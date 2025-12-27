@@ -25,7 +25,6 @@ import java.util.Properties;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,12 +92,6 @@ public class PerformanceIT
         return Thread.currentThread().getContextClassLoader().getResourceAsStream(resourceName);
     }
 
-    @BeforeEach
-    public void setup() throws WikiApiException
-    {
-
-    }
-
     @Test
     public void testPerformanceLoadPagesIntern() throws WikiApiException
     {
@@ -129,42 +122,42 @@ public class PerformanceIT
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer1() throws WikiApiException
+    public void testPerformancePageIteratorBuffer1()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 1);
         pt.loadPageAndIterate(retrievedNumberOfPages, 1, wiki);
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer10() throws WikiApiException
+    public void testPerformancePageIteratorBuffer10()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 10);
         pt.loadPageAndIterate(retrievedNumberOfPages, 10, wiki);
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer50() throws WikiApiException
+    public void testPerformancePageIteratorBuffer50()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 50);
         pt.loadPageAndIterate(retrievedNumberOfPages, 50, wiki);
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer100() throws WikiApiException
+    public void testPerformancePageIteratorBuffer100()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 100);
         pt.loadPageAndIterate(retrievedNumberOfPages, 100, wiki);
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer200() throws WikiApiException
+    public void testPerformancePageIteratorBuffer200()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 200);
         pt.loadPageAndIterate(retrievedNumberOfPages, 200, wiki);
     }
 
     @Test
-    public void testPerformancePageIteratorBuffer500() throws WikiApiException
+    public void testPerformancePageIteratorBuffer500()
     {
         logger.debug("Test: retrieve 4000 pages - buffer = '{}' ...", retrievedNumberOfPages, 500);
         pt.loadPageAndIterate(retrievedNumberOfPages, 500, wiki);
