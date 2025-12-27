@@ -82,7 +82,6 @@ public class FileMemoryLogger
     protected void finalize() throws Throwable
     {
         output.close();
-        super.finalize();
     }
 
 }

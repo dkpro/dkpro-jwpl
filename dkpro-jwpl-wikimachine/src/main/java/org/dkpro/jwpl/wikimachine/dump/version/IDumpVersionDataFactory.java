@@ -38,6 +38,7 @@ public interface IDumpVersionDataFactory extends IDumpVersionFactory {
     };
   }
 
+  @SuppressWarnings("unchecked")
   static IDumpVersionDataFactory byClass(String className) {
       try {
           Class<IDumpVersionDataFactory> c = (Class<IDumpVersionDataFactory>) Class.forName(className);
