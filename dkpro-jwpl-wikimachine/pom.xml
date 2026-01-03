@@ -35,6 +35,16 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-compress</artifactId>
     </dependency>
+    <!--
+      Required for 7z support in commons-compress, see:
+      https://commons.apache.org/proper/commons-compress/limitations.html
+    -->
+    <dependency>
+      <groupId>org.tukaani</groupId>
+      <artifactId>xz</artifactId>
+      <version>${xz.version}</version>
+      <scope>runtime</scope>
+    </dependency>
 
     <!-- logger dependencies -->
     <dependency>

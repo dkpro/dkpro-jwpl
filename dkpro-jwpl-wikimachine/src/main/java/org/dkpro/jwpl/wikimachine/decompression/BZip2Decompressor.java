@@ -20,23 +20,39 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 /**
- * BZip2 Decompressor (based on Singleton Design Pattern).
- * Uses {@link IDecompressor#getInputStream(String)} to set up the archive
+ * A {@link IDecompressor decompressor} implementation for archives in {@code bzip2} format.
+ * Uses {@link IDecompressor#getInputStream(Path)} to set up the archive
  * path and returns the {@link InputStream} to read from.
  *
  * @see IDecompressor
+ * @see AbstractDecompressor
  */
 public final class BZip2Decompressor
     extends AbstractDecompressor implements IDecompressor
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public InputStream getInputStream(String fileName) throws IOException
+    public InputStream getInputStream(String resource) throws IOException
     {
-        return new BZip2CompressorInputStream(new BufferedInputStream(openStream(fileName)));
+        checkResource(resource);
+        return getInputStream(Path.of(resource));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStream(Path resource) throws IOException
+    {
+        checkResource(resource);
+        return new BZip2CompressorInputStream(new BufferedInputStream(openStream(resource)));
     }
 }

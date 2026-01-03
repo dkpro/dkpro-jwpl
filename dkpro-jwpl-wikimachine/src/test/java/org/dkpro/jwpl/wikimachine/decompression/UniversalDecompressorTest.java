@@ -36,13 +36,12 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class UniversalDecompressorTest {
-
-    private static final String EXPECTED_CONTENT = "This file is here to test decompression types.";
+class UniversalDecompressorTest extends AbstractDecompressorTest {
 
     @TempDir
     private Path tmpDir;
 
+    // SUT
     private UniversalDecompressor udc;
 
     @BeforeEach
@@ -51,9 +50,14 @@ public class UniversalDecompressorTest {
         assertNotNull(udc);
     }
 
+    @Override
+    protected IDecompressor getDecompressor() {
+        return udc;
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"decompressor-ar.xml"})
-    public void testInitializeWithExternalConfig(String input) throws IOException {
+    void testInitializeWithExternalConfig(String input) throws IOException {
         Path defaultTestConfig = Path.of("src/test/resources/" + input);
         Path externalConfig = tmpDir.resolve(input);
         /* Copy project local XML config file to external tmp path */
@@ -66,33 +70,39 @@ public class UniversalDecompressorTest {
     @ParameterizedTest
     @ValueSource(strings = {"archive.txt.gz", "archive.txt.bz2", "archive.txt.7z",
             "src/test/resources/archive.txt.gz"})
-    public void testIsSupported(String input)
+    void testIsSupported(String input)
     {
         assertTrue(udc.isSupported(input));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"archive.txt.gz", "archive.txt.bz2",
-            "src/test/resources/archive.txt.gz", "src/test/resources/archive.txt.bz2"})
-    public void testGetInputStream(String input) throws IOException {
-        try (BufferedInputStream in = new BufferedInputStream(udc.getInputStream(input))) {
+    @ValueSource(strings = {"archive.txt.gz", "archive.txt.bz2", "archive.txt.7z",
+            "src/test/resources/archive.txt.gz", "src/test/resources/archive.txt.bz2",
+            "src/test/resources/archive.txt.7z"})
+    void testGetInputStream(String input) throws IOException {
+        getAndCheck(input);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"src/test/resources/uncompressed.txt"})
+    void testGetInputStreamWithDefault(String input) throws IOException {
+        assertNotNull(udc);
+        try (InputStream in = udc.getInputStream(Path.of(input))) {
             assertNotNull(in);
-            String content = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            assertNotNull(content);
-            assertEquals(EXPECTED_CONTENT, content);
         }
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"src/test/resources/archive.txt.ar"})
     @DisabledOnOs(OS.WINDOWS)
-    public void testGetInputStreamWithExternalConfig(String input) throws IOException {
+    void testGetInputStreamWithExternalConfig(String input) throws IOException {
         Path arConfig = Path.of("src/test/resources/decompressor-ar.xml");
         UniversalDecompressor udc = new UniversalDecompressor(arConfig);
         assertNotNull(udc);
         assertTrue(udc.isSupported(input));
 
-        try (InputStream in = udc.getInputStream(input)) {
+        final Path p = Path.of(input);
+        try (InputStream in = new BufferedInputStream(udc.getInputStream(p))) {
           assertNotNull(in);
           String content = new String(in.readAllBytes(), StandardCharsets.UTF_8).trim();
           assertNotNull(content);
