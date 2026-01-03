@@ -40,9 +40,7 @@ public final class GZipDecompressor
      */
     @Override
     public InputStream getInputStream(String resource) throws IOException {
-        if (resource == null || resource.isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
-        }
+        checkResource(resource);
         return getInputStream(Path.of(resource));
     }
 

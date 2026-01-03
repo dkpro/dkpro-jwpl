@@ -78,9 +78,7 @@ public abstract class AbstractDecompressor implements IDecompressor {
      * @throws IOException Thrown if (other) IO errors occurred.
      */
     protected SeekableByteChannel openChannel(Path resource) throws IOException {
-        if (resource == null || resource.toString().isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
-        }
+        checkResource(resource);
         if (Files.exists(resource)) {
             return Files.newByteChannel(resource, StandardOpenOption.READ);
         } else {
