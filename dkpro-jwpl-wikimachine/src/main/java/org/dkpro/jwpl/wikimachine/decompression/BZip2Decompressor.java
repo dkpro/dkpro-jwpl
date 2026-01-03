@@ -36,18 +36,23 @@ public final class BZip2Decompressor
     extends AbstractDecompressor implements IDecompressor
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(String resource) throws IOException
     {
-        if (resource == null || resource.isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
-        }
+        checkResource(resource);
         return getInputStream(Path.of(resource));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(Path resource) throws IOException
     {
+        checkResource(resource);
         return new BZip2CompressorInputStream(new BufferedInputStream(openStream(resource)));
     }
 }

@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ import java.util.Properties;
  * <p>
  * Please note that the unpack utility has to use the standard output and external unpack
  * utilities are in preference to the internal.
- * Also, there could be more heap memory necessary to use start external programs.
+ * Also, there could be more heap memory necessary to start external programs.
  * <p>
  * The compressed file should be specified with the placeholder <code>%f</code>. <br>
  * For instance, the entry for the native RAR utility could look like this: <br>
@@ -212,7 +213,7 @@ public class UniversalDecompressor
      * Get default InputStream to read the data from the file
      *
      * @param fileName The file's name or (relative) path to read the archive from.
-     * @return FileInputStream(fileName)
+     * @return A buffered {@link FileInputStream} instance for {@code fileName}.
      */
     private InputStream getDefault(String fileName)
     {
@@ -253,6 +254,7 @@ public class UniversalDecompressor
      * @param resource The file's name or (relative) path to read the archive from.
      *
      * @throws IllegalArgumentException Thrown if parameters were invalid.
+     * @throws InvalidPathException Thrown if the parameter {@code resource} referred to a directory.
      * @throws IOException Thrown if IO errors occurred.
      */
     @Override
@@ -262,7 +264,7 @@ public class UniversalDecompressor
             throw new IllegalArgumentException("Can't load a 'null' or 'empty' resource!");
         }
         if (Files.isDirectory(resource)) {
-            throw new IOException("Can't load a 'directory' as resource!");
+            throw new InvalidPathException(resource.toString(), "Can't load a 'directory' as resource!");
         }
         final String file = resource.toAbsolutePath().toString();
         final String extension = detectExtension(file);

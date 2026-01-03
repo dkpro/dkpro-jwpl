@@ -38,16 +38,21 @@ public final class SevenZipDecompressor
     extends AbstractDecompressor implements IDecompressor
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(String resource) throws IOException {
-        if (resource == null || resource.isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
-        }
+        checkResource(resource);
         return getInputStream(Path.of(resource));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(Path resource) throws IOException {
+        checkResource(resource);
         final SeekableByteChannel sbc = openChannel(resource);
         if (sbc == null || !sbc.isOpen()) {
             return null;
@@ -61,6 +66,9 @@ public final class SevenZipDecompressor
                     return new SevenZipInputStreamWrapper(archive, archive.getInputStream(entry));
                 } else {
                     archive.close();
+                    if (sbc.isOpen()) {
+                        sbc.close();
+                    }
                     return null;
                 }
             }

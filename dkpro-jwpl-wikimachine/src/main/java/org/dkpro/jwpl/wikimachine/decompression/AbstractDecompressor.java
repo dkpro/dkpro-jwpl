@@ -24,6 +24,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
@@ -43,17 +44,15 @@ public abstract class AbstractDecompressor implements IDecompressor {
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
      * @param resource References a resource via a {@link Path} or by its file name only.
-     *                 If {@code null}, this will result in an {@link IOException}.
+     *                 Must not be {@code null} and not refer to a directory.
      * @return An open {@link InputStream} or {@code null} if {@code resource} could not be found.
      * 
      * @throws IllegalArgumentException Thrown if the parameters were invalid.
-     * @throws IOException Thrown if IO errors occurred.
+     * @throws IOException Thrown if (other) IO errors occurred.
      */
     protected InputStream openStream(Path resource) throws IOException
     {
-        if (resource == null || resource.toString().isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' resource!");
-        }
+        checkResource(resource);
         final InputStream in;
         if (Files.exists(resource)) {
             in = Files.newInputStream(resource);
@@ -71,12 +70,12 @@ public abstract class AbstractDecompressor implements IDecompressor {
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
      * @param resource References a resource via a {@link Path} or by its file name only.
-     *                 If {@code null}, this will result in an {@link IOException}.
+     *                 Must not be {@code null} and not refer to a directory.
      * @return An open {@link SeekableByteChannel} or {@code null} if {@code resource}
      *         could not be found.
      *
      * @throws IllegalArgumentException Thrown if the parameters were invalid.
-     * @throws IOException Thrown if IO errors occurred.
+     * @throws IOException Thrown if (other) IO errors occurred.
      */
     protected SeekableByteChannel openChannel(Path resource) throws IOException {
         if (resource == null || resource.toString().isBlank()) {
@@ -95,6 +94,35 @@ public abstract class AbstractDecompressor implements IDecompressor {
             } catch (URISyntaxException e) {
                 throw new IOException(e);
             }
+        }
+    }
+
+    /**
+     * Checks if the specified (file) resource is not {@code null} and not blank.
+     *
+     * @param resource The resource to check for. Must not be {@code null} and not be blank.
+     * @throws IllegalArgumentException Thrown if the parameter {@code resource} was invalid.
+     */
+    protected void checkResource(String resource) {
+        if (resource == null || resource.isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
+        }
+    }
+
+    /**
+     * Checks if the specified (file) resource is not {@code null} and not blank.
+     *
+     * @param resource The resource to check for. Must not be {@code null} and not be blank.
+     * @throws IllegalArgumentException Thrown if the parameter {@code resource} was invalid.
+     * @throws InvalidPathException Thrown if the parameter {@code resource} referred to a directory.
+     */
+    protected void checkResource(Path resource) {
+        if (resource == null) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' file resource!");
+        }
+        checkResource(resource.toString());
+        if (Files.isDirectory(resource)) {
+            throw new InvalidPathException(resource.toString(), "Can't load a 'directory' as resource!");
         }
     }
 

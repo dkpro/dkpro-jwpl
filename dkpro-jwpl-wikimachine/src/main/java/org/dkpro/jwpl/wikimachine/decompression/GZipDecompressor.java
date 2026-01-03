@@ -35,6 +35,9 @@ public final class GZipDecompressor
     extends AbstractDecompressor implements IDecompressor
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(String resource) throws IOException {
         if (resource == null || resource.isBlank()) {
@@ -43,9 +46,13 @@ public final class GZipDecompressor
         return getInputStream(Path.of(resource));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public InputStream getInputStream(Path resource) throws IOException
     {
+        checkResource(resource);
         return new GZIPInputStream(new BufferedInputStream(openStream(resource)));
     }
 

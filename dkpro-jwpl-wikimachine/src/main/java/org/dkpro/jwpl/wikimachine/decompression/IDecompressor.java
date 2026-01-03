@@ -34,10 +34,11 @@ public interface IDecompressor
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
      * @param resource References an archive via a path or by its file name only.
-     *                 If {@code null}, this will result in an {@link IOException}.
+     *                 Must not be {@code null} and not be blank.
      * @return An open {@link InputStream} or {@code null} if the archive could not be found.
      *
-     * @throws IOException Thrown if IO errors occurred.
+     * @throws IllegalArgumentException Thrown if parameter {@code resource} is invalid.
+     * @throws IOException Thrown if (other) IO errors occurred.
      */
     InputStream getInputStream(String resource) throws IOException;
 
@@ -49,10 +50,11 @@ public interface IDecompressor
      * in {@code resource}, an attempt is made to detect and load the resource from the classpath.
      *
      * @param resource References an archive via a {@link Path} or by its file name only.
-     *                 If {@code null}, this will result in an {@link IOException}.
+     *                 Must not be {@code null} and not refer to a directory.
      * @return An open {@link InputStream} or {@code null} if the archive could not be found.
      *
-     * @throws IOException Thrown if IO errors occurred.
+     * @throws IllegalArgumentException Thrown if parameter {@code resource} is invalid.
+     * @throws IOException Thrown if (other) IO errors occurred.
      */
     InputStream getInputStream(Path resource) throws IOException;
 }

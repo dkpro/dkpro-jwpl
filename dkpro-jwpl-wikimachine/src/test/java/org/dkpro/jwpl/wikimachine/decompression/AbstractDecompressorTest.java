@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ abstract class AbstractDecompressorTest {
 
     @Test
     void testGetInputStreamThrowsWithDirectory(@TempDir Path input) {
-        assertThrows(IOException.class, () -> getDecompressor().getInputStream(input));
+        assertThrows(InvalidPathException.class, () -> getDecompressor().getInputStream(input));
     }
     
     protected void getAndCheck(String input) throws IOException {
