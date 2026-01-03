@@ -25,18 +25,13 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigControll
  */
 public class SimpleConfig
 {
-    /**
-     * Reference to the ConfigController
-     */
-    private final ConfigController controller;
 
-    /**
+  /**
      * (Constructor) Creates a new ConfigGUI object.
      */
     public SimpleConfig()
     {
-        this.controller = new ConfigController();
+        ConfigController controller = new ConfigController();
         controller.defaultConfiguration();
-        // TODO nothing here yet...
     }
 }

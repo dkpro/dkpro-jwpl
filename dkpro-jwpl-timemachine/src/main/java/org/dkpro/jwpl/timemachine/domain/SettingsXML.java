@@ -22,6 +22,8 @@ import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Properties;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
@@ -51,8 +53,7 @@ public class SettingsXML
 
     public static void generateSample(String outputFileName) throws IOException
     {
-
-        Properties p = new Properties();
+        final Properties p = new Properties();
         p.put(LANGUAGE, PLACEHOLDER);
         p.put(MAIN_CATEGORY, PLACEHOLDER);
         p.put(DISAMBIGUATION_CATEGORY, PLACEHOLDER);
@@ -63,26 +64,29 @@ public class SettingsXML
         p.put(PAGE_LINKS_FILE, PLACEHOLDER);
         p.put(CATEGORY_LINKS_FILE, PLACEHOLDER);
         p.put(OUTPUT_DIRECTORY, PLACEHOLDER);
-        p.storeToXML(new BufferedOutputStream(new FileOutputStream(outputFileName)), DESCRIPTION);
-
+        try (OutputStream os = new BufferedOutputStream(new FileOutputStream(outputFileName))) {
+            p.storeToXML(os, DESCRIPTION);
+        }
     }
 
     public static Configuration loadConfiguration(String configFile, ILogger logger)
     {
+        final Properties properties = new Properties();
         Configuration result;
-        try {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(configFile))) {
+            properties.loadFromXML(in);
             result = new Configuration(logger);
-            Properties properties = new Properties();
-            properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
-
             result.setLanguage(properties.get(LANGUAGE).toString());
             result.setMainCategory(properties.get(MAIN_CATEGORY).toString());
             result.setDisambiguationCategory(properties.get(DISAMBIGUATION_CATEGORY).toString());
             result.setFromTimestamp(TimestampUtil.parse(properties.get(FROM_TIMESTAMP).toString()));
             result.setToTimestamp(TimestampUtil.parse(properties.get(TO_TIMESTAMP).toString()));
             result.setEach(Integer.parseInt(properties.get(EACH).toString()));
-        }
-        catch (Exception e) {
+        } catch (IOException ioe) {
+            logger.log("Could not find config file " + configFile);
+            result = null;
+        } catch (NumberFormatException nfe) {
+            logger.log("Could not read 'each' parameter - check the config file!");
             result = null;
         }
         return result;
@@ -90,19 +94,18 @@ public class SettingsXML
 
     public static TimeMachineFiles loadFiles(String configFile, ILogger logger)
     {
+        final Properties properties = new Properties();
         TimeMachineFiles result;
-        try {
-            Properties properties = new Properties();
-            properties.loadFromXML(new BufferedInputStream(new FileInputStream(configFile)));
+        try (InputStream in = new BufferedInputStream(new FileInputStream(configFile))) {
+            properties.loadFromXML(in);
             result = new TimeMachineFiles(logger);
-
             result.setMetaHistoryFile(properties.get(META_HISTORY_FILE).toString());
             result.setPageLinksFile(properties.get(PAGE_LINKS_FILE).toString());
             result.setCategoryLinksFile(properties.get(CATEGORY_LINKS_FILE).toString());
             result.setOutputDirectory(properties.get(OUTPUT_DIRECTORY).toString());
         }
-        catch (Exception e) {
-            logger.log("Could not load config file " + configFile);
+        catch (IOException e) {
+            logger.log("Could not find config file " + configFile);
             result = null;
         }
         return result;

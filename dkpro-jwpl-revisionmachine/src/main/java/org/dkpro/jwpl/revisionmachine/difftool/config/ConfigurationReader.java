@@ -52,192 +52,192 @@ public class ConfigurationReader
     /**
      * Section identifier - Mode
      */
-    private final String SECTION_MODE = "VALUES";
+    private static final String SECTION_MODE = "VALUES";
 
     /**
      * Key identifier - Mode >> Minimum longest common substring
      */
-    private final String KEY_VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING = "VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING";
+    private static final String KEY_VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING = "VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING";
 
     /**
      * Key identifier - Mode >> full revision counter
      */
-    private final String KEY_COUNTER_FULL_REVISION = "COUNTER_FULL_REVISION";
+    private static final String KEY_COUNTER_FULL_REVISION = "COUNTER_FULL_REVISION";
 
     /**
      * Section identifier - Externals
      */
-    private final String SECTION_EXTERNALS = "EXTERNALS";
+    private static final String SECTION_EXTERNALS = "EXTERNALS";
 
     /**
      * Key identifier - Externals >> SevenZip
      */
-    private final String KEY_SEVENZIP = "SEVENZIP";
+    private static final String KEY_SEVENZIP = "SEVENZIP";
 
     /**
      * Section identifier - Input
      */
-    private final String SECTION_INPUT = "INPUT";
+    private static final String SECTION_INPUT = "INPUT";
 
     /**
      * Key identifier - Input >> Surrogates Mode
      */
-    private final String KEY_MODE_SURROGATES = "MODE_SURROGATES";
+    private static final String KEY_MODE_SURROGATES = "MODE_SURROGATES";
 
     /**
      * Key identifier - Input >> Wikipedia Encoding
      */
-    private final String KEY_WIKIPEDIA_ENCODING = "WIKIPEDIA_ENCODING";
+    private static final String KEY_WIKIPEDIA_ENCODING = "WIKIPEDIA_ENCODING";
 
     /**
      * Subsection identifier - Input -> Archive
      */
-    private final String SUBSECTION_ARCHIVE = "ARCHIVE";
+    private static final String SUBSECTION_ARCHIVE = "ARCHIVE";
 
     /**
      * Key identifier - Input -> Archive >> Type
      */
-    private final String KEY_TYPE = "TYPE";
+    private static final String KEY_TYPE = "TYPE";
 
     /**
      * Key identifier - Input -> Archive >> Path
      */
-    private final String KEY_PATH = "PATH";
+    private static final String KEY_PATH = "PATH";
 
     /**
      * Key identifier - Input -> Archive >> Start
      */
-    private final String KEY_START = "START";
+    private static final String KEY_START = "START";
 
     /**
      * Section identifier - Output
      */
-    private final String SECTION_OUTPUT = "OUTPUT";
+    private static final String SECTION_OUTPUT = "OUTPUT";
 
     /**
      * Key identifier - Output >> MODE
      */
-    private final String KEY_OUTPUT_MODE = "OUTPUT_MODE";
+    private static final String KEY_OUTPUT_MODE = "OUTPUT_MODE";
 
     /**
      * Key identifier - Output >> MODE >> UNCOMPRESSED File Size
      */
-    private final String KEY_LIMIT_SQL_FILE_SIZE = "LIMIT_SQL_FILE_SIZE";
+    private static final String KEY_LIMIT_SQL_FILE_SIZE = "LIMIT_SQL_FILE_SIZE";
 
     /**
      * Key identifier - Output >> Enable Datafile
      */
-    private final String KEY_OUTPUT_DATAFILE = "MODE_DATAFILE_OUTPUT";
+    private static final String KEY_OUTPUT_DATAFILE = "MODE_DATAFILE_OUTPUT";
 
     /**
      * Key identifier - Output >> MODE >> UNCOMPRESSED Archive Size
      */
-    private final String KEY_LIMIT_SQL_ARCHIVE_SIZE = "LIMIT_SQL_ARCHIVE_SIZE";
+    private static final String KEY_LIMIT_SQL_ARCHIVE_SIZE = "LIMIT_SQL_ARCHIVE_SIZE";
 
     /**
      * Key identifier - Output >> MODE >> Zip-Compression enabled
      */
-    private final String KEY_MODE_ZIP_COMPRESSION_ENABLED = "MODE_ZIP_COMPRESSION_ENABLED";
+    private static final String KEY_MODE_ZIP_COMPRESSION_ENABLED = "MODE_ZIP_COMPRESSION_ENABLED";
 
     /**
      * Key identifier - Output >> MODE >> Binary output enabled
      */
-    private final String KEY_MODE_BINARY_OUTPUT_ENABLED = "MODE_BINARY_OUTPUT_ENABLED";
+    private static final String KEY_MODE_BINARY_OUTPUT_ENABLED = "MODE_BINARY_OUTPUT_ENABLED";
 
     /**
      * Subsection identifier - Output -> UNCOMPRESSED
      */
-    private final String SUBSECTION_SQL = "UNCOMPRESSED";
+    private static final String SUBSECTION_SQL = "UNCOMPRESSED";
 
     /**
      * Key identifier - Output -> UNCOMPRESSED >> Host
      */
-    private final String KEY_HOST = "HOST";
+    private static final String KEY_HOST = "HOST";
 
     /**
      * Key identifier - Output -> UNCOMPRESSED >> Database
      */
-    private final String KEY_DATABASE = "DATABASE";
+    private static final String KEY_DATABASE = "DATABASE";
 
     /**
      * Key identifier - Output -> UNCOMPRESSED >> User
      */
-    private final String KEY_USER = "USER";
+    private static final String KEY_USER = "USER";
 
     /**
      * Key identifier - Output -> UNCOMPRESSED >> Password
      */
-    private final String KEY_PASSWORD = "PASSWORD";
+    private static final String KEY_PASSWORD = "PASSWORD";
 
     /**
      * Section identifier - Cache
      */
-    private final String SECTION_CACHE = "CACHE";
+    private static final String SECTION_CACHE = "CACHE";
 
     /**
      * Key identifier - Cache >> Task Size Revisions
      */
-    private final String KEY_LIMIT_TASK_SIZE_REVISIONS = "LIMIT_TASK_SIZE_REVISIONS";
+    private static final String KEY_LIMIT_TASK_SIZE_REVISIONS = "LIMIT_TASK_SIZE_REVISIONS";
 
     /**
      * Key identifier - Cache >> Task Size Diff
      */
-    private final String KEY_LIMIT_TASK_SIZE_DIFFS = "LIMIT_TASK_SIZE_DIFFS";
+    private static final String KEY_LIMIT_TASK_SIZE_DIFFS = "LIMIT_TASK_SIZE_DIFFS";
 
     /**
      * Key identifier - Cache >> SQLProducer MAXALLOWEDPACKET
      */
-    private final String KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET = "LIMIT_SQLSERVER_MAX_ALLOWED_PACKET";
+    private static final String KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET = "LIMIT_SQLSERVER_MAX_ALLOWED_PACKET";
 
     /**
      * Section identifier - Logging
      */
-    private final String SECTION_LOGGING = "LOGGING";
+    private static final String SECTION_LOGGING = "LOGGING";
 
     /**
      * Section identifier - Logging >> Root folder
      */
-    private final String KEY_ROOT_FOLDER = "ROOT_FOLDER";
+    private static final String KEY_ROOT_FOLDER = "ROOT_FOLDER";
 
     /**
      * Subsection identifier - Logging -> DiffTool
      */
-    private final String SUBSUBSECTION_DIFF_TOOL = "DIFF_TOOL";
+    private static final String SUBSUBSECTION_DIFF_TOOL = "DIFF_TOOL";
 
     /**
      * Key identifier - Logging -> ... >> Level
      */
-    private final String KEY_LOG_LEVEL = "LEVEL";
+    private static final String KEY_LOG_LEVEL = "LEVEL";
 
     /**
      * Key identifier - Logging -> ... >> Path
      */
-    private final String KEY_LOG_PATH = "PATH";
+    private static final String KEY_LOG_PATH = "PATH";
 
     /**
      * Section identifier - Debug
      */
-    private final String SECTION_DEBUG = "DEBUG";
+    private static final String SECTION_DEBUG = "DEBUG";
 
     /**
      * Key identifier - Debug -> Output >> Verification Diff
      */
-    private final String KEY_VERIFICATION_DIFF = "VERIFICATION_DIFF";
+    private static final String KEY_VERIFICATION_DIFF = "VERIFICATION_DIFF";
 
     /**
      * Key identifier - Debug -> Output >> Verification Encoding
      */
-    private final String KEY_VERIFICATION_ENCODING = "VERIFICATION_ENCODING";
+    private static final String KEY_VERIFICATION_ENCODING = "VERIFICATION_ENCODING";
 
     /**
      * Key identifier - Debug -> Output >> Statistical
      */
-    private final String KEY_STATISTICAL_OUTPUT = "STATISTICAL_OUTPUT";
+    private static final String KEY_STATISTICAL_OUTPUT = "STATISTICAL_OUTPUT";
 
     /**
      * Subsection identifier - Debug -> Output
      */
-    private final String SUBSECTION_DEBUG_OUTPUT = "DEBUG_OUTPUT";
+    private static final String SUBSECTION_DEBUG_OUTPUT = "DEBUG_OUTPUT";
 
     /**
      * Key identifier - Debug -> Output >> Enabled
@@ -247,50 +247,45 @@ public class ConfigurationReader
     /**
      * Key identifier - Debug -> Output >> Path
      */
-    private final String KEY_DEBUG_PATH = "PATH";
+    private static final String KEY_DEBUG_PATH = "PATH";
 
     /**
      * Section identifier - filter
      */
-    private final String SECTION_FILTER = "FILTER";
+    private static final String SECTION_FILTER = "FILTER";
 
     /**
      * Subsection identifier - filter -> namespaces
      */
-    private final String SUBSECTION_FILTER_NAMESPACES = "NAMESPACES";
+    private static final String SUBSECTION_FILTER_NAMESPACES = "NAMESPACES";
 
     /**
      * Key identifier - filter -> namespaces >> ns
      */
-    private final String NAMESPACE_TO_KEEP = "NS";
+    private static final String NAMESPACE_TO_KEEP = "NS";
 
     /**
-     * (Constructor) Creates a new ConfigurationReader object.
+     *  Creates a new ConfigurationReader object.
      *
-     * @param path
-     * @throws IOException
-     *             if an error occurs while reading the file
-     * @throws SAXException
-     *             if an error occurs while building the document
-     * @throws ParserConfigurationException
-     *             if an error occurs while parsing the document
+     * @param path The path to the configuration file to read from.
+     * @throws IOException Thrown if an error occurs while reading the file.
+     * @throws SAXException Thrown if an error occurs while building the document.
+     * @throws ParserConfigurationException Thrown if an error occurs while parsing the document.
      */
     public ConfigurationReader(final String path)
         throws IOException, SAXException, ParserConfigurationException
     {
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-
         DocumentBuilder loader = factory.newDocumentBuilder();
-
         Document document = loader.parse(path);
         root = document.getDocumentElement();
     }
 
     /**
-     * Reads the input of the configuration file and parses the into the ConfigSettings object.
+     * Reads the input of the configuration file and parses the into a {@link ConfigSettings} object.
      *
-     * @return ConfigSettings
+     * @return ConfigSettings The fully initialized configuration, guaranteed to be not {@code null}.
      */
     public ConfigSettings read()
     {
@@ -338,13 +333,11 @@ public class ConfigurationReader
 
         for (int i = 0; i < length; i++) {
             nnode = list.item(i);
-
             name = nnode.getNodeName().toUpperCase();
 
             if (name.equals(SUBSECTION_FILTER_NAMESPACES)) {
                 parseNamespaceFilterConfig(nnode, config);
             }
-
         }
     }
 
@@ -359,7 +352,6 @@ public class ConfigurationReader
     private void parseNamespaceFilterConfig(final Node node, final ConfigSettings config)
     {
         String name;
-        Integer value;
         Node nnode;
         final NodeList list = node.getChildNodes();
         final int length = list.getLength();
@@ -370,12 +362,9 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(NAMESPACE_TO_KEEP)) {
-
-                value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
+                int value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
                 namespaces.add(value);
-
             }
-
         }
 
         config.setConfigParameter(ConfigurationKeys.NAMESPACES_TO_KEEP, namespaces);
@@ -394,7 +383,6 @@ public class ConfigurationReader
     {
 
         String name;
-        Integer value;
         Node nnode;
         NodeList list = node.getChildNodes();
 
@@ -404,17 +392,12 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING)) {
-
-                value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
-                config.setConfigParameter(ConfigurationKeys.VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING,
-                        value);
-
+                int value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
+                config.setConfigParameter(ConfigurationKeys.VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING, value);
             }
             else if (name.equals(KEY_COUNTER_FULL_REVISION)) {
-
-                value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
+                int value = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.COUNTER_FULL_REVISION, value);
-
             }
         }
     }
@@ -440,12 +423,9 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_SEVENZIP)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 value = value.substring(1, value.length() - 1);
-
                 config.setConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP, value);
-
             }
         }
     }
@@ -511,20 +491,14 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_TYPE)) {
-
                 type = InputType.parse(nnode.getChildNodes().item(0).getNodeValue());
-
             }
             else if (name.equals(KEY_PATH)) {
-
                 path = nnode.getChildNodes().item(0).getNodeValue();
                 path = path.substring(1, path.length() - 1);
-
             }
             else if (name.equals(KEY_START)) {
-
                 startPosition = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
-
             }
         }
 
@@ -552,8 +526,6 @@ public class ConfigurationReader
     {
 
         String name;
-        Long lValue;
-        Boolean bValue;
         Node nnode;
         NodeList list = node.getChildNodes();
 
@@ -563,51 +535,36 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_OUTPUT_MODE)) {
-
                 OutputType oValue = OutputType.parse(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_OUTPUT, oValue);
-
             }
             else if (name.equals(KEY_PATH)) {
-
                 String path = nnode.getChildNodes().item(0).getNodeValue();
                 path = path.substring(1, path.length() - 1);
-
                 config.setConfigParameter(ConfigurationKeys.PATH_OUTPUT_SQL_FILES, path);
-
             }
             else if (name.equals(KEY_OUTPUT_DATAFILE)) {
-                bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                boolean bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT, bValue);
             }
             else if (name.equals(KEY_LIMIT_SQL_FILE_SIZE)) {
-
-                lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
+                long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE, lValue);
-
             }
             else if (name.equals(KEY_LIMIT_SQL_ARCHIVE_SIZE)) {
-
-                lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
+                long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.LIMIT_SQL_ARCHIVE_SIZE, lValue);
-
             }
             else if (name.equals(KEY_MODE_ZIP_COMPRESSION_ENABLED)) {
-
-                bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                boolean bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, bValue);
-
             }
             else if (name.equals(KEY_MODE_BINARY_OUTPUT_ENABLED)) {
-
-                bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                boolean bValue = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED, bValue);
-
             }
             else if (name.equals(SUBSECTION_SQL)) {
-
                 parseSQLConfig(nnode, config);
-
             }
         }
     }
@@ -633,25 +590,21 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_HOST)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 config.setConfigParameter(ConfigurationKeys.SQL_HOST, value);
 
             }
             else if (name.equals(KEY_DATABASE)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 config.setConfigParameter(ConfigurationKeys.SQL_DATABASE, value);
 
             }
             else if (name.equals(KEY_USER)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 config.setConfigParameter(ConfigurationKeys.SQL_USERNAME, value);
 
             }
             else if (name.equals(KEY_PASSWORD)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 config.setConfigParameter(ConfigurationKeys.SQL_PASSWORD, value);
             }
@@ -670,7 +623,6 @@ public class ConfigurationReader
     {
 
         String name;
-        Long lValue;
         Node nnode;
         NodeList list = node.getChildNodes();
 
@@ -680,23 +632,16 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_LIMIT_TASK_SIZE_REVISIONS)) {
-
-                lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
+                long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_REVISIONS, lValue);
-
             }
             else if (name.equals(KEY_LIMIT_TASK_SIZE_DIFFS)) {
-
-                lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
+                long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.LIMIT_TASK_SIZE_DIFFS, lValue);
-
             }
             else if (name.equals(KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET)) {
-
-                lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
-                config.setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET,
-                        lValue);
-
+                long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
+                config.setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, lValue);
             }
         }
     }
@@ -723,17 +668,12 @@ public class ConfigurationReader
 
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_ROOT_FOLDER)) {
-
                 value = nnode.getChildNodes().item(0).getNodeValue();
                 value = value.substring(1, value.length() - 1);
-
                 config.setConfigParameter(ConfigurationKeys.LOGGING_PATH_DIFFTOOL, value);
-
             }
             else if (name.equals(SUBSUBSECTION_DIFF_TOOL)) {
-
                 parseLoggerConfig(nnode, config, null, ConfigurationKeys.LOGGING_LOGLEVEL_DIFFTOOL);
-
             }
         }
     }
@@ -751,7 +691,7 @@ public class ConfigurationReader
      *            Key for the level of this logger.
      */
     private void parseLoggerConfig(final Node node, final ConfigSettings config,
-            final ConfigurationKeys logPath, final ConfigurationKeys logLevel)
+                                   final ConfigurationKeys logPath, final ConfigurationKeys logLevel)
     {
 
         String name, value;
@@ -791,7 +731,6 @@ public class ConfigurationReader
     {
 
         String name;
-        Boolean value;
         Node nnode;
         NodeList list = node.getChildNodes();
 
@@ -802,20 +741,19 @@ public class ConfigurationReader
             name = nnode.getNodeName().toUpperCase();
             if (name.equals(KEY_VERIFICATION_DIFF)) {
 
-                value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                boolean value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.VERIFICATION_DIFF, value);
 
             }
             else if (name.equals(KEY_VERIFICATION_ENCODING)) {
 
-                value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
-
+                boolean value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.VERIFICATION_ENCODING, value);
 
             }
             else if (name.equals(KEY_STATISTICAL_OUTPUT)) {
 
-                value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                boolean value = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT, value);
 
             }
@@ -856,8 +794,7 @@ public class ConfigurationReader
             }
             else if (name.equals(KEY_DEBUG_ENABLED)) {
 
-                Boolean enabled = Boolean
-                        .parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
+                Boolean enabled = Boolean.parseBoolean(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.MODE_DEBUG_OUTPUT, enabled);
             }
         }

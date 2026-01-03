@@ -76,20 +76,17 @@ public class JWPLDataMachine
 
                     logger.log("End of the application. Working time = "
                             + (System.currentTimeMillis() - startTime) + " ms");
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.log(e);
                 }
-            }
-            else {
+            } else {
                 logger.log("Not all necessary source files could be found in " + args[DATADIR_ARG]);
             }
 
-        }
-        else {
+        } else {
             System.out.println(USAGE);
+            System.exit(255);
         }
-
     }
 
     private static Configuration getConfigFromArgs(String[] args)
@@ -98,8 +95,6 @@ public class JWPLDataMachine
         config.setLanguage(args[LANG_ARG]);
         config.setMainCategory(args[MAINCATEGORY_ARG]);
         config.setDisambiguationCategory(args[DISAMBIGUATION_ARG]);
-
         return config;
     }
-
 }

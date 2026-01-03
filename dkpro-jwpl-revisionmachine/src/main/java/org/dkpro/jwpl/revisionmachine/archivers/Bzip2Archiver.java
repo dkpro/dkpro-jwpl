@@ -122,20 +122,10 @@ public class Bzip2Archiver
      */
     public InputStreamReader getDecompressionStream(String path, String encoding) throws IOException
     {
-        File fileToUncompress = new File(path);
-
-        BufferedInputStream fileStream = new BufferedInputStream(
-                new FileInputStream(fileToUncompress));
-
-        // read bzip2 prefix: BZ
-        fileStream.read();
-        fileStream.read();
-
-        BufferedInputStream bufferedStream = new BufferedInputStream(fileStream);
+        BufferedInputStream bufferedStream = new BufferedInputStream(new FileInputStream(path));
         BZip2CompressorInputStream input = new BZip2CompressorInputStream(bufferedStream);
 
         return new InputStreamReader(input, encoding);
-
     }
 
     /**

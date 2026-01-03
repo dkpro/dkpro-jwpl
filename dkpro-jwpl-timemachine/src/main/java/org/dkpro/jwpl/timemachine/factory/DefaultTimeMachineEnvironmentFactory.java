@@ -58,7 +58,9 @@ public class DefaultTimeMachineEnvironmentFactory extends AbstractEnvironmentFac
     public synchronized IDumpVersion getDumpVersion()
     {
         // prototype beans required
-        return new DumpVersionFastUtilIntKey();
+        DumpVersionFastUtilIntKey d = new DumpVersionFastUtilIntKey();
+        d.setLogger(getLogger());
+        return d;
     }
 
     @Override
