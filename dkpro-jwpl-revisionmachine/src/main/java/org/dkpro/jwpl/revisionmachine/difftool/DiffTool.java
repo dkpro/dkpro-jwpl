@@ -50,7 +50,7 @@ public class DiffTool
         if (args.length == 1) {
             try {
                 ConfigSettings config = new ConfigurationReader(args[0]).read();
-                new DiffToolThread(config).run();
+                new DiffToolThread(config).start();
             } catch (Exception e) {
                 e.printStackTrace();
             }
