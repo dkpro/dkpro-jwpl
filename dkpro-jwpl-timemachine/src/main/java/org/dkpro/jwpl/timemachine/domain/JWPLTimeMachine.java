@@ -58,11 +58,7 @@ public class JWPLTimeMachine
      */
     private static boolean checkArgs(String[] args)
     {
-        boolean result = (args.length > 0);
-        if (!result) {
-            System.out.println("Usage: java -jar JWPLTimeMachine.jar <config-file>");
-        }
-        return result;
+        return args.length > 0;
     }
 
     public static void main(String[] args)
@@ -87,6 +83,9 @@ public class JWPLTimeMachine
                                 + (System.currentTimeMillis() - startTime) + " ms");
                     }
                 }
+            } else {
+                logger.log("Usage: java -jar JWPLTimeMachine.jar <CONFIG_FILE>");
+                System.exit(255);
             }
         }
         catch (Exception e) {

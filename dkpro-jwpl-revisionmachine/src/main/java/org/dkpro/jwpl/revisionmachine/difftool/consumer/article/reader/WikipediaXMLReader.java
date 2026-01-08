@@ -67,7 +67,7 @@ public class WikipediaXMLReader
     /**
      * Reference to the XML keyword tree
      */
-    private SingleKeywordTree<WikipediaXMLKeys> keywords;
+    private SingleKeywordTree<WikipediaXMLKeys> keys;
 
     /**
      * Configuration parameter - Maximum size of a revision task
@@ -112,11 +112,7 @@ public class WikipediaXMLReader
      */
     public WikipediaXMLReader(final Reader input) throws ConfigurationException
     {
-
-        this();
-        this.articleFilter = null;
-        this.input = input;
-        initNamespaces();
+        this(input, null);
     }
 
     /**
@@ -145,56 +141,35 @@ public class WikipediaXMLReader
      */
     private void initXMLKeys()
     {
-        this.keywords = new SingleKeywordTree<>();
+        this.keys = new SingleKeywordTree<>();
 
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_PAGE.getKeyword(),
-                WikipediaXMLKeys.KEY_START_PAGE);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_PAGE.getKeyword(),
-                WikipediaXMLKeys.KEY_END_PAGE);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_TITLE.getKeyword(),
-                WikipediaXMLKeys.KEY_START_TITLE);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_TITLE.getKeyword(),
-                WikipediaXMLKeys.KEY_END_TITLE);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_ID.getKeyword(),
-                WikipediaXMLKeys.KEY_START_ID);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_ID.getKeyword(), WikipediaXMLKeys.KEY_END_ID);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_REVISION.getKeyword(),
-                WikipediaXMLKeys.KEY_START_REVISION);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_REVISION.getKeyword(),
-                WikipediaXMLKeys.KEY_END_REVISION);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword(),
-                WikipediaXMLKeys.KEY_START_TIMESTAMP);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword(),
-                WikipediaXMLKeys.KEY_END_TIMESTAMP);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_TEXT.getKeyword(),
-                WikipediaXMLKeys.KEY_START_TEXT);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_TEXT.getKeyword(),
-                WikipediaXMLKeys.KEY_END_TEXT);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_MINOR_FLAG.getKeyword(),
-                WikipediaXMLKeys.KEY_MINOR_FLAG);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_COMMENT.getKeyword(),
-                WikipediaXMLKeys.KEY_START_COMMENT);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_COMMENT.getKeyword(),
-                WikipediaXMLKeys.KEY_END_COMMENT);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_IP.getKeyword(),
-                WikipediaXMLKeys.KEY_START_IP);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_IP.getKeyword(), WikipediaXMLKeys.KEY_END_IP);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_USERNAME.getKeyword(),
-                WikipediaXMLKeys.KEY_START_USERNAME);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword(),
-                WikipediaXMLKeys.KEY_END_USERNAME);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_CONTRIBUTOR.getKeyword(),
-                WikipediaXMLKeys.KEY_START_CONTRIBUTOR);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword(),
-                WikipediaXMLKeys.KEY_END_CONTRIBUTOR);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword(),
-                WikipediaXMLKeys.KEY_START_NAMESPACES);
-        keywords.addKeyword(WikipediaXMLKeys.KEY_END_NAMESPACES.getKeyword(),
-                WikipediaXMLKeys.KEY_END_NAMESPACES);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_PAGE.getKeyword(), WikipediaXMLKeys.KEY_START_PAGE);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_PAGE.getKeyword(), WikipediaXMLKeys.KEY_END_PAGE);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_TITLE.getKeyword(), WikipediaXMLKeys.KEY_START_TITLE);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_TITLE.getKeyword(), WikipediaXMLKeys.KEY_END_TITLE);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_ID.getKeyword(), WikipediaXMLKeys.KEY_START_ID);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_ID.getKeyword(), WikipediaXMLKeys.KEY_END_ID);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_REVISION.getKeyword(), WikipediaXMLKeys.KEY_START_REVISION);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_REVISION.getKeyword(), WikipediaXMLKeys.KEY_END_REVISION);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_TIMESTAMP.getKeyword(), WikipediaXMLKeys.KEY_START_TIMESTAMP);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_TIMESTAMP.getKeyword(), WikipediaXMLKeys.KEY_END_TIMESTAMP);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_TEXT.getKeyword(), WikipediaXMLKeys.KEY_START_TEXT);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_TEXT.getKeyword(), WikipediaXMLKeys.KEY_END_TEXT);
+        keys.addKeyword(WikipediaXMLKeys.KEY_MINOR_FLAG.getKeyword(), WikipediaXMLKeys.KEY_MINOR_FLAG);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_COMMENT.getKeyword(), WikipediaXMLKeys.KEY_START_COMMENT);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_COMMENT.getKeyword(), WikipediaXMLKeys.KEY_END_COMMENT);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_IP.getKeyword(), WikipediaXMLKeys.KEY_START_IP);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_IP.getKeyword(), WikipediaXMLKeys.KEY_END_IP);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_USERNAME.getKeyword(), WikipediaXMLKeys.KEY_START_USERNAME);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_USERNAME.getKeyword(), WikipediaXMLKeys.KEY_END_USERNAME);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_CONTRIBUTOR.getKeyword(), WikipediaXMLKeys.KEY_START_CONTRIBUTOR);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword(), WikipediaXMLKeys.KEY_END_CONTRIBUTOR);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword(), WikipediaXMLKeys.KEY_START_NAMESPACES);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_NAMESPACES.getKeyword(), WikipediaXMLKeys.KEY_END_NAMESPACES);
     }
 
     /**
-     * Reads the namespaces from the siteinfo section and processes them in order to initialize the
+     * Reads the namespaces from the site-info section and processes them in order to initialize the
      * ArticleFilter
      */
     private void initNamespaces()
@@ -203,7 +178,7 @@ public class WikipediaXMLReader
         try {
             int b = read();
 
-            this.keywords.reset();
+            this.keys.reset();
             StringBuilder buffer = null;
 
             while (b != -1) {
@@ -213,12 +188,11 @@ public class WikipediaXMLReader
                     buffer.append((char) b);
                 }
 
-                if (this.keywords.check((char) b)) {
-                    switch (this.keywords.getValue()) {
+                if (this.keys.check((char) b)) {
+                    switch (this.keys.getValue()) {
 
                     case KEY_START_NAMESPACES:
-                        buffer = new StringBuilder(
-                                WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword());
+                        buffer = new StringBuilder(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword());
                         break;
 
                     case KEY_END_NAMESPACES:
@@ -236,8 +210,7 @@ public class WikipediaXMLReader
                             String prefix = curNamespace.getTextContent().trim();
                             if (!prefix.isEmpty()) {
                                 NamedNodeMap nsAttributes = curNamespace.getAttributes();
-                                String namespace = nsAttributes.getNamedItem("key")
-                                        .getTextContent();
+                                String namespace = nsAttributes.getNamedItem("key").getTextContent();
                                 namespaceMap.put(Integer.parseInt(namespace), prefix);
                             }
                         }
@@ -247,7 +220,7 @@ public class WikipediaXMLReader
 
                     }
 
-                    this.keywords.reset();
+                    this.keys.reset();
                 }
 
                 b = read();
@@ -275,22 +248,22 @@ public class WikipediaXMLReader
     }
 
     /**
-     * Temporary variable - reference to the article information
+     * Reference to the article information
      */
     private ArticleInformation taskHeader;
 
     /**
-     * Temporary variable - Flag which indicates that the last task was completed
+     * Flag which indicates that the last task was completed
      */
     private boolean lastTaskCompleted;
 
     /**
-     * Temporary variable - Task part counter
+     * Task part counter
      */
     private int taskPartCounter;
 
     /**
-     * Temporary variable - Task revision counter
+     * Task revision counter
      */
     private int taskRevisionCounter;
 
@@ -311,18 +284,18 @@ public class WikipediaXMLReader
                 return true;
             }
 
-            this.keywords.reset();
+            this.keys.reset();
 
             int b = read();
             while (b != -1) {
 
-                if (keywords.check((char) b)) {
-                    switch (keywords.getValue()) {
+                if (keys.check((char) b)) {
+                    switch (keys.getValue()) {
                     case KEY_START_PAGE:
                         // taskStartPosition = bytePosition;
                         return true;
                     }
-                    keywords.reset();
+                    keys.reset();
                 }
 
                 b = read();
@@ -360,8 +333,8 @@ public class WikipediaXMLReader
                 buffer.append((char) r);
             }
 
-            if (this.keywords.check((char) r)) {
-                switch (this.keywords.getValue()) {
+            if (this.keys.check((char) r)) {
+                switch (this.keys.getValue()) {
 
                 case KEY_START_TITLE:
                 case KEY_START_ID:
@@ -392,7 +365,7 @@ public class WikipediaXMLReader
                     break;
 
                 case KEY_START_REVISION:
-                    this.keywords.reset();
+                    this.keys.reset();
                     return true;
 
                 default:
@@ -400,7 +373,7 @@ public class WikipediaXMLReader
                             ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
                 }
 
-                this.keywords.reset();
+                this.keys.reset();
             }
 
             r = read();
@@ -429,7 +402,7 @@ public class WikipediaXMLReader
         boolean hasId = false;
 
         StringBuilder buffer = null;
-        this.keywords.reset();
+        this.keys.reset();
 
         while (r != -1) {
 
@@ -437,8 +410,8 @@ public class WikipediaXMLReader
                 buffer.append((char) r);
             }
 
-            if (this.keywords.check((char) r)) {
-                switch (this.keywords.getValue()) {
+            if (this.keys.check((char) r)) {
+                switch (this.keys.getValue()) {
 
                 case KEY_START_TEXT:
 
@@ -510,7 +483,7 @@ public class WikipediaXMLReader
                     break;
 
                 case KEY_END_REVISION:
-                    this.keywords.reset();
+                    this.keys.reset();
                     return revision;
 
                 // the following cases are handled in readContributor()
@@ -522,12 +495,12 @@ public class WikipediaXMLReader
                     break;
 
                 default:
-                    System.out.println(keywords.getValue());
+                    System.out.println(keys.getValue());
                     throw ErrorFactory.createArticleReaderException(
                             ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_KEYWORD);
                 }
 
-                this.keywords.reset();
+                this.keys.reset();
             }
 
             r = read();
@@ -552,7 +525,7 @@ public class WikipediaXMLReader
         int size;
 
         StringBuilder buffer = null;
-        this.keywords.reset();
+        this.keys.reset();
 
         for (char curChar : contrChars) {
 
@@ -560,9 +533,9 @@ public class WikipediaXMLReader
                 buffer.append(curChar);
             }
 
-            if (this.keywords.check(curChar)) {
+            if (this.keys.check(curChar)) {
 
-                switch (this.keywords.getValue()) {
+                switch (this.keys.getValue()) {
 
                 case KEY_START_ID:
                 case KEY_START_IP:
@@ -615,7 +588,7 @@ public class WikipediaXMLReader
     {
 
         try {
-            this.keywords.reset();
+            this.keys.reset();
 
             // if new article read header, otherwise use old one
             if (this.lastTaskCompleted) {
@@ -640,9 +613,9 @@ public class WikipediaXMLReader
 
             int r = read();
             while (r != -1) {
-                if (this.keywords.check((char) r)) {
+                if (this.keys.check((char) r)) {
 
-                    switch (this.keywords.getValue()) {
+                    switch (this.keys.getValue()) {
 
                     case KEY_START_REVISION:
 
@@ -675,7 +648,7 @@ public class WikipediaXMLReader
                         throw new IOException();
                     }
 
-                    this.keywords.reset();
+                    this.keys.reset();
                 }
 
                 r = read();

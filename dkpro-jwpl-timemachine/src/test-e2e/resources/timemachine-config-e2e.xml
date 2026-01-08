@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>This a configuration formular for the DBMapping Tool of the JWPL</comment>
+  <entry key="pageLinksFile">tool-exec/aawiki-20260101-pagelinks.sql.gz</entry>
+  <entry key="categoryLinksFile">tool-exec/aawiki-20260101-categorylinks.sql.gz</entry>
+  <entry key="metaHistoryFile">tool-exec/aawiki-20260101-pages-meta-history.xml.7z</entry>
+  <entry key="fromTimestamp">2025-01-01 00:00:00.000</entry>
+  <entry key="toTimestamp">2026-01-01 00:00:00.000</entry>
+  <entry key="mainCategory">n/a</entry>
+  <entry key="disambiguationCategory">n/a</entry>
+  <entry key="language">aa</entry>
+  <entry key="outputDirectory">tool-exec/output</entry>
+  <!-- 180: ~ 2 times per year-->
+  <entry key="each">180</entry>
+</properties>

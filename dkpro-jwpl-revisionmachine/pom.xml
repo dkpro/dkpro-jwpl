@@ -59,29 +59,62 @@
 
     <!-- TEST dependencies -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.hsqldb</groupId>
-      <artifactId>hsqldb</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.mariadb.jdbc</groupId>
       <artifactId>mariadb-java-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
 
+  <profiles>
+    <profile>
+      <id>test-e2e-tools</id>
+      <properties>
+        <build.profile.id>test-e2e-tools</build.profile.id>
+        <!--
+          End2End tests are run when the test-e2e-tools profile is active
+        -->
+        <skip.e2e.tests>false</skip.e2e.tests>
+      </properties>
+    </profile>
+  </profiles>
+
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <!-- Configures the source directory of our e2e tests -->
+          <execution>
+            <id>add-e2e-test-sources</id>
+            <phase>generate-test-sources</phase>
+            <goals>
+              <goal>add-test-source</goal>
+            </goals>
+            <configuration>
+              <sources>
+                <source>src/test-e2e/java</source>
+              </sources>
+            </configuration>
+          </execution>
+          <!-- Configures the resource directory of our e2e tests -->
+          <execution>
+            <id>add-e2e-test-resources</id>
+            <phase>generate-test-resources</phase>
+            <goals>
+              <goal>add-test-resource</goal>
+            </goals>
+            <configuration>
+              <resources>
+                <resource>
+                  <filtering>false</filtering>
+                  <directory>src/test-e2e/resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -116,6 +149,11 @@
               <descriptors>
                 <descriptor>src/main/assembly/assembly.xml</descriptor>
               </descriptors>
+              <archive>
+                <manifest>
+                  <mainClass>org.dkpro.jwpl.revisionmachine.difftool.DiffTool</mainClass>
+                </manifest>
+              </archive>
             </configuration>
           </execution>
         </executions>
@@ -125,7 +163,40 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+          <excludes>
+            **/*E2ETest.java
+          </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven.failsafe.plugin}</version>
+        <configuration>
+          <!-- Needs to be '0' here to allow logger output from the JAR process to be redirected correctly -->
+          <forkCount>0</forkCount>
+          <argLine>-Xms256m -Xmx384m -Dfile.encoding=UTF-8</argLine>
+          <includes>
+            **/*E2ETest.java
+          </includes>
+          <systemPropertyVariables>
+            <jwpl.tool.name>${project.artifactId}-${project.version}-jar-with-dependencies.jar</jwpl.tool.name>
+            <jwpl.wiki.name>aawiki</jwpl.wiki.name>
+          </systemPropertyVariables>
+        </configuration>
+        <executions>
+          <execution>
+            <!-- Needs to be called late (post package) as we e2e-test a shaded jar file -->
+            <phase>verify</phase>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+            <configuration>
+              <skipITs>${skip.e2e.tests}</skipITs>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

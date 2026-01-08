@@ -17,19 +17,26 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool;
 
-import java.io.IOException;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationReader;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
-import org.xml.sax.SAXException;
 
 /**
- * This class contains the start method for the DiffTool application.
+ * The command line tool to the start the DiffTool application.
  */
 public class DiffTool
 {
+
+    private static final String USAGE = "Please use\n"
+            + "\tjava -jar JWPLRevisionMachine.jar "
+            + "org.dkpro.jwpl.revisionmachine.difftool.DiffTool <CONFIG_FILE>\n\n"
+            + "Hint: Set up a difftool-config.xml via the GUI tool (see documentation for more help).\n";
+
+    /**
+     * No object - Utility class
+     */
+    private DiffTool()
+    {
+    }
 
     /**
      * Starts the DiffTool application.
@@ -40,46 +47,17 @@ public class DiffTool
     public static void main(final String[] args)
     {
 
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Configuration File ist missing.");
+        if (args.length == 1) {
+            try {
+                ConfigSettings config = new ConfigurationReader(args[0]).read();
+                new DiffToolThread(config).start();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Arg for configuration file is missing
+            System.out.println(USAGE);
+            System.exit(255);
         }
-
-        try {
-
-            // Reads the configuration
-            ConfigSettings config = readConfiguration(args[0]);
-            new DiffToolThread(config).run();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Reads and parses the configuration file.
-     *
-     * @param path
-     *            path to the configuration file
-     * @return ConfigurationSettings
-     * @throws IOException
-     *             if an error occurred while reading the configuration file
-     * @throws SAXException
-     *             if an error occurred while using the XML parser
-     * @throws ParserConfigurationException
-     *             if the initialization of the XML parser failed
-     */
-    private static ConfigSettings readConfiguration(final String path)
-        throws IOException, SAXException, ParserConfigurationException
-    {
-
-        ConfigurationReader reader = new ConfigurationReader(path);
-        return reader.read();
-    }
-
-    /**
-     * No object - Utility class
-     */
-    private DiffTool()
-    {
     }
 }

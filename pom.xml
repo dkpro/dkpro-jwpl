@@ -471,6 +471,7 @@
                     <inputExclude>src/main/java/org/dkpro/jwpl/tutorial/parser/DarmstadtWikipediaArticle.txt</inputExclude>
                     <inputExclude>src/main/resources/**/*</inputExclude>
                     <inputExclude>src/test/resources/**/*</inputExclude>
+                    <inputExclude>src/test-e2e/resources/**/*</inputExclude>
                     <inputExclude>.activate_rat-check</inputExclude>
                     <inputExclude>.github/**/*</inputExclude>
                   </inputExcludes>

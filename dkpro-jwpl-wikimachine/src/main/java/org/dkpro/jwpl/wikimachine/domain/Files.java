@@ -59,7 +59,7 @@ public class Files
     {
         boolean result = outputDirectory.exists() && outputDirectory.isDirectory();
         if (!result) {
-            result = outputDirectory.mkdir();
+            result = outputDirectory.mkdirs();
         }
         if (!result) {
             logger.log("can't create the output directory");
@@ -79,7 +79,7 @@ public class Files
 
     protected String getOutputPath(String fileName)
     {
-        this.outputDirectory.mkdir();
+        this.outputDirectory.mkdirs();
         return outputDirectory.getAbsolutePath() + File.separator + fileName;
     }
 

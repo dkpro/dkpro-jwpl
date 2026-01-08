@@ -35,6 +35,9 @@ public class SQLEscape
      */
     public static String escape(String str)
     {
+        if (str == null || str.isBlank()) {
+            return "";
+        }
         final int len = str.length();
 
         // maybe the StringBuffer would be safer?
