@@ -32,6 +32,8 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 public class JWPLTimeMachine
 {
 
+    private static final String PROP_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+
     private static final IEnvironmentFactory environmentFactory;
     private static final ILogger logger;
 
@@ -63,9 +65,9 @@ public class JWPLTimeMachine
 
     public static void main(String[] args)
     {
-
         try {
             if (checkArgs(args)) {
+                System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
                 logger.log("parsing configuration file....");
                 Configuration config = SettingsXML.loadConfiguration(args[0], logger);
                 TimeMachineFiles files = SettingsXML.loadFiles(args[0], logger);

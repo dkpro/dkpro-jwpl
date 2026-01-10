@@ -32,6 +32,8 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 public class JWPLDataMachine
 {
 
+    private static final String PROP_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+
     private static final int LANG_ARG = 0;
     private static final int MAINCATEGORY_ARG = 1;
     private static final int DISAMBIGUATION_ARG = 2;
@@ -63,6 +65,7 @@ public class JWPLDataMachine
     public static void main(String[] args)
     {
         if (args.length > 3) {
+            System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
             Configuration config = getConfigFromArgs(args);
             DataMachineFiles files = new DataMachineFiles(logger);
             files.setDataDirectory(args[DATADIR_ARG]);
