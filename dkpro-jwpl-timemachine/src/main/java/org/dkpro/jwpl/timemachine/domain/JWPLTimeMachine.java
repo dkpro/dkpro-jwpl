@@ -38,7 +38,6 @@ public class JWPLTimeMachine
     private static final ILogger logger;
 
     static {
-        System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
         Optional<IEnvironmentFactory> candidate = ServiceLoader.load(IEnvironmentFactory.class).findFirst();
         environmentFactory = candidate.orElseThrow(
                 () -> new RuntimeException("Error detecting required runtime environment components! " +
@@ -66,9 +65,9 @@ public class JWPLTimeMachine
 
     public static void main(String[] args)
     {
-
         try {
             if (checkArgs(args)) {
+                System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
                 logger.log("parsing configuration file....");
                 Configuration config = SettingsXML.loadConfiguration(args[0], logger);
                 TimeMachineFiles files = SettingsXML.loadFiles(args[0], logger);
