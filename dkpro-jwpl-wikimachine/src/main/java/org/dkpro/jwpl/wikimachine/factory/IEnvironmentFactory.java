@@ -27,23 +27,54 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
+/**
+ * An abstraction for a factory which defines methods to retrieve environment specific bean instances.
+ */
 public interface IEnvironmentFactory
 {
+
+    /**
+     * @return Retrieves the current {@link ILogger} instance.
+     */
     ILogger getLogger();
 
+    /**
+     * @return Retrieves the current {@link IDecompressor} instance.
+     */
     IDecompressor getDecompressor();
 
+    /**
+     * @return Retrieves the current {@link ISnapshotGenerator} instance.
+     */
     ISnapshotGenerator getSnapshotGenerator();
 
+    /**
+     * @return Retrieves the current {@link DumpVersionProcessor} instance.
+     */
     DumpVersionProcessor getDumpVersionProcessor();
 
+    /**
+     * @return Retrieves a valid {@link IDumpVersion} instance.
+     */
     IDumpVersion getDumpVersion();
 
+    /**
+     * @return Retrieves a valid {@link DumpTableInputStream} instance.
+     */
     DumpTableInputStream getDumpTableInputStream();
 
+    /**
+     * @return Retrieves the current {@link PageParser} instance.
+     */
     PageParser getPageParser();
 
+    /**
+     * @return Retrieves a valid {@link RevisionParser} instance.
+     */
     RevisionParser getRevisionParser();
 
+    /**
+     * @return Retrieves a valid {@link TextParser} instance.
+     */
     TextParser getTextParser();
 }

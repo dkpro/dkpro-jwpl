@@ -21,27 +21,28 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * A Parser for the SQL file that defines the table categorylinks.
+ * A Parser for the SQL file that defines the table {@code categorylinks}.
  * <p>
- * A fix for Issue 102 has been provided by Google Code user astronautguo
+ * A fix for Issue 102 has been provided by Google Code user @code astronautguo}.
+ *
+ * @see SQLFileParser
  */
 public class CategorylinksParser
     extends SQLFileParser
 {
 
     /**
-     * The fields of the table categorylinks.<br>
+     * The fields of the table {@code categorylinks}.<br>
      * These fields are updated on each read value.
      */
     private int clFrom;
     private String clTo;
 
     /**
-     * Create a parser from an input stream
+     * Instantiates a {@link CategorylinksParser} via an input stream.
      *
-     * @param inputStream
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param inputStream A valid {@link InputStream} to read SQL content from.
+     * @throws IOException Thrown if IO errors occurred.
      */
     public CategorylinksParser(InputStream inputStream) throws IOException
     {
@@ -49,7 +50,7 @@ public class CategorylinksParser
     }
 
     /**
-     * @return Returns the cl_from.
+     * @return Returns the {@code cl_from}.
      */
     public int getClFrom()
     {
@@ -57,13 +58,16 @@ public class CategorylinksParser
     }
 
     /**
-     * @return Returns the cl_to.
+     * @return Returns the {@code cl_to}.
      */
     public String getClTo()
     {
         return clTo;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean next() throws IOException
     {

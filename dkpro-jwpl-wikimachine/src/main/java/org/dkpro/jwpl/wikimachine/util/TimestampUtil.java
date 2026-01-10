@@ -22,10 +22,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 /**
- * This class provides utilities for the conversion of timestamps.
+ * Provides utilities for the conversion of timestamps.
+ *
+ * @see Timestamp
  */
 public abstract class TimestampUtil
 {
+    /**
+     * Parses a given Mediawiki time string into a {@link Timestamp} object.
+     *
+     * @param mediaWikiString The input parameter; must respect the format {@code yyyyMMddHHmmss}.
+     *
+     * @return A valid {@link Timestamp} representation of {@code mediaWikiString}.
+     */
     public static Timestamp parse(String mediaWikiString)
     {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
@@ -40,21 +49,38 @@ public abstract class TimestampUtil
         return new Timestamp(time);
     }
 
-    // 0123456789012345678
-    // example: 1970-01-04 18:11:40.0 to 19700104181140
+    /**
+     * Converts a {@link Timestamp} object into a valid Mediawiki time string.
+     * <p>
+     * Example:<br/>
+     * The timestamp {@code 1970-01-04 18:11:40.0} will result in {@code 19700104181140}.
+     *
+     * @param timestamp The {@link Timestamp} to convert.
+     *
+     * @return A valid MediaWiki time string in the format {@code yyyyMMddHHmmss}.
+     */
     public static String toMediaWikiString(Timestamp timestamp)
     {
+        // 0123456789012345678
         String original = timestamp.toString();
         StringBuffer result = new StringBuffer();
-        result.append(original.substring(0, 4));// year
-        result.append(original.substring(5, 7));// month
-        result.append(original.substring(8, 10));// date
-        result.append(original.substring(11, 13));// hour
-        result.append(original.substring(14, 16));// minute
-        result.append(original.substring(17, 19));// second
+        result.append(original, 0, 4);// year
+        result.append(original, 5, 7);// month
+        result.append(original, 8, 10);// date
+        result.append(original, 11, 13);// hour
+        result.append(original, 14, 16);// minute
+        result.append(original, 17, 19);// second
         return result.toString();
     }
 
+    /**
+     * Computes the 'next' timestamp for a specified shift {@code nrDays}.
+     *
+     * @param previous  The input {@link Timestamp} to compute the next one from.
+     * @param nrDays    The positive offset of days to shift {@code previous}.
+     *
+     * @return A valid {@link Timestamp} representation shifted by {@code nrDays}.
+     */
     public static Timestamp getNextTimestamp(Timestamp previous, long nrDays)
     {
         return new Timestamp(previous.getTime() + (nrDays * 24 * 60 * 60 * 1000));

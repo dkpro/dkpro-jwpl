@@ -30,7 +30,7 @@ import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
 /**
- * An interface to abstract from DumpVersion realization
+ * An abstraction for DumpVersion realization.
  */
 public interface IDumpVersion
 {
@@ -48,67 +48,174 @@ public interface IDumpVersion
         return b ? new String(new byte[] { 1 }) : "";
     }
 
+    /**
+     * Configures the specified {@link ILogger}.
+     *
+     * @param logger The logger to use.
+     */
     void setLogger(ILogger logger);
 
+    /**
+     * Toggles the category redirect skip.
+     *
+     * @param skipCategory {@code true} if category redirects should be skipped, {@code false} otherwise.
+     */
     void setCategoryRedirectsSkip(boolean skipCategory);
 
+    /**
+     * Toggles the page redirect skip.
+     *
+     * @param skipPage {@code true} if page redirects should be skipped, {@code false} otherwise.
+     */
     void setPageRedirectsSkip(boolean skipPage);
 
-    // initialize
+    /**
+     * Initializes and associates a processing phase with a specified {@link Timestamp revision timestamp}.
+     * @param timestamp The {@link Timestamp} to set.
+     */
     void initialize(Timestamp timestamp);
 
+    /**
+     * Specifies the {@link MetaData meta data} to use.
+     * @param commonMetaData A valid {@link MetaData} instance.
+     */
     void setMetaData(MetaData commonMetaData);
 
+    /**
+     * Specifies the {@link Files version files} to use.
+     * @param versionFiles A valid {@link Files} instance.
+     */
     void setFiles(Files versionFiles);
 
-    // parse revisions
+    /**
+     * Starts the parsing of a page revision row.
+     */
     void initRevisionParsing();
 
+    /**
+     * Processes a revision row.
+     *
+     * @param revisionParser A valid {@link RevisionParser} instance.
+     */
     void processRevisionRow(RevisionParser revisionParser);
 
+    /**
+     * Exports the results of revision parsing; to a file for instance.
+     */
     void exportAfterRevisionParsing();
 
+    /**
+     * Clears internal state after a revision parsing phase.
+     */
     void freeAfterRevisionParsing();
 
-    // parse pages
+    /**
+     * Starts the parsing of a page row.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
     void initPageParsing() throws IOException;
 
+    /**
+     * Processes a page row.
+     *
+     * @param pageParser A valid {@link PageParser} instance.
+     */
     void processPageRow(PageParser pageParser);
 
+    /**
+     * Exports the results of page parsing; to a file for instance.
+     */
     void exportAfterPageParsing();
 
+    /**
+     * Clears internal state after a page parsing phase.
+     */
     void freeAfterPageParsing();
 
-    // parse category links
+    /**
+     * Starts the parsing of a category links row.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
     void initCategoryLinksParsing() throws IOException;
 
+    /**
+     * Processes a category link row.
+     *
+     * @param clParser A valid {@link CategorylinksParser} instance.
+     * @throws IOException Thrown if IO errors occurred during processing.
+     */
     void processCategoryLinksRow(CategorylinksParser clParser) throws IOException;
 
+    /**
+     * Exports the results of category link parsing; to a file for instance.
+     */
     void exportAfterCategoryLinksParsing();
 
+    /**
+     * Clears internal state after a category link parsing phase.
+     */
     void freeAfterCategoryLinksParsing();
 
-    // parse page links
+    /**
+     * Starts the parsing of a page links row.
+     *
+     * @throws IOException Thrown if IO errors occurred.
+     */
     void initPageLinksParsing() throws IOException;
 
+    /**
+     * Processes a page link row.
+     *
+     * @param plParser A valid {@link PagelinksParser} instance.
+     */
     void processPageLinksRow(PagelinksParser plParser);
 
+    /**
+     * Exports the results of page link parsing; to a file for instance.
+     */
     void exportAfterPageLinksParsing();
 
+    /**
+     * Clears internal state after a page link parsing phase.
+     */
     void freeAfterPageLinksParsing();
 
-    // parse text
+    /**
+     * Starts the parsing of a text row.
+     * 
+     * @throws IOException Thrown if IO errors occurred.
+     */
     void initTextParsing() throws IOException;
 
+    /**
+     * Processes a text row.
+     *
+     * @param textParser A valid {@link TextParser} instance.
+     */
     void processTextRow(TextParser textParser);
 
+    /**
+     * Ensures internal buffers to be flushed before export phase.
+     */
     void flushByTextParsing();
 
+    /**
+     * Exports the results of text parsing; to a file for instance.
+     */
     void exportAfterTextParsing();
 
+    /**
+     * Clears internal state after a text parsing phase.
+     */
     void freeAfterTextParsing();
 
-    // write meta data
+    /**
+     * Exports the (current) {@link MetaData}; to a file for instance.
+     *
+     * @throws IOException Thrown if IO errors occurred during export.
+     */
     void writeMetaData() throws IOException;
 
 }

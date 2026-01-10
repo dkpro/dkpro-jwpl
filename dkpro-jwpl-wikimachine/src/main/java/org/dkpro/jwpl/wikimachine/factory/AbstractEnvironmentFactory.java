@@ -29,6 +29,12 @@ import org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
+/**
+ * A base {@link IEnvironmentFactory} implementation that defines several common beans
+ * for concrete subclasses.
+ *
+ * @see IEnvironmentFactory
+ */
 public abstract class AbstractEnvironmentFactory
     implements IEnvironmentFactory
 {
@@ -39,8 +45,16 @@ public abstract class AbstractEnvironmentFactory
     private static PageParser PAGEPARSER_BEAN;
     private static TextParser TEXTPARSER_BEAN;
 
+    /**
+     * Instantiates a {@link AbstractEnvironmentFactory}.
+     */
     protected AbstractEnvironmentFactory() {}
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: Realized via a singleton instance.
+     */
     @Override
     public ILogger getLogger()
     {
@@ -51,6 +65,11 @@ public abstract class AbstractEnvironmentFactory
         return LOG_BEAN;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: Realized via a singleton instance.
+     */
     @Override
     public IDecompressor getDecompressor()
     {
@@ -60,6 +79,11 @@ public abstract class AbstractEnvironmentFactory
         return DECOMPRESSOR_BEAN;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: Realized via a singleton instance.
+     */
     @Override
     public DumpVersionProcessor getDumpVersionProcessor()
     {
@@ -72,6 +96,11 @@ public abstract class AbstractEnvironmentFactory
         return DUMPVERSIONPROCESSOR_BEAN;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: Realized via a singleton instance.
+     */
     @Override
     public PageParser getPageParser()
     {
@@ -81,6 +110,11 @@ public abstract class AbstractEnvironmentFactory
         return PAGEPARSER_BEAN;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note: Realized via a singleton instance.
+     */
     @Override
     public TextParser getTextParser()
     {

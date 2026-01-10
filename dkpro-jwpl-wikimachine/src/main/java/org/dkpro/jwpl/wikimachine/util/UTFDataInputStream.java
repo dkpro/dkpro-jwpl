@@ -23,9 +23,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * This is an inverse class of {@link UTFDataOutputStream} witch goal is to reminder the length
- * limitation of written UTF-8 strings
+ * This is an inverse of {@link UTFDataOutputStream} witch goal is to reminder the length
+ * limitation of written UTF-8 strings.
  *
+ * @see DataInputStream
  * @see UTFDataOutputStream
  */
 public class UTFDataInputStream
@@ -34,16 +35,22 @@ public class UTFDataInputStream
 
     final static boolean END_REACHED = true;
 
+    /**
+     * Initializes a {@link UTFDataInputStream} with the specified {@link InputStream}.
+     *
+     * @param in The input stream to read from.
+     */
     public UTFDataInputStream(InputStream in)
     {
         super(in);
     }
 
     /**
-     * Read a fragmented UTF-8 String
+     * Reads a fragmented UTF-8 string.
      *
-     * @return a String written with {@link UTFDataOutputStream#writeFragmentedUTF(String)}
-     * @throws IOException
+     * @return A String written with {@link UTFDataOutputStream#writeFragmentedUTF(String)}.
+     * 
+     * @throws IOException Thrown if IO errors occurred.
      * @see UTFDataOutputStream#writeFragmentedUTF(String)
      */
     public String readFragmentedUTF() throws IOException
@@ -62,10 +69,11 @@ public class UTFDataInputStream
     }
 
     /**
-     * Read a byte array formed UTF-8 String
+     * Reads a byte array formed UTF-8 String.
      *
-     * @return a String written with {@link UTFDataOutputStream#writeUTFAsArray(String)}
-     * @throws IOException
+     * @return A String written with {@link UTFDataOutputStream#writeUTFAsArray(String)}.
+     * 
+     * @throws IOException Thrown if IO errors occurred.
      * @see UTFDataOutputStream#writeUTFAsArray(String)
      */
     public String readUTFAsArray() throws IOException

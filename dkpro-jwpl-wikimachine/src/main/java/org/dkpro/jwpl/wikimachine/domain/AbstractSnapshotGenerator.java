@@ -21,33 +21,51 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
+/**
+ * A base {@link ISnapshotGenerator} implementation that defines several common beans
+ * for concrete subclasses.
+ *
+ * @see ISnapshotGenerator
+ */
 public abstract class AbstractSnapshotGenerator
     implements ISnapshotGenerator
 {
+    /** The active {@link Configuration}. */
     protected Configuration configuration = null;
+    /** The {@link IDecompressor} in use. */
     protected final IDecompressor decompressor;
+    /** The {@link ILogger} in use. */
     protected final ILogger logger;
+    /** The {@link DumpVersionProcessor}  in use. */
     protected final DumpVersionProcessor dumpVersionProcessor;
-    protected final IEnvironmentFactory environmentFactory;
+    /** The {@link IEnvironmentFactory} in use. */
+    protected final IEnvironmentFactory envFactory;
 
+    /**
+     * Instantiates a {@link AbstractSnapshotGenerator} via the specified {@code environmentFactory}.
+     *
+     * @param environmentFactory The {@link IEnvironmentFactory environment factory} to use at runtime.
+     * @throws IllegalArgumentException Thrown if arguments were invalid.
+     */
     public AbstractSnapshotGenerator(IEnvironmentFactory environmentFactory)
     {
-        this.decompressor = environmentFactory.getDecompressor();
-        this.logger = environmentFactory.getLogger();
-        this.dumpVersionProcessor = environmentFactory.getDumpVersionProcessor();
+        if (environmentFactory == null) {
+            throw new IllegalArgumentException("The specified environmentFactory must not be null.");
+        }
+        this.envFactory = environmentFactory;
+        this.decompressor = envFactory.getDecompressor();
+        this.logger = envFactory.getLogger();
+        this.dumpVersionProcessor = envFactory.getDumpVersionProcessor();
 
-        this.environmentFactory = environmentFactory;
     }
 
-    @Override
-    public abstract void setFiles(Files files);
-
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setConfiguration(Configuration configuration)
     {
         this.configuration = configuration;
     }
 
-    @Override
-    public abstract void start() throws Exception;
 }

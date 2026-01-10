@@ -65,38 +65,67 @@ public abstract class AbstractXmlDumpReader
     extends DefaultHandler
 {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /** Constant for sitename. */
     protected static final String SITENAME = "sitename";
+    /** Constant for generator. */
     protected static final String GENERATOR = "generator";
+    /** Constant for case. */
     protected static final String CASE = "case";
+    /** Constant for base. */
     protected static final String BASE = "base";
+    /** Constant for namespace. */
     protected static final String NAMESPACE = "namespace";
+    /** Constant for namespaces. */
     protected static final String NAMESPACES = "namespaces";
+    /** Constant for siteinfo. */
     protected static final String SITEINFO = "siteinfo";
+    /** Constant for mediawiki. */
     protected static final String MEDIAWIKI = "mediawiki";
+    /** Constant for username. */
     protected static final String USERNAME = "username";
+    /** Constant for title. */
     protected static final String TITLE = "title";
+    /** Constant for timestamp. */
     protected static final String TIMESTAMP = "timestamp";
+    /** Constant for text. */
     protected static final String TEXT = "text";
+    /** Constant for restrictions. */
     protected static final String RESTRICTIONS = "restrictions";
+    /** Constant for page. */
     protected static final String PAGE = "page";
+    /** Constant for minor. */
     protected static final String MINOR = "minor";
+    /** Constant for ip. */
     protected static final String IP = "ip";
+    /** Constant for id. */
     protected static final String ID = "id";
+    /** Constant for comment. */
     protected static final String COMMENT = "comment";
-    protected static final String THREAD_TYPE = "ThreadType";
-    protected static final String THREAD_EDIT_STATUS = "ThreadEditStatus";
-    protected static final String THREAD_AUTHOR = "ThreadAuthor";
-    protected static final String THREAD_SUMMARY_PAGE = "ThreadSummaryPage";
-    protected static final String THREAD_ID = "ThreadID";
-    protected static final String THREAD_PAGE = "ThreadPage";
-    protected static final String THREAD_ANCESTOR = "ThreadAncestor";
-    protected static final String THREAD_PARENT = "ThreadParent";
-    protected static final String THREAD_SUBJECT = "ThreadSubject";
+    /** Constant for contributor. */
     protected static final String CONTRIBUTOR = "contributor";
+    /** Constant for revision. */
     protected static final String REVISION = "revision";
+
+    /** Constant for ThreadType. */
+    protected static final String THREAD_TYPE = "ThreadType";
+    /** Constant for ThreadEditStatus. */
+    protected static final String THREAD_EDIT_STATUS = "ThreadEditStatus";
+    /** Constant for ThreadAuthor. */
+    protected static final String THREAD_AUTHOR = "ThreadAuthor";
+    /** Constant for ThreadSummaryPage. */
+    protected static final String THREAD_SUMMARY_PAGE = "ThreadSummaryPage";
+    /** Constant for ThreadID. */
+    protected static final String THREAD_ID = "ThreadID";
+    /** Constant for ThreadPage. */
+    protected static final String THREAD_PAGE = "ThreadPage";
+    /** Constant for ThreadAncestor. */
+    protected static final String THREAD_ANCESTOR = "ThreadAncestor";
+    /** Constant for ThreadParent. */
+    protected static final String THREAD_PARENT = "ThreadParent";
+    /** Constant for ThreadSubject. */
+    protected static final String THREAD_SUBJECT = "ThreadSubject";
 
     private final InputStream input;
     private final DumpWriter writer;
@@ -116,14 +145,16 @@ public abstract class AbstractXmlDumpReader
     private boolean abortFlag;
     private boolean errorState = false;
 
+    /** The mapping of start elements with an initial capacity of 64. */
     protected final Map<String, String> startElements = new HashMap<>(64);
+    /** The mapping of end elements with an initial capacity of 64. */
     protected final Map<String, String> endElements = new HashMap<>(64);
 
     private final Map<String, String> forbiddenIdStartElements = new HashMap<>(64);
     private final Map<String, String> forbiddenIdEndElements = new HashMap<>(64);
 
     /**
-     * Fill {@link #forbiddenIdStartElements}
+     * Fill {@link #forbiddenIdStartElements}.
      *
      * @see #notAllowedStart(String)
      */
@@ -134,7 +165,7 @@ public abstract class AbstractXmlDumpReader
     }
 
     /**
-     * Fill {@link #forbiddenIdEndElements}
+     * Fill {@link #forbiddenIdEndElements}.
      *
      * @see #notAllowedEnd(String)
      */
@@ -178,10 +209,8 @@ public abstract class AbstractXmlDumpReader
      * {@link DumpWriter} output sink, but you can chain multiple output processors with a
      * MultiWriter.
      *
-     * @param inputStream
-     *            Stream to read XML from.
-     * @param writer
-     *            Output sink to send processed events to.
+     * @param inputStream  The {@link InputStream} to read XML from.
+     * @param writer  The {@link DumpWriter output sink} to send processed events to.
      */
     public AbstractXmlDumpReader(InputStream inputStream, DumpWriter writer)
     {
@@ -202,8 +231,7 @@ public abstract class AbstractXmlDumpReader
      * {@link DumpWriter} as it goes. May throw exceptions on invalid input or due to problems with
      * the output.
      *
-     * @throws IOException
-     *             Thrown if errors occurred during parsing.
+     * @throws IOException  Thrown if errors occurred during parsing.
      */
     public void readDump() throws IOException
     {
@@ -223,9 +251,8 @@ public abstract class AbstractXmlDumpReader
     /**
      * Request that the dump processing be aborted. At the next element, an exception will be thrown
      * to stop the XML parser.
-     * <p>
-     * TODO Investigate: Is setting a bool thread-safe? It should be atomic...
      */
+    // TODO Investigate: Is setting a bool thread-safe? It should be atomic...
     public void abort()
     {
         abortFlag = true;
@@ -235,10 +262,12 @@ public abstract class AbstractXmlDumpReader
     // SAX handler interface methods:
 
     /**
+     * Checks whether a given start tag is allowed or not.
+     * <p>
      * If error with wrong id tag occurs, the errorState flag will be set. In this case some start
      * tags have to be ignored.
      *
-     * @param startTag
+     * @param startTag The start tag to check.
      * @return {@code true} if {@code startTag} is not allowed and will be ignored
      * @see #setupForbiddenStartElements()
      */
@@ -264,6 +293,9 @@ public abstract class AbstractXmlDumpReader
         return errorState;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void startElement(String uri, String localname, String qName, Attributes attributes)
         throws SAXException
@@ -305,6 +337,9 @@ public abstract class AbstractXmlDumpReader
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void characters(char[] ch, int start, int length)
     {
@@ -322,6 +357,9 @@ public abstract class AbstractXmlDumpReader
         hasContent = true;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void endElement(String uri, String localname, String qName) throws SAXException
     {

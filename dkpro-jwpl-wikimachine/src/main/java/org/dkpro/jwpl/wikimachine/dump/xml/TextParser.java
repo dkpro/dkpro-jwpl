@@ -23,21 +23,27 @@ import java.io.InputStream;
 
 import org.dkpro.jwpl.wikimachine.util.UTFDataInputStream;
 
+/**
+ * A parser for the 'text' table.<br/>
+ * Accessing the field values is only possible each time the method {@link #next()} returned {@code true}.
+ *
+ * @see AutoCloseable
+ */
 public class TextParser
+    implements AutoCloseable
 {
 
-    /**
-     * Need fields from the table text.<br>
-     * These fields are updated each time the method next() returns true.
+    /*
+     * Corresponding fields of the 'text' table.
      */
     private int oldId;
     private String oldText;
     private UTFDataInputStream stream;
 
     /**
-     * Create a parser from an input stream
+     * Sets an input stream to text parse with.
      *
-     * @param inputStream
+     * @param inputStream An open {@link InputStream} to set for text parsing.
      */
     public void setInputStream(InputStream inputStream)
     {
@@ -45,7 +51,7 @@ public class TextParser
     }
 
     /**
-     * @return Returns the old_id.
+     * @return Returns the value of {@code old_id}.
      */
     public int getOldId()
     {
@@ -53,7 +59,7 @@ public class TextParser
     }
 
     /**
-     * @return Returns the old_text.
+     * @return Returns the value of {@code old_text}.
      */
     public String getOldText()
     {
@@ -61,9 +67,8 @@ public class TextParser
     }
 
     /**
-     * @return {@code true} if the table has more rows, {@code false} othwise.
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @return {@code true} if the table has more rows, {@code false} otherwise.
+     * @throws IOException  Thrown if IO errors occurred.
      */
     public boolean next() throws IOException
     {
@@ -78,6 +83,10 @@ public class TextParser
         return hasNext;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void close() throws IOException
     {
         stream.close();

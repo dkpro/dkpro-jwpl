@@ -28,34 +28,75 @@ import java.util.regex.Pattern;
 public abstract class Strings
 {
 
-    // nobody could instantiate it
-    private Strings()
-    {
-    }
+    // nobody can instantiate it
+    private Strings() {}
 
+    /**
+     * Attempts to find the next subsequence of the input sequence that matches
+     * the specified pattern.
+     *
+     * @param str   The string to check.
+     * @param regex The regular expression to use.
+     *              
+     * @return  {@code true} if it is found, {@code false} otherwise.
+     */
     public static boolean find(String str, String regex)
     {
         return Pattern.compile(regex).matcher(str).find();
     }
 
+    /**
+     * Attempts to match the input sequence, starting at the beginning of the
+     * region, against the pattern.
+     * 
+     * @param str   The string to check.
+     * @param regex The regular expression to use.
+     * @return  {@code true} if, and only if, a prefix of the input
+     *          sequence matches the {@code regex} pattern.
+     */
     public static boolean lookingAt(String str, String regex)
     {
         return Pattern.compile(regex).matcher(str).lookingAt();
     }
 
+    /**
+     * Attempts to match the entire region against the pattern.
+     *
+     * @param str   The string to check.
+     * @param regex The regular expression to use.
+     *
+     * @return  {@code true} if, and only if, the entire region sequence
+     *          matches the {@code regex} pattern.
+     */
     public static boolean matches(String str, String regex)
     {
         return Pattern.compile(regex).matcher(str).matches();
     }
 
+    /**
+     * Checks whether a String ends the specified {@code regex} pattern.
+     *
+     * @param str   The string to check.
+     * @param regex The regular expression to use.
+     *
+     * @return  {@code true} if, and only if, the entire region sequence
+     *          ends with the {@code regex} pattern.
+     */
     public static boolean endsWithRegex(String str, String regex)
     {
         return matches(str, "(.)*" + regex);
     }
 
+    /**
+     * Joins all elements in a collection into a String separated by the specified {@code delimiter}.
+     *
+     * @param c A collection whose elements should be combined into a String representation.
+     * @param delimiter The delimiter to use.
+     * @return The combined String form of the elements in {@code c}.
+     */
     public static String join(Collection<?> c, String delimiter)
     {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         Iterator<?> iter = c.iterator();
         while (iter.hasNext()) {
             buffer.append(iter.next());
@@ -69,9 +110,8 @@ public abstract class Strings
     /**
      * Uppercases the first character of a string.
      *
-     * @param s
-     *            a string to capitalize
-     * @return a capitalized version of the string
+     * @param s A string to capitalize.
+     * @return The capitalized version of the string.
      */
     public static String capitalize(String s)
     {
@@ -83,16 +123,36 @@ public abstract class Strings
         }
     }
 
+    /**
+     * @param s The String to check.
+     * @return  {@code true} if {@link String#length()} is {@code 0},
+     *          {@code false} otherwise.
+     */
     public static boolean isEmpty(String s)
     {
         return s.isEmpty();
     }
 
+    /**
+     * @param s The String to check.
+     * @return  {@code true} if the first character of {@code s} is uppercase;
+     *          {@code false} otherwise.
+     */
     public static boolean isCapitalized(String s)
     {
         return Character.isUpperCase(s.charAt(0));
     }
 
+    /**
+     * Replaces all occurrences of {@code from_regex} in a specified {@code text}
+     * with the specified replacement {@code to}.
+     *
+     * @param text          The original String to screen for.
+     * @param from_regex    The regex to search for.
+     * @param to            The replacement to use.
+     *
+     * @return The resulting String.
+     */
     public static String searchAndReplace(String text, String from_regex, String to)
     {
         from_regex = escapeString(from_regex, new char[] { '.', '[', ']', '\\' }, '\\'); // special
@@ -103,9 +163,17 @@ public abstract class Strings
         return m.replaceAll(to);
     }
 
+    /**
+     * Escapes a given String with a specified {@code escapeChar}.
+     *
+     * @param s             The string literal to escape characters in.
+     * @param charsToEscape The array of chars to replace with {@code escapeChar}.
+     * @param escapeChar    The character to use as a replacement for other characters in {@code s}.
+     * @return  The resulting String.
+     */
     public static String escapeString(String s, char[] charsToEscape, char escapeChar)
     {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == escapeChar) {
@@ -124,6 +192,13 @@ public abstract class Strings
         return result.toString();
     }
 
+    /**
+     * Converts an input String into a pure Ascii form.
+     *
+     * @param s The input string to convert.
+     *          
+     * @return The converted Ascii string.
+     */
     public static String toAscii(String s)
     {
         StringBuilder b = new StringBuilder();
@@ -218,11 +293,26 @@ public abstract class Strings
         return b.toString();
     }
 
+    /**
+     * Groups a string literal in round brackets.
+     *
+     * @param str The input string to put in brackets.
+     *
+     * @return The grouped String.
+     */
     public static String group(String str)
     {
         return "(" + str + ")";
     }
 
+    /**
+     * Concatenates the given String {@code s} n-{@code times}.
+     *
+     * @param s     The input to duplicate.
+     * @param times The number of concatenations.
+     *              
+     * @return  The resulting String.
+     */
     public static String repeat(String s, int times)
     {
         if (times == 0)
@@ -232,6 +322,14 @@ public abstract class Strings
         return sb.toString();
     }
 
+    /**
+     * Concatenates the given {@code elements} with the specified {@code glue} in between.
+     *
+     * @param elements  The input to concatenate.
+     * @param glue The char sequence to use as "glue" in between each element in {@code elements}.
+     *
+     * @return  The resulting String.
+     */
     public static String join(Object[] elements, String glue)
     {
         return join(java.util.Arrays.asList(elements), glue);

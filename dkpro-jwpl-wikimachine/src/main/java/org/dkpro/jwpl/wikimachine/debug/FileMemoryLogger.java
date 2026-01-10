@@ -29,30 +29,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A logger implementation which directs its logging output to a file with a CSV format.
+ * A {@link ILogger} implementation which directs its logging output to a file with a CSV format.
  * <p>
  * The format - and it's semantics - is defined by the header: {@link FileMemoryLogger#FILEHEADER}.
  */
 public class FileMemoryLogger
-    extends AbstractLogger
+    extends AbstractLogger implements AutoCloseable
 {
 
     private static final String FILEHEADER = "\"Date/Time\",\"Total Memory\",\"Free Memory\",\"Message\"";
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
-
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
     private static final SimpleDateFormat FILENAME_FORMAT = new SimpleDateFormat("yyyyMMdd_HHmmss");
-    private static final SimpleDateFormat DATEFIELD_FORMAT = new SimpleDateFormat(
-            "yyyy.MM.dd HH:mm:ss");
+    private static final SimpleDateFormat DATEFIELD_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 
+    private PrintStream output;
+
+    /**
+     * @param format The {@link SimpleDateFormat time representation} format to use.
+     * @return Retrieves a string representation of the current date time, aka 'now'.
+     */
     public static String now(SimpleDateFormat format)
     {
         return format.format(new Date());
     }
 
-    private PrintStream output;
-
+    /**
+     * Instantiates a {@link FileMemoryLogger} logger.
+     */
     public FileMemoryLogger()
     {
 
@@ -68,6 +71,9 @@ public class FileMemoryLogger
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void logObject(Object message)
     {
@@ -78,10 +84,13 @@ public class FileMemoryLogger
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected void finalize() throws Throwable
-    {
-        output.close();
+    public void close() throws Exception {
+        if (output != null) {
+            output.close();
+        }
     }
-
 }

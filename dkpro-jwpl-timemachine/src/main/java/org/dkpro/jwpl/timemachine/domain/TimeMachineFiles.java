@@ -66,9 +66,9 @@ public class TimeMachineFiles
         return metaHistoryFile;
     }
 
-    public void setMetaHistoryFile(String metaHistroyFile)
+    public void setMetaHistoryFile(String metaHistoryFile)
     {
-        this.metaHistoryFile = metaHistroyFile;
+        this.metaHistoryFile = metaHistoryFile;
     }
 
     public String getPageLinksFile()

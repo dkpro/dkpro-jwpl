@@ -20,9 +20,21 @@ package org.dkpro.jwpl.wikimachine.dump.xml;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * An abstraction of an {@link InputStream} for Wikipedia table dumps of three {@link DumpTableEnum types}.
+ *
+ * @see DumpTableEnum
+ */
 public abstract class DumpTableInputStream
     extends InputStream
 {
+    /**
+     * Initializes the specified {@link InputStream} depending on its {@link DumpTableEnum table type}.
+     *
+     * @param inputStream   The input stream to read from.
+     * @param table         The {@link DumpTableEnum table type} as additional context information.
+     * @throws IOException  Thrown if IO errors occurred.
+     */
     public abstract void initialize(InputStream inputStream, DumpTableEnum table)
         throws IOException;
 }

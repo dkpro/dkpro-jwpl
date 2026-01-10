@@ -18,14 +18,19 @@
 package org.dkpro.jwpl.wikimachine.dump.xml;
 
 /**
- * Three possible tables, which can be parsed from the Wikimedia-Dump
+ * Three possible tables, which can be parsed from the Wikimedia-Dump.
  * <ul>
- * <li>PAGE</li>
- * <li>REVISION</li>
- * <li>TEXT</li>
+ *      <li>PAGE</li>
+ *      <li>REVISION</li>
+ *      <li>TEXT</li>
  * </ul>
  */
 public enum DumpTableEnum
 {
-    PAGE, REVISION, TEXT
+    /** Refers to a dump of the {@code page} table. */
+    PAGE,
+    /** Refers to a dump of the {@code revision} table. */
+    REVISION,
+    /** Refers to a dump of the {@code text} table. */
+    TEXT
 }

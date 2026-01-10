@@ -24,15 +24,24 @@ import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+/**
+ * A JBoss specific {@link IStringHashCode} implementation.
+ */
 public class StringHashCodeJBoss
     implements IStringHashCode
 {
 
+    /**
+     * Instantiates a {@link StringHashCodeJBoss} object.
+     */
     public StringHashCodeJBoss()
     {
         // use for instantiate as generic
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Long hashCode(String string)
     {

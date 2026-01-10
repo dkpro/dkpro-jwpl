@@ -17,7 +17,14 @@
  */
 package org.dkpro.jwpl.wikimachine.hashing;
 
+/**
+ * Defines a minimal API for hashing strings.
+ */
 public interface IStringHashCode
 {
+    /**
+     * @param string The input string to compute a hash representation for.
+     * @return The computed {@link Object hash code}.
+     */
     Object hashCode(String string);
 }
