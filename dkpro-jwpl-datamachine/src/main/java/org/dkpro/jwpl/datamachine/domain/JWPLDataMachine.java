@@ -32,6 +32,8 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 public class JWPLDataMachine
 {
 
+    private static final String PROP_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+
     private static final int LANG_ARG = 0;
     private static final int MAINCATEGORY_ARG = 1;
     private static final int DISAMBIGUATION_ARG = 2;
@@ -50,6 +52,7 @@ public class JWPLDataMachine
     private static final ILogger logger;
 
     static {
+        System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
         Optional<IEnvironmentFactory> candidate = ServiceLoader.load(IEnvironmentFactory.class).findFirst();
         environmentFactory = candidate.orElseThrow(
                 () -> new RuntimeException("Error detecting required runtime environment components! " +
