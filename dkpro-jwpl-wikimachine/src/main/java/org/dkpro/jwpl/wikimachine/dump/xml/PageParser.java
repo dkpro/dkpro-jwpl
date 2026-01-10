@@ -23,23 +23,29 @@ import java.io.InputStream;
 
 import org.dkpro.jwpl.wikimachine.util.UTFDataInputStream;
 
+/**
+ * A parser for the 'page' table.<br/>
+ * Accessing the field values is only possible each time the method {@link #next()} returned {@code true}.
+ *
+ * @see AutoCloseable
+ */
 public class PageParser
+    implements AutoCloseable
 {
-    /**
-     * Needed fields from the table page.<br>
-     * These fields are updated each time the method next() returns true.
+    /*
+     * Corresponding fields of the 'page' table.
      */
-    protected int pageId;
-    protected int pageNamespace;
-    protected String pageTitle;
-    protected boolean pageIsRedirect;
+    private int pageId;
+    private int pageNamespace;
+    private String pageTitle;
+    private boolean pageIsRedirect;
 
-    protected UTFDataInputStream stream;
+    private UTFDataInputStream stream;
 
     /**
-     * Create a parser from an input stream
+     * Sets an input stream to page parse with.
      *
-     * @param inputStream
+     * @param inputStream An open {@link InputStream} to set for page parsing.
      */
     public void setInputStream(InputStream inputStream)
     {
@@ -47,7 +53,7 @@ public class PageParser
     }
 
     /**
-     * @return Returns the page_id.
+     * @return Returns the value of {@code page_id}.
      */
     public int getPageId()
     {
@@ -55,7 +61,7 @@ public class PageParser
     }
 
     /**
-     * @return Returns the page_is_redirect.
+     * @return Returns the value of {@code page_is_redirect}.
      */
     public boolean getPageIsRedirect()
     {
@@ -63,7 +69,7 @@ public class PageParser
     }
 
     /**
-     * @return Returns the page_namespace.
+     * @return Returns the value of {@code page_namespace}.
      */
     public int getPageNamespace()
     {
@@ -71,7 +77,7 @@ public class PageParser
     }
 
     /**
-     * @return Returns the page_title.
+     * @return Returns the value of {@code page_title}.
      */
     public String getPageTitle()
     {
@@ -79,9 +85,8 @@ public class PageParser
     }
 
     /**
-     * @return {@code true} if the table has more rows, {@code false} othwise.
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @return {@code true} if the table has more rows, {@code false} otherwise.
+     * @throws IOException  Thrown if IO errors occurred.
      */
     public boolean next() throws IOException
     {
@@ -98,8 +103,14 @@ public class PageParser
         return hasNext;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void close() throws IOException
     {
-        stream.close();
+        if (stream != null) {
+            stream.close();
+        }
     }
 }

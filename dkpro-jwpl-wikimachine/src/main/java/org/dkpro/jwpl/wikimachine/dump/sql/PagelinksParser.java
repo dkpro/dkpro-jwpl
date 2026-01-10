@@ -24,7 +24,9 @@ import java.io.StreamTokenizer;
 /**
  * A Parser for the SQL file that defines the table {@code pagelinks}.
  * <p>
- * A fix for Issue 102 has been provided by Google Code user {@code astronautguo}.
+ * A fix for Issue #102 has been provided by Google Code user {@code astronautguo}.
+ *
+ * @see SQLFileParser
  */
 public class PagelinksParser
     extends SQLFileParser
@@ -39,17 +41,20 @@ public class PagelinksParser
     private String plTo;
 
     /**
-     * Create a parser from an input stream
+     * Instantiates a {@link PagelinksParser} via an input stream.
      *
-     * @param inputStream
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param inputStream A valid {@link InputStream} to read SQL content from.
+     *                    
+     * @throws IOException Thrown if IO errors occurred.
      */
     public PagelinksParser(InputStream inputStream) throws IOException
     {
         init(inputStream);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean next() throws IOException
     {
@@ -76,7 +81,7 @@ public class PagelinksParser
         // read pl_to
         st.nextToken();
         plTo = SQLEscape.escape(st.sval);
-        // pre July 2014 dumpo: read ')' / post July 2014 dump read ','
+        // pre July 2014 dump: read ')' / post July 2014 dump read ','
         st.nextToken();
         if (st.toString().charAt(7) == ',') {
             // we have a post July 2014 dump and thus have to skip the pl_from_namespace field
@@ -92,7 +97,7 @@ public class PagelinksParser
     }
 
     /**
-     * @return Returns the pl_from.
+     * @return Returns the {@code pl_from}.
      */
     public int getPlFrom()
     {
@@ -100,7 +105,7 @@ public class PagelinksParser
     }
 
     /**
-     * @return Returns the pl_namespace.
+     * @return Returns the {@code pl_namespace}.
      */
     public int getPlNamespace()
     {
@@ -108,7 +113,7 @@ public class PagelinksParser
     }
 
     /**
-     * @return Returns the pl_to.
+     * @return Returns the {@code pl_to}.
      */
     public String getPlTo()
     {

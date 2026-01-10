@@ -20,6 +20,8 @@ package org.dkpro.jwpl.wikimachine.debug;
 /**
  * A logger implementation which combines several {@link ILogger} instances into a chain which is
  * processed in the order in which the chain was initially composed.
+ *
+ * @see ILogger
  */
 public class CompositeLogger
     implements ILogger
@@ -27,6 +29,11 @@ public class CompositeLogger
 
     private final ILogger[] loggers;
 
+    /**
+     * Instantiates a {@link CompositeLogger} from one or more {@link ILogger logger} instances.
+     * @param initLoggers A collection of logger references to use as a composition.
+     *                    Note: Initial sort order matters.
+     */
     public CompositeLogger(ILogger[] initLoggers)
     {
         loggers = (initLoggers != null) ? initLoggers : new ILogger[0];

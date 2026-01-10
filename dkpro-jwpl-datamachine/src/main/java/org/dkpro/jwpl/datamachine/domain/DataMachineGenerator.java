@@ -58,7 +58,7 @@ public class DataMachineGenerator
     @Override
     public void start() throws Exception
     {
-        version = environmentFactory.getDumpVersion();
+        version = envFactory.getDumpVersion();
         MetaData metaData = MetaData.initWithConfig(configuration);
         version.initialize(null);
         version.setMetaData(metaData);
@@ -126,10 +126,10 @@ public class DataMachineGenerator
     {
         String pageFile = files.getGeneratedPage();
 
-        DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
+        DumpTableInputStream pageTableInputStream = envFactory.getDumpTableInputStream();
         pageTableInputStream.initialize(decompressor.getInputStream(pageFile), DumpTableEnum.PAGE);
 
-        PageParser pageParser = environmentFactory.getPageParser();
+        PageParser pageParser = envFactory.getPageParser();
         pageParser.setInputStream(pageTableInputStream);
         return pageParser;
     }
@@ -150,12 +150,12 @@ public class DataMachineGenerator
     {
         String revisionFile = files.getGeneratedRevision();
 
-        DumpTableInputStream revisionTableInputStream = environmentFactory
+        DumpTableInputStream revisionTableInputStream = envFactory
                 .getDumpTableInputStream();
         revisionTableInputStream.initialize(decompressor.getInputStream(revisionFile),
                 DumpTableEnum.REVISION);
 
-        RevisionParser revisionParser = environmentFactory.getRevisionParser();
+        RevisionParser revisionParser = envFactory.getRevisionParser();
         revisionParser.setInputStream(revisionTableInputStream);
         return revisionParser;
     }
@@ -164,10 +164,10 @@ public class DataMachineGenerator
     {
         String textFile = files.getGeneratedText();
 
-        DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
+        DumpTableInputStream textTableInputStream = envFactory.getDumpTableInputStream();
         textTableInputStream.initialize(decompressor.getInputStream(textFile), DumpTableEnum.TEXT);
 
-        TextParser textParser = environmentFactory.getTextParser();
+        TextParser textParser = envFactory.getTextParser();
         textParser.setInputStream(textTableInputStream);
         return textParser;
     }

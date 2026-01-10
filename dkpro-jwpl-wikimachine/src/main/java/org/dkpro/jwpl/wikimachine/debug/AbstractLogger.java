@@ -20,11 +20,18 @@ package org.dkpro.jwpl.wikimachine.debug;
 /**
  * Logger, which does not implement some concrete output technique, but knows how exceptions are
  * handled. AbstractLogger provides a template method {@link #log(Object)} for its derivatives.
+ *
+ * @see ILogger
  */
 public abstract class AbstractLogger
     implements ILogger
 {
 
+    /**
+     * Checks whether a {@link Class} is throwable or not.
+     * @param c The class to investigate.
+     * @return {@code true} if {@code c} is throwable, {@code false} otherwise.
+     */
     protected boolean isThrowable(Class<?> c)
     {
         boolean throwable = false;
@@ -44,6 +51,13 @@ public abstract class AbstractLogger
         return throwable;
     }
 
+    /**
+     * Instantiates a logger-friendly message from a {@link Throwable} object.
+     *
+     * @param e The throwable to create the log message from.
+     *
+     * @return The resulting, pretty-formatted message extracted from {@code e}.
+     */
     protected String createThrowableMessage(Throwable e)
     {
         StringBuilder message = new StringBuilder();
@@ -56,6 +70,9 @@ public abstract class AbstractLogger
         return message.toString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void log(Object message)
     {
@@ -67,6 +84,11 @@ public abstract class AbstractLogger
         }
     }
 
+    /**
+     * Logs the current object reference or state of a specified {@link Object object}.
+     *
+     * @param message The object to use and convert to a log message.
+     */
     protected abstract void logObject(Object message);
 
 }

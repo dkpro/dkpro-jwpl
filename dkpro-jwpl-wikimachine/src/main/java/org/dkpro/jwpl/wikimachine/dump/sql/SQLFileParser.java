@@ -22,35 +22,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StreamTokenizer;
+import java.nio.charset.StandardCharsets;
 
 /**
- * This class defines common utilities for the classes CategorylinksParser <br>
- * and PagelinksParser.
+ * This class defines common utilities for the classes {@link CategorylinksParser}
+ * and {@link PagelinksParser}.
  *
  * @version 0.2 <br>
  *          <code>SQLFileParser</code> don't create a BufferedReader by himself but entrust it to
- *          <code>BufferedReaderFactory</code>. Thereby BufferedReaders are created according to
+ *          <code>BufferedReaderFactory</code>. Thereby, BufferedReaders are created according to
  *          archive type and try to uncompress the file on the fly. (Ivan Galkin 15.01.2009)
  */
-abstract class SQLFileParser
+abstract class SQLFileParser implements AutoCloseable
 {
 
-    private static final String ENCODING = "UTF-8";
+    /** The stream associated with the SQL content to parse. */
     protected InputStream stream;
+    /** The tokenizer instance used to parse the underlying {@link #stream}.*/
     protected StreamTokenizer st;
+    /** Whether the end of file has been reached. */
     protected boolean EOF_reached;
 
     /**
-     * Init the SQLFileParser with an input stream
+     * Init a {@link SQLFileParser} via an input stream.
      *
-     * @param inputStream
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param inputStream A valid {@link InputStream} to read SQL content from.
+     *                    
+     * @throws IOException Thrown if IO errors occurred during initialization.
      */
     protected void init(InputStream inputStream) throws IOException
     {
         stream = inputStream;
-        st = new StreamTokenizer(new BufferedReader(new InputStreamReader(stream, ENCODING)));
+        st = new StreamTokenizer(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
 
         EOF_reached = false;
         skipStatements();
@@ -81,16 +84,19 @@ abstract class SQLFileParser
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public void close() throws IOException
     {
         stream.close();
     }
 
     /**
-     * This method must be implemented by the PagelinksParser and the CategorylinksParser<br>
-     * classes.
+     * Must be implemented by the {@link PagelinksParser} and the {@link CategorylinksParser} classes.
      *
-     * @return Returns true if a new value is now available und {@code false} otherwise.
+     * @return {@code true} if a new value is now available, {@code false} otherwise.
      * @throws IOException
      *             Thrown if IO errors occurred.
      */

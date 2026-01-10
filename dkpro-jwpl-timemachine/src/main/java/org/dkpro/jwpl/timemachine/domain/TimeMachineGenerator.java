@@ -94,7 +94,7 @@ public class TimeMachineGenerator
                 MetaData commonMetaData = MetaData.initWithConfig(configuration);
                 commonMetaData.setTimestamp(currentTimestamp);
 
-                IDumpVersion version = environmentFactory.getDumpVersion();
+                IDumpVersion version = envFactory.getDumpVersion();
 
                 version.initialize(currentTimestamp);
                 version.setMetaData(commonMetaData);
@@ -141,12 +141,12 @@ public class TimeMachineGenerator
 
         String metahistory = initialFiles.getMetaHistoryFile();
 
-        DumpTableInputStream revisionTableInputStream = environmentFactory
+        DumpTableInputStream revisionTableInputStream = envFactory
                 .getDumpTableInputStream();
         revisionTableInputStream.initialize(decompressor.getInputStream(metahistory),
                 DumpTableEnum.REVISION);
 
-        RevisionParser revisionParser = environmentFactory.getRevisionParser();
+        RevisionParser revisionParser = envFactory.getRevisionParser();
         revisionParser.setInputStream(revisionTableInputStream);
 
         return revisionParser;
@@ -158,11 +158,11 @@ public class TimeMachineGenerator
 
         String metahistory = initialFiles.getMetaHistoryFile();
 
-        DumpTableInputStream pageTableInputStream = environmentFactory.getDumpTableInputStream();
+        DumpTableInputStream pageTableInputStream = envFactory.getDumpTableInputStream();
         pageTableInputStream.initialize(decompressor.getInputStream(metahistory),
                 DumpTableEnum.PAGE);
 
-        PageParser pageParser = environmentFactory.getPageParser();
+        PageParser pageParser = envFactory.getPageParser();
         pageParser.setInputStream(pageTableInputStream);
 
         return pageParser;
@@ -194,11 +194,11 @@ public class TimeMachineGenerator
 
         String metahistory = initialFiles.getMetaHistoryFile();
 
-        DumpTableInputStream textTableInputStream = environmentFactory.getDumpTableInputStream();
+        DumpTableInputStream textTableInputStream = envFactory.getDumpTableInputStream();
         textTableInputStream.initialize(decompressor.getInputStream(metahistory),
                 DumpTableEnum.TEXT);
 
-        TextParser textParser = environmentFactory.getTextParser();
+        TextParser textParser = envFactory.getTextParser();
         textParser.setInputStream(textTableInputStream);
 
         return textParser;

@@ -17,15 +17,24 @@
  */
 package org.dkpro.jwpl.wikimachine.hashing;
 
+/**
+ * A JDK specific {@link IStringHashCode} implementation.
+ */
 public class StringHashCodeJDK
     implements IStringHashCode
 {
 
+    /**
+     * Instantiates a {@link StringHashCodeJDK} object.
+     */
     public StringHashCodeJDK()
     {
         // use for instantiate as generic
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Integer hashCode(String string)
     {

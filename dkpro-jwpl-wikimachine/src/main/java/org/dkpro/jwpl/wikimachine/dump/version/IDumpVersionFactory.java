@@ -17,11 +17,25 @@
  */
 package org.dkpro.jwpl.wikimachine.dump.version;
 
+/**
+ * Defines the minimal API of a factory to retrieve {@link IDumpVersion} objects.
+ */
 public interface IDumpVersionFactory
 {
+    /**
+     * Defines several factory variants for different key access strategies.
+     */
     enum FactoryType {
-      JDK_INT_KEY, JDK_LONG_KEY, JDK_STRING_KEY
+        /** The key for: JDK Integer. */
+        JDK_INT_KEY,
+        /** The key for: JDK Long. */
+        JDK_LONG_KEY,
+        /** The key for: JDK String. */
+        JDK_STRING_KEY
     }
 
+    /**
+     * @return Retrieves the {@link IDumpVersion}.
+     */
     IDumpVersion getDumpVersion();
 }

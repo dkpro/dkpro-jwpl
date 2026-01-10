@@ -23,7 +23,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * The standard <code>DataOutputStream.writeUTF(String)</code> limits the string with 65536 byte
+ * The standard {@link DataOutputStream#writeUTF(String)} limits the string with a 65536 byte
  * sized buffer. To avoid this limitation there is two methods to use:
  * <ul>
  * <li>{@link UTFDataOutputStream#writeFragmentedUTF(String)}</li>
@@ -40,6 +40,11 @@ public class UTFDataOutputStream
     final static boolean END_REACHED = true;
     final static boolean FRAGMENTS_FOLLOW = false;
 
+    /**
+     * Initializes a {@link UTFDataOutputStream} with the specified {@link OutputStream}.
+     *
+     * @param out The output stream to write to.
+     */
     public UTFDataOutputStream(OutputStream out)
     {
         super(out);
@@ -59,12 +64,10 @@ public class UTFDataOutputStream
 
     /**
      * The UTF-8 encoding uses sequences of 1, 2, or 3 bytes per character. With the maximal length
-     * of the fragment we want to ensure, that there is no overflow of 6the 5536 byte sized buffer
+     * of the fragment we want to ensure, that there is no overflow of the 65536 byte sized buffer.
      *
-     * @param str
-     *            String to be written in the output stream
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param str A String to be written in the output stream.
+     * @throws IOException Thrown if IO errors occurred.
      */
     public void writeFragmentedUTF(String str) throws IOException
     {
@@ -84,10 +87,8 @@ public class UTFDataOutputStream
      * <li>the unicode byte sequence of this string</li>
      * </ol>
      *
-     * @param str
-     *            String to be written in the output stream
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param str A String to be written in the output stream.
+     * @throws IOException Thrown if IO errors occurred.
      */
     public void writeUTFAsArray(String str) throws IOException
     {

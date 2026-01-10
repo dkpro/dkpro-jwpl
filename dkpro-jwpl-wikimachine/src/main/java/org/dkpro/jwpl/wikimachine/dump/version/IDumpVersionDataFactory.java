@@ -24,12 +24,26 @@ import java.lang.reflect.InvocationTargetException;
  */
 public interface IDumpVersionDataFactory extends IDumpVersionFactory {
 
+  /** The fully qualified datamachine-specific package. */
   String DATAMACHINE_PACKAGE = "org.dkpro.jwpl.datamachine.dump.version.";
 
+  /**
+   * Retrieves a {@link IDumpVersionDataFactory} instance of
+   * the default {@code SingleDumpVersionJDKStringKeyFactory} class.
+   *
+   * @return A default {@link IDumpVersionDataFactory} instance.
+   */
   static IDumpVersionDataFactory defaultFactory() {
     return byClass(DATAMACHINE_PACKAGE + "SingleDumpVersionJDKStringKeyFactory");
   }
 
+  /**
+   * Retrieves a {@link IDumpVersionDataFactory} instance by {@link FactoryType}.
+   *
+   * @param type The {@link FactoryType} to specify the factory instance with.
+   *
+   * @return A corresponding {@link IDumpVersionDataFactory} instance.
+   */
   static IDumpVersionDataFactory byType(FactoryType type) {
     return switch (type) {
       case JDK_INT_KEY -> byClass(DATAMACHINE_PACKAGE + "SingleDumpVersionJDKIntKeyFactory");
@@ -38,6 +52,13 @@ public interface IDumpVersionDataFactory extends IDumpVersionFactory {
     };
   }
 
+  /**
+   * Retrieves a {@link IDumpVersionDataFactory} instance by its class name.
+   *
+   * @param className The fully qualified name of the class to specify the factory instance with.
+   *
+   * @return A corresponding {@link IDumpVersionDataFactory} instance.
+   */
   @SuppressWarnings("unchecked")
   static IDumpVersionDataFactory byClass(String className) {
       try {

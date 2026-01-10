@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * An {@link InputStream} variant that transparently copies its content over
+ * to an {@link OutputStream} while being read.
+ */
 public class InputStreamSpy
     extends InputStream
 {
@@ -28,12 +32,20 @@ public class InputStreamSpy
     private final InputStream iStream;
     private final OutputStream oStream;
 
+    /**
+     * Instantiates a {@link InputStreamSpy} with the specified parameters.
+     * @param iStream  An open {@link InputStream} to consume from.
+     * @param oStream  An open {@link OutputStream} to produce to.
+     */
     public InputStreamSpy(InputStream iStream, OutputStream oStream)
     {
         this.iStream = iStream;
         this.oStream = oStream;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() throws IOException
     {
@@ -42,12 +54,18 @@ public class InputStreamSpy
         return result;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int available() throws IOException
     {
         return iStream.available();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException
     {
@@ -55,18 +73,27 @@ public class InputStreamSpy
         oStream.flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void mark(int readlimit)
     {
         iStream.mark(readlimit);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void reset() throws IOException
     {
         iStream.reset();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean markSupported()
     {

@@ -17,11 +17,30 @@
  */
 package org.dkpro.jwpl.wikimachine.domain;
 
+/**
+ * An abstraction for a snapshot generation.
+ *
+ * @see Files
+ * @see Configuration
+ */
 public interface ISnapshotGenerator
 {
+    /**
+     * Specifies the {@link Files} instance to use for snapshot generation.
+     * @param files A fully initialized {@link Files} instance.
+     */
     void setFiles(Files files);
 
-    void setConfiguration(Configuration configuration);
+    /**
+     * Specifies the {@link Configuration} instance to use for snapshot generation.
+     * @param config A fully initialized {@link Configuration} instance.
+     */
+    void setConfiguration(Configuration config);
 
+    /**
+     * Triggers the snapshot generator process.
+     *
+     * @throws Exception Thrown if errors occurred during start.
+     */
     void start() throws Exception;
 }

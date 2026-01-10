@@ -25,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 
 /**
  * Writes the dumps of tables as txt files.
+ *
+ * @see PrintStream
  */
 public class TxtFileWriter
     extends PrintStream
@@ -33,11 +35,11 @@ public class TxtFileWriter
     private static final boolean AUTOFLUSH = false;
 
     /**
-     * Instantiates a new TxtFileWriter object.
+     * Instantiates a new {@link TxtFileWriter} object.
      *
-     * @param filename
-     * @throws IOException
-     *             Thrown if IO errors occurred.
+     * @param filename The name of the file to write to.
+     *                 
+     * @throws IOException Thrown if IO errors occurred.
      */
     public TxtFileWriter(String filename) throws IOException
     {
@@ -48,13 +50,20 @@ public class TxtFileWriter
     /**
      * Add one or more rows to the dump of the table.
      *
-     * @param row
+     * @param row  The (text) data to add.
      */
     public void addRow(Object... row)
     {
         super.print(Strings.join(row, "\t") + "\n");
     }
 
+    /**
+     * Exports the accumulated (text) rows to the output file.
+     * <p>
+     * Note:<br/>
+     * After calling {@code export()}, the underlying stream is closed, that is,
+     * calling {@link #addRow(Object...)} has no effect.
+     */
     public void export()
     {
         super.flush();

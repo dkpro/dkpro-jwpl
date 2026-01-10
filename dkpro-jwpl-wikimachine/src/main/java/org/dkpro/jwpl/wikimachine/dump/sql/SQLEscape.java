@@ -28,9 +28,8 @@ public class SQLEscape
     }
 
     /**
-     * @param str
-     *            unescaped String
-     * @return String with escape characters
+     * @param str The unescaped String.
+     * @return String with escape characters.
      * @see SQLEscape
      */
     public static String escape(String str)
@@ -87,6 +86,13 @@ public class SQLEscape
         return sql.toString();
     }
 
+    /**
+     * Formats the specified {@code title}, that is, replaces whitespaces with {@code _}.
+     * 
+     * @param title The String to format.
+     *              
+     * @return The resulting String with all whitespaces replaced.
+     */
     public static String titleFormat(String title)
     {
         return title.replace(' ', '_');

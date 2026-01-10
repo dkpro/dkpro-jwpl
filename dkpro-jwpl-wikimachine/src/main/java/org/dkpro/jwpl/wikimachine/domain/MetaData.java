@@ -37,10 +37,10 @@ public class MetaData
     private Integer nrOfRedirects = 0;
     private Integer nrOfDisambiguations = 0;
 
-    public MetaData()
-    {
-
-    }
+    /**
+     * Instantiates an empty {@link MetaData} object.
+     */
+    public MetaData() {}
 
     /**
      * @return the id
@@ -51,8 +51,7 @@ public class MetaData
     }
 
     /**
-     * @param id
-     *            the id to set
+     * @param id the id to set
      */
     public void setId(String id)
     {
@@ -68,8 +67,7 @@ public class MetaData
     }
 
     /**
-     * @param language
-     *            the language to set
+     * @param language the language to set
      */
     public void setLanguage(String language)
     {
@@ -85,8 +83,7 @@ public class MetaData
     }
 
     /**
-     * @param mainCategory
-     *            the mainCategory to set
+     * @param mainCategory the mainCategory to set
      */
     public void setMainCategory(String mainCategory)
     {
@@ -102,8 +99,7 @@ public class MetaData
     }
 
     /**
-     * @param disambiguationCategory
-     *            the disambiguationCategory to set
+     * @param disambiguationCategory the disambiguationCategory to set
      */
     public void setDisambiguationCategory(String disambiguationCategory)
     {
@@ -119,8 +115,7 @@ public class MetaData
     }
 
     /**
-     * @param timestamp
-     *            the timestamp to set
+     * @param timestamp the timestamp to set
      */
     public void setTimestamp(Timestamp timestamp)
     {
@@ -136,8 +131,7 @@ public class MetaData
     }
 
     /**
-     * @param nrOfCategories
-     *            the nrOfCategories to set
+     * @param nrOfCategories the nrOfCategories to set
      */
     public void setNrOfCategories(int nrOfCategories)
     {
@@ -153,8 +147,7 @@ public class MetaData
     }
 
     /**
-     * @param nrOfPages
-     *            the nrOfPages to set
+     * @param nrOfPages the nrOfPages to set
      */
     public void setNrOfPages(int nrOfPages)
     {
@@ -170,27 +163,11 @@ public class MetaData
     }
 
     /**
-     * @param nrOfRedirects
-     *            the nrOfRedirects to set
+     * @param nrOfRedirects  the nrOfRedirects to set
      */
     public void setNrOfRedirects(int nrOfRedirects)
     {
         this.nrOfRedirects = nrOfRedirects;
-    }
-
-    public void addPage()
-    {
-        nrOfPages++;
-    }
-
-    public void addDisamb()
-    {
-        nrOfDisambiguations++;
-    }
-
-    public void addRedirect()
-    {
-        nrOfRedirects++;
     }
 
     /**
@@ -201,11 +178,47 @@ public class MetaData
         return nrOfDisambiguations;
     }
 
+    /**
+     * Increments the pages counter.
+     */
+    public void addPage()
+    {
+        nrOfPages++;
+    }
+
+    /**
+     * Increments the disambiguation pages counter.
+     */
+    public void addDisamb()
+    {
+        nrOfDisambiguations++;
+    }
+
+    /**
+     * Increments the redirects counter.
+     */
+    public void addRedirect()
+    {
+        nrOfRedirects++;
+    }
+
+    /**
+     * Increments the categories counter.
+     */
     public void addCategory()
     {
         nrOfCategories++;
     }
 
+    /**
+     * Inits a {@link MetaData} object via a {@link Configuration configuration} and its relevant
+     * values of {@link Configuration#getLanguage() language},
+     * {@link Configuration#getMainCategory() main category}, and
+     *  {@link Configuration#getDisambiguationCategory() disambiguation category}
+     *
+     * @param config The {@link Configuration} to use for initializing a {@link MetaData} object.
+     * @return A valid {@link MetaData} object filled with basic configuration parameters.
+     */
     public static MetaData initWithConfig(Configuration config)
     {
         MetaData result = new MetaData();
