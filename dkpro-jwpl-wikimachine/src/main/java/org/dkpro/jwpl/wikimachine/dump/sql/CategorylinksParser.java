@@ -23,7 +23,7 @@ import java.io.InputStream;
 /**
  * A Parser for the SQL file that defines the table {@code categorylinks}.
  * <p>
- * A fix for Issue 102 has been provided by Google Code user @code astronautguo}.
+ * A fix for Issue #102 has been provided by Google Code user {@code astronautguo}.
  *
  * @see SQLFileParser
  */
