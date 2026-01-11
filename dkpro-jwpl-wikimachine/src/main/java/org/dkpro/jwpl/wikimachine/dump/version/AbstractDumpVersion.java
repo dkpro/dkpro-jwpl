@@ -41,14 +41,6 @@ public abstract class AbstractDumpVersion
     implements IDumpVersion
 {
 
-    /*
-     * Wikipedia namespace codes according to:
-     * https://en.wikipedia.org/wiki/Wikipedia:MediaWiki_namespace
-     *
-     * and:
-     * https://en.wikipedia.org/wiki/Special:NamespaceInfo
-     */
-
     /** Namespace code for articles */
     protected static final int NS_MAIN = 0;
     /** Namespace code for talk on articles */

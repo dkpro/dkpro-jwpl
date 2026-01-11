@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 /**
- * This is an inverse of {@link UTFDataOutputStream} witch goal is to reminder the length
+ * This is an inverse of {@link UTFDataOutputStream} which goal is to reminder the length
  * limitation of written UTF-8 strings.
  *
  * @see DataInputStream
