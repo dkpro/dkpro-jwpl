@@ -43,12 +43,14 @@ public class SqlWriter14
         super(tr, output, prefix);
     }
 
+    @Override
     public void writeStartPage(Page page)
     {
         currentPage = page;
         lastRevision = null;
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
         if (lastRevision != null)
@@ -57,6 +59,7 @@ public class SqlWriter14
         lastRevision = null;
     }
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
         if (lastRevision != null)

@@ -35,6 +35,7 @@ public class ExactListFilter
         super(sink, sourceFileName);
     }
 
+    @Override
     protected boolean pass(Page page)
     {
         return list.containsKey(page.Title.toString());

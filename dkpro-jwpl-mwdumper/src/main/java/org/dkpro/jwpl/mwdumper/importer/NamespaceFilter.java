@@ -65,6 +65,7 @@ public class NamespaceFilter
         }
     }
 
+    @Override
     protected boolean pass(Page page)
     {
         return invert ^ matches.containsKey(page.Title.Namespace);

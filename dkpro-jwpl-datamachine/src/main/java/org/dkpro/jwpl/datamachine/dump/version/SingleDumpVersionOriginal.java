@@ -117,8 +117,8 @@ public class SingleDumpVersionOriginal
     {
         txtFW.export();
 
-        nrOfCategories = cPageIdNameMap.keySet().size();
-        nrOfPages = pPageIdNameMap.keySet().size() + rPageIdNameMap.keySet().size();
+        nrOfCategories = cPageIdNameMap.size();
+        nrOfPages = pPageIdNameMap.size() + rPageIdNameMap.size();
     }
 
     @Override

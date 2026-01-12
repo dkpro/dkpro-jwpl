@@ -33,6 +33,7 @@ public class NotalkFilter
         super(sink);
     }
 
+    @Override
     protected boolean pass(Page page)
     {
         return !page.Title.isTalk();

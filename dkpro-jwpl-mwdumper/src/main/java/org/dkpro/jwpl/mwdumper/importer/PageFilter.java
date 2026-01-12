@@ -38,26 +38,31 @@ public abstract class PageFilter
         this.sink = sink;
     }
 
+    @Override
     public void close() throws IOException
     {
         sink.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         sink.writeStartWiki();
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         sink.writeEndWiki();
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         sink.writeSiteinfo(info);
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
         showThisPage = pass(page);

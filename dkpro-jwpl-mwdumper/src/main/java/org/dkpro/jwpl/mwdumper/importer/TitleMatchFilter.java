@@ -38,6 +38,7 @@ public class TitleMatchFilter
         regex = Pattern.compile(regexString);
     }
 
+    @Override
     protected boolean pass(Page page)
     {
         return regex.matcher(page.Title.toString()).matches();

@@ -30,7 +30,7 @@ import java.io.IOException;
 public class LatestFilter
     implements DumpWriter
 {
-    final DumpWriter sink;
+    private final DumpWriter sink;
     Revision lastRevision;
 
     public LatestFilter(DumpWriter sink)
@@ -38,31 +38,37 @@ public class LatestFilter
         this.sink = sink;
     }
 
+    @Override
     public void close() throws IOException
     {
         sink.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         sink.writeStartWiki();
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         sink.writeEndWiki();
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         sink.writeSiteinfo(info);
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
         sink.writeStartPage(page);
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
         if (lastRevision != null) {
@@ -72,6 +78,7 @@ public class LatestFilter
         sink.writeEndPage();
     }
 
+    @Override
     public void writeRevision(Revision revision)
     {
         lastRevision = revision;

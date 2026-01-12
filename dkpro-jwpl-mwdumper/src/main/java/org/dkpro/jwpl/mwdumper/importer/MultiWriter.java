@@ -39,58 +39,58 @@ public class MultiWriter
         sinks = new ArrayList<>();
     }
 
+    @Override
     public void close() throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.close();
         }
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeStartWiki();
         }
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeEndWiki();
         }
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeSiteinfo(info);
         }
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeStartPage(page);
         }
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeEndPage();
         }
     }
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
-        for (int i = 0; i < sinks.size(); i++) {
-            DumpWriter sink = sinks.get(i);
+        for (DumpWriter sink : sinks) {
             sink.writeRevision(revision);
         }
     }

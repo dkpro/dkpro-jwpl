@@ -143,19 +143,19 @@ public class SimpleBinaryDumpWriter
     }
 
     @Override
-    public void writeSiteinfo(Siteinfo info) throws IOException
+    public void writeSiteinfo(Siteinfo info)
     {
     }
 
     @Override
-    public void writeStartPage(Page page) throws IOException
+    public void writeStartPage(Page page)
     {
         currentPage = page;
         lastRevision = null;
     }
 
     @Override
-    public void writeStartWiki() throws IOException
+    public void writeStartWiki()
     {
     }
 

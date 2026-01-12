@@ -57,11 +57,13 @@ public class XmlDumpWriter
         writer = new XmlWriter(stream);
     }
 
+    @Override
     public void close() throws IOException
     {
         writer.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         writer.openXml();
@@ -73,12 +75,14 @@ public class XmlDumpWriter
         // TODO: store and keep the xml:lang
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         writer.closeElement();
         writer.closeXml();
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         XmlWriter writer = this.writer;
@@ -100,6 +104,7 @@ public class XmlDumpWriter
         writer.closeElement();
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
         XmlWriter writer = this.writer;
@@ -111,11 +116,13 @@ public class XmlDumpWriter
             writer.textElement("restrictions", page.Restrictions);
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
         writer.closeElement();
     }
 
+    @Override
     public void writeRevision(Revision rev) throws IOException
     {
         XmlWriter writer = this.writer;

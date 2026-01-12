@@ -35,15 +35,13 @@ import java.util.Calendar;
 public class SphinxWriter
     implements DumpWriter
 {
-    protected final OutputStream stream;
-    protected final XmlWriter writer;
+    private final XmlWriter writer;
     protected Page _page;
     protected Revision _rev;
 
     public SphinxWriter(OutputStream output)
     {
-        stream = output;
-        writer = new XmlWriter(stream);
+        writer = new XmlWriter(output);
     }
 
     @Override
