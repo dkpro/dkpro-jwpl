@@ -1582,10 +1582,6 @@ public class RevisionApi
         catch (WikiPageNotFoundException | DecodingException | SQLException | IOException e) {
             throw new RuntimeException(e);
         }
-        catch (RuntimeException e) {
-            throw e;
-        }
-
     }
 
     /**

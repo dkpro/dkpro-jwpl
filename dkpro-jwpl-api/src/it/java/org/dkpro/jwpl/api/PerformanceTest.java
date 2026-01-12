@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
 class PerformanceTest
 {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final Wikipedia wiki;
 
@@ -196,9 +195,9 @@ class PerformanceTest
             counter++;
         }
         long to = System.currentTimeMillis();
-        logger.debug("RetrievedPages  : " + counter);
-        logger.debug("Used Buffer Size: " + bufferSize);
-        logger.debug("Time            : " + (to - from) + "ms");
+        logger.debug("RetrievedPages  : {}", counter);
+        logger.debug("Used Buffer Size: {}", bufferSize);
+        logger.debug("Time            : {}ms", to - from);
         logger.debug("------------------------------");
     }
 }

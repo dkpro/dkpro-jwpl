@@ -86,7 +86,7 @@ public class MetaDataDAO
     @Override
     public MetaData findById(java.lang.Long id)
     {
-        logger.debug("getting MetaData instance with id: " + id);
+        logger.debug("getting MetaData instance with id: {}", id);
         return super.findById(id);
     }
 }

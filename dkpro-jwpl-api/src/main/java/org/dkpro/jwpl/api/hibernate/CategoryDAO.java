@@ -84,7 +84,7 @@ public class CategoryDAO
     @Override
     public Category findById(java.lang.Long id)
     {
-        logger.debug("getting Category instance with id: " + id);
+        logger.debug("getting Category instance with id: {}", id);
         return super.findById(id);
     }
 }

@@ -86,7 +86,7 @@ public abstract class GenericDAO<T>
             logger.trace("persist successful");
         }
         catch (RuntimeException re) {
-            logger.error("Failed persisting " + entityClass + " instance", re);
+            logger.error("Failed persisting {} instance", entityClass, re);
             throw re;
         }
     }
@@ -123,7 +123,7 @@ public abstract class GenericDAO<T>
             return result;
         }
         catch (RuntimeException re) {
-            logger.error("Failed merging " + entityClass + " instance", re);
+            logger.error("Failed merging {} instance", entityClass, re);
             throw re;
         }
     }
@@ -140,7 +140,7 @@ public abstract class GenericDAO<T>
             logger.trace("attach successful");
         }
         catch (RuntimeException re) {
-            logger.error("Failed attaching " + entityClass + " instance", re);
+            logger.error("Failed attaching {} instance", entityClass, re);
             throw re;
         }
     }
@@ -173,7 +173,7 @@ public abstract class GenericDAO<T>
         try {
             T instance = (T) getSession().get(entityClass, id);
             if (instance == null) {
-                logger.trace("get successful, no " + entityClass + " instance found");
+                logger.trace("get successful, no {} instance found", entityClass);
             }
             else {
                 logger.trace("get successful, instance found");
@@ -181,7 +181,7 @@ public abstract class GenericDAO<T>
             return instance;
         }
         catch (RuntimeException re) {
-            logger.error("Failed finding " + entityClass + " instance by id", re);
+            logger.error("Failed finding {} instance by id", entityClass, re);
             throw re;
         }
     }

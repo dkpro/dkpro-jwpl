@@ -582,7 +582,7 @@ public class ModularParser
                 break;
 
             default:
-                logger.error("unknown lineStart!: \"" + sm.substring(s) + "\"");
+                logger.error("unknown lineStart!: \"{}\"", sm.substring(s));
                 lineSpans.removeFirst();
             }
         }
