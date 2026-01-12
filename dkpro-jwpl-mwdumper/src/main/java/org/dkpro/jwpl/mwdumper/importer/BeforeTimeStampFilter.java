@@ -36,6 +36,7 @@ public class BeforeTimeStampFilter
         super(sink, timeStamp);
     }
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
         if (revision.Timestamp.before(super.filterTimeStamp)) {

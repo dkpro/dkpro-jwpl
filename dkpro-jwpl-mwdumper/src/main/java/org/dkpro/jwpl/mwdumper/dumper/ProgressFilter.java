@@ -50,12 +50,14 @@ public class ProgressFilter
             throw new IllegalArgumentException("Reporting interval must be positive.");
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
         super.writeStartPage(page);
         pages++;
     }
 
+    @Override
     public void writeRevision(Revision rev) throws IOException
     {
         super.writeRevision(rev);
@@ -66,8 +68,9 @@ public class ProgressFilter
     /**
      * If we didn't just show a progress report on the last revision, show the final results.
      *
-     * @throws IOException
+     * @throws IOException  Thrown if IO errors occurred.
      */
+    @Override
     public void writeEndWiki() throws IOException
     {
         super.writeEndWiki();

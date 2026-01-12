@@ -37,7 +37,8 @@ import java.util.TreeSet;
 public class RevisionListFilter
     implements DumpWriter
 {
-    final DumpWriter sink;
+    private static final String SYMBOL_HASH = "#";
+    private final DumpWriter sink;
     protected final Set<String> revIds;
     protected Page currentPage;
     protected boolean pageWritten;
@@ -46,46 +47,51 @@ public class RevisionListFilter
     {
         this.sink = sink;
         revIds = new TreeSet<>();
-        BufferedReader input = new BufferedReader(
-                new InputStreamReader(new BufferedInputStream(new FileInputStream(sourceFileName)),
-                        StandardCharsets.UTF_8));
-        String line = input.readLine();
-        while (line != null) {
-            line = line.trim();
-            if (!line.isEmpty() && !line.startsWith("#")) {
-                revIds.add(line);
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(
+                new BufferedInputStream(new FileInputStream(sourceFileName)), StandardCharsets.UTF_8))) {
+            String line = input.readLine();
+            while (line != null) {
+                line = line.trim();
+                if (!line.isEmpty() && !line.startsWith(SYMBOL_HASH)) {
+                    revIds.add(line);
+                }
+                line = input.readLine();
             }
-            line = input.readLine();
         }
-        input.close();
     }
 
+    @Override
     public void close() throws IOException
     {
         sink.close();
     }
 
+    @Override
     public void writeStartWiki() throws IOException
     {
         sink.writeStartWiki();
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         sink.writeEndWiki();
     }
 
+    @Override
     public void writeSiteinfo(Siteinfo info) throws IOException
     {
         sink.writeSiteinfo(info);
     }
 
+    @Override
     public void writeStartPage(Page page) throws IOException
     {
         currentPage = page;
         pageWritten = false;
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
         if (pageWritten) {
@@ -93,6 +99,7 @@ public class RevisionListFilter
         }
     }
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
         if (revIds.contains(Integer.valueOf(revision.Id).toString())) {

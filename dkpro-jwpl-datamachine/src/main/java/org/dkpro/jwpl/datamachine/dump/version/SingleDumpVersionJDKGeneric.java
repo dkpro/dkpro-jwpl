@@ -86,7 +86,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     public void freeAfterPageParsing()
     {
         metaData.setNrOfCategories(cPageIdNameMap.size());
-        metaData.setNrOfPages(pPageIdNameMap.keySet().size() + rPageIdNameMap.keySet().size());
+        metaData.setNrOfPages(pPageIdNameMap.size() + rPageIdNameMap.size());
         System.out.println("nrOfCategories: " + metaData.getNrOfCategories());
         System.out.println("nrOfPage: " + metaData.getNrOfPages());
         System.out.println("nrOfRedirects before testing the validity of the destination:"

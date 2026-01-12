@@ -45,18 +45,21 @@ public class SqlWriter15
         super(tr, output, prefix);
     }
 
+    @Override
     public void writeEndWiki() throws IOException
     {
         flushInsertBuffers();
         super.writeEndWiki();
     }
 
+    @Override
     public void writeStartPage(Page page)
     {
         currentPage = page;
         lastRevision = null;
     }
 
+    @Override
     public void writeEndPage() throws IOException
     {
         if (lastRevision != null) {
@@ -71,6 +74,7 @@ public class SqlWriter15
     static final int DELETED_USER = 4;
     static final int DELETED_RESTRICTED = 8;
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
         bufferInsertRow(traits.getTextTable(),

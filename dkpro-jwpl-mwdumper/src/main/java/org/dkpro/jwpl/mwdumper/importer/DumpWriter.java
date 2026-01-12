@@ -28,7 +28,9 @@ package org.dkpro.jwpl.mwdumper.importer;
 import java.io.IOException;
 
 public interface DumpWriter
+    extends AutoCloseable
 {
+    @Override
     void close() throws IOException;
 
     void writeStartWiki() throws IOException;

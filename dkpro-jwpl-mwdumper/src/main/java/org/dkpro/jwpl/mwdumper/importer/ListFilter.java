@@ -37,31 +37,37 @@ import java.util.Map;
 public class ListFilter
     extends PageFilter
 {
+    private static final String SYMBOL_HASH = "#";
+    private static final String SYMBOL_UNDERSCORE = "_";
+    private static final String SYMBOL_COLON = ":";
+    private static final String WHITESPACE = " ";
+
     protected final Map<String, String> list;
 
     public ListFilter(DumpWriter sink, String sourceFileName) throws IOException
     {
         super(sink);
         list = new HashMap<>();
-        BufferedReader input = new BufferedReader(
-                new InputStreamReader(new BufferedInputStream(new FileInputStream(sourceFileName)),
-                        StandardCharsets.UTF_8));
-        String line = input.readLine();
-        while (line != null) {
-            if (!line.startsWith("#")) {
-                String title = line.trim();
-                title = title.replace("_", " ");
-                if (title.startsWith(":"))
-                    title = line.substring(1);
+        try (BufferedReader input = new BufferedReader(new InputStreamReader(
+                new BufferedInputStream(new FileInputStream(sourceFileName)), StandardCharsets.UTF_8))) {
+            String line = input.readLine();
+            while (line != null) {
+                if (!line.startsWith(SYMBOL_HASH)) {
+                    String title = line.trim();
+                    title = title.replace(SYMBOL_UNDERSCORE, WHITESPACE);
+                    if (title.startsWith(SYMBOL_COLON))
+                        title = line.substring(1);
 
-                if (!title.isEmpty())
-                    list.put(title, title);
+                    if (!title.isEmpty())
+                        list.put(title, title);
+                }
+                line = input.readLine();
             }
-            line = input.readLine();
+
         }
-        input.close();
     }
 
+    @Override
     protected boolean pass(Page page)
     {
         return list.containsKey(page.Title.subjectPage().toString())

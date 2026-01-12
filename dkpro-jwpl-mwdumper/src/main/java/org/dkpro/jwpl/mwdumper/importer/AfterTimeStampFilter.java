@@ -36,6 +36,7 @@ public class AfterTimeStampFilter
         super(sink, timeStamp);
     }
 
+    @Override
     public void writeRevision(Revision revision) throws IOException
     {
         if (revision.Timestamp.after(super.filterTimeStamp)) {
