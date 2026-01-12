@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.datamachine.domain;
 
 import java.io.File;
+import java.io.FileFilter;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Files;
@@ -26,8 +27,8 @@ public class DataMachineFiles
     extends Files
 {
     private final static String INPUT_PAGELINKS = "pagelinks.sql";
-    private final static String INPUT_PAGESARTICLES = "pages-articles.xml";
     private final static String INPUT_CATEGORYLINKS = "categorylinks.sql";
+    private final static String INPUT_PAGESARTICLES = "pages-articles.xml";
     private final static String INPUT_PAGESMETACURRENT = "pages-meta-current.xml";
 
     private final static String GENERATED_PAGE = "page.bin";
@@ -58,20 +59,19 @@ public class DataMachineFiles
     {
         super(files);
         this.dataDirectory = files.dataDirectory;
-        this.compressGeneratedFiles = files.compressGeneratedFiles;
         this.inputPagelinks = files.inputPagelinks;
         this.inputPagesarticles = files.inputPagesarticles;
         this.inputCategorylinks = files.inputCategorylinks;
         this.inputPagesMetaCurrent = files.inputPagesMetaCurrent;
+        this.compressGeneratedFiles = files.compressGeneratedFiles;
     }
 
-    private File setOutputDirectory(File parentDirectory)
+    File setOutputDirectory(File parentDirectory)
     {
-        return new File(
-               parentDirectory.getAbsolutePath() + File.separator + OUTPUT_DIRECTORY);
+        return new File(parentDirectory.getAbsolutePath() + File.separator + OUTPUT_DIRECTORY);
     }
 
-    public void setDataDirectory(String newDataDirectory)
+    void setDataDirectory(String newDataDirectory)
     {
         File inputDataDirectory = new File(newDataDirectory);
         if (inputDataDirectory.isDirectory()) {
@@ -79,20 +79,22 @@ public class DataMachineFiles
             this.outputDirectory = setOutputDirectory(dataDirectory);
         }
         else {
-            logger.log(dataDirectory + " is not a directory. Continue read from "
+            logger.log(dataDirectory + " is not a directory. Continue read from: "
                     + this.dataDirectory.getAbsolutePath());
         }
 
     }
 
-    public boolean checkDatamachineSourceFiles()
+    private boolean checkDataMachineSourceFiles()
     {
-        File[] filesInDataDirectory = dataDirectory.listFiles();
-        if (filesInDataDirectory.length > 2) {
-            for (File currentFile : filesInDataDirectory) {
-
-                // TODO improve file check. Only accept files that come in a supported compression
-                // format
+        final FileFilter supportedFormatFilter = file -> {
+            final String name = file.getName();
+            // See UniversalDecompressor for all built-in decompression formats. For now:
+            return name.endsWith(".7z") || name.endsWith(".gz") || name.endsWith(".bz2");
+        };
+        final File[] files = dataDirectory.listFiles(supportedFormatFilter);
+        if (files != null && files.length > 2) {
+            for (File currentFile : files) {
                 String currentFileName = currentFile.getName();
                 if (currentFileName.contains(INPUT_PAGESARTICLES)) {
                     inputPagesarticles = currentFile;
@@ -136,22 +138,22 @@ public class DataMachineFiles
 
     public String getInputPageLinks()
     {
-        return (inputPagelinks != null) ? inputPagelinks.getAbsolutePath() : null;
+        return inputPagelinks != null ? inputPagelinks.getAbsolutePath() : null;
     }
 
     public String getInputPagesArticles()
     {
-        return (inputPagesarticles != null) ? inputPagesarticles.getAbsolutePath() : null;
+        return inputPagesarticles != null ? inputPagesarticles.getAbsolutePath() : null;
     }
 
     public String getInputCategoryLinks()
     {
-        return (inputCategorylinks != null) ? inputCategorylinks.getAbsolutePath() : null;
+        return inputCategorylinks != null ? inputCategorylinks.getAbsolutePath() : null;
     }
 
     public String getInputPagesMetaCurrent()
     {
-        return (inputPagesMetaCurrent != null) ? inputPagesMetaCurrent.getAbsolutePath() : null;
+        return inputPagesMetaCurrent != null ? inputPagesMetaCurrent.getAbsolutePath() : null;
     }
 
     private String getGeneratedPath(String fileName)
@@ -164,7 +166,7 @@ public class DataMachineFiles
     }
 
     /**
-     * @see DataMachineFiles#setCompressGeneratedFiles(boolean)
+     * @return {@code true} if temporary files are GZip compressed, {@code false} otherwise.
      */
     public boolean isCompressGeneratedFiles()
     {
@@ -172,7 +174,7 @@ public class DataMachineFiles
     }
 
     /**
-     * Set the input parameter to {@code true} it you want to GZip the temporary files and save a
+     * Set the input parameter to {@code true} if you want to GZip the temporary files and save a
      * disk space. <b>Attention:</b> {@code DataInputStream} can have problems reading from a
      * compressed file. This can be a reason for strange side effects like heap overflow or some
      * other exceptions. <br>
@@ -180,16 +182,20 @@ public class DataMachineFiles
      * Dump every time you need it: during processPage(), processRevision() and processText(). See
      * TimeMachine solution especially the package org.dkpro.jwpl.timemachine.dump.xml
      *
-     * @param compressGeneratedFiles
+     * @param compressGeneratedFiles {@code true} if you want to GZip the temporary files,
+     *                               {@code false} otherwise.
      */
     public void setCompressGeneratedFiles(boolean compressGeneratedFiles)
     {
         this.compressGeneratedFiles = compressGeneratedFiles;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean checkAll()
     {
-        return checkOutputDirectory() && checkDatamachineSourceFiles();
+        return checkOutputDirectory() && checkDataMachineSourceFiles();
     }
 }
