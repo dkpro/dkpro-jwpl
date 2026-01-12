@@ -66,7 +66,7 @@ public class DataMachineFiles
         this.compressGeneratedFiles = files.compressGeneratedFiles;
     }
 
-    File setOutputDirectory(File parentDirectory)
+    private File setOutputDirectory(File parentDirectory)
     {
         return new File(parentDirectory.getAbsolutePath() + File.separator + OUTPUT_DIRECTORY);
     }
