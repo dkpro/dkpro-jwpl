@@ -84,7 +84,7 @@ public class PageDAO
     @Override
     public Page findById(java.lang.Long id)
     {
-        logger.debug("getting Page instance with id: " + id);
+        logger.debug("getting Page instance with id: {}", id);
         return super.findById(id);
     }
 }

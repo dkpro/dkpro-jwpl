@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.api;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -45,7 +46,7 @@ public class RevisionIterator
     implements RevisionIteratorInterface
 {
 
-    private static final Logger logger = LoggerFactory.getLogger(RevisionIterator.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Reference to the ResultSet
@@ -182,8 +183,7 @@ public class RevisionIterator
      * @throws WikiApiException
      *             if an error occurs
      */
-    public RevisionIterator(final RevisionAPIConfiguration config, final int startPK,
-            final int endPK)
+    public RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK)
         throws WikiApiException
     {
 
@@ -339,9 +339,8 @@ public class RevisionIterator
 
             if (revCount - 1 != this.currentRevCounter) {
 
-                logger.error("Invalid RevCounter -" + " [ArticleId " + articleID + ", RevisionId "
-                        + result.getInt(4) + ", RevisionCounter " + revCount + "] - Expected: "
-                        + (this.currentRevCounter + 1));
+                logger.error("Invalid RevCounter - [ArticleId {}, RevisionId {}, RevisionCounter {}] - Expected: {}",
+                      articleID, result.getInt(4), revCount, this.currentRevCounter + 1);
 
                 this.currentRevCounter = revCount;
                 this.previousRevision = null;
@@ -373,9 +372,8 @@ public class RevisionIterator
                 }
                 catch (Exception e) {
                     this.previousRevision = null;
-                    logger.error("Reconstruction failed -" + " [ArticleId " + result.getInt(5)
-                            + ", RevisionId " + result.getInt(4) + ", RevisionCounter "
-                            + result.getInt(3) + "]");
+                    logger.error("Reconstruction failed - [ArticleId {}, RevisionId {}, RevisionCounter {}]",
+                            result.getInt(5), result.getInt(4), result.getInt(3));
                     return null;
                 }
 

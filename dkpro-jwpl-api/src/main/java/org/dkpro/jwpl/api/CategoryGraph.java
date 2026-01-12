@@ -60,8 +60,7 @@ public class CategoryGraph
     implements WikiConstants, Serializable
 {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final long serialVersionUID = 1L;
 
@@ -301,7 +300,7 @@ public class CategoryGraph
         numberOfNodes = graph.vertexSet().size();
 
         // add edges
-        logger.info(OS.getUsedMemory() + " MB memory used.");
+        logger.info("{} MB memory used.", OS.getUsedMemory());
         int progress = 0;
         for (int pageID : graph.vertexSet()) {
             progress++;
@@ -334,7 +333,7 @@ public class CategoryGraph
             for (int inLink : inLinks) {
                 if (graph.vertexSet().contains(inLink)) {
                     if (inLink == pageID) {
-                        logger.debug("Self-loop for node " + pageID + " (" + cat.getTitle() + ")");
+                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
                     }
                     else {
                         graph.addEdge(inLink, pageID);
@@ -344,7 +343,7 @@ public class CategoryGraph
             for (int outLink : outLinks) {
                 if (graph.vertexSet().contains(outLink)) {
                     if (outLink == pageID) {
-                        logger.debug("Self-loop for node " + pageID + " (" + cat.getTitle() + ")");
+                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
                     }
                     else {
                         graph.addEdge(pageID, outLink);
@@ -355,13 +354,13 @@ public class CategoryGraph
 
         numberOfEdges = graph.edgeSet().size();
 
-        logger.info("Added " + this.getNumberOfNodes() + " nodes.");
-        logger.info("Added " + this.getNumberOfEdges() + " edges.");
+        logger.info("Added {} nodes.", this.getNumberOfNodes());
+        logger.info("Added {} edges.", this.getNumberOfEdges());
 
         CycleHandler cycleHandler = new CycleHandler(wiki, this);
-        logger.info("Graph contains cycles: " + cycleHandler.containsCycle());
+        logger.info("Graph contains cycles: {}", cycleHandler.containsCycle());
         cycleHandler.removeCycles();
-        logger.info("Graph contains cycles: " + cycleHandler.containsCycle());
+        logger.info("Graph contains cycles: {}", cycleHandler.containsCycle());
 
         this.numberOfEdges = this.graph.edgeSet().size();
         this.undirectedGraph = new AsUndirectedGraph<>(this.graph);
@@ -387,7 +386,7 @@ public class CategoryGraph
         String categoryTitle = cat.getTitle().getPlainTitle();
         for (String filter : filterList) {
             if (categoryTitle.startsWith(filter)) {
-                logger.info(categoryTitle + " starts with " + filter + " => removing");
+                logger.info("{} starts with {} => removing", categoryTitle, filter);
                 return true;
             }
         }
@@ -444,8 +443,7 @@ public class CategoryGraph
         List<Integer> nodeList2 = getRootPathMap().get(categoryPageId2);
 
         // if one of the paths is null => return -1
-        if (nodeList1 == null || nodeList2 == null || nodeList1.isEmpty()
-                || nodeList2.isEmpty()) {
+        if (nodeList1 == null || nodeList2 == null || nodeList1.isEmpty() || nodeList2.isEmpty()) {
             logger.debug("One of the node lists is null or empty!");
             return -1;
         }
@@ -768,7 +766,7 @@ public class CategoryGraph
         Set<Integer> leafNodes = this.__getLeafNodes();
         List<Integer> queue = new ArrayList<>(leafNodes);
 
-        logger.info(leafNodes.size() + " leaf nodes.");
+        logger.info("{} leaf nodes.", leafNodes.size());
 
         // while the queue is not empty
         while (!queue.isEmpty()) {
@@ -809,10 +807,10 @@ public class CategoryGraph
             // mark as visited
             visited.add(currNode);
 
-            // number of hyponomys of current node is the number of its own hyponomies and the sum
+            // number of hyponyms of current node is the number of its own hyponomies and the sum
             // of the hyponomies of its children.
-            int currNodeHyponomyCount = validChildren + sumChildHyponyms;
-            hyponymCountMap.put(currNode, currNodeHyponomyCount);
+            int currNodeHyponymCount = validChildren + sumChildHyponyms;
+            hyponymCountMap.put(currNode, currNodeHyponymCount);
 
             // add parents of current node to queue
             for (int parent : __getParents(currNode)) {
@@ -823,7 +821,7 @@ public class CategoryGraph
 
         } // while queue not empty
 
-        logger.info(visited.size() + " nodes visited");
+        logger.info("{} nodes visited", visited.size());
         if (visited.size() != graph.vertexSet().size()) {
             throw new WikiApiException("Visited only " + visited.size() + " out of "
                     + graph.vertexSet().size() + " nodes.");
@@ -886,8 +884,7 @@ public class CategoryGraph
     // * @param numberOfCategories
     // * @return The intrinsic information content.
     // */
-    // private double computeIntrinsicInformationContent(int numberOfHyponyms, int
-    //// numberOfCategories) {
+    // private double computeIntrinsicInformationContent(int numberOfHyponyms, int numberOfCategories) {
     // return (1 - (Math.log(numberOfHyponyms + 1) / Math.log(numberOfCategories)) );
     // }
 
@@ -915,7 +912,7 @@ public class CategoryGraph
                     + hyponymCount + " hyponyms, but only " + numberOfNodes + " nodes.");
         }
 
-        logger.debug(category.getTitle().getPlainTitle() + " has # hyponyms: " + hyponymCount);
+        logger.debug("{} has # hyponyms: {}", category.getTitle().getPlainTitle(), hyponymCount);
 
         double intrinsicIC = -1;
         if (hyponymCount >= 0) {
@@ -962,7 +959,7 @@ public class CategoryGraph
         Set<Integer> leafNodes = this.__getLeafNodes();
         queue.addAll(leafNodes);
 
-        logger.info(queue.size() + " leaf nodes.");
+        logger.info("{} leaf nodes.", queue.size());
         fillRootPathMap(queue);
 
         queue.clear(); // queue should be empty now, but clear anyway
@@ -974,19 +971,19 @@ public class CategoryGraph
             }
         }
 
-        logger.info(queue.size() + " non leaf nodes not on a shortest leaf-node to root path.");
+        logger.info("{} non leaf nodes not on a shortest leaf-node to root path.", queue.size());
         fillRootPathMap(queue);
 
         for (Category cat : wiki.getCategories()) {
             if (!rootPathMap.containsKey(cat.getPageId())) {
-                logger.info("no path for " + cat.getPageId());
+                logger.info("no path for {}", cat.getPageId());
             }
         }
 
         // from the root path map, we can very easily get the depth
         this.depth = getDepthFromRootPathMap();
 
-        logger.info("Setting depth of category graph: " + this.depth);
+        logger.info("Setting depth of category graph: {}", this.depth);
 
         logger.info("Serializing rootPathMap");
         this.serializeMap(rootPathMap, rootPathFile);
@@ -1002,7 +999,7 @@ public class CategoryGraph
             int currentNode = queue.get(0);
             queue.remove(0);
 
-            logger.debug("Queue size: " + queue.size());
+            logger.debug("Queue size: {}", queue.size());
 
             // if we have already inserted a path for this node => continue with the next
             if (getRootPathMap().containsKey(currentNode)) {
@@ -1026,8 +1023,8 @@ public class CategoryGraph
                                                                        // should always be the root
                                                                        // node
                 logger.error("Something is wrong with the path to the root");
-                logger.error(nodesOnPath.get(0) + " -- " + currentNode);
-                logger.error(nodesOnPath.get(nodesOnPath.size() - 1) + " -- " + root);
+                logger.error("{} -- {}", nodesOnPath.get(0), currentNode);
+                logger.error("{} -- {}", nodesOnPath.get(nodesOnPath.size() - 1), root);
                 logger.error("size = {}", nodesOnPath.size());
                 System.exit(1);
             }
@@ -1107,8 +1104,7 @@ public class CategoryGraph
      */
     public CategoryGraph getLargestConnectedComponent() throws WikiApiException
     {
-        ConnectivityInspector<Integer, DefaultEdge> connectInspect = new ConnectivityInspector<>(
-                graph);
+        ConnectivityInspector<Integer, DefaultEdge> connectInspect = new ConnectivityInspector<>(graph);
 
         // if the graph is connected, simply return the whole graph
         if (connectInspect.isConnected()) {
@@ -1118,7 +1114,7 @@ public class CategoryGraph
         // else, get the largest connected component
         List<Set<Integer>> connectedComponentList = connectInspect.connectedSets();
 
-        logger.info(connectedComponentList.size() + " connected components.");
+        logger.info("{} connected components.", connectedComponentList.size());
 
         int i = 0;
         int maxSize = 0;
@@ -1132,9 +1128,8 @@ public class CategoryGraph
         }
 
         double largestComponentRatio = largestComponent.size() * 100 / this.getNumberOfNodes();
-        logger.info("Largest component contains " + largestComponentRatio + "% ("
-                + largestComponent.size() + "/" + this.getNumberOfNodes()
-                + ") of the nodes in the graph.");
+        logger.info("Largest component contains {}% ({}/{}) of the nodes in the graph.",
+              largestComponentRatio, largestComponent.size(), this.getNumberOfNodes());
 
         return CategoryGraphManager.getCategoryGraph(wiki, largestComponent);
     }
@@ -1484,12 +1479,12 @@ public class CategoryGraph
         if (depth < 0) { // has not been initialized
             if (rootPathMap != null) {
                 this.depth = getDepthFromRootPathMap();
-                logger.info("Getting depth from RootPathMap: " + this.depth);
+                logger.info("Getting depth from RootPathMap: {}", this.depth);
 
             }
             else {
                 depth = computeDepth();
-                logger.info("Computing depth of the hierarchy: " + this.depth);
+                logger.info("Computing depth of the hierarchy: {}", this.depth);
             }
         }
         return depth;
@@ -1536,14 +1531,14 @@ public class CategoryGraph
     {
         Category root = wiki.getMetaData().getMainCategory();
         if (root == null) {
-            logger.error(
-                    "There is no root node for this wiki. Check the parameter that provides the name of the root node.");
+            logger.error("There is no root node for this wiki. " +
+                    "Check the parameter that provides the name of the root node.");
             return 0.0;
         }
         // test whether the root category is in this graph
         if (!graph.containsVertex(root.getPageId())) {
-            logger.error(
-                    "The root node is not part of this graph. Cannot compute depth of this graph. Setting depth to 0.0");
+            logger.error("The root node is not part of this graph. " +
+                            "Cannot compute depth of this graph. Setting depth to 0.0");
             return 0.0;
         }
         double maxPathLength = 0.0;

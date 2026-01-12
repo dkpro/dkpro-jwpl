@@ -31,8 +31,7 @@ import org.slf4j.LoggerFactory;
 public class MediaWikiParserFactory
 {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private Class<?> parserClass;
     private Class<?> templateParserClass;
@@ -149,8 +148,8 @@ public class MediaWikiParserFactory
             return "\n";
         }
 
-        logger.error("LineSeparator is UNKNOWN: \"" + lineSeparator + "\"\n"
-                + "Set LineSeparator to \"LF\" or \"CRLF\" for a Error free configuration");
+        logger.error("LineSeparator is UNKNOWN: \"{}\"\n" +
+              "Set LineSeparator to \"LF\" or \"CRLF\" for a Error free configuration", lineSeparator);
 
         return lineSeparator;
     }
@@ -401,7 +400,7 @@ public class MediaWikiParserFactory
     }
 
     /**
-     * Retruns if the Content of math tags (&lt;math&gt;&lt;CONTENT/math&gt;) should be deleted or
+     * Returns if the Content of math tags (&lt;math&gt;&lt;CONTENT/math&gt;) should be deleted or
      * annotated.
      *
      * @return {@code true}, if the tag content should be annotated.

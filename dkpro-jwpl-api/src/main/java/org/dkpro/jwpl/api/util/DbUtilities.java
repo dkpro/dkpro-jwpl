@@ -75,7 +75,7 @@ public class DbUtilities
             }
         }
         catch (SQLException e) {
-            logger.error("Table " + tableName + " does not exist.", new RuntimeException(e));
+            logger.error("Table {} does not exist.", tableName, new RuntimeException(e));
         }
 
         return false;

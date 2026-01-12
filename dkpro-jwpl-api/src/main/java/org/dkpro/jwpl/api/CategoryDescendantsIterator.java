@@ -182,9 +182,9 @@ public class CategoryDescendantsIterator
                     notExpandedCategories.remove(currentCat.getPageId());
                     expandedCategoryIds.add(currentCat.getPageId());
 
-                    logger.debug("buf: " + buffer.size());
-                    logger.debug("notExp: " + notExpandedCategories);
-                    logger.debug("exp: " + expandedCategoryIds);
+                    logger.debug("buf: {}", buffer.size());
+                    logger.debug("notExp: {}", notExpandedCategories);
+                    logger.debug("exp: {}", expandedCategoryIds);
 
                     for (Category child : currentCat.getChildren()) {
                         queue.add(child.getPageId());

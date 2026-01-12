@@ -533,7 +533,7 @@ public class Wikipedia
             try {
                 categorySet.add(new Category(this, hibernateId));
             } catch (WikiPageNotFoundException e) {
-                logger.warn("Could not load Category by it's HibernateId = '" + hibernateId + "'");
+                logger.warn("Could not load Category by it's HibernateId = '{}'", hibernateId);
             }
         }
         return categorySet;

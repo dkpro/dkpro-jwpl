@@ -40,8 +40,7 @@ import org.slf4j.LoggerFactory;
 public class WikipediaInfo
 {
 
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private final Iterable<Page> pages;
     private double averageFanOut;
@@ -184,7 +183,7 @@ public class WikipediaInfo
         double startTime = System.currentTimeMillis();
         logger.error(catGraph.getGraphInfo());
         double endTime = (System.currentTimeMillis() - startTime) / 1000.0;
-        logger.error(endTime + "s");
+        logger.error("{}s", endTime);
     }
 
     /**
@@ -206,8 +205,8 @@ public class WikipediaInfo
                 catGraph);
         double overlappingCategoriesRatio = (double) articlesWithOverlappingCategories
                 / (double) pWiki.getMetaData().getNumberOfPages();
-        logger.info(articlesWithOverlappingCategories + " - "
-                + pWiki.getMetaData().getNumberOfPages() + " - " + overlappingCategoriesRatio);
+        logger.info("{} - {} - {}", articlesWithOverlappingCategories,
+              pWiki.getMetaData().getNumberOfPages(), overlappingCategoriesRatio);
 
         double endTime = (System.currentTimeMillis() - startTime) / 1000.0;
         logger.debug("{} ms", endTime);
@@ -362,10 +361,8 @@ public class WikipediaInfo
      *            The wikipedia object.
      * @param catGraph
      *            The category graph.
-     * @throws WikiPageNotFoundException
      */
     private void iterateCategoriesGetArticles(Wikipedia pWiki, CategoryGraph catGraph)
-        throws WikiPageNotFoundException
     {
         Map<Integer, Integer> localDegreeDistribution = new HashMap<>();
         Set<Integer> localCategorizedArticleSet = new HashSet<>();

@@ -77,7 +77,7 @@ public class CycleHandler
             Category sourceCat = wiki.getCategory(categoryGraph.getGraph().getEdgeSource(edge));
             Category targetCat = wiki.getCategory(categoryGraph.getGraph().getEdgeTarget(edge));
 
-            logger.info("Cycle: " + sourceCat.getTitle() + " - " + targetCat.getTitle());
+            logger.info("Cycle: {} - {}", sourceCat.getTitle(), targetCat.getTitle());
             return true;
         }
         else {
@@ -98,7 +98,7 @@ public class CycleHandler
             Category sourceCat = wiki.getCategory(categoryGraph.getGraph().getEdgeSource(edge));
             Category targetCat = wiki.getCategory(categoryGraph.getGraph().getEdgeTarget(edge));
 
-            logger.info("Removing cycle: " + sourceCat.getTitle() + " - " + targetCat.getTitle());
+            logger.info("Removing cycle: {} - {}", sourceCat.getTitle(), targetCat.getTitle());
 
             categoryGraph.getGraph().removeEdge(edge);
         }

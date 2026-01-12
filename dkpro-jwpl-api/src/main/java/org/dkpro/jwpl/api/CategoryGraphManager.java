@@ -164,7 +164,7 @@ public class CategoryGraphManager
         File defaulSerializedGraphFile = new File(defaultSerializedGraphLocation);
         if (defaulSerializedGraphFile.exists()) {
             try {
-                logger.info("Loading category graph from " + defaultSerializedGraphLocation);
+                logger.info("Loading category graph from {}", defaultSerializedGraphLocation);
                 return new CategoryGraph(wiki,
                         GraphSerialization.loadGraph(defaultSerializedGraphLocation));
             }
@@ -182,7 +182,7 @@ public class CategoryGraphManager
     {
         String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
         try {
-            logger.info("Saving category graph to " + defaultSerializedGraphLocation);
+            logger.info("Saving category graph to {}", defaultSerializedGraphLocation);
             GraphSerialization.saveGraph(catGraph.getGraph(), defaultSerializedGraphLocation);
         }
         catch (IOException e) {
