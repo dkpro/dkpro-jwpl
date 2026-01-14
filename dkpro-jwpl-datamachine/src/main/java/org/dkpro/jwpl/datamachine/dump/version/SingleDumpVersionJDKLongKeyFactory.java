@@ -21,17 +21,26 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionDataFactory;
 import org.dkpro.jwpl.wikimachine.hashing.StringHashCodeJBoss;
 
+/**
+ * A {@link IDumpVersionDataFactory dump version factory} implementation that uses
+ * longs as keys and {@link StringHashCodeJBoss} as hash algorithm.
+ *
+ * @see IDumpVersionDataFactory
+ * @see StringHashCodeJBoss
+ */
 public class SingleDumpVersionJDKLongKeyFactory
     implements IDumpVersionDataFactory
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IDumpVersion getDumpVersion()
     {
         IDumpVersion dumpVersion;
         try {
-            dumpVersion = new SingleDumpVersionJDKGeneric<Long, StringHashCodeJBoss>(
-                    StringHashCodeJBoss.class);
+            dumpVersion = new SingleDumpVersionJDKGeneric<Long, StringHashCodeJBoss>(StringHashCodeJBoss.class);
         }
         catch (Exception e) {
             dumpVersion = null;

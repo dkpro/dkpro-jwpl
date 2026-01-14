@@ -23,12 +23,22 @@ import java.io.InputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 
+/**
+ * A binary implementation of {@link DumpTableInputStream} for Wikipedia table dumps
+ * of three {@link DumpTableEnum types}.
+ *
+ * @see DumpTableEnum
+ * @see DumpTableInputStream
+ */
 public class BinaryDumpTableInputStream
     extends DumpTableInputStream
 {
 
-    protected InputStream inputStream = null;
+    private InputStream inputStream = null;
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
     {
@@ -36,6 +46,9 @@ public class BinaryDumpTableInputStream
         this.inputStream = inputStream;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public int read() throws IOException
     {

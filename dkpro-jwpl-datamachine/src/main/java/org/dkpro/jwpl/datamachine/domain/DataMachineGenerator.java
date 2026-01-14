@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.dkpro.jwpl.datamachine.dump.xml.XML2Binary;
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.Files;
+import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
@@ -36,25 +37,39 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 /**
  * Transforms a database from mediawiki format to JWPL format.<br>
  * The transformation produces .txt files for the different tables in the JWPL database.
+ *
+ * @see AbstractSnapshotGenerator
+ * @see ISnapshotGenerator
  */
 public class DataMachineGenerator
     extends AbstractSnapshotGenerator
 {
 
-    DataMachineFiles files = null;
-    IDumpVersion version = null;
+    private DataMachineFiles files = null;
+    private IDumpVersion version = null;
 
+    /**
+     * Instantiates a {@link DataMachineGenerator} within the provided environment.
+     *
+     * @param environmentFactory The {@link IEnvironmentFactory factory} to use for bean creation.
+     */
     public DataMachineGenerator(IEnvironmentFactory environmentFactory)
     {
         super(environmentFactory);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setFiles(Files files)
     {
         this.files = (DataMachineFiles) files;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void start() throws Exception
     {
@@ -69,35 +84,35 @@ public class DataMachineGenerator
     private void processInputDump() throws IOException
     {
 
-        logger.log("parse input dumps...");
+        logger.log("Parsing input dumps...");
         new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()), files);
 
         dumpVersionProcessor.setDumpVersions(new IDumpVersion[] { version });
 
-        logger.log("processing table page...");
+        logger.log("Processing table page...");
         dumpVersionProcessor.processPage(createPageParser());
 
-        logger.log("processing table categorylinks...");
+        logger.log("Processing table categorylinks...");
         dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
 
-        logger.log("processing table pagelinks...");
+        logger.log("Processing table pagelinks...");
         dumpVersionProcessor.processPagelinks(createPagelinksParser());
 
-        logger.log("processing table revision...");
+        logger.log("Processing table revision...");
         dumpVersionProcessor.processRevision(createRevisionParser());
 
-        logger.log("processing table text...");
+        logger.log("Processing table text...");
         dumpVersionProcessor.processText(createTextParser());
 
-        logger.log("writing metadata...");
+        logger.log("Writing metadata...");
         dumpVersionProcessor.writeMetaData();
 
-        logger.log("finished");
+        logger.log("Finished");
     }
 
     /**
-     * Parse either "pages-articles.xml" or "pages-meta-current.xml". If both files exist in the
-     * input directory "pages-meta-current.xml" will be favored.
+     * Parses either {@code pages-articles.xml} or {@code pages-meta-current.xml}.
+     * If both files exist in the input directory {@code pages-meta-current.xml} will be favored.
      *
      * @return the input articles dump
      */

@@ -62,6 +62,12 @@ public class JWPLDataMachine
     }
 
 
+    /**
+     * The entry point of the DataMachine tool.
+     *
+     * @param args Excepts four arguments. Must be in the ordering as specified as follows:
+     *        {@code <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>}.
+     */
     public static void main(String[] args)
     {
         if (args.length > 3) {

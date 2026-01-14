@@ -35,18 +35,30 @@ import org.dkpro.jwpl.wikimachine.dump.sql.SQLEscape;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 import org.dkpro.jwpl.wikimachine.util.UTFDataOutputStream;
 
+/**
+ * A basic {@link DumpWriter} implementation to write binary dumps.
+ *
+ * @see DumpWriter
+ */
 public class SimpleBinaryDumpWriter
     implements DumpWriter
 {
 
+    private final DataMachineFiles files;
     private UTFDataOutputStream pageFile;
     private UTFDataOutputStream revisionFile;
     private UTFDataOutputStream textFile;
-    private final DataMachineFiles files;
 
     private Page currentPage;
     private Revision lastRevision;
 
+    /**
+     * Instantiates a {@link SimpleBinaryDumpWriter} with the specified {@link DataMachineFiles configuration}.
+     *
+     * @param files The {@link DataMachineFiles} to use for configuring the dump output.
+     *              
+     * @throws IOException Thrown if IO errors occurred.
+     */
     public SimpleBinaryDumpWriter(DataMachineFiles files) throws IOException
     {
         this.files = files;
@@ -58,22 +70,21 @@ public class SimpleBinaryDumpWriter
         }
     }
 
-    protected void createUncompressed() throws IOException
+    private void createUncompressed() throws IOException
     {
         pageFile = openUTFDataOutputStream(files.getGeneratedPage(), false);
         revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), false);
         textFile = openUTFDataOutputStream(files.getGeneratedText(), false);
     }
 
-    protected void createCompressed() throws IOException
+    private void createCompressed() throws IOException
     {
         pageFile = openUTFDataOutputStream(files.getGeneratedPage(), true);
         revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), true);
         textFile = openUTFDataOutputStream(files.getGeneratedText(), true);
     }
 
-    private UTFDataOutputStream openUTFDataOutputStream(final String filePath,
-            final boolean compressed)
+    private UTFDataOutputStream openUTFDataOutputStream(final String filePath, final boolean compressed)
         throws IOException
     {
         UTFDataOutputStream utfDataOutputStream;
@@ -104,6 +115,18 @@ public class SimpleBinaryDumpWriter
         return new BufferedOutputStream(fileOutputStream);
     }
 
+    private void updatePage(Page page, Revision revision) throws IOException
+    {
+        pageFile.writeInt(page.Id);
+        pageFile.writeInt(page.Title.Namespace);
+        pageFile.writeUTFAsArray(SQLEscape.escape(SQLEscape.titleFormat(page.Title.Text)));
+        // pageFile.writeBoolean(revision.isRedirect());
+        pageFile.writeBoolean(Redirects.isRedirect(revision.Text));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void close() throws IOException
     {
@@ -112,6 +135,9 @@ public class SimpleBinaryDumpWriter
         textFile.close();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeEndPage() throws IOException
     {
@@ -122,6 +148,9 @@ public class SimpleBinaryDumpWriter
         lastRevision = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeEndWiki() throws IOException
     {
@@ -130,6 +159,9 @@ public class SimpleBinaryDumpWriter
         textFile.flush();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeRevision(Revision revision) throws IOException
     {
@@ -142,11 +174,17 @@ public class SimpleBinaryDumpWriter
         textFile.writeUTFAsArray(SQLEscape.escape(revision.Text));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeSiteinfo(Siteinfo info)
     {
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeStartPage(Page page)
     {
@@ -154,17 +192,12 @@ public class SimpleBinaryDumpWriter
         lastRevision = null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeStartWiki()
     {
     }
 
-    private void updatePage(Page page, Revision revision) throws IOException
-    {
-        pageFile.writeInt(page.Id);
-        pageFile.writeInt(page.Title.Namespace);
-        pageFile.writeUTFAsArray(SQLEscape.escape(SQLEscape.titleFormat(page.Title.Text)));
-        // pageFile.writeBoolean(revision.isRedirect());
-        pageFile.writeBoolean(Redirects.isRedirect(revision.Text));
-    }
 }
