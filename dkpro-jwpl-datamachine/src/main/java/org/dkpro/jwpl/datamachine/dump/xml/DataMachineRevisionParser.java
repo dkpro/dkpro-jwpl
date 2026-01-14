@@ -22,10 +22,18 @@ import java.io.IOException;
 
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 
+/**
+ * A parser for the 'revision' table specific for the DataMachine tool.
+ *
+ * @see RevisionParser
+ */
 public class DataMachineRevisionParser
     extends RevisionParser
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean next() throws IOException
     {

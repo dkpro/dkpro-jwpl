@@ -23,6 +23,13 @@ import java.io.FileFilter;
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Files;
 
+/**
+ * A {@link Files} implementation specific for the DataMachine tool.
+ * It defines file name constants and provides methods for
+ * input/output directory building rules and checks.
+ *
+ * @see Files
+ */
 public class DataMachineFiles
     extends Files
 {
@@ -49,12 +56,22 @@ public class DataMachineFiles
     private File inputCategorylinks = null;
     private File inputPagesMetaCurrent = null;
 
+    /**
+     * Instantiates a {@link Files} object with the specified {@code logger}.
+     *
+     * @param logger The {@link ILogger logger} to use.
+     */
     public DataMachineFiles(ILogger logger)
     {
         super(logger);
         outputDirectory = setOutputDirectory(dataDirectory);
     }
 
+    /**
+     * Instantiates a copy of the specified {@link DataMachineFiles} object.
+     *
+     * @param files The {@link DataMachineFiles files} to use for the copy.
+     */
     public DataMachineFiles(DataMachineFiles files)
     {
         super(files);
@@ -116,41 +133,65 @@ public class DataMachineFiles
                 || inputPagelinks == null || inputCategorylinks == null);
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@link #GENERATED_PAGE} file.
+     */
     public String getGeneratedPage()
     {
         return getGeneratedPath(GENERATED_PAGE);
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@link #GENERATED_REVISION} file.
+     */
     public String getGeneratedRevision()
     {
         return getGeneratedPath(GENERATED_REVISION);
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@link #GENERATED_TEXT} file.
+     */
     public String getGeneratedText()
     {
         return getGeneratedPath(GENERATED_TEXT);
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@link #GENERATED_DISCUSSIONS} file.
+     */
     public String getGeneratedDiscussions()
     {
         return getGeneratedPath(GENERATED_DISCUSSIONS);
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@code pagelinks.sql} file.
+     */
     public String getInputPageLinks()
     {
         return inputPagelinks != null ? inputPagelinks.getAbsolutePath() : null;
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@code pages-articles.xml} file.
+     */
     public String getInputPagesArticles()
     {
         return inputPagesarticles != null ? inputPagesarticles.getAbsolutePath() : null;
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@code categorylinks.sql} file.
+     */
     public String getInputCategoryLinks()
     {
         return inputCategorylinks != null ? inputCategorylinks.getAbsolutePath() : null;
     }
 
+    /**
+     * @return Retrieves the absolute path of the {@code pages-meta-current.xml} file.
+     */
     public String getInputPagesMetaCurrent()
     {
         return inputPagesMetaCurrent != null ? inputPagesMetaCurrent.getAbsolutePath() : null;

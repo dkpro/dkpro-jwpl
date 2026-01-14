@@ -29,6 +29,11 @@ import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.factory.AbstractEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 
+/**
+ * A default {@link IEnvironmentFactory} implementation for the DataMachine tool environment.
+ *
+ * @see IEnvironmentFactory
+ */
 public class DefaultDataMachineEnvironmentFactory extends AbstractEnvironmentFactory
     implements IEnvironmentFactory
 {
@@ -39,14 +44,24 @@ public class DefaultDataMachineEnvironmentFactory extends AbstractEnvironmentFac
 
     private static final DefaultDataMachineEnvironmentFactory INSTANCE = new DefaultDataMachineEnvironmentFactory();
 
+
+    /**
+     * Do not instantiate this class on your own. Use {@link #getInstance()} instead.
+     */
     // Note: Can't enforce a singleton-like private ctor, as ServiceLoader mechanism requires public no-arg form...
     public DefaultDataMachineEnvironmentFactory() {}
 
+    /**
+     * @return Retrieves the one and only instance of {@link DefaultDataMachineEnvironmentFactory}.
+     */
     public static DefaultDataMachineEnvironmentFactory getInstance()
     {
         return INSTANCE;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized ISnapshotGenerator getSnapshotGenerator()
     {
@@ -56,6 +71,9 @@ public class DefaultDataMachineEnvironmentFactory extends AbstractEnvironmentFac
         return SNAPSHOTGENERATOR_BEAN;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized IDumpVersion getDumpVersion()
     {
@@ -69,6 +87,9 @@ public class DefaultDataMachineEnvironmentFactory extends AbstractEnvironmentFac
         return version;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized DumpTableInputStream getDumpTableInputStream()
     {
@@ -76,6 +97,9 @@ public class DefaultDataMachineEnvironmentFactory extends AbstractEnvironmentFac
         return new BinaryDumpTableInputStream();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public synchronized RevisionParser getRevisionParser()
     {

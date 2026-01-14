@@ -27,6 +27,10 @@ import org.dkpro.jwpl.mwdumper.importer.XmlDumpReader;
 /**
  * Use org.mediawiki.importer engine to parse the XML-Dump (only useful fields) and store it to
  * binary file. Compression of the output files is possible.
+ *
+ * @see SimpleBinaryDumpWriter
+ * @see SimpleXmlDumpReader
+ * @see XmlDumpReader
  */
 public class XML2Binary
 {
@@ -38,19 +42,24 @@ public class XML2Binary
 
     private static final boolean USE_MODIFIED_PARSER = true;
 
+    /**
+     * Instantiates a {@link XML2Binary} object with the specified parameters.
+     *
+     * @param iStream   The {@link InputStream} containing the XML data to process.
+     * @param files     The {@link DataMachineFiles} configuration to apply.
+     * @throws IOException Thrown if IO errors occurred during processing.
+     */
     public XML2Binary(InputStream iStream, DataMachineFiles files) throws IOException
     {
         if (USE_MODIFIED_PARSER) {
             // modified parser, skips faulty tags
             new SimpleXmlDumpReader(iStream,
-                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES))
-                            .readDump();
+                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES)).readDump();
         }
         else {
             // original MWDumper parser, very sensible to not closed tags
             new XmlDumpReader(iStream,
-                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES))
-                            .readDump();
+                    new NamespaceFilter(new SimpleBinaryDumpWriter(files), ENABLED_NAMESPACES)).readDump();
         }
     }
 

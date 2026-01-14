@@ -37,6 +37,12 @@ import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
+/**
+ * A generic {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion IDumpVersion} implementation.
+ * 
+ * @param <KeyType>         The type of keys to use.
+ * @param <HashAlgorithm>   The hash algorithm to use.
+ */
 public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCode>
     extends AbstractDumpVersion
 {
@@ -57,17 +63,25 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
     IStringHashCode hashAlgorithm;
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Instantiates a {@link SingleDumpVersionJDKGeneric} object with the specified {@code hashAlgorithmClass}.
+     *
+     * @param hashAlgorithmClass        The concrete class of the {@link HashAlgorithm} to use.
+     * @throws InstantiationException   Thrown if the underlying hash algorithm cannot be instantiated.
+     * @throws IllegalAccessException   Thrown if the specified class can not be accessed.
+     * @throws NoSuchMethodException    Thrown if there is no way to call the constructor of {@link HashAlgorithm}.
+     * @throws InvocationTargetException Thrown in any other error cases during invocation of the constructor.
+     */
     public SingleDumpVersionJDKGeneric(Class<HashAlgorithm> hashAlgorithmClass)
         throws InstantiationException, IllegalAccessException, NoSuchMethodException,
         InvocationTargetException
     {
-
         hashAlgorithm = hashAlgorithmClass.getDeclaredConstructor().newInstance();
-        @SuppressWarnings("unused")
-        KeyType hashAlgorithmResult = (KeyType) hashAlgorithm.hashCode("test");
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeAfterCategoryLinksParsing()
     {
@@ -75,6 +89,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         cNamePageIdMap.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeAfterPageLinksParsing()
     {
@@ -82,6 +99,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeAfterPageParsing()
     {
@@ -93,12 +113,18 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
                 + rPageIdNameMap.size());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeAfterRevisionParsing()
     {
         // nothing to free
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void freeAfterTextParsing()
     {
@@ -111,6 +137,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         textIdPageIdMap.clear();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void initialize(Timestamp timestamp)
     {
@@ -123,6 +152,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         textIdPageIdMap = new HashMap<>(1_000_000);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
@@ -154,11 +186,14 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
             }
         }
         else {
-            throw new IOException("Parsin error." + CategorylinksParser.class.getName()
+            throw new IOException("Parsing error." + CategorylinksParser.class.getName()
                     + " returned null value in " + this.getClass().getName());
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void processPageLinksRow(PagelinksParser plParser)
@@ -176,6 +211,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void processPageRow(PageParser pageParser)
@@ -215,12 +253,18 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void processRevisionRow(RevisionParser revisionParser)
     {
         textIdPageIdMap.put(revisionParser.getRevTextId(), revisionParser.getRevPage());
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void processTextRow(TextParser textParser)
@@ -256,6 +300,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void writeMetaData() throws IOException
     {

@@ -74,7 +74,7 @@ public abstract class Files
     /**
      * Instantiates a copy of the specified {@link Files} object.
      *
-     * @param files The {@link Files logger} to use for the copy.
+     * @param files The {@link Files files} to use for the copy.
      */
     public Files(Files files)
     {

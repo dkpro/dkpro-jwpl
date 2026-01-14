@@ -30,19 +30,30 @@ import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.wikimachine.dump.xml.AbstractXmlDumpReader;
 
 /**
- * This class is a specified variant of XmlDumpReader. Please see its source for more information
- * about a functionality and a license.<br>
+ * This class is a specialized variant of {@link AbstractXmlDumpReader}.
+ * Please see its source for more information about a functionality and a license.<br>
+ *
+ * @see AbstractXmlDumpReader
  */
 public class SimpleXmlDumpReader
     extends AbstractXmlDumpReader
 {
 
+    /**
+     * Instantiates a {@link SimpleXmlDumpReader} with the specified {@link DumpWriter writer}.
+     *
+     * @param inputStream The {@link InputStream} to consume from.
+     * @param writer The {@link DumpWriter writer} to use.
+     */
     public SimpleXmlDumpReader(InputStream inputStream, DumpWriter writer)
     {
         super(inputStream, writer);
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setupStartElements()
     {
@@ -54,6 +65,9 @@ public class SimpleXmlDumpReader
         startElements.put(NAMESPACE, NAMESPACE);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void setupEndElements()
     {

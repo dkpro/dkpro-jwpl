@@ -21,17 +21,26 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionDataFactory;
 import org.dkpro.jwpl.wikimachine.hashing.StringHashCodeDisabled;
 
+/**
+ * A {@link IDumpVersionDataFactory dump version factory} implementation that uses
+ * String objects as keys and {@link StringHashCodeDisabled} as hash algorithm.
+ *
+ * @see IDumpVersionDataFactory
+ * @see StringHashCodeDisabled
+ */
 public class SingleDumpVersionJDKStringKeyFactory
     implements IDumpVersionDataFactory
 {
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public IDumpVersion getDumpVersion()
     {
         IDumpVersion dumpVersion;
         try {
-            dumpVersion = new SingleDumpVersionJDKGeneric<String, StringHashCodeDisabled>(
-                    StringHashCodeDisabled.class);
+            dumpVersion = new SingleDumpVersionJDKGeneric<String, StringHashCodeDisabled>(StringHashCodeDisabled.class);
         }
         catch (Exception e) {
             dumpVersion = null;
