@@ -43,7 +43,7 @@ public class JWPLDataMachine
             + "\tjava -jar JWPLDataMachine.jar <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>\n\n"
             + "The source directory must contain files\n" + "\tpagelinks.sql\n"
             + "\tpages-articles.xml\n" + "\tcategorylinks.sql\n"
-            + "GZip or BZip2 compressed archives of above-named files are also allowed.\n"
+            + "GZip, BZip2, and 7z compressed archives of above-named files are also allowed.\n"
             + "Please set up a decompressor.xml for a usage of other external archive utilities (see documentation for more help).\n";
 
     private static final long startTime = System.currentTimeMillis();
