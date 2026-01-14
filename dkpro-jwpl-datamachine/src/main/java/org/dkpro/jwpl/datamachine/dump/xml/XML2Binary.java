@@ -45,7 +45,7 @@ public class XML2Binary
     /**
      * Instantiates a {@link XML2Binary} object with the specified parameters.
      *
-     * @param iStream   The {@link InputStream xml input stream} to process.
+     * @param iStream   The {@link InputStream} containing the XML data to process.
      * @param files     The {@link DataMachineFiles} configuration to apply.
      * @throws IOException Thrown if IO errors occurred during processing.
      */

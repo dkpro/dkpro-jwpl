@@ -53,7 +53,7 @@ public class SimpleBinaryDumpWriter
     private Revision lastRevision;
 
     /**
-     * Instantiates a {@link SimpleBinaryDumpWriter} with the specified {@link DataMachineFiles configuration}.
+     * Instantiates a {@link SimpleBinaryDumpWriter} with the specified {@link DataMachineFiles}.
      *
      * @param files The {@link DataMachineFiles} to use for configuring the dump output.
      *              
