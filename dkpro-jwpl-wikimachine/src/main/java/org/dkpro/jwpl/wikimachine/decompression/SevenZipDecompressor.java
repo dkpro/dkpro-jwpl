@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
@@ -84,6 +85,14 @@ public final class SevenZipDecompressor
             sbc.close();
         }
         return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStreamSequence(List<Path> resources) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static class SevenZipInputStreamWrapper extends FilterInputStream {
