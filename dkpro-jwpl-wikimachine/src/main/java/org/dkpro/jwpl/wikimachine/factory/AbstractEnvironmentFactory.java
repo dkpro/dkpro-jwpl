@@ -20,7 +20,6 @@ package org.dkpro.jwpl.wikimachine.factory;
 import java.util.List;
 
 import org.dkpro.jwpl.wikimachine.debug.CompositeLogger;
-import org.dkpro.jwpl.wikimachine.debug.FileMemoryLogger;
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.debug.Slf4JLogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
@@ -59,8 +58,12 @@ public abstract class AbstractEnvironmentFactory
     public ILogger getLogger()
     {
         if (LOG_BEAN == null) {
-          List<ILogger> loggers = List.of(new FileMemoryLogger(), new Slf4JLogger());
-          LOG_BEAN = new CompositeLogger(loggers.toArray(new ILogger[0]));
+            /* Note:
+             * FileMemoryLogger not configured any longer as it spams new log files per run,
+             * and it is easily replaceable by Slf4J config
+             */
+            List<ILogger> loggers = List.of(new Slf4JLogger());
+            LOG_BEAN = new CompositeLogger(loggers.toArray(new ILogger[0]));
         }
         return LOG_BEAN;
     }

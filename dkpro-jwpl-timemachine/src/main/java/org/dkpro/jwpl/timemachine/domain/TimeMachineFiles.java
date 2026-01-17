@@ -46,7 +46,7 @@ public class TimeMachineFiles
     {
         super(files);
         this.metaHistoryFile = files.metaHistoryFile;
-        this.pageLinksFile = files.metaHistoryFile;
+        this.pageLinksFile = files.pageLinksFile;
         this.categoryLinksFile = files.categoryLinksFile;
     }
 
@@ -57,7 +57,6 @@ public class TimeMachineFiles
      */
     public void setTimestamp(Timestamp timestamp)
     {
-
         timeStamp = TimestampUtil.toMediaWikiString(timestamp) + File.separator;
     }
 
@@ -104,8 +103,7 @@ public class TimeMachineFiles
     @Override
     protected String getOutputPath(String fileName)
     {
-        File outputSubDirectory = new File(
-                outputDirectory.getAbsolutePath() + File.separator + timeStamp);
+        File outputSubDirectory = new File(outputDirectory.getAbsolutePath() + File.separator + timeStamp);
         outputSubDirectory.mkdir();
         return outputDirectory.getAbsolutePath() + File.separator + timeStamp + fileName;
     }
@@ -113,7 +111,8 @@ public class TimeMachineFiles
     @Override
     public boolean checkAll()
     {
-        return checkOutputDirectory() && checkInputFile(metaHistoryFile, NO_METAHISTORY)
+        return checkOutputDirectory()
+                && checkInputFile(metaHistoryFile, NO_METAHISTORY)
                 && checkInputFile(pageLinksFile, NO_PAGELINKS)
                 && checkInputFile(categoryLinksFile, NO_CATEGORYLINKS);
     }

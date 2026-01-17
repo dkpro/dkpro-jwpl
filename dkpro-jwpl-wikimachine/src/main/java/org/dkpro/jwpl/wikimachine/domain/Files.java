@@ -103,10 +103,21 @@ public abstract class Files
      * Configures the output directory via the specified parameter.
      *
      * @param outputDirectory The absolute or relative path to the output directory.
+     * @throws IllegalArgumentException Thrown if parameters were invalid.
      */
     public void setOutputDirectory(String outputDirectory)
     {
-        this.outputDirectory = new File(outputDirectory);
+        if (outputDirectory == null || outputDirectory.isBlank()) {
+            throw new IllegalArgumentException("Parameter outputDirectory must not be null or blank!");
+        }
+
+        File outputDir = new File(outputDirectory);
+        if (outputDir.isDirectory()) {
+            this.outputDirectory = outputDir;
+        } else {
+            logger.log(outputDir + " is not a directory. Continue read from: "
+                    + this.outputDirectory.getAbsolutePath());
+        }
     }
 
     /**

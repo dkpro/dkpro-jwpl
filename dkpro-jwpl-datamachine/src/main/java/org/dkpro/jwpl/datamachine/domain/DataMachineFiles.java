@@ -90,13 +90,15 @@ public class DataMachineFiles
 
     void setDataDirectory(String newDataDirectory)
     {
+        if (newDataDirectory == null || newDataDirectory.isBlank()) {
+            throw new IllegalArgumentException("New data directory must not be null or blank!");
+        }
         File inputDataDirectory = new File(newDataDirectory);
         if (inputDataDirectory.isDirectory()) {
             this.dataDirectory = inputDataDirectory;
             this.outputDirectory = setOutputDirectory(dataDirectory);
-        }
-        else {
-            logger.log(dataDirectory + " is not a directory. Continue read from: "
+        } else {
+            logger.log(inputDataDirectory + " is not a directory. Continue read from: "
                     + this.dataDirectory.getAbsolutePath());
         }
 
@@ -170,6 +172,9 @@ public class DataMachineFiles
      */
     public String getInputPageLinks()
     {
+        if (inputPagelinks == null) {
+            checkDataMachineSourceFiles();
+        }
         return inputPagelinks != null ? inputPagelinks.getAbsolutePath() : null;
     }
 
@@ -178,6 +183,9 @@ public class DataMachineFiles
      */
     public String getInputPagesArticles()
     {
+        if (inputPagesarticles == null) {
+            checkDataMachineSourceFiles();
+        }
         return inputPagesarticles != null ? inputPagesarticles.getAbsolutePath() : null;
     }
 
@@ -186,6 +194,9 @@ public class DataMachineFiles
      */
     public String getInputCategoryLinks()
     {
+        if (inputCategorylinks == null) {
+            checkDataMachineSourceFiles();
+        }
         return inputCategorylinks != null ? inputCategorylinks.getAbsolutePath() : null;
     }
 
@@ -194,6 +205,9 @@ public class DataMachineFiles
      */
     public String getInputPagesMetaCurrent()
     {
+        if (inputPagesMetaCurrent == null) {
+            checkDataMachineSourceFiles();
+        }
         return inputPagesMetaCurrent != null ? inputPagesMetaCurrent.getAbsolutePath() : null;
     }
 

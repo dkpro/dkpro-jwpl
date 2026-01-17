@@ -40,7 +40,8 @@ public class JWPLTimeMachineE2ETest {
   private static final URL BASE = JWPLTimeMachineE2ETest.class.getProtectionDomain().getCodeSource().getLocation();
   private static final String TARGET = BASE.getFile().replace("test-classes/","");
   private static final String CONF_FILE = BASE.getFile() + "timemachine-config-e2e.xml";
-  private static final String OUTPUT_DIR = TARGET + "tool-exec";
+  private static final String EXEC_DIR = TARGET + "tool-exec";
+  private static final String OUTPUT_DIR = EXEC_DIR + File.separator + "output";
 
   private static final String TOOL_NAME;
   private static final String WIKI_NAME;
@@ -56,6 +57,7 @@ public class JWPLTimeMachineE2ETest {
 
   @BeforeAll
   public static void initEnv() throws IOException {
+    Files.createDirectories(Path.of(EXEC_DIR));
     Files.createDirectories(Path.of(OUTPUT_DIR));
     Stream<Path> results = Files.find(Path.of(BASE.getFile()), Integer.MAX_VALUE,
             (path, basicFileAttributes)
@@ -64,7 +66,7 @@ public class JWPLTimeMachineE2ETest {
 
     results.forEach(p -> {
       try {
-        Files.move(p, Path.of(OUTPUT_DIR, p.getFileName().toString()));
+        Files.move(p, Path.of(EXEC_DIR, p.getFileName().toString()));
       } catch (IOException e) {
         throw new UncheckedIOException(e);
       }
@@ -83,7 +85,7 @@ public class JWPLTimeMachineE2ETest {
     cmd.add(CONF_FILE);
     assertEquals(0,  execTool(cmd));
     // check resulting directories in 'output' directory are present and count meets expectations
-    Stream<Path> results = Files.find(Path.of(OUTPUT_DIR + File.separator + "output"), Integer.MAX_VALUE,
+    Stream<Path> results = Files.find(Path.of(EXEC_DIR + File.separator + "output"), Integer.MAX_VALUE,
             (path, basicFileAttributes)
                     -> basicFileAttributes.isDirectory() && path.toFile().getName().endsWith("100")
     );
