@@ -35,7 +35,7 @@ public class Slf4JLogger
     protected void logObject(Object message)
     {
         if (isThrowable(message.getClass())) {
-            logger.info(createThrowableMessage((Throwable) message));
+            logger.error(createThrowableMessage((Throwable) message));
         }
         else if (message instanceof String) {
             logger.info((String) message);
