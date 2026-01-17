@@ -20,7 +20,11 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -52,6 +56,23 @@ public final class GZipDecompressor
     {
         checkResource(resource);
         return new GZIPInputStream(new BufferedInputStream(openStream(resource)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStreamSequence(List<Path> resources) throws IOException {
+        if (resources == null || resources.isEmpty()) {
+            throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
+        }
+        resources.forEach(this::checkResource);
+        // if checks passed for all elements: open streams
+        List<InputStream> streams = new Vector<>();
+        for (Path p: resources) {
+            streams.add(new BufferedInputStream(openStream(p)));
+        }
+        return new GZIPInputStream(new SequenceInputStream(Collections.enumeration(streams)));
     }
 
 }

@@ -27,6 +27,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -260,12 +261,7 @@ public class UniversalDecompressor
     @Override
     public InputStream getInputStream(Path resource) throws IOException
     {
-        if (resource == null || resource.toString().isBlank()) {
-            throw new IllegalArgumentException("Can't load a 'null' or 'empty' resource!");
-        }
-        if (Files.isDirectory(resource)) {
-            throw new InvalidPathException(resource.toString(), "Can't load a 'directory' as resource!");
-        }
+        checkPath(resource);
         final String file = resource.toAbsolutePath().toString();
         final String extension = detectExtension(file);
 
@@ -283,7 +279,32 @@ public class UniversalDecompressor
     }
 
     /**
-     * Check if the {@link File} specified via {@code fileName} exists.
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStreamSequence(List<Path> resources) throws IOException {
+        if (resources == null || resources.isEmpty()) {
+            throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
+        }
+        resources.forEach(this::checkPath);
+        final Path firstElement = resources.get(0); // safe here, as resource is not empty
+        if (firstElement != null) {
+            final String file = firstElement.toAbsolutePath().toString();
+            final String extension = detectExtension(file);
+            if (isInternalSupported(extension) && !"7z".equals(extension) /* 7z is unsupported for now */) {
+                return internalSupport.get(extension).getInputStreamSequence(resources);
+            }
+            else {
+                throw new IOException("Multi-file dumps of '" + extension + "' archives " +
+                        "are currently not supported.");
+            }
+        } else {
+            throw new IllegalArgumentException("Can't process a 'null' element in the resources list!");
+        }
+    }
+
+    /**
+     * Checks if the {@link File} specified via {@code fileName} exists.
      *
      * @param resource file path to check
      * @return {@code true} if the file exists and can be read, {@code false} otherwise.
@@ -293,4 +314,20 @@ public class UniversalDecompressor
         return Files.exists(resource);
     }
 
+
+    /**
+     * Verifies the provided {@code resource} references a valid archive.
+     *
+     * @param resource The file's name or (relative) path to read the archive from.
+     * @throws IllegalArgumentException Thrown if parameters were invalid.
+     * @throws InvalidPathException Thrown if the parameter {@code resource} referred to a directory.
+     */
+    private void checkPath(Path resource) {
+        if (resource == null || resource.toString().isBlank()) {
+            throw new IllegalArgumentException("Can't load a 'null' or 'empty' resource!");
+        }
+        if (Files.isDirectory(resource)) {
+            throw new InvalidPathException(resource.toString(), "Can't load a 'directory' as resource!");
+        }
+    }
 }
