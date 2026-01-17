@@ -98,7 +98,7 @@ public class DataMachineFiles
             this.dataDirectory = inputDataDirectory;
             this.outputDirectory = setOutputDirectory(dataDirectory);
         } else {
-            logger.log(inputDataDirectory + " is not a directory. Continue read from: "
+            logger.log(inputDataDirectory + " is not a directory. Continue using: "
                     + this.dataDirectory.getAbsolutePath());
         }
 

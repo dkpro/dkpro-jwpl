@@ -115,7 +115,7 @@ public abstract class Files
         if (outputDir.isDirectory()) {
             this.outputDirectory = outputDir;
         } else {
-            logger.log(outputDir + " is not a directory. Continue read from: "
+            logger.log(outputDir + " is not a directory. Continue using: "
                     + this.outputDirectory.getAbsolutePath());
         }
     }

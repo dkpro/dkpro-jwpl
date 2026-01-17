@@ -59,15 +59,15 @@ class TimeMachineFilesTest {
     Files.createDirectories(Path.of(OUTPUT_DIR));
     mockPageLinks = Path.of(TEST_OUTPUT_DIR, "pagelinks.sql.gz").toFile();
     if (!mockPageLinks.exists()) {
-      assertTrue(mockPageLinks.createNewFile());;
+      assertTrue(mockPageLinks.createNewFile());
     }
     mockCategoryLinks = Path.of(TEST_OUTPUT_DIR, "categorylinks.sql.gz").toFile();
     if (!mockCategoryLinks.exists()) {
-      assertTrue(mockCategoryLinks.createNewFile());;
+      assertTrue(mockCategoryLinks.createNewFile());
     }
     mockMetaHistory = Path.of(TEST_OUTPUT_DIR, "pages-meta-history.xml.7z").toFile();
     if (!mockMetaHistory.exists()) {
-      assertTrue(mockMetaHistory.createNewFile());;
+      assertTrue(mockMetaHistory.createNewFile());
     }
   }
 
