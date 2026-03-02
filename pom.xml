@@ -49,7 +49,7 @@
       Required for 7z support in commons-compress,  see:
       https://commons.apache.org/proper/commons-compress/limitations.html
     -->  
-    <xz.version>1.11</xz.version>
+    <xz.version>1.12</xz.version>
     
     <!-- DB specific dependency versions -->
     <hibernate.version>6.6.40.Final</hibernate.version>
