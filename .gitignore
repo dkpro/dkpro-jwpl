@@ -17,5 +17,5 @@ target
 *.tmp
 *_hypoCountMap
 
-### Embedded DB properties file
-org.dkpro.jwpl.revisionmachine/src/test/resources/db/*.properties
+### HSQLDB transient test artifacts (regenerated on each run)
+dkpro-jwpl-revisionmachine/src/test/resources/db/*.properties

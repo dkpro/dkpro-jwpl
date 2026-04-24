@@ -38,7 +38,7 @@ public class WikipediaInfoTest
     @BeforeAll
     public static void setupWikipedia()
     {
-        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        DatabaseConfiguration db = obtainDbConfiguration();
         try {
             wikipediaInfo = new WikipediaInfo(new Wikipedia(db));
         }

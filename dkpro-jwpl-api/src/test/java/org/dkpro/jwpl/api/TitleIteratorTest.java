@@ -36,7 +36,7 @@ public class TitleIteratorTest
     @BeforeAll
     public static void setupWikipedia()
     {
-        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        DatabaseConfiguration db = obtainDbConfiguration();
         try {
             wiki = new Wikipedia(db);
         }

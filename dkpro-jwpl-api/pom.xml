@@ -86,6 +86,33 @@
       <artifactId>mariadb-java-client</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Testcontainers-based DB matrix (see JwplTestDatabase) -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mariadb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mysql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -133,6 +160,33 @@
       </properties>
     </profile>
 
+    <!--
+      DB engine selection profiles for the unit test suite (see JwplTestDatabase).
+      db-hsqldb is the default and is always-on; db-mariadb/db-mysql spin up a
+      Testcontainers-managed database. Tests are auto-skipped when Docker is absent.
+    -->
+    <profile>
+      <id>db-hsqldb</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <jwpl.test.db>hsqldb</jwpl.test.db>
+      </properties>
+    </profile>
+    <profile>
+      <id>db-mariadb</id>
+      <properties>
+        <jwpl.test.db>mariadb</jwpl.test.db>
+      </properties>
+    </profile>
+    <profile>
+      <id>db-mysql</id>
+      <properties>
+        <jwpl.test.db>mysql</jwpl.test.db>
+      </properties>
+    </profile>
+
     <profile>
       <id>jacoco</id>
       <build>
@@ -145,6 +199,9 @@
               <argLine>@{jacoco.argLine} -Xms256m -Xmx384m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
               <!-- Show 100% of the lines from the stack trace (doesn't work) -->
               <trimStackTrace>false</trimStackTrace>
+              <systemPropertyVariables>
+                <jwpl.test.db>${jwpl.test.db}</jwpl.test.db>
+              </systemPropertyVariables>
               <includes>
                 <!-- Include unit tests within integration-test phase. -->
                 <include>**/*Test.java</include>
@@ -231,6 +288,10 @@
             --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
           <!-- Show 100% of the lines from the stack trace (doesn't work) -->
           <trimStackTrace>false</trimStackTrace>
+          <systemPropertyVariables>
+            <!-- Selects the backend used by JwplTestDatabase; see db-* profiles. -->
+            <jwpl.test.db>${jwpl.test.db}</jwpl.test.db>
+          </systemPropertyVariables>
           <includes>
             <!-- Include unit tests within integration-test phase. -->
             <include>**/*Test.java</include>
