@@ -69,15 +69,16 @@ public final class BZip2Decompressor
             throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
         }
         resources.forEach(this::checkResource);
+        // Decompress each part independently and concatenate the decompressed streams.
+        // This mirrors the gzip impl and avoids depending on the compressed-side
+        // multi-stream detection heuristic (which is sensitive to the underlying
+        // stream's available() at part boundaries).
         final List<InputStream> streams = new ArrayList<>(resources.size());
         try {
             for (Path p : resources) {
-                streams.add(new BufferedInputStream(openStream(p)));
+                streams.add(new BZip2CompressorInputStream(new BufferedInputStream(openStream(p))));
             }
-            // decompressConcatenated=true: each part is a self-contained bz2 stream;
-            // without this flag, only the first part would be decoded.
-            return new BZip2CompressorInputStream(
-                    new SequenceInputStream(Collections.enumeration(streams)), true);
+            return new SequenceInputStream(Collections.enumeration(streams));
         } catch (IOException | RuntimeException e) {
             closeQuietly(streams, e);
             throw e;

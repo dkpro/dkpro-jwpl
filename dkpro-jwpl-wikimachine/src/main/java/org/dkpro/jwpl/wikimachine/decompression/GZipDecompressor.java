@@ -67,13 +67,17 @@ public final class GZipDecompressor
             throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
         }
         resources.forEach(this::checkResource);
+        // Wrap every part in its own GZIPInputStream and concatenate the decompressed streams.
+        // We previously fed a concatenated compressed stream to a single GZIPInputStream relying
+        // on RFC 1952 multi-member support, but GZIPInputStream detects subsequent members via
+        // the underlying stream's available() count — which is zero at SequenceInputStream's
+        // boundary between parts, so decoding stopped after the first part on some platforms.
         final List<InputStream> streams = new ArrayList<>(resources.size());
         try {
             for (Path p : resources) {
-                streams.add(new BufferedInputStream(openStream(p)));
+                streams.add(new GZIPInputStream(new BufferedInputStream(openStream(p))));
             }
-            // GZIPInputStream transparently reads concatenated gzip members (RFC 1952).
-            return new GZIPInputStream(new SequenceInputStream(Collections.enumeration(streams)));
+            return new SequenceInputStream(Collections.enumeration(streams));
         } catch (IOException | RuntimeException e) {
             closeQuietly(streams, e);
             throw e;
