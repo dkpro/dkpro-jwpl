@@ -17,6 +17,13 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
 /**
  * An object-relational entity which maps a {@link org.dkpro.jwpl.api.MetaData}
  * to data attributes in a database. Those are persisted and retrieved by
@@ -25,19 +32,38 @@ package org.dkpro.jwpl.api.hibernate;
  * It is accessed via an equally named class in the {@code api} package
  * to hide session management from the user.
  */
+@Entity
+@Table(name = "MetaData")
 public class MetaData
 {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
+    @Column(name = "language")
     private String language;
+
+    @Column(name = "disambiguationCategory")
     private String disambiguationCategory;
+
+    @Column(name = "mainCategory")
     private String mainCategory;
+
+    @Column(name = "version")
     private String version;
 
+    @Column(name = "nrofPages")
     private long nrofPages;
+
+    @Column(name = "nrofRedirects")
     private long nrofRedirects;
+
+    @Column(name = "nrofDisambiguationPages")
     private long nrofDisambiguationPages;
+
+    @Column(name = "nrofCategories")
     private long nrofCategories;
 
     /**
