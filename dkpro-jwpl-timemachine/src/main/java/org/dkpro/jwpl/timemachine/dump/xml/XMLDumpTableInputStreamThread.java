@@ -21,10 +21,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
+import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.mwdumper.importer.NamespaceFilter;
 import org.dkpro.jwpl.wikimachine.dump.xml.AbstractXmlDumpReader;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
+import org.dkpro.jwpl.wikimachine.dump.xml.MultiPartXmlDumpReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,39 +53,86 @@ class XMLDumpTableInputStreamThread
     private AbstractXmlDumpReader xmlReader;
 
     /**
+     * Populated in multi-part mode. When non-null, {@link #run()} drives parsing through
+     * {@link MultiPartXmlDumpReader} instead of a single {@link AbstractXmlDumpReader#readDump()}.
+     */
+    private final List<InputStream> parts;
+    private final DumpWriter multiPartWriter;
+    private final MultiPartXmlDumpReader.ReaderFactory readerFactory;
+
+    /**
      * completion flag for a conversion process
      */
     private boolean isComplete;
 
     /**
-     * Initiate input and output streams
+     * Initiate input and output streams for a single-file dump.
      *
-     * @param iStream
-     *            XML input stream
-     * @param oStream
-     *            SQL output stream
-     * @throws IOException
-     *             Thrown in case errors occurred.
+     * @param iStream XML input stream
+     * @param oStream SQL output stream
+     * @param table   Kind of table output expected.
+     * @throws IOException Thrown in case errors occurred.
      */
     public XMLDumpTableInputStreamThread(InputStream iStream, OutputStream oStream,
             DumpTableEnum table)
         throws IOException
     {
         super("xml2sql");
+        this.parts = null;
+        this.multiPartWriter = null;
+        this.readerFactory = null;
+        this.xmlReader = createReader(iStream, createWriter(oStream, table), table);
+    }
 
+    /**
+     * Initiate input and output streams for a multi-part dump. Every element of {@code iStreams}
+     * is a self-contained XML document; SAX events across parts are collapsed into a single
+     * logical document by {@link MultiPartXmlDumpReader}.
+     *
+     * @param iStreams Ordered list of XML part input streams (ascending page-range).
+     * @param oStream  SQL output stream.
+     * @param table    Kind of table output expected.
+     */
+    public XMLDumpTableInputStreamThread(List<InputStream> iStreams, OutputStream oStream,
+            DumpTableEnum table)
+    {
+        super("xml2sql");
+        this.parts = iStreams;
+        this.multiPartWriter = createWriter(oStream, table);
+        this.readerFactory = readerFactoryFor(table);
+    }
+
+    private static DumpWriter createWriter(OutputStream oStream, DumpTableEnum table)
+    {
         switch (table) {
         case PAGE:
-            xmlReader = new PageReader(iStream,
-                    new NamespaceFilter(new PageWriter(oStream), ENABLED_NAMESPACES));
-            break;
+            return new NamespaceFilter(new PageWriter(oStream), ENABLED_NAMESPACES);
         case REVISION:
-            xmlReader = new RevisionReader(iStream,
-                    new NamespaceFilter(new RevisionWriter(oStream), ENABLED_NAMESPACES));
-            break;
+            return new NamespaceFilter(new RevisionWriter(oStream), ENABLED_NAMESPACES);
         case TEXT:
-            xmlReader = new TextReader(iStream,
-                    new NamespaceFilter(new TextWriter(oStream), ENABLED_NAMESPACES));
-            break;
+            return new NamespaceFilter(new TextWriter(oStream), ENABLED_NAMESPACES);
+        default:
+            throw new IllegalArgumentException("Unsupported table type: " + table);
+        }
+    }
+
+    private static AbstractXmlDumpReader createReader(InputStream in, DumpWriter writer,
+            DumpTableEnum table)
+    {
+        return readerFactoryFor(table).apply(in, writer);
+    }
+
+    private static MultiPartXmlDumpReader.ReaderFactory readerFactoryFor(DumpTableEnum table)
+    {
+        switch (table) {
+        case PAGE:
+            return PageReader::new;
+        case REVISION:
+            return RevisionReader::new;
+        case TEXT:
+            return TextReader::new;
+        default:
+            throw new IllegalArgumentException("Unsupported table type: " + table);
         }
     }
 
@@ -91,7 +141,12 @@ class XMLDumpTableInputStreamThread
     {
         try {
             isComplete = false;
-            xmlReader.readDump();
+            if (parts != null) {
+                MultiPartXmlDumpReader.readDumps(parts, multiPartWriter, readerFactory);
+            }
+            else {
+                xmlReader.readDump();
+            }
             isComplete = true;
         }
         catch (IOException e) {
@@ -101,12 +156,17 @@ class XMLDumpTableInputStreamThread
     }
 
     /**
-     * Abort a conversion
+     * Abort a conversion.
+     * <p>
+     * Only supported in single-file mode. In multi-part mode the abort flag is recorded but does
+     * not interrupt an in-flight SAX parse — callers must let the current part finish.
      */
     public synchronized void abort()
     {
         if (!isComplete) {
-            xmlReader.abort();
+            if (xmlReader != null) {
+                xmlReader.abort();
+            }
             isComplete = true;
         }
     }
