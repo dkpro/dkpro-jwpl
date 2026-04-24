@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
 
 /**
  * A common base {@link IDecompressor} implementation that provides methods to open
@@ -127,5 +128,29 @@ public abstract class AbstractDecompressor implements IDecompressor {
     private ClassLoader getContextClassLoader()
     {
        return Thread.currentThread().getContextClassLoader();
+    }
+
+    /**
+     * Closes every element of {@code streams}, attaching any thrown {@link IOException} as
+     * suppressed to {@code primary}. Intended for cleanup after a partial open loop where
+     * several streams have already been created but the call must now unwind.
+     *
+     * @param streams Streams to close. {@code null} elements are tolerated.
+     * @param primary The in-flight exception that triggered cleanup; close failures are
+     *                recorded as suppressed on it.
+     */
+    protected static void closeQuietly(List<InputStream> streams, Throwable primary)
+    {
+        for (InputStream s : streams) {
+            if (s == null) {
+                continue;
+            }
+            try {
+                s.close();
+            }
+            catch (IOException suppressed) {
+                primary.addSuppressed(suppressed);
+            }
+        }
     }
 }

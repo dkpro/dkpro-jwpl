@@ -17,9 +17,21 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -42,5 +54,37 @@ class GZipDecompressorTest extends AbstractDecompressorTest {
     @ValueSource(strings = {"archive.txt.gz", "src/test/resources/archive.txt.gz"})
     void testGetInputStream(String input) throws IOException {
         getAndCheck(input);
+    }
+
+    @Test
+    void testGetInputStreamSequenceConcatenatesParts(@TempDir Path dir) throws IOException {
+        final String contentA = "part-a payload\n";
+        final String contentB = "part-b payload\n";
+        final Path partA = writeGz(dir.resolve("dump.xml-p1p10.gz"), contentA);
+        final Path partB = writeGz(dir.resolve("dump.xml-p11p20.gz"), contentB);
+
+        try (InputStream in = decomp.getInputStreamSequence(List.of(partA, partB))) {
+            assertNotNull(in);
+            final String decompressed = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            assertEquals(contentA + contentB, decompressed);
+        }
+    }
+
+    @Test
+    void testGetInputStreamSequenceSinglePartEqualsSingleFile(@TempDir Path dir) throws IOException {
+        final String content = "lonely payload\n";
+        final Path part = writeGz(dir.resolve("dump.xml-p1p10.gz"), content);
+
+        try (InputStream in = decomp.getInputStreamSequence(List.of(part))) {
+            assertNotNull(in);
+            assertEquals(content, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    private static Path writeGz(Path out, String content) throws IOException {
+        try (OutputStream os = new GZIPOutputStream(Files.newOutputStream(out))) {
+            os.write(content.getBytes(StandardCharsets.UTF_8));
+        }
+        return out;
     }
 }
