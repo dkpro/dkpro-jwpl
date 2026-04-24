@@ -119,7 +119,7 @@ class XMLDumpTableInputStreamThread
     private static AbstractXmlDumpReader createReader(InputStream in, DumpWriter writer,
             DumpTableEnum table)
     {
-        return readerFactoryFor(table).apply(in, writer);
+        return readerFactoryFor(table).create(in, writer);
     }
 
     private static MultiPartXmlDumpReader.ReaderFactory readerFactoryFor(DumpTableEnum table)

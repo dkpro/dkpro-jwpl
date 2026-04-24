@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.mwdumper.importer.MultiPartDumpWriter;
@@ -44,12 +43,19 @@ public final class MultiPartXmlDumpReader
     /**
      * Factory that produces a fresh {@link AbstractXmlDumpReader} (typically a concrete
      * subclass such as {@code SimpleXmlDumpReader} or a {@code timemachine} reader) for
-     * a given part's {@link InputStream} and the shared {@link DumpWriter}.
+     * a given part's {@link InputStream} and the shared {@link DumpWriter}. Callers
+     * normally pass a constructor reference such as {@code SimpleXmlDumpReader::new}.
      */
     @FunctionalInterface
     public interface ReaderFactory
-        extends BiFunction<InputStream, DumpWriter, AbstractXmlDumpReader>
     {
+        /**
+         * @param in     The part's input stream.
+         * @param writer The shared dump writer (already wrapped in a
+         *               {@link MultiPartDumpWriter} by {@link #readDumps}).
+         * @return A fresh reader bound to {@code in} and {@code writer}.
+         */
+        AbstractXmlDumpReader create(InputStream in, DumpWriter writer);
     }
 
     private MultiPartXmlDumpReader()
@@ -98,7 +104,7 @@ public final class MultiPartXmlDumpReader
         Throwable primary = null;
         try {
             for (InputStream part : parts) {
-                factory.apply(part, wrapper).doParse();
+                factory.create(part, wrapper).doParse();
             }
         }
         catch (IOException | RuntimeException e) {

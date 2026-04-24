@@ -40,6 +40,10 @@ import java.util.Objects;
  * </ul>
  * Call {@link #finish()} exactly once after all parts have been parsed to emit the single
  * {@code writeEndWiki()} and close the delegate.
+ * <p>
+ * <b>Thread-safety:</b> not thread-safe. Mirroring the {@link DumpWriter} contract, instances
+ * are intended for single-threaded use — events from one parser at a time. In the multi-part
+ * pipeline that means all parts are parsed sequentially against the same wrapper.
  */
 public final class MultiPartDumpWriter
     implements DumpWriter

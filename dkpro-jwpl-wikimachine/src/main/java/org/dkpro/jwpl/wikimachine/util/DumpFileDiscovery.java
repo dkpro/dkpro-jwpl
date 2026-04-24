@@ -138,7 +138,7 @@ public final class DumpFileDiscovery
      *         {@link Long#MIN_VALUE} if absent. Files without a range therefore sort before
      *         ranged parts in {@link #orderByPageRange}.
      */
-    static long pageRangeStart(File file)
+    private static long pageRangeStart(File file)
     {
         if (file == null) {
             return Long.MIN_VALUE;
