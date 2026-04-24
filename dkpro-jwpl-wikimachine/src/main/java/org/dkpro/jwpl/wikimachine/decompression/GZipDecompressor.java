@@ -83,17 +83,4 @@ public final class GZipDecompressor
             throw e;
         }
     }
-
-    private static void closeQuietly(List<InputStream> streams, Throwable primary) {
-        for (InputStream s : streams) {
-            if (s == null) {
-                continue;
-            }
-            try {
-                s.close();
-            } catch (IOException suppressed) {
-                primary.addSuppressed(suppressed);
-            }
-        }
-    }
 }
