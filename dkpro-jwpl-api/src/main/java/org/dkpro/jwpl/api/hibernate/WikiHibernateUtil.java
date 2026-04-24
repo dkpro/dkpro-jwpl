@@ -149,10 +149,9 @@ public class WikiHibernateUtil
 
     private static Configuration getConfiguration(DatabaseConfiguration config)
     {
-        return new Configuration().addClass(Category.class).addClass(MetaData.class)
-                .addClass(Page.class).addClass(PageMapLine.class)
-                // .addClass(RelatednessCacheLine.class)
-                .addProperties(getProperties(config));
+        return new Configuration().addAnnotatedClass(Category.class)
+                .addAnnotatedClass(MetaData.class).addAnnotatedClass(Page.class)
+                .addAnnotatedClass(PageMapLine.class).addProperties(getProperties(config));
     }
 
 }

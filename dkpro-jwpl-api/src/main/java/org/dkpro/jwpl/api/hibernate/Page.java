@@ -20,6 +20,18 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
+
 /**
  * An object-relational entity which maps a {@link org.dkpro.jwpl.api.Page}
  * to data attributes in a database. Those are persisted and retrieved by
@@ -28,17 +40,51 @@ import java.util.Set;
  * It is accessed via an equally named class in the {@code api} package
  * to hide session management from the user.
  */
+@Entity
+@Table(name = "Page", indexes = @Index(name = "nameIndex", columnList = "name"))
 public class Page
 {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
+
+    @Column(name = "pageId", unique = true)
     private int pageId;
+
+    @Column(name = "name")
     private String name;
+
+    // Maps to LONGTEXT on MariaDB/MySQL; on HSQLDB the test fixture pre-creates
+    // a large VARCHAR and Hibernate runs with hbm2ddl.auto=none there.
+    @Lob
+    @Column(name = "text", length = 200_000_000)
     private String text;
+
+    @Column(name = "isDisambiguation")
     private boolean isDisambiguation;
+
+    @ElementCollection
+    @CollectionTable(name = "page_inlinks", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "page_outlinks", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
+
+    // Set of category IDs the page belongs to; the underlying table column is
+    // named "pages" (historical naming preserved from the original hbm mapping).
+    @ElementCollection
+    @CollectionTable(name = "page_categories", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "pages")
     private Set<Integer> categories = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "page_redirects", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "redirects")
     private Set<String> redirects = new HashSet<>();
 
     /**

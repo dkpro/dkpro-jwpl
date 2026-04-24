@@ -20,6 +20,17 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
+
 /**
  * An object-relational entity which maps a {@link org.dkpro.jwpl.api.Category}
  * to data attributes in a database. Those are persisted and retrieved by
@@ -28,13 +39,36 @@ import java.util.Set;
  * It is accessed via an equally named class in the {@code api} package
  * to hide session management from the user.
  */
+@Entity
+@Table(name = "Category", indexes = @Index(name = "nameIndex", columnList = "name"))
 public class Category
 {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
+
+    @Column(name = "pageId", unique = true)
     private int pageId;
+
+    @Column(name = "name")
     private String name;
+
+    @ElementCollection
+    @CollectionTable(name = "category_inlinks", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
+
+    @ElementCollection
+    @CollectionTable(name = "category_outlinks", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
+
+    // Set of page IDs the category groups; the underlying table column name
+    // is "pages" (same convention as Page.categories → page_categories.pages).
+    @ElementCollection
+    @CollectionTable(name = "category_pages", joinColumns = @JoinColumn(name = "id"))
+    @Column(name = "pages")
     private Set<Integer> pages = new HashSet<>();
 
     /**
