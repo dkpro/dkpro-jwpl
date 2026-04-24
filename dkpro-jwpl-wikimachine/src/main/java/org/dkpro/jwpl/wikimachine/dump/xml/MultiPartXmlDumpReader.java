@@ -61,7 +61,13 @@ public final class MultiPartXmlDumpReader
      * Parses every part in {@code parts} against the same {@code writer}. Events from
      * the individual parts are funnelled through a {@link MultiPartDumpWriter} so the
      * delegate observes the combined stream as a single {@code <mediawiki>} document.
-     * The delegate writer is closed by this method after the last part has been consumed.
+     * <p>
+     * This method takes ownership of the supplied streams: every element of {@code parts}
+     * is {@link InputStream#close() closed} before {@code readDumps} returns (on both the
+     * success and failure paths), and the delegate writer is closed via the wrapper's
+     * {@code finish()} exactly once at the end. Exceptions raised by stream close or by
+     * the wrapper's final flush are attached as suppressed to any primary error from the
+     * parse.
      *
      * @param parts   Ordered list of decompressed XML {@link InputStream streams}. Must
      *                not be {@code null}, must not be empty, and must not contain
@@ -70,7 +76,7 @@ public final class MultiPartXmlDumpReader
      * @param factory Instantiates a fresh reader per part — typically a method reference
      *                such as {@code SimpleXmlDumpReader::new}.
      * @throws IOException              Thrown on I/O or SAX errors encountered while parsing
-     *                                  any part.
+     *                                  any part, or while closing the supplied streams.
      * @throws IllegalArgumentException If {@code parts} is null, empty, or contains a null
      *                                  element.
      */
@@ -89,21 +95,53 @@ public final class MultiPartXmlDumpReader
         }
 
         final MultiPartDumpWriter wrapper = new MultiPartDumpWriter(writer);
+        Throwable primary = null;
         try {
             for (InputStream part : parts) {
-                final AbstractXmlDumpReader reader = factory.apply(part, wrapper);
-                reader.doParse();
+                factory.apply(part, wrapper).doParse();
             }
-            wrapper.finish();
         }
         catch (IOException | RuntimeException e) {
-            try {
-                wrapper.finish();
-            }
-            catch (IOException suppressed) {
-                e.addSuppressed(suppressed);
-            }
-            throw e;
+            primary = e;
         }
+        // We took ownership of every stream — close them all, regardless of outcome.
+        for (InputStream part : parts) {
+            primary = closeAndChain(part, primary);
+        }
+        // finish() is idempotent; emits a single writeEndWiki (if any startWiki was seen)
+        // and closes the delegate writer.
+        try {
+            wrapper.finish();
+        }
+        catch (IOException e) {
+            primary = chain(primary, e);
+        }
+
+        if (primary instanceof IOException) {
+            throw (IOException) primary;
+        }
+        if (primary instanceof RuntimeException) {
+            throw (RuntimeException) primary;
+        }
+    }
+
+    private static Throwable closeAndChain(InputStream stream, Throwable primary)
+    {
+        try {
+            stream.close();
+            return primary;
+        }
+        catch (IOException e) {
+            return chain(primary, e);
+        }
+    }
+
+    private static Throwable chain(Throwable primary, Throwable next)
+    {
+        if (primary == null) {
+            return next;
+        }
+        primary.addSuppressed(next);
+        return primary;
     }
 }

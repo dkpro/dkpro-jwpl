@@ -19,14 +19,17 @@ package org.dkpro.jwpl.wikimachine.dump.xml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.mwdumper.importer.Page;
@@ -159,6 +162,55 @@ class MultiPartXmlDumpReaderTest
 
         // Even on failure, the delegate writer must be closed — nothing else leaked.
         assertEquals(List.of("close"), delegate.events);
+    }
+
+    @Test
+    void closesEveryPartStreamOnSuccess() throws IOException
+    {
+        final CountingInputStream a = new CountingInputStream(stream(part(1, 10, "A")));
+        final CountingInputStream b = new CountingInputStream(stream(part(2, 20, "B")));
+
+        MultiPartXmlDumpReader.readDumps(List.<InputStream>of(a, b),
+                new RecordingDumpWriter(), WikiXMLDumpReader::new);
+
+        // SAXParser.parse also closes the stream internally in some JDKs; close() is
+        // idempotent on InputStream so we only require that each part was closed at least
+        // once (ownership transferred, no leak).
+        assertTrue(a.closed.get() >= 1, "first part stream not closed");
+        assertTrue(b.closed.get() >= 1, "second part stream not closed");
+    }
+
+    @Test
+    void closesEveryPartStreamOnFailure()
+    {
+        // Second part is malformed so parsing fails mid-list; both parts must still be closed.
+        final CountingInputStream good = new CountingInputStream(stream(part(1, 10, "A")));
+        final CountingInputStream bad = new CountingInputStream(
+                stream("<?xml version=\"1.0\"?><not-mediawiki>oops"));
+
+        assertThrows(IOException.class, () ->
+                MultiPartXmlDumpReader.readDumps(List.<InputStream>of(good, bad),
+                        new RecordingDumpWriter(), WikiXMLDumpReader::new));
+
+        assertTrue(good.closed.get() >= 1, "good part stream not closed");
+        assertTrue(bad.closed.get() >= 1, "bad part stream not closed");
+    }
+
+    private static final class CountingInputStream extends FilterInputStream
+    {
+        final AtomicInteger closed = new AtomicInteger();
+
+        CountingInputStream(InputStream delegate)
+        {
+            super(delegate);
+        }
+
+        @Override
+        public void close() throws IOException
+        {
+            closed.incrementAndGet();
+            super.close();
+        }
     }
 
     private static final class RecordingDumpWriter
