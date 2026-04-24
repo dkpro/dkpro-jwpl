@@ -29,6 +29,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -286,21 +287,25 @@ public class UniversalDecompressor
         if (resources == null || resources.isEmpty()) {
             throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
         }
+        // checkPath rejects null, blank, and directory entries for every element.
         resources.forEach(this::checkPath);
-        final Path firstElement = resources.get(0); // safe here, as resource is not empty
-        if (firstElement != null) {
-            final String file = firstElement.toAbsolutePath().toString();
-            final String extension = detectExtension(file);
-            if (isInternalSupported(extension) && !"7z".equals(extension) /* 7z is unsupported for now */) {
-                return internalSupport.get(extension).getInputStreamSequence(resources);
+        final String extension = detectExtension(resources.get(0).toAbsolutePath().toString());
+        // Every part must share the same extension: mixing would otherwise be silently
+        // misdecoded (first-entry's decoder applied to all bytes).
+        for (int i = 1; i < resources.size(); i++) {
+            final String partExtension = detectExtension(resources.get(i).toAbsolutePath().toString());
+            if (!Objects.equals(extension, partExtension)) {
+                throw new IOException("Multi-file dumps must share a single archive format, "
+                        + "got '" + extension + "' and '" + partExtension + "'.");
             }
-            else {
-                throw new IOException("Multi-file dumps of '" + extension + "' archives " +
-                        "are currently not supported.");
-            }
-        } else {
-            throw new IllegalArgumentException("Can't process a 'null' element in the resources list!");
         }
+        // 7z multi-file archives are not supported yet; only the internally supported
+        // streamable formats (bz2, gz) can be concatenated at the decompressor level.
+        if (isInternalSupported(extension) && !"7z".equals(extension)) {
+            return internalSupport.get(extension).getInputStreamSequence(resources);
+        }
+        throw new IOException("Multi-file dumps of '" + extension + "' archives "
+                + "are currently not supported.");
     }
 
     /**

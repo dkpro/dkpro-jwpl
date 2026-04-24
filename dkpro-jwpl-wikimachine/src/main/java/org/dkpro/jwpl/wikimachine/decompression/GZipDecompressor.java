@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Vector;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -67,12 +67,29 @@ public final class GZipDecompressor
             throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
         }
         resources.forEach(this::checkResource);
-        // if checks passed for all elements: open streams
-        List<InputStream> streams = new Vector<>();
-        for (Path p: resources) {
-            streams.add(new BufferedInputStream(openStream(p)));
+        final List<InputStream> streams = new ArrayList<>(resources.size());
+        try {
+            for (Path p : resources) {
+                streams.add(new BufferedInputStream(openStream(p)));
+            }
+            // GZIPInputStream transparently reads concatenated gzip members (RFC 1952).
+            return new GZIPInputStream(new SequenceInputStream(Collections.enumeration(streams)));
+        } catch (IOException | RuntimeException e) {
+            closeQuietly(streams, e);
+            throw e;
         }
-        return new GZIPInputStream(new SequenceInputStream(Collections.enumeration(streams)));
     }
 
+    private static void closeQuietly(List<InputStream> streams, Throwable primary) {
+        for (InputStream s : streams) {
+            if (s == null) {
+                continue;
+            }
+            try {
+                s.close();
+            } catch (IOException suppressed) {
+                primary.addSuppressed(suppressed);
+            }
+        }
+    }
 }
