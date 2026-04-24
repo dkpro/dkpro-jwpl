@@ -38,7 +38,7 @@ public class PageIteratorTest
     @BeforeAll
     public static void setupWikipedia()
     {
-        DatabaseConfiguration db = obtainHSDLDBConfiguration();
+        DatabaseConfiguration db = obtainDbConfiguration();
         try {
             wiki = new Wikipedia(db);
         }

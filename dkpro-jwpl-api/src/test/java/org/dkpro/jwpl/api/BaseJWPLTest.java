@@ -2,13 +2,13 @@
  * Licensed to the Technische Universität Darmstadt under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
- * regarding copyright ownership.  The Technische Universität Darmstadt 
+ * regarding copyright ownership.  The Technische Universität Darmstadt
  * licenses this file to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.
- *  
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,27 +17,24 @@
  */
 package org.dkpro.jwpl.api;
 
+import org.dkpro.jwpl.api.testdb.DbEngineCondition;
+import org.dkpro.jwpl.api.testdb.JwplTestDatabase;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 /**
- * Simple test base class to inject the same hsqldb test context into every test class to avoid
- * duplicated code and efforts. Also shuts down the hibernate/hsqldb context properly.
- *
- * @author mawiesne
+ * Shared base class that hands subclasses a {@link DatabaseConfiguration} pointing
+ * at the JVM-wide test database managed by {@link JwplTestDatabase}. Pick the engine
+ * via the {@code jwpl.test.db} system property ({@code hsqldb}, {@code mariadb},
+ * {@code mysql}); tests needing Docker are skipped automatically when Docker is absent.
  */
+@ExtendWith(DbEngineCondition.class)
 public abstract class BaseJWPLTest
 {
 
     protected static Wikipedia wiki;
 
-    protected static DatabaseConfiguration obtainHSDLDBConfiguration()
+    protected static DatabaseConfiguration obtainDbConfiguration()
     {
-        DatabaseConfiguration db = new DatabaseConfiguration();
-        db.setDatabase("wikiapi_test");
-        db.setHost("localhost");
-        db.setUser("sa");
-        db.setPassword("");
-        db.setLanguage(WikiConstants.Language._test);
-        db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
-        db.setDatabaseDriver("org.hsqldb.jdbcDriver");
-        return db;
+        return JwplTestDatabase.instance().configuration();
     }
 }
