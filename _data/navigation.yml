@@ -37,8 +37,6 @@
   dropdown:
   - title: "Mailing lists"
     url: "/mailinglists/"
-#  - title: "Twitter"
-#    url: "http://twitter.com/PROJECT_X"
 #  - title: "Contributing"
 #    url: "http://github.com/dkpro/PROJECT_X/blob/master/CONTRIBUTING.md"
 #  - title: "Contributors"
