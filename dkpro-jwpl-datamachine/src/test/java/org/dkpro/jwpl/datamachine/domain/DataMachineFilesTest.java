@@ -28,12 +28,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.dkpro.jwpl.datamachine.factory.DefaultDataMachineEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -224,5 +226,72 @@ class DataMachineFilesTest {
   void testGetGeneratedDiscussions() {
     assertEquals(TEST_OUTPUT_DIR + "discussions.bin", dmFiles.getGeneratedDiscussions());
   }
-  
+
+  @Test
+  void testGetInputPagesArticlesFilesSingleFile() {
+    assertEquals(List.of(TEST_OUTPUT_DIR + "pages-articles.xml.bz2"),
+        dmFiles.getInputPagesArticlesFiles());
+  }
+
+  @Test
+  void testMultiFilePagesArticlesAreGroupedAndOrdered(@TempDir Path dir) throws IOException {
+    Files.createFile(dir.resolve("dewiki-20260101-pages-articles2.xml-p297013p1262093.bz2"));
+    Files.createFile(dir.resolve("dewiki-20260101-pages-articles1.xml-p1p297012.bz2"));
+    Files.createFile(dir.resolve("dewiki-20260101-pages-articles3.xml-p1262094p2762093.bz2"));
+    Files.createFile(dir.resolve("pagelinks.sql.gz"));
+    Files.createFile(dir.resolve("categorylinks.sql.gz"));
+
+    DataMachineFiles files = new DataMachineFiles(factory.getLogger());
+    files.setDataDirectory(dir.toAbsolutePath().toString());
+    files.checkAll();
+
+    List<String> parts = files.getInputPagesArticlesFiles();
+    assertEquals(3, parts.size());
+    assertTrue(parts.get(0).endsWith("pages-articles1.xml-p1p297012.bz2"));
+    assertTrue(parts.get(1).endsWith("pages-articles2.xml-p297013p1262093.bz2"));
+    assertTrue(parts.get(2).endsWith("pages-articles3.xml-p1262094p2762093.bz2"));
+
+    // Legacy getter returns the first part for backwards compatibility.
+    assertTrue(files.getInputPagesArticles().endsWith("pages-articles1.xml-p1p297012.bz2"));
+  }
+
+  @Test
+  void testPagesArticlesMultistreamDoesNotMatchPagesArticlesRole(@TempDir Path dir)
+      throws IOException {
+    Files.createFile(dir.resolve("dewiki-20260101-pages-articles-multistream.xml.bz2"));
+    Files.createFile(dir.resolve("dewiki-20260101-pages-articles.xml.bz2"));
+    Files.createFile(dir.resolve("pagelinks.sql.gz"));
+    Files.createFile(dir.resolve("categorylinks.sql.gz"));
+
+    DataMachineFiles files = new DataMachineFiles(factory.getLogger());
+    files.setDataDirectory(dir.toAbsolutePath().toString());
+    files.checkAll();
+
+    assertEquals(1, files.getInputPagesArticlesFiles().size());
+    assertTrue(files.getInputPagesArticlesFiles().get(0).endsWith("pages-articles.xml.bz2"));
+  }
+
+  @Test
+  void testMultiFilePagesMetaCurrent(@TempDir Path dir) throws IOException {
+    Files.createFile(dir.resolve("enwiki-20250601-pages-meta-current2.xml-p100p200.bz2"));
+    Files.createFile(dir.resolve("enwiki-20250601-pages-meta-current1.xml-p1p99.bz2"));
+    Files.createFile(dir.resolve("pagelinks.sql.gz"));
+    Files.createFile(dir.resolve("categorylinks.sql.gz"));
+
+    DataMachineFiles files = new DataMachineFiles(factory.getLogger());
+    files.setDataDirectory(dir.toAbsolutePath().toString());
+    files.checkAll();
+
+    List<String> parts = files.getInputPagesMetaCurrentFiles();
+    assertEquals(2, parts.size());
+    assertTrue(parts.get(0).endsWith("pages-meta-current1.xml-p1p99.bz2"));
+    assertTrue(parts.get(1).endsWith("pages-meta-current2.xml-p100p200.bz2"));
+  }
+
+  @Test
+  void testGetInputPagesArticlesFilesEmptyForMissingDump(@TempDir Path dir) {
+    DataMachineFiles files = new DataMachineFiles(factory.getLogger());
+    files.setDataDirectory(dir.toAbsolutePath().toString());
+    assertTrue(files.getInputPagesArticlesFiles().isEmpty());
+  }
 }

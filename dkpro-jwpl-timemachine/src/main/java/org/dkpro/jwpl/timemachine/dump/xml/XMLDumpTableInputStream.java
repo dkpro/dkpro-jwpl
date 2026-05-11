@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.List;
 
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
@@ -56,7 +57,30 @@ public class XMLDumpTableInputStream
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
     {
+        final PipedOutputStream decodedStream = openPipe();
+        xmlInputThread = new XMLDumpTableInputStreamThread(inputStream, decodedStream, table);
+        xmlInputThread.start();
+    }
 
+    /**
+     * Multi-part equivalent of {@link #initialize(InputStream, DumpTableEnum)}. Each element of
+     * {@code inputStreams} is a self-contained Wikipedia XML dump part; SAX events across parts
+     * are collapsed into a single logical document before being written to the SQL sink.
+     *
+     * @param inputStreams Ordered list of XML part streams (ascending page-range). Must not be
+     *                     {@code null} or empty and must not contain {@code null} elements.
+     * @param table        The type of table to dump.
+     * @throws IOException Thrown if IO errors occurred while setting up the pipe.
+     */
+    public void initialize(List<InputStream> inputStreams, DumpTableEnum table) throws IOException
+    {
+        final PipedOutputStream decodedStream = openPipe();
+        xmlInputThread = new XMLDumpTableInputStreamThread(inputStreams, decodedStream, table);
+        xmlInputThread.start();
+    }
+
+    private PipedOutputStream openPipe() throws IOException
+    {
         /*
          * piped input stream, that allows to read from a <code>decodedStream</code>
          */
@@ -67,10 +91,7 @@ public class XMLDumpTableInputStream
          */
         PipedOutputStream decodedStream = new PipedOutputStream(unbufferedResult);
         result = new BufferedInputStream(unbufferedResult, BUFFERSIZE);
-
-        xmlInputThread = new XMLDumpTableInputStreamThread(inputStream, decodedStream, table);
-        xmlInputThread.start();
-
+        return decodedStream;
     }
 
     @Override
