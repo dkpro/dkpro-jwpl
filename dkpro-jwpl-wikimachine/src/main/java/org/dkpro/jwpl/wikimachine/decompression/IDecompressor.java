@@ -20,6 +20,7 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Uses an archive file path and returns an {@link InputStream}.
@@ -57,4 +58,30 @@ public interface IDecompressor
      * @throws IOException Thrown if (other) IO errors occurred.
      */
     InputStream getInputStream(Path resource) throws IOException;
+
+
+    /**
+     * Attempts to open an {@link InputStream} to a compressed archive that is split
+     * across multiple files. These archives are combined over a sequence of files
+     * in a logical order — for example, by page-id ranges in ascending order.
+     * The returned stream yields the byte concatenation of the decompressed parts
+     * in the order provided.
+     * <p>
+     * External archives are referenced via a relative or absolute path, including
+     * the actual file name of each resource. In case only plain file names are given
+     * and no directory or path elements are contained, an attempt is made to detect
+     * and load the resources from the classpath.
+     *
+     * @param resources References an archive via an ordered list of {@link Path paths} of all
+     *                  relevant files. Must not be {@code null}, not be {@code empty} and not
+     *                  refer to directories. All elements in {@code resources} must not
+     *                  be {@code null}.
+     * @return An open {@link InputStream} over the concatenated decompressed contents
+     *         of the supplied parts.
+     *
+     * @throws IllegalArgumentException Thrown if {@code resources} is invalid.
+     * @throws IOException Thrown if (other) IO errors occurred or the archive format
+     *                     does not support multi-file sequences.
+     */
+    InputStream getInputStreamSequence(List<Path> resources) throws IOException;
 }

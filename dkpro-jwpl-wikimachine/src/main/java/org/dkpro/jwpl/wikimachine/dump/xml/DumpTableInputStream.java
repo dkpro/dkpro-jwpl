@@ -19,6 +19,7 @@ package org.dkpro.jwpl.wikimachine.dump.xml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * An abstraction of an {@link InputStream} for Wikipedia table dumps of three {@link DumpTableEnum types}.
@@ -37,4 +38,28 @@ public abstract class DumpTableInputStream
      */
     public abstract void initialize(InputStream inputStream, DumpTableEnum table)
         throws IOException;
+
+    /**
+     * Multi-part counterpart of {@link #initialize(InputStream, DumpTableEnum)}. The default
+     * implementation transparently forwards a single-element list to the single-stream
+     * initializer and rejects larger lists with {@link UnsupportedOperationException};
+     * subclasses that can read across a sequence of self-contained XML documents should
+     * override this method.
+     *
+     * @param inputStreams Ordered list of input streams. Must not be {@code null} or empty.
+     * @param table        The {@link DumpTableEnum table type}.
+     * @throws IOException Thrown if IO errors occurred.
+     */
+    public void initialize(List<InputStream> inputStreams, DumpTableEnum table) throws IOException
+    {
+        if (inputStreams == null || inputStreams.isEmpty()) {
+            throw new IllegalArgumentException("'inputStreams' must not be null or empty.");
+        }
+        if (inputStreams.size() == 1) {
+            initialize(inputStreams.get(0), table);
+            return;
+        }
+        throw new UnsupportedOperationException(
+                "Multi-part initialisation is not supported by " + getClass().getSimpleName());
+    }
 }

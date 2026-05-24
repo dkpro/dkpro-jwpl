@@ -18,6 +18,9 @@
 package org.dkpro.jwpl.datamachine.domain;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dkpro.jwpl.datamachine.dump.xml.XML2Binary;
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
@@ -85,7 +88,14 @@ public class DataMachineGenerator
     {
 
         logger.log("Parsing input dumps...");
-        new XML2Binary(decompressor.getInputStream(getPagesArticlesFile()), files);
+        final List<String> parts = getPagesArticlesFiles();
+        final List<InputStream> streams = new ArrayList<>(parts.size());
+        for (String part : parts) {
+            streams.add(decompressor.getInputStream(part));
+        }
+        // A single-file dump reduces to a one-element list; the multi-part XML2Binary
+        // constructor handles both cases uniformly via MultiPartXmlDumpReader.
+        new XML2Binary(streams, files);
 
         dumpVersionProcessor.setDumpVersions(new IDumpVersion[] { version });
 
@@ -111,30 +121,28 @@ public class DataMachineGenerator
     }
 
     /**
-     * Parses either {@code pages-articles.xml} or {@code pages-meta-current.xml}.
-     * If both files exist in the input directory {@code pages-meta-current.xml} will be favored.
+     * Selects the input articles dump in preferred order: {@code pages-meta-current} (when
+     * available — includes discussions) falls back to {@code pages-articles}. Returns every
+     * part of the selected role in ascending page-range order; a single-file dump yields a
+     * list of size 1.
      *
-     * @return the input articles dump
+     * @return the ordered list of input articles dump parts
+     * @throws IOException If neither dump role is present.
      */
-    private String getPagesArticlesFile()
+    private List<String> getPagesArticlesFiles() throws IOException
     {
-        String pagesArticlesFile = null;
-        String parseMessage = null;
-
-        // Use of minimal dump only with articles
-        if (files.getInputPagesArticles() != null) {
-            pagesArticlesFile = files.getInputPagesArticles();
-            parseMessage = "Discussions are unavailable";
+        final List<String> metaCurrent = files.getInputPagesMetaCurrentFiles();
+        if (!metaCurrent.isEmpty()) {
+            logger.log("Discussions are available");
+            return metaCurrent;
         }
-
-        // Use of dump with discussions
-        if (files.getInputPagesMetaCurrent() != null) {
-            pagesArticlesFile = files.getInputPagesMetaCurrent();
-            parseMessage = "Discussions are available";
+        final List<String> articles = files.getInputPagesArticlesFiles();
+        if (!articles.isEmpty()) {
+            logger.log("Discussions are unavailable");
+            return articles;
         }
-
-        logger.log(parseMessage);
-        return pagesArticlesFile;
+        throw new IOException("No pages-articles or pages-meta-current dump found in the input "
+                + "directory.");
     }
 
     private PageParser createPageParser() throws IOException

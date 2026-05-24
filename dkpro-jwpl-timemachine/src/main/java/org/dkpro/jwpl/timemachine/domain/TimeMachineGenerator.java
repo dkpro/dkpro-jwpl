@@ -20,6 +20,8 @@ package org.dkpro.jwpl.timemachine.domain;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.Files;
@@ -138,35 +140,24 @@ public class TimeMachineGenerator
 
     private RevisionParser createRevisionParser() throws IOException
     {
-
-        String metahistory = initialFiles.getMetaHistoryFile();
-
-        DumpTableInputStream revisionTableInputStream = envFactory
-                .getDumpTableInputStream();
-        revisionTableInputStream.initialize(decompressor.getInputStream(metahistory),
-                DumpTableEnum.REVISION);
+        DumpTableInputStream revisionTableInputStream = envFactory.getDumpTableInputStream();
+        revisionTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.REVISION);
 
         RevisionParser revisionParser = envFactory.getRevisionParser();
         revisionParser.setInputStream(revisionTableInputStream);
 
         return revisionParser;
-
     }
 
     private PageParser createPageParser() throws IOException
     {
-
-        String metahistory = initialFiles.getMetaHistoryFile();
-
         DumpTableInputStream pageTableInputStream = envFactory.getDumpTableInputStream();
-        pageTableInputStream.initialize(decompressor.getInputStream(metahistory),
-                DumpTableEnum.PAGE);
+        pageTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.PAGE);
 
         PageParser pageParser = envFactory.getPageParser();
         pageParser.setInputStream(pageTableInputStream);
 
         return pageParser;
-
     }
 
     private CategorylinksParser createCategorylinksParser() throws IOException
@@ -191,18 +182,28 @@ public class TimeMachineGenerator
 
     private TextParser createTextParser() throws IOException
     {
-
-        String metahistory = initialFiles.getMetaHistoryFile();
-
         DumpTableInputStream textTableInputStream = envFactory.getDumpTableInputStream();
-        textTableInputStream.initialize(decompressor.getInputStream(metahistory),
-                DumpTableEnum.TEXT);
+        textTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.TEXT);
 
         TextParser textParser = envFactory.getTextParser();
         textParser.setInputStream(textTableInputStream);
 
         return textParser;
-
     }
 
+    /**
+     * Opens a decompressed stream per configured meta-history part, preserving order. A
+     * single-file dump yields a list of size 1; the call site hands the list to
+     * {@link DumpTableInputStream#initialize(List, DumpTableEnum)} which dispatches to the
+     * single- or multi-part SAX pipeline transparently.
+     */
+    private List<InputStream> openMetaHistoryStreams() throws IOException
+    {
+        final List<String> parts = initialFiles.getMetaHistoryFiles();
+        final List<InputStream> streams = new ArrayList<>(parts.size());
+        for (String part : parts) {
+            streams.add(decompressor.getInputStream(part));
+        }
+        return streams;
+    }
 }
