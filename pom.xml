@@ -67,7 +67,7 @@
     <testcontainers.version>1.21.4</testcontainers.version>
 
     <!-- Maven plugin versions -->
-    <maven.failsafe.plugin>3.5.5</maven.failsafe.plugin>
+    <maven.failsafe.plugin>3.5.6</maven.failsafe.plugin>
     <maven.build.helper.plugin>3.6.1</maven.build.helper.plugin>
   </properties>
 
