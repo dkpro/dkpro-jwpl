@@ -454,6 +454,128 @@ public class WikipediaTest
         assertTrue(entry.getValue() <= 1);
     }
 
+    // ---- Tests targeting surviving PIT mutants ----
+
+    /** Kills: ConstructorCallMutator on HashMap init (line 94).
+     *  Verifies idMapPages is functional by exercising the cache path. */
+    @Test
+    public void testConstructorInitializesIdMapPages() {
+        // First call populates the cache; second call must hit the cache
+        long id1 = wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID);
+        assertTrue(id1 > 0, "Hibernate ID should be positive");
+        long id2 = wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID);
+        assertEquals(id1, id2, "Cached ID must match on second call");
+    }
+
+    /** Kills: MemberVariableMutator removing metaData assignment (line 96).
+     *  Verifies getMetaData() returns a populated object, not null. */
+    @Test
+    public void testGetMetaDataReturnsPopulatedObject() {
+        MetaData md = wiki.getMetaData();
+        assertNotNull(md, "MetaData must not be null");
+        assertNotNull(md.getLanguage(), "MetaData language must not be null");
+        assertEquals(wiki.getLanguage(), md.getLanguage(), "MetaData language must match wiki language");
+        assertTrue(md.getNumberOfPages() > 0, "MetaData should report pages");
+        assertTrue(md.getNumberOfCategories() > 0, "MetaData should report categories");
+    }
+
+    /** Kills: RemoveConditionalMutator_EQUAL_ELSE on cache check in __getCategoryHibernateId (line 771).
+     *  Verifies the cache path works by querying a category twice. */
+    @Test
+    public void testGetCategoryHibernateIdCachesResult() {
+        // Category with pageId=9 exists in test data
+        long id1 = wiki.__getCategoryHibernateId(9);
+        assertTrue(id1 > 0, "Category hibernate ID should be positive");
+        long id2 = wiki.__getCategoryHibernateId(9);
+        assertEquals(id1, id2, "Cached category ID must match on second call");
+    }
+
+    /** Kills: NonVoidMethodCallMutator removing isEmpty() call in existsPage(String) (line 669).
+     *  Verifies existsPage("") returns false. */
+    @Test
+    public void testExistsPageEmptyStringReturnsFalse() {
+        assertFalse(wiki.existsPage(""), "existsPage with empty string must return false");
+    }
+
+    /** Kills: EmptyObjectReturnValsMutator replacing getPageIds() return with empty list (line 617).
+     *  Verifies getPageIds() returns actual page IDs, not an empty collection. */
+    @Test
+    public void testGetPageIdsReturnsNonEmptyCollection() {
+        Iterable<Integer> pageIds = wiki.getPageIds();
+        assertNotNull(pageIds);
+        assertTrue(pageIds.iterator().hasNext(), "getPageIds() must return at least one page ID");
+        int count = 0;
+        for (Integer id : pageIds) {
+            assertNotNull(id);
+            assertTrue(id > 0, "Page ID must be positive: " + id);
+            count++;
+        }
+        assertTrue(count > 0, "getPageIds() must return at least one page ID");
+    }
+
+    /** Kills: VoidMethodCallMutator removing commit() in getPageIds(String) (line 214).
+     *  Verifies the transaction commits properly by calling getPageIds twice. */
+    @Test
+    public void testGetPageIdsCommitsTransaction() throws WikiApiException {
+        // First call
+        List<Integer> ids1 = wiki.getPageIds(A_FAMOUS_PAGE);
+        assertNotNull(ids1);
+        assertEquals(1, ids1.size());
+        assertTrue(ids1.contains(A_FAMOUS_PAGE_ID));
+        // Second call must succeed (transaction was committed)
+        List<Integer> ids2 = wiki.getPageIds(A_FAMOUS_PAGE);
+        assertNotNull(ids2);
+        assertEquals(1, ids2.size());
+        assertTrue(ids2.contains(A_FAMOUS_PAGE_ID));
+    }
+
+    /** Kills: NakedReceiverMutator replacing replaceAll with receiver in getPageIdsCaseInsensitive (line 235).
+     *  Verifies spaces are converted to underscores in the lookup. */
+    @Test
+    public void testGetPageIdsCaseInsensitiveWithSpaces() throws WikiApiException {
+        // Use a title with spaces - the method must convert spaces to underscores
+        List<Integer> ids = wiki.getPageIdsCaseInsensitive("Exploring the Potential of Semantic Relatedness in Information Retrieval");
+        assertNotNull(ids);
+        assertEquals(1, ids.size());
+        assertTrue(ids.contains(A_FAMOUS_PAGE_ID),
+                "getPageIdsCaseInsensitive with spaces must find the page");
+    }
+
+    /** Kills: VoidMethodCallMutator removing commit() in __getPages() (line 608).
+     *  Calls getPageIds() twice to verify the session transaction commits properly. */
+    @Test
+    public void testGetPageIdsTwice() {
+        // First call
+        Iterable<Integer> ids1 = wiki.getPageIds();
+        assertNotNull(ids1);
+        int count1 = 0;
+        for (Integer id : ids1) {
+            assertNotNull(id);
+            count1++;
+        }
+        assertTrue(count1 > 0, "First getPageIds() call must return at least one ID");
+
+        // Second call - would fail if transaction wasn't committed
+        Iterable<Integer> ids2 = wiki.getPageIds();
+        assertNotNull(ids2);
+        int count2 = 0;
+        for (Integer id : ids2) {
+            assertNotNull(id);
+            count2++;
+        }
+        assertEquals(count1, count2, "Both getPageIds() calls must return the same count");
+    }
+
+    /** Kills: NegateConditionalsMutator on hibernateId == -1 check in getCategory(int) (line 490).
+     *  Verifies getCategory with a valid category pageId returns non-null. */
+    @Test
+    public void testGetCategoryValidPageId() {
+        // Page ID 9 is a valid category in the test database ("Publications of UKP")
+        Category cat = wiki.getCategory(9);
+        assertNotNull(cat, "getCategory(9) must return a non-null Category");
+        assertEquals(9, cat.getPageId());
+    }
+
     /* INTERNAL TEST HELPER METHODS */
 
     private void getNotExistingPage(String title)
