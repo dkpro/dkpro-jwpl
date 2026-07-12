@@ -149,4 +149,11 @@ public class MetaDataTest
                     + e.getLocalizedMessage());
         }
     }
+
+    @Test
+    public void testGetId()
+    {
+        long id = metaData.getId();
+        assertEquals(1, id, "MetaData id should be 1");
+    }
 }

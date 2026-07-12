@@ -223,4 +223,88 @@ public class TitleTest
         }
     }
 
+    @Test
+    public void testValidateTitleChars()
+    {
+        assertEquals("Page Title", Title.ValidateTitleChars("Page Title"));
+    }
+
+    @Test
+    public void testValidateTitleCharsSpecialChars()
+    {
+        assertEquals("Page:Title", Title.ValidateTitleChars("Page:Title"));
+    }
+
+    @Test
+    public void testEqualsSameInstance()
+    {
+        Title title = new Title("Page", namespaces);
+        assertEquals(title, title);
+    }
+
+    @Test
+    public void testEqualsDifferentObject()
+    {
+        Title title = new Title("Page", namespaces);
+        assertFalse(title.equals("Page"));
+    }
+
+    @Test
+    public void testEqualsNull()
+    {
+        Title title = new Title("Page", namespaces);
+        assertFalse(title.equals(null));
+    }
+
+    @Test
+    public void testEqualsMatching()
+    {
+        Title title1 = new Title(0, "Page", namespaces);
+        Title title2 = new Title(0, "Page", namespaces);
+        assertEquals(title1, title2);
+    }
+
+    @Test
+    public void testEqualsDifferentContent()
+    {
+        Title title1 = new Title(0, "Page", namespaces);
+        Title title2 = new Title(1, "Page", namespaces);
+        assertNotEquals(title1, title2);
+    }
+
+    @Test
+    public void testHashCode()
+    {
+        Title title1 = new Title(0, "Page", namespaces);
+        Title title2 = new Title(0, "Page", namespaces);
+        assertEquals(title1.hashCode(), title2.hashCode());
+        assertEquals(0 ^ "Page".hashCode(), title1.hashCode());
+    }
+
+    @Test
+    public void testHashCodeConsistent()
+    {
+        Title title = new Title("Talk:Page", namespaces);
+        int hash1 = title.hashCode();
+        int hash2 = title.hashCode();
+        assertEquals(hash1, hash2);
+        assertEquals(1 ^ "Page".hashCode(), hash1);
+    }
+
+    @Test
+    public void testConstructorWithColonAtZero()
+    {
+        Title title = new Title(":Page", namespaces);
+        assertEquals(0, title.Namespace.intValue());
+        assertEquals(":Page", title.Text);
+    }
+
+    @Test
+    public void testConstructorWithLeadingColon()
+    {
+        Title title = new Title(":A", namespaces);
+        assertEquals(0, title.Namespace.intValue());
+        assertEquals(":A", title.Text);
+    }
+
 }

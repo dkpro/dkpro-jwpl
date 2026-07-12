@@ -302,6 +302,17 @@ public class PageTest
     }
 
     @Test
+    public void testGetRedirectsNonEmpty()
+    {
+        Page p = fetchPage("Semantic_Information_Retrieval");
+        assertNotNull(p);
+        Set<String> redirects = p.getRedirects();
+        assertNotNull(redirects);
+        assertFalse(redirects.isEmpty());
+        assertTrue(redirects.contains("SIR"));
+    }
+
+    @Test
     public void testIsRedirect()
     {
         assertFalse(page.isRedirect());
