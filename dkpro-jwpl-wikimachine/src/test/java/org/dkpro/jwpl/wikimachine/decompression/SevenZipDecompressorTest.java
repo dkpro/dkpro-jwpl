@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +47,20 @@ class SevenZipDecompressorTest extends AbstractDecompressorTest {
         return decomp;
     }
 
+    /**
+     * 7z does not support multi-file sequences: every invocation fails fast with
+     * {@link UnsupportedOperationException}, regardless of input validity.
+     */
+    @Override
+    protected Class<? extends Throwable> expectedSequenceValidationException() {
+        return UnsupportedOperationException.class;
+    }
+
+    @Override
+    protected Class<? extends Throwable> expectedSequenceDirectoryException() {
+        return UnsupportedOperationException.class;
+    }
+
     @ParameterizedTest
     @ValueSource(strings = {"archive.txt.7z", "src/test/resources/archive.txt.7z"})
     void testGetInputStream(String input) throws IOException {
@@ -61,5 +77,11 @@ class SevenZipDecompressorTest extends AbstractDecompressorTest {
     void testGetInputStreamWithRandomResourceName() throws IOException {
         final InputStream in = getDecompressor().getInputStream(UUID.randomUUID().toString());
         assertNull(in);
+    }
+
+    @Test
+    void testGetInputStreamSequenceThrowsUnsupported() {
+        assertThrows(UnsupportedOperationException.class,
+                () -> decomp.getInputStreamSequence(List.of(Path.of("archive.txt.7z"))));
     }
 }

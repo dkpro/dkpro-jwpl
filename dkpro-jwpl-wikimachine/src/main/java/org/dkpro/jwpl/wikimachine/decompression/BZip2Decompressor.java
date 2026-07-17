@@ -20,7 +20,11 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
@@ -54,5 +58,30 @@ public final class BZip2Decompressor
     {
         checkResource(resource);
         return new BZip2CompressorInputStream(new BufferedInputStream(openStream(resource)));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public InputStream getInputStreamSequence(List<Path> resources) throws IOException {
+        if (resources == null || resources.isEmpty()) {
+            throw new IllegalArgumentException("Can't process a 'null' or 'empty' resources list!");
+        }
+        resources.forEach(this::checkResource);
+        // Decompress each part independently and concatenate the decompressed streams.
+        // This mirrors the gzip impl and avoids depending on the compressed-side
+        // multi-stream detection heuristic (which is sensitive to the underlying
+        // stream's available() at part boundaries).
+        final List<InputStream> streams = new ArrayList<>(resources.size());
+        try {
+            for (Path p : resources) {
+                streams.add(new BZip2CompressorInputStream(new BufferedInputStream(openStream(p))));
+            }
+            return new SequenceInputStream(Collections.enumeration(streams));
+        } catch (IOException | RuntimeException e) {
+            closeQuietly(streams, e);
+            throw e;
+        }
     }
 }

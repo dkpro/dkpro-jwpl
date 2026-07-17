@@ -235,6 +235,20 @@ public abstract class AbstractXmlDumpReader
      */
     public void readDump() throws IOException
     {
+        doParse();
+        writer.close();
+    }
+
+    /**
+     * SAX-parses the bound input stream against this handler, but does <b>not</b> close the
+     * {@link DumpWriter}. Exposed for multi-part pipelines where several readers share a single
+     * writer and the caller is responsible for closing it after the last part has been consumed.
+     *
+     * @throws IOException Thrown if errors occurred during parsing.
+     * @see org.dkpro.jwpl.mwdumper.importer.MultiPartDumpWriter
+     */
+    protected void doParse() throws IOException
+    {
         try {
             SAXParserFactory factory = SAXParserFactory.newInstance();
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
@@ -245,7 +259,6 @@ public abstract class AbstractXmlDumpReader
         catch (ParserConfigurationException | SAXException e) {
             throw new IOException(e);
         }
-        writer.close();
     }
 
     /**

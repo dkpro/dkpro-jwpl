@@ -18,8 +18,10 @@
 package org.dkpro.jwpl.timemachine.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -28,12 +30,16 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.dkpro.jwpl.timemachine.factory.DefaultTimeMachineEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -173,5 +179,57 @@ class TimeMachineFilesTest {
   void testGetOutputMetadata() {
     assertEquals(OUTPUT_DIR + File.separator + "MetaData.txt", tmFiles.getOutputMetadata());
   }
-  
+
+  @Test
+  void testGetMetaHistoryFilesReturnsSingletonForLegacySetter() {
+    assertEquals(List.of(mockMetaHistory.getAbsolutePath()), tmFiles.getMetaHistoryFiles());
+  }
+
+  @Test
+  void testSetMetaHistoryFileNullClearsList() {
+    tmFiles.setMetaHistoryFile(null);
+    assertTrue(tmFiles.getMetaHistoryFiles().isEmpty());
+    assertNull(tmFiles.getMetaHistoryFile());
+  }
+
+  @Test
+  void testSetMetaHistoryFilesPreservesOrder(@TempDir Path dir) throws IOException {
+    Path p1 = Files.createFile(
+        dir.resolve("enwiki-20250601-pages-meta-history1.xml-p1p812.bz2"));
+    Path p2 = Files.createFile(
+        dir.resolve("enwiki-20250601-pages-meta-history1.xml-p813p1418.bz2"));
+    Path p3 = Files.createFile(
+        dir.resolve("enwiki-20250601-pages-meta-history2.xml-p1419p2000.bz2"));
+
+    List<String> parts = Arrays.asList(p1.toString(), p2.toString(), p3.toString());
+    tmFiles.setMetaHistoryFiles(parts);
+
+    assertEquals(parts, tmFiles.getMetaHistoryFiles());
+    assertEquals(p1.toString(), tmFiles.getMetaHistoryFile());
+    assertTrue(tmFiles.checkAll());
+  }
+
+  @Test
+  void testSetMetaHistoryFilesRejectsInvalid() {
+    assertThrows(IllegalArgumentException.class, () -> tmFiles.setMetaHistoryFiles(null));
+    assertThrows(IllegalArgumentException.class,
+        () -> tmFiles.setMetaHistoryFiles(Collections.emptyList()));
+    assertThrows(IllegalArgumentException.class,
+        () -> tmFiles.setMetaHistoryFiles(Arrays.asList("a", null)));
+  }
+
+  @Test
+  void testGetMetaHistoryFilesIsUnmodifiable() {
+    assertThrows(UnsupportedOperationException.class,
+        () -> tmFiles.getMetaHistoryFiles().add("should-fail"));
+  }
+
+  @Test
+  void testCheckAllFailsIfAnyMetaHistoryPartMissing(@TempDir Path dir) throws IOException {
+    Path p1 = Files.createFile(dir.resolve("history1.bz2"));
+    Path p2 = dir.resolve("history2.bz2"); // not created
+
+    tmFiles.setMetaHistoryFiles(Arrays.asList(p1.toString(), p2.toString()));
+    assertFalse(tmFiles.checkAll());
+  }
 }

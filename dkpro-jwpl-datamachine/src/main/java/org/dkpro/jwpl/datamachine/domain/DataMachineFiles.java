@@ -19,14 +19,25 @@ package org.dkpro.jwpl.datamachine.domain;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Files;
+import org.dkpro.jwpl.wikimachine.util.DumpFileDiscovery;
 
 /**
  * A {@link Files} implementation specific for the DataMachine tool.
  * It defines file name constants and provides methods for
  * input/output directory building rules and checks.
+ * <p>
+ * Wikimedia publishes large XML dumps split across several files (see
+ * {@link DumpFileDiscovery}). For the {@code pages-articles} and {@code pages-meta-current}
+ * roles this class keeps the ordered list of parts and exposes both the legacy singular
+ * getter (first part of the ordered list, for backwards compatibility) and a list getter
+ * that returns every part.
  *
  * @see Files
  */
@@ -35,8 +46,8 @@ public class DataMachineFiles
 {
     private final static String INPUT_PAGELINKS = "pagelinks.sql";
     private final static String INPUT_CATEGORYLINKS = "categorylinks.sql";
-    private final static String INPUT_PAGESARTICLES = "pages-articles.xml";
-    private final static String INPUT_PAGESMETACURRENT = "pages-meta-current.xml";
+    private final static String INPUT_PAGESARTICLES = "pages-articles";
+    private final static String INPUT_PAGESMETACURRENT = "pages-meta-current";
 
     private final static String GENERATED_PAGE = "page.bin";
     private final static String GENERATED_REVISION = "revision.bin";
@@ -48,13 +59,15 @@ public class DataMachineFiles
 
     private final static String ARCHIVE_EXTENSION = ".gz";
 
+    private final static Set<String> SUPPORTED_EXTENSIONS = Set.of("bz2", "gz", "7z");
+
     private File dataDirectory = new File(".");
     private boolean compressGeneratedFiles = false;
 
     private File inputPagelinks = null;
-    private File inputPagesarticles = null;
     private File inputCategorylinks = null;
-    private File inputPagesMetaCurrent = null;
+    private List<File> inputPagesarticles = new ArrayList<>();
+    private List<File> inputPagesMetaCurrent = new ArrayList<>();
 
     /**
      * Instantiates a {@link Files} object with the specified {@code logger}.
@@ -77,9 +90,9 @@ public class DataMachineFiles
         super(files);
         this.dataDirectory = files.dataDirectory;
         this.inputPagelinks = files.inputPagelinks;
-        this.inputPagesarticles = files.inputPagesarticles;
+        this.inputPagesarticles = new ArrayList<>(files.inputPagesarticles);
         this.inputCategorylinks = files.inputCategorylinks;
-        this.inputPagesMetaCurrent = files.inputPagesMetaCurrent;
+        this.inputPagesMetaCurrent = new ArrayList<>(files.inputPagesMetaCurrent);
         this.compressGeneratedFiles = files.compressGeneratedFiles;
     }
 
@@ -108,30 +121,34 @@ public class DataMachineFiles
     {
         final FileFilter supportedFormatFilter = file -> {
             final String name = file.getName();
-            // See UniversalDecompressor for all built-in decompression formats. For now:
             return name.endsWith(".7z") || name.endsWith(".gz") || name.endsWith(".bz2");
         };
         final File[] files = dataDirectory.listFiles(supportedFormatFilter);
-        if (files != null && files.length > 2) {
+        if (files != null && files.length >= 3) {
+            final List<File> articleParts = new ArrayList<>();
+            final List<File> metaCurrentParts = new ArrayList<>();
             for (File currentFile : files) {
-                String currentFileName = currentFile.getName();
-                if (currentFileName.contains(INPUT_PAGESARTICLES)) {
-                    inputPagesarticles = currentFile;
+                final String name = currentFile.getName();
+                if (DumpFileDiscovery.matchesRole(name, INPUT_PAGESARTICLES, SUPPORTED_EXTENSIONS)) {
+                    articleParts.add(currentFile);
                 }
-                else if (currentFileName.contains(INPUT_PAGELINKS)) {
+                else if (DumpFileDiscovery.matchesRole(name, INPUT_PAGESMETACURRENT,
+                        SUPPORTED_EXTENSIONS)) {
+                    metaCurrentParts.add(currentFile);
+                }
+                else if (name.contains(INPUT_PAGELINKS)) {
                     inputPagelinks = currentFile;
                 }
-                else if (currentFileName.contains(INPUT_CATEGORYLINKS)) {
+                else if (name.contains(INPUT_CATEGORYLINKS)) {
                     inputCategorylinks = currentFile;
                 }
-                else if (currentFileName.contains(INPUT_PAGESMETACURRENT)) {
-                    inputPagesMetaCurrent = currentFile;
-                }
             }
+            inputPagesarticles = DumpFileDiscovery.orderByPageRange(articleParts);
+            inputPagesMetaCurrent = DumpFileDiscovery.orderByPageRange(metaCurrentParts);
         }
         // either inputPagesarticles or inputPagesMetaCurrent have to be placed
         // in the input directory
-        return !((inputPagesarticles == null && inputPagesMetaCurrent == null)
+        return !((inputPagesarticles.isEmpty() && inputPagesMetaCurrent.isEmpty())
                 || inputPagelinks == null || inputCategorylinks == null);
     }
 
@@ -179,14 +196,29 @@ public class DataMachineFiles
     }
 
     /**
-     * @return Retrieves the absolute path of the {@code pages-articles.xml} file.
+     * @return Retrieves the absolute path of the first {@code pages-articles.xml} part,
+     *         or {@code null} if none was discovered. For multi-part dumps, prefer
+     *         {@link #getInputPagesArticlesFiles()}.
      */
     public String getInputPagesArticles()
     {
-        if (inputPagesarticles == null) {
+        if (inputPagesarticles.isEmpty()) {
             checkDataMachineSourceFiles();
         }
-        return inputPagesarticles != null ? inputPagesarticles.getAbsolutePath() : null;
+        return inputPagesarticles.isEmpty() ? null : inputPagesarticles.get(0).getAbsolutePath();
+    }
+
+    /**
+     * @return Absolute paths of all {@code pages-articles.xml} parts ordered by ascending page
+     *         range. Empty if the dump is not available. A single-file dump yields a list of
+     *         size 1.
+     */
+    public List<String> getInputPagesArticlesFiles()
+    {
+        if (inputPagesarticles.isEmpty()) {
+            checkDataMachineSourceFiles();
+        }
+        return toAbsolutePathList(inputPagesarticles);
     }
 
     /**
@@ -201,14 +233,41 @@ public class DataMachineFiles
     }
 
     /**
-     * @return Retrieves the absolute path of the {@code pages-meta-current.xml} file.
+     * @return Retrieves the absolute path of the first {@code pages-meta-current.xml} part,
+     *         or {@code null} if none was discovered. For multi-part dumps, prefer
+     *         {@link #getInputPagesMetaCurrentFiles()}.
      */
     public String getInputPagesMetaCurrent()
     {
-        if (inputPagesMetaCurrent == null) {
+        if (inputPagesMetaCurrent.isEmpty()) {
             checkDataMachineSourceFiles();
         }
-        return inputPagesMetaCurrent != null ? inputPagesMetaCurrent.getAbsolutePath() : null;
+        return inputPagesMetaCurrent.isEmpty() ? null
+                : inputPagesMetaCurrent.get(0).getAbsolutePath();
+    }
+
+    /**
+     * @return Absolute paths of all {@code pages-meta-current.xml} parts ordered by ascending
+     *         page range. Empty if the dump is not available.
+     */
+    public List<String> getInputPagesMetaCurrentFiles()
+    {
+        if (inputPagesMetaCurrent.isEmpty()) {
+            checkDataMachineSourceFiles();
+        }
+        return toAbsolutePathList(inputPagesMetaCurrent);
+    }
+
+    private static List<String> toAbsolutePathList(List<File> files)
+    {
+        if (files.isEmpty()) {
+            return Collections.emptyList();
+        }
+        final List<String> paths = new ArrayList<>(files.size());
+        for (File f : files) {
+            paths.add(f.getAbsolutePath());
+        }
+        return paths;
     }
 
     private String getGeneratedPath(String fileName)

@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -57,7 +60,47 @@ abstract class AbstractDecompressorTest {
     void testGetInputStreamThrowsWithDirectory(@TempDir Path input) {
         assertThrows(InvalidPathException.class, () -> getDecompressor().getInputStream(input));
     }
-    
+
+    /**
+     * Exception type thrown for contract violations of
+     * {@link IDecompressor#getInputStreamSequence(List)} — IAE/InvalidPathException
+     * for formats that support the multi-file contract. Subclasses that don't
+     * (e.g. 7z) can override to assert {@link UnsupportedOperationException}.
+     */
+    protected Class<? extends Throwable> expectedSequenceValidationException() {
+        return IllegalArgumentException.class;
+    }
+
+    protected Class<? extends Throwable> expectedSequenceDirectoryException() {
+        return InvalidPathException.class;
+    }
+
+    @Test
+    void testGetInputStreamSequenceThrowsOnNullList() {
+        assertThrows(expectedSequenceValidationException(),
+                () -> getDecompressor().getInputStreamSequence(null));
+    }
+
+    @Test
+    void testGetInputStreamSequenceThrowsOnEmptyList() {
+        assertThrows(expectedSequenceValidationException(),
+                () -> getDecompressor().getInputStreamSequence(Collections.emptyList()));
+    }
+
+    @Test
+    void testGetInputStreamSequenceThrowsOnNullElement() {
+        final List<Path> withNull = Arrays.asList((Path) null);
+        assertThrows(expectedSequenceValidationException(),
+                () -> getDecompressor().getInputStreamSequence(withNull));
+    }
+
+    @Test
+    void testGetInputStreamSequenceThrowsOnDirectoryElement(@TempDir Path dir) {
+        final List<Path> withDir = List.of(dir);
+        assertThrows(expectedSequenceDirectoryException(),
+                () -> getDecompressor().getInputStreamSequence(withDir));
+    }
+
     protected void getAndCheck(String input) throws IOException {
         try (InputStream in = getDecompressor().getInputStream(input)) {
             assertNotNull(in);

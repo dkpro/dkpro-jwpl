@@ -17,9 +17,21 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
-import java.io.IOException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -42,5 +54,37 @@ class BZip2DecompressorTest extends AbstractDecompressorTest {
     @ValueSource(strings = {"archive.txt.bz2", "src/test/resources/archive.txt.bz2"})
     void testGetInputStream(String input) throws IOException {
         getAndCheck(input);
+    }
+
+    @Test
+    void testGetInputStreamSequenceConcatenatesParts(@TempDir Path dir) throws IOException {
+        final String contentA = "part-a payload\n";
+        final String contentB = "part-b payload\n";
+        final Path partA = writeBz2(dir.resolve("dump.xml-p1p10.bz2"), contentA);
+        final Path partB = writeBz2(dir.resolve("dump.xml-p11p20.bz2"), contentB);
+
+        try (InputStream in = decomp.getInputStreamSequence(List.of(partA, partB))) {
+            assertNotNull(in);
+            final String decompressed = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            assertEquals(contentA + contentB, decompressed);
+        }
+    }
+
+    @Test
+    void testGetInputStreamSequenceSinglePartEqualsSingleFile(@TempDir Path dir) throws IOException {
+        final String content = "lonely payload\n";
+        final Path part = writeBz2(dir.resolve("dump.xml-p1p10.bz2"), content);
+
+        try (InputStream in = decomp.getInputStreamSequence(List.of(part))) {
+            assertNotNull(in);
+            assertEquals(content, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    private static Path writeBz2(Path out, String content) throws IOException {
+        try (OutputStream os = new BZip2CompressorOutputStream(Files.newOutputStream(out))) {
+            os.write(content.getBytes(StandardCharsets.UTF_8));
+        }
+        return out;
     }
 }

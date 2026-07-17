@@ -19,17 +19,23 @@ package org.dkpro.jwpl.wikimachine.decompression;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
@@ -108,5 +114,65 @@ class UniversalDecompressorTest extends AbstractDecompressorTest {
           assertNotNull(content);
           assertEquals(EXPECTED_CONTENT, content);
         }
+    }
+
+    @Test
+    void testGetInputStreamSequenceDispatchesBz2() throws IOException {
+        final String a = "alpha\n";
+        final String b = "beta\n";
+        final Path partA = writeBz2(tmpDir.resolve("dump.xml-p1p10.bz2"), a);
+        final Path partB = writeBz2(tmpDir.resolve("dump.xml-p11p20.bz2"), b);
+
+        try (InputStream in = udc.getInputStreamSequence(List.of(partA, partB))) {
+            assertNotNull(in);
+            assertEquals(a + b, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void testGetInputStreamSequenceDispatchesGz() throws IOException {
+        final String a = "alpha\n";
+        final String b = "beta\n";
+        final Path partA = writeGz(tmpDir.resolve("dump.xml-p1p10.gz"), a);
+        final Path partB = writeGz(tmpDir.resolve("dump.xml-p11p20.gz"), b);
+
+        try (InputStream in = udc.getInputStreamSequence(List.of(partA, partB))) {
+            assertNotNull(in);
+            assertEquals(a + b, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void testGetInputStreamSequenceRejects7z() throws IOException {
+        // Create an empty placeholder so checkPath passes (no file-existence check).
+        final Path part = Files.createFile(tmpDir.resolve("dump.xml-p1p10.7z"));
+        assertThrows(IOException.class, () -> udc.getInputStreamSequence(List.of(part)));
+    }
+
+    @Test
+    void testGetInputStreamSequenceRejectsUnsupportedExtension() throws IOException {
+        final Path part = Files.createFile(tmpDir.resolve("dump.xml-p1p10.rar"));
+        assertThrows(IOException.class, () -> udc.getInputStreamSequence(List.of(part)));
+    }
+
+    @Test
+    void testGetInputStreamSequenceRejectsMixedExtensions() throws IOException {
+        final Path bz2 = writeBz2(tmpDir.resolve("dump.xml-p1p10.bz2"), "x\n");
+        final Path gz = writeGz(tmpDir.resolve("dump.xml-p11p20.gz"), "y\n");
+        assertThrows(IOException.class, () -> udc.getInputStreamSequence(List.of(bz2, gz)));
+    }
+
+    private static Path writeBz2(Path out, String content) throws IOException {
+        try (OutputStream os = new BZip2CompressorOutputStream(Files.newOutputStream(out))) {
+            os.write(content.getBytes(StandardCharsets.UTF_8));
+        }
+        return out;
+    }
+
+    private static Path writeGz(Path out, String content) throws IOException {
+        try (OutputStream os = new GZIPOutputStream(Files.newOutputStream(out))) {
+            os.write(content.getBytes(StandardCharsets.UTF_8));
+        }
+        return out;
     }
 }
