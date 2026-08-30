@@ -205,9 +205,9 @@
         <version>1.5.3</version>
       </dependency>
       <dependency>
-        <groupId>com.neovisionaries</groupId>
+        <groupId>uk.co.foundationsedge</groupId>
         <artifactId>nv-i18n</artifactId>
-        <version>1.29</version>
+        <version>1.33</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
