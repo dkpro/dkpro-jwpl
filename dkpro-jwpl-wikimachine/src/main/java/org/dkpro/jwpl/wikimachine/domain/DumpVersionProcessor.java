@@ -166,6 +166,7 @@ public class DumpVersionProcessor
                 }
                 logAndClear(++counter, "Categorylinks");
             }
+            categorylinksParser.checkPostConditions();
 
             for (IDumpVersion version : versions) {
                 version.exportAfterCategoryLinksParsing();
@@ -195,6 +196,7 @@ public class DumpVersionProcessor
                 }
                 logAndClear(++counter, "Pagelinks");
             }
+            pagelinksParser.checkPostConditions();
 
             for (IDumpVersion version : versions) {
                 version.exportAfterPageLinksParsing();

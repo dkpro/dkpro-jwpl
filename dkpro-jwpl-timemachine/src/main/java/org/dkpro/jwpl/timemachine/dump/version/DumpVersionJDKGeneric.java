@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dkpro.jwpl.timemachine.domain.Revision;
-import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
-import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.AbstractDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
@@ -169,65 +167,43 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processCategoryLinksRow(CategorylinksParser clParser)
+    public Integer categoryIdByTitle(String title)
     {
-        String cl_to_text = clParser.getClTo();
-        if (cl_to_text != null) {
-            KeyType cl_to_textHashcode = (KeyType) hashAlgorithm.hashCode(cl_to_text);
-            // if category exists
-
-            Integer cl_to = cNamePageIdMap.get(cl_to_textHashcode);
-            if (cl_to != null) {
-                // if the link source is a page then write the link in
-                // category_pages and page_categories
-                int cl_from = clParser.getClFrom();
-                // if exists page
-                if (pPageIdNameMap.containsKey(cl_from)) {
-                    processCategoryLinksRowPageExists(cl_from, cl_to, cl_to_text);
-                }
-                else {
-                    processCateforyLinksRowPageMiss(cl_from, cl_to);
-                }
-            }
-        }
-    }
-
-    private void processCategoryLinksRowPageExists(Integer cl_from, Integer cl_to,
-            String cl_to_text)
-    {
-        categoryPages.addRow(cl_to, cl_from);
-        pageCategories.addRow(cl_from, cl_to);
-        if (cl_to_text.equals(metaData.getDisambiguationCategory())) {
-            disambiguations.add(cl_from);
-            metaData.addDisamb();
-        }
-    }
-
-    private void processCateforyLinksRowPageMiss(Integer cl_from, Integer cl_to)
-    {
-        // if category page id exists
-        if (cNamePageIdMap.containsValue(cl_from)) {
-            categoryOutlinks.addRow(cl_to, cl_from);
-            categoryInlinks.addRow(cl_from, cl_to);
-        }
+        return cNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void processPageLinksRow(PagelinksParser plParser)
+    public Integer pageIdByTitle(String title)
     {
-        int pl_from = plParser.getPlFrom();
-        String pl_to = plParser.getPlTo();
-        if (pl_to != null) {
-            KeyType pl_toHashcode = (KeyType) hashAlgorithm.hashCode(pl_to);
+        return pNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
+    }
 
-            // if page name and page id exists
-            Integer id = pNamePageIdMap.get(pl_toHashcode);
-            if (id != null && (!skipPage || pPageIdNameMap.containsKey(pl_from))) {
-                pageOutlinks.addRow(pl_from, id);
-                pageInlinks.addRow(id, pl_from);
-            }
-        }
+    @Override
+    public boolean isKnownArticleId(int pageId)
+    {
+        return pPageIdNameMap.containsKey(pageId);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This variant does not keep a page id keyed map of the categories, so the answer is obtained
+     * by a linear scan over the values of {@code cNamePageIdMap}. On dumps that carry a
+     * {@code cl_type} column the scan is only reached for rows that actually describe a
+     * subcategory.
+     */
+    @Override
+    public boolean isKnownCategoryId(int pageId)
+    {
+        return cNamePageIdMap.containsValue(pageId);
+    }
+
+    @Override
+    public void recordDisambiguation(int pageId)
+    {
+        disambiguations.add(pageId);
+        metaData.addDisamb();
     }
 
     @Override

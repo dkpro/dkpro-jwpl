@@ -19,7 +19,6 @@ package org.dkpro.jwpl.datamachine.dump.version;
 
 import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -27,8 +26,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
-import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.AbstractDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
@@ -156,38 +153,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
+    public Integer categoryIdByTitle(String title)
     {
-        String cl_to = clParser.getClTo();
-
-        if (cl_to != null) {
-            KeyType clToHash = (KeyType) hashAlgorithm.hashCode(cl_to);
-
-            Integer cl_toValue = cNamePageIdMap.get(clToHash);
-
-            if (cl_toValue != null) {
-                int cl_from = clParser.getClFrom();
-
-                if (pPageIdNameMap.containsKey(cl_from)) {
-                    categoryPages.addRow(cl_toValue, cl_from);
-                    pageCategories.addRow(cl_from, cl_toValue);
-
-                    if (cl_to.equals(metaData.getDisambiguationCategory())) {
-                        disambiguations.add(cl_from);
-                        metaData.addDisamb();
-                    }
-                }
-                else if (cPageIdNameMap.contains(cl_from)) {
-                    categoryOutlinks.addRow(cl_toValue, cl_from);
-                    categoryInlinks.addRow(cl_from, cl_toValue);
-                }
-
-            }
-        }
-        else {
-            throw new IOException("Parsing error." + CategorylinksParser.class.getName()
-                    + " returned null value in " + this.getClass().getName());
-        }
+        return cNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
     }
 
     /**
@@ -195,19 +163,37 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void processPageLinksRow(PagelinksParser plParser)
+    public Integer pageIdByTitle(String title)
     {
-        int pl_from = plParser.getPlFrom();
-        String pl_to = plParser.getPlTo();
-        if (pl_to != null) {
-            KeyType plToHash = (KeyType) hashAlgorithm.hashCode(pl_to);
-            Integer pl_toValue = pNamePageIdMap.get(plToHash);
-            // skip redirects if skipPage is enabled
-            if ((!skipPage || pPageIdNameMap.containsKey(pl_from)) && pl_toValue != null) {
-                pageOutlinks.addRow(pl_from, pl_toValue);
-                pageInlinks.addRow(pl_toValue, pl_from);
-            }
-        }
+        return pNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isKnownArticleId(int pageId)
+    {
+        return pPageIdNameMap.containsKey(pageId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isKnownCategoryId(int pageId)
+    {
+        return cPageIdNameMap.contains(pageId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void recordDisambiguation(int pageId)
+    {
+        disambiguations.add(pageId);
+        metaData.addDisamb();
     }
 
     /**

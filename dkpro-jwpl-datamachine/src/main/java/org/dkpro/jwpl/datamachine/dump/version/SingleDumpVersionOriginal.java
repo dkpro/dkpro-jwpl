@@ -31,6 +31,8 @@ import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
+import org.dkpro.jwpl.wikimachine.dump.version.LinkRowProcessor;
+import org.dkpro.jwpl.wikimachine.dump.version.LinkRowSink;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
@@ -55,7 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * id literal; that pre-existing divergence is left untouched.
  */
 public class SingleDumpVersionOriginal
-    implements IDumpVersion
+    implements IDumpVersion, LinkRowSink
 {
 
     // metadata
@@ -236,56 +238,77 @@ public class SingleDumpVersionOriginal
     @Override
     public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
     {
-
-        int cl_from;
-        String cl_to;
-
-        cl_from = clParser.getClFrom();
-        cl_to = clParser.getClTo();
-        if (!cNamePageIdMap.containsKey(cl_to)) {
-            // discard links with non-registered targets
-            return;
-        }
-        // if the link source is a page then write the link in
-        // category_pages and
-        // page_categories
-        if (pPageIdNameMap.containsKey(cl_from)) {
-            categoryPages.addRow(cNamePageIdMap.get(cl_to), cl_from);
-            pageCategories.addRow(cl_from, cNamePageIdMap.get(cl_to));
-            if (cl_to.equals(disambiguationsCategory)) {
-                disambiguations.add(cl_from);
-                nrOfDisambiguations++;
-            }
-        }
-        else {
-            // if the link source is a category than write the link in
-            // category_inlinks and category_outlinks
-            if (cPageIdNameMap.containsKey(cl_from)) {
-                categoryOutlinks.addRow(cNamePageIdMap.get(cl_to), cl_from);
-                categoryInlinks.addRow(cl_from, cNamePageIdMap.get(cl_to));
-            }
-        }
-
+        LinkRowProcessor.processCategoryLink(clParser, this);
     }
 
     @Override
     public void processPageLinksRow(PagelinksParser plParser)
     {
+        LinkRowProcessor.processPageLink(plParser, this);
+    }
 
-        int pl_from;
-        String pl_to;
+    @Override
+    public Integer categoryIdByTitle(String title)
+    {
+        return cNamePageIdMap.get(title);
+    }
 
-        pl_from = plParser.getPlFrom();
-        pl_to = plParser.getPlTo();
-        // skip redirects or page with other namespace than 0
+    @Override
+    public Integer pageIdByTitle(String title)
+    {
+        return pNamePageIdMap.get(title);
+    }
 
-        if (skipPage && !pPageIdNameMap.containsKey(pl_from)
-                || !pNamePageIdMap.containsKey(pl_to)) {
-            return;
-        }
+    @Override
+    public boolean isKnownArticleId(int pageId)
+    {
+        return pPageIdNameMap.containsKey(pageId);
+    }
 
-        pageOutlinks.addRow(pl_from, pNamePageIdMap.get(pl_to));
-        pageInlinks.addRow(pNamePageIdMap.get(pl_to), pl_from);
+    @Override
+    public boolean isKnownCategoryId(int pageId)
+    {
+        return cPageIdNameMap.containsKey(pageId);
+    }
+
+    @Override
+    public boolean isSkipPageEnabled()
+    {
+        return skipPage;
+    }
+
+    @Override
+    public String getDisambiguationCategoryTitle()
+    {
+        return disambiguationsCategory;
+    }
+
+    @Override
+    public void recordDisambiguation(int pageId)
+    {
+        disambiguations.add(pageId);
+        nrOfDisambiguations++;
+    }
+
+    @Override
+    public void writeCategoryMembership(int categoryId, int pageId)
+    {
+        categoryPages.addRow(categoryId, pageId);
+        pageCategories.addRow(pageId, categoryId);
+    }
+
+    @Override
+    public void writeSubcategory(int parentCategoryId, int childCategoryId)
+    {
+        categoryOutlinks.addRow(parentCategoryId, childCategoryId);
+        categoryInlinks.addRow(childCategoryId, parentCategoryId);
+    }
+
+    @Override
+    public void writePageLink(int fromPageId, int toPageId)
+    {
+        pageOutlinks.addRow(fromPageId, toPageId);
+        pageInlinks.addRow(toPageId, fromPageId);
     }
 
     @Override

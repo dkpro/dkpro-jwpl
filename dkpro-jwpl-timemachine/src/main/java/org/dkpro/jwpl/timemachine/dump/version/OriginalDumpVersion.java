@@ -33,6 +33,8 @@ import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
+import org.dkpro.jwpl.wikimachine.dump.version.LinkRowProcessor;
+import org.dkpro.jwpl.wikimachine.dump.version.LinkRowSink;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
@@ -50,7 +52,7 @@ import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
  * consistency, not because it runs.
  */
 public class OriginalDumpVersion
-    implements IDumpVersion
+    implements IDumpVersion, LinkRowSink
 {
 
     private Timestamp timestamp;
@@ -229,35 +231,73 @@ public class OriginalDumpVersion
     }
 
     @Override
-    public void processCategoryLinksRow(CategorylinksParser clParser)
+    public void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
     {
-        int cl_from;
-        String cl_to;
+        LinkRowProcessor.processCategoryLink(clParser, this);
+    }
 
-        cl_from = clParser.getClFrom();
-        cl_to = clParser.getClTo();
-        if (!existsCategory(cl_to)) { // discard links with non-registered targets
-            return;
-        }
-        // if the link source is a page then write the link in category_pages
-        // and page_categories
-        if (existsPage(cl_from)) {
+    @Override
+    public Integer categoryIdByTitle(String title)
+    {
+        return existsCategory(title) ? getCategoryPageId(title) : null;
+    }
 
-            categoryPages.addRow(getCategoryPageId(cl_to), cl_from);
-            pageCategories.addRow(cl_from, getCategoryPageId(cl_to));
-            if (cl_to.equals(metaData.getDisambiguationCategory())) {
-                disambiguations.add(cl_from);
-                metaData.addDisamb();
-            }
-        }
-        else {
-            // if the link source is a category than write the link in
-            // category_inlinks and category_outlinks
-            if (existsCategoryPageId(cl_from)) {
-                categoryOutlinks.addRow(getCategoryPageId(cl_to), cl_from);
-                categoryInlinks.addRow(cl_from, getCategoryPageId(cl_to));
-            }
-        }
+    @Override
+    public Integer pageIdByTitle(String title)
+    {
+        return existsPageName(title) ? getPagePageId(title) : null;
+    }
+
+    @Override
+    public boolean isKnownArticleId(int pageId)
+    {
+        return existsPage(pageId);
+    }
+
+    @Override
+    public boolean isKnownCategoryId(int pageId)
+    {
+        return existsCategoryPageId(pageId);
+    }
+
+    @Override
+    public boolean isSkipPageEnabled()
+    {
+        return skipPage;
+    }
+
+    @Override
+    public String getDisambiguationCategoryTitle()
+    {
+        return metaData.getDisambiguationCategory();
+    }
+
+    @Override
+    public void recordDisambiguation(int pageId)
+    {
+        disambiguations.add(pageId);
+        metaData.addDisamb();
+    }
+
+    @Override
+    public void writeCategoryMembership(int categoryId, int pageId)
+    {
+        categoryPages.addRow(categoryId, pageId);
+        pageCategories.addRow(pageId, categoryId);
+    }
+
+    @Override
+    public void writeSubcategory(int parentCategoryId, int childCategoryId)
+    {
+        categoryOutlinks.addRow(parentCategoryId, childCategoryId);
+        categoryInlinks.addRow(childCategoryId, parentCategoryId);
+    }
+
+    @Override
+    public void writePageLink(int fromPageId, int toPageId)
+    {
+        pageOutlinks.addRow(fromPageId, toPageId);
+        pageInlinks.addRow(toPageId, fromPageId);
     }
 
     @Override
@@ -283,16 +323,7 @@ public class OriginalDumpVersion
     @Override
     public void processPageLinksRow(PagelinksParser plParser)
     {
-        int pl_from;
-        String pl_to;
-        pl_from = plParser.getPlFrom();
-        pl_to = plParser.getPlTo();
-        // skip redirects or page with other namespace than 0
-        if (skipPage && !existsPagePageId(pl_from) || !existsPageName(pl_to)) {
-            return;
-        }
-        pageOutlinks.addRow(pl_from, getPagePageId(pl_to));
-        pageInlinks.addRow(getPagePageId(pl_to), pl_from);
+        LinkRowProcessor.processPageLink(plParser, this);
     }
 
     public void exportAfterPageLinksProcessing()

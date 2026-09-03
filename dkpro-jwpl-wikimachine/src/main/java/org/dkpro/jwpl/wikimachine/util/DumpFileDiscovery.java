@@ -126,6 +126,32 @@ public final class DumpFileDiscovery
     }
 
     /**
+     * Matches a filename against a known Wikimedia SQL dump role, that is, a file named
+     * {@code <prefix><role>.sql[.<ext>]}. In contrast to {@link #matchesRole} the match is
+     * anchored on the {@code .sql} marker, so {@code categorylinks} does not match a
+     * {@code pagelinks} dump and vice versa. The archive extension is optional so that an
+     * already decompressed {@code .sql} file is recognised as well.
+     *
+     * @param fileName   File name (or path whose last segment is the file name).
+     * @param role       Role token as it appears in the dump name, e.g. {@code categorylinks},
+     *                   {@code pagelinks}, {@code linktarget}.
+     * @param extensions Supported archive extensions without dot, e.g. {@code ["bz2", "gz", "7z"]}.
+     * @return {@code true} if {@code fileName} is an SQL dump of the requested role.
+     */
+    public static boolean matchesSqlRole(String fileName, String role,
+            Collection<String> extensions)
+    {
+        if (fileName == null || role == null || extensions == null || extensions.isEmpty()) {
+            return false;
+        }
+        final String name = lastSegment(fileName);
+        final String extAlt = String.join("|", extensions);
+        final Pattern p = Pattern
+                .compile(".*" + Pattern.quote(role) + "\\.sql(\\.(" + extAlt + "))?$");
+        return p.matcher(name).matches();
+    }
+
+    /**
      * Returns a new list containing {@code files} ordered for multi-part consumption: files with a
      * {@code -p<start>p<end>} suffix are sorted by ascending start page id; files without such a
      * suffix preserve their relative input order and come first. Stable for equal starts.
