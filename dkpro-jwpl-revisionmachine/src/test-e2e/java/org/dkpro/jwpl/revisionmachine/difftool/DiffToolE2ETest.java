@@ -25,6 +25,7 @@ import java.io.UncheckedIOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -61,18 +62,21 @@ public class DiffToolE2ETest {
   public static void initEnv() throws IOException {
     Files.createDirectories(Path.of(OUTPUT_DIR));
     Files.createDirectories(Path.of(LOGS_DIR));
-    Stream<Path> results = Files.find(Path.of(BASE.getFile()), Integer.MAX_VALUE,
+    // Copy (do not move) the fixtures: keeping the originals in place makes repeated
+    // invocations of 'mvn verify' over a populated 'target' directory idempotent.
+    try (Stream<Path> results = Files.find(Path.of(BASE.getFile()), Integer.MAX_VALUE,
             (path, basicFileAttributes)
                     -> path.toFile().getName().startsWith(WIKI_NAME)
-    );
-
-    results.forEach(p -> {
-      try {
-        Files.move(p, Path.of(OUTPUT_DIR, p.getFileName().toString()));
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
+    )) {
+      results.forEach(p -> {
+        try {
+          Files.copy(p, Path.of(OUTPUT_DIR, p.getFileName().toString()),
+                  StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+      });
+    }
   }
 
   @BeforeEach
