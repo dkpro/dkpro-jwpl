@@ -61,9 +61,11 @@ dbConfig.setHibernateProperties(hibernateProperties);
 Wikipedia wiki = new Wikipedia(dbConfig);
 ```
 
-Populate the settings **before** the first `new Wikipedia(config)` for a given
-language/host/database combination: session factories are cached JVM-wide and built only once per
-combination.
+Populate the settings **before** the first `new Wikipedia(config)` for a given database
+configuration: session factories are cached JVM-wide and built only once per configuration. The
+cache key is derived from the connection-affecting values -- language, host, database, JDBC url,
+driver, user and password -- so two configurations differing in any of them get their own factory.
+The Hibernate settings bag above is deliberately *not* part of that key.
 
 ## Persistence
 
