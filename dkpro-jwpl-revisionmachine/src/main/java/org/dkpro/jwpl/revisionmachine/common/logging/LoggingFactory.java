@@ -22,12 +22,15 @@ import java.util.HashMap;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
+import org.slf4j.LoggerFactory;
 
 /**
  * The static references in this 'class' creates and controls all loggers.
  */
 public class LoggingFactory
 {
+
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(LoggingFactory.class);
 
     /**
      * Reference Map Consumer(-Name) -> Logger
@@ -53,7 +56,7 @@ public class LoggingFactory
             createLogger(LoggerType.ARTICLE_OUTPUT, NAME_ARTICLE_OUTPUT_LOGGER);
         }
         catch (LoggingException e) {
-            e.printStackTrace();
+            logger.error("Could not initialize the DiffTool loggers.", e);
             System.exit(-1);
         }
     }

@@ -200,7 +200,9 @@ public class SectionExtractor
             }
         }
         catch (LinkTargetException e) {
-            // Ignore
+            // The link target is malformed and cannot be resolved to a page title. As this
+            // visitor renders a best-effort plain text representation, such a link is simply
+            // skipped and the remaining content is processed.
         }
     }
 

@@ -24,11 +24,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Properties;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a utility class that generates a template for the configuration file<br>
@@ -36,6 +39,9 @@ import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
  */
 public class SettingsXML
 {
+
+    private static final Logger LOG = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     public static final String OUTPUT_DIRECTORY = "outputDirectory";
     public static final String CATEGORY_LINKS_FILE = "categoryLinksFile";
@@ -86,9 +92,11 @@ public class SettingsXML
             result.setEach(Integer.parseInt(properties.get(EACH).toString()));
         } catch (IOException ioe) {
             logger.log("Could not find config file " + configFile);
+            logger.log(ioe);
             result = null;
         } catch (NumberFormatException nfe) {
             logger.log("Could not read 'each' parameter - check the config file!");
+            logger.log(nfe);
             result = null;
         }
         return result;
@@ -113,6 +121,7 @@ public class SettingsXML
         }
         catch (IOException e) {
             logger.log("Could not find config file " + configFile);
+            logger.log(e);
             result = null;
         }
         return result;
@@ -125,7 +134,7 @@ public class SettingsXML
                 generateSample(args[0]);
             }
             catch (IOException e) {
-                e.printStackTrace();
+                LOG.error("Could not generate a sample configuration file at '{}'.", args[0], e);
             }
         }
 

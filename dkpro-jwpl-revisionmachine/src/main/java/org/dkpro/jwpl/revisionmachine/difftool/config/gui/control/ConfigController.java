@@ -19,6 +19,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.config.gui.control;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 
 import javax.swing.JPanel;
 
@@ -29,12 +30,17 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.dialogs.XMLFileChooser
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.panels.AbstractPanel;
 import org.dkpro.jwpl.revisionmachine.difftool.data.SurrogateModes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Controller of the ConfigurationTool
  */
 public class ConfigController
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Reference to the ArchiveRegistry
@@ -457,7 +463,7 @@ public class ConfigController
             writer.flush();
 
           } catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.error("Could not write the configuration to [{}].", path, ioe);
             success = false;
           }
 

@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.difftool.config.gui.control;
 
 import java.io.File;
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,8 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.gui.data.ConfigEnum;
 import org.dkpro.jwpl.revisionmachine.difftool.data.OutputType;
 import org.dkpro.jwpl.revisionmachine.difftool.data.SurrogateModes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 /**
@@ -40,6 +43,9 @@ import org.slf4j.event.Level;
  */
 public class ConfigSettings
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Returns the type of the configuration
@@ -263,7 +269,7 @@ public class ConfigSettings
 
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Could not load the configuration from [{}].", path, e);
         }
     }
 }

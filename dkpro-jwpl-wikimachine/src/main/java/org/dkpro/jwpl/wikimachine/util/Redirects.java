@@ -153,7 +153,7 @@ public class Redirects
         }
         catch (Exception e) {
             redirectString = null;
-            logger.debug("Error in Redirects ignored");
+            logger.debug("Error in Redirects ignored", e);
         }
 
         return redirectString;

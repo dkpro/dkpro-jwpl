@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.util.templates.parser;
 
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
@@ -24,9 +25,14 @@ import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.WikiConstants;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SectionExtractionTest
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * @param args
@@ -51,7 +57,7 @@ public class SectionExtractionTest
 
         }
         catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Could not extract sections.", e);
         }
 
     }

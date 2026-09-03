@@ -137,7 +137,8 @@ public class SQLEncoding
 
         }
         catch (Exception e) {
-            // Ignore
+            // Deliberately ignored: toString() must not fail. If the detailed representation
+            // cannot be built, the compact fallback representation below is returned instead.
         }
 
         return "<" + list.size() + ">\r\n" + query;

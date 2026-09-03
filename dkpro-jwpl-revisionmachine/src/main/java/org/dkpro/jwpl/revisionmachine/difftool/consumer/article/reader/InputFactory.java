@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.invoke.MethodHandles;
 
 import org.dkpro.jwpl.revisionmachine.archivers.Bzip2Archiver;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ArticleReaderException;
@@ -32,6 +33,8 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.consumer.article.ArticleReaderInterface;
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This factory class contains methods to access an input medium.
@@ -40,6 +43,9 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
  */
 public class InputFactory
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Configuration parameter - Path to the 7Zip executable
@@ -70,7 +76,7 @@ public class InputFactory
 
         }
         catch (ConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Could not access the DiffTool configuration.", e);
             System.exit(-1);
         }
     }
@@ -129,8 +135,7 @@ public class InputFactory
             reader = archiver.getDecompressionStream(archivePath, WIKIPEDIA_ENCODING);
         }
         catch (IOException e) {
-
-            e.printStackTrace();
+            logger.error("Could not open a BZip2 decompression stream for [{}].", archivePath, e);
         }
 
         return reader;

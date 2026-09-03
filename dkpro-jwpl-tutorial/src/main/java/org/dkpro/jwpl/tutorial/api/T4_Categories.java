@@ -56,7 +56,7 @@ public class T4_Categories
             cat = wiki.getCategory(title);
         }
         catch (WikiPageNotFoundException e) {
-            throw new WikiApiException("Category " + title + " does not exist");
+            throw new WikiApiException("Category " + title + " does not exist", e);
         }
 
         StringBuilder sb = new StringBuilder();

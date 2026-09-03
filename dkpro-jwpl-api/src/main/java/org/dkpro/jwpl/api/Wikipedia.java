@@ -494,6 +494,9 @@ public class Wikipedia
         try {
             return new Category(this, hibernateId);
         } catch (WikiPageNotFoundException e) {
+            // The exception is used here as a control-flow signal only: the contract of this
+            // method is to return null if no category exists for the given id, so there is
+            // nothing to chain or log.
             return null;
         }
     }
@@ -533,7 +536,7 @@ public class Wikipedia
             try {
                 categorySet.add(new Category(this, hibernateId));
             } catch (WikiPageNotFoundException e) {
-                logger.warn("Could not load Category by it's HibernateId = '{}'", hibernateId);
+                logger.warn("Could not load Category by it's HibernateId = '{}'", hibernateId, e);
             }
         }
         return categorySet;
@@ -674,6 +677,8 @@ public class Wikipedia
         try {
             t = new Title(title);
         } catch (WikiTitleParsingException e) {
+            // The exception is used here as a control-flow signal only: a title that cannot be
+            // parsed cannot denote an existing page, so there is nothing to chain or log.
             return false;
         }
 

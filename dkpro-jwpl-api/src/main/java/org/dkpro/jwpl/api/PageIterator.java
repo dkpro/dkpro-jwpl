@@ -203,7 +203,7 @@ public class PageIterator
                             bufferFillSize++;
                         }
                         catch (WikiApiException e) {
-                            logger.warn("Missing article with id {}", id);
+                            logger.warn("Missing article with id {}", id, e);
                         }
                     }
                 }
@@ -215,7 +215,7 @@ public class PageIterator
                             bufferFillSize++;
                         }
                         catch (WikiApiException e) {
-                          logger.warn("Missing article with title \"{}\"", title);
+                          logger.warn("Missing article with title \"{}\"", title, e);
                         }
                     }
                 }
@@ -273,7 +273,7 @@ public class PageIterator
                             }
                         }
                         catch (WikiApiException e) {
-                            logger.error("Page with hibernateID {} not found.", id);
+                            logger.error("Page with hibernateID {} not found.", id, e);
                         }
                         lastPage = id;
                     }

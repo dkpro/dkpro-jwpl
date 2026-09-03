@@ -21,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -29,12 +30,17 @@ import java.util.regex.Pattern;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Starter, which parsed configuration properties file and starts WikipediaTemplateInfoGenerator
  */
 public class TemplateInfoGeneratorStarter
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private final static String FILTERING_ACTIVE_FOR_PAGES = "create_templates_for_pages";
     private final static String FILTERING_ACTIVE_FOR_REVISIONS = "create_templates_for_revisions";
@@ -131,6 +137,9 @@ public class TemplateInfoGeneratorStarter
                                 + "templateInfo.sql";
                     }
                     catch (IOException e) {
+                        // The canonical path cannot be determined - fall back to the plain path.
+                        logger.debug("Could not determine canonical path of [{}]. "
+                                + "Falling back to the plain path.", outfile, e);
                         output = outfile.getPath() + File.separatorChar + "templateInfo.sql";
                     }
                 }
@@ -174,7 +183,7 @@ public class TemplateInfoGeneratorStarter
                 generator.process();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Could not generate the template information.", e);
             }
         }
     }
@@ -194,7 +203,7 @@ public class TemplateInfoGeneratorStarter
             props.load(fis);
         }
         catch (IOException e) {
-            System.err.println("Could not load configuration file " + configFilePath);
+            logger.error("Could not load configuration file [{}].", configFilePath, e);
         }
         return props;
     }

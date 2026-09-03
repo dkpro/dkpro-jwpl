@@ -19,6 +19,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.invoke.MethodHandles;
 
 import org.dkpro.jwpl.revisionmachine.archivers.Bzip2Archiver;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
@@ -27,9 +28,14 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.data.OutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OutputFactory
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private static String PATH_PROGRAM_7ZIP = null;
     private static OutputType MODE_OUTPUT = null;
@@ -41,7 +47,7 @@ public class OutputFactory
             MODE_OUTPUT = (OutputType) config.getConfigParameter(ConfigurationKeys.MODE_OUTPUT);
         }
         catch (ConfigurationException e) {
-            e.printStackTrace();
+            logger.error("Could not access the DiffTool configuration.", e);
             System.exit(-1);
         }
     }
@@ -76,7 +82,7 @@ public class OutputFactory
             output = new Bzip2Archiver().getCompressionStream(archivePath);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Could not open a BZip2 compression stream for [{}].", archivePath, e);
         }
         return output;
     }

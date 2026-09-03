@@ -62,7 +62,7 @@ public class T5_TownList
             topCat = wiki.getCategory(title);
         }
         catch (WikiPageNotFoundException e) {
-            throw new WikiApiException("Category " + title + " does not exist");
+            throw new WikiApiException("Category " + title + " does not exist", e);
         }
 
         // Add the pages categorized under "Towns in Germany".

@@ -98,6 +98,7 @@ public class PageParser
             pageIsRedirect = stream.readBoolean();
         }
         catch (EOFException e) {
+            // Not an error: reaching the end of the stream is how the last row is detected.
             hasNext = false;
         }
         return hasNext;

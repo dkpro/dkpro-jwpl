@@ -100,6 +100,8 @@ public class DiffToolThread
                     .getConfigParameter(ConfigurationKeys.MODE_STATISTICAL_OUTPUT);
         }
         catch (ConfigurationException e) {
+            // The parameter is optional: if it is not configured, the statistical output stays
+            // disabled. The exception carries no information beyond that, hence it is not chained.
             MODE_STATISTICAL_OUTPUT = false;
         }
 
@@ -254,7 +256,6 @@ public class DiffToolThread
             catch (SQLConsumerException e) {
 
                 SQLConsumerLogMessages.logSQLConsumerException(logger, e);
-                e.printStackTrace();
 
                 // Critical Exceptions
             }

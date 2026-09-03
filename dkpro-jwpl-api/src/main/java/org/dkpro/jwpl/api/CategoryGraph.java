@@ -286,7 +286,7 @@ public class CategoryGraph
                     cat = new Category(this.wiki, hibernateID);
                 }
                 catch (WikiPageNotFoundException e) {
-                    throw new WikiApiException("Category not found");
+                    throw new WikiApiException("Category not found", e);
                 }
 
                 if (matchesFilter(cat, filterList)) {
@@ -318,7 +318,7 @@ public class CategoryGraph
                 cat = new Category(this.wiki, hibernateID);
             }
             catch (WikiPageNotFoundException e) {
-                throw new WikiApiException("Category not found");
+                throw new WikiApiException("Category not found", e);
             }
 
             // get parents and children

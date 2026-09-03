@@ -29,12 +29,16 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ChronoIterator Iterates articles in chronological order.
  */
 public class ChronoIterator
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChronoIterator.class);
 
     /**
      * Reference to the configuration
@@ -334,10 +338,9 @@ public class ChronoIterator
                 }
                 catch (Exception e) {
 
-                    System.err.println("Reconstruction failed while retrieving"
-                            + " data to reconstruct <" + revisionIndex + ">" + "\r\n\t"
-                            + "[ArticleId " + result.getInt(5) + ", RevisionId " + result.getInt(4)
-                            + ", RevisionCounter " + result.getInt(3) + "]");
+                    logger.error(
+                            "Reconstruction failed while retrieving data to reconstruct <{}> - [ArticleId {}, RevisionId {}, RevisionCounter {}]",
+                            revisionIndex, result.getInt(5), result.getInt(4), result.getInt(3), e);
 
                     return null;
                 }

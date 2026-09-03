@@ -28,12 +28,16 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class provides basic bzip2 compression/decompression functionality
  */
 public class Bzip2Archiver
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(Bzip2Archiver.class);
 
     // Size to write in memory while compressing (in bytes)
     private static final int COMPRESSION_CACHE = 10000000;
@@ -83,7 +87,7 @@ public class Bzip2Archiver
 
         }
         catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Could not compress file [{}]", path, e);
         }
 
     }

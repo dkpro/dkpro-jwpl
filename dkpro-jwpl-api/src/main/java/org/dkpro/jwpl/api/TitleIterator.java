@@ -17,12 +17,15 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.hibernate.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An {@link Iterator} over {@link Title} objects.
@@ -30,6 +33,9 @@ import org.hibernate.Session;
 public class TitleIterator
     implements Iterator<Title>
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private final TitleBuffer buffer;
 
@@ -131,7 +137,7 @@ public class TitleIterator
                 title = new Title(titleString);
             }
             catch (WikiTitleParsingException e) {
-                e.printStackTrace();
+                logger.error("Could not parse title '{}'.", titleString, e);
             }
             bufferOffset++;
             dataOffset++;

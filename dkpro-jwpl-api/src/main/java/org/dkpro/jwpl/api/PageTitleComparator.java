@@ -17,9 +17,12 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Comparator;
 
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Compares two pages based on the lexicographic ordering of their titles.
@@ -27,6 +30,9 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 public class PageTitleComparator
     implements Comparator<Page>
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     public int compare(Page o1, Page o2)
     {
@@ -36,7 +42,7 @@ public class PageTitleComparator
             retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
         }
         catch (WikiTitleParsingException e) {
-            e.printStackTrace();
+            logger.error("Could not compare page titles.", e);
         }
         return retVal;
     }

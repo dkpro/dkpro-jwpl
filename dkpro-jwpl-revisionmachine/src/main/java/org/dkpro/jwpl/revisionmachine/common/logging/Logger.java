@@ -25,6 +25,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
+import org.slf4j.LoggerFactory;
 import org.slf4j.event.Level;
 
 /**
@@ -32,6 +33,11 @@ import org.slf4j.event.Level;
  */
 public class Logger
 {
+
+    /**
+     * Reference to a fallback logger which is used if this logger itself fails.
+     */
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Logger.class);
 
     /**
      * Name of the logger
@@ -108,7 +114,7 @@ public class Logger
             writer.close();
         }
         catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.error("Could not close the log file of [{}]", consumerName, ioe);
         }
     }
 
@@ -121,7 +127,7 @@ public class Logger
             writer.flush();
         }
         catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.error("Could not flush the log file of [{}]", consumerName, ioe);
         }
     }
 
@@ -148,7 +154,7 @@ public class Logger
             this.writer.write(text);
         }
         catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.error("Could not write to the log file of [{}]", consumerName, ioe);
         }
     }
 
@@ -173,7 +179,8 @@ public class Logger
 
         }
         catch (LoggingException ex) {
-            ex.printStackTrace();
+            logger.error("Could not access the error logger [{}]", LoggingFactory.NAME_ERROR_LOGGER,
+                    ex);
         }
 
         if (logLevel.toInt() > level.toInt()) {
@@ -205,7 +212,8 @@ public class Logger
 
         }
         catch (LoggingException ex) {
-            ex.printStackTrace();
+            logger.error("Could not access the error logger [{}]", LoggingFactory.NAME_ERROR_LOGGER,
+                    ex);
         }
 
         if (logLevel.toInt() > level.toInt()) {
@@ -239,7 +247,7 @@ public class Logger
             this.writer.flush();
         }
         catch (IOException ioe) {
-            ioe.printStackTrace();
+            logger.error("Could not write to the log file of [{}]", consumerName, ioe);
         }
     }
 

@@ -47,7 +47,7 @@ public class SqlServerStream
             statement.execute(sql.toString());
         }
         catch (SQLException e) {
-            throw new IOException(e.toString());
+            throw new IOException(e.toString(), e);
         }
     }
 
@@ -57,10 +57,13 @@ public class SqlServerStream
             connection.close();
         }
         catch (SQLWarning e) {
-            e.printStackTrace();
+            // A warning on close is not fatal and is therefore handled here instead of being
+            // propagated. This module declares no logging facade, so it is reported on stderr
+            // like the other diagnostics of this module.
+            System.err.println("Warning while closing the SQL connection: " + e);
         }
         catch (SQLException e) {
-            throw new IOException(e.toString());
+            throw new IOException(e.toString(), e);
         }
     }
 

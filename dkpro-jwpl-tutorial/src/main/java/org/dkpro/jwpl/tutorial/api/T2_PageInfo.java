@@ -53,7 +53,7 @@ public class T2_PageInfo
             page = wiki.getPage(title);
         }
         catch (WikiPageNotFoundException e) {
-            throw new WikiApiException("Page " + title + " does not exist");
+            throw new WikiApiException("Page " + title + " does not exist", e);
         }
 
         // the title of the page

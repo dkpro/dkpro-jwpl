@@ -17,9 +17,12 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Comparator;
 
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Compares two {@link Category categories} based on the lexicographic ordering of their titles.
@@ -27,6 +30,9 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 public class CategoryTitleComparator
     implements Comparator<Category>
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     @Override
     public int compare(Category o1, Category o2)
@@ -37,7 +43,7 @@ public class CategoryTitleComparator
             retVal = o1.getTitle().getPlainTitle().compareTo(o2.getTitle().getPlainTitle());
         }
         catch (WikiTitleParsingException e) {
-            e.printStackTrace();
+            logger.error("Could not compare category titles.", e);
         }
         return retVal;
     }

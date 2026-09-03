@@ -32,6 +32,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Factory to create {@link InputStream} depending on the filename's extension. If
  * there are a supported archive type we decorate {@link FileInputStream} with special
@@ -58,6 +61,8 @@ import java.util.Properties;
 public class UniversalDecompressor
     implements IDecompressor
 {
+
+    private static final Logger LOG = LoggerFactory.getLogger(UniversalDecompressor.class);
 
     /**
      * Placeholder for compressed file path in external command
@@ -134,8 +139,10 @@ public class UniversalDecompressor
         try {
           loadExternal(Files.newInputStream(externalConfig, StandardOpenOption.READ));
         }
-        catch (IOException ignore) {
-          // silently ignore it
+        catch (IOException e) {
+          // The external configuration is optional: if it cannot be opened, only the
+          // internally supported archive formats remain available, which is a valid state.
+          LOG.debug("Could not open external decompressor configuration '{}'.", externalConfig, e);
         }
     }
 
@@ -151,8 +158,10 @@ public class UniversalDecompressor
             externalSupport.put(key, properties.getProperty(key));
           }
         }
-        catch (IOException ignore) {
-            // silently ignore it
+        catch (IOException e) {
+            // The external configuration is optional: if it cannot be parsed, only the
+            // internally supported archive formats remain available, which is a valid state.
+            LOG.debug("Could not read external decompressor configuration.", e);
         }
     }
 
@@ -205,8 +214,10 @@ public class UniversalDecompressor
             Process externalProcess = Runtime.getRuntime().exec(command);
             result = externalProcess.getInputStream();
         }
-        catch (IOException ignore) {
-          ignore.printStackTrace();
+        catch (IOException e) {
+          // Handled here: the caller is signalled by the 'null' return value, so this is the
+          // only place the underlying cause is recorded.
+          LOG.error("Could not start the external decompressor for '{}'.", fileName, e);
         }
         return result;
     }
@@ -223,7 +234,10 @@ public class UniversalDecompressor
         try {
             result = new BufferedInputStream(new FileInputStream(fileName));
         }
-        catch (IOException ignore) {
+        catch (IOException e) {
+            // Handled here: the caller is signalled by the 'null' return value, so this is the
+            // only place the underlying cause is recorded.
+            LOG.error("Could not open '{}' for reading.", fileName, e);
         }
 
         return result;

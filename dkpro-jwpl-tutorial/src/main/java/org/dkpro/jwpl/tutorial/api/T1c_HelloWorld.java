@@ -52,6 +52,9 @@ public class T1c_HelloWorld
             wiki = new Wikipedia(dbConfig);
         }
         catch (WikiInitializationException e1) {
+            // The exception is handled here and not rethrown, so the stack trace printed below is
+            // the only record of the cause. The tutorial module deliberately pulls in no logging
+            // framework, hence the plain console output.
             System.out.println("Could not initialize Wikipedia.");
             e1.printStackTrace();
             System.exit(1);
@@ -64,6 +67,7 @@ public class T1c_HelloWorld
             System.out.println(page.getText());
         }
         catch (WikiApiException e) {
+            // Handled, not rethrown - see the comment above on why the trace is printed.
             System.out.println("Page " + title + " does not exist");
             e.printStackTrace();
             System.exit(1);

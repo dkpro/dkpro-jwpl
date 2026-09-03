@@ -43,7 +43,8 @@ public abstract class TimestampUtil
             time = sdf.parse(mediaWikiString).getTime();
         }
         catch (ParseException e) {
-            // Ignore
+            // Intentionally ignored: this method is contractually total and falls back to the
+            // epoch for input that does not match the MediaWiki timestamp format.
         }
 
         return new Timestamp(time);
