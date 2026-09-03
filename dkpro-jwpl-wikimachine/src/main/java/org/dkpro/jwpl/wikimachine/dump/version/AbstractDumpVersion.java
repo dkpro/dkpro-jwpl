@@ -305,4 +305,40 @@ public abstract class AbstractDumpVersion
 
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This is the canonical {@code MetaData.txt} layout shared by the DataMachine and the
+     * TimeMachine. Exactly nine tab separated values are written, in this order:
+     * <ol>
+     *   <li>{@code id}</li>
+     *   <li>{@code language}</li>
+     *   <li>{@code disambiguationCategory}</li>
+     *   <li>{@code mainCategory}</li>
+     *   <li>{@code nrofPages}</li>
+     *   <li>{@code nrofRedirects}</li>
+     *   <li>{@code nrofDisambiguationPages}</li>
+     *   <li>{@code nrofCategories}</li>
+     *   <li>{@code version}</li>
+     * </ol>
+     * The ninth value maps onto the {@code MetaData.version} database column. An absent version is
+     * emitted as {@link MetaData#NULL_MARKER} — the {@code LOAD DATA INFILE} {@code NULL} marker —
+     * rather than as the literal string {@code null} the underlying writer would otherwise produce
+     * for a {@code null} element.
+     */
+    @Override
+    public void writeMetaData() throws IOException
+    {
+        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
+            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
+            // nrOfDisambiguationPages, nrOfCategories, version
+            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
+                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
+                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
+                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
+                    metaData.getVersion() != null ? metaData.getVersion()
+                            : MetaData.NULL_MARKER);
+        }
+    }
+
 }

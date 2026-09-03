@@ -18,8 +18,12 @@
 package org.dkpro.jwpl.api;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.api.hibernate.AbstractMetaData;
+import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.hibernate.LockMode;
 import org.hibernate.Session;
+
+import jakarta.persistence.criteria.CriteriaQuery;
 
 /**
  * Provides access to meta-data about a certain {@link Wikipedia} instance.
@@ -31,7 +35,7 @@ public class MetaData
 {
 
     private final Wikipedia wiki;
-    private final org.dkpro.jwpl.api.hibernate.MetaData hibernateMetaData;
+    private final AbstractMetaData hibernateMetaData;
 
     /**
      * Instantiates a new {@link MetaData} object.
@@ -41,12 +45,24 @@ public class MetaData
     protected MetaData(Wikipedia wiki)
     {
         this.wiki = wiki;
+        /*
+         * Note well: the entity to load is chosen by the schema probe in WikiHibernateUtil and can
+         * be either the current or the legacy 'MetaData' mapping. Their entity names differ, hence
+         * a criteria query rather than a literal HQL string.
+         */
+        Class<? extends AbstractMetaData> entityClass = WikiHibernateUtil
+                .getMetaDataEntityClass(wiki.getDatabaseConfiguration());
         Session session = this.wiki.__getHibernateSession();
         session.beginTransaction();
-        hibernateMetaData = session
-                .createQuery("from MetaData", org.dkpro.jwpl.api.hibernate.MetaData.class)
-                .uniqueResult();
+        hibernateMetaData = loadMetaData(session, entityClass);
         session.getTransaction().commit();
+    }
+
+    private static <T extends AbstractMetaData> T loadMetaData(Session session, Class<T> type)
+    {
+        CriteriaQuery<T> query = session.getCriteriaBuilder().createQuery(type);
+        query.select(query.from(type));
+        return session.createQuery(query).uniqueResult();
     }
 
     /**
@@ -149,7 +165,12 @@ public class MetaData
     }
 
     /**
-     * @return The version of the wikipedia data.
+     * @return The version of the wikipedia data, or {@code null} if it is unknown. That is the case
+     *         when the underlying database predates the {@code MetaData.version} column, and for
+     *         DataMachine generated databases created before the DataMachine started writing it.
+     *         See {@code dkpro-jwpl-api/README.md} on how to add the column to an existing
+     *         database:
+     *         {@code ALTER TABLE MetaData ADD COLUMN version VARCHAR(255) DEFAULT NULL;}
      * @throws WikiApiException
      *             Thrown if errors occurred fetching the information.
      */

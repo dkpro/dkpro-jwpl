@@ -18,15 +18,18 @@
 package org.dkpro.jwpl.timemachine.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
@@ -90,6 +93,20 @@ public class JWPLTimeMachineE2ETest {
                     -> basicFileAttributes.isDirectory() && path.toFile().getName().endsWith("100")
     );
     assertEquals(3,  results.count());
+    // Regression guard for issue #490: hoisting writeMetaData() into AbstractDumpVersion must
+    // leave the TimeMachine output unchanged, i.e. nine columns whose ninth is the 14-digit
+    // MediaWiki snapshot timestamp.
+    Optional<Path> metaDataFile;
+    try (Stream<Path> found = Files.find(Path.of(OUTPUT_DIR), Integer.MAX_VALUE,
+            (path, basicFileAttributes) -> path.toFile().getName().equals("MetaData.txt"))) {
+      metaDataFile = found.findFirst();
+    }
+    assertTrue(metaDataFile.isPresent(), "no MetaData.txt was generated");
+    List<String> metaData = Files.readAllLines(metaDataFile.get(), StandardCharsets.UTF_8);
+    assertEquals(1, metaData.size());
+    String[] fields = metaData.get(0).split("\t", -1);
+    assertEquals(9, fields.length);
+    assertTrue(fields[8].matches("\\d{14}"), "unexpected version value: " + fields[8]);
   }
 
   @Test

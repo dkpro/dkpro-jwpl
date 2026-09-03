@@ -55,8 +55,9 @@ public abstract class GenericDAO<T>
         try {
             return WikiHibernateUtil.getSessionFactory(wiki.getDatabaseConfiguration());
         }
-        catch (Exception e) {
-            throw new IllegalStateException("Could not locate SessionFactory in JNDI", e);
+        catch (RuntimeException e) {
+            throw new IllegalStateException(
+                    "Could not build a Hibernate SessionFactory for the configured database.", e);
         }
     }
 

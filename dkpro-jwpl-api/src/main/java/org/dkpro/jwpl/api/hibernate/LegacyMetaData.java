@@ -17,53 +17,38 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 /**
- * An object-relational entity which maps a {@link org.dkpro.jwpl.api.MetaData}
- * to data attributes in a database. Those are persisted and retrieved by
- * an OR mapper, such as Hibernate.
+ * The pre-{@code version} mapping of the {@code MetaData} table: the eight columns contributed by
+ * {@link AbstractMetaData} and nothing else.
  * <p>
- * It is accessed via an equally named class in the {@code api} package
- * to hide session management from the user.
+ * {@link WikiHibernateUtil} binds this entity instead of {@link MetaData} when its schema probe
+ * finds no {@code version} column, so that databases generated before that column was introduced
+ * keep loading instead of failing with a Hibernate schema validation error or an
+ * {@code Unknown column 'version'} SQL error. {@link #getVersion()} then returns {@code null}.
  * <p>
- * This entity represents the <i>current</i> schema, i.e. one that carries the {@code version}
- * column. For databases generated before that column was introduced, {@link WikiHibernateUtil}
- * binds {@link LegacyMetaData} instead.
+ * The recommended remedy is to add the column, after which the current mapping is used again:
+ * <pre>
+ * ALTER TABLE MetaData ADD COLUMN version VARCHAR(255) DEFAULT NULL;
+ * </pre>
+ * See {@code dkpro-jwpl-api/README.md} for details.
+ * <p>
+ * Note that this entity and {@link MetaData} may both declare {@code @Table(name = "MetaData")}
+ * because exactly one of them is ever registered in a given session factory. Their entity names
+ * differ, following the default simple-class-name rule.
  */
 @Entity
 @Table(name = "MetaData")
-public class MetaData
+public class LegacyMetaData
     extends AbstractMetaData
 {
-
-    @Column(name = "version")
-    private String version;
 
     /**
      * A no argument constructor as required by Hibernate.
      */
-    public MetaData()
+    public LegacyMetaData()
     {
-    }
-
-    /**
-     * @return Retrieves the version of a {@link MetaData} instance.
-     */
-    @Override
-    public String getVersion()
-    {
-        return version;
-    }
-
-    /**
-     * @param version The version of a {@link MetaData} instance.
-     */
-    @Override
-    public void setVersion(String version)
-    {
-        this.version = version;
     }
 }

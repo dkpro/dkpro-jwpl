@@ -45,6 +45,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Transforms a database from mediawiki format to JWPL format.<br>
  * The transformation produces .txt files for the different tables<br>
  * in the JWPL database.<br>
+ * <p>
+ * Note: this implementation is not reachable from any wired
+ * {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionDataFactory factory} — the DataMachine
+ * uses {@link SingleDumpVersionJDKGeneric} instead. It is retained for API compatibility only and
+ * is kept in sync with the canonical nine-column {@code MetaData.txt} layout defined by
+ * {@link org.dkpro.jwpl.wikimachine.dump.version.AbstractDumpVersion#writeMetaData()} purely for
+ * consistency, not because it runs. Unlike the wired writers it emits a lowercase {@code "null"}
+ * id literal; that pre-existing divergence is left untouched.
  */
 public class SingleDumpVersionOriginal
     implements IDumpVersion
@@ -54,6 +62,7 @@ public class SingleDumpVersionOriginal
     private String language;
     private String mainCategory;
     private String disambiguationsCategory;
+    private String version;
 
     // statistics
     private int nrOfDisambiguations = 0;
@@ -387,6 +396,7 @@ public class SingleDumpVersionOriginal
         this.language = commonMetaData.getLanguage();
         this.mainCategory = commonMetaData.getMainCategory();
         this.disambiguationsCategory = commonMetaData.getDisambiguationCategory();
+        this.version = commonMetaData.getVersion();
     }
 
     @Override
@@ -395,9 +405,10 @@ public class SingleDumpVersionOriginal
         try (TxtFileWriter metaData = new TxtFileWriter(
                 outputDir + File.separator + "MetaData.txt")) {
             // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
-            // nrOfDisambiguationPages, nrOfCategories
+            // nrOfDisambiguationPages, nrOfCategories, version
             metaData.addRow("null", language, disambiguationsCategory, mainCategory, nrOfPages,
-                    nrOfRedirects, nrOfDisambiguations, nrOfCategories);
+                    nrOfRedirects, nrOfDisambiguations, nrOfCategories,
+                    version != null ? version : MetaData.NULL_MARKER);
             metaData.export();
         }
     }

@@ -39,3 +39,5 @@ Features of the Wikipedia Revision Toolkit:
    * Dedicated revision storage format
 
 More detailed information can be found at the [DKPro JWPL website](https://dkpro.github.io/dkpro-jwpl/).
+
+Upgrading an existing JWPL database? See [dkpro-jwpl-api/README.md](dkpro-jwpl-api/README.md).

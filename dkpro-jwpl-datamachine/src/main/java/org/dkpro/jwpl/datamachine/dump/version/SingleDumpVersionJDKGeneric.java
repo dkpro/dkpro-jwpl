@@ -35,7 +35,6 @@ import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
-import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 /**
  * A generic {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion IDumpVersion} implementation.
@@ -297,22 +296,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
                     }
                 }
             }
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void writeMetaData() throws IOException
-    {
-        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
-            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
-            // nrOfDisambiguationPages, nrOfCategories
-            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
-                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
-                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
-                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories());
         }
     }
 }

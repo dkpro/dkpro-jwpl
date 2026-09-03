@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,10 @@ import java.util.regex.Pattern;
  *   <li>matches filenames against a known dump role (e.g. {@code pages-articles}) accepting both
  *       the single-file and multi-part naming schemes — {@link #matchesRole};</li>
  *   <li>orders a collection of multi-part files by ascending start page id —
- *       {@link #orderByPageRange}.</li>
+ *       {@link #orderByPageRange};</li>
+ *   <li>extracts the Wikimedia dump date embedded in a dump file name —
+ *       {@link #extractDumpDate} — and derives a MediaWiki style dump version string from a set of
+ *       candidate file names — {@link #extractDumpVersion}.</li>
  * </ul>
  * All methods tolerate absolute paths: only the file name is inspected.
  */
@@ -51,6 +55,19 @@ public final class DumpFileDiscovery
      * end=1262093.
      */
     private static final Pattern PAGE_RANGE = Pattern.compile("-p(\\d+)p(\\d+)(?=\\.)");
+
+    /**
+     * The Wikimedia dump date embedded in a dump file name, i.e. the {@code YYYYMMDD} token of
+     * {@code <wiki>-<YYYYMMDD>-<role>...}. Example match on
+     * {@code aawiki-20260101-pages-meta-current.xml.bz2} yields {@code 20260101}.
+     */
+    private static final Pattern DUMP_DATE = Pattern.compile("-(\\d{8})-");
+
+    /**
+     * The time-of-day part appended to a dump date to obtain the MediaWiki {@code yyyyMMddHHmmss}
+     * shape. Wikimedia dump names carry a date only, so midnight is assumed.
+     */
+    private static final String MIDNIGHT = "000000";
 
     private DumpFileDiscovery()
     {
@@ -153,6 +170,47 @@ public final class DumpFileDiscovery
         catch (NumberFormatException e) {
             return Long.MIN_VALUE;
         }
+    }
+
+    /**
+     * Extracts the Wikimedia dump date from a dump file name following the convention
+     * {@code <wiki>-<YYYYMMDD>-<role>...}, e.g. {@code aawiki-20260101-pages-meta-current.xml.bz2}
+     * or {@code dewiki-20260101-pages-articles1.xml-p1p297012.bz2}.
+     *
+     * @param fileName A file name or path whose last component is inspected. May be {@code null}.
+     * @return The 8-digit dump date, or {@link Optional#empty()} if the name carries none.
+     */
+    public static Optional<String> extractDumpDate(String fileName)
+    {
+        if (fileName == null || fileName.isBlank()) {
+            return Optional.empty();
+        }
+        final Matcher m = DUMP_DATE.matcher(lastSegment(fileName));
+        return m.find() ? Optional.of(m.group(1)) : Optional.empty();
+    }
+
+    /**
+     * Derives a dump version string from the first of {@code fileNames} that carries a dump date.
+     * The result is normalised to the MediaWiki {@code yyyyMMddHHmmss} shape used by the
+     * TimeMachine, i.e. the 8-digit dump date followed by {@code 000000}, so that values written
+     * by both machines round-trip identically through
+     * {@link TimestampUtil#parse(String)} / {@link TimestampUtil#toMediaWikiString}.
+     *
+     * @param fileNames Candidate file names or paths, inspected in iteration order.
+     * @return The dump version, or {@link Optional#empty()} if no candidate carries a dump date.
+     */
+    public static Optional<String> extractDumpVersion(Collection<String> fileNames)
+    {
+        if (fileNames == null || fileNames.isEmpty()) {
+            return Optional.empty();
+        }
+        for (String fileName : fileNames) {
+            final Optional<String> dumpDate = extractDumpDate(fileName);
+            if (dumpDate.isPresent()) {
+                return Optional.of(dumpDate.get() + MIDNIGHT);
+            }
+        }
+        return Optional.empty();
     }
 
     private static String lastSegment(String path)

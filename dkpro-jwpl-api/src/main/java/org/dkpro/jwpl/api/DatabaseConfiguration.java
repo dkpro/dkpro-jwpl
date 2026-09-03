@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.util.Properties;
+
 /**
  * A {@link DatabaseConfiguration} is used to establish a database connection and set various
  * parameters.
@@ -31,6 +33,7 @@ public class DatabaseConfiguration
     private WikiConstants.Language language;
     private String jdbcURL;
     private String databaseDriver;
+    private final Properties hibernateProperties = new Properties();
 
     /**
      * A no-arg constructor required by frameworks.
@@ -226,6 +229,56 @@ public class DatabaseConfiguration
     public String getJdbcURL()
     {
         return jdbcURL;
+    }
+
+    /**
+     * Additional Hibernate settings supplied by the caller. They are merged <i>last</i> into the
+     * Hibernate configuration and therefore override JWPL's own defaults, including
+     * {@code hibernate.hbm2ddl.auto}.
+     * <p>
+     * The returned instance is live and mutable — changes to it are picked up as-is. Populate it
+     * <i>before</i> the first {@code new Wikipedia(config)} for a given language/host/database
+     * combination, because session factories are cached JVM-wide and built only once per
+     * combination.
+     * <p>
+     * See {@code dkpro-jwpl-api/README.md} for the legacy-schema use case this exists for.
+     *
+     * @return The live, never {@code null}, bag of Hibernate settings.
+     */
+    public Properties getHibernateProperties()
+    {
+        return hibernateProperties;
+    }
+
+    /**
+     * Sets a single additional Hibernate setting.
+     *
+     * @param key
+     *            The Hibernate setting name, e.g. {@code hibernate.hbm2ddl.auto}.
+     * @param value
+     *            The value to set for {@code key}.
+     *
+     * @see #getHibernateProperties()
+     */
+    public void setHibernateProperty(String key, String value)
+    {
+        hibernateProperties.setProperty(key, value);
+    }
+
+    /**
+     * Replaces all additional Hibernate settings with the given ones.
+     *
+     * @param properties
+     *            The settings to use. A {@code null} argument clears the current settings.
+     *
+     * @see #getHibernateProperties()
+     */
+    public void setHibernateProperties(Properties properties)
+    {
+        hibernateProperties.clear();
+        if (properties != null) {
+            hibernateProperties.putAll(properties);
+        }
     }
 
 }

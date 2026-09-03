@@ -26,6 +26,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -163,5 +164,75 @@ class DumpFileDiscoveryTest
         assertThrows(IllegalArgumentException.class,
                 () -> DumpFileDiscovery.orderByPageRange(Arrays.asList(
                         new File("pages-articles1.xml-p1p10.bz2"), null)));
+    }
+
+    // extractDumpDate / extractDumpVersion --------------------------------------
+
+    @Test
+    void extractDumpDateFindsTheDumpDate()
+    {
+        assertEquals(Optional.of("20260101"),
+                DumpFileDiscovery.extractDumpDate("aawiki-20260101-pages-meta-current.xml.bz2"));
+        assertEquals(Optional.of("20260101"), DumpFileDiscovery
+                .extractDumpDate("dewiki-20260101-pages-articles1.xml-p1p297012.bz2"));
+        assertEquals(Optional.of("20260101"),
+                DumpFileDiscovery.extractDumpDate("aawiki-20260101-pagelinks.sql.gz"));
+    }
+
+    @Test
+    void extractDumpDateInspectsOnlyTheLastPathSegment()
+    {
+        assertEquals(Optional.of("20250601"), DumpFileDiscovery
+                .extractDumpDate("/data/dumps-20260101/enwiki-20250601-pages-articles.xml.bz2"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "pages-articles.xml.bz2",
+            "aawiki-2026010-pages-articles.xml.bz2",
+            "random.txt",
+            "   "
+    })
+    void extractDumpDateReturnsEmptyWithoutADate(String name)
+    {
+        assertTrue(DumpFileDiscovery.extractDumpDate(name).isEmpty());
+    }
+
+    @Test
+    void extractDumpDateReturnsEmptyForNull()
+    {
+        assertTrue(DumpFileDiscovery.extractDumpDate(null).isEmpty());
+    }
+
+    @Test
+    void extractDumpVersionPadsToMediaWikiShape()
+    {
+        assertEquals(Optional.of("20260101000000"), DumpFileDiscovery.extractDumpVersion(
+                List.of("aawiki-20260101-pages-meta-current.xml.bz2")));
+    }
+
+    @Test
+    void extractDumpVersionReturnsTheFirstHit()
+    {
+        assertEquals(Optional.of("20260101000000"),
+                DumpFileDiscovery.extractDumpVersion(Arrays.asList(
+                        "aawiki-pages-articles.xml.bz2",
+                        "aawiki-20260101-pages-meta-current.xml.bz2",
+                        "aawiki-20250601-pagelinks.sql.gz")));
+    }
+
+    @Test
+    void extractDumpVersionReturnsEmptyForEmptyOrNullInput()
+    {
+        assertTrue(DumpFileDiscovery.extractDumpVersion(Collections.emptyList()).isEmpty());
+        assertTrue(DumpFileDiscovery.extractDumpVersion(null).isEmpty());
+    }
+
+    @Test
+    void extractDumpVersionReturnsEmptyWhenNoCandidateCarriesADate()
+    {
+        assertTrue(DumpFileDiscovery
+                .extractDumpVersion(List.of("pagelinks.sql.gz", "pages-articles.xml.bz2"))
+                .isEmpty());
     }
 }
