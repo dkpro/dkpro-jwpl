@@ -44,8 +44,9 @@ import org.dkpro.jwpl.wikimachine.util.DumpFileDiscovery;
 public class DataMachineFiles
     extends Files
 {
-    private final static String INPUT_PAGELINKS = "pagelinks.sql";
-    private final static String INPUT_CATEGORYLINKS = "categorylinks.sql";
+    private final static String INPUT_PAGELINKS = "pagelinks";
+    private final static String INPUT_CATEGORYLINKS = "categorylinks";
+    private final static String INPUT_LINKTARGET = "linktarget";
     private final static String INPUT_PAGESARTICLES = "pages-articles";
     private final static String INPUT_PAGESMETACURRENT = "pages-meta-current";
 
@@ -66,6 +67,7 @@ public class DataMachineFiles
 
     private File inputPagelinks = null;
     private File inputCategorylinks = null;
+    private File inputLinktarget = null;
     private List<File> inputPagesarticles = new ArrayList<>();
     private List<File> inputPagesMetaCurrent = new ArrayList<>();
 
@@ -92,6 +94,7 @@ public class DataMachineFiles
         this.inputPagelinks = files.inputPagelinks;
         this.inputPagesarticles = new ArrayList<>(files.inputPagesarticles);
         this.inputCategorylinks = files.inputCategorylinks;
+        this.inputLinktarget = files.inputLinktarget;
         this.inputPagesMetaCurrent = new ArrayList<>(files.inputPagesMetaCurrent);
         this.compressGeneratedFiles = files.compressGeneratedFiles;
     }
@@ -136,11 +139,17 @@ public class DataMachineFiles
                         SUPPORTED_EXTENSIONS)) {
                     metaCurrentParts.add(currentFile);
                 }
-                else if (name.contains(INPUT_PAGELINKS)) {
+                else if (DumpFileDiscovery.matchesSqlRole(name, INPUT_PAGELINKS,
+                        SUPPORTED_EXTENSIONS)) {
                     inputPagelinks = currentFile;
                 }
-                else if (name.contains(INPUT_CATEGORYLINKS)) {
+                else if (DumpFileDiscovery.matchesSqlRole(name, INPUT_CATEGORYLINKS,
+                        SUPPORTED_EXTENSIONS)) {
                     inputCategorylinks = currentFile;
+                }
+                else if (DumpFileDiscovery.matchesSqlRole(name, INPUT_LINKTARGET,
+                        SUPPORTED_EXTENSIONS)) {
+                    inputLinktarget = currentFile;
                 }
             }
             inputPagesarticles = DumpFileDiscovery.orderByPageRange(articleParts);
@@ -230,6 +239,21 @@ public class DataMachineFiles
             checkDataMachineSourceFiles();
         }
         return inputCategorylinks != null ? inputCategorylinks.getAbsolutePath() : null;
+    }
+
+    /**
+     * The {@code linktarget} dump is optional: it only exists for dumps produced by MediaWiki 1.43
+     * and later, where {@code categorylinks} and {@code pagelinks} reference their targets by id.
+     *
+     * @return Retrieves the absolute path of the {@code linktarget.sql} file, or {@code null} if
+     *         no such dump is present in the input directory.
+     */
+    public String getInputLinkTarget()
+    {
+        if (inputLinktarget == null) {
+            checkDataMachineSourceFiles();
+        }
+        return inputLinktarget != null ? inputLinktarget.getAbsolutePath() : null;
     }
 
     /**

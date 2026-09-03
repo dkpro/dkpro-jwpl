@@ -34,10 +34,12 @@ public class TimeMachineFiles
     private static final String NO_CATEGORYLINKS = "category links file not found";
     private static final String NO_METAHISTORY = "meta history file not found";
     private static final String NO_PAGELINKS = "page links file not found";
+    private static final String NO_LINKTARGET = "link target file not found";
 
     private final List<String> metaHistoryFiles = new ArrayList<>();
     private String pageLinksFile;
     private String categoryLinksFile;
+    private String linkTargetFile;
     private String timeStamp = "";
 
     public TimeMachineFiles(ILogger logger)
@@ -51,6 +53,7 @@ public class TimeMachineFiles
         this.metaHistoryFiles.addAll(files.metaHistoryFiles);
         this.pageLinksFile = files.pageLinksFile;
         this.categoryLinksFile = files.categoryLinksFile;
+        this.linkTargetFile = files.linkTargetFile;
     }
 
     /**
@@ -138,6 +141,25 @@ public class TimeMachineFiles
         this.categoryLinksFile = categoryLinksFile;
     }
 
+    /**
+     * The link target dump is optional: it only exists for dumps produced by MediaWiki 1.43 and
+     * later, where {@code categorylinks} and {@code pagelinks} reference their targets by id.
+     *
+     * @return The configured {@code linktarget} dump, or {@code null} if none was configured.
+     */
+    public String getLinkTargetFile()
+    {
+        return linkTargetFile;
+    }
+
+    /**
+     * @param linkTargetFile The {@code linktarget} dump to read, or {@code null} for none.
+     */
+    public void setLinkTargetFile(String linkTargetFile)
+    {
+        this.linkTargetFile = linkTargetFile;
+    }
+
     public boolean checkInputFile(String fileName, String errorMessage)
     {
         File inputFile = new File(fileName);
@@ -170,6 +192,10 @@ public class TimeMachineFiles
             if (!checkInputFile(part, NO_METAHISTORY)) {
                 return false;
             }
+        }
+        // The link target dump is optional; a configured but unreadable one is an error though.
+        if (linkTargetFile != null && !checkInputFile(linkTargetFile, NO_LINKTARGET)) {
+            return false;
         }
         return checkInputFile(pageLinksFile, NO_PAGELINKS)
                 && checkInputFile(categoryLinksFile, NO_CATEGORYLINKS);

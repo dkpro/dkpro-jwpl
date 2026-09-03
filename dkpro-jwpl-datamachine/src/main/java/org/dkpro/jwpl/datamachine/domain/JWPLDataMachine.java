@@ -43,7 +43,12 @@ public class JWPLDataMachine
             + "\tjava -jar JWPLDataMachine.jar <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>\n\n"
             + "The source directory must contain files\n" + "\tpagelinks.sql\n"
             + "\tpages-articles.xml\n" + "\tcategorylinks.sql\n"
+            + "\tlinktarget.sql (required for dumps produced by MediaWiki 1.43 and later, where\n"
+            + "\t                categorylinks/pagelinks reference their targets by id; ignored\n"
+            + "\t                for older dumps)\n"
             + "GZip, BZip2, and 7z compressed archives of above-named files are also allowed.\n"
+            + "Note that the linktarget table is loaded into memory; for large wikis increase the\n"
+            + "heap of the JVM accordingly (e.g. -Xmx8g).\n"
             + "Please set up a decompressor.xml for a usage of other external archive utilities (see documentation for more help).\n";
 
     private static final long startTime = System.currentTimeMillis();

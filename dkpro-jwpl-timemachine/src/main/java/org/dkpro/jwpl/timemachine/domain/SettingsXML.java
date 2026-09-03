@@ -40,6 +40,7 @@ public class SettingsXML
     public static final String OUTPUT_DIRECTORY = "outputDirectory";
     public static final String CATEGORY_LINKS_FILE = "categoryLinksFile";
     public static final String PAGE_LINKS_FILE = "pageLinksFile";
+    public static final String LINK_TARGET_FILE = "linkTargetFile";
     public static final String META_HISTORY_FILE = "metaHistoryFile";
     public static final String EACH = "each";
     public static final String TO_TIMESTAMP = "toTimestamp";
@@ -62,6 +63,7 @@ public class SettingsXML
         p.put(EACH, PLACEHOLDER);
         p.put(META_HISTORY_FILE, PLACEHOLDER);
         p.put(PAGE_LINKS_FILE, PLACEHOLDER);
+        p.put(LINK_TARGET_FILE, PLACEHOLDER);
         p.put(CATEGORY_LINKS_FILE, PLACEHOLDER);
         p.put(OUTPUT_DIRECTORY, PLACEHOLDER);
         try (OutputStream os = new BufferedOutputStream(new FileOutputStream(outputFileName))) {
@@ -102,6 +104,11 @@ public class SettingsXML
             result.setMetaHistoryFile(properties.get(META_HISTORY_FILE).toString());
             result.setPageLinksFile(properties.get(PAGE_LINKS_FILE).toString());
             result.setCategoryLinksFile(properties.get(CATEGORY_LINKS_FILE).toString());
+            // Optional - only present for MediaWiki 1.43+ dumps, so read it defensively.
+            final String linkTarget = properties.getProperty(LINK_TARGET_FILE);
+            if (linkTarget != null && !linkTarget.isBlank()) {
+                result.setLinkTargetFile(linkTarget);
+            }
             result.setOutputDirectory(properties.get(OUTPUT_DIRECTORY).toString());
         }
         catch (IOException e) {

@@ -27,6 +27,9 @@ import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.Files;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
+import org.dkpro.jwpl.wikimachine.dump.sql.FastUtilLinkTargetResolver;
+import org.dkpro.jwpl.wikimachine.dump.sql.LinkTargetResolver;
+import org.dkpro.jwpl.wikimachine.dump.sql.LinktargetParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
@@ -125,11 +128,14 @@ public class TimeMachineGenerator
         logger.log("Processing the page table");
         dumpVersionProcessor.processPage(createPageParser());
 
+        logger.log("Processing the linktarget table");
+        final LinkTargetResolver linkTargets = loadLinkTargets();
+
         logger.log("Processing the categorylinks table");
-        dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
+        dumpVersionProcessor.processCategorylinks(createCategorylinksParser(linkTargets));
 
         logger.log("Processing the pagelinks table");
-        dumpVersionProcessor.processPagelinks(createPagelinksParser());
+        dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
 
         logger.log("Processing the text table");
         dumpVersionProcessor.processText(createTextParser());
@@ -160,23 +166,50 @@ public class TimeMachineGenerator
         return pageParser;
     }
 
-    private CategorylinksParser createCategorylinksParser() throws IOException
+    /**
+     * Loads the configured {@code linktarget} dump, if any. It only exists for dumps produced by
+     * MediaWiki 1.43 and later; for older dumps {@code null} is returned and the link parsers use
+     * the target titles carried by the link tables themselves.
+     * <p>
+     * The resolver is created once and shared by both link parsers - one instance per dump
+     * version would multiply its (potentially considerable) memory footprint by the number of
+     * snapshots being generated.
+     *
+     * @return A populated {@link LinkTargetResolver}, or {@code null} if none was configured.
+     * @throws IOException Thrown if the dump is configured but cannot be read.
+     */
+    private LinkTargetResolver loadLinkTargets() throws IOException
+    {
+        final String linkTargetFile = initialFiles.getLinkTargetFile();
+        if (linkTargetFile == null) {
+            logger.log("No linktarget dump configured - assuming a legacy (pre-normalisation) "
+                    + "dump set.");
+            return null;
+        }
+        return FastUtilLinkTargetResolver.load(
+                new LinktargetParser(decompressor.getInputStream(linkTargetFile)),
+                FastUtilLinkTargetResolver.ARTICLE_TALK_AND_CATEGORY);
+    }
+
+    private CategorylinksParser createCategorylinksParser(LinkTargetResolver linkTargets)
+        throws IOException
     {
 
         String categorylinks = initialFiles.getCategoryLinksFile();
         InputStream categorylinksStream = decompressor.getInputStream(categorylinks);
 
-        return new CategorylinksParser(categorylinksStream);
+        return new CategorylinksParser(categorylinksStream, linkTargets);
 
     }
 
-    private PagelinksParser createPagelinksParser() throws IOException
+    private PagelinksParser createPagelinksParser(LinkTargetResolver linkTargets)
+        throws IOException
     {
 
         String pagelinks = initialFiles.getPageLinksFile();
 
         InputStream pagelinksStream = decompressor.getInputStream(pagelinks);
-        return new PagelinksParser(pagelinksStream);
+        return new PagelinksParser(pagelinksStream, linkTargets);
 
     }
 

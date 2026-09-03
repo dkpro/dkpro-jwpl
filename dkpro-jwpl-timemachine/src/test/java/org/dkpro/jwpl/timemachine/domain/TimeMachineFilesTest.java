@@ -95,6 +95,11 @@ class TimeMachineFilesTest {
     assertEquals(tmFiles.getCategoryLinksFile(), copy.getCategoryLinksFile());
     assertEquals(tmFiles.getPageLinksFile(), copy.getPageLinksFile());
     assertEquals(tmFiles.getMetaHistoryFile(), copy.getMetaHistoryFile());
+    assertEquals(tmFiles.getLinkTargetFile(), copy.getLinkTargetFile());
+
+    tmFiles.setLinkTargetFile(mockPageLinks.getAbsolutePath());
+    assertEquals(mockPageLinks.getAbsolutePath(),
+        new TimeMachineFiles(tmFiles).getLinkTargetFile());
   }
 
   @Test
@@ -231,5 +236,24 @@ class TimeMachineFilesTest {
 
     tmFiles.setMetaHistoryFiles(Arrays.asList(p1.toString(), p2.toString()));
     assertFalse(tmFiles.checkAll());
+  }
+
+  @Test
+  void testCheckAllWithoutLinkTargetFile() {
+    // The linktarget dump is optional: legacy dumps do not have one and must still validate.
+    assertNull(tmFiles.getLinkTargetFile());
+    assertTrue(tmFiles.checkAll());
+  }
+
+  @Test
+  void testCheckAllWithMissingLinkTargetFile() {
+    tmFiles.setLinkTargetFile(TEST_OUTPUT_DIR + "does-not-exist-linktarget.sql.gz");
+    assertFalse(tmFiles.checkAll());
+  }
+
+  @Test
+  void testCheckAllWithLinkTargetFile() {
+    tmFiles.setLinkTargetFile(mockCategoryLinks.getAbsolutePath());
+    assertTrue(tmFiles.checkAll());
   }
 }

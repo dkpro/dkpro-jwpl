@@ -29,6 +29,9 @@ import org.dkpro.jwpl.wikimachine.domain.Files;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
+import org.dkpro.jwpl.wikimachine.dump.sql.FastUtilLinkTargetResolver;
+import org.dkpro.jwpl.wikimachine.dump.sql.LinkTargetResolver;
+import org.dkpro.jwpl.wikimachine.dump.sql.LinktargetParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
@@ -105,11 +108,14 @@ public class DataMachineGenerator
         logger.log("Processing table page...");
         dumpVersionProcessor.processPage(createPageParser());
 
+        logger.log("Processing table linktarget...");
+        final LinkTargetResolver linkTargets = loadLinkTargets();
+
         logger.log("Processing table categorylinks...");
-        dumpVersionProcessor.processCategorylinks(createCategorylinksParser());
+        dumpVersionProcessor.processCategorylinks(createCategorylinksParser(linkTargets));
 
         logger.log("Processing table pagelinks...");
-        dumpVersionProcessor.processPagelinks(createPagelinksParser());
+        dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
 
         logger.log("Processing table revision...");
         dumpVersionProcessor.processRevision(createRevisionParser());
@@ -195,16 +201,37 @@ public class DataMachineGenerator
         return pageParser;
     }
 
-    private CategorylinksParser createCategorylinksParser() throws IOException
+    /**
+     * Loads the {@code linktarget} dump, if one is present in the input directory. It only exists
+     * for dumps produced by MediaWiki 1.43 and later; for older dumps {@code null} is returned and
+     * the link parsers use the target titles carried by the link tables themselves.
+     *
+     * @return A populated {@link LinkTargetResolver}, or {@code null} if no dump is available.
+     * @throws IOException Thrown if the dump is present but cannot be read.
+     */
+    private LinkTargetResolver loadLinkTargets() throws IOException
     {
-        String categorylinksFile = files.getInputCategoryLinks();
-        return new CategorylinksParser(decompressor.getInputStream(categorylinksFile));
+        final String linkTargetFile = files.getInputLinkTarget();
+        if (linkTargetFile == null) {
+            logger.log("No linktarget dump found - assuming a legacy (pre-normalisation) dump set.");
+            return null;
+        }
+        return FastUtilLinkTargetResolver.load(
+                new LinktargetParser(decompressor.getInputStream(linkTargetFile)),
+                FastUtilLinkTargetResolver.ARTICLE_TALK_AND_CATEGORY);
     }
 
-    private PagelinksParser createPagelinksParser() throws IOException
+    private CategorylinksParser createCategorylinksParser(LinkTargetResolver linkTargets)
+        throws IOException
+    {
+        String categorylinksFile = files.getInputCategoryLinks();
+        return new CategorylinksParser(decompressor.getInputStream(categorylinksFile), linkTargets);
+    }
+
+    private PagelinksParser createPagelinksParser(LinkTargetResolver linkTargets) throws IOException
     {
         String pagelinksFile = files.getInputPageLinks();
-        return new PagelinksParser(decompressor.getInputStream(pagelinksFile));
+        return new PagelinksParser(decompressor.getInputStream(pagelinksFile), linkTargets);
     }
 
     private RevisionParser createRevisionParser() throws IOException

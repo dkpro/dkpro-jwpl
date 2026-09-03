@@ -20,6 +20,7 @@ EXAMPLE FILE:
   <entry key="metaHistoryFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pages-meta-history.xml.bz2</entry>
   <entry key="categoryLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-categorylinks.sql.gz</entry>
   <entry key="pageLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pagelinks.sql.gz</entry>
+  <entry key="linkTargetFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-linktarget.sql.gz</entry>
   <entry key="outputDirectory">/home/zesch/wiki_data/elwiki_test</entry>
   <entry key="removeInputFilesAfterProcessing">false</entry>
 </properties>
@@ -34,6 +35,7 @@ EXAMPLE FILE:
  * metaHistoryFile - The absolute path to the pages-meta-history file. Only .xml and .xml.bz2 extensions are supported.
  * pageLinksFile - The absolute path to the pagelinks file only .sql and .sql.gz extensions are supported.
  * categoryLinksFile - The absolute path to the categorylinks file only .sql and .sql.gz extensions are supported.
+ * linkTargetFile - The absolute path to the linktarget file, only .sql and .sql.gz extensions are supported. This entry is *required* for dumps produced by MediaWiki 1.43 and later, whose categorylinks and pagelinks tables reference their link targets by id (`cl_target_id` / `pl_target_id`) instead of carrying the target title. It may be omitted for older dumps, which carry `cl_to` respectively `pl_namespace`/`pl_to`. The TimeMachine detects the layout from the `CREATE TABLE` header of the dumps and aborts with a descriptive error if a normalised dump is processed without this entry. Note that the linktarget table is held in memory while the link tables are processed, so increase the heap of the JVM accordingly for large wikis.
  * outputDirectory - The absolute path to the directory to which the transformed files will be written. The outputDirectory will be created if it does not exist. However its parent directory must exist.
  * removeInputFilesAfterProcessing - A boolean that specifies whether the meta-history file, the pagelinks file and the categorylinks file should be removed after the processing.
 
@@ -55,6 +57,7 @@ EXAMPLE FILE:
   <entry key="metaHistoryFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pages-meta-history.xml.bz2</entry>
   <entry key="categoryLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-categorylinks.sql.gz</entry>
   <entry key="pageLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pagelinks.sql.gz</entry>
+  <entry key="linkTargetFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-linktarget.sql.gz</entry>
   <entry key="outputDirectory">/home/zesch/wiki_data/elwiki_test</entry>
   <entry key="removeInputFilesAfterProcessing">false</entry>
 </properties>
@@ -76,6 +79,7 @@ EXAMPLE FILE:
     <entry key="metaHistoryFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pages-meta-history.xml.bz2</entry>
     <entry key="categoryLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-categorylinks.sql.gz</entry>
     <entry key="pageLinksFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-pagelinks.sql.gz</entry>
+    <entry key="linkTargetFile">/home/zesch/wiki_data/elwiki/elwiki-20080205-linktarget.sql.gz</entry>
     <entry key="outputDirectory">/home/zesch/wiki_data/elwiki_test</entry>
     <entry key="removeInputFilesAfterProcessing">false</entry>
 </properties>

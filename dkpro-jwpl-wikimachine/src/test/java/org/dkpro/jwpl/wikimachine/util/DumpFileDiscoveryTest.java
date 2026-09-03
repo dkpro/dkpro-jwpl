@@ -235,4 +235,53 @@ class DumpFileDiscoveryTest
                 .extractDumpVersion(List.of("pagelinks.sql.gz", "pages-articles.xml.bz2"))
                 .isEmpty());
     }
+
+    // matchesSqlRole -----------------------------------------------------------
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "aawiki-20260101-linktarget.sql.gz",
+            "dewiki-latest-linktarget.sql.bz2",
+            "wiki-linktarget.sql.7z",
+            "wiki-linktarget.sql",
+            "/tmp/dumps/dewiki-20260101-linktarget.sql.gz"
+    })
+    void matchesSqlRoleTrue(String name)
+    {
+        assertTrue(DumpFileDiscovery.matchesSqlRole(name, "linktarget", EXTENSIONS));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "aawiki-20260101-pagelinks.sql.gz",
+            "aawiki-20260101-categorylinks.sql.gz",
+            "aawiki-20260101-pages-articles.xml.bz2",
+            "linktarget.txt",
+            "linktarget.sql.zip"
+    })
+    void matchesSqlRoleFalse(String name)
+    {
+        assertFalse(DumpFileDiscovery.matchesSqlRole(name, "linktarget", EXTENSIONS));
+    }
+
+    @Test
+    void matchesSqlRoleDistinguishesTheLinkTables()
+    {
+        assertTrue(DumpFileDiscovery.matchesSqlRole("dewiki-latest-categorylinks.sql.bz2",
+                "categorylinks", EXTENSIONS));
+        assertFalse(DumpFileDiscovery.matchesSqlRole("dewiki-latest-categorylinks.sql.bz2",
+                "pagelinks", EXTENSIONS));
+        assertTrue(DumpFileDiscovery.matchesSqlRole("wiki-pagelinks.sql.7z", "pagelinks",
+                EXTENSIONS));
+    }
+
+    @Test
+    void matchesSqlRoleRejectsNullAndEmptyArguments()
+    {
+        assertFalse(DumpFileDiscovery.matchesSqlRole(null, "linktarget", EXTENSIONS));
+        assertFalse(DumpFileDiscovery.matchesSqlRole("wiki-linktarget.sql.gz", null, EXTENSIONS));
+        assertFalse(DumpFileDiscovery.matchesSqlRole("wiki-linktarget.sql.gz", "linktarget", null));
+        assertFalse(DumpFileDiscovery.matchesSqlRole("wiki-linktarget.sql.gz", "linktarget",
+                Collections.emptySet()));
+    }
 }

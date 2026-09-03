@@ -4,6 +4,7 @@
   <comment>This a configuration formular for the DBMapping Tool of the JWPL</comment>
   <entry key="pageLinksFile">tool-exec/aawiki-20260101-pagelinks.sql.gz</entry>
   <entry key="categoryLinksFile">tool-exec/aawiki-20260101-categorylinks.sql.gz</entry>
+  <entry key="linkTargetFile">tool-exec/aawiki-20260101-linktarget.sql.gz</entry>
   <entry key="metaHistoryFile">tool-exec/aawiki-20260101-pages-meta-history.xml.7z</entry>
   <entry key="fromTimestamp">2025-01-01 00:00:00.000</entry>
   <entry key="toTimestamp">2026-01-01 00:00:00.000</entry>

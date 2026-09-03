@@ -22,6 +22,8 @@ import java.io.IOException;
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Files;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
+import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
+import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 /**
@@ -35,10 +37,15 @@ import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
  * <a href="https://en.wikipedia.org/wiki/Special:NamespaceInfo">
  *   https://en.wikipedia.org/wiki/Special:NamespaceInfo</a>.
  *
+ * <p>
+ * It also provides the shared implementation of the category link and page link row processing by
+ * delegating to {@link LinkRowProcessor}; concrete subclasses only supply the {@link LinkRowSink}
+ * lookup hooks over their own map flavour.
+ *
  * @see IDumpVersion
  */
 public abstract class AbstractDumpVersion
-    implements IDumpVersion
+    implements IDumpVersion, LinkRowSink
 {
 
     /** Namespace code for articles */
@@ -285,6 +292,72 @@ public abstract class AbstractDumpVersion
         page.flush();
         pageMapLine.flush();
         pageRedirects.flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void processCategoryLinksRow(CategorylinksParser clParser) throws IOException
+    {
+        LinkRowProcessor.processCategoryLink(clParser, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void processPageLinksRow(PagelinksParser plParser)
+    {
+        LinkRowProcessor.processPageLink(plParser, this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final boolean isSkipPageEnabled()
+    {
+        return skipPage;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getDisambiguationCategoryTitle()
+    {
+        return metaData.getDisambiguationCategory();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void writeCategoryMembership(int categoryId, int pageId)
+    {
+        categoryPages.addRow(categoryId, pageId);
+        pageCategories.addRow(pageId, categoryId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void writeSubcategory(int parentCategoryId, int childCategoryId)
+    {
+        categoryOutlinks.addRow(parentCategoryId, childCategoryId);
+        categoryInlinks.addRow(childCategoryId, parentCategoryId);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public final void writePageLink(int fromPageId, int toPageId)
+    {
+        pageOutlinks.addRow(fromPageId, toPageId);
+        pageInlinks.addRow(toPageId, fromPageId);
     }
 
     /**

@@ -20,6 +20,7 @@ package org.dkpro.jwpl.datamachine.domain;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -293,5 +294,34 @@ class DataMachineFilesTest {
     DataMachineFiles files = new DataMachineFiles(factory.getLogger());
     files.setDataDirectory(dir.toAbsolutePath().toString());
     assertTrue(files.getInputPagesArticlesFiles().isEmpty());
+  }
+
+  @Test
+  void testGetInputLinkTargetIsNullWhenNoSuchDumpIsPresent() {
+    // The linktarget dump is optional: legacy dumps do not have one and must still validate.
+    assertNull(dmFiles.getInputLinkTarget());
+    assertTrue(dmFiles.checkAll());
+  }
+
+  @Test
+  void testGetInputLinkTargetIsDiscovered(@TempDir Path dir) throws IOException {
+    Files.createFile(dir.resolve("aawiki-20260101-pages-articles.xml.bz2"));
+    Files.createFile(dir.resolve("aawiki-20260101-pagelinks.sql.gz"));
+    Files.createFile(dir.resolve("aawiki-20260101-categorylinks.sql.gz"));
+    Files.createFile(dir.resolve("aawiki-20260101-linktarget.sql.gz"));
+
+    DataMachineFiles files = new DataMachineFiles(factory.getLogger());
+    files.setDataDirectory(dir.toAbsolutePath().toString());
+
+    assertTrue(files.checkAll());
+    assertEquals(dir.resolve("aawiki-20260101-linktarget.sql.gz").toAbsolutePath().toString(),
+        files.getInputLinkTarget());
+    assertEquals(dir.resolve("aawiki-20260101-pagelinks.sql.gz").toAbsolutePath().toString(),
+        files.getInputPageLinks());
+    assertEquals(dir.resolve("aawiki-20260101-categorylinks.sql.gz").toAbsolutePath().toString(),
+        files.getInputCategoryLinks());
+
+    DataMachineFiles copy = new DataMachineFiles(files);
+    assertEquals(files.getInputLinkTarget(), copy.getInputLinkTarget());
   }
 }
