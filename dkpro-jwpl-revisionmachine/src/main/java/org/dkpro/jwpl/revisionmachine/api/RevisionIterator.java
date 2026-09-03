@@ -373,7 +373,7 @@ public class RevisionIterator
                 catch (Exception e) {
                     this.previousRevision = null;
                     logger.error("Reconstruction failed - [ArticleId {}, RevisionId {}, RevisionCounter {}]",
-                            result.getInt(5), result.getInt(4), result.getInt(3));
+                            result.getInt(5), result.getInt(4), result.getInt(3), e);
                     return null;
                 }
 

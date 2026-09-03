@@ -57,6 +57,9 @@ public class NamespaceFilter
                 matches.put(key, trimmed);
             }
             catch (NumberFormatException e) {
+                // Not a numeric namespace key: fall back to matching the symbolic namespace
+                // names below. The exception is a mere control-flow signal here and carries no
+                // information beyond the input string, which is retained.
                 for (int key = 0; key < namespaceKeys.length; key++) {
                     if (trimmed.equalsIgnoreCase(namespaceKeys[key]))
                         matches.put(key, trimmed);

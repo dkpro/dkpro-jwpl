@@ -20,6 +20,7 @@ package org.dkpro.jwpl.parser.selectiveaccess;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,8 @@ import org.dkpro.jwpl.parser.SectionContainer;
 import org.dkpro.jwpl.parser.SectionContent;
 import org.dkpro.jwpl.parser.Span;
 import org.dkpro.jwpl.parser.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -47,6 +50,9 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class SelectiveAccessHandler
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     public static final String COLON = ":";
     public static final String TAB = "\t";
@@ -408,7 +414,8 @@ public class SelectiveAccessHandler
             sp.parse(XMLFile, handler);
         }
         catch (Exception e) {
-            System.err.println(e);
+            logger.error("Could not load configuration from '{}'. Falling back to the default "
+                    + "configuration.", XMLFile, e);
             loadConfig();
         }
     }
@@ -456,7 +463,7 @@ public class SelectiveAccessHandler
             bw.close();
         }
         catch (IOException e) {
-            System.err.println(e);
+            logger.error("Could not write configuration to '{}'.", XMLFile, e);
         }
     }
 }

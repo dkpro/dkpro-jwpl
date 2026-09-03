@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.article.reader;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -26,6 +27,8 @@ import java.util.Set;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Filter articles from unwanted namespaces.<br>
@@ -38,6 +41,9 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
  */
 public class ArticleFilter
 {
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
+
     private Map<Integer, String> namespaceMap;
 
     private Set<String> prefixesToAllow;
@@ -57,8 +63,7 @@ public class ArticleFilter
             config = ConfigurationManager.getInstance();
         }
         catch (ConfigurationException e) {
-            // TODO logger
-            System.err.print(e);
+            logger.error("Could not access the DiffTool configuration.", e);
         }
     }
 

@@ -247,7 +247,7 @@ public class Page
                     }
                     catch (WikiPageNotFoundException e) {
                         throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX
-                                + getTitle().getRawTitleText() + " was found.");
+                                + getTitle().getRawTitleText() + " was found.", e);
                     }
                 }
             }

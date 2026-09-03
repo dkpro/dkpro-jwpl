@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.util.templates;
 
+import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -49,12 +50,17 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.util.templates.RevisionPair.RevisionPairType;
 import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class gives access to the additional information created by the TemplateInfoGenerator.
  */
 public class WikipediaTemplateInfo
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private final Wikipedia wiki;
     private RevisionApi revApi = null;
@@ -1083,6 +1089,11 @@ public class WikipediaTemplateInfo
             p = wiki.getPage(pageTitle);
         }
         catch (WikiApiException e) {
+            // The page does not exist (or cannot be retrieved) - by contract, this method then
+            // yields an empty result instead of failing. As the exception is not propagated,
+            // it is logged here as it would be lost otherwise.
+            logger.debug("Could not retrieve page [{}]. Returning an empty template name list.",
+                    pageTitle, e);
             return new ArrayList<>();
         }
         return getTemplateNamesFromPage(p);
@@ -1353,7 +1364,7 @@ public class WikipediaTemplateInfo
                         }
                         catch (WikiPageNotFoundException e) {
                             // current was probably the last revision already
-                            System.out.println("Succeeding revision not found.");
+                            logger.debug("Succeeding revision not found.", e);
                         }
                     }
                     if (type == RevisionPairType.addTemplate) {
@@ -1372,14 +1383,14 @@ public class WikipediaTemplateInfo
                         }
                         catch (WikiPageNotFoundException e) {
                             // current was probably the first revision already
-                            System.out.println("Preceding revision not found.");
+                            logger.debug("Preceding revision not found.", e);
                         }
                     }
                 }
             }
             catch (WikiPageNotFoundException e) {
                 // The revision from the template db is missing in the revision db.
-                System.err.println("Current revision (" + revId + ")not found.");
+                logger.warn("Current revision ({}) not found.", revId, e);
             }
         }
 
@@ -1579,7 +1590,7 @@ public class WikipediaTemplateInfo
         }
         catch (WikiApiException e) {
             close();
-            System.err.println("Could not reconnect. Closing connection...");
+            logger.error("Could not reconnect. Closing connection...", e);
         }
     }
 
@@ -1590,6 +1601,10 @@ public class WikipediaTemplateInfo
             res = state.executeQuery();
         }
         catch (Exception e) {
+            // The query failed - most likely due to a stale connection. Reconnect once and retry.
+            // The original failure is not propagated as the retry either succeeds or fails with
+            // its own exception, hence it is logged here to not lose that information.
+            logger.debug("Query execution failed. Reconnecting and retrying ...", e);
             reconnect();
             res = state.executeQuery();
         }

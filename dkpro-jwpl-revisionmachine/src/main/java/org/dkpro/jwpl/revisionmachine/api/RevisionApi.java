@@ -133,7 +133,8 @@ public class RevisionApi
                 }
                 catch (SQLException e) {
                     throw new WikiApiException(
-                            "To execute this query for the first time, you need to have write permissions for the database.");
+                            "To execute this query for the first time, you need to have write permissions for the database.",
+                            e);
                 }
                 // fill with information extracted from RevisionCounter field
                 statement = this.connection.prepareStatement(

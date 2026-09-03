@@ -30,12 +30,16 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.common.util.Time;
 import org.dkpro.jwpl.revisionmachine.difftool.config.OutputTypes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generates the indices for the database.
  */
 public class IndexGenerator
 {
+
+    private static final Logger logger = LoggerFactory.getLogger(IndexGenerator.class);
 
     /**
      * Reference to the configuration
@@ -191,7 +195,7 @@ public class IndexGenerator
                 new IndexGenerator(config).generate();
             }
             catch (Exception e) {
-                e.printStackTrace();
+                logger.error("Index generation failed.", e);
             }
 
             System.out.println("TERMINATED");
@@ -215,7 +219,7 @@ public class IndexGenerator
             props.load(fis);
         }
         catch (IOException e) {
-            System.err.println("Could not load configuration file " + configFilePath);
+            logger.error("Could not load configuration file [{}]", configFilePath, e);
         }
         finally {
             if (fis != null) {
@@ -223,8 +227,8 @@ public class IndexGenerator
                     fis.close();
                 }
                 catch (IOException e) {
-                    System.err.println(
-                            "Error closing file stream of configuration file " + configFilePath);
+                    logger.error("Error closing file stream of configuration file [{}]",
+                            configFilePath, e);
                 }
             }
         }

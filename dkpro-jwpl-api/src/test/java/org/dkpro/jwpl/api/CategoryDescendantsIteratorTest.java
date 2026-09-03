@@ -61,8 +61,7 @@ public class CategoryDescendantsIteratorTest
             cat = wiki.getCategory("UKP");
         }
         catch (WikiApiException e) {
-            e.printStackTrace();
-            fail("A WikiApiException occurred while getting the category 'UKP'");
+            fail("A WikiApiException occurred while getting the category 'UKP'", e);
         }
 
         List<Integer> expectedPageIds = new ArrayList<>();
@@ -97,8 +96,7 @@ public class CategoryDescendantsIteratorTest
             cat = wiki.getCategory("UKP");
         }
         catch (WikiApiException e) {
-            e.printStackTrace();
-            fail("A WikiApiException occurred while getting the category 'UKP'");
+            fail("A WikiApiException occurred while getting the category 'UKP'", e);
         }
 
         List<Integer> expectedPageIds = new ArrayList<>();

@@ -17,14 +17,21 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool;
 
+import java.lang.invoke.MethodHandles;
+
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationReader;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The command line tool to the start the DiffTool application.
  */
 public class DiffTool
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String USAGE = "Please use\n"
             + "\tjava -jar JWPLRevisionMachine.jar "
@@ -52,7 +59,7 @@ public class DiffTool
                 ConfigSettings config = new ConfigurationReader(args[0]).read();
                 new DiffToolThread(config).start();
             } catch (Exception e) {
-                e.printStackTrace();
+                logger.error("The DiffTool terminated abnormally.", e);
             }
         } else {
             // Arg for configuration file is missing

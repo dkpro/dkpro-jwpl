@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.util.templates;
 
 import java.io.Serializable;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +27,8 @@ import java.util.Objects;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.util.templates.parser.ParseUtils;
 import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents a pair of (adjacent) revisions. In the second pair part (=after) a template has been
@@ -34,6 +37,9 @@ import org.dkpro.jwpl.util.templates.parser.SectionExtractor.ExtractedSection;
 public class RevisionPair
     implements Serializable
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     private static final long serialVersionUID = -1958556838478438963L;
     private final Revision before;
@@ -156,8 +162,7 @@ public class RevisionPair
             // in the parser, which is not wrapped in a Compiler exception.
             // Therefore, we should catch all exceptions here and return the
             // TextPairs identified so far (if any)
-            System.err.println(ex.getMessage());
-            // TODO use logger!!
+            logger.error("Could not extract text pairs from revision pair.", ex);
         }
         return pairList;
     }

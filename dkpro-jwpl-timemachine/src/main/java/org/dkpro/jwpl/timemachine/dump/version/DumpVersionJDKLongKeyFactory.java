@@ -34,6 +34,10 @@ public class DumpVersionJDKLongKeyFactory
                     StringHashCodeJBoss.class);
         }
         catch (Exception e) {
+            // Only reflective instantiation failures of the hard-wired hash algorithm class can
+            // occur here, which cannot happen for a type with a public no-arg constructor. The
+            // cause is intentionally not propagated because the factory contract does not permit
+            // throwing; a 'null' result signals the (unreachable) failure to the caller.
             dumpVersion = null;
         }
         return dumpVersion;

@@ -363,7 +363,7 @@ public class PlainTextConverter
             }
         }
         catch (LinkTargetException e) {
-            logger.warn(e.getLocalizedMessage());
+            logger.warn(e.getLocalizedMessage(), e);
         }
 
         write(link.getPrefix());

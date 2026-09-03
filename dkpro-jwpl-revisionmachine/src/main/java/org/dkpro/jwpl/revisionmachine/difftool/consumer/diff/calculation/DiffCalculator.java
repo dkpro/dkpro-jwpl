@@ -383,6 +383,8 @@ public class DiffCalculator
             }
         }
         catch (NullPointerException e) {
+            // A faulty revision without accessible text is skipped. The exception is only used to
+            // detect that condition and carries no additional information, hence it is not chained.
             return null;
         }
 

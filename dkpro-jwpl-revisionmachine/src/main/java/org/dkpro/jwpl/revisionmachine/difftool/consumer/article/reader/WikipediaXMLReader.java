@@ -20,6 +20,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.article.reader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +41,8 @@ import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.SQLEscape;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.TaskTypes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.info.ArticleInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -53,6 +56,9 @@ import org.xml.sax.SAXException;
 public class WikipediaXMLReader
     implements ArticleReaderInterface
 {
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
      * Reference to the reader
@@ -227,10 +233,10 @@ public class WikipediaXMLReader
             }
         }
         catch (IOException e) {
-            System.err.println("Error reading namespaces from xml dump.");
+            logger.error("Error reading namespaces from xml dump.", e);
         }
         catch (ParserConfigurationException | SAXException e) {
-            System.err.println("Error parsing namespace data.");
+            logger.error("Error parsing namespace data.", e);
         }
     }
 

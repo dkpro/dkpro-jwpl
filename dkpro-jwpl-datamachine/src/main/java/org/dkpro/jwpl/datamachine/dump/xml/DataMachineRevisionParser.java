@@ -43,6 +43,8 @@ public class DataMachineRevisionParser
             revTextId = stream.readInt();
         }
         catch (EOFException e) {
+            // Reaching the end of the stream is the regular termination signal here, not an
+            // error. The exception therefore carries no information worth propagating.
             hasNext = false;
         }
         return hasNext;

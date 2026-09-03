@@ -18,10 +18,13 @@
 package org.dkpro.jwpl.api;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.engine.utils.LanguageConfigGenerator;
@@ -85,6 +88,9 @@ public interface WikiConstants
         west_frisian, wolof, wu, xhosa, yiddish, yoruba, zamboanga_chavacano, zazaki, zealandic,
         zhuang, zulu, _test;
 
+        private static final Logger logger = LoggerFactory
+                .getLogger(MethodHandles.lookup().lookupClass());
+
         /**
          * Configures a language specific configuration for parsing wikipedia pages.
          *
@@ -105,10 +111,8 @@ public interface WikiConstants
                     }
                 }
                 catch (IOException | ParserConfigurationException | SAXException e) {
-                    System.out.println(String.format(
-                            "Failed to create WikiConfig for language for %s, using default instead",
-                            langName));
-                    e.printStackTrace();
+                    logger.warn("Failed to create WikiConfig for language for {}, "
+                            + "using default instead", langName, e);
                 }
             }
             return config;

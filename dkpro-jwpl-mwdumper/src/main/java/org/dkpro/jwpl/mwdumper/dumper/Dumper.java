@@ -273,7 +273,7 @@ class Dumper
             return new OutputWrapper(conn);
         }
         catch (Exception e) {
-            throw new IOException(e.toString());
+            throw new IOException(e.toString(), e);
         }
     }
 

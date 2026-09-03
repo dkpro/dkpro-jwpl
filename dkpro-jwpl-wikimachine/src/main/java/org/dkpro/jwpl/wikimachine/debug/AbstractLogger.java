@@ -28,6 +28,12 @@ public abstract class AbstractLogger
 {
 
     /**
+     * Upper bound for the number of chained causes rendered by
+     * {@link #createThrowableMessage(Throwable)}.
+     */
+    private static final int MAX_CAUSE_DEPTH = 32;
+
+    /**
      * Checks whether a {@link Class} is throwable or not.
      * @param c The class to investigate.
      * @return {@code true} if {@code c} is throwable, {@code false} otherwise.
@@ -66,6 +72,18 @@ public abstract class AbstractLogger
         for (StackTraceElement currentTrace : e.getStackTrace()) {
             message.append('\n');
             message.append(currentTrace);
+        }
+        // Render the chained causes as well - otherwise the root of the problem is lost.
+        // The depth is bounded so that a (pathological) cyclic cause chain cannot loop forever.
+        int depth = 0;
+        for (Throwable cause = e.getCause(); cause != null
+                && depth < MAX_CAUSE_DEPTH; cause = cause.getCause(), depth++) {
+            message.append("\n\nCaused by: ");
+            message.append(cause);
+            for (StackTraceElement currentTrace : cause.getStackTrace()) {
+                message.append('\n');
+                message.append(currentTrace);
+            }
         }
         return message.toString();
     }

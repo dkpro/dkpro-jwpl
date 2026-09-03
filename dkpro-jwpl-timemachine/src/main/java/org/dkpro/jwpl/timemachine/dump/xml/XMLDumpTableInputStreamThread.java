@@ -134,6 +134,9 @@ class XMLDumpTableInputStreamThread
             isComplete = true;
         }
         catch (IOException e) {
+            // The rethrown exception dies with this thread - no caller ever joins it, the
+            // consumer only observes a broken pipe. Hence this log is the only record of the
+            // original cause and must not be removed as 'redundant'.
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
         }

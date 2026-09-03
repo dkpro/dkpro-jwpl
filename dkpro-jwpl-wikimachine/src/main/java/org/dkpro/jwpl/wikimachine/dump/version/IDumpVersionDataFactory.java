@@ -66,7 +66,7 @@ public interface IDumpVersionDataFactory extends IDumpVersionFactory {
           return c.getDeclaredConstructor().newInstance();
       } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException |
                InvocationTargetException | IllegalAccessException e) {
-        throw new RuntimeException("Errors during creation of IDumpVersionDataFactory instance!");
+        throw new RuntimeException("Errors during creation of IDumpVersionDataFactory instance!", e);
       }
   }
 }

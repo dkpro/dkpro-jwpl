@@ -111,7 +111,7 @@ public class PageQueryIterable
             }
             catch (WikiPageNotFoundException e) {
                 logger.warn("Page with pageID {} could not be found. Fatal error. Terminating.",
-                        pageID);
+                        pageID, e);
             }
 
             if (!(q.getMinIndegree() >= 0 && q.getMaxIndegree() >= 0

@@ -194,7 +194,6 @@ public class Indexer
                     send();
                 }
                 catch (SQLException | IOException sql) {
-                    sql.printStackTrace();
                     throw new WikiApiException(sql);
                 }
             }
@@ -280,7 +279,6 @@ public class Indexer
 
         }
         catch (SQLException | IOException sql) {
-            sql.printStackTrace();
             throw new WikiApiException(sql);
         }
     }

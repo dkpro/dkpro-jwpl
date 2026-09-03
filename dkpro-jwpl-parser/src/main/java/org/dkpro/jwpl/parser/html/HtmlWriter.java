@@ -367,6 +367,8 @@ public class HtmlWriter
             colspan = t.getTableElement(t.nrOfTableElements() - 1).getCol() + 1;
         }
         catch (Exception e) {
+            // The table carries no elements to derive the column count from - a single column is
+            // the correct fallback here, so the exception is intentionally not propagated.
             colspan = 1;
         }
 
