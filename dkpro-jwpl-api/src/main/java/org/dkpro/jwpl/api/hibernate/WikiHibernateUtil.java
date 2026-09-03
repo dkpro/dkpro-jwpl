@@ -17,6 +17,12 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import java.lang.invoke.MethodHandles;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -26,6 +32,8 @@ import org.dkpro.jwpl.api.WikiConstants;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class which provides access to underlying Hibernate session factories.
@@ -34,7 +42,31 @@ public class WikiHibernateUtil
     implements WikiConstants
 {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final String METADATA_TABLE = "MetaData";
+    private static final String VERSION_COLUMN = "version";
+
+    /**
+     * Identifier casing differs per backend — HSQLDB folds unquoted identifiers to upper case,
+     * MariaDB on Linux preserves the case a table was created with. The variants are probed in
+     * this order; the first one that yields any column decides.
+     */
+    private static final String[] TABLE_NAME_VARIANTS = { "MetaData", "METADATA", "metadata" };
+
+    /** The remedy quoted to users whose database predates the {@code version} column. */
+    private static final String ADD_VERSION_COLUMN_DDL = "ALTER TABLE MetaData ADD COLUMN version "
+            + "VARCHAR(255) DEFAULT NULL;";
+
     private static final Map<String, SessionFactory> sessionFactoryMap = new HashMap<>();
+
+    /**
+     * The {@code MetaData} entity bound for a given session factory, keyed exactly like
+     * {@link #sessionFactoryMap} so that both stay in lockstep.
+     */
+    private static final Map<String, Class<? extends AbstractMetaData>> metaDataEntityMap
+            = new HashMap<>();
 
     /**
      * Retrieves (and creates) a {@link SessionFactory} for a specified {@link DatabaseConfiguration}.
@@ -58,17 +90,123 @@ public class WikiHibernateUtil
             throw new ExceptionInInitializerError(
                     "Database configuration error. 'Database' is empty.");
         }
+        else if (config.getJdbcURL() == null) {
+            throw new ExceptionInInitializerError(
+                    "Database configuration error. 'JdbcURL' is empty.");
+        }
 
+        // Note: the key intentionally ignores the JDBC URL, the driver and the credentials.
+        // It now also binds the probed 'MetaData' entity choice - see metaDataEntityMap.
         String uniqueSessionKey = config.getLanguage().toString() + config.getHost()
                 + config.getDatabase();
         if (!sessionFactoryMap.containsKey(uniqueSessionKey)) {
-            Configuration configuration = getConfiguration(config);
+            Class<? extends AbstractMetaData> metaDataEntity = hasMetaDataVersionColumn(config)
+                    ? MetaData.class
+                    : LegacyMetaData.class;
+            Configuration configuration = getConfiguration(config, metaDataEntity);
             StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder()
                     .applySettings(configuration.getProperties());
             SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.build());
             sessionFactoryMap.put(uniqueSessionKey, sessionFactory);
+            metaDataEntityMap.put(uniqueSessionKey, metaDataEntity);
         }
         return sessionFactoryMap.get(uniqueSessionKey);
+    }
+
+    /**
+     * Retrieves the {@code MetaData} entity bound for a specified {@link DatabaseConfiguration},
+     * i.e. either {@link MetaData} (current schema) or {@link LegacyMetaData} (schema predating the
+     * {@code version} column). The underlying schema probe runs only once, when the
+     * {@link SessionFactory} for {@code config} is built.
+     * <p>
+     * Note well: this is internal API for {@link org.dkpro.jwpl.api.MetaData}. It is only public
+     * because that class resides in a different package.
+     *
+     * @param config The {@link DatabaseConfiguration} to look up. Must not be {@code null}.
+     * @return The bound entity class, never {@code null}.
+     */
+    public static Class<? extends AbstractMetaData> getMetaDataEntityClass(
+            DatabaseConfiguration config)
+    {
+        // Ensures the probe has run and the map is populated; idempotent and cached.
+        getSessionFactory(config);
+        String uniqueSessionKey = config.getLanguage().toString() + config.getHost()
+                + config.getDatabase();
+        return metaDataEntityMap.getOrDefault(uniqueSessionKey, MetaData.class);
+    }
+
+    /**
+     * Probes the live database for the presence of the {@code MetaData.version} column. This is a
+     * single JDBC metadata lookup performed once per {@link SessionFactory}, never per query.
+     * <p>
+     * If the probe cannot be carried out - for instance because the JDBC driver is unavailable or
+     * the account lacks the privileges to read schema metadata - the current schema is assumed,
+     * which is exactly the behaviour of JWPL versions predating this probe.
+     *
+     * @param config The {@link DatabaseConfiguration} to probe.
+     * @return {@code false} only if the {@code MetaData} table was found <i>and</i> demonstrably
+     *         carries no {@code version} column; {@code true} otherwise.
+     */
+    private static boolean hasMetaDataVersionColumn(DatabaseConfiguration config)
+    {
+        try {
+            Class.forName(config.getDatabaseDriver());
+            try (Connection connection = DriverManager.getConnection(config.getJdbcURL(),
+                    config.getUser(), config.getPassword())) {
+                DatabaseMetaData databaseMetaData = connection.getMetaData();
+                // The catalog reported by the connection first, to avoid picking up a same-named
+                // table from another schema; then 'null' for drivers whose metadata calls do not
+                // match the reported catalog.
+                String[] catalogs = { connection.getCatalog(), null };
+                for (String catalog : catalogs) {
+                    Boolean seen = probeCatalog(databaseMetaData, catalog);
+                    if (seen != null) {
+                        if (!seen) {
+                            logger.warn("The column '{}' is missing in table '{}'. Falling back to "
+                                    + "the legacy mapping - MetaData#getVersion() will return null."
+                                    + " To use the current schema, run: {}", VERSION_COLUMN,
+                                    METADATA_TABLE, ADD_VERSION_COLUMN_DDL);
+                        }
+                        return seen;
+                    }
+                }
+            }
+        }
+        catch (SQLException | ClassNotFoundException | RuntimeException e) {
+            logger.debug("Could not probe the MetaData schema; assuming the current layout.", e);
+        }
+        // The table was not visible at all - not a legacy signal.
+        return true;
+    }
+
+    /**
+     * Probes a single catalog for the {@code MetaData} table.
+     *
+     * @param databaseMetaData The {@link DatabaseMetaData} to query.
+     * @param catalog          The catalog to inspect; may be {@code null}.
+     * @return {@code Boolean.TRUE} if the table was found and carries a {@code version} column,
+     *         {@code Boolean.FALSE} if it was found without one, and {@code null} if the table was
+     *         not found under any name variant.
+     */
+    private static Boolean probeCatalog(DatabaseMetaData databaseMetaData, String catalog)
+        throws SQLException
+    {
+        for (String variant : TABLE_NAME_VARIANTS) {
+            boolean anyColumn = false;
+            boolean versionColumn = false;
+            try (ResultSet columns = databaseMetaData.getColumns(catalog, null, variant, null)) {
+                while (columns.next()) {
+                    anyColumn = true;
+                    if (VERSION_COLUMN.equalsIgnoreCase(columns.getString("COLUMN_NAME"))) {
+                        versionColumn = true;
+                    }
+                }
+            }
+            if (anyColumn) {
+                return versionColumn;
+            }
+        }
+        return null;
     }
 
     private static Properties getProperties(DatabaseConfiguration config)
@@ -147,11 +285,19 @@ public class WikiHibernateUtil
         return p;
     }
 
-    private static Configuration getConfiguration(DatabaseConfiguration config)
+    private static Configuration getConfiguration(DatabaseConfiguration config,
+            Class<? extends AbstractMetaData> metaDataEntity)
     {
-        return new Configuration().addAnnotatedClass(Category.class)
-                .addAnnotatedClass(MetaData.class).addAnnotatedClass(Page.class)
+        Configuration configuration = new Configuration().addAnnotatedClass(Category.class)
+                .addAnnotatedClass(metaDataEntity).addAnnotatedClass(Page.class)
                 .addAnnotatedClass(PageMapLine.class).addProperties(getProperties(config));
+
+        Properties overrides = config.getHibernateProperties();
+        if (overrides != null && !overrides.isEmpty()) {
+            // Caller-supplied settings are merged last and therefore override JWPL's defaults.
+            configuration.addProperties(overrides);
+        }
+        return configuration;
     }
 
 }

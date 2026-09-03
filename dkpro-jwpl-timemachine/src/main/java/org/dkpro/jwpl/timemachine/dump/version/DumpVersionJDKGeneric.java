@@ -19,7 +19,6 @@ package org.dkpro.jwpl.timemachine.dump.version;
 
 import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -36,8 +35,6 @@ import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
-import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
-import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 /**
  * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} of the provided HashAlgorithm type
@@ -384,20 +381,6 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
                 pageMapLine.addRow(page_id, redirectName, id, SQL_NULL, SQL_NULL);
                 metaData.addRedirect();
             }
-        }
-    }
-
-    @Override
-    public void writeMetaData() throws IOException
-    {
-        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
-            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
-            // nrOfDisambiguationPages, nrOfCategories, timestamp
-            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
-                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
-                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
-                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
-                    TimestampUtil.toMediaWikiString(metaData.getTimestamp()));
         }
     }
 

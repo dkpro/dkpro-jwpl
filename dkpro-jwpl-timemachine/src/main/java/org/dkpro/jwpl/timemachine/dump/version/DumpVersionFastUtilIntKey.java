@@ -32,8 +32,6 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
-import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
-import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
@@ -356,20 +354,6 @@ public class DumpVersionFastUtilIntKey
                 pageMapLine.addRow(page_id, redirectName, id, SQL_NULL, SQL_NULL);
                 metaData.addRedirect();
             }
-        }
-    }
-
-    @Override
-    public void writeMetaData() throws IOException
-    {
-        try (var outputFile = new TxtFileWriter(versionFiles.getOutputMetadata())) {
-            // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
-            // nrOfDisambiguationPages, nrOfCategories, timestamp
-            outputFile.addRow(metaData.getId(), metaData.getLanguage(),
-                    metaData.getDisambiguationCategory(), metaData.getMainCategory(),
-                    metaData.getNrOfPages(), metaData.getNrOfRedirects(),
-                    metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
-                    TimestampUtil.toMediaWikiString(metaData.getTimestamp()));
         }
     }
 }

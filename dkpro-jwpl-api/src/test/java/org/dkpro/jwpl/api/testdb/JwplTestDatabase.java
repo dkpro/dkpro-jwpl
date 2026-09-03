@@ -159,6 +159,27 @@ public final class JwplTestDatabase
         return db;
     }
 
+    /**
+     * Provisions an arbitrary database from classpath SQL fixtures. Used by tests that need a
+     * second, differently shaped catalog next to the shared fixture.
+     *
+     * @param jdbcUrl   The JDBC url to connect to.
+     * @param user      The user name to authenticate with.
+     * @param password  The password to authenticate with.
+     * @param resources The classpath resources holding the SQL scripts, applied in order.
+     */
+    public static void provision(String jdbcUrl, String user, String password, String... resources)
+    {
+        try (Connection c = DriverManager.getConnection(jdbcUrl, user, password)) {
+            for (String r : resources) {
+                executeScript(c, readResource(r));
+            }
+        }
+        catch (IOException | SQLException e) {
+            throw new IllegalStateException("Failed to provision database at " + jdbcUrl, e);
+        }
+    }
+
     private void applyScripts(String jdbcUrl, String user, String password, String... resources)
     {
         try (Connection c = DriverManager.getConnection(jdbcUrl, user, password)) {
@@ -171,7 +192,7 @@ public final class JwplTestDatabase
         }
     }
 
-    private static String readResource(String name) throws IOException
+    static String readResource(String name) throws IOException
     {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try (InputStream in = cl.getResourceAsStream(name)) {
@@ -188,7 +209,7 @@ public final class JwplTestDatabase
      * comments. This matters because our fixture contains semicolons both in
      * data strings and in header comments.
      */
-    private static void executeScript(Connection c, String script) throws SQLException
+    static void executeScript(Connection c, String script) throws SQLException
     {
         StringBuilder stmt = new StringBuilder();
         int i = 0;

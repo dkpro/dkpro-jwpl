@@ -37,11 +37,17 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
-import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
 /**
  * This class holds the data for a specific dump version.
+ * <p>
+ * Note: this implementation is not reachable from any wired
+ * {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionDataFactory factory} — the TimeMachine
+ * uses {@link DumpVersionFastUtilIntKey} instead. It is retained for API compatibility only and is
+ * kept in sync with the canonical nine-column {@code MetaData.txt} layout defined by
+ * {@link org.dkpro.jwpl.wikimachine.dump.version.AbstractDumpVersion#writeMetaData()} purely for
+ * consistency, not because it runs.
  */
 public class OriginalDumpVersion
     implements IDumpVersion
@@ -352,12 +358,13 @@ public class OriginalDumpVersion
     {
         try (TxtFileWriter metaData_ = new TxtFileWriter(versionFiles.getOutputMetadata())) {
             // ID, LANGUAGE, DISAMBIGUATION_CATEGORY, MAIN_CATEGORY, nrOfPages, nrOfRedirects,
-            // nrOfDisambiguationPages, nrOfCategories, timestamp
+            // nrOfDisambiguationPages, nrOfCategories, version
             metaData_.addRow(metaData.getId(), metaData.getLanguage(),
                     metaData.getDisambiguationCategory(), metaData.getMainCategory(),
                     metaData.getNrOfPages(), metaData.getNrOfRedirects(),
                     metaData.getNrOfDisambiguations(), metaData.getNrOfCategories(),
-                    TimestampUtil.toMediaWikiString(metaData.getTimestamp()));
+                    metaData.getVersion() != null ? metaData.getVersion()
+                            : MetaData.NULL_MARKER);
             System.out.println("-------------------------------");
             System.out.println("Timestamp          : " + timestamp.toString());
             System.out.println("nrOfCategories     : " + metaData.getNrOfCategories());

@@ -18,11 +18,13 @@
 package org.dkpro.jwpl.datamachine.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -86,6 +88,16 @@ public class JWPLDataMachineE2ETest {
             (path, basicFileAttributes) -> path.toFile().getName().endsWith(".txt")
     );
     assertEquals(11,  results.count());
+    // MetaData.txt must carry all nine columns; the ninth is the dump version derived from the
+    // input file names (the bundled fixtures are 'aawiki-20260101-*').
+    List<String> metaData = Files.readAllLines(
+            Path.of(OUTPUT_DIR + File.separator + "output" + File.separator + "MetaData.txt"),
+            StandardCharsets.UTF_8);
+    assertEquals(1, metaData.size());
+    String[] fields = metaData.get(0).split("\t", -1);
+    assertEquals(9, fields.length);
+    assertEquals("20260101000000", fields[8]);
+    assertTrue(fields[0].length() > 0);
   }
 
   @Test

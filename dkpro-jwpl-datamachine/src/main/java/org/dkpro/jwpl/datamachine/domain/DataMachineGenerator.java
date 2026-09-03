@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.dkpro.jwpl.datamachine.dump.xml.XML2Binary;
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
@@ -36,6 +37,7 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
+import org.dkpro.jwpl.wikimachine.util.DumpFileDiscovery;
 
 /**
  * Transforms a database from mediawiki format to JWPL format.<br>
@@ -78,6 +80,7 @@ public class DataMachineGenerator
     {
         version = envFactory.getDumpVersion();
         MetaData metaData = MetaData.initWithConfig(configuration);
+        resolveDumpVersion().ifPresent(metaData::setVersion);
         version.initialize(null);
         version.setMetaData(metaData);
         version.setFiles(files);
@@ -143,6 +146,41 @@ public class DataMachineGenerator
         }
         throw new IOException("No pages-articles or pages-meta-current dump found in the input "
                 + "directory.");
+    }
+
+    /**
+     * Derives the dump version written into the {@code MetaData.version} column from the Wikimedia
+     * dump date embedded in the input file names, which follow the convention
+     * {@code <wiki>-<YYYYMMDD>-<role>...}. Candidates are inspected in this order, and the first
+     * one carrying a date wins: every {@code pages-meta-current} part, every
+     * {@code pages-articles} part, {@code pagelinks.sql}, {@code categorylinks.sql}.
+     * <p>
+     * The value is normalised to the MediaWiki {@code yyyyMMddHHmmss} shape the TimeMachine emits,
+     * i.e. the dump date followed by {@code 000000}.
+     *
+     * @return The derived dump version, or {@link Optional#empty()} if none could be determined —
+     *         in which case {@code MetaData.version} is written as SQL {@code NULL}.
+     */
+    private Optional<String> resolveDumpVersion()
+    {
+        final List<String> candidates = new ArrayList<>();
+        candidates.addAll(files.getInputPagesMetaCurrentFiles());
+        candidates.addAll(files.getInputPagesArticlesFiles());
+        addIfPresent(candidates, files.getInputPageLinks());
+        addIfPresent(candidates, files.getInputCategoryLinks());
+        final Optional<String> dumpVersion = DumpFileDiscovery.extractDumpVersion(candidates);
+        if (dumpVersion.isEmpty()) {
+            logger.log("Could not derive a dump version from the input file names; "
+                    + "MetaData.version will be NULL.");
+        }
+        return dumpVersion;
+    }
+
+    private static void addIfPresent(List<String> candidates, String fileName)
+    {
+        if (fileName != null) {
+            candidates.add(fileName);
+        }
     }
 
     private PageParser createPageParser() throws IOException
