@@ -18,14 +18,18 @@
 package org.dkpro.jwpl.api.hibernate;
 
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants;
@@ -59,14 +63,95 @@ public class WikiHibernateUtil
     private static final String ADD_VERSION_COLUMN_DDL = "ALTER TABLE MetaData ADD COLUMN version "
             + "VARCHAR(255) DEFAULT NULL;";
 
-    private static final Map<String, SessionFactory> sessionFactoryMap = new HashMap<>();
+    /**
+     * The JVM-wide session factory cache. Both the {@link SessionFactory} and the {@code MetaData}
+     * entity probed for it live in a single {@link CachedSessionFactory} value, so that the two can
+     * not drift apart.
+     */
+    private static final Map<SessionFactoryKey, CachedSessionFactory> sessionFactoryMap
+            = new ConcurrentHashMap<>();
 
     /**
-     * The {@code MetaData} entity bound for a given session factory, keyed exactly like
-     * {@link #sessionFactoryMap} so that both stay in lockstep.
+     * The immutable, value derived cache key of a {@link DatabaseConfiguration}. Every field which
+     * affects the connection a {@link SessionFactory} ends up using is a component here, so that two
+     * configurations differing in any of them cannot share a cached factory. Being a record, equality
+     * is component wise - unlike a concatenated string it therefore cannot suffer boundary collisions
+     * such as {@code host="hostdb", database="x"} versus {@code host="host", database="dbx"}.
+     * <p>
+     * The password is held as a digest only, never in the clear.
+     *
+     * @param language        The wiki {@link Language}; {@code null} is tolerated by the key itself.
+     * @param host            The database host.
+     * @param database        The database name.
+     * @param jdbcURL         The JDBC url the connection is actually opened against.
+     * @param databaseDriver  The JDBC driver class name; may be {@code null}.
+     * @param user            The database user; may be {@code null}.
+     * @param passwordDigest  The SHA-256 hex digest of the password, or {@code null} if the password
+     *                        itself was {@code null}.
      */
-    private static final Map<String, Class<? extends AbstractMetaData>> metaDataEntityMap
-            = new HashMap<>();
+    record SessionFactoryKey(Language language, String host, String database, String jdbcURL,
+            String databaseDriver, String user, String passwordDigest)
+    {
+
+        /**
+         * Renders every component but the password, which is elided entirely - not even its digest is
+         * shown. The generated record {@code toString()} would print all components, and this
+         * representation is what can end up in a log statement or an exception message.
+         */
+        @Override
+        public String toString()
+        {
+            return "SessionFactoryKey[language=" + language + ", host=" + host + ", database="
+                    + database + ", jdbcURL=" + jdbcURL + ", databaseDriver=" + databaseDriver
+                    + ", user=" + user + ", password=***]";
+        }
+    }
+
+    /**
+     * A lazily built cache entry pairing a {@link SessionFactory} with the {@code MetaData} entity
+     * that was bound into it. Keeping both in one value makes the lockstep of the two structural
+     * rather than a convention.
+     * <p>
+     * The entry object itself is cheap to create, which is what allows it to be installed via
+     * {@link ConcurrentHashMap#computeIfAbsent(Object, java.util.function.Function)}: the expensive
+     * schema probe and the Hibernate bootstrap happen afterwards, under this entry's own lock, and so
+     * neither block unrelated keys nor re-enter the map from within a mapping function.
+     */
+    private static final class CachedSessionFactory
+    {
+
+        private volatile SessionFactory sessionFactory;
+
+        private volatile Class<? extends AbstractMetaData> metaDataEntity;
+
+        /**
+         * Builds the {@link SessionFactory} and probes the bound entity, exactly once. A failed
+         * attempt leaves this entry uninitialized, so that a later call may retry.
+         *
+         * @param config The {@link DatabaseConfiguration} this entry was keyed for.
+         */
+        private void initialize(DatabaseConfiguration config)
+        {
+            if (sessionFactory != null) {
+                return;
+            }
+            synchronized (this) {
+                if (sessionFactory != null) {
+                    return;
+                }
+                Class<? extends AbstractMetaData> entity = hasMetaDataVersionColumn(config)
+                        ? MetaData.class
+                        : LegacyMetaData.class;
+                Configuration configuration = getConfiguration(config, entity);
+                StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties());
+                SessionFactory built = configuration.buildSessionFactory(ssrb.build());
+                metaDataEntity = entity;
+                // Published last: a non-null 'sessionFactory' signals that both fields are set.
+                sessionFactory = built;
+            }
+        }
+    }
 
     /**
      * Retrieves (and creates) a {@link SessionFactory} for a specified {@link DatabaseConfiguration}.
@@ -78,39 +163,7 @@ public class WikiHibernateUtil
      */
     public static SessionFactory getSessionFactory(DatabaseConfiguration config)
     {
-
-        if (config.getLanguage() == null) {
-            throw new ExceptionInInitializerError(
-                    "Database configuration error. 'Language' is empty.");
-        }
-        else if (config.getHost() == null) {
-            throw new ExceptionInInitializerError("Database configuration error. 'Host' is empty.");
-        }
-        else if (config.getDatabase() == null) {
-            throw new ExceptionInInitializerError(
-                    "Database configuration error. 'Database' is empty.");
-        }
-        else if (config.getJdbcURL() == null) {
-            throw new ExceptionInInitializerError(
-                    "Database configuration error. 'JdbcURL' is empty.");
-        }
-
-        // Note: the key intentionally ignores the JDBC URL, the driver and the credentials.
-        // It now also binds the probed 'MetaData' entity choice - see metaDataEntityMap.
-        String uniqueSessionKey = config.getLanguage().toString() + config.getHost()
-                + config.getDatabase();
-        if (!sessionFactoryMap.containsKey(uniqueSessionKey)) {
-            Class<? extends AbstractMetaData> metaDataEntity = hasMetaDataVersionColumn(config)
-                    ? MetaData.class
-                    : LegacyMetaData.class;
-            Configuration configuration = getConfiguration(config, metaDataEntity);
-            StandardServiceRegistryBuilder ssrb = new StandardServiceRegistryBuilder()
-                    .applySettings(configuration.getProperties());
-            SessionFactory sessionFactory = configuration.buildSessionFactory(ssrb.build());
-            sessionFactoryMap.put(uniqueSessionKey, sessionFactory);
-            metaDataEntityMap.put(uniqueSessionKey, metaDataEntity);
-        }
-        return sessionFactoryMap.get(uniqueSessionKey);
+        return cacheEntry(config).sessionFactory;
     }
 
     /**
@@ -128,11 +181,95 @@ public class WikiHibernateUtil
     public static Class<? extends AbstractMetaData> getMetaDataEntityClass(
             DatabaseConfiguration config)
     {
-        // Ensures the probe has run and the map is populated; idempotent and cached.
-        getSessionFactory(config);
-        String uniqueSessionKey = config.getLanguage().toString() + config.getHost()
-                + config.getDatabase();
-        return metaDataEntityMap.getOrDefault(uniqueSessionKey, MetaData.class);
+        return cacheEntry(config).metaDataEntity;
+    }
+
+    /**
+     * Looks up - building it if required - the cache entry for a specified
+     * {@link DatabaseConfiguration}.
+     *
+     * @param config The {@link DatabaseConfiguration} to obtain the entry for.
+     * @return A fully initialized {@link CachedSessionFactory}.
+     * 
+     * @throws ExceptionInInitializerError Thrown if the {@code config} instance was incorrect or incomplete.
+     */
+    private static CachedSessionFactory cacheEntry(DatabaseConfiguration config)
+    {
+        validate(config);
+        CachedSessionFactory entry = sessionFactoryMap.computeIfAbsent(keyOf(config),
+                key -> new CachedSessionFactory());
+        entry.initialize(config);
+        return entry;
+    }
+
+    /**
+     * Derives the cache key of a specified {@link DatabaseConfiguration}. This is the single place
+     * where the key is built, so a connection affecting field added later needs to be picked up here
+     * only.
+     * <p>
+     * The values are snapshotted rather than the configuration being used as the key itself:
+     * {@link DatabaseConfiguration} is public, mutable and subclassed, and callers hold on to the very
+     * instance they handed to JWPL. A configuration mutated after first use therefore simply maps to
+     * a different key - and, mutated back, to the original entry again.
+     *
+     * @param config The {@link DatabaseConfiguration} to derive a key for.
+     * @return The derived {@link SessionFactoryKey}.
+     */
+    static SessionFactoryKey keyOf(DatabaseConfiguration config)
+    {
+        return new SessionFactoryKey(config.getLanguage(), config.getHost(), config.getDatabase(),
+                config.getJdbcURL(), config.getDatabaseDriver(), config.getUser(),
+                digest(config.getPassword()));
+    }
+
+    /**
+     * Digests a password so that it can take part in the cache key without being retained in the
+     * clear.
+     *
+     * @param password The password to digest; may be {@code null}.
+     * @return The SHA-256 hex digest, or {@code null} for a {@code null} password - which keeps
+     *         {@code null} and {@code ""} distinguishable.
+     */
+    private static String digest(String password)
+    {
+        if (password == null) {
+            return null;
+        }
+        try {
+            MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+            return HexFormat.of()
+                    .formatHex(sha256.digest(password.getBytes(StandardCharsets.UTF_8)));
+        }
+        catch (NoSuchAlgorithmException e) {
+            // Every JDK is required to provide SHA-256, so this is unreachable in practice.
+            throw new IllegalStateException("SHA-256 is not available in this JVM.", e);
+        }
+    }
+
+    /**
+     * Rejects a {@link DatabaseConfiguration} which lacks a value required to open a connection.
+     *
+     * @param config The {@link DatabaseConfiguration} to check.
+     * 
+     * @throws ExceptionInInitializerError Thrown if the {@code config} instance was incorrect or incomplete.
+     */
+    private static void validate(DatabaseConfiguration config)
+    {
+        if (config.getLanguage() == null) {
+            throw new ExceptionInInitializerError(
+                    "Database configuration error. 'Language' is empty.");
+        }
+        else if (config.getHost() == null) {
+            throw new ExceptionInInitializerError("Database configuration error. 'Host' is empty.");
+        }
+        else if (config.getDatabase() == null) {
+            throw new ExceptionInInitializerError(
+                    "Database configuration error. 'Database' is empty.");
+        }
+        else if (config.getJdbcURL() == null) {
+            throw new ExceptionInInitializerError(
+                    "Database configuration error. 'JdbcURL' is empty.");
+        }
     }
 
     /**

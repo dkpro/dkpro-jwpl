@@ -44,8 +44,9 @@ public class LegacyMetaDataTest
     private static final String LEGACY_URL = "jdbc:hsqldb:mem:wikiapi_legacy";
     private static final String LEGACY_DB = "wikiapi_legacy";
     /*
-     * Note well: session factories are cached JVM-wide under language + host + database, so every
-     * configuration below uses a distinct database name to force a fresh probe.
+     * Note well: session factories are cached JVM-wide, keyed by the connection affecting values of
+     * a configuration - the caller supplied Hibernate settings are deliberately not among them. So
+     * every configuration below uses a distinct database name to force a fresh probe.
      */
     private static final String VALIDATE_DB = "wikiapi_legacy_validate";
     private static final String SHOW_SQL_DB = "wikiapi_legacy_showsql";
