@@ -54,6 +54,13 @@ public class WikipediaTest
     private static final String A_FAMOUS_PAGE_CLEAN = "Exploring the Potential of Semantic Relatedness in Information Retrieval";
     private static final int A_FAMOUS_PAGE_ID = 1017;
 
+    /** A page that redirects point to, hence one holding more than one entry in {@code PageMapLine}. */
+    private static final String A_PAGE_WITH_REDIRECTS = "Net_Centric_Systems";
+    private static final int A_PAGE_WITH_REDIRECTS_ID = 101;
+
+    /** A name that more than one entry of {@code PageMapLine} carries. */
+    private static final String A_DUPLICATE_TITLE = "Ambiguous_Title";
+
     /**
      * Made this static so that following tests don't run if assumption fails. (With AT_Before,
      * tests also would not be executed but marked as passed) This could be changed back as soon as
@@ -250,6 +257,41 @@ public class WikipediaTest
     {
         assertFalse(wiki.existsPage(null));
         assertFalse(wiki.existsPage(""));
+    }
+
+    /**
+     * A page and every redirect pointing to it share one entry per title in {@code PageMapLine}, all
+     * of them carrying the page id of the page. Looking that id up must not depend on the page having
+     * no redirects.
+     */
+    @Test
+    public void testExistsPageByIdOfPageWithRedirects()
+    {
+        assertTrue(wiki.existsPage(A_PAGE_WITH_REDIRECTS_ID));
+    }
+
+    /**
+     * The title of a page is the name of the page itself, not one of the titles redirecting to it.
+     *
+     * @see #testExistsPageByIdOfPageWithRedirects()
+     */
+    @Test
+    public void testGetTitleByIdOfPageWithRedirects() throws WikiApiException
+    {
+        Title title = wiki.getTitle(A_PAGE_WITH_REDIRECTS_ID);
+        assertNotNull(title);
+        assertEquals(A_PAGE_WITH_REDIRECTS, title.getRawTitleText());
+    }
+
+    /**
+     * A name is not unique in {@code PageMapLine}, see the entries of {@link #A_DUPLICATE_TITLE} in the
+     * test data. Existence is a question about the presence of an entry, so more than one of them is
+     * an answer, not an error.
+     */
+    @Test
+    public void testExistsPageByTitleThatOccursMoreThanOnce()
+    {
+        assertTrue(wiki.existsPage(A_DUPLICATE_TITLE));
     }
 
     @Test
