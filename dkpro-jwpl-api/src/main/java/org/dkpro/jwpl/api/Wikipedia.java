@@ -18,6 +18,8 @@
 package org.dkpro.jwpl.api;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +56,14 @@ public class Wikipedia
     // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove
     // it!
     static final String SQL_COLLATION = " COLLATE utf8mb4_bin"; /* " COLLATE utf8_bin"; */
+
+    /**
+     * Upper bound for the number of page ids bound into a single {@code in (..)} clause of
+     * {@link Wikipedia#getTitles(Collection)}. Pages with several thousand outgoing links exist,
+     * and neither the JDBC drivers nor the query planners deal well with parameter lists of that
+     * size.
+     */
+    private static final int TITLE_BATCH_SIZE = 500;
 
     private final Language language;
     private final DatabaseConfiguration dbConfig;
@@ -195,6 +205,55 @@ public class Wikipedia
             throw new WikiPageNotFoundException();
         }
         return new Title(returnValue);
+    }
+
+    /**
+     * Resolves the titles of many pages at once, without loading the pages themselves.
+     * <p>
+     * Obtaining the same titles via {@link Wikipedia#getPage(int)} and {@link Page#getTitle()}
+     * costs one full entity load - article text included - per page. This reads nothing but the
+     * page names, in one query per {@value Wikipedia#TITLE_BATCH_SIZE} ids.
+     * <p>
+     * Ids that have no matching page are absent from the result, as are pages whose name cannot be
+     * parsed into a {@link Title}. Callers that need to tell those cases apart have to compare the
+     * key set of the result against the ids they passed in.
+     *
+     * @param pageIds The ids of the pages to resolve titles for. Must not be {@code null}.
+     * @return The resolved titles, keyed by page id. Never {@code null}.
+     */
+    public Map<Integer, Title> getTitles(Collection<Integer> pageIds) {
+        Map<Integer, Title> titles = new HashMap<>();
+        if (pageIds.isEmpty()) {
+            return titles;
+        }
+
+        List<Integer> ids = new ArrayList<>(pageIds);
+        for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
+            // Re-acquired per batch on purpose: the thread-bound session context unbinds and closes
+            // the session once its transaction completes, so it must not be reused across batches.
+            Session session = this.__getHibernateSession();
+            session.beginTransaction();
+            List<Object[]> rows = session
+                    .createQuery("select p.pageId, p.name from Page as p where p.pageId in (:ids)",
+                            Object[].class)
+                    .setParameterList("ids", batch).list();
+            session.getTransaction().commit();
+
+            for (Object[] row : rows) {
+                Integer pageId = (Integer) row[0];
+                String name = (String) row[1];
+                try {
+                    titles.put(pageId, new Title(name));
+                } catch (WikiTitleParsingException e) {
+                    // A single unparsable name must not cost the caller the remaining titles.
+                    // This is the only record of the failure, so the exception is logged with it.
+                    logger.warn("Could not parse the title '{}' of the page with page id {}", name,
+                            pageId, e);
+                }
+            }
+        }
+        return titles;
     }
 
     /**

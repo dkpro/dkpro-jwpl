@@ -27,6 +27,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
@@ -291,6 +292,69 @@ public class PageTest
         assertNotNull(outlinkIDs);
         assertFalse(outlinkIDs.isEmpty());
         assertEquals(1, outlinkIDs.size());
+    }
+
+    @Test
+    public void testGetOutlinkTitles()
+    {
+        Set<Title> outlinkTitles = page.getOutlinkTitles();
+        assertNotNull(outlinkTitles);
+        assertEquals(1, outlinkTitles.size());
+        assertEquals("Torsten Zesch", outlinkTitles.iterator().next().getPlainTitle());
+    }
+
+    @Test
+    public void testGetOutlinkTitlesZero()
+    {
+        Set<Title> outlinkTitles = fetchPage("Unconnected_page").getOutlinkTitles();
+        assertNotNull(outlinkTitles);
+        assertTrue(outlinkTitles.isEmpty());
+    }
+
+    @Test
+    public void testGetOutlinkTitlesSkipsNonExistingPages()
+    {
+        // Two of the three outlinks point at existing pages, the third one (page id 1012) does not.
+        Page p = fetchPage("Christoph_Mueller");
+        assertEquals(3, p.getOutlinkIDs().size());
+        assertEquals(plainTitles(p.getOutlinks()), toPlainTitles(p.getOutlinkTitles()));
+        assertEquals(Set.of("Exploring the Potential of Semantic Relatedness in Information Retrieval",
+                "Semantic Information Retrieval"), toPlainTitles(p.getOutlinkTitles()));
+    }
+
+    @Test
+    public void testGetInlinkTitles()
+    {
+        Set<Title> inlinkTitles = page.getInlinkTitles();
+        assertNotNull(inlinkTitles);
+        assertEquals(3, inlinkTitles.size());
+        assertEquals(Set.of("Anouar Haha", "Torsten Zesch", "Demo of Wikipedia API"),
+                toPlainTitles(inlinkTitles));
+    }
+
+    @Test
+    public void testGetInlinkTitlesZero()
+    {
+        Set<Title> inlinkTitles = fetchPage("Unconnected_page").getInlinkTitles();
+        assertNotNull(inlinkTitles);
+        assertTrue(inlinkTitles.isEmpty());
+    }
+
+    private Set<String> toPlainTitles(Set<Title> titles)
+    {
+        return titles.stream().map(Title::getPlainTitle).collect(Collectors.toSet());
+    }
+
+    private Set<String> plainTitles(Set<Page> pages)
+    {
+        return pages.stream().map(p -> {
+            try {
+                return p.getTitle().getPlainTitle();
+            }
+            catch (WikiTitleParsingException e) {
+                throw new IllegalStateException(e);
+            }
+        }).collect(Collectors.toSet());
     }
 
     @Test
