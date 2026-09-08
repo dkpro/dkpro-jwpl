@@ -32,7 +32,14 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 public class JWPLDataMachine
 {
 
-    private static final String PROP_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+    private static final String PROP_TOTAL_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+
+    private static final String PROP_MAX_GENERAL_ENTITY_SIZE_LIMIT = "jdk.xml.maxGeneralEntitySizeLimit";
+
+    /**
+     * Indicates that the corresponding JAXP limit is not enforced.
+     */
+    private static final String NO_LIMIT = "0";
 
     private static final int LANG_ARG = 0;
     private static final int MAINCATEGORY_ARG = 1;
@@ -76,7 +83,10 @@ public class JWPLDataMachine
     public static void main(String[] args)
     {
         if (args.length > 3) {
-            System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
+            // The dumps processed here are trusted input whose entity sizes legitimately
+            // exceed the JAXP defaults. See #201 and #504.
+            System.setProperty(PROP_TOTAL_ENTITY_SIZE_LIMIT, NO_LIMIT);
+            System.setProperty(PROP_MAX_GENERAL_ENTITY_SIZE_LIMIT, NO_LIMIT);
             Configuration config = getConfigFromArgs(args);
             DataMachineFiles files = new DataMachineFiles(logger);
             files.setDataDirectory(args[DATADIR_ARG]);
