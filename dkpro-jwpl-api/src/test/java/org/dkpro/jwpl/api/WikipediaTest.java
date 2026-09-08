@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -643,6 +644,52 @@ public class WikipediaTest
         catch (WikiApiException ae) {
             fail("Encountered WikiApiException: " + ae.getLocalizedMessage(), ae);
         }
+    }
+
+    @Test
+    public void testGetTitlesForPageIds()
+    {
+        Map<Integer, Title> titles = wiki.getTitles(List.of(1014, 1022, 1041));
+        assertEquals(3, titles.size());
+        assertEquals("Wikipedia API", titles.get(1014).getPlainTitle());
+        assertEquals("Torsten Zesch", titles.get(1022).getPlainTitle());
+        assertEquals("UKP", titles.get(1041).getPlainTitle());
+    }
+
+    @Test
+    public void testGetTitlesForPageIdsEmpty()
+    {
+        Map<Integer, Title> titles = wiki.getTitles(Collections.emptyList());
+        assertNotNull(titles);
+        assertTrue(titles.isEmpty());
+    }
+
+    @Test
+    public void testGetTitlesForPageIdsSkipsUnknownIds()
+    {
+        // Page id 1012 has no matching page, so it must be absent instead of mapping to null.
+        Map<Integer, Title> titles = wiki.getTitles(List.of(1014, 1012));
+        assertEquals(1, titles.size());
+        assertTrue(titles.containsKey(1014));
+        assertFalse(titles.containsKey(1012));
+    }
+
+    @Test
+    public void testGetTitlesForPageIdsWithRedirects()
+    {
+        // Page id 101 is reachable under two names ('Net_Centric_Systems' and 'NCS') and therefore
+        // has two PageMapLine rows. Resolving titles must yield the canonical page name regardless.
+        Map<Integer, Title> titles = wiki.getTitles(List.of(101));
+        assertEquals(1, titles.size());
+        assertEquals("Net Centric Systems", titles.get(101).getPlainTitle());
+    }
+
+    @Test
+    public void testGetTitlesForPageIdsMatchesGetTitle() throws WikiApiException
+    {
+        int pageId = 1022;
+        assertEquals(wiki.getTitle(pageId).getPlainTitle(),
+                wiki.getTitles(List.of(pageId)).get(pageId).getPlainTitle());
     }
 
     private void checkGetPageByExactTitle(String pageTitle) throws WikiApiException

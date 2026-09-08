@@ -392,6 +392,21 @@ public class Page
     }
 
     /**
+     * Returns the titles of the pages that have a link pointing to this page.
+     * <p>
+     * This is a more efficient shortcut for collecting {@link Page#getTitle()} over
+     * {@link Page#getInlinks()}, as that would load every linking page - article text included -
+     * just to read its title. As with {@link Page#getInlinks()}, inlinks that do not come from an
+     * existing page are not part of the result.
+     *
+     * @return The titles of the pages that have a link pointing to this page.
+     */
+    public Set<Title> getInlinkTitles()
+    {
+        return new HashSet<>(wiki.getTitles(getInlinkIDs()).values());
+    }
+
+    /**
      * Returns the set of pages that are linked from this page. Outlinks in a page might also point
      * to non-existing pages. They are not included in the result set. <b>Warning:</b> Do not use
      * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too
@@ -463,6 +478,21 @@ public class Page
 
         session.getTransaction().commit();
         return tmpSet;
+    }
+
+    /**
+     * Returns the titles of the pages that are linked from this page.
+     * <p>
+     * This is a more efficient shortcut for collecting {@link Page#getTitle()} over
+     * {@link Page#getOutlinks()}, as that would load every linked page - article text included -
+     * just to read its title. As with {@link Page#getOutlinks()}, outlinks pointing to
+     * non-existing pages are not part of the result.
+     *
+     * @return The titles of the pages that are linked from this page.
+     */
+    public Set<Title> getOutlinkTitles()
+    {
+        return new HashSet<>(wiki.getTitles(getOutlinkIDs()).values());
     }
 
     /**
