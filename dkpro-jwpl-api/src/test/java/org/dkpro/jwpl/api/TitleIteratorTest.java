@@ -56,7 +56,7 @@ public class TitleIteratorTest
             assertNotNull(t);
             nrOfTitles++;
         }
-        assertEquals(40, nrOfTitles, "Number of titles == 40");
+        assertEquals(42, nrOfTitles, "Number of titles == 42");
 
     }
 }

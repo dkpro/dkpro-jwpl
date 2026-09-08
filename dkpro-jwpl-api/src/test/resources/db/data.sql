@@ -125,6 +125,11 @@ INSERT INTO PageMapLine VALUES (37, 'Discussion:Wikipedia_API', 4000, NULL, NULL
 INSERT INTO PageMapLine VALUES (38, 'Humanbiologie', 6000, NULL, NULL);
 INSERT INTO PageMapLine VALUES (39, 'Liste_von_Materia_Medica_der_traditionellen_uigurischen_Medizin', 6001, NULL, NULL);
 INSERT INTO PageMapLine VALUES (40, 'Moore''s_law', 6002, NULL, NULL);
+-- Two entries share one name on purpose. A name is not unique in PageMapLine: case variants of the
+-- same title map to their own entry, and a database whose charset cannot represent a title stores
+-- the substituted characters, which lets unrelated titles collapse onto one name.
+INSERT INTO PageMapLine VALUES (41, 'Ambiguous_Title', 101, NULL, NULL);
+INSERT INTO PageMapLine VALUES (42, 'Ambiguous_Title', 1017, NULL, NULL);
 
 INSERT INTO category_inlinks VALUES (2, 8);
 INSERT INTO category_inlinks VALUES (3, 1);

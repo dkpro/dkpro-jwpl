@@ -194,12 +194,22 @@ public class Wikipedia
      * @throws WikiApiException Thrown if errors occurred.
      */
     public Title getTitle(int pageId) throws WikiApiException {
+        // Read from Page, not from PageMapLine, the way getTitles(Collection) does. A page id is
+        // unique in Page, while PageMapLine holds one entry per title the id can be reached by - the
+        // name of the page itself and the name of every redirect pointing to it. Asking PageMapLine
+        // for a unique result therefore failed for every page that has a redirect, and it could not
+        // tell the name of the page from the name of a redirect to begin with.
+        String returnValue;
         Session session = this.__getHibernateSession();
-        session.beginTransaction();
-        String sql = "select p.name from PageMapLine as p where p.pageId= :pId";
-        String returnValue = session.createNativeQuery(sql, String.class)
-                .setParameter("pId", pageId, StandardBasicTypes.INTEGER).uniqueResult();
-        session.getTransaction().commit();
+        try {
+            session.beginTransaction();
+            String sql = "select p.name from Page as p where p.pageId = :pId";
+            returnValue = session.createQuery(sql, String.class).setParameter("pId", pageId)
+                    .uniqueResult();
+        }
+        finally {
+            session.getTransaction().commit();
+        }
 
         if (returnValue == null) {
             throw new WikiPageNotFoundException();
@@ -765,8 +775,15 @@ public class Wikipedia
 
             // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
             // NativeQuery...
+            // A name is not unique in PageMapLine: case variants of one title map to their own
+            // entry, and a database whose charset cannot represent a title stores the substituted
+            // characters, which lets unrelated titles collapse onto one name. Asking for a unique
+            // result made this method throw NonUniqueResultException - unchecked, and out of a
+            // method that promises a boolean instead of an exception. One entry is all it takes to
+            // answer the question.
             var nativeQuery = session.createNativeQuery(query, Long.class)
-                    .setParameter("pName", encodedTitle, StandardBasicTypes.STRING);
+                    .setParameter("pName", encodedTitle, StandardBasicTypes.STRING)
+                    .setMaxResults(1);
             var returnValue = nativeQuery.uniqueResult();
             return returnValue != null;
         } finally {
@@ -791,13 +808,21 @@ public class Wikipedia
         }
 
         Session session = this.__getHibernateSession();
-        session.beginTransaction();
-        String sql = "select p.id from PageMapLine as p where p.pageID = :pageId";
-        Long returnValue = session.createNativeQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult();
-        session.getTransaction().commit();
+        try {
+            session.beginTransaction();
+            // PageMapLine holds one entry per title the page id can be reached by, so a page that
+            // has redirects carries several of them. One entry answers the question, see
+            // existsPage(String) on why a unique result must not be asked for here.
+            String sql = "select p.id from PageMapLine as p where p.pageID = :pageId";
+            Long returnValue = session.createNativeQuery(sql, Long.class)
+                    .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).setMaxResults(1)
+                    .uniqueResult();
 
-        return returnValue != null;
+            return returnValue != null;
+        }
+        finally {
+            session.getTransaction().commit();
+        }
     }
 
     /**
