@@ -32,7 +32,14 @@ import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 public class JWPLTimeMachine
 {
 
-    private static final String PROP_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+    private static final String PROP_TOTAL_ENTITY_SIZE_LIMIT = "jdk.xml.totalEntitySizeLimit";
+
+    private static final String PROP_MAX_GENERAL_ENTITY_SIZE_LIMIT = "jdk.xml.maxGeneralEntitySizeLimit";
+
+    /**
+     * Indicates that the corresponding JAXP limit is not enforced.
+     */
+    private static final String NO_LIMIT = "0";
 
     private static final IEnvironmentFactory environmentFactory;
     private static final ILogger logger;
@@ -67,7 +74,10 @@ public class JWPLTimeMachine
     {
         try {
             if (checkArgs(args)) {
-                System.setProperty(PROP_ENTITY_SIZE_LIMIT, "0"); // compensates for #201
+                // The dumps processed here are trusted input whose entity sizes legitimately
+                // exceed the JAXP defaults. See #201 and #504.
+                System.setProperty(PROP_TOTAL_ENTITY_SIZE_LIMIT, NO_LIMIT);
+                System.setProperty(PROP_MAX_GENERAL_ENTITY_SIZE_LIMIT, NO_LIMIT);
                 logger.log("parsing configuration file....");
                 Configuration config = SettingsXML.loadConfiguration(args[0], logger);
                 TimeMachineFiles files = SettingsXML.loadFiles(args[0], logger);
