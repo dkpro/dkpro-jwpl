@@ -234,11 +234,23 @@ public class Wikipedia
             // the session once its transaction completes, so it must not be reused across batches.
             Session session = this.__getHibernateSession();
             session.beginTransaction();
-            List<Object[]> rows = session
-                    .createQuery("select p.pageId, p.name from Page as p where p.pageId in (:ids)",
-                            Object[].class)
-                    .setParameterList("ids", batch).list();
-            session.getTransaction().commit();
+            List<Object[]> rows;
+            try {
+                rows = session
+                        .createQuery(
+                                "select p.pageId, p.name from Page as p where p.pageId in (:ids)",
+                                Object[].class)
+                        .setParameterList("ids", batch).list();
+                session.getTransaction().commit();
+            } catch (RuntimeException e) {
+                // A transaction left open would poison the thread-bound session for every later
+                // call on this thread, so callers that log the failure and move on to the next
+                // page would fail from here on for an unrelated reason.
+                if (session.getTransaction().isActive()) {
+                    session.getTransaction().rollback();
+                }
+                throw e;
+            }
 
             for (Object[] row : rows) {
                 Integer pageId = (Integer) row[0];

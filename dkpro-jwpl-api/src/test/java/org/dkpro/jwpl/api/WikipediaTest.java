@@ -675,6 +675,16 @@ public class WikipediaTest
     }
 
     @Test
+    public void testGetTitlesForPageIdsWithRedirects()
+    {
+        // Page id 101 is reachable under two names ('Net_Centric_Systems' and 'NCS') and therefore
+        // has two PageMapLine rows. Resolving titles must yield the canonical page name regardless.
+        Map<Integer, Title> titles = wiki.getTitles(List.of(101));
+        assertEquals(1, titles.size());
+        assertEquals("Net Centric Systems", titles.get(101).getPlainTitle());
+    }
+
+    @Test
     public void testGetTitlesForPageIdsMatchesGetTitle() throws WikiApiException
     {
         int pageId = 1022;
