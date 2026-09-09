@@ -18,12 +18,12 @@
 package org.dkpro.jwpl.api.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
-import org.hibernate.Session;
 
 /**
  * Provides helpful methods for working with the ORM Hibernate.
@@ -58,15 +58,16 @@ public class HibernateUtilities
     {
         Map<Integer, Long> idMapping = new HashMap<>();
 
-        Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
-        session.beginTransaction();
-        for (Object o : session.createQuery("select page.id, page.pageId from Page as page")
-                .list()) {
-            Object[] row = (Object[]) o;
+        List<Object[]> rows = WikiHibernateUtil.inTransaction(
+                WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession(),
+                session -> session
+                        .createQuery("select page.id, page.pageId from Page as page",
+                                Object[].class)
+                        .list());
+        for (Object[] row : rows) {
             // put (pageID, id)
             idMapping.put((Integer) row[1], (Long) row[0]);
         }
-        session.getTransaction().commit();
         return idMapping;
     }
 
@@ -80,15 +81,16 @@ public class HibernateUtilities
     {
         Map<Integer, Long> idMapping = new HashMap<>();
 
-        Session session = WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
-        session.beginTransaction();
-        for (Object o : session.createQuery("select cat.id, cat.pageId from Category as cat")
-                .list()) {
-            Object[] row = (Object[]) o;
+        List<Object[]> rows = WikiHibernateUtil.inTransaction(
+                WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession(),
+                session -> session
+                        .createQuery("select cat.id, cat.pageId from Category as cat",
+                                Object[].class)
+                        .list());
+        for (Object[] row : rows) {
             // put (pageID, id)
             idMapping.put((Integer) row[1], (Long) row[0]);
         }
-        session.getTransaction().commit();
         return idMapping;
     }
 }

@@ -26,7 +26,6 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.StringUtils;
-import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,14 +77,15 @@ public class PageQueryIterable
             hql += "where " + conditionString;
         }
 
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        Query<Integer> query = session.createQuery(hql, Integer.class);
-        if (hasTitlePattern) {
-            query.setParameter("name", q.getTitlePattern());
-        }
-        List<Integer> idList = query.list();
-        session.getTransaction().commit();
+        final String finalHql = hql;
+        final boolean titlePattern = hasTitlePattern;
+        List<Integer> idList = wiki.__inTransaction(session -> {
+            Query<Integer> query = session.createQuery(finalHql, Integer.class);
+            if (titlePattern) {
+                query.setParameter("name", q.getTitlePattern());
+            }
+            return query.list();
+        });
 
         int progress = 0;
         for (Integer pageID : idList) {
