@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -229,25 +228,26 @@ public class PageIterator
                 }
             }
             else {
-                Session session = this.wiki.__getHibernateSession();
-                session.beginTransaction();
-                List<org.dkpro.jwpl.api.hibernate.Page> returnValues;
-                TypedQuery<org.dkpro.jwpl.api.hibernate.Page> query;
-                String sql;
-                if (onlyArticles) {
-                    sql = "SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId";
-                    query = session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Page.class);
-                    query.setParameter("isDisambiguation", false);
-                    query.setParameter("pageId", lastPage);
-                }
-                else {
-                    sql = "SELECT p FROM Page p WHERE p.id > :pageId";
-                    query = session.createQuery(sql, org.dkpro.jwpl.api.hibernate.Page.class);
-                    query.setParameter("pageId", lastPage);
-                }
-                query.setMaxResults(maxBufferSize);
-                returnValues = query.getResultList();
-                session.getTransaction().commit();
+                List<org.dkpro.jwpl.api.hibernate.Page> returnValues = wiki
+                        .__inTransaction(session -> {
+                            TypedQuery<org.dkpro.jwpl.api.hibernate.Page> query;
+                            String sql;
+                            if (onlyArticles) {
+                                sql = "SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId";
+                                query = session.createQuery(sql,
+                                        org.dkpro.jwpl.api.hibernate.Page.class);
+                                query.setParameter("isDisambiguation", false);
+                                query.setParameter("pageId", lastPage);
+                            }
+                            else {
+                                sql = "SELECT p FROM Page p WHERE p.id > :pageId";
+                                query = session.createQuery(sql,
+                                        org.dkpro.jwpl.api.hibernate.Page.class);
+                                query.setParameter("pageId", lastPage);
+                            }
+                            query.setMaxResults(maxBufferSize);
+                            return query.getResultList();
+                        });
 
                 // clear the old buffer and all variables regarding the state of the buffer
                 buffer.clear();

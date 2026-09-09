@@ -30,9 +30,11 @@ import java.util.HexFormat;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
@@ -344,6 +346,61 @@ public class WikiHibernateUtil
             }
         }
         return null;
+    }
+
+    /**
+     * Runs {@code work} inside a transaction on a specified {@link Session} and commits it.
+     * <p>
+     * JWPL binds its sessions to the current thread
+     * ({@code hibernate.current_session_context_class=thread}), and such a session is unbound and
+     * closed only once its transaction <i>completes</i>. A transaction left open by a failing unit
+     * of work therefore neither releases the session nor its JDBC connection: every later JWPL call
+     * on the same thread fails with {@code IllegalStateException: Transaction already active}, and
+     * a handful of failures exhausts the connection pool for the whole JVM. Which is why the
+     * transaction is completed here on every path, the failure ones included.
+     *
+     * @param session The {@link Session} to run {@code work} on. Must not be {@code null}.
+     * @param work    The unit of work to run. Must not be {@code null}. It must not call back into
+     *                an operation that opens a transaction of its own, as the thread-bound session
+     *                supports no nesting - do that after {@code inTransaction} returned.
+     * @param <T>     The type of the result of {@code work}.
+     * @return Whatever {@code work} returned.
+     */
+    public static <T> T inTransaction(Session session, Function<Session, T> work)
+    {
+        session.beginTransaction();
+        boolean completed = false;
+        try {
+            T result = work.apply(session);
+            session.getTransaction().commit();
+            completed = true;
+            return result;
+        }
+        finally {
+            if (!completed) {
+                rollbackQuietly(session);
+            }
+        }
+    }
+
+    /**
+     * Rolls back the transaction of a specified {@link Session}, if one is still active. A failure
+     * to do so is logged rather than thrown: this runs while another exception is already on its
+     * way out, and that one is the one the caller needs to see.
+     *
+     * @param session The {@link Session} whose transaction to roll back.
+     */
+    private static void rollbackQuietly(Session session)
+    {
+        try {
+            if (session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+        }
+        catch (RuntimeException e) {
+            logger.warn("Could not roll back the transaction after a failed unit of work. The "
+                    + "session bound to this thread may stay unusable.", e);
+        }
     }
 
     private static Properties getProperties(DatabaseConfiguration config)

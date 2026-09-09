@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,14 +140,12 @@ public class CategoryIterator
         private boolean fillBuffer()
         {
 
-            Session session = this.wiki.__getHibernateSession();
-            session.beginTransaction();
             final String sql = "SELECT c FROM Category c";
-            List<org.dkpro.jwpl.api.hibernate.Category> returnValues = session
-                    .createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
-                    .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
-                    .setFetchSize(maxBufferSize).list();
-            session.getTransaction().commit();
+            List<org.dkpro.jwpl.api.hibernate.Category> returnValues = wiki.__inTransaction(
+                    session -> session
+                            .createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
+                            .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
+                            .setFetchSize(maxBufferSize).list());
 
             // clear the old buffer and all variables regarding the state of the buffer
             buffer.clear();

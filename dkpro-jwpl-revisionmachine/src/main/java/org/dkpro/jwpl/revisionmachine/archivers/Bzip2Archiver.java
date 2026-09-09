@@ -53,43 +53,31 @@ public class Bzip2Archiver
      */
     public void compress(String path)
     {
-        try {
+        File fileToArchive = new File(path);
+        File archivedFile = new File(fileToArchive.getName() + ".bz2");
 
-            File fileToArchive = new File(path);
+        try (BufferedInputStream input = new BufferedInputStream(
+                new FileInputStream(fileToArchive))) {
 
-            BufferedInputStream input = new BufferedInputStream(new FileInputStream(fileToArchive));
-
-            File archivedFile = new File(fileToArchive.getName() + ".bz2");
             archivedFile.createNewFile();
 
-            FileOutputStream fos = new FileOutputStream(archivedFile);
-            BufferedOutputStream bufStr = new BufferedOutputStream(fos);
-            // added bzip2 prefix
-            fos.write("BZ".getBytes());
-            BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr);
+            try (FileOutputStream fos = new FileOutputStream(archivedFile)) {
+                BufferedOutputStream bufStr = new BufferedOutputStream(fos);
+                // added bzip2 prefix
+                fos.write("BZ".getBytes());
 
-            while (input.available() > 0) {
-                int size = COMPRESSION_CACHE;
-
-                if (input.available() < COMPRESSION_CACHE) {
-                    size = input.available();
+                try (BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr)) {
+                    byte[] bytes = new byte[COMPRESSION_CACHE];
+                    int read;
+                    while ((read = input.read(bytes)) != -1) {
+                        bzip2.write(bytes, 0, read);
+                    }
                 }
-                byte[] bytes = new byte[size];
-
-                input.read(bytes);
-
-                bzip2.write(bytes);
             }
-            bzip2.close();
-            bufStr.close();
-            fos.close();
-            input.close();
-
         }
         catch (IOException e) {
             logger.error("Could not compress file [{}]", path, e);
         }
-
     }
 
     /**
@@ -147,33 +135,26 @@ public class Bzip2Archiver
 
         unarchived.createNewFile();
 
-        BufferedInputStream inputStr = new BufferedInputStream(new FileInputStream(bzip2));
+        try (BufferedInputStream inputStr = new BufferedInputStream(new FileInputStream(bzip2))) {
 
-        // read bzip2 prefix
-        inputStr.read();
-        inputStr.read();
+            // read bzip2 prefix
+            inputStr.read();
+            inputStr.read();
 
-        BufferedInputStream buffStr = new BufferedInputStream(inputStr);
+            try (BZip2CompressorInputStream input = new BZip2CompressorInputStream(
+                    new BufferedInputStream(inputStr));
+                    FileOutputStream outStr = new FileOutputStream(unarchived)) {
 
-        BZip2CompressorInputStream input = new BZip2CompressorInputStream(buffStr);
-
-        FileOutputStream outStr = new FileOutputStream(unarchived);
-
-        while (true) {
-            byte[] compressedBytes = new byte[DECOMPRESSION_CACHE];
-
-            int byteRead = input.read(compressedBytes);
-
-            outStr.write(compressedBytes, 0, byteRead);
-            if (byteRead != DECOMPRESSION_CACHE) {
-                break;
+                byte[] compressedBytes = new byte[DECOMPRESSION_CACHE];
+                int byteRead;
+                // A short read is not the end of the stream - only a -1 is, which the previous
+                // 'read fewer bytes than asked for' check mistook for it (and then wrote a -1
+                // length chunk).
+                while ((byteRead = input.read(compressedBytes)) != -1) {
+                    outStr.write(compressedBytes, 0, byteRead);
+                }
             }
         }
-
-        input.close();
-        buffStr.close();
-        inputStr.close();
-        outStr.close();
     }
 
 }

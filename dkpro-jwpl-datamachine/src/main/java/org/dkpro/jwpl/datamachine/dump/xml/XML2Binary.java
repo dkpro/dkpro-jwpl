@@ -48,7 +48,8 @@ public class XML2Binary
     /**
      * Instantiates a {@link XML2Binary} object with the specified parameters.
      *
-     * @param iStream   The {@link InputStream} containing the XML data to process.
+     * @param iStream   The {@link InputStream} containing the XML data to process. It is closed
+     *                  before this constructor returns, on the failure paths as well.
      * @param files     The {@link DataMachineFiles} configuration to apply.
      * @throws IOException Thrown if IO errors occurred during processing.
      */
@@ -56,13 +57,16 @@ public class XML2Binary
     {
         final DumpWriter writer = new NamespaceFilter(new SimpleBinaryDumpWriter(files),
                 ENABLED_NAMESPACES);
-        if (USE_MODIFIED_PARSER) {
-            // modified parser, skips faulty tags
-            new SimpleXmlDumpReader(iStream, writer).readDump();
-        }
-        else {
-            // original MWDumper parser, very sensible to not closed tags
-            new XmlDumpReader(iStream, writer).readDump();
+        // Ownership of the stream is taken over here, exactly as the multi-part constructor does.
+        try (iStream) {
+            if (USE_MODIFIED_PARSER) {
+                // modified parser, skips faulty tags
+                new SimpleXmlDumpReader(iStream, writer).readDump();
+            }
+            else {
+                // original MWDumper parser, very sensible to not closed tags
+                new XmlDumpReader(iStream, writer).readDump();
+            }
         }
     }
 

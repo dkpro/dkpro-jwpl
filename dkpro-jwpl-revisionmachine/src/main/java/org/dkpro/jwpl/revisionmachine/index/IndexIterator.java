@@ -31,9 +31,12 @@ import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 
 /**
  * Iterates over the database to retrieve the necessary information for the index generation.
+ * <p>
+ * The iterator owns the database connection it opens, hence it must be closed by its caller - use
+ * it as a resource of a try-with-resources statement.
  */
 public class IndexIterator
-    implements Iterator<Revision>
+    implements Iterator<Revision>, AutoCloseable
 {
 
     /**
@@ -159,18 +162,57 @@ public class IndexIterator
                 return true;
             }
 
-            if (this.statement != null) {
-                this.statement.close();
-            }
-            if (this.result != null) {
-                this.result.close();
+            closeResultResources();
+
+            if (query()) {
+                return true;
             }
 
-            return query();
-
+            // The batch came back empty - release what the query opened right away instead of
+            // holding a statement and a result set until the iterator itself is closed.
+            closeResultResources();
+            return false;
         }
         catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Closes the {@link Statement} of the current batch, and with it the {@link ResultSet} it
+     * produced, so that a new batch can be queried.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the statement
+     */
+    private void closeResultResources() throws SQLException
+    {
+        try {
+            if (statement != null) {
+                // Closing a statement closes the result set it produced along with it.
+                statement.close();
+            }
+        }
+        finally {
+            statement = null;
+            result = null;
+        }
+    }
+
+    /**
+     * Closes the current batch and the database connection this iterator opened.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the connection
+     */
+    @Override
+    public void close() throws SQLException
+    {
+        try {
+            closeResultResources();
+        }
+        finally {
+            connection.close();
         }
     }
 

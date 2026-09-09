@@ -52,10 +52,7 @@ public class MetaData
          */
         Class<? extends AbstractMetaData> entityClass = WikiHibernateUtil
                 .getMetaDataEntityClass(wiki.getDatabaseConfiguration());
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        hibernateMetaData = loadMetaData(session, entityClass);
-        session.getTransaction().commit();
+        hibernateMetaData = wiki.__inTransaction(session -> loadMetaData(session, entityClass));
     }
 
     private static <T extends AbstractMetaData> T loadMetaData(Session session, Class<T> type)
@@ -74,12 +71,10 @@ public class MetaData
      */
     long getId()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        long id = hibernateMetaData.getId();
-        session.getTransaction().commit();
-        return id;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getId();
+        });
     }
 
     /**
@@ -87,12 +82,10 @@ public class MetaData
      */
     public long getNumberOfCategories()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        long nrofCategories = hibernateMetaData.getNrofCategories();
-        session.getTransaction().commit();
-        return nrofCategories;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getNrofCategories();
+        });
     }
 
     /**
@@ -100,12 +93,10 @@ public class MetaData
      */
     public long getNumberOfPages()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        long nrofPages = hibernateMetaData.getNrofPages();
-        session.getTransaction().commit();
-        return nrofPages;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getNrofPages();
+        });
     }
 
     /**
@@ -113,12 +104,10 @@ public class MetaData
      */
     public long getNumberOfDisambiguationPages()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        long nrofDisambPages = hibernateMetaData.getNrofDisambiguationPages();
-        session.getTransaction().commit();
-        return nrofDisambPages;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getNrofDisambiguationPages();
+        });
     }
 
     /**
@@ -126,12 +115,10 @@ public class MetaData
      */
     public long getNumberOfRedirectPages()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        long nrofRedirects = hibernateMetaData.getNrofRedirects();
-        session.getTransaction().commit();
-        return nrofRedirects;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getNrofRedirects();
+        });
     }
 
     /**
@@ -141,11 +128,10 @@ public class MetaData
      */
     public Category getDisambiguationCategory() throws WikiApiException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        String disambCategoryTitle = hibernateMetaData.getDisambiguationCategory();
-        session.getTransaction().commit();
+        String disambCategoryTitle = wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getDisambiguationCategory();
+        });
         return wiki.getCategory(disambCategoryTitle);
     }
 
@@ -156,11 +142,10 @@ public class MetaData
      */
     public Category getMainCategory() throws WikiApiException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        String mainCategoryTitle = hibernateMetaData.getMainCategory();
-        session.getTransaction().commit();
+        String mainCategoryTitle = wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getMainCategory();
+        });
         return wiki.getCategory(mainCategoryTitle);
     }
 
@@ -176,12 +161,10 @@ public class MetaData
      */
     public String getVersion() throws WikiApiException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernateMetaData, LockMode.NONE);
-        String version = hibernateMetaData.getVersion();
-        session.getTransaction().commit();
-        return version;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernateMetaData, LockMode.NONE);
+            return hibernateMetaData.getVersion();
+        });
     }
 
     /**

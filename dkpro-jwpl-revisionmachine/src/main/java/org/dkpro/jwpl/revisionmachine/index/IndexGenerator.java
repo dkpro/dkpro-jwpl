@@ -21,7 +21,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -76,18 +75,19 @@ public class IndexGenerator
             long count = 0;
             long last = 0, now, start = System.currentTimeMillis();
 
-            Iterator<Revision> it = new IndexIterator(config);
-            while (it.hasNext()) {
+            try (IndexIterator it = new IndexIterator(config)) {
+                while (it.hasNext()) {
 
-                if (++count % bufferSize == 0) {
-                    now = System.currentTimeMillis() - start;
-                    System.out.println(
-                            Time.toClock(now) + "\t" + (now - last) + "\tINDEXING " + count);
-                    last = now;
+                    if (++count % bufferSize == 0) {
+                        now = System.currentTimeMillis() - start;
+                        System.out.println(
+                                Time.toClock(now) + "\t" + (now - last) + "\tINDEXING " + count);
+                        last = now;
+                    }
+
+                    rev = it.next();
+                    data.index(rev);
                 }
-
-                rev = it.next();
-                data.index(rev);
             }
 
             System.out.println("GENERATING INDEX ENDED + ("

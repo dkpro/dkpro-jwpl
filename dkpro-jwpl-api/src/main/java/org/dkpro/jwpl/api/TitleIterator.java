@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
-import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,13 +146,11 @@ public class TitleIterator
         private boolean fillBuffer()
         {
 
-            Session session = this.wiki.__getHibernateSession();
-            session.beginTransaction();
             final String sql = "select p.name from PageMapLine as p";
-            List<String> returnList = session.createNativeQuery(sql, String.class)
-                    .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
-                    .setFetchSize(maxBufferSize).list();
-            session.getTransaction().commit();
+            List<String> returnList = wiki
+                    .__inTransaction(session -> session.createNativeQuery(sql, String.class)
+                            .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
+                            .setFetchSize(maxBufferSize).list());
 
             // clear the old buffer and all variables regarding the state of the buffer
             titleStringBuffer.clear();

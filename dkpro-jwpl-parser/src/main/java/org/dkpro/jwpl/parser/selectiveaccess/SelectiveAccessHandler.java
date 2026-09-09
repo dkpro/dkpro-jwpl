@@ -447,9 +447,7 @@ public class SelectiveAccessHandler
      */
     public void writeConfig(String XMLFile)
     {
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(XMLFile));
-
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(XMLFile))) {
             bw.write("<SelectiveAccessHandlerConfig>\n");
             bw.write("<page>" + XMLCIT(pageHandling) + "</page>\n");
             bw.write("<firstparagraph>" + XMLCIT(pageHandling) + "</firstparagraph>\n");
@@ -459,8 +457,6 @@ public class SelectiveAccessHandler
                 bw.write("</section>\n");
             }
             bw.write("<SelectiveAccessHandlerConfig>\n");
-
-            bw.close();
         }
         catch (IOException e) {
             logger.error("Could not write configuration to '{}'.", XMLFile, e);

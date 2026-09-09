@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
@@ -199,17 +200,10 @@ public class Wikipedia
         // name of the page itself and the name of every redirect pointing to it. Asking PageMapLine
         // for a unique result therefore failed for every page that has a redirect, and it could not
         // tell the name of the page from the name of a redirect to begin with.
-        String returnValue;
-        Session session = this.__getHibernateSession();
-        try {
-            session.beginTransaction();
-            String sql = "select p.name from Page as p where p.pageId = :pId";
-            returnValue = session.createQuery(sql, String.class).setParameter("pId", pageId)
-                    .uniqueResult();
-        }
-        finally {
-            session.getTransaction().commit();
-        }
+        String sql = "select p.name from Page as p where p.pageId = :pId";
+        String returnValue = __inTransaction(
+                session -> session.createQuery(sql, String.class).setParameter("pId", pageId)
+                        .uniqueResult());
 
         if (returnValue == null) {
             throw new WikiPageNotFoundException();
@@ -240,27 +234,13 @@ public class Wikipedia
         List<Integer> ids = new ArrayList<>(pageIds);
         for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
             List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
-            // Re-acquired per batch on purpose: the thread-bound session context unbinds and closes
-            // the session once its transaction completes, so it must not be reused across batches.
-            Session session = this.__getHibernateSession();
-            session.beginTransaction();
-            List<Object[]> rows;
-            try {
-                rows = session
-                        .createQuery(
-                                "select p.pageId, p.name from Page as p where p.pageId in (:ids)",
-                                Object[].class)
-                        .setParameterList("ids", batch).list();
-                session.getTransaction().commit();
-            } catch (RuntimeException e) {
-                // A transaction left open would poison the thread-bound session for every later
-                // call on this thread, so callers that log the failure and move on to the next
-                // page would fail from here on for an unrelated reason.
-                if (session.getTransaction().isActive()) {
-                    session.getTransaction().rollback();
-                }
-                throw e;
-            }
+            // A session is acquired per batch on purpose: the thread-bound session context unbinds
+            // and closes the session once its transaction completes, so it must not be reused
+            // across batches.
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery("select p.pageId, p.name from Page as p where p.pageId in (:ids)",
+                            Object[].class)
+                    .setParameterList("ids", batch).list());
 
             for (Object[] row : rows) {
                 Integer pageId = (Integer) row[0];
@@ -286,13 +266,10 @@ public class Wikipedia
      * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIds(String title) throws WikiApiException {
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select p.pageID from PageMapLine as p where p.name = :pName";
-        Iterator<Integer> results = session.createQuery(sql, Integer.class)
-                .setParameter("pName", title, StandardBasicTypes.STRING).list().iterator();
-
-        session.getTransaction().commit();
+        Iterator<Integer> results = __inTransaction(session -> session
+                .createQuery(sql, Integer.class)
+                .setParameter("pName", title, StandardBasicTypes.STRING).list()).iterator();
 
         if (!results.hasNext()) {
             throw new WikiPageNotFoundException();
@@ -312,16 +289,13 @@ public class Wikipedia
      * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
-        title = title.toLowerCase();
-        title = title.replaceAll(" ", "_");
+        final String normalizedTitle = title.toLowerCase().replaceAll(" ", "_");
 
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select p.pageID from PageMapLine as p where lower(p.name) = :pName";
-        Iterator<Integer> results = session.createQuery(sql, Integer.class)
-                .setParameter("pName", title, StandardBasicTypes.STRING).list().iterator();
-
-        session.getTransaction().commit();
+        Iterator<Integer> results = __inTransaction(session -> session
+                .createQuery(sql, Integer.class)
+                .setParameter("pName", normalizedTitle, StandardBasicTypes.STRING).list())
+                .iterator();
 
         if (!results.hasNext()) {
             throw new WikiPageNotFoundException();
@@ -460,17 +434,13 @@ public class Wikipedia
             articleTitle = WikiConstants.DISCUSSION_PREFIX + articleTitle;
         }
 
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
-
         List<Page> discussionArchives = new LinkedList<>();
 
         String sql = "SELECT pageID FROM PageMapLine where name like :name";
-        Iterator<Integer> results = session.createQuery(sql, Integer.class)
-                .setParameter("name", articleTitle + "/%", StandardBasicTypes.STRING).list()
-                .iterator();
-
-        session.getTransaction().commit();
+        final String namePattern = articleTitle + "/%";
+        Iterator<Integer> results = __inTransaction(session -> session
+                .createQuery(sql, Integer.class)
+                .setParameter("name", namePattern, StandardBasicTypes.STRING).list()).iterator();
 
         while (results.hasNext()) {
             int pageID = results.next();
@@ -502,12 +472,12 @@ public class Wikipedia
         Map<Integer, Double> distanceMap = new HashMap<>();
 
         final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
                 + " from PageMapLine as pml";
-        for (PageTuple o : session.createQuery(query, PageTuple.class)
-                .list()) {
+        // The whole table is materialized by the query anyway, so the scoring below runs outside
+        // the transaction rather than holding a connection for its duration.
+        for (PageTuple o : __inTransaction(
+                session -> session.createQuery(query, PageTuple.class).list())) {
 
             // this returns a similarity - if we want to use it, we have to change the semantics the
             // ordering of the results
@@ -528,7 +498,6 @@ public class Wikipedia
                 }
             }
         }
-        session.getTransaction().commit();
 
         for (int pageID : distanceMap.keySet()) {
             Page page = null;
@@ -605,12 +574,9 @@ public class Wikipedia
             throw new WikiPageNotFoundException();
         }
 
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
-        List<Integer> categoryHibernateIds = session.createQuery(sql, Integer.class)
-                .setParameter("pageTitle", pageTitle).list();
-        session.getTransaction().commit();
+        List<Integer> categoryHibernateIds = __inTransaction(session -> session
+                .createQuery(sql, Integer.class).setParameter("pageTitle", pageTitle).list());
 
         Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
         for (int hibernateId : categoryHibernateIds) {
@@ -644,11 +610,9 @@ public class Wikipedia
     // TODO this should be replaced with the buffered category iterator, as it might produce an
     // HeapSpace Overflow, if there are too many categories.
     protected Set<Integer> __getCategories() {
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select cat.pageId from Category as cat";
-        List<Integer> idList = session.createQuery(sql, Integer.class).list();
-        session.getTransaction().commit();
+        List<Integer> idList = __inTransaction(
+                session -> session.createQuery(sql, Integer.class).list());
 
         return new HashSet<>(idList);
     }
@@ -685,11 +649,9 @@ public class Wikipedia
      * @return A set with all {@code pageIDs}. Returning all pages is much to expensive.
      */
     protected Set<Integer> __getPages() {
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select page.pageId from Page as page";
-        List<Integer> idList = session.createQuery(sql, Integer.class).list();
-        session.getTransaction().commit();
+        List<Integer> idList = __inTransaction(
+                session -> session.createQuery(sql, Integer.class).list());
 
         return new HashSet<>(idList);
     }
@@ -765,14 +727,10 @@ public class Wikipedia
 
         String encodedTitle = t.getWikiStyleTitle();
 
-        Session session = this.__getHibernateSession();
-        try {
-            session.beginTransaction();
-            var query = "select p.id from PageMapLine as p where p.name = :pName";
-            if (dbConfig.supportsCollation()) {
-                query += SQL_COLLATION;
-            }
+        final String query = "select p.id from PageMapLine as p where p.name = :pName"
+                + (dbConfig.supportsCollation() ? SQL_COLLATION : "");
 
+        return __inTransaction(session -> {
             // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
             // NativeQuery...
             // A name is not unique in PageMapLine: case variants of one title map to their own
@@ -784,11 +742,8 @@ public class Wikipedia
             var nativeQuery = session.createNativeQuery(query, Long.class)
                     .setParameter("pName", encodedTitle, StandardBasicTypes.STRING)
                     .setMaxResults(1);
-            var returnValue = nativeQuery.uniqueResult();
-            return returnValue != null;
-        } finally {
-            session.getTransaction().commit();
-        }
+            return nativeQuery.uniqueResult();
+        }) != null;
     }
 
     /**
@@ -807,22 +762,15 @@ public class Wikipedia
             return false;
         }
 
-        Session session = this.__getHibernateSession();
-        try {
-            session.beginTransaction();
-            // PageMapLine holds one entry per title the page id can be reached by, so a page that
-            // has redirects carries several of them. One entry answers the question, see
-            // existsPage(String) on why a unique result must not be asked for here.
-            String sql = "select p.id from PageMapLine as p where p.pageID = :pageId";
-            Long returnValue = session.createNativeQuery(sql, Long.class)
-                    .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).setMaxResults(1)
-                    .uniqueResult();
+        // PageMapLine holds one entry per title the page id can be reached by, so a page that has
+        // redirects carries several of them. One entry answers the question, see existsPage(String)
+        // on why a unique result must not be asked for here.
+        String sql = "select p.id from PageMapLine as p where p.pageID = :pageId";
+        Long returnValue = __inTransaction(session -> session.createNativeQuery(sql, Long.class)
+                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).setMaxResults(1)
+                .uniqueResult());
 
-            return returnValue != null;
-        }
-        finally {
-            session.getTransaction().commit();
-        }
+        return returnValue != null;
     }
 
     /**
@@ -842,12 +790,9 @@ public class Wikipedia
 
         // The id was not found in the id mapping cache.
         // It may not be in the cahe or may not exist at all.
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select page.id from Page as page where page.pageId = :pageId";
-        Long retObjectPage = session.createQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult();
-        session.getTransaction().commit();
+        Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
+                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult());
         if (retObjectPage != null) {
             hibernateID = retObjectPage;
             // add it to the cache
@@ -875,12 +820,9 @@ public class Wikipedia
 
         // The id was not found in the id mapping cache.
         // It may not be in the cahe or may not exist at all.
-        Session session = this.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select cat.id from Category as cat where cat.pageId = :pageId";
-        Long retObjectPage = session.createQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult();
-        session.getTransaction().commit();
+        Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
+                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult());
         if (retObjectPage != null) {
             hibernateID = retObjectPage;
             // add it to the cache
@@ -910,6 +852,23 @@ public class Wikipedia
      */
     protected Session __getHibernateSession() {
         return WikiHibernateUtil.getSessionFactory(this.dbConfig).getCurrentSession();
+    }
+
+    /**
+     * Runs a unit of work inside a transaction on the session bound to the current thread.
+     * <p>
+     * This is the shortcut every database access in the API package goes through. Completing the
+     * transaction on the failure paths as well is what keeps a failing query from leaving the
+     * thread-bound session - and the JDBC connection it holds - behind for good; see
+     * {@link WikiHibernateUtil#inTransaction(Session, Function)} for the full story.
+     *
+     * @param work The unit of work to run. Must not be {@code null}, and must not call back into an
+     *             operation that opens a transaction of its own.
+     * @param <T>  The type of the result of {@code work}.
+     * @return Whatever {@code work} returned.
+     */
+    protected <T> T __inTransaction(Function<Session, T> work) {
+        return WikiHibernateUtil.inTransaction(__getHibernateSession(), work);
     }
 
     /**

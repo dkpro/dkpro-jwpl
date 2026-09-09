@@ -90,13 +90,42 @@ public class SQLDatabaseWriter
 
             this.connection = DriverManager.getConnection("jdbc:mysql://" + host + "/" + sTable,
                     user, password);
-
-            init();
-            writeHeader();
-
         }
         catch (ClassNotFoundException | SQLException e) {
             throw new ConfigurationException(e);
+        }
+
+        // The connection is open by now, and no caller can reach it any more once the
+        // constructor fails - so every failure below has to release it.
+        try {
+            init();
+            writeHeader();
+        }
+        catch (SQLException e) {
+            ConfigurationException wrapped = new ConfigurationException(e);
+            closeQuietly(wrapped);
+            throw wrapped;
+        }
+        catch (ConfigurationException | LoggingException | RuntimeException e) {
+            closeQuietly(e);
+            throw e;
+        }
+    }
+
+    /**
+     * Closes the database connection while another failure is already on its way out. A failure to
+     * do so is attached to that one rather than replacing it.
+     *
+     * @param primary
+     *            The failure that made the connection unreachable.
+     */
+    private void closeQuietly(Exception primary)
+    {
+        try {
+            close();
+        }
+        catch (SQLException e) {
+            primary.addSuppressed(e);
         }
     }
 
@@ -149,13 +178,11 @@ public class SQLDatabaseWriter
         try {
             queries = sqlEncoder.encodeTask(task);
 
-            Statement query;
             int size = queries.length;
             for (i = 0; i < size; i++) {
-
-                query = connection.createStatement();
-                query.executeUpdate(queries[i].getQuery());
-                query.close();
+                try (Statement query = connection.createStatement()) {
+                    query.executeUpdate(queries[i].getQuery());
+                }
             }
             // System.out.println(task.toString());
 
@@ -191,17 +218,13 @@ public class SQLDatabaseWriter
     private void writeHeader() throws SQLException
     {
 
-        Statement query;
-        String[] revTableHeaderQueries;
-
-        revTableHeaderQueries = sqlEncoder.getTable();
+        String[] revTableHeaderQueries = sqlEncoder.getTable();
 
         // commit revision table header
         for (String revTableHeaderQuery : revTableHeaderQueries) {
-            query = connection.createStatement();
-
-            query.executeUpdate(revTableHeaderQuery);
-            query.close();
+            try (Statement query = connection.createStatement()) {
+                query.executeUpdate(revTableHeaderQuery);
+            }
         }
 
     }

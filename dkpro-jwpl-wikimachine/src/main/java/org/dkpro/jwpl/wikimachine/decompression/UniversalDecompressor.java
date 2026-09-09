@@ -20,6 +20,7 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -207,19 +208,37 @@ public class UniversalDecompressor
      */
     private InputStream startExternal(String fileName)
     {
-        InputStream result = null;
         try {
             String extension = detectExtension(fileName);
             String command = externalSupport.get(extension).replace(FILEPLACEHOLDER, fileName);
-            Process externalProcess = Runtime.getRuntime().exec(command);
-            result = externalProcess.getInputStream();
+            // The error stream is inherited rather than left to fill up: nothing here drains it,
+            // and once its buffer runs full the external decompressor blocks for good, taking the
+            // whole import with it. It must not be merged into the standard output either - that
+            // is the dump being read.
+            Process externalProcess = new ProcessBuilder(command.split("\\s+"))
+                    .redirectError(ProcessBuilder.Redirect.INHERIT).start();
+            // Closing the returned stream is what the caller does when it is done reading, and
+            // that is when the process has to go as well - it cannot be reached any other way.
+            return new FilterInputStream(externalProcess.getInputStream())
+            {
+                @Override
+                public void close() throws IOException
+                {
+                    try {
+                        super.close();
+                    }
+                    finally {
+                        externalProcess.destroy();
+                    }
+                }
+            };
         }
         catch (IOException e) {
           // Handled here: the caller is signalled by the 'null' return value, so this is the
           // only place the underlying cause is recorded.
           LOG.error("Could not start the external decompressor for '{}'.", fileName, e);
         }
-        return result;
+        return null;
     }
 
     /**

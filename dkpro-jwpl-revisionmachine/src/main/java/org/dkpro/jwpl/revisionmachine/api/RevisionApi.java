@@ -117,18 +117,21 @@ public class RevisionApi
                 throw new IllegalArgumentException("minNumberRevisions needs to be >= 0");
             }
 
-            PreparedStatement statement;
-
+            boolean columnExists;
             // check whether the field has already been added
-            statement = this.connection.prepareStatement(
+            try (PreparedStatement statement = this.connection.prepareStatement(
                     "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '"
                             + config.getDatabase()
-                            + "' AND TABLE_NAME = 'index_articleID_rc_ts' AND COLUMN_NAME = 'NumberRevisions'");
-            if (!statement.executeQuery().next()) {
+                            + "' AND TABLE_NAME = 'index_articleID_rc_ts' AND COLUMN_NAME = 'NumberRevisions'")) {
+                try (ResultSet result = statement.executeQuery()) {
+                    columnExists = result.next();
+                }
+            }
+
+            if (!columnExists) {
                 // create new column
-                statement = this.connection.prepareStatement(
-                        "ALTER TABLE index_articleID_rc_ts ADD NumberRevisions INT(10) unsigned NOT NULL");
-                try {
+                try (PreparedStatement statement = this.connection.prepareStatement(
+                        "ALTER TABLE index_articleID_rc_ts ADD NumberRevisions INT(10) unsigned NOT NULL")) {
                     statement.execute();
                 }
                 catch (SQLException e) {
@@ -137,37 +140,30 @@ public class RevisionApi
                             e);
                 }
                 // fill with information extracted from RevisionCounter field
-                statement = this.connection.prepareStatement(
-                        "UPDATE index_articleID_rc_ts SET NumberRevisions = (SELECT SUBSTRING_INDEX(RevisionCounter,' ',-1))");
-                statement.execute();
+                String fill = "UPDATE index_articleID_rc_ts SET NumberRevisions = "
+                        + "(SELECT SUBSTRING_INDEX(RevisionCounter,' ',-1))";
+                try (PreparedStatement statement = this.connection.prepareStatement(fill)) {
+                    statement.execute();
+                }
             }
 
             HashSet<Integer> articles = new HashSet<>();
 
             // make query
-            try {
-                if (maxNumberRevisions == -1) {
-                    statement = this.connection
-                            .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
-                                    + "WHERE NumberRevisions >= ?");
-                    statement.setInt(1, minNumberRevisions);
-                }
-                else {
-                    statement = this.connection
-                            .prepareStatement("SELECT ArticleID FROM index_articleID_rc_ts "
-                                    + "WHERE NumberRevisions BETWEEN ? AND ?");
-                    statement.setInt(1, minNumberRevisions);
+            String sql = maxNumberRevisions == -1
+                    ? "SELECT ArticleID FROM index_articleID_rc_ts WHERE NumberRevisions >= ?"
+                    : "SELECT ArticleID FROM index_articleID_rc_ts "
+                            + "WHERE NumberRevisions BETWEEN ? AND ?";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+                statement.setInt(1, minNumberRevisions);
+                if (maxNumberRevisions != -1) {
                     statement.setInt(2, maxNumberRevisions);
                 }
-                ResultSet result = statement.executeQuery();
 
-                while (result.next()) {
-                    articles.add(result.getInt(1));
-                }
-            }
-            finally {
-                if (statement != null) {
-                    statement.close();
+                try (ResultSet result = statement.executeQuery()) {
+                    while (result.next()) {
+                        articles.add(result.getInt(1));
+                    }
                 }
             }
             return articles;

@@ -27,7 +27,6 @@ import org.dkpro.jwpl.api.hibernate.PageDAO;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
 import org.dkpro.jwpl.api.util.UnmodifiableArraySet;
 import org.hibernate.LockOptions;
-import org.hibernate.Session;
 import org.hibernate.type.StandardBasicTypes;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
@@ -159,10 +158,7 @@ public class Page
      */
     private void fetchByHibernateId(long id) throws WikiApiException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        hibernatePage = pageDAO.findById(id);
-        session.getTransaction().commit();
+        hibernatePage = wiki.__inTransaction(session -> pageDAO.findById(id));
 
         if (hibernatePage == null) {
             throw new WikiPageNotFoundException("No page with id " + id + " was found.");
@@ -171,13 +167,10 @@ public class Page
 
     private void fetchByPageId(int pageID) throws WikiApiException
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        hibernatePage = session
+        hibernatePage = wiki.__inTransaction(session -> session
                 .createQuery("from Page where pageId = :id",
                         org.dkpro.jwpl.api.hibernate.Page.class)
-                .setParameter("id", pageID, StandardBasicTypes.INTEGER).uniqueResult();
-        session.getTransaction().commit();
+                .setParameter("id", pageID, StandardBasicTypes.INTEGER).uniqueResult());
 
         if (hibernatePage == null) {
             throw new WikiPageNotFoundException("No page with page id " + pageID + " was found.");
@@ -193,18 +186,14 @@ public class Page
      */
     private void fetchByTitle(Title pTitle, boolean useExactTitle) throws WikiApiException
     {
-        String searchString = pTitle.getPlainTitle();
-        if (!useExactTitle) {
-            searchString = pTitle.getWikiStyleTitle();
-        }
+        final String searchString = useExactTitle ? pTitle.getPlainTitle()
+                : pTitle.getWikiStyleTitle();
 
-        Session session;
-        session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1";
-        Integer pageId = session.createNativeQuery(sql, Integer.class)
-                .setParameter("pagetitle", searchString, StandardBasicTypes.STRING).uniqueResult();
-        session.getTransaction().commit();
+        Integer pageId = wiki.__inTransaction(
+                session -> session.createNativeQuery(sql, Integer.class)
+                        .setParameter("pagetitle", searchString, StandardBasicTypes.STRING)
+                        .uniqueResult());
 
         if (pageId == null) {
             throw new WikiPageNotFoundException(
@@ -279,11 +268,10 @@ public class Page
      */
     public Set<Category> getCategories()
     {
-        Session session = this.wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernatePage, LockOptions.NONE);
-        Set<Integer> tmp = new UnmodifiableArraySet<>(hibernatePage.getCategories());
-        session.getTransaction().commit();
+        Set<Integer> tmp = wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new UnmodifiableArraySet<>(hibernatePage.getCategories());
+        });
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmp) {
@@ -304,12 +292,10 @@ public class Page
         int nrOfCategories = 0;
 
         long id = __getId();
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select count(pages) from page_categories where id = :pageid";
-        Long returnValue = session.createNativeQuery(sql, Long.class)
-                .setParameter("pageid", id, StandardBasicTypes.LONG).uniqueResult();
-        session.getTransaction().commit();
+        Long returnValue = wiki.__inTransaction(session -> session
+                .createNativeQuery(sql, Long.class)
+                .setParameter("pageid", id, StandardBasicTypes.LONG).uniqueResult());
 
         if (returnValue != null) {
             nrOfCategories = returnValue.intValue();
@@ -328,12 +314,11 @@ public class Page
      */
     public Set<Page> getInlinks()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernatePage, LockOptions.NONE);
         // Have to copy links here since getPage later will close the session.
-        Set<Integer> pageIDs = new UnmodifiableArraySet<>(hibernatePage.getInLinks());
-        session.getTransaction().commit();
+        Set<Integer> pageIDs = wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new UnmodifiableArraySet<>(hibernatePage.getInLinks());
+        });
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : pageIDs) {
@@ -360,12 +345,10 @@ public class Page
         int nrOfInlinks = 0;
 
         long id = __getId();
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select count(pi.inLinks) from page_inlinks as pi where pi.id = :piid";
-        Long returnValue = session.createNativeQuery(sql, Long.class)
-                .setParameter("piid", id, StandardBasicTypes.LONG).uniqueResult();
-        session.getTransaction().commit();
+        Long returnValue = wiki.__inTransaction(session -> session
+                .createNativeQuery(sql, Long.class)
+                .setParameter("piid", id, StandardBasicTypes.LONG).uniqueResult());
 
         if (returnValue != null) {
             nrOfInlinks = returnValue.intValue();
@@ -381,14 +364,10 @@ public class Page
      */
     public Set<Integer> getInlinkIDs()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernatePage, LockOptions.NONE);
-
-        Set<Integer> tmpSet = new HashSet<>(hibernatePage.getInLinks());
-
-        session.getTransaction().commit();
-        return tmpSet;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new HashSet<>(hibernatePage.getInLinks());
+        });
     }
 
     /**
@@ -416,13 +395,11 @@ public class Page
      */
     public Set<Page> getOutlinks()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        // session.lock(hibernatePage, LockMode.NONE);
-        session.lock(hibernatePage, LockOptions.NONE);
         // Have to copy links here since getPage later will close the session.
-        Set<Integer> tmpSet = new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
-        session.getTransaction().commit();
+        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new UnmodifiableArraySet<>(hibernatePage.getOutLinks());
+        });
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -448,12 +425,10 @@ public class Page
         int nrOfOutlinks = 0;
 
         long id = __getId();
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
         String sql = "select count(outLinks) from page_outlinks where id = :id";
-        Long returnValue = session.createNativeQuery(sql, Long.class)
-                .setParameter("id", id, StandardBasicTypes.LONG).uniqueResult();
-        session.getTransaction().commit();
+        Long returnValue = wiki.__inTransaction(session -> session
+                .createNativeQuery(sql, Long.class)
+                .setParameter("id", id, StandardBasicTypes.LONG).uniqueResult());
 
         if (returnValue != null) {
             nrOfOutlinks = returnValue.intValue();
@@ -470,14 +445,10 @@ public class Page
     public Set<Integer> getOutlinkIDs()
     {
 
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernatePage, LockOptions.NONE);
-
-        Set<Integer> tmpSet = new HashSet<>(hibernatePage.getOutLinks());
-
-        session.getTransaction().commit();
-        return tmpSet;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new HashSet<>(hibernatePage.getOutLinks());
+        });
     }
 
     /**
@@ -502,10 +473,7 @@ public class Page
      */
     public Title getTitle() throws WikiTitleParsingException
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        String name = hibernatePage.getName();
-        session.getTransaction().commit();
+        String name = wiki.__inTransaction(session -> hibernatePage.getName());
         return new Title(name);
     }
 
@@ -514,12 +482,10 @@ public class Page
      */
     public Set<String> getRedirects()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        session.lock(hibernatePage, LockOptions.NONE);
-        Set<String> tmpSet = new HashSet<>(hibernatePage.getRedirects());
-        session.getTransaction().commit();
-        return tmpSet;
+        return wiki.__inTransaction(session -> {
+            session.lock(hibernatePage, LockOptions.NONE);
+            return new HashSet<>(hibernatePage.getRedirects());
+        });
     }
 
     /**
@@ -527,10 +493,7 @@ public class Page
      */
     public String getText()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        String text = hibernatePage.getText();
-        session.getTransaction().commit();
+        String text = wiki.__inTransaction(session -> hibernatePage.getText());
 
         // Normalize strings read from the DB to use "\n" for all line breaks.
         StringBuilder sb = new StringBuilder(text);
@@ -571,11 +534,7 @@ public class Page
      */
     public boolean isDisambiguation()
     {
-        Session session = wiki.__getHibernateSession();
-        session.beginTransaction();
-        boolean isDisambiguation = hibernatePage.getIsDisambiguation();
-        session.getTransaction().commit();
-        return isDisambiguation;
+        return wiki.__inTransaction(session -> hibernatePage.getIsDisambiguation());
     }
 
     /**

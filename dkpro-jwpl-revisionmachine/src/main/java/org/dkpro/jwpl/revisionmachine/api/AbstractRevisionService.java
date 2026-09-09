@@ -27,8 +27,12 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A common base class that handles the aspect of database connection handling.
+ * <p>
+ * Implementations own the database connection they open, hence they must be closed by their
+ * caller - use them as a resource of a try-with-resources statement.
  */
 public abstract class AbstractRevisionService
+    implements AutoCloseable
 {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRevisionService.class);
@@ -80,6 +84,7 @@ public abstract class AbstractRevisionService
      * @throws SQLException
      *             if an error occurs while closing the connection
      */
+    @Override
     public final void close() throws SQLException
     {
         if (this.connection != null) {
