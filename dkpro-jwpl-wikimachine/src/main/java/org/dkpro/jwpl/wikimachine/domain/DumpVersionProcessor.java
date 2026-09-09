@@ -97,24 +97,24 @@ public class DumpVersionProcessor
      */
     public void processRevision(RevisionParser revisionParser) throws IOException
     {
-        for (IDumpVersion version : versions) {
-            version.initRevisionParsing();
-        }
-        int counter = 0;
-        while (revisionParser.next()) {
+        try (revisionParser) {
             for (IDumpVersion version : versions) {
-                version.processRevisionRow(revisionParser);
+                version.initRevisionParsing();
+            }
+            int counter = 0;
+            while (revisionParser.next()) {
+                for (IDumpVersion version : versions) {
+                    version.processRevisionRow(revisionParser);
+                }
+
+                logAndClear(++counter, "Revision");
             }
 
-            logAndClear(++counter, "Revision");
+            for (IDumpVersion version : versions) {
+                version.exportAfterRevisionParsing();
+                version.freeAfterRevisionParsing();
+            }
         }
-
-        for (IDumpVersion version : versions) {
-            version.exportAfterRevisionParsing();
-            version.freeAfterRevisionParsing();
-        }
-
-        revisionParser.close();
     }
 
     /**
@@ -126,24 +126,24 @@ public class DumpVersionProcessor
      */
     public void processPage(PageParser pageParser) throws IOException
     {
-        for (IDumpVersion version : versions) {
-            version.initPageParsing();
-        }
-
-        int counter = 0;
-        while (pageParser.next()) {
+        try (pageParser) {
             for (IDumpVersion version : versions) {
-                version.processPageRow(pageParser);
+                version.initPageParsing();
             }
-            logAndClear(++counter, "Pages");
-        }
 
-        for (IDumpVersion version : versions) {
-            version.exportAfterPageParsing();
-            version.freeAfterPageParsing();
-        }
+            int counter = 0;
+            while (pageParser.next()) {
+                for (IDumpVersion version : versions) {
+                    version.processPageRow(pageParser);
+                }
+                logAndClear(++counter, "Pages");
+            }
 
-        pageParser.close();
+            for (IDumpVersion version : versions) {
+                version.exportAfterPageParsing();
+                version.freeAfterPageParsing();
+            }
+        }
     }
 
     /**
@@ -214,30 +214,30 @@ public class DumpVersionProcessor
      */
     public void processText(TextParser textParser) throws IOException
     {
-        for (IDumpVersion version : versions) {
-            version.initTextParsing();
-        }
-
-        int counter = 0;
-        while (textParser.next()) {
+        try (textParser) {
             for (IDumpVersion version : versions) {
-                version.processTextRow(textParser);
+                version.initTextParsing();
             }
-            if (step2Flush != 0 && counter % step2Flush == 0) {
+
+            int counter = 0;
+            while (textParser.next()) {
                 for (IDumpVersion version : versions) {
-                    version.flushByTextParsing();
+                    version.processTextRow(textParser);
                 }
+                if (step2Flush != 0 && counter % step2Flush == 0) {
+                    for (IDumpVersion version : versions) {
+                        version.flushByTextParsing();
+                    }
+                }
+                logAndClear(++counter, "Text");
+
             }
-            logAndClear(++counter, "Text");
 
+            for (IDumpVersion version : versions) {
+                version.exportAfterTextParsing();
+                version.freeAfterTextParsing();
+            }
         }
-
-        for (IDumpVersion version : versions) {
-            version.exportAfterTextParsing();
-            version.freeAfterTextParsing();
-        }
-
-        textParser.close();
     }
 
     /**

@@ -78,13 +78,10 @@ public final class GraphSerialization
         throws IOException
     {
         SerializableDirectedGraph serialGraph = new SerializableDirectedGraph(graph);
-        BufferedOutputStream fos;
-        ObjectOutputStream out;
-        fos = new BufferedOutputStream(new FileOutputStream(file));
-        out = new ObjectOutputStream(fos);
-        out.writeObject(serialGraph);
-        out.close();
-
+        try (ObjectOutputStream out = new ObjectOutputStream(
+                new BufferedOutputStream(new FileOutputStream(file)))) {
+            out.writeObject(serialGraph);
+        }
     }
 
     /**
@@ -129,12 +126,10 @@ public final class GraphSerialization
         throws IOException, ClassNotFoundException
     {
         SerializableDirectedGraph serialGraph;
-        BufferedInputStream fin;
-        ObjectInputStream in;
-        fin = new BufferedInputStream(new FileInputStream(file));
-        in = new ObjectInputStream(fin);
-        serialGraph = (SerializableDirectedGraph) in.readObject();
-        in.close();
+        try (ObjectInputStream in = new ObjectInputStream(
+                new BufferedInputStream(new FileInputStream(file)))) {
+            serialGraph = (SerializableDirectedGraph) in.readObject();
+        }
         return serialGraph.getGraph();
     }
 }

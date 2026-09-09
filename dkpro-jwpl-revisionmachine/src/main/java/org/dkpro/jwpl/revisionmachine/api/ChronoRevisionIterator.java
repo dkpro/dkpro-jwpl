@@ -50,6 +50,13 @@ public class ChronoRevisionIterator
     private ResultSet resultArticles;
 
     /**
+     * Reference to the statement that produced {@link #resultArticles}. It is kept so that it can
+     * be closed along with the result set - a statement left behind holds server side resources
+     * for the whole lifetime of the connection.
+     */
+    private Statement articlesStatement;
+
+    /**
      * Number of revisions of the current read article
      */
     private int maxRevision;
@@ -161,14 +168,15 @@ public class ChronoRevisionIterator
      */
     private boolean queryArticle() throws SQLException
     {
+        closeArticleResources();
 
-        Statement statement = this.connection.createStatement();
+        articlesStatement = this.connection.createStatement();
 
         String query = "SELECT ArticleID, FullRevisionPKs, RevisionCounter "
                 + "FROM index_articleID_rc_ts " + "WHERE articleID > " + this.currentArticleID
                 + " LIMIT " + MAX_NUMBER_RESULTS;
 
-        resultArticles = statement.executeQuery(query);
+        resultArticles = articlesStatement.executeQuery(query);
 
         if (resultArticles.next()) {
 
@@ -321,7 +329,6 @@ public class ChronoRevisionIterator
                             || (this.currentArticleID <= this.lastArticleID);
                 }
 
-                resultArticles.close();
                 return queryArticle();
 
             case ITERATE_WITHOUT_MAPPING:
@@ -339,7 +346,6 @@ public class ChronoRevisionIterator
                             || (this.currentArticleID <= this.lastArticleID);
                 }
 
-                resultArticles.close();
                 return queryArticle();
 
             default:
@@ -373,8 +379,33 @@ public class ChronoRevisionIterator
     @Override
     public void close() throws SQLException
     {
-        if (this.connection != null) {
-            this.connection.close();
+        try {
+            closeArticleResources();
+        }
+        finally {
+            if (this.connection != null) {
+                this.connection.close();
+            }
+        }
+    }
+
+    /**
+     * Closes the statement of the current article batch, and with it the result set it produced.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the statement
+     */
+    private void closeArticleResources() throws SQLException
+    {
+        try {
+            if (articlesStatement != null) {
+                // Closing a statement closes the result set it produced along with it.
+                articlesStatement.close();
+            }
+        }
+        finally {
+            articlesStatement = null;
+            resultArticles = null;
         }
     }
 
