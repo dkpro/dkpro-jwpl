@@ -20,11 +20,13 @@ package org.dkpro.jwpl.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -217,6 +219,45 @@ public class PageTest
             fail("A WikiTitleParsingException occurred while accessing the category title of the page: "
                     + e.getLocalizedMessage());
         }
+    }
+
+    @Test
+    public void testGetVisibleCategoriesWithoutHiddenCategoriesCategory() throws Exception
+    {
+        // The test database has no "Hidden_categories" category, so no category is hidden.
+        assertEquals(Set.of("SIR", "Disambiguation"), titlesOf(page.getVisibleCategories()));
+    }
+
+    @Test
+    public void testGetVisibleCategoriesLeavesOutSubcategoriesOfHiddenCategory() throws Exception
+    {
+        // "SIR" is a subcategory of "Projects_of_UKP", "Disambiguation" of "Telecooperation".
+        assertEquals(Set.of("Disambiguation"),
+                titlesOf(page.getVisibleCategories("Projects_of_UKP")));
+        assertEquals(Set.of("SIR"), titlesOf(page.getVisibleCategories("Telecooperation")));
+    }
+
+    @Test
+    public void testGetVisibleCategoriesWithUnknownHiddenCategory() throws Exception
+    {
+        assertEquals(Set.of("SIR", "Disambiguation"),
+                titlesOf(page.getVisibleCategories("No_such_category")));
+    }
+
+    @Test
+    public void testGetVisibleCategoriesRejectsNullOrBlankTitle()
+    {
+        assertThrows(IllegalArgumentException.class, () -> page.getVisibleCategories(null));
+        assertThrows(IllegalArgumentException.class, () -> page.getVisibleCategories(" "));
+    }
+
+    private static Set<String> titlesOf(Set<Category> categories) throws WikiTitleParsingException
+    {
+        Set<String> titles = new HashSet<>();
+        for (Category category : categories) {
+            titles.add(category.getTitle().getPlainTitle());
+        }
+        return titles;
     }
 
     @Test

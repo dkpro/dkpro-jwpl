@@ -48,6 +48,11 @@ public class Page
     implements WikiConstants
 {
 
+    /**
+     * The title of the category that holds the hidden categories in English Wikipedia.
+     */
+    public static final String HIDDEN_CATEGORIES_TITLE = "Hidden_categories";
+
     private final Wikipedia wiki;
 
     private final PageDAO pageDAO;
@@ -301,6 +306,64 @@ public class Page
             nrOfCategories = returnValue.intValue();
         }
         return nrOfCategories;
+    }
+
+    /**
+     * Returns the categories of this page, leaving out the hidden categories of English Wikipedia,
+     * i.e. the subcategories of {@value #HIDDEN_CATEGORIES_TITLE}. These are maintenance
+     * categories, such as "All articles with dead external links", which Wikipedia does not show on
+     * the page.
+     * <p>
+     * For other language editions, use {@link #getVisibleCategories(String)} with the title of that
+     * edition's hidden-categories category.
+     *
+     * @return The categories of this page that are not hidden. If there is no
+     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page.
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
+     */
+    public Set<Category> getVisibleCategories() throws WikiApiException
+    {
+        return getVisibleCategories(HIDDEN_CATEGORIES_TITLE);
+    }
+
+    /**
+     * Returns the categories of this page, leaving out the hidden ones. A category is hidden if it
+     * is a direct subcategory of the category with the given title.
+     *
+     * @param hiddenCategoriesTitle
+     *            The title of the category that holds the hidden categories, e.g.
+     *            {@value #HIDDEN_CATEGORIES_TITLE}. Must not be {@code null} or blank.
+     * @return The categories of this page that are not hidden. If there is no category with the
+     *         given title, all categories of this page.
+     * @throws IllegalArgumentException
+     *             Thrown if {@code hiddenCategoriesTitle} is {@code null} or blank.
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
+     */
+    public Set<Category> getVisibleCategories(String hiddenCategoriesTitle) throws WikiApiException
+    {
+        if (hiddenCategoriesTitle == null || hiddenCategoriesTitle.isBlank()) {
+            throw new IllegalArgumentException(
+                    "The title of the hidden categories category must not be null or blank.");
+        }
+
+        int hiddenCategoriesId;
+        try {
+            hiddenCategoriesId = wiki.getCategory(hiddenCategoriesTitle).getPageId();
+        }
+        catch (WikiPageNotFoundException e) {
+            // Without a hidden categories category, none of the categories of this page is hidden.
+            return getCategories();
+        }
+
+        Set<Category> visibleCategories = new HashSet<>();
+        for (Category category : getCategories()) {
+            if (!category.getParentIDs().contains(hiddenCategoriesId)) {
+                visibleCategories.add(category);
+            }
+        }
+        return visibleCategories;
     }
 
     /**
