@@ -91,14 +91,23 @@ public class Link
     }
 
     /**
-     * Retruns the Link text or link caption.
+     * Returns the link text or link caption. Where that text is blank, the target is returned
+     * instead (see issue #90).
+     * <p>
+     * For a category link, the text behind the pipe is its sort key. A sort key that is not
+     * blank, as in {@code [[Category:Anarchism|Anarchism, political]]}, is returned as is, while
+     * a blank one, as in {@code [[Category:Anarchism| ]]}, yields the target.
+     *
+     * @return The text of the link, or its target if that text is blank.
      */
     public String getText()
     {
         if (home_cc == null) {
             return null;
         }
-        return pos.getText(home_cc.getText());
+
+        String text = pos.getText(home_cc.getText());
+        return text == null || text.isBlank() ? target : text;
     }
 
     /**
