@@ -91,14 +91,21 @@ public class Link
     }
 
     /**
-     * Retruns the Link text or link caption.
+     * Returns the link text or link caption. Where a link carries no caption of its own, the
+     * target is returned instead: the text behind the pipe of a category link is its sort key
+     * rather than a caption, and {@code [[Category:Anarchism| ]]} would otherwise be the empty
+     * string (see issue #90).
+     *
+     * @return The caption of the link, or its target if the link has no caption.
      */
     public String getText()
     {
         if (home_cc == null) {
             return null;
         }
-        return pos.getText(home_cc.getText());
+
+        String text = pos.getText(home_cc.getText());
+        return text == null || text.isBlank() ? target : text;
     }
 
     /**
