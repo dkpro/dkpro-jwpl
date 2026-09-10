@@ -891,7 +891,8 @@ public class ModularParser
 
             if (templateOptionTag != -1) {
                 templateNameEnd = templateOptionTag;
-                templateOptions = tokenize(sm, templateOptionTag + 1, templateCloseTag, SYMBOL_PIPE);
+                templateOptions = tokenizeTemplateParameters(sm, templateOptionTag + 1,
+                        templateCloseTag);
             }
             else {
                 templateNameEnd = templateCloseTag;
@@ -1205,6 +1206,78 @@ public class ModularParser
         parseContentElement(sm, cepp, paragraphSpans, result);
 
         return result;
+    }
+
+    /**
+     * Splits the parameters of a template on the pipes that separate them, which are the pipes
+     * outside of any link, template or table markup: a pipe inside {@code [[A|B]]} belongs to that
+     * link and is not a parameter separator, so splitting on every pipe cuts such a parameter in
+     * two (see issue #111).
+     *
+     * @param sm    The {@link SpanManager} holding the text.
+     * @param start The position of the first character behind the pipe that ends the template name.
+     * @param end   The position of the closing braces of the template.
+     * @return The parameters of the template, in the order in which they occur.
+     */
+    private List<String> tokenizeTemplateParameters(SpanManager sm, int start, int end)
+    {
+        List<String> result = new ArrayList<>();
+
+        if (start > end) {
+            logger.debug("tokenizeTemplateParameters({},{}) doesn't make sense", start, end);
+            return result;
+        }
+
+        int depth = 0;
+        int tokenStart = start;
+
+        for (int i = start; i < end; i++) {
+            char current = sm.charAt(i);
+            char next = i + 1 < end ? sm.charAt(i + 1) : 0;
+
+            // "[[" and "[" open a link, "{{" a template and "{|" a table
+            if (current == '[') {
+                if (next == '[') {
+                    i++;
+                }
+                depth++;
+            }
+            else if (current == '{' && (next == '{' || next == '|')) {
+                i++;
+                depth++;
+            }
+            else if (current == ']') {
+                if (next == ']') {
+                    i++;
+                }
+                depth = Math.max(0, depth - 1);
+            }
+            else if (current == '}' && next == '}') {
+                i++;
+                depth = Math.max(0, depth - 1);
+            }
+            else if (current == '|' && next == '}') {
+                // the end of a table, not a separator
+                i++;
+                depth = Math.max(0, depth - 1);
+            }
+            else if (current == '|' && depth == 0) {
+                addToken(result, sm, tokenStart, i);
+                tokenStart = i + 1;
+            }
+        }
+
+        addToken(result, sm, tokenStart, end);
+
+        return result;
+    }
+
+    private void addToken(List<String> tokens, SpanManager sm, int start, int end)
+    {
+        String token = sm.substring(start, end).trim();
+        if (!token.isEmpty()) {
+            tokens.add(token);
+        }
     }
 
     private List<String> tokenize(SpanManager sm, int start, int end, String delim)
