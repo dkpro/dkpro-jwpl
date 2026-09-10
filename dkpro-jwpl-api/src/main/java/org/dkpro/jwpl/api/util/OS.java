@@ -22,6 +22,7 @@ package org.dkpro.jwpl.api.util;
  *
  * @deprecated To be removed without replacement.
  */
+@Deprecated(forRemoval = true)
 public class OS
 {
 

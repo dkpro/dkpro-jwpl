@@ -71,7 +71,9 @@ public class ApiUtilities
             double progressPercent = (double) (counter * 100) / size;
             progressPercent = 1 + Math.round(progressPercent * 100) / 100.0;
             if (mode.equals(ApiUtilities.ProgressInfoMode.TEXT)) {
-              logger.info("{}: {} - {} MB", text, progressPercent, OS.getUsedMemory());
+                Runtime rt = Runtime.getRuntime();
+                long usedMemoryMb = (rt.totalMemory() - rt.freeMemory()) / (1024 * 1024);
+                logger.info("{}: {} - {} MB", text, progressPercent, usedMemoryMb);
             }
             else if (mode.equals(ApiUtilities.ProgressInfoMode.DOTS)) {
                 System.out.print(".");

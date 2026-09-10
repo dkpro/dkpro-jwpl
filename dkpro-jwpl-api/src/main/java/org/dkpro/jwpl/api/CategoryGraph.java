@@ -42,7 +42,6 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.CommonUtilities;
 import org.dkpro.jwpl.api.util.GraphSerialization;
-import org.dkpro.jwpl.api.util.OS;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -300,7 +299,6 @@ public class CategoryGraph
         numberOfNodes = graph.vertexSet().size();
 
         // add edges
-        logger.info("{} MB memory used.", OS.getUsedMemory());
         int progress = 0;
         for (int pageID : graph.vertexSet()) {
             progress++;
