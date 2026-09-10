@@ -185,4 +185,15 @@ public class PageQueryIterable
     {
         return new PageQueryIterator(wiki, pageIdList);
     }
+
+    /**
+     * The pages matching the query are selected when this object is created, so their number is
+     * known without iterating over them.
+     *
+     * @return The number of pages that match the query.
+     */
+    public int size()
+    {
+        return pageIdList.size();
+    }
 }

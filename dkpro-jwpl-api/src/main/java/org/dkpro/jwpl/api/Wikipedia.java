@@ -677,6 +677,19 @@ public class Wikipedia
     }
 
     /**
+     * Get the number of pages that match the given query. The query is evaluated the same way as
+     * in {@link #getPages(PageQuery)}, which means the same warning applies: it may be running very
+     * slow, depending on the size of the Wikipedia!
+     *
+     * @param query A query object containing the query conditions.
+     * @return The number of pages that match the given query.
+     * @throws WikiApiException Thrown if errors occurred.
+     */
+    public int getNumberOfPages(PageQuery query) throws WikiApiException {
+        return new PageQueryIterable(this, query).size();
+    }
+
+    /**
      * Get all articles (pages MINUS disambiguationPages MINUS redirects). Returns only an iterable,
      * as a collection may not fit into memory for a large wikipedia.
      *

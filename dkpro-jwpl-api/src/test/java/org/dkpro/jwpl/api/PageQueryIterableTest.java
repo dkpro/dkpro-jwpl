@@ -63,6 +63,29 @@ public class PageQueryIterableTest
         assertNotNull(pqi);
     }
 
+    @Test
+    public void testNumberOfPagesOfAQueryWithoutConditions() throws WikiApiException
+    {
+        assertEquals(34, new PageQueryIterable(wiki, pq).size());
+        assertEquals(34, wiki.getNumberOfPages(pq));
+    }
+
+    @Test
+    public void testNumberOfPagesMatchesTheNumberOfIteratedPages() throws WikiApiException
+    {
+        pq.setTitlePattern("Wikipedia%");
+        pq.setOnlyArticlePages(true);
+
+        int iterated = 0;
+        for (Page page : wiki.getPages(pq)) {
+            assertNotNull(page);
+            iterated++;
+        }
+
+        assertTrue(iterated >= 1);
+        assertEquals(iterated, wiki.getNumberOfPages(pq));
+    }
+
     // Example with ' character in titlePattern verifies issue #124
     @ParameterizedTest
     @ValueSource(strings = {"Wikipedia%", "Wiki_edia%", "Moore'%"})
