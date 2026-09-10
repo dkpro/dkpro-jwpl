@@ -1435,8 +1435,37 @@ public class ModularParser
                 sm.replace(lsinlink, lsinlink + lineSeparator.length(), " ");
             }
 
+            if (linkType == Link.type.INTERNAL) {
+                includeBlendEnding(sm, posSpan);
+            }
+
             lastLinkSpan = posSpan;
         }
+    }
+
+    /**
+     * Includes the ending of a blend link in the text of that link. MediaWiki renders the letters
+     * that immediately follow an internal link as a part of it, so {@code [[Wiki]]pedia} is one
+     * link reading "Wikipedia", and that is the anchor text the author intended (see issue #32).
+     * <p>
+     * The ending stops at the first character that is not a letter and at an upper case letter,
+     * which starts a word of its own rather than continuing the link.
+     *
+     * @param sm       The {@link SpanManager} holding the text.
+     * @param linkSpan The span of the link text, which is extended over the ending.
+     */
+    private void includeBlendEnding(SpanManager sm, Span linkSpan)
+    {
+        int end = linkSpan.getEnd();
+        while (end < sm.length() && isBlendEndingCharacter(sm.charAt(end))) {
+            end++;
+        }
+        linkSpan.setEnd(end);
+    }
+
+    private static boolean isBlendEndingCharacter(char c)
+    {
+        return Character.isLetter(c) && !Character.isUpperCase(c);
     }
 
     /**
