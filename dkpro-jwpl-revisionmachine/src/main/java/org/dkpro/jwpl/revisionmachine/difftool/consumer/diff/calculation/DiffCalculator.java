@@ -30,6 +30,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.DiffException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.TimeoutException;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.common.util.Surrogates;
 import org.dkpro.jwpl.revisionmachine.common.util.WikipediaXMLWriter;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
@@ -515,8 +516,9 @@ public class DiffCalculator
 
                             if (MODE_DEBUG_OUTPUT_ACTIVATED) {
                                 WikipediaXMLWriter writer = new WikipediaXMLWriter(
-                                        LOGGING_PATH_DIFFTOOL + LOGGING_PATH_DEBUG
-                                                + task.getHeader().getArticleName() + ".dbg");
+                                        FilePaths.resolve(LOGGING_PATH_DIFFTOOL,
+                                                LOGGING_PATH_DEBUG,
+                                                task.getHeader().getArticleName() + ".dbg"));
 
                                 writer.writeRevision(task);
                                 writer.close();
