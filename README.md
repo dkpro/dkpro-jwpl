@@ -19,8 +19,8 @@
 # dkpro-jwpl
 
 [![GitHub license](https://img.shields.io/badge/license-Apache%202-blue.svg)](https://raw.githubusercontent.com/dkpro/dkpro-jwpl/master/LICENSE.txt)
-[![Maven Central Version](https://img.shields.io/maven-central/v/org.dkpro.jwpl/dkpro-jwpl)](https://img.shields.io/maven-central/v/org.dkpro.jwpl/dkpro-jwpl)
-[![Build Status](https://github.com/dkpro/dkpro-jwpl/actions/workflows/maven.yml/badge.svg)](https://github.com/dkpro/dkpro-jwpl/actions/workflows/maven.yml/badge.svg)
+[![Maven Central Version](https://img.shields.io/maven-central/v/org.dkpro.jwpl/dkpro-jwpl)](https://central.sonatype.com/artifact/org.dkpro.jwpl/dkpro-jwpl)
+[![Build Status](https://github.com/dkpro/dkpro-jwpl/actions/workflows/maven.yml/badge.svg)](https://github.com/dkpro/dkpro-jwpl/actions/workflows/maven.yml)
 [![Contributors](https://img.shields.io/github/contributors/dkpro/dkpro-jwpl)](https://github.com/dkpro/dkpro-jwpl/graphs/contributors)
 [![GitHub pull requests](https://img.shields.io/github/issues-pr-raw/dkpro/dkpro-jwpl.svg)](https://github.com/dkpro/dkpro-jwpl/pulls)
 
