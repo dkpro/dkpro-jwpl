@@ -962,7 +962,7 @@ public class ModularParser
                     // images
                     for (String s : tokenize(sm, startSpan.getEnd(), endSpan.getStart(),
                             lineSeparator)) {
-                        sb.append("[[" + s + "]]" + lineSeparator);
+                        sb.append("[[" + qualifyGalleryEntry(s) + "]]" + lineSeparator);
                     }
 
                     // replace the source and remove the tags
@@ -970,6 +970,32 @@ public class ModularParser
                 }
             }
         }
+    }
+
+    /**
+     * Every line of a gallery names a file, whether or not it carries the namespace prefix that a
+     * link outside a gallery needs. The prefix is therefore added where it is missing, so that the
+     * link the gallery is turned into is recognized as an image rather than as an internal link to
+     * an article of that name (see issue #151).
+     *
+     * @param entry One line of a gallery, that is, a file name followed by the optional caption.
+     * @return The entry, prefixed with an image identifier unless it already carries one.
+     */
+    private String qualifyGalleryEntry(String entry)
+    {
+        if (imageIdentifiers.isEmpty()) {
+            return entry;
+        }
+
+        String namespace = getLinkNameSpace(entry);
+        if (namespace != null && imageIdentifiers.contains(namespace)) {
+            return entry;
+        }
+
+        // the identifiers are kept in lower case for the comparison above, while a namespace
+        // prefix is conventionally capitalized
+        String identifier = imageIdentifiers.get(0);
+        return Character.toUpperCase(identifier.charAt(0)) + identifier.substring(1) + ":" + entry;
     }
 
     private Table buildTable(SpanManager sm, ContentElementParsingParameters cepp,
