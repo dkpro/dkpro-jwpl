@@ -51,6 +51,11 @@ public class RevisionApi
 {
 
     /**
+     * Whether the revisions table has a Namespace column, {@code null} until it has been checked
+     */
+    private Boolean hasNamespaceColumn;
+
+    /**
      * Creates a new {@link RevisionApi} object with an existing database connection.
      *
      * @param config
@@ -1595,8 +1600,10 @@ public class RevisionApi
     private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException
     {
 
-        final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-                + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
+        final boolean namespaceColumn = hasNamespaceColumn();
+        final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered"
+                + (namespaceColumn ? ", Namespace" : "") + " FROM revisions "
+                + "WHERE PrimaryKey >= ? LIMIT " + limit;
         /*
          * As HSQL does not support ResultSet.last() per default, we have to specify these extra
          * parameters here.
@@ -1631,11 +1638,32 @@ public class RevisionApi
                 revision.setContributorId(contributorId);
 
                 revision.setContributorIsRegistered(result.getBoolean(11));
+
+                if (namespaceColumn) {
+                    revision.setNamespace(RevisionsTable.getNamespace(result, 12));
+                }
             }
             return revision;
 
         }
 
+    }
+
+    /**
+     * Checks whether the revisions table has a Namespace column. The result is cached, as the
+     * schema does not change while this API is in use.
+     *
+     * @return {@code true} if the column exists, {@code false} for databases created by
+     *         RevisionMachine versions before 2.2.0
+     * @throws SQLException
+     *             if an error occurs while querying the database
+     */
+    private boolean hasNamespaceColumn() throws SQLException
+    {
+        if (hasNamespaceColumn == null) {
+            hasNamespaceColumn = RevisionsTable.hasNamespaceColumn(connection);
+        }
+        return hasNamespaceColumn;
     }
 
     /**

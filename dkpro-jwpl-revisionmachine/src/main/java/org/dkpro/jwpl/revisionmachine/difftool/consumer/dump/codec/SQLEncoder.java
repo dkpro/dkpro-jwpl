@@ -158,7 +158,8 @@ public class SQLEncoder
                 + "Timestamp BIGINT NOT NULL, " + "Revision MEDIUMTEXT NOT NULL, "
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
-                + "ContributorIsRegistered TINYINT NOT NULL, " + "PRIMARY KEY(PrimaryKey)"
+                + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
+                + "PRIMARY KEY(PrimaryKey)"
                 + ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
         binaryTableRevision = "CREATE TABLE IF NOT EXISTS revisions ("
@@ -169,7 +170,8 @@ public class SQLEncoder
                 + "Timestamp BIGINT NOT NULL, " + "Revision MEDIUMBLOB NOT NULL,"
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
-                + "ContributorIsRegistered TINYINT NOT NULL, " + "PRIMARY KEY(PrimaryKey)"
+                + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
+                + "PRIMARY KEY(PrimaryKey)"
                 + ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
     }
@@ -206,6 +208,7 @@ public class SQLEncoder
         }
 
         int articleId = task.getHeader().getArticleId();
+        Integer namespace = task.getHeader().getNamespace();
         Diff diff;
 
         ArrayList<SQLEncoding> list = new ArrayList<>();
@@ -241,7 +244,8 @@ public class SQLEncoder
             tempData = "(null, " + this.lastFullRevID + "," + diff.getRevisionCounter() + ","
                     + diff.getRevisionID() + "," + articleId + "," + diff.getTimeStamp().getTime()
                     + ",?," + comment + "," + (diff.isMinor() ? "1" : "0") + "," + contributorId
-                    + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ")";
+                    + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ","
+                    + namespace + ")";
             tempBinaryData = binaryDiff(task, diff);
 
             // if the limit would be reached start a new encoding
@@ -325,6 +329,7 @@ public class SQLEncoder
         }
 
         int articleId = task.getHeader().getArticleId();
+        Integer namespace = task.getHeader().getNamespace();
         Diff diff;
 
         ArrayList<SQLEncoding> list = new ArrayList<>();
@@ -359,7 +364,8 @@ public class SQLEncoder
                     + diff.getRevisionID() + "," + articleId + "," + diff.getTimeStamp().getTime()
                     + ",'" + encodeDiff(task, diff) + "'," + comment + ","
                     + (diff.isMinor() ? "1" : "0") + ",'" + diff.getContributorName() + "',"
-                    + contributorId + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ")";
+                    + contributorId + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ","
+                    + namespace + ")";
 
             // if the limit would be reached start a new encoding
             if ((revisionEncoding.byteSize() + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE)

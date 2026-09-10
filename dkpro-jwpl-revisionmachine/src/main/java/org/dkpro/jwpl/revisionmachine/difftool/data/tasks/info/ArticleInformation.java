@@ -72,6 +72,11 @@ public class ArticleInformation
     private int ignoredRevisionsCounter;
 
     /**
+     * Namespace of the article, {@code null} if unknown
+     */
+    private Integer namespace;
+
+    /**
      * Original size of the article
      */
     private long originalSize;
@@ -211,6 +216,16 @@ public class ArticleInformation
     public int getIgnoredRevisionsCounter()
     {
         return ignoredRevisionsCounter;
+    }
+
+    /**
+     * Returns the namespace of the article.
+     *
+     * @return namespace, {@code null} if unknown
+     */
+    public Integer getNamespace()
+    {
+        return namespace;
     }
 
     /**
@@ -373,6 +388,17 @@ public class ArticleInformation
     }
 
     /**
+     * Sets the namespace of the article.
+     *
+     * @param namespace
+     *            namespace, {@code null} if unknown
+     */
+    public void setNamespace(final Integer namespace)
+    {
+        this.namespace = namespace;
+    }
+
+    /**
      * Sets the original size of the article.
      *
      * @param originalSize
@@ -453,6 +479,8 @@ public class ArticleInformation
         b.append(articleId);
         b.append("\r\n\tARTICLENAME:       \t");
         b.append(articleName);
+        b.append("\r\n\tNAMESPACE:         \t");
+        b.append(namespace);
         b.append("\r\n\r\n\tNUMBER REVISIONS:\t[");
         b.append(this.revisionCounter);
         b.append(" + ");

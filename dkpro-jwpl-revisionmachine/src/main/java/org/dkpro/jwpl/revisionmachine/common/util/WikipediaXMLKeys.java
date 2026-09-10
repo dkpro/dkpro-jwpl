@@ -124,6 +124,16 @@ public enum WikipediaXMLKeys
     KEY_END_NAMESPACES("</namespaces>"),
 
     /**
+     * Indicates the start of the namespace of a page
+     */
+    KEY_START_NS("<ns>"),
+
+    /**
+     * Indicates the end of the namespace of a page
+     */
+    KEY_END_NS("</ns>"),
+
+    /**
      * Indicates the start of a text segment
      */
     KEY_START_TEXT("<text xml:space=\"preserve\">"),

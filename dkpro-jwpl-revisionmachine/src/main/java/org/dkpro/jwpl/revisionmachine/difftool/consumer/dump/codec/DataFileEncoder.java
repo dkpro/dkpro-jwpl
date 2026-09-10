@@ -89,6 +89,7 @@ public class DataFileEncoder
         }
 
         int articleId = task.getHeader().getArticleId();
+        Integer namespace = task.getHeader().getNamespace();
         Diff diff;
 
         ArrayList<String> list = new ArrayList<>();
@@ -127,7 +128,8 @@ public class DataFileEncoder
                     + diff.getRevisionID() + "," + articleId + "," + diff.getTimeStamp().getTime()
                     + ",\"" + encodeDiff(task, diff) + "\"," + comment + ","
                     + (diff.isMinor() ? "1" : "0") + "," + contributorName + "," + contributorId
-                    + "," + (diff.getContributorIsRegistered() ? "1" : "0");
+                    + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ","
+                    + (namespace == null ? "\\N" : namespace.toString());
 
             // add item to the list
             list.add(tempData);
