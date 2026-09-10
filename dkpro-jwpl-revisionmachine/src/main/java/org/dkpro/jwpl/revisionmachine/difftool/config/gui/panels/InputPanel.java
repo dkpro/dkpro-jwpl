@@ -171,34 +171,13 @@ public class InputPanel
          */
         private void validateSurrogateSettings()
         {
+            SurrogateModes sur = controller.getSurrogates();
 
-            /*
-             * TODO Uncomment this code as soon as the surrogate modes are reactivated
-             */
-
-            // SurrogateModes sur = controller.getSurrogates();
-            //
-            // replaceSurrogatesRadioButton
-            // .setSelected(sur == SurrogateModes.REPLACE);
-            // faultySurrogatesRadioButton
-            // .setSelected(sur == SurrogateModes.THROW_ERROR);
-            // discardSurrogatesRevisionRadioButton
-            // .setSelected(sur == SurrogateModes.DISCARD_REVISION);
-            // discardSurrogatesArticleRadioButton
-            // .setSelected(sur == SurrogateModes.DISCARD_REST);
-
-            /*
-             * DEACTIVATE UNSUPPORTED MODES TODO: remove config options for unsupported surrogates
-             * mode. Can be activated again as soon as the implementation of these modes have been
-             * checked. Then also uncomment the original code above.
-             */
-            // BEGIN WORK AROUND FOR DEACTIVATED SURROGATE MODES
-            faultySurrogatesRadioButton.setEnabled(false);
-            discardSurrogatesArticleRadioButton.setEnabled(false);
-            replaceSurrogatesRadioButton.setEnabled(false);
-            discardSurrogatesRevisionRadioButton.setSelected(true);
-            // END WORK AROUND FOR DEACTIVATED SURROGATE MODES
-
+            replaceSurrogatesRadioButton.setSelected(sur == SurrogateModes.REPLACE);
+            faultySurrogatesRadioButton.setSelected(sur == SurrogateModes.THROW_ERROR);
+            discardSurrogatesRevisionRadioButton
+                    .setSelected(sur == SurrogateModes.DISCARD_REVISION);
+            discardSurrogatesArticleRadioButton.setSelected(sur == SurrogateModes.DISCARD_REST);
         }
 
         /**

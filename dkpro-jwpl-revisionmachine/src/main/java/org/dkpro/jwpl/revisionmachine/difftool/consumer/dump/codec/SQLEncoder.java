@@ -30,11 +30,9 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.common.logging.messages.consumer.ConsumerLogMessages;
 import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
-import org.dkpro.jwpl.revisionmachine.common.util.Surrogates;
 import org.dkpro.jwpl.revisionmachine.common.util.WikipediaXMLWriter;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
-import org.dkpro.jwpl.revisionmachine.difftool.data.SurrogateModes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecData;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionEncoder;
@@ -91,11 +89,6 @@ public class SQLEncoder
     private final boolean MODE_DEBUG_OUTPUT_ACTIVATED;
 
     /**
-     * Configuration parameter - Surrogate Mode
-     */
-    private final SurrogateModes MODE_SURROGATES;
-
-    /**
      * UNCOMPRESSED Statement for tables containing base 64 encoded diff information
      */
     private final String tableRevision;
@@ -141,9 +134,6 @@ public class SQLEncoder
 
         LIMIT_SQL_STATEMENT_SIZE = (Long) config
                 .getConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET);
-
-        MODE_SURROGATES = (SurrogateModes) config
-                .getConfigParameter(ConfigurationKeys.MODE_SURROGATES);
 
         WIKIPEDIA_ENCODING = (String) config
                 .getConfigParameter(ConfigurationKeys.WIKIPEDIA_ENCODING);
@@ -420,21 +410,7 @@ public class SQLEncoder
         String orig = originalDiff.toString();
         String deco = decodedDiff.toString();
 
-        boolean notEqual = !orig.equals(deco);
-
-        if (notEqual && MODE_SURROGATES == SurrogateModes.REPLACE) {
-
-            char[] origDiff = orig.toCharArray();
-
-            // TODO: test
-            if (Surrogates.scan(origDiff)) {
-
-                String repDiff = new String(Surrogates.replace(origDiff));
-                notEqual = !repDiff.equals(deco);
-            }
-        }
-
-        if (notEqual) {
+        if (!orig.equals(deco)) {
 
             if (MODE_DEBUG_OUTPUT_ACTIVATED) {
 
