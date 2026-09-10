@@ -745,15 +745,52 @@ public class CategoryGraph
         String hyponymCountMapFilename = "hypoCountMap";
         File hyponymCountMapSerializedFile = new File(
                 wiki.getWikipediaId() + "_" + hyponymCountMapFilename);
-        hyponymCountMap = new HashMap<>();
 
         if (hyponymCountMapSerializedFile.exists()) {
             logger.info("Loading saved hyponymyCountMap ...");
-            hyponymCountMap = (Map<Integer, Integer>) this
+            Map<Integer, Integer> savedMap = (Map<Integer, Integer>) this
                     .deserializeMap(hyponymCountMapSerializedFile);
-            logger.info("Done loading saved hyponymyCountMap");
-            return;
+            // Maps written before the counting was capped may hold negative counts, which are the
+            // result of an overflow of the summation (see issue #94). Such a map is unusable, so
+            // it is discarded and computed anew rather than propagated into the measures.
+            if (containsNegativeCount(savedMap)) {
+                logger.warn(
+                        "Discarding the saved hyponymyCountMap in {}: it holds negative hyponym "
+                                + "counts, which an earlier version of JWPL could produce. It is "
+                                + "computed again and overwritten.",
+                        hyponymCountMapSerializedFile);
+            }
+            else {
+                hyponymCountMap = savedMap;
+                logger.info("Done loading saved hyponymyCountMap");
+                return;
+            }
         }
+
+        hyponymCountMap = __computeHyponymCountMap();
+
+        if (hyponymCountMap.size() != graph.vertexSet().size()) {
+            throw new WikiApiException(
+                    "HyponymCountMap does not contain an entry for each node in the graph."
+                            + hyponymCountMap.size() + "/" + graph.vertexSet().size());
+        }
+
+        logger.info("Computed hyponymCountMap");
+        serializeMap(hyponymCountMap, hyponymCountMapSerializedFile);
+        logger.info("Serialized hyponymCountMap");
+    }
+
+    /**
+     * Computes the (recursive) number of hyponyms of each node of the graph, working upwards from
+     * the leaf nodes so that the count of a node is available once all of its children have one.
+     *
+     * @return A map from each node of the graph to its hyponym count.
+     * @throws WikiApiException
+     *             Thrown if not every node of the graph could be visited.
+     */
+    Map<Integer, Integer> __computeHyponymCountMap() throws WikiApiException
+    {
+        Map<Integer, Integer> result = new HashMap<>();
 
         // a queue holding the nodes to process
 
@@ -783,12 +820,15 @@ public class CategoryGraph
             Set<Integer> children = __getChildren(currNode);
 
             int validChildren = 0;
-            int sumChildHyponyms = 0;
+            // The counts are summed in a long: a node that is reachable over several paths is
+            // counted once per path, so the sum can grow far beyond the number of nodes in the
+            // graph - in a Wikipedia sized graph well beyond Integer.MAX_VALUE (see issue #94).
+            long sumChildHyponyms = 0;
             boolean invalid = false;
             for (int child : children) {
                 if (graph.containsVertex(child)) {
-                    if (hyponymCountMap.containsKey(child)) {
-                        sumChildHyponyms += hyponymCountMap.get(child);
+                    if (result.containsKey(child)) {
+                        sumChildHyponyms += result.get(child);
                         validChildren++;
                     }
                     else {
@@ -809,8 +849,8 @@ public class CategoryGraph
 
             // number of hyponyms of current node is the number of its own hyponomies and the sum
             // of the hyponomies of its children.
-            int currNodeHyponymCount = validChildren + sumChildHyponyms;
-            hyponymCountMap.put(currNode, currNodeHyponymCount);
+            long currNodeHyponymCount = validChildren + sumChildHyponyms;
+            result.put(currNode, capHyponymCount(currNodeHyponymCount));
 
             // add parents of current node to queue
             for (int parent : __getParents(currNode)) {
@@ -826,35 +866,35 @@ public class CategoryGraph
             throw new WikiApiException("Visited only " + visited.size() + " out of "
                     + graph.vertexSet().size() + " nodes.");
         }
-        if (hyponymCountMap.size() != graph.vertexSet().size()) {
-            throw new WikiApiException(
-                    "HyponymCountMap does not contain an entry for each node in the graph."
-                            + hyponymCountMap.size() + "/" + graph.vertexSet().size());
-        }
 
-        scaleHyponymCountMap();
-        logger.info("Computed hyponymCountMap");
-        serializeMap(hyponymCountMap, hyponymCountMapSerializedFile);
-        logger.info("Serialized hyponymCountMap");
+        return result;
     }
 
     /**
-     * As the categoryGraph is a graph rather than a tree, the hyponymCount for top nodes can be
+     * As the categoryGraph is a graph rather than a tree, the hyponym count of a node can come out
      * greater than the number of nodes in the graph. This is due to the multiple counting of nodes
-     * having more than one parent. Thus, we have to scale hyponym counts to fall in
-     * [0,NumberOfNodes].
+     * having more than one parent. Counts are therefore capped to fall in [0,NumberOfNodes], which
+     * also keeps the summation of the counts of the parents of such a node away from an overflow.
      *
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
+     * @param count
+     *            The counted number of hyponyms of a node.
+     * @return The count, capped at the number of nodes in the graph.
      */
-    private void scaleHyponymCountMap() throws WikiApiException
+    private int capHyponymCount(long count)
     {
-        for (int key : getHyponymCountMap().keySet()) {
-            if (getHyponymCountMap().get(key) > graph.vertexSet().size()) {
-                // TODO scaling function is not optimal (to say the least :)
-                getHyponymCountMap().put(key, (graph.vertexSet().size() - 1));
-            }
-        }
+        int numberOfNodes = graph.vertexSet().size();
+        // TODO capping is not optimal (to say the least :)
+        return count > numberOfNodes ? numberOfNodes - 1 : (int) count;
+    }
+
+    /**
+     * @param countMap
+     *            A map from nodes to hyponym counts.
+     * @return {@code true} if any node is mapped to a negative count.
+     */
+    private static boolean containsNegativeCount(Map<Integer, Integer> countMap)
+    {
+        return countMap.values().stream().anyMatch(count -> count < 0);
     }
 
     /**
