@@ -97,6 +97,14 @@ public final class LinkRowProcessor
 
     /**
      * Processes one row of the {@code pagelinks} table.
+     * <p>
+     * Only links whose <em>target</em> lives in the main namespace are kept. The title of a
+     * {@code pagelinks} row is namespace local, so {@code [[Wikipedia:Stub]]} and {@code [[Stub]]}
+     * both arrive here as the title {@code Stub} and are told apart by
+     * {@link PagelinksParser#getPlNamespace()} alone. Without that check every link into a
+     * non-article namespace whose title happens to match an article is written as a link to that
+     * article (see issue #97). Article links are the only ones the JWPL page link tables model;
+     * adding the remaining namespaces is issue #38.
      *
      * @param parser The parser positioned on the row to process.
      * @param sink   The sink to look up ids in and to write the resulting rows to.
@@ -105,6 +113,10 @@ public final class LinkRowProcessor
     {
         final String plTo = parser.getPlTo();
         if (plTo == null) {
+            return;
+        }
+        if (parser.getPlNamespace() != AbstractDumpVersion.NS_MAIN) {
+            // discard links pointing outside the main namespace
             return;
         }
         final int plFrom = parser.getPlFrom();

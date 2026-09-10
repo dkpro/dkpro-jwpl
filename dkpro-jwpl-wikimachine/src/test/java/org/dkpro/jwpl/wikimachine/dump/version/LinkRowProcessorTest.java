@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Map;
 
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.LinkTargetResolver;
@@ -95,34 +96,69 @@ class LinkRowProcessorTest
             (11,0,'Nirvana',0);
             """;
 
+    /**
+     * A {@code pagelinks} dump in which the same title occurs in several namespaces. The titles are
+     * namespace local, so every row carries the title of a registered article while only the first
+     * one actually points at it (see issue #97).
+     */
+    private static final String PAGELINKS_LEGACY_NAMESPACES = """
+            CREATE TABLE `pagelinks` (
+              `pl_from` int(8) unsigned NOT NULL DEFAULT 0,
+              `pl_namespace` int(11) NOT NULL DEFAULT 0,
+              `pl_to` varbinary(255) NOT NULL DEFAULT '',
+              `pl_from_namespace` int(11) NOT NULL DEFAULT 0,
+              UNIQUE KEY `pl_from` (`pl_from`,`pl_namespace`,`pl_to`)
+            ) ENGINE=InnoDB;
+            INSERT INTO `pagelinks` VALUES (11,0,'Main_Page',0),(11,4,'Main_Page',0),\
+            (11,1,'Main_Page',0),(11,14,'Main_Page',0);
+            """;
+
+    /**
+     * The same four links in the normalised layout of MediaWiki 1.43+, where the namespace of the
+     * target is only known through the {@code linktarget} table.
+     */
+    private static final String PAGELINKS_NORMALISED = """
+            CREATE TABLE `pagelinks` (
+              `pl_from` int(8) unsigned NOT NULL DEFAULT 0,
+              `pl_from_namespace` int(11) NOT NULL DEFAULT 0,
+              `pl_target_id` bigint(20) unsigned NOT NULL,
+              PRIMARY KEY (`pl_from`,`pl_target_id`)
+            ) ENGINE=InnoDB;
+            INSERT INTO `pagelinks` VALUES (11,0,800),(11,0,801),(11,0,802),(11,0,700);
+            """;
+
     private static InputStream stream(String sql)
     {
         return new ByteArrayInputStream(sql.getBytes(UTF_8));
     }
 
     /**
-     * lt_id 700 is {@code Category:Top Level}, everything else is unknown.
+     * lt_id 700 is {@code Category:Top Level}, 800, 801 and 802 are the article, the project page
+     * and the talk page named {@code Main Page}; everything else is unknown.
      */
     private static LinkTargetResolver resolver()
     {
+        final Map<Long, String> titles = Map.of(700L, "Top_Level", 800L, "Main_Page", 801L,
+                "Main_Page", 802L, "Main_Page");
+        final Map<Long, Integer> namespaces = Map.of(700L, 14, 800L, 0, 801L, 4, 802L, 1);
         return new LinkTargetResolver()
         {
             @Override
             public String getTitle(long ltId)
             {
-                return ltId == 700 ? "Top_Level" : null;
+                return titles.get(ltId);
             }
 
             @Override
             public int getNamespace(long ltId)
             {
-                return ltId == 700 ? 14 : NAMESPACE_UNKNOWN;
+                return namespaces.getOrDefault(ltId, NAMESPACE_UNKNOWN);
             }
 
             @Override
             public long size()
             {
-                return 1;
+                return titles.size();
             }
         };
     }
@@ -208,5 +244,49 @@ class LinkRowProcessorTest
         }
         assertEquals(of("11->1", "41->1"), sink.pageLinks);
         assertEquals(emptyList(), sink.memberships);
+    }
+
+    @Test
+    void keepsPageLinksIntoTheMainNamespaceOnly() throws Exception
+    {
+        final RecordingLinkRowSink sink = sink();
+        try (PagelinksParser parser = new PagelinksParser(
+                stream(PAGELINKS_LEGACY_NAMESPACES))) {
+            while (parser.next()) {
+                LinkRowProcessor.processPageLink(parser, sink);
+            }
+        }
+        // only the row targeting namespace 0 is a link to the article 'Main Page'. The rows for
+        // 'Wikipedia:Main Page', 'Talk:Main Page' and 'Category:Main Page' carry the same title
+        // and must not be attributed to it.
+        assertEquals(of("11->1"), sink.pageLinks);
+    }
+
+    @Test
+    void keepsPageLinksIntoTheMainNamespaceOnlyOnTheNormalisedLayout() throws Exception
+    {
+        final RecordingLinkRowSink sink = sink();
+        try (PagelinksParser parser = new PagelinksParser(stream(PAGELINKS_NORMALISED),
+                resolver())) {
+            while (parser.next()) {
+                LinkRowProcessor.processPageLink(parser, sink);
+            }
+        }
+        // lt_id 800 is the article, 801 the project page and 802 the talk page of that title, and
+        // 700 is a category - so the namespace has to come from the linktarget table here.
+        assertEquals(of("11->1"), sink.pageLinks);
+    }
+
+    @Test
+    void keepsPageLinksIntoTheMainNamespaceOnlyWhenSkipPageIsDisabled() throws Exception
+    {
+        final RecordingLinkRowSink sink = sink().withSkipPage(false);
+        try (PagelinksParser parser = new PagelinksParser(
+                stream(PAGELINKS_LEGACY_NAMESPACES))) {
+            while (parser.next()) {
+                LinkRowProcessor.processPageLink(parser, sink);
+            }
+        }
+        assertEquals(of("11->1"), sink.pageLinks);
     }
 }
