@@ -91,12 +91,14 @@ public class Link
     }
 
     /**
-     * Returns the link text or link caption. Where a link carries no caption of its own, the
-     * target is returned instead: the text behind the pipe of a category link is its sort key
-     * rather than a caption, and {@code [[Category:Anarchism| ]]} would otherwise be the empty
-     * string (see issue #90).
+     * Returns the link text or link caption. Where that text is blank, the target is returned
+     * instead (see issue #90).
+     * <p>
+     * For a category link, the text behind the pipe is its sort key. A sort key that is not
+     * blank, as in {@code [[Category:Anarchism|Anarchism, political]]}, is returned as is, while
+     * a blank one, as in {@code [[Category:Anarchism| ]]}, yields the target.
      *
-     * @return The caption of the link, or its target if the link has no caption.
+     * @return The text of the link, or its target if that text is blank.
      */
     public String getText()
     {
