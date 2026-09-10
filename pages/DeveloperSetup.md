@@ -8,7 +8,7 @@ permalink: "/DeveloperSetup/"
 
 # Maven Setup
 
-As of version 0.7.0, all JWPL components are available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Corg.dkpro.jwpl.wikipedia). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
+As of version 0.7.0, all JWPL components are available on [Maven Central](https://central.sonatype.com/namespace/org.dkpro.jwpl). If you use Maven as your build tool, then you can add any JWPL component as a dependency to your `pom.xml` without having to perform any additional configuration:
 
 For adding JWPL components in the most recent version to your Maven project, add any of the following dependencies to your `pom.xml`:
 

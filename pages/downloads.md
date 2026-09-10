@@ -41,6 +41,6 @@ A full list of artifacts is available from [Maven Central][1]!
 
 Get the sources from [GitHub](https://github.com/dkpro/dkpro-jwpl/releases/tag/dkpro-jwpl-{{ stable.version }}).
 
-[1]: http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22{{ stable.groupId }}%22%20AND%20v%3A%22{{ stable.version }}%22
+[1]: https://central.sonatype.com/namespace/{{ stable.groupId }}
 
 
