@@ -64,7 +64,6 @@ public interface WikiConstants
      * each carries the code of its edition, see {@link #getWikiCode()}. Languages and codes are
      * taken from that list and are not looked up at runtime (see issue #53).
      */
-    // Languages should be lowercase and match the corresponding snowball stemmer names.
     enum Language
     {
         abkhazian("ab"), acehnese("ace"), adyghe("ady"), afar("aa"), afrikaans("af"), akan("ak"),
