@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.invoke.MethodHandles;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -43,6 +44,13 @@ public class WikipediaTemplateInfoDumpWriter
     private final Map<String, Integer> tplNameToTplId;
     private final String outputPath;
     private final String charset;
+
+    /**
+     * The template names this dump inserts into the tplid-tplname table. A name occurring in both
+     * the page index and the revision index must only be inserted once, or the two indices end up
+     * pointing at two ids of the same name (see issue #95).
+     */
+    private final Set<String> insertedTemplateNames = new HashSet<>();
 
     private final boolean tableExists;
 
@@ -73,19 +81,25 @@ public class WikipediaTemplateInfoDumpWriter
             String curTemplateName = e.getKey();
             Set<Integer> curPageIds = e.getValue();
 
-            // FIXME Problem - we do reuse existing ids here, but we treat template names from the
-            // pages and from revisions separately - resulting in
             if (!curTemplateName.isEmpty() && !curPageIds.isEmpty()) {
-                // if template name does not have an id in the tplname-id map
-                String id = "LAST_INSERT_ID()";
-                if (!tplNameToTplId.containsKey(curTemplateName)) {
+                String id;
+                if (tplNameToTplId.containsKey(curTemplateName)) {
+                    // if template name has an id in the tplname-id map
+                    id = tplNameToTplId.get(curTemplateName).toString();
+                }
+                else if (insertedTemplateNames.add(curTemplateName)) {
+                    // if template name does not have an id in the tplname-id map
                     output.append("INSERT INTO " + GeneratorConstants.TABLE_TPLID_TPLNAME
                             + " (templateName) VALUES ('" + curTemplateName + "');");
                     output.append("\r\n");
+                    id = "LAST_INSERT_ID()";
                 }
                 else {
-                    // if template name has an id in the tplname-id map
-                    id = tplNameToTplId.get(curTemplateName).toString();
+                    // the name was already inserted by an earlier statement of this dump - which
+                    // happens whenever the page index and the revision index are created in one
+                    // run - so its id is looked up instead of being created a second time
+                    id = "(SELECT templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                            + " WHERE templateName = '" + curTemplateName + "' LIMIT 1)";
                 }
 
                 StringBuilder curValues = new StringBuilder();

@@ -263,16 +263,6 @@ public class WikipediaTemplateInfoGenerator
         pageTableExists = info.tableExists(GeneratorConstants.TABLE_TPLID_PAGEID);
         revisionTableExists = info.tableExists(GeneratorConstants.TABLE_TPLID_REVISIONID);
 
-        if (!pageTableExists && !revisionTableExists && mode.active_for_pages
-                && mode.active_for_revisions) {
-            // TODO see fix-me comment in WikipediaTemplateInfoDumpWriter
-            throw new IllegalStateException(
-                    "Currently, you cannot create revision-tpl index and page-tpl index at the same time. "
-                            + "The code is there, but it currently assigns separate tpl-name-ids for page-tpls and "
-                            + "revisions-tpls. Please create a revision-tpl index, import the data into the db, create the "
-                            + "page-tpl index and import this data.");
-        }
-
         if (mode.useRevisionIterator) {
             if (mode.active_for_revisions) {
                 processRevisions();
