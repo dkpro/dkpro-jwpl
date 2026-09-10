@@ -82,18 +82,50 @@ public class LinkAnchorExtractor
 
     /**
      * Note that this method only returns the anchors that are not equal to the title of the page
-     * they are pointing to. Anchors might contain references to sections in an article in the form
-     * of "Page#Section". If you need the plain title, e.g. for checking whether the page exists in
+     * they are pointing to. Use {@link #getAllOutlinkAnchors(Page)} to obtain every anchor,
+     * including those. Anchors might contain references to sections in an article in the form of
+     * "Page#Section". If you need the plain title, e.g. for checking whether the page exists in
      * Wikipedia, the Title object can be used.
      *
+     * @param page The page whose outgoing links are inspected.
      * @return A mapping from the page titles of links in that page to the anchor texts used in the
      *         links.
-     * @throws WikiTitleParsingException
+     * @throws WikiTitleParsingException Thrown if a link target could not be parsed as a title.
      */
     public Map<String, Set<String>> getOutlinkAnchors(Page page) throws WikiTitleParsingException
     {
+        return getOutlinkAnchors(parser.parse(page.getText()), false);
+    }
+
+    /**
+     * Returns every anchor text of the outgoing links of a page, including the anchors that are
+     * equal to the title of the page they are pointing to. How often a given anchor is used for a
+     * given page is what word sense disambiguation reads out of a Wikipedia, and dropping the
+     * anchors that repeat the title removes the most frequent sense of most words from that count
+     * (see issue #79).
+     *
+     * @param page The page whose outgoing links are inspected.
+     * @return A mapping from the page titles of links in that page to the anchor texts used in the
+     *         links.
+     * @throws WikiTitleParsingException Thrown if a link target could not be parsed as a title.
+     */
+    public Map<String, Set<String>> getAllOutlinkAnchors(Page page) throws WikiTitleParsingException
+    {
+        return getOutlinkAnchors(parser.parse(page.getText()), true);
+    }
+
+    /**
+     * @param pp                         The parsed page whose outgoing links are inspected.
+     * @param includeAnchorsEqualToTitle Whether an anchor that is equal to the title of the page it
+     *                                   points to is part of the result.
+     * @return A mapping from the page titles of links in that page to the anchor texts used in the
+     *         links.
+     * @throws WikiTitleParsingException Thrown if a link target could not be parsed as a title.
+     */
+    Map<String, Set<String>> getOutlinkAnchors(ParsedPage pp, boolean includeAnchorsEqualToTitle)
+        throws WikiTitleParsingException
+    {
         Map<String, Set<String>> outAnchors = new HashMap<>();
-        ParsedPage pp = parser.parse(page.getText());
         if (pp == null) {
             return outAnchors;
         }
@@ -109,16 +141,9 @@ public class LinkAnchorExtractor
             // are categories or other metadata
             {
                 String anchorText = l.getText();
-                if (!anchorText.equals(targetTitle)) {
-                    Set<String> anchors;
-                    if (outAnchors.containsKey(targetTitle)) {
-                        anchors = outAnchors.get(targetTitle);
-                    }
-                    else {
-                        anchors = new HashSet<>();
-                    }
-                    anchors.add(anchorText);
-                    outAnchors.put(targetTitle, anchors);
+                if (includeAnchorsEqualToTitle || !anchorText.equals(targetTitle)) {
+                    outAnchors.computeIfAbsent(targetTitle, title -> new HashSet<>())
+                            .add(anchorText);
                 }
             }
         }
