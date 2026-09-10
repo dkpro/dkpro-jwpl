@@ -29,6 +29,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.common.logging.messages.consumer.ConsumerLogMessages;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.common.util.Surrogates;
 import org.dkpro.jwpl.revisionmachine.common.util.WikipediaXMLWriter;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
@@ -439,8 +440,9 @@ public class SQLEncoder
 
                 try {
 
-                    WikipediaXMLWriter writer = new WikipediaXMLWriter(LOGGING_PATH_DIFFTOOL
-                            + LOGGING_PATH_DEBUG + task.getHeader().getArticleName() + ".dbg");
+                    WikipediaXMLWriter writer = new WikipediaXMLWriter(
+                            FilePaths.resolve(LOGGING_PATH_DIFFTOOL, LOGGING_PATH_DEBUG,
+                                    task.getHeader().getArticleName() + ".dbg"));
 
                     switch (task.getTaskType()) {
                     case TASK_FULL:

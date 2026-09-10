@@ -34,6 +34,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
 import org.dkpro.jwpl.revisionmachine.common.logging.Logger;
 import org.dkpro.jwpl.revisionmachine.common.logging.messages.consumer.SQLConsumerLogMessages;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.WriterInterface;
@@ -238,7 +239,8 @@ public class SQLFileWriter
         }
 
         this.fileCounter++;
-        String filePath = PATH_OUTPUT_SQL_FILES + this.outputName + "_" + fileCounter + ".sql";
+        String filePath = FilePaths.resolve(PATH_OUTPUT_SQL_FILES,
+                this.outputName + "_" + fileCounter + ".sql");
 
         SQLConsumerLogMessages.logFileCreation(logger, filePath);
 

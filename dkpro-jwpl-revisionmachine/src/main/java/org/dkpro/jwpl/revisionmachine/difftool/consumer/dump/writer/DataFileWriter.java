@@ -33,6 +33,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.WriterInterface;
@@ -227,7 +228,8 @@ public class DataFileWriter
         }
 
         this.fileCounter++;
-        String filePath = PATH_OUTPUT_DATA_FILES + this.outputName + "_" + fileCounter + ".csv";
+        String filePath = FilePaths.resolve(PATH_OUTPUT_DATA_FILES,
+                this.outputName + "_" + fileCounter + ".csv");
         this.dataFile = new File(filePath);
         this.writer = new BufferedWriter(new OutputStreamWriter(
                 new BufferedOutputStream(new FileOutputStream(filePath)), WIKIPEDIA_ENCODING));

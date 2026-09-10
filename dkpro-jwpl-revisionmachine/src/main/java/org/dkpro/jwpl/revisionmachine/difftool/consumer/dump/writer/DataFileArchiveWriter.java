@@ -29,6 +29,7 @@ import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.SQLConsumerException;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.WriterInterface;
@@ -221,7 +222,8 @@ public class DataFileArchiveWriter
         }
         this.counter++;
 
-        String filePath = PATH_OUTPUT_SQL_FILES + this.outputName + "_" + counter;
+        String filePath = FilePaths.resolve(PATH_OUTPUT_SQL_FILES,
+                this.outputName + "_" + counter);
         this.output = OutputFactory.getOutputStream(filePath);
         this.dataArchive = new File(filePath);
         this.output.flush();

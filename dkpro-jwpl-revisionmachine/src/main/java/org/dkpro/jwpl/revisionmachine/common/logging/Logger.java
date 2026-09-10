@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorFactory;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.LoggingException;
+import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.slf4j.LoggerFactory;
@@ -96,7 +97,7 @@ public class Logger
                         .createLoggingException(ErrorKeys.LOGGING_LOGGER_INITIALIZISATION_FAILED);
             }
 
-            this.writer = new FileWriter(path + consumerName + ".log");
+            this.writer = new FileWriter(FilePaths.resolve(path, consumerName + ".log"));
 
         }
         catch (Exception e) {
