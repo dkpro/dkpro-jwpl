@@ -52,6 +52,10 @@ class LanguageWikiCodeTest
             "min_nan, zh-min-nan", //
             "cantonese, zh-yue", //
             "tokipona, tok", //
+            "egyptian_arabic, arz", //
+            "south_azerbaijani, azb", //
+            "nko, nqo", //
+            "northern_luri, lrc", //
             "_test, test" })
     void mapsALanguageToTheCodeOfItsEdition(Language language, String wikiCode)
     {
