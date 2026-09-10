@@ -27,6 +27,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigController;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
@@ -89,6 +91,26 @@ public class InputDialog
 
             pathField = new JTextField();
             pathField.setBounds(10, 40, 250, 25);
+            pathField.getDocument().addDocumentListener(new DocumentListener()
+            {
+                @Override
+                public void insertUpdate(DocumentEvent e)
+                {
+                    selectTypeOfCurrentPath();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e)
+                {
+                    selectTypeOfCurrentPath();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e)
+                {
+                    selectTypeOfCurrentPath();
+                }
+            });
             this.add(pathField);
 
             searchButton = new JButton("Search");
@@ -103,6 +125,28 @@ public class InputDialog
             });
 
             this.add(searchButton);
+        }
+
+        /**
+         * Selects the input type that matches the extension of the entered path, so that a
+         * compressed dump is not processed as an uncompressed one just because the type was left
+         * at its default (see issue #105). A type the extension does not identify, and one that is
+         * not offered by the chooser, leaves the current selection alone, so it can still be set by
+         * hand.
+         */
+        private void selectTypeOfCurrentPath()
+        {
+            InputType type = InputType.fromPath(pathField.getText());
+            if (type == null || typeChooser == null) {
+                return;
+            }
+
+            for (int i = 0; i < typeChooser.getItemCount(); i++) {
+                if (typeChooser.getItemAt(i) == type) {
+                    typeChooser.setSelectedItem(type);
+                    return;
+                }
+            }
         }
 
         /**
