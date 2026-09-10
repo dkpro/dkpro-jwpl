@@ -59,4 +59,33 @@ public enum InputType
         };
 
     }
+
+    /**
+     * Derives the InputType of a dump from the extension of its file name. Setting the type by
+     * hand is easily overlooked, and a compressed dump left at the default of an uncompressed one
+     * fails only once the DiffTool is running (see issue #105).
+     *
+     * @param path
+     *            The path or name of a dump file. May be {@code null}.
+     * @return The InputType matching the extension of the file, or {@code null} if the extension
+     *         does not identify one of the supported types.
+     */
+    public static InputType fromPath(final String path)
+    {
+        if (path == null) {
+            return null;
+        }
+
+        String name = path.trim().toLowerCase();
+        if (name.endsWith(".bz2")) {
+            return BZIP2;
+        }
+        if (name.endsWith(".7z")) {
+            return SEVENZIP;
+        }
+        if (name.endsWith(".xml")) {
+            return XML;
+        }
+        return null;
+    }
 }
