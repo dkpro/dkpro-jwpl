@@ -17,58 +17,55 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.data;
 
+import java.util.Locale;
+
 /**
- * This Enumerator lists the different method of how to handle surrogates.
- * <p>
- * TODO: The surrogate mode implementations need a work over. TODO Add documentation for surrogates
+ * This Enumerator lists the different methods of how to handle revisions whose text contains
+ * surrogate characters, i.e. UTF-16 code units in the range {@code U+D800} to {@code U+DFFF}. They
+ * encode the characters outside the Basic Multilingual Plane, such as emoji, and also occur
+ * unpaired in malformed text.
  */
 public enum SurrogateModes
 {
 
     /**
-     * Replace the surrogate TODO COULD BE FAULTY. CHECK BEFORE USING!!! DISABLED FOR NOW!
+     * Replace each surrogate character with {@code '?'}, so that a character outside the Basic
+     * Multilingual Plane becomes {@code "??"}.
      */
     REPLACE,
 
     /**
-     * Throw an error if a surrogate is detected TODO COULD BE FAULTY. CHECK BEFORE USING!!!
-     * DISABLED FOR NOW!
+     * Stop with an error as soon as a revision contains a surrogate character.
      */
     THROW_ERROR,
 
     /**
-     * Discard the rest of the article after a surrogate is detected TODO COULD BE FAULTY. CHECK
-     * BEFORE USING!!! DISABLED FOR NOW!
+     * Keep only the text of a revision that precedes its first surrogate character.
      */
     DISCARD_REST,
 
     /**
-     * Discard revisions which contain surrogates (java default setting)
+     * Discard revisions which contain surrogate characters (default setting)
      */
     DISCARD_REVISION;
 
     /**
-     * Parses the given string.
+     * Parses the given string, ignoring case.
      *
      * @param s
      *            string
      * @return SurrogateModes
+     * @throws IllegalArgumentException
+     *             if the string names no surrogate mode
      */
     public static SurrogateModes parse(final String s)
     {
-
-        String t = s.toUpperCase();
-
-        final String msg = "This mode is currently not supported. " +
-                "Please check the implementation first. For now, you can use the default mode DISCARD_REVISION";
-        // return REPLACE;
-        // return THROW_ERROR;
-        // return DISCARD_REST;
-        return switch (t) {
-            case "REPLACE", "THROW_ERROR", "DISCARD_REST" -> throw new UnsupportedOperationException(msg);
+        return switch (s.toUpperCase(Locale.ROOT)) {
+            case "REPLACE" -> REPLACE;
+            case "THROW_ERROR" -> THROW_ERROR;
+            case "DISCARD_REST" -> DISCARD_REST;
             case "DISCARD_REVISION" -> DISCARD_REVISION;
             default -> throw new IllegalArgumentException("Unknown SurrogateModes : " + s);
         };
-
     }
 }

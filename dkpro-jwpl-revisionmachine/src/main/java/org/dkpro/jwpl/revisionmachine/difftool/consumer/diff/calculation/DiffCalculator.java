@@ -279,13 +279,14 @@ public class DiffCalculator
     /**
      * Generates a FullRevision.
      *
-     * @param revision
-     *            Reference to the revision
+     * @param revisionText
+     *            Text of the revision, after the surrogate mode has been applied
      * @return Diff, containing a FullRevision
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
      */
-    private Diff generateFullRevision(final Revision revision) throws UnsupportedEncodingException
+    private Diff generateFullRevision(final char[] revisionText)
+        throws UnsupportedEncodingException
     {
 
         Diff diff = new Diff();
@@ -295,8 +296,8 @@ public class DiffCalculator
         part = new DiffPart(DiffAction.FULL_REVISION_UNCOMPRESSED);
 
         // L T
-        text = revision.getRevisionText();
-        revCurrent = text.toCharArray();
+        text = String.valueOf(revisionText);
+        revCurrent = revisionText;
 
         part.setText(text);
         codecData.checkBlocksizeL(text.getBytes(WIKIPEDIA_ENCODING).length);
@@ -362,6 +363,38 @@ public class DiffCalculator
     }
 
     /**
+     * Applies the given surrogate mode to the text of a revision.
+     *
+     * @param mode
+     *            the surrogate mode; {@code null} leaves the text as it is
+     * @param text
+     *            the text of the revision
+     * @param revisionId
+     *            the ID of the revision, used in the error message
+     * @return the text to process further, or {@code null} if the revision is to be discarded
+     * @throws DiffException
+     *             if the text contains surrogate characters and the mode is
+     *             {@link SurrogateModes#THROW_ERROR}
+     */
+    static char[] handleSurrogates(final SurrogateModes mode, final char[] text,
+            final int revisionId)
+        throws DiffException
+    {
+        if (mode == null || !Surrogates.scan(text)) {
+            return text;
+        }
+
+        return switch (mode) {
+            case REPLACE -> Surrogates.replace(text);
+            case DISCARD_REST -> Surrogates.discardRest(text);
+            case DISCARD_REVISION -> null;
+            case THROW_ERROR -> throw ErrorFactory.createDiffException(
+                    ErrorKeys.DIFFTOOL_DIFFCONSUMER_SURROGATE_FOUND,
+                    "Revision " + revisionId + " contains surrogate characters.");
+        };
+    }
+
+    /**
      * Calculates the diff for the given revision.
      *
      * @param revision
@@ -369,8 +402,12 @@ public class DiffCalculator
      * @return Diff
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
+     * @throws DiffException
+     *             if the revision contains surrogate characters and the surrogate mode is
+     *             {@link SurrogateModes#THROW_ERROR}
      */
-    protected Diff processRevision(final Revision revision) throws UnsupportedEncodingException
+    protected Diff processRevision(final Revision revision)
+        throws UnsupportedEncodingException, DiffException
     {
 
         // ----------------------------------------------------//
@@ -389,14 +426,12 @@ public class DiffCalculator
             return null;
         }
 
-        revTemp = revision.getRevisionText().toCharArray();
+        revTemp = handleSurrogates(MODE_SURROGATES, revision.getRevisionText().toCharArray(),
+                revision.getRevisionID());
 
-        if (MODE_SURROGATES == SurrogateModes.DISCARD_REVISION) {
-
-            // Ignore Revision with surrogate characters
-            if (Surrogates.scan(revTemp)) {
-                return null;
-            }
+        // Ignore revisions discarded because of surrogate characters
+        if (revTemp == null) {
+            return null;
         }
 
         Diff diff;
@@ -404,7 +439,7 @@ public class DiffCalculator
         // Full revision
         if (revisionCounter % COUNTER_FULL_REVISION == 0) {
 
-            diff = generateFullRevision(revision);
+            diff = generateFullRevision(revTemp);
 
             // Diffed revision
         }
@@ -496,21 +531,6 @@ public class DiffCalculator
                     try {
                         revC = String.valueOf(revCurrent);
                         revP = diff.buildRevision(revPrevious);
-
-                        /*
-                         * WRONG LOCATION if (notEqual && MODE_SURROGATES == SurrogateModes.REPLACE)
-                         * {
-                         *
-                         * // TODO: TEST: if (Surrogates.scan(revCurrent)) {
-                         *
-                         * char[] repCurrent = Surrogates.replace(revCurrent); char[] repPrevious =
-                         * Surrogates.replace(revPrevious);
-                         *
-                         * revC = String.valueOf(repCurrent); revP =
-                         * diff.buildRevision(repPrevious);
-                         *
-                         * notEqual = !revC.equals(revP); } }
-                         */
 
                         if (!revC.equals(revP)) {
 

@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.revisionmachine.common.util;
 
+import java.util.Arrays;
+
 /**
  * This utility class contains some surrogate related methods.
  */
@@ -79,5 +81,24 @@ public class Surrogates
         }
 
         return output;
+    }
+
+    /**
+     * Returns the part of the specified input that precedes the first surrogate character.
+     *
+     * @param input
+     *            input
+     * @return input up to, but not including, the first surrogate character, or the whole input if
+     *         it contains none
+     */
+    public static char[] discardRest(final char[] input)
+    {
+        for (int i = 0; i < input.length; i++) {
+            if (Character.isSurrogate(input[i])) {
+                return Arrays.copyOf(input, i);
+            }
+        }
+
+        return input;
     }
 }
