@@ -193,8 +193,8 @@ public class CategoryGraph
     public CategoryGraph(Wikipedia pWiki, Iterable<Category> categories) throws WikiApiException
     {
         Set<Integer> pageIDs = new HashSet<>();
-        while (categories.iterator().hasNext()) {
-            pageIDs.add(categories.iterator().next().getPageId());
+        for (Category category : categories) {
+            pageIDs.add(category.getPageId());
         }
         constructCategoryGraph(pWiki, pageIDs, null);
     }
@@ -217,8 +217,8 @@ public class CategoryGraph
         throws WikiApiException
     {
         Set<Integer> pageIDs = new HashSet<>();
-        while (categories.iterator().hasNext()) {
-            pageIDs.add(categories.iterator().next().getPageId());
+        for (Category category : categories) {
+            pageIDs.add(category.getPageId());
         }
         constructCategoryGraph(pWiki, pageIDs, filterList);
     }
