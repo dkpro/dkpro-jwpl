@@ -86,6 +86,12 @@ public class WikipediaXMLReader
     private ArticleFilter articleFilter;
 
     /**
+     * Mapping of namespace ids to the corresponding article title prefixes, read from the
+     * {@code <siteinfo>} of the dump
+     */
+    private Map<Integer, String> namespaceMap = new HashMap<>();
+
+    /**
      * Creates a new WikipediaXMLReader.
      *
      * @throws ConfigurationException
@@ -172,6 +178,8 @@ public class WikipediaXMLReader
         keys.addKeyword(WikipediaXMLKeys.KEY_END_CONTRIBUTOR.getKeyword(), WikipediaXMLKeys.KEY_END_CONTRIBUTOR);
         keys.addKeyword(WikipediaXMLKeys.KEY_START_NAMESPACES.getKeyword(), WikipediaXMLKeys.KEY_START_NAMESPACES);
         keys.addKeyword(WikipediaXMLKeys.KEY_END_NAMESPACES.getKeyword(), WikipediaXMLKeys.KEY_END_NAMESPACES);
+        keys.addKeyword(WikipediaXMLKeys.KEY_START_NS.getKeyword(), WikipediaXMLKeys.KEY_START_NS);
+        keys.addKeyword(WikipediaXMLKeys.KEY_END_NS.getKeyword(), WikipediaXMLKeys.KEY_END_NS);
     }
 
     /**
@@ -180,7 +188,7 @@ public class WikipediaXMLReader
      */
     private void initNamespaces()
     {
-        Map<Integer, String> namespaceMap = new HashMap<>();
+        namespaceMap = new HashMap<>();
         try {
             int b = read();
 
@@ -221,7 +229,9 @@ public class WikipediaXMLReader
                             }
                         }
 
-                        articleFilter.initializeNamespaces(namespaceMap);
+                        if (articleFilter != null) {
+                            articleFilter.initializeNamespaces(namespaceMap);
+                        }
                         return; // init done
 
                     }
@@ -344,6 +354,7 @@ public class WikipediaXMLReader
 
                 case KEY_START_TITLE:
                 case KEY_START_ID:
+                case KEY_START_NS:
                     buffer = new StringBuilder();
                     break;
 
@@ -370,7 +381,20 @@ public class WikipediaXMLReader
                     buffer = null;
                     break;
 
+                case KEY_END_NS:
+                    size = buffer.length();
+                    buffer.delete(size - WikipediaXMLKeys.KEY_END_NS.getKeyword().length(), size);
+
+                    this.taskHeader.setNamespace(Integer.parseInt(buffer.toString().trim()));
+                    buffer = null;
+                    break;
+
                 case KEY_START_REVISION:
+                    // Dumps without the <ns> element only reveal the namespace of a page
+                    // through the prefix of its title.
+                    if (this.taskHeader.getNamespace() == null) {
+                        this.taskHeader.setNamespace(namespaceOf(this.taskHeader.getArticleName()));
+                    }
                     this.keys.reset();
                     return true;
 
@@ -387,6 +411,27 @@ public class WikipediaXMLReader
 
         throw ErrorFactory.createArticleReaderException(
                 ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
+    }
+
+    /**
+     * Derives the namespace of a page from the prefix of its title, e.g. 1 for "Talk:Main Page".
+     *
+     * @param title
+     *            the page title
+     * @return the namespace, 0 if the title has no namespace prefix, or {@code null} if the
+     *         namespaces of the dump are unknown
+     */
+    private Integer namespaceOf(final String title)
+    {
+        if (namespaceMap.isEmpty() || title == null) {
+            return null;
+        }
+        for (Map.Entry<Integer, String> namespace : namespaceMap.entrySet()) {
+            if (title.startsWith(namespace.getValue() + ":")) {
+                return namespace.getKey();
+            }
+        }
+        return 0;
     }
 
     /**

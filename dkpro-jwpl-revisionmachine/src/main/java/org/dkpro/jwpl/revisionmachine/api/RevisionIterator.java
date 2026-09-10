@@ -103,6 +103,11 @@ public class RevisionIterator
      */
     private RevisionApi revApi = null;
 
+    /**
+     * Whether the revisions table has a Namespace column, {@code null} until the first query
+     */
+    private Boolean hasNamespaceColumn;
+
     public boolean shouldLoadRevisionText()
     {
         return shouldLoadRevisionText;
@@ -266,9 +271,13 @@ public class RevisionIterator
      */
     private boolean query() throws SQLException
     {
+        if (hasNamespaceColumn == null) {
+            hasNamespaceColumn = RevisionsTable.hasNamespaceColumn(connection);
+        }
+
         String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
-                + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered "
-                + "FROM revisions";
+                + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
+                + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions";
 
         if (primaryKey > 0) {
             query += " WHERE PrimaryKey > " + primaryKey;
@@ -396,6 +405,10 @@ public class RevisionIterator
             revision.setComment(result.getString(10));
             revision.setMinor(result.getBoolean(11));
             revision.setContributorIsRegistered(result.getBoolean(12));
+
+            if (Boolean.TRUE.equals(hasNamespaceColumn)) {
+                revision.setNamespace(RevisionsTable.getNamespace(result, 13));
+            }
 
             return revision;
 

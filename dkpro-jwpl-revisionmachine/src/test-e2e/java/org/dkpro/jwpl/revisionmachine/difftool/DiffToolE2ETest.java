@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.difftool;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,11 +87,14 @@ public class DiffToolE2ETest {
   }
 
   @Test
-  void testExecJWPLDiffTool() {
+  void testExecJWPLDiffTool() throws IOException {
     // Add in required arguments
     cmd.add(CONF_FILE);
     int exitCode = execTool(cmd);
     assertEquals(0,  exitCode);
+    // The revisions table records the namespace of each revision
+    String sql = Files.readString(Path.of(OUTPUT_DIR, "output_1.sql"));
+    assertTrue(sql.contains("Namespace INTEGER"), sql);
   }
 
   @Test

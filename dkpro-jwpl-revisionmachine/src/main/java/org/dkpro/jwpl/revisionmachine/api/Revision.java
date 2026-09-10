@@ -102,6 +102,11 @@ public class Revision
     private boolean contributorIsRegistered;
 
     /**
+     * Namespace of the page this revision belongs to, {@code null} if unknown
+     */
+    private Integer namespace;
+
+    /**
      * Reference to RevisionApi
      */
     private transient RevisionApi revisionApi;
@@ -463,6 +468,30 @@ public class Revision
     public Integer getContributorId()
     {
         return contributorId;
+    }
+
+    /**
+     * Returns the namespace of the page this revision belongs to, e.g. 0 for articles and 1 for
+     * their talk pages.
+     *
+     * @return the namespace, or {@code null} if it is unknown. This is always the case for
+     *         databases created by RevisionMachine versions before 2.2.0, which did not record the
+     *         namespace.
+     */
+    public Integer getNamespace()
+    {
+        return namespace;
+    }
+
+    /**
+     * Sets the namespace of the page this revision belongs to.
+     *
+     * @param namespace
+     *            the namespace, {@code null} if unknown
+     */
+    public void setNamespace(Integer namespace)
+    {
+        this.namespace = namespace;
     }
 
     private void writeObject(ObjectOutputStream out) throws IOException
