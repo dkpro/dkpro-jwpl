@@ -19,7 +19,12 @@ package org.dkpro.jwpl.api;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -53,43 +58,112 @@ public interface WikiConstants
     /**
      * Enumerates the languages for which Wikipedia APIs are available. A Wikipedia object can be
      * created using one of these languages.
+     * <p>
+     * Each language carries the code of its Wikipedia edition, see {@link #getWikiCode()}. The
+     * codes are taken from the
+     * <a href="https://meta.wikimedia.org/wiki/List_of_Wikipedias">List of Wikipedias</a> and
+     * are not looked up at runtime (see issue #53).
      */
     // Languages should be lowercase and match the corresponding snowball stemmer names.
     enum Language
     {
-        abkhazian, afar, afrikaans, akan, albanian, alemannic, amharic, anglo_saxon, arabic,
-        aragonese, armenian, aromanian, assamese, assyrian_neo_aramaic, asturian, avar, aymara,
-        azeri, bambara, banyumasan, bashkir, basque, bavarian, belarusian, belarusian_tarashkevitsa,
-        bengali, bihari, bishnupriya_manipuri, bislama, bosnian, breton, buginese, bulgarian,
-        burmese, buryat_russia, cantonese, catalan, cebuano, central_bicolano, chamorro, chechen,
-        cherokee, cheyenne, chichewa, chinese, choctaw, chuvash, classical_chinese, cornish,
-        corsican, cree, crimean_tatar, croatian, czech, danish, divehi, dutch, dutch_low_saxon,
-        dzongkha, emilian_romagnol, english, esperanto, estonian, ewe, faroese, fijian, finnish,
-        franco_provencal_arpitan, french, friulian, fula, galician, georgian, german, gilaki,
-        gothic, greek, greenlandic, guarani, gujarati, haitian, hakka, hausa, hawaiian, hebrew,
-        herero, hindi, hiri_motu, hungarian, icelandic, ido, igbo, ilokano, indonesian, interlingua,
-        interlingue, inuktitut, inupiak, irish, italian, japanese, javanese, kabyle, kalmyk,
-        kannada, kanuri, kapampangan, kashmiri, kashubian, kazakh, khmer, kikuyu, kinyarwanda,
-        kirghiz, kirundi, klingon, komi, kongo, korean, kuanyama, kurdish, ladino, lak, lao, latin,
-        latvian, ligurian, limburgian, lingala, lithuanian, lojban, lombard, low_saxon,
-        lower_sorbian, luganda, luxembourgish, macedonian, malagasy, malay, malayalam, maltese,
-        manx, maori, marathi, marshallese, mazandarani, min_dong, min_nan, moldovan, mongolian,
-        muscogee, nahuatl, nauruan, navajo, ndonga, neapolitan, nepali, newar_nepal_bhasa, norfolk,
-        norman, northern_sami, norwegian_bokmal, norwegian_nynorsk, novial, occitan,
-        old_church_slavonic, oriya, oromo, ossetian, pali, pangasinan, papiamentu, pashto,
-        pennsylvania_german, persian, piedmontese, polish, portuguese, punjabi, quechua, ripuarian,
-        romani, romanian, romansh, russian, samoan, samogitian, sango, sanskrit, sardinian,
-        saterland_frisian, scots, scottish_gaelic, serbian, serbo_croatian, sesotho, shona,
-        sichuan_yi, sicilian, simple_english, sindhi, sinhalese, slovak, slovenian, somali, spanish,
-        sundanese, swahili, swati, swedish, tagalog, tahitian, tajik, tamil, tarantino, tatar,
-        telugu, tetum, thai, tibetan, tigrinya, tok_pisin, tokipona, tongan, tsonga, tswana,
-        tumbuka, turkish, turkmen, twi, udmurt, ukrainian, upper_sorbian, urdu, uyghur, uzbek,
-        venda, venetian, vietnamese, volapuek, voro, walloon, waray_waray, welsh, west_flemish,
-        west_frisian, wolof, wu, xhosa, yiddish, yoruba, zamboanga_chavacano, zazaki, zealandic,
-        zhuang, zulu, _test;
+        abkhazian("ab"), afar("aa"), afrikaans("af"), akan("ak"), albanian("sq"), alemannic("als"),
+        amharic("am"), anglo_saxon("ang"), arabic("ar"), aragonese("an"), armenian("hy"),
+        aromanian("roa-rup"), assamese("as"), assyrian_neo_aramaic("arc"), asturian("ast"),
+        avar("av"), aymara("ay"), azeri("az"), bambara("bm"), banyumasan("map-bms"), bashkir("ba"),
+        basque("eu"), bavarian("bar"), belarusian("be"), belarusian_tarashkevitsa("be-tarask"),
+        bengali("bn"), bihari("bh"), bishnupriya_manipuri("bpy"), bislama("bi"), bosnian("bs"),
+        breton("br"), buginese("bug"), bulgarian("bg"), burmese("my"), buryat_russia("bxr"),
+        cantonese("zh-yue"), catalan("ca"), cebuano("ceb"), central_bicolano("bcl"), chamorro("ch"),
+        chechen("ce"), cherokee("chr"), cheyenne("chy"), chichewa("ny"), chinese("zh"),
+        choctaw("cho"), chuvash("cv"), classical_chinese("zh-classical"), cornish("kw"),
+        corsican("co"), cree("cr"), crimean_tatar("crh"), croatian("hr"), czech("cs"), danish("da"),
+        divehi("dv"), dutch("nl"), dutch_low_saxon("nds-nl"), dzongkha("dz"),
+        emilian_romagnol("eml"), english("en"), esperanto("eo"), estonian("et"), ewe("ee"),
+        faroese("fo"), fijian("fj"), finnish("fi"), franco_provencal_arpitan("frp"), french("fr"),
+        friulian("fur"), fula("ff"), galician("gl"), georgian("ka"), german("de"), gilaki("glk"),
+        gothic("got"), greek("el"), greenlandic("kl"), guarani("gn"), gujarati("gu"), haitian("ht"),
+        hakka("hak"), hausa("ha"), hawaiian("haw"), hebrew("he"), herero("hz"), hindi("hi"),
+        hiri_motu("ho"), hungarian("hu"), icelandic("is"), ido("io"), igbo("ig"), ilokano("ilo"),
+        indonesian("id"), interlingua("ia"), interlingue("ie"), inuktitut("iu"), inupiak("ik"),
+        irish("ga"), italian("it"), japanese("ja"), javanese("jv"), kabyle("kab"), kalmyk("xal"),
+        kannada("kn"), kanuri("kr"), kapampangan("pam"), kashmiri("ks"), kashubian("csb"),
+        kazakh("kk"), khmer("km"), kikuyu("ki"), kinyarwanda("rw"), kirghiz("ky"), kirundi("rn"),
+        klingon("tlh"), komi("kv"), kongo("kg"), korean("ko"), kuanyama("kj"), kurdish("ku"),
+        ladino("lad"), lak("lbe"), lao("lo"), latin("la"), latvian("lv"), ligurian("lij"),
+        limburgian("li"), lingala("ln"), lithuanian("lt"), lojban("jbo"), lombard("lmo"),
+        low_saxon("nds"), lower_sorbian("dsb"), luganda("lg"), luxembourgish("lb"),
+        macedonian("mk"), malagasy("mg"), malay("ms"), malayalam("ml"), maltese("mt"), manx("gv"),
+        maori("mi"), marathi("mr"), marshallese("mh"), mazandarani("mzn"), min_dong("cdo"),
+        min_nan("zh-min-nan"), moldovan("mo"), mongolian("mn"), muscogee("mus"), nahuatl("nah"),
+        nauruan("na"), navajo("nv"), ndonga("ng"), neapolitan("nap"), nepali("ne"),
+        newar_nepal_bhasa("new"), norfolk("pih"), norman("nrm"), northern_sami("se"),
+        norwegian_bokmal("no"), norwegian_nynorsk("nn"), novial("nov"), occitan("oc"),
+        old_church_slavonic("cu"), oriya("or"), oromo("om"), ossetian("os"), pali("pi"),
+        pangasinan("pag"), papiamentu("pap"), pashto("ps"), pennsylvania_german("pdc"),
+        persian("fa"), piedmontese("pms"), polish("pl"), portuguese("pt"), punjabi("pa"),
+        quechua("qu"), ripuarian("ksh"), romani("rmy"), romanian("ro"), romansh("rm"),
+        russian("ru"), samoan("sm"), samogitian("bat-smg"), sango("sg"), sanskrit("sa"),
+        sardinian("sc"), saterland_frisian("stq"), scots("sco"), scottish_gaelic("gd"),
+        serbian("sr"), serbo_croatian("sh"), sesotho("st"), shona("sn"), sichuan_yi("ii"),
+        sicilian("scn"), simple_english("simple"), sindhi("sd"), sinhalese("si"), slovak("sk"),
+        slovenian("sl"), somali("so"), spanish("es"), sundanese("su"), swahili("sw"), swati("ss"),
+        swedish("sv"), tagalog("tl"), tahitian("ty"), tajik("tg"), tamil("ta"),
+        tarantino("roa-tara"), tatar("tt"), telugu("te"), tetum("tet"), thai("th"), tibetan("bo"),
+        tigrinya("ti"), tok_pisin("tpi"), tokipona("tok"), tongan("to"), tsonga("ts"), tswana("tn"),
+        tumbuka("tum"), turkish("tr"), turkmen("tk"), twi("tw"), udmurt("udm"), ukrainian("uk"),
+        upper_sorbian("hsb"), urdu("ur"), uyghur("ug"), uzbek("uz"), venda("ve"), venetian("vec"),
+        vietnamese("vi"), volapuek("vo"), voro("fiu-vro"), walloon("wa"), waray_waray("war"),
+        welsh("cy"), west_flemish("vls"), west_frisian("fy"), wolof("wo"), wu("wuu"), xhosa("xh"),
+        yiddish("yi"), yoruba("yo"), zamboanga_chavacano("cbk-zam"), zazaki("diq"),
+        zealandic("zea"), zhuang("za"), zulu("zu"), _test("test");
 
         private static final Logger logger = LoggerFactory
                 .getLogger(MethodHandles.lookup().lookupClass());
+
+        private static final Map<String, Language> BY_WIKI_CODE = Arrays.stream(values())
+                .collect(Collectors.toUnmodifiableMap(Language::getWikiCode, Function.identity()));
+
+        private final String wikiCode;
+
+        Language(String wikiCode)
+        {
+            this.wikiCode = wikiCode;
+        }
+
+        /**
+         * Returns the code of the Wikipedia edition in this language, which is the sub domain the
+         * edition is served from, as {@code en} in {@code en.wikipedia.org}. The dumps of an
+         * edition are named after the code as well, with hyphens replaced by underscores, as
+         * {@code zh_min_nanwiki} for {@code zh-min-nan}.
+         * <p>
+         * An edition that was closed, as {@code kl}, or deleted, as {@code mo} and {@code tlh},
+         * keeps the code it was served from. {@link #_test} is mapped to the test wiki,
+         * {@code test.wikipedia.org}.
+         *
+         * @return The code of the Wikipedia edition in this language, never {@code null}.
+         */
+        public String getWikiCode()
+        {
+            return wikiCode;
+        }
+
+        /**
+         * Looks up the language of a Wikipedia edition by the code of the edition.
+         *
+         * @param wikiCode
+         *            The code of a Wikipedia edition, as {@code en} or {@code zh-min-nan}. Case and
+         *            surrounding blanks are ignored. May be {@code null}.
+         * @return The language of the edition, or {@code null} if no language has that code.
+         * @see #getWikiCode()
+         */
+        public static Language fromWikiCode(String wikiCode)
+        {
+            if (wikiCode == null) {
+                return null;
+            }
+            return BY_WIKI_CODE.get(wikiCode.trim().toLowerCase(Locale.ROOT));
+        }
 
         /**
          * Configures a language specific configuration for parsing wikipedia pages.
