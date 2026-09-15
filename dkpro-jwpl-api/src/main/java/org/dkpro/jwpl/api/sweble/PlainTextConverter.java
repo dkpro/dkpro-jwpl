@@ -43,6 +43,7 @@ import org.sweble.wikitext.parser.nodes.WtNodeList;
 import org.sweble.wikitext.parser.nodes.WtPage;
 import org.sweble.wikitext.parser.nodes.WtPageSwitch;
 import org.sweble.wikitext.parser.nodes.WtParagraph;
+import org.sweble.wikitext.parser.nodes.WtRedirect;
 import org.sweble.wikitext.parser.nodes.WtSection;
 import org.sweble.wikitext.parser.nodes.WtTable;
 import org.sweble.wikitext.parser.nodes.WtTableCaption;
@@ -698,6 +699,17 @@ public class PlainTextConverter
      *            A node representing a behaviour switch.
      */
     public void visit(WtPageSwitch n)
+    {
+    }
+
+    /**
+     * Called when a {@link WtRedirect redirect} is about to be processed. A redirect only points to
+     * another page and has no text of its own, so its target is not written.
+     *
+     * @param n
+     *            A node representing a redirect.
+     */
+    public void visit(WtRedirect n)
     {
     }
 

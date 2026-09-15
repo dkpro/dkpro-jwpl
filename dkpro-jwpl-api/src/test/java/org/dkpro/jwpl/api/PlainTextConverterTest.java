@@ -177,6 +177,25 @@ public class PlainTextConverterTest
         assertEquals("Intro text.", convert("Intro __NOTOC__ text."));
     }
 
+    // ---- Redirects ---------------------------------------------------------
+
+    /** A redirect has no text of its own, so its target is not rendered. */
+    @Test
+    public void testRedirectIsOmitted() throws Exception
+    {
+        assertEquals("", convert("#REDIRECT [[Target page]]"));
+    }
+
+    /** Text that follows a redirect is still rendered, without the target of the redirect. */
+    @Test
+    public void testTextAfterRedirectIsKept() throws Exception
+    {
+        String result = convert("#REDIRECT [[Target page]]\n\nText after the redirect.");
+        // the line break after the skipped redirect is kept, as after other skipped markup
+        assertEquals("\nText after the redirect.", result);
+        assertFalse(result.contains("Target page"), "Redirect target must not appear: " + result);
+    }
+
     // ---- Line wrapping -----------------------------------------------------
 
     /**
