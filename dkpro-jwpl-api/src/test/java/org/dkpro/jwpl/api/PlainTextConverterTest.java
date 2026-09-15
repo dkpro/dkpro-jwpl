@@ -100,6 +100,43 @@ public class PlainTextConverterTest
         assertEquals("Studiengang|1979\nFoo|2014", convert(markup));
     }
 
+    /** The cells that follow a caption in the middle of a table are still rendered as a row. */
+    @Test
+    public void testRowAfterCaptionInMiddleOfTableIsRendered() throws Exception
+    {
+        String markup = "{|\n| a || b\n|-\n|+ Caption\n| c || d\n|}";
+        assertEquals("a|b Caption\n\nc|d", convert(markup));
+    }
+
+    /**
+     * A nested table with a caption after its first row does not break the cell of the enclosing
+     * table it is placed in. As with any nested table, the rows of the inner table are skipped and
+     * only its caption is added to the enclosing cell.
+     */
+    @Test
+    public void testNestedTableWithCaptionAfterRowKeepsEnclosingCells() throws Exception
+    {
+        String markup = "{|\n| Outer\n{|\n|-\n|+ Inner caption\n! Year !! Team\n|}\n"
+                + "| Next\n|}";
+        assertEquals("Outer\n Inner caption|Next", convert(markup));
+    }
+
+    /** The text of an HTML table placed in a cell is kept as part of that cell. */
+    @Test
+    public void testHtmlTableInTableCellKeepsItsText() throws Exception
+    {
+        String markup = "{|\n| <table><tr><td>x</td><td>y</td></tr></table>\n| z\n|}";
+        assertEquals("xy|z", convert(markup));
+    }
+
+    /** A table placed in the row of an HTML table is rendered with its rows. */
+    @Test
+    public void testTableInHtmlTableRowIsRendered() throws Exception
+    {
+        String markup = "<table><tr><td>\n{|\n| a || b\n|}\n</td></tr></table>\nafter";
+        assertEquals("\na|b\n\nafter", convert(markup));
+    }
+
     // ---- Sections ----------------------------------------------------------
 
     /** Section headings are rendered on their own lines, in document order. */

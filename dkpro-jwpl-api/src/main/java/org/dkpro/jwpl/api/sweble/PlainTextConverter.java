@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
+import org.sweble.wikitext.parser.nodes.WtBody;
 import org.sweble.wikitext.parser.nodes.WtBold;
 import org.sweble.wikitext.parser.nodes.WtExternalLink;
 import org.sweble.wikitext.parser.nodes.WtHorizontalRule;
@@ -491,6 +492,13 @@ public class PlainTextConverter
         if (e.getName().equalsIgnoreCase("br")) {
             newline(1);
         }
+        else if (e.getName().equalsIgnoreCase("tr") && containsTableCells(e.getBody())) {
+            // Sweble 4.1 repairs a missing row start for wikitext cells that follow a caption in the
+            // middle of a table with a tr element instead of a WtTableRow. Such a row holds
+            // WtTableCell or WtTableHeader nodes. HTML rows hold td/th elements and are iterated
+            // below, so that their text is kept wherever the HTML table is placed.
+            processRowContent(e, e.getBody());
+        }
         else {
             iterate(e.getBody());
         }
@@ -570,13 +578,28 @@ public class PlainTextConverter
      */
     public void visit(WtTableRow n)
     {
+        processRowContent(n, n.getBody());
+    }
+
+    private static boolean containsTableCells(WtBody body)
+    {
+        for (WtNode child : body) {
+            if (child instanceof WtTableCell || child instanceof WtTableHeader) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void processRowContent(WtNode row, WtBody body)
+    {
         if (currentRow == null) {
             currentRow = new ArrayList<>();
-            iterate(n);
+            iterate(row);
             if (!currentRow.isEmpty()) {
                 rows.add(currentRow);
             }
-            if (currentRow.size() == n.getBody().size()) {
+            if (currentRow.size() == body.size()) {
                 StringBuilder tableRowFormatted = new StringBuilder();
                 for (int i = 0; i < currentRow.size(); i++) {
                     tableRowFormatted.append(currentRow.get(i));
