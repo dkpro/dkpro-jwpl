@@ -100,6 +100,43 @@ public class PlainTextConverterTest
         assertEquals("Studiengang|1979\nFoo|2014", convert(markup));
     }
 
+    /** The cells that follow a caption in the middle of a table are still rendered as a row. */
+    @Test
+    public void testRowAfterCaptionInMiddleOfTableIsRendered() throws Exception
+    {
+        String markup = "{|\n| a || b\n|-\n|+ Caption\n| c || d\n|}";
+        assertEquals("a|b Caption\n\nc|d", convert(markup));
+    }
+
+    /**
+     * A nested table with a caption after its first row does not break the cell of the enclosing
+     * table it is placed in. As with any nested table, the rows of the inner table are skipped and
+     * only its caption is added to the enclosing cell.
+     */
+    @Test
+    public void testNestedTableWithCaptionAfterRowKeepsEnclosingCells() throws Exception
+    {
+        String markup = "{|\n| Outer\n{|\n|-\n|+ Inner caption\n! Year !! Team\n|}\n"
+                + "| Next\n|}";
+        assertEquals("Outer\n Inner caption|Next", convert(markup));
+    }
+
+    /** The text of an HTML table placed in a cell is kept as part of that cell. */
+    @Test
+    public void testHtmlTableInTableCellKeepsItsText() throws Exception
+    {
+        String markup = "{|\n| <table><tr><td>x</td><td>y</td></tr></table>\n| z\n|}";
+        assertEquals("xy|z", convert(markup));
+    }
+
+    /** A table placed in the row of an HTML table is rendered with its rows. */
+    @Test
+    public void testTableInHtmlTableRowIsRendered() throws Exception
+    {
+        String markup = "<table><tr><td>\n{|\n| a || b\n|}\n</td></tr></table>\nafter";
+        assertEquals("\na|b\n\nafter", convert(markup));
+    }
+
     // ---- Sections ----------------------------------------------------------
 
     /** Section headings are rendered on their own lines, in document order. */
@@ -159,6 +196,41 @@ public class PlainTextConverterTest
     {
         String result = convert("Body <small><center>Quellen here</center></small> end.");
         assertEquals("Body\nQuellen here end.", result);
+    }
+
+    // ---- Behaviour switches ------------------------------------------------
+
+    /** A behaviour switch on a line of its own contributes no text to the output. */
+    @Test
+    public void testBehaviourSwitchOnOwnLineIsOmitted() throws Exception
+    {
+        assertEquals("Intro text.", convert("__NOTOC__\nIntro text."));
+    }
+
+    /** A behaviour switch within a paragraph is dropped without joining the surrounding words. */
+    @Test
+    public void testBehaviourSwitchWithinParagraphIsOmitted() throws Exception
+    {
+        assertEquals("Intro text.", convert("Intro __NOTOC__ text."));
+    }
+
+    // ---- Redirects ---------------------------------------------------------
+
+    /** A redirect has no text of its own, so its target is not rendered. */
+    @Test
+    public void testRedirectIsOmitted() throws Exception
+    {
+        assertEquals("", convert("#REDIRECT [[Target page]]"));
+    }
+
+    /** Text that follows a redirect is still rendered, without the target of the redirect. */
+    @Test
+    public void testTextAfterRedirectIsKept() throws Exception
+    {
+        String result = convert("#REDIRECT [[Target page]]\n\nText after the redirect.");
+        // the line break after the skipped redirect is kept, as after other skipped markup
+        assertEquals("\nText after the redirect.", result);
+        assertFalse(result.contains("Target page"), "Redirect target must not appear: " + result);
     }
 
     // ---- Line wrapping -----------------------------------------------------
