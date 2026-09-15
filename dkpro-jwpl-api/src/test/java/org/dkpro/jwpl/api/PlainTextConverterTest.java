@@ -161,6 +161,22 @@ public class PlainTextConverterTest
         assertEquals("Body\nQuellen here end.", result);
     }
 
+    // ---- Behaviour switches ------------------------------------------------
+
+    /** A behaviour switch on a line of its own contributes no text to the output. */
+    @Test
+    public void testBehaviourSwitchOnOwnLineIsOmitted() throws Exception
+    {
+        assertEquals("Intro text.", convert("__NOTOC__\nIntro text."));
+    }
+
+    /** A behaviour switch within a paragraph is dropped without joining the surrounding words. */
+    @Test
+    public void testBehaviourSwitchWithinParagraphIsOmitted() throws Exception
+    {
+        assertEquals("Intro text.", convert("Intro __NOTOC__ text."));
+    }
+
     // ---- Line wrapping -----------------------------------------------------
 
     /**

@@ -41,6 +41,7 @@ import org.sweble.wikitext.parser.nodes.WtListItem;
 import org.sweble.wikitext.parser.nodes.WtNode;
 import org.sweble.wikitext.parser.nodes.WtNodeList;
 import org.sweble.wikitext.parser.nodes.WtPage;
+import org.sweble.wikitext.parser.nodes.WtPageSwitch;
 import org.sweble.wikitext.parser.nodes.WtParagraph;
 import org.sweble.wikitext.parser.nodes.WtSection;
 import org.sweble.wikitext.parser.nodes.WtTable;
@@ -686,6 +687,17 @@ public class PlainTextConverter
      *            A node representing a template parameter.
      */
     public void visit(WtTemplateParameter n)
+    {
+    }
+
+    /**
+     * Called when a {@link WtPageSwitch behaviour switch}, such as {@code __NOTOC__}, is about to
+     * be processed.
+     *
+     * @param n
+     *            A node representing a behaviour switch.
+     */
+    public void visit(WtPageSwitch n)
     {
     }
 
