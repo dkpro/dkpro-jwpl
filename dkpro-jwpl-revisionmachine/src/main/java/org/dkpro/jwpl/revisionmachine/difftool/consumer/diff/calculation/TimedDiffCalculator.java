@@ -162,8 +162,12 @@ public class TimedDiffCalculator
      * @return Diff
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
+     * @throws DiffException
+     *             if the revision contains surrogate characters and the surrogate mode is
+     *             {@code THROW_ERROR}
      */
-    protected Diff processRevision(final Revision revision) throws UnsupportedEncodingException
+    protected Diff processRevision(final Revision revision)
+        throws UnsupportedEncodingException, DiffException
     {
 
         Diff diff = super.processRevision(revision);
