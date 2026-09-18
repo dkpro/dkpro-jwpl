@@ -22,7 +22,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: "JDK ${{ matrix.java }} / ${{ matrix.db }}"
+    name: "JDK ${{ matrix.java }} / ${{ matrix.db }}${{ matrix.label }}"
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -33,6 +33,8 @@ jobs:
           - { os: ubuntu-latest, java: 25, db: hsqldb }
           - { os: ubuntu-latest, java: 21, db: mariadb }
           - { os: ubuntu-latest, java: 21, db: mysql }
+          # The artifacts are built against Hibernate 6 but must also run with Hibernate 7
+          - { os: ubuntu-latest, java: 21, db: hsqldb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.5.Final -Djakarta.persistence.version=3.2.0' }
 
     steps:
       - uses: actions/checkout@v7
@@ -48,4 +50,4 @@ jobs:
           distribution: temurin
           java-version: ${{ matrix.java }}
       - name: Build with Maven
-        run: mvn -V clean verify -Ptest-e2e-tools -Prat-check -Pdb-${{ matrix.db }} --no-transfer-progress
+        run: mvn -V clean verify -Ptest-e2e-tools -Prat-check -Pdb-${{ matrix.db }} ${{ matrix.args }} --no-transfer-progress

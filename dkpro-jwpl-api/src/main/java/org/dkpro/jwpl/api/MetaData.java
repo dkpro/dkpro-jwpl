@@ -20,7 +20,6 @@ package org.dkpro.jwpl.api;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.hibernate.AbstractMetaData;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
-import org.hibernate.LockMode;
 import org.hibernate.Session;
 
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -72,7 +71,6 @@ public class MetaData
     long getId()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getId();
         });
     }
@@ -83,7 +81,6 @@ public class MetaData
     public long getNumberOfCategories()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getNrofCategories();
         });
     }
@@ -94,7 +91,6 @@ public class MetaData
     public long getNumberOfPages()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getNrofPages();
         });
     }
@@ -105,7 +101,6 @@ public class MetaData
     public long getNumberOfDisambiguationPages()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getNrofDisambiguationPages();
         });
     }
@@ -116,7 +111,6 @@ public class MetaData
     public long getNumberOfRedirectPages()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getNrofRedirects();
         });
     }
@@ -129,7 +123,6 @@ public class MetaData
     public Category getDisambiguationCategory() throws WikiApiException
     {
         String disambCategoryTitle = wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getDisambiguationCategory();
         });
         return wiki.getCategory(disambCategoryTitle);
@@ -143,7 +136,6 @@ public class MetaData
     public Category getMainCategory() throws WikiApiException
     {
         String mainCategoryTitle = wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getMainCategory();
         });
         return wiki.getCategory(mainCategoryTitle);
@@ -162,7 +154,6 @@ public class MetaData
     public String getVersion() throws WikiApiException
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateMetaData, LockMode.NONE);
             return hibernateMetaData.getVersion();
         });
     }
