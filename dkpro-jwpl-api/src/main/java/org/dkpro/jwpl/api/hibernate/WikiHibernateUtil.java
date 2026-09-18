@@ -34,8 +34,10 @@ import java.util.function.Function;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Version;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.slf4j.Logger;
@@ -50,6 +52,14 @@ public class WikiHibernateUtil
 
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
+
+    /**
+     * Whether the Hibernate version at runtime can reassociate a detached instance with a session
+     * via {@code lock(entity, LockMode.NONE)}. Hibernate 7 dropped that and rejects such an
+     * instance with a {@code DetachedObjectException}.
+     */
+    private static final boolean REASSOCIATION_SUPPORTED = majorVersion(
+            Version.getVersionString()) < 7;
 
     private static final String METADATA_TABLE = "MetaData";
     private static final String VERSION_COLUMN = "version";
@@ -381,6 +391,49 @@ public class WikiHibernateUtil
                 rollbackQuietly(session);
             }
         }
+    }
+
+    /**
+     * Makes a detached entity usable within a specified {@link Session}, so that its lazy
+     * collections can be loaded.
+     * <p>
+     * Hibernate 6 reassociates the given instance itself, without a round trip to the database.
+     * Hibernate 7 no longer supports reassociation, so the managed instance with the same
+     * identifier is loaded instead. Callers must therefore continue with the returned instance.
+     *
+     * @param session The {@link Session} to use the entity in. Must not be {@code null}.
+     * @param entity  The detached entity. Must not be {@code null}.
+     * @param <T>     The type of the entity.
+     * @return An instance of the entity that is associated with {@code session}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T reattach(Session session, T entity)
+    {
+        if (REASSOCIATION_SUPPORTED) {
+            session.lock(entity, LockMode.NONE);
+            return entity;
+        }
+        Object id = session.getSessionFactory().getPersistenceUnitUtil().getIdentifier(entity);
+        return (T) session.find(entity.getClass(), id);
+    }
+
+    /**
+     * @param versionString A Hibernate version string, such as {@code 6.6.40.Final}.
+     * @return The major version, or {@link Integer#MAX_VALUE} if it cannot be determined, which
+     *         selects the behavior of the most recent Hibernate version.
+     */
+    static int majorVersion(String versionString)
+    {
+        if (versionString != null) {
+            int end = versionString.indexOf('.');
+            try {
+                return Integer.parseInt(end < 0 ? versionString : versionString.substring(0, end));
+            }
+            catch (NumberFormatException e) {
+                logger.warn("Cannot determine the major version of Hibernate '{}'", versionString);
+            }
+        }
+        return Integer.MAX_VALUE;
     }
 
     /**

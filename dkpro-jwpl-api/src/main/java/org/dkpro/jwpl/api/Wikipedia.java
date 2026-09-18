@@ -39,7 +39,6 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.hibernate.Session;
-import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -269,7 +268,7 @@ public class Wikipedia
         String sql = "select p.pageID from PageMapLine as p where p.name = :pName";
         Iterator<Integer> results = __inTransaction(session -> session
                 .createQuery(sql, Integer.class)
-                .setParameter("pName", title, StandardBasicTypes.STRING).list()).iterator();
+                .setParameter("pName", title, String.class).list()).iterator();
 
         if (!results.hasNext()) {
             throw new WikiPageNotFoundException();
@@ -294,7 +293,7 @@ public class Wikipedia
         String sql = "select p.pageID from PageMapLine as p where lower(p.name) = :pName";
         Iterator<Integer> results = __inTransaction(session -> session
                 .createQuery(sql, Integer.class)
-                .setParameter("pName", normalizedTitle, StandardBasicTypes.STRING).list())
+                .setParameter("pName", normalizedTitle, String.class).list())
                 .iterator();
 
         if (!results.hasNext()) {
@@ -440,7 +439,7 @@ public class Wikipedia
         final String namePattern = articleTitle + "/%";
         Iterator<Integer> results = __inTransaction(session -> session
                 .createQuery(sql, Integer.class)
-                .setParameter("name", namePattern, StandardBasicTypes.STRING).list()).iterator();
+                .setParameter("name", namePattern, String.class).list()).iterator();
 
         while (results.hasNext()) {
             int pageID = results.next();
@@ -753,7 +752,7 @@ public class Wikipedia
             // method that promises a boolean instead of an exception. One entry is all it takes to
             // answer the question.
             var nativeQuery = session.createNativeQuery(query, Long.class)
-                    .setParameter("pName", encodedTitle, StandardBasicTypes.STRING)
+                    .setParameter("pName", encodedTitle, String.class)
                     .setMaxResults(1);
             return nativeQuery.uniqueResult();
         }) != null;
@@ -780,7 +779,7 @@ public class Wikipedia
         // on why a unique result must not be asked for here.
         String sql = "select p.id from PageMapLine as p where p.pageID = :pageId";
         Long returnValue = __inTransaction(session -> session.createNativeQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).setMaxResults(1)
+                .setParameter("pageId", pageID, Integer.class).setMaxResults(1)
                 .uniqueResult());
 
         return returnValue != null;
@@ -805,7 +804,7 @@ public class Wikipedia
         // It may not be in the cahe or may not exist at all.
         String sql = "select page.id from Page as page where page.pageId = :pageId";
         Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult());
+                .setParameter("pageId", pageID, Integer.class).uniqueResult());
         if (retObjectPage != null) {
             hibernateID = retObjectPage;
             // add it to the cache
@@ -835,7 +834,7 @@ public class Wikipedia
         // It may not be in the cahe or may not exist at all.
         String sql = "select cat.id from Category as cat where cat.pageId = :pageId";
         Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
-                .setParameter("pageId", pageID, StandardBasicTypes.INTEGER).uniqueResult());
+                .setParameter("pageId", pageID, Integer.class).uniqueResult());
         if (retObjectPage != null) {
             hibernateID = retObjectPage;
             // add it to the cache

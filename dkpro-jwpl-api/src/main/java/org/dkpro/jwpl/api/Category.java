@@ -24,8 +24,7 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.CategoryDAO;
-import org.hibernate.LockMode;
-import org.hibernate.type.StandardBasicTypes;
+import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 
 /**
  * Represents a category as conceptually defined by Wikipedia.
@@ -132,7 +131,7 @@ public class Category
                         : "");
         Integer returnValue = wiki.__inTransaction(
                 session -> session.createNativeQuery(query, Integer.class)
-                        .setParameter("name", name, StandardBasicTypes.STRING).uniqueResult());
+                        .setParameter("name", name, String.class).uniqueResult());
 
         // if there is no category with this name, the hibernateCategory is null
         if (returnValue == null) {
@@ -157,7 +156,6 @@ public class Category
     long __getId()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
             return hibernateCategory.getId();
         });
     }
@@ -168,7 +166,6 @@ public class Category
     public int getPageId()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
             return hibernateCategory.getPageId();
         });
     }
@@ -179,8 +176,8 @@ public class Category
     public Set<Category> getParents()
     {
         Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
-            return new HashSet<>(hibernateCategory.getInLinks());
+            return new HashSet<>(
+                    WikiHibernateUtil.reattach(session, hibernateCategory).getInLinks());
         });
 
         Set<Category> categories = new HashSet<>();
@@ -204,7 +201,7 @@ public class Category
         String sql = "select count(inLinks) from category_inlinks where id = :id";
         Long returnValue = wiki.__inTransaction(session -> session
                 .createNativeQuery(sql, Long.class)
-                .setParameter("id", id, StandardBasicTypes.LONG).uniqueResult());
+                .setParameter("id", id, Long.class).uniqueResult());
 
         if (returnValue != null) {
             nrOfInlinks = returnValue.intValue();
@@ -218,8 +215,8 @@ public class Category
     public Set<Integer> getParentIDs()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
-            return new HashSet<>(hibernateCategory.getInLinks());
+            return new HashSet<>(
+                    WikiHibernateUtil.reattach(session, hibernateCategory).getInLinks());
         });
     }
 
@@ -229,8 +226,8 @@ public class Category
     public Set<Category> getChildren()
     {
         Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
-            return new HashSet<>(hibernateCategory.getOutLinks());
+            return new HashSet<>(
+                    WikiHibernateUtil.reattach(session, hibernateCategory).getOutLinks());
         });
 
         Set<Category> categories = new HashSet<>();
@@ -254,7 +251,7 @@ public class Category
         String sql = "select count(outLinks) from category_outlinks where id = :id";
         Long returnValue = wiki.__inTransaction(session -> session
                 .createNativeQuery(sql, Long.class)
-                .setParameter("id", id, StandardBasicTypes.LONG).uniqueResult());
+                .setParameter("id", id, Long.class).uniqueResult());
 
         if (returnValue != null) {
             nrOfOutlinks = returnValue.intValue();
@@ -268,8 +265,8 @@ public class Category
     public Set<Integer> getChildrenIDs()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
-            return new HashSet<>(hibernateCategory.getOutLinks());
+            return new HashSet<>(
+                    WikiHibernateUtil.reattach(session, hibernateCategory).getOutLinks());
         });
     }
 
@@ -281,7 +278,6 @@ public class Category
     public Title getTitle() throws WikiTitleParsingException
     {
         String name = wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
             return hibernateCategory.getName();
         });
         return new Title(name);
@@ -308,8 +304,8 @@ public class Category
     public Set<Integer> getArticleIds()
     {
         return wiki.__inTransaction(session -> {
-            session.lock(hibernateCategory, LockMode.NONE);
-            return new HashSet<>(hibernateCategory.getPages());
+            return new HashSet<>(
+                    WikiHibernateUtil.reattach(session, hibernateCategory).getPages());
         });
     }
 
@@ -327,7 +323,7 @@ public class Category
         String sql = "select count(pages) from category_pages where id = :id";
         Long returnValue = wiki.__inTransaction(session -> session
                 .createNativeQuery(sql, Long.class)
-                .setParameter("id", id, StandardBasicTypes.LONG).uniqueResult());
+                .setParameter("id", id, Long.class).uniqueResult());
 
         if (returnValue != null) {
             nrOfPages = returnValue.intValue();

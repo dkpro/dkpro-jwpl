@@ -53,6 +53,7 @@
     
     <!-- DB specific dependency versions -->
     <hibernate.version>6.6.40.Final</hibernate.version>
+    <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
     <mysql.version>8.0.33</mysql.version>
     <mariadb.version>3.5.10</mariadb.version>
     <postgresql.version>42.6.0</postgresql.version>
@@ -177,7 +178,7 @@
       <dependency>
         <groupId>jakarta.persistence</groupId>
         <artifactId>jakarta.persistence-api</artifactId>
-        <version>3.1.0</version>
+        <version>${jakarta.persistence.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.xml.bind</groupId>
