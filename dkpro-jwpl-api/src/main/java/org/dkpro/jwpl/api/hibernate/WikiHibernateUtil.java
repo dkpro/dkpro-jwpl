@@ -61,6 +61,12 @@ public class WikiHibernateUtil
     private static final boolean REASSOCIATION_SUPPORTED = majorVersion(
             Version.getVersionString()) < 7;
 
+    /**
+     * Whether Hibernate's C3P0 integration ({@code hibernate-c3p0}) is on the classpath.
+     */
+    private static final boolean C3P0_AVAILABLE = isClassAvailable(
+            "org.hibernate.c3p0.internal.C3P0ConnectionProvider");
+
     private static final String METADATA_TABLE = "MetaData";
     private static final String VERSION_COLUMN = "version";
 
@@ -418,6 +424,21 @@ public class WikiHibernateUtil
     }
 
     /**
+     * @param className The fully qualified name of a class.
+     * @return {@code true} if the class can be loaded, {@code false} otherwise.
+     */
+    static boolean isClassAvailable(String className)
+    {
+        try {
+            Class.forName(className, false, WikiHibernateUtil.class.getClassLoader());
+            return true;
+        }
+        catch (ClassNotFoundException | LinkageError e) {
+            return false;
+        }
+    }
+
+    /**
      * @param versionString A Hibernate version string, such as {@code 6.6.40.Final}.
      * @return The major version, or {@link Integer#MAX_VALUE} if it cannot be determined, which
      *         selects the behavior of the most recent Hibernate version.
@@ -518,10 +539,10 @@ public class WikiHibernateUtil
         // Leave this set 'true' as this is required for dynamic Dialect resolution!
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
-        if (useMySQL || useMariaDB) {
-            // Set C3P0 Connection Pool in case somebody wants to use it in production settings
-            // if no C3P0 is available at runtime, related warnings can be ignored safely as the
-            // built-in CP will be used.
+        if ((useMySQL || useMariaDB) && C3P0_AVAILABLE) {
+            // Set C3P0 Connection Pool in case somebody wants to use it in production settings.
+            // Only if it is available at runtime: Hibernate 6 falls back to the built-in CP
+            // otherwise, but Hibernate 7 then ends up without any connection provider.
             p.setProperty("hibernate.c3p0.acquire_increment", "3");
             p.setProperty("hibernate.c3p0.idle_test_period", "300");
             p.setProperty("hibernate.c3p0.min_size", "3");

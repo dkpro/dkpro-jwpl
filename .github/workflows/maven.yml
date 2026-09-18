@@ -34,7 +34,9 @@ jobs:
           - { os: ubuntu-latest, java: 21, db: mariadb }
           - { os: ubuntu-latest, java: 21, db: mysql }
           # The artifacts are built against Hibernate 6 but must also run with Hibernate 7
-          - { os: ubuntu-latest, java: 21, db: hsqldb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.5.Final -Djakarta.persistence.version=3.2.0' }
+          - { os: ubuntu-latest, java: 21, db: hsqldb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
+          - { os: ubuntu-latest, java: 21, db: mariadb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
+          - { os: ubuntu-latest, java: 21, db: mysql, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
 
     steps:
       - uses: actions/checkout@v7
