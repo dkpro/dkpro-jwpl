@@ -18,7 +18,10 @@
 package org.dkpro.jwpl.api.hibernate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -44,5 +47,12 @@ public class WikiHibernateUtilVersionTest
     void testUnknownMajorVersionSelectsTheMostRecentBehavior(String versionString)
     {
         assertEquals(Integer.MAX_VALUE, WikiHibernateUtil.majorVersion(versionString));
+    }
+
+    @Test
+    void testIsClassAvailable()
+    {
+        assertTrue(WikiHibernateUtil.isClassAvailable("org.hibernate.Session"));
+        assertFalse(WikiHibernateUtil.isClassAvailable("org.hibernate.NoSuchClassAtAll"));
     }
 }
