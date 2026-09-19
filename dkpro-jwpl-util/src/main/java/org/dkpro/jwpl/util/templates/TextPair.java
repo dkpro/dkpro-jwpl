@@ -108,7 +108,7 @@ public class TextPair
      *
      * @return Patch object with all diffs
      */
-    public Patch getPatch()
+    public Patch<String> getPatch()
     {
         return DiffUtils.diff(sentenceSplit(beforeText), sentenceSplit(afterText));
     }
@@ -141,7 +141,7 @@ public class TextPair
     public String getSimpleDiffString()
     {
         StringBuilder deltas = new StringBuilder();
-        for (Delta delta : getPatch().getDeltas()) {
+        for (Delta<String> delta : getPatch().getDeltas()) {
             deltas.append(delta.toString());
             deltas.append(System.getProperty("line.separator"));
         }
@@ -159,7 +159,7 @@ public class TextPair
     public String getSimpleDiffString(TYPE difftype)
     {
         StringBuilder deltas = new StringBuilder();
-        for (Delta delta : getPatch().getDeltas()) {
+        for (Delta<String> delta : getPatch().getDeltas()) {
             if (delta.getType() == difftype) {
                 deltas.append(delta);
                 deltas.append(System.getProperty("line.separator"));
@@ -177,7 +177,7 @@ public class TextPair
     public String getLongDiffString()
     {
         StringBuilder deltas = new StringBuilder();
-        for (Delta delta : getPatch().getDeltas()) {
+        for (Delta<String> delta : getPatch().getDeltas()) {
             deltas.append("DeltaType: " + delta.getType().toString());
             deltas.append(System.getProperty("line.separator"));
             deltas.append("Original (Non-Neutral):");
@@ -204,7 +204,7 @@ public class TextPair
     public String getLongDiffString(TYPE diffType)
     {
         StringBuilder deltas = new StringBuilder();
-        for (Delta delta : getPatch().getDeltas()) {
+        for (Delta<String> delta : getPatch().getDeltas()) {
             if (delta.getType() == diffType) {
                 deltas.append("Original (Non-Neutral):");
                 deltas.append(System.getProperty("line.separator"));
