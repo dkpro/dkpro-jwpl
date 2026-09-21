@@ -69,7 +69,7 @@
 
     <!-- Maven plugin versions -->
     <maven.failsafe.plugin>3.6.0</maven.failsafe.plugin>
-    <maven.build.helper.plugin>3.6.1</maven.build.helper.plugin>
+    <maven.build.helper.plugin>3.6.2</maven.build.helper.plugin>
   </properties>
 
   <scm>
