@@ -8,6 +8,12 @@
 #
 # Possible status: "stable", "unstable"
 
+- version: 2.2.0
+  date: 2026-09-22
+  status: stable
+  groupId: org.dkpro.jwpl
+  artifactId: dkpro-jwpl
+
 - version: 2.1.0
   date: 2026-09-10
   status: stable
@@ -32,7 +38,7 @@
   groupId: org.dkpro.jwpl
   artifactId: dkpro-jwpl
 
-- version: 2.2.0-SNAPSHOT
+- version: 2.3.0-SNAPSHOT
   date: unknown
   status: unstable
   groupId: org.dkpro.jwpl
