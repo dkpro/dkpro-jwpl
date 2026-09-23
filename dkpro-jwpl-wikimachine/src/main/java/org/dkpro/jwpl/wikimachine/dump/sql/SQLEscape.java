@@ -23,6 +23,9 @@ package org.dkpro.jwpl.wikimachine.dump.sql;
  */
 public class SQLEscape
 {
+    /** Marker returned by {@link #escapeCode(char)} for characters that are copied as they are. */
+    private static final char NO_ESCAPE = '\uffff';
+
     private SQLEscape()
     {
     }
@@ -39,51 +42,61 @@ public class SQLEscape
         }
         final int len = str.length();
 
-        // maybe the StringBuffer would be safer?
-        StringBuilder sql = new StringBuilder(len * 2);
+        int first = 0;
+        while (first < len && escapeCode(str.charAt(first)) == NO_ESCAPE) {
+            first++;
+        }
+        if (first == len) {
+            // Nothing to escape: the input is already the result.
+            return str;
+        }
 
-        for (int i = 0; i < len; i++) {
-            char c = str.charAt(i);
-            switch (c) {
-            case '\u0000':
-                sql.append('\\').append('0');
-                break;
-            case '\n':
-                sql.append('\\').append('n');
-                break;
-            case '\t':
-                sql.append('\\').append('t');
-                break;
-            case '\r':
-                sql.append('\\').append('r');
-                break;
-            case '\u001a':
-                sql.append('\\').append('Z');
-                break;
-            case '\'':
-                sql.append('\\').append('\'');
-                break;
-            case '\"':
-                sql.append('\\').append('"');
-                break;
-            case '\b':
-                sql.append('\\').append('b');
-                break;
-            case '\\':
-                sql.append('\\').append('\\');
-                break;
-            // case '%':
-            // sql.append('[').append('%').append(']');
-            // break;
-            // case '_':
-            // sql.append('[').append('_').append(']');
-            // break;
-            default:
+        // Most text has few escapable characters, so a small headroom avoids allocating twice
+        // the input length; escape-heavy input simply grows the builder.
+        final StringBuilder sql = new StringBuilder(len + (len >> 4) + 16);
+        sql.append(str, 0, first);
+        for (int i = first; i < len; i++) {
+            final char c = str.charAt(i);
+            final char code = escapeCode(c);
+            if (code == NO_ESCAPE) {
                 sql.append(c);
-                break;
+            }
+            else {
+                sql.append('\\').append(code);
             }
         }
         return sql.toString();
+    }
+
+    /**
+     * @param c The character to check.
+     * @return The character to emit after a backslash for {@code c}, or {@link #NO_ESCAPE} if
+     *         {@code c} is copied as it is.
+     */
+    private static char escapeCode(char c)
+    {
+        switch (c) {
+        case '\u0000':
+            return '0';
+        case '\n':
+            return 'n';
+        case '\t':
+            return 't';
+        case '\r':
+            return 'r';
+        case '\u001a':
+            return 'Z';
+        case '\'':
+            return '\'';
+        case '\"':
+            return '"';
+        case '\b':
+            return 'b';
+        case '\\':
+            return '\\';
+        default:
+            return NO_ESCAPE;
+        }
     }
 
     /**

@@ -18,10 +18,13 @@
 package org.dkpro.jwpl.wikimachine.dump.sql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.util.List;
+import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -89,6 +92,111 @@ class SQLEscapeTest
         // itself still works.
         assertEquals("Z", roundTrip("'\\Z'"));
         assertEquals("a\\Zb", SQLEscape.escape("a" + (char) 0x1A + "b"));
+    }
+
+    /** Every character the escape table handles, including the backslash. */
+    private static final String ESCAPABLE = "\u0000\n\t\r\u001a'\"\b\\";
+
+    /**
+     * The implementation of {@link SQLEscape#escape} before it gained the no-escape fast path and
+     * the smaller buffer, kept as the oracle that the current output must match char for char.
+     */
+    private static String referenceEscape(String str)
+    {
+        if (str == null || str.isBlank()) {
+            return "";
+        }
+        final int len = str.length();
+        StringBuilder sql = new StringBuilder(len * 2);
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            switch (c) {
+            case '\u0000':
+                sql.append('\\').append('0');
+                break;
+            case '\n':
+                sql.append('\\').append('n');
+                break;
+            case '\t':
+                sql.append('\\').append('t');
+                break;
+            case '\r':
+                sql.append('\\').append('r');
+                break;
+            case '\u001a':
+                sql.append('\\').append('Z');
+                break;
+            case '\'':
+                sql.append('\\').append('\'');
+                break;
+            case '\"':
+                sql.append('\\').append('"');
+                break;
+            case '\b':
+                sql.append('\\').append('b');
+                break;
+            case '\\':
+                sql.append('\\').append('\\');
+                break;
+            default:
+                sql.append(c);
+                break;
+            }
+        }
+        return sql.toString();
+    }
+
+    @Test
+    void everyEscapableCharacterMatchesTheReference()
+    {
+        for (int i = 0; i < ESCAPABLE.length(); i++) {
+            final char c = ESCAPABLE.charAt(i);
+            for (String input : List.of("a" + c, c + "a", "a" + c + "b", c + "" + c + "x")) {
+                assertEquals(referenceEscape(input), SQLEscape.escape(input),
+                        "escape of U+" + Integer.toHexString(c));
+            }
+        }
+        assertEquals(referenceEscape("x" + ESCAPABLE + "y"), SQLEscape.escape("x" + ESCAPABLE + "y"));
+    }
+
+    @Test
+    void inputWithoutEscapableCharactersIsReturnedAsIs()
+    {
+        final String title = "Albert_Einstein_(\u00e9t\u00e9)_%_\uffff";
+        assertEquals(referenceEscape(title), SQLEscape.escape(title));
+        assertSame(title, SQLEscape.escape(title));
+    }
+
+    @Test
+    void leadingAndTrailingEscapesMatchTheReference()
+    {
+        for (String input : List.of("'leading", "trailing'", "\\", "\n\n\n", " a\n", "a\n ")) {
+            assertEquals(referenceEscape(input), SQLEscape.escape(input));
+        }
+    }
+
+    @Test
+    void randomMixedTextMatchesTheReference()
+    {
+        final String alphabet = ESCAPABLE + " abcXYZ019[]{}|=_%\u00e4\u4e2d\uffff";
+        final Random random = new Random(614);
+        for (int n = 0; n < 2000; n++) {
+            final int len = random.nextInt(n % 10 == 0 ? 20000 : 200);
+            final StringBuilder text = new StringBuilder(len);
+            // Vary the escape density from none at all to escape-only text.
+            final int escapePercent = n % 5 == 0 ? 0 : random.nextInt(101);
+            for (int i = 0; i < len; i++) {
+                if (random.nextInt(100) < escapePercent) {
+                    text.append(ESCAPABLE.charAt(random.nextInt(ESCAPABLE.length())));
+                }
+                else {
+                    text.append(alphabet.charAt(ESCAPABLE.length()
+                            + random.nextInt(alphabet.length() - ESCAPABLE.length())));
+                }
+            }
+            final String input = text.toString();
+            assertEquals(referenceEscape(input), SQLEscape.escape(input));
+        }
     }
 
     @Test
