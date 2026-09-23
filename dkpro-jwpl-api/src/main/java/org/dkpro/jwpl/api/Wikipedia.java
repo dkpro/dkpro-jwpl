@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -577,35 +576,39 @@ public class Wikipedia
         Map<Page, Double> pageMap = new HashMap<>();
 
         // holds a mapping of the best distance values to page IDs
-        Map<Integer, Double> distanceMap = new HashMap<>();
+        final Map<Integer, Double> distanceMap = new HashMap<>();
+        // how many entries of distanceMap carry each distance value, the largest one last
+        final TreeMap<Double, Integer> distanceCounts = new TreeMap<>();
 
         final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
         final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
                 + " from PageMapLine as pml";
-        // The whole table is materialized by the query anyway, so the scoring below runs outside
-        // the transaction rather than holding a connection for its duration.
-        for (PageTuple o : __inTransaction(
-                session -> session.createQuery(query, PageTuple.class).list())) {
+        final int fetchSize = getStreamingFetchSize();
+        // The rows are streamed rather than materialized, so the heap holds the current top
+        // entries only. This keeps the connection open for the duration of the scan.
+        __inTransaction(session -> {
+            try (Stream<PageTuple> rows = session.createQuery(query, PageTuple.class)
+                    .setFetchSize(fetchSize).getResultStream()) {
+                rows.forEach(o -> {
+                    // this returns a similarity - if we want to use it, we have to change the
+                    // semantics the ordering of the results
+                    double distance = lsd.distance(o.name(), pattern);
 
-            // this returns a similarity - if we want to use it, we have to change the semantics the
-            // ordering of the results
-            double distance = lsd.distance(o.name(), pattern);
+                    Double previous = distanceMap.put(o.id(), distance);
+                    if (previous != null) {
+                        decrementDistanceCount(distanceCounts, previous);
+                    }
+                    distanceCounts.merge(distance, 1, Integer::sum);
 
-            distanceMap.put(o.id(), distance);
-
-            // if there are more than "pSize" entries in the map remove the last one (it has the
-            // biggest distance)
-            if (distanceMap.size() > pSize) {
-                Set<Entry<Integer, Double>> valueSortedSet = new TreeSet<>(new ValueComparator());
-                valueSortedSet.addAll(distanceMap.entrySet());
-                Iterator<Entry<Integer, Double>> it = valueSortedSet.iterator();
-                // remove the first element
-                if (it.hasNext()) {
-                    // get the id of this entry and remove it in the distanceMap
-                    distanceMap.remove(it.next().getKey());
-                }
+                    // if there are more than "pSize" entries in the map remove the one with the
+                    // biggest distance
+                    if (distanceMap.size() > pSize) {
+                        removeLargestDistance(distanceMap, distanceCounts, o.id(), distance);
+                    }
+                });
             }
-        }
+            return null;
+        });
 
         for (int pageID : distanceMap.keySet()) {
             Page page = null;
@@ -1037,13 +1040,52 @@ public class Wikipedia
         return sb.toString();
     }
 
-    private static class ValueComparator
-            implements Comparator<Entry<Integer, Double>> {
-
-        @Override
-        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
-            return Double.compare(e2.getValue(), e1.getValue());
+    /**
+     * Removes the entry with the largest distance from {@code distanceMap}. Among several entries
+     * with that distance, the first one in the iteration order of {@code distanceMap} is removed,
+     * which is the entry a {@link java.util.TreeSet} ordering the entries by descending distance
+     * alone would yield first.
+     *
+     * @param distanceMap    The distances by page ID.
+     * @param distanceCounts The number of entries in {@code distanceMap} per distance value.
+     * @param latestId       The page ID put into {@code distanceMap} last.
+     * @param latestDistance The distance put into {@code distanceMap} last.
+     */
+    private static void removeLargestDistance(Map<Integer, Double> distanceMap,
+            TreeMap<Double, Integer> distanceCounts, int latestId, double latestDistance) {
+        Entry<Double, Integer> largest = distanceCounts.lastEntry();
+        Integer victim = null;
+        if (largest.getValue() == 1 && Double.compare(latestDistance, largest.getKey()) == 0) {
+            // the latest entry is the only one with the largest distance
+            victim = latestId;
         }
+        else {
+            for (Entry<Integer, Double> e : distanceMap.entrySet()) {
+                if (Double.compare(e.getValue(), largest.getKey()) == 0) {
+                    victim = e.getKey();
+                    break;
+                }
+            }
+        }
+        distanceMap.remove(victim);
+        decrementDistanceCount(distanceCounts, largest.getKey());
+    }
+
+    private static void decrementDistanceCount(TreeMap<Double, Integer> distanceCounts,
+            Double distance) {
+        distanceCounts.computeIfPresent(distance, (d, count) -> count == 1 ? null : count - 1);
+    }
+
+    /**
+     * @return A JDBC fetch size that makes the configured driver stream a result set instead of
+     * buffering it completely. MySQL Connector/J streams only with {@link Integer#MIN_VALUE}.
+     */
+    private int getStreamingFetchSize() {
+        String driver = getDatabaseConfiguration().getDatabaseDriver();
+        if (driver != null && driver.startsWith("com.mysql")) {
+            return Integer.MIN_VALUE;
+        }
+        return 1000;
     }
 
     private record PageTuple(int id, String name) {
