@@ -18,11 +18,17 @@
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.article.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +42,7 @@ import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
 import org.dkpro.jwpl.revisionmachine.difftool.consumer.diff.calculation.DiffCalculator;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
+import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.TaskTypes;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -155,6 +162,140 @@ public class WikipediaXMLReaderTest
     private static String page(String title, String namespace, int id)
     {
         return page(title, namespace, id, "<text xml:space=\"preserve\">Some text</text>");
+    }
+
+    /**
+     * A small dump in the layout of a real meta-history export, with multibyte text, entities,
+     * several revisions, a redirect, an IP contributor, a minor edit and a filtered namespace.
+     */
+    private static final String DUMP = "<mediawiki xmlns=\"http://www.mediawiki.org/xml/export-0.10/\""
+            + " version=\"0.10\" xml:lang=\"de\">\n"
+            + "  <siteinfo>\n    <sitename>Wikipedia</sitename>\n    <namespaces>\n"
+            + "      <namespace key=\"-1\" case=\"first-letter\">Spezial</namespace>\n"
+            + "      <namespace key=\"0\" case=\"first-letter\" />\n"
+            + "      <namespace key=\"1\" case=\"first-letter\">Diskussion</namespace>\n"
+            + "      <namespace key=\"4\" case=\"first-letter\">Wikipedia</namespace>\n"
+            + "    </namespaces>\n  </siteinfo>\n"
+            + "  <page>\n    <title>Größe</title>\n    <ns>0</ns>\n    <id>7</id>\n"
+            + "    <revision>\n      <id>70</id>\n"
+            + "      <timestamp>2009-03-16T01:13:23Z</timestamp>\n"
+            + "      <contributor>\n        <username>Jürgen</username>\n        <id>177</id>\n"
+            + "      </contributor>\n      <comment>Neu &amp; frisch</comment>\n"
+            + "      <model>wikitext</model>\n      <format>text/x-wiki</format>\n"
+            + "      <text xml:space=\"preserve\">Größe – 東京 😀 &lt;b&gt;fett&lt;/b&gt; &amp;amp;</text>\n"
+            + "      <sha1>abc</sha1>\n    </revision>\n"
+            + "    <revision>\n      <id>71</id>\n      <parentid>70</parentid>\n"
+            + "      <timestamp>2009-03-17T10:00:00Z</timestamp>\n"
+            + "      <contributor>\n        <ip>192.0.2.1</ip>\n      </contributor>\n"
+            + "      <minor />\n      <comment>O'Brien</comment>\n"
+            + "      <text xml:space=\"preserve\">Москва\nzweite Zeile</text>\n    </revision>\n"
+            + "    <revision>\n      <id>72</id>\n      <parentid>71</parentid>\n"
+            + "      <timestamp>2009-03-18T12:30:45Z</timestamp>\n"
+            + "      <contributor>\n        <username>Ärger &amp; Co</username>\n"
+            + "        <id>9</id>\n      </contributor>\n"
+            + "      <text xml:space=\"preserve\">&quot;قاهرة&quot;</text>\n    </revision>\n"
+            + "  </page>\n"
+            + "  <page>\n    <title>Wikipedia:Über</title>\n    <ns>4</ns>\n    <id>8</id>\n"
+            + "    <revision>\n      <id>80</id>\n"
+            + "      <timestamp>2010-01-01T00:00:00Z</timestamp>\n"
+            + "      <contributor>\n        <ip>192.0.2.2</ip>\n      </contributor>\n"
+            + "      <text xml:space=\"preserve\">verworfen</text>\n    </revision>\n"
+            + "  </page>\n"
+            + "  <page>\n    <title>Groesse</title>\n    <ns>0</ns>\n    <id>9</id>\n"
+            + "    <redirect title=\"Größe\" />\n"
+            + "    <revision>\n      <id>90</id>\n"
+            + "      <timestamp>2011-05-05T05:05:05Z</timestamp>\n"
+            + "      <contributor>\n        <username>Bot</username>\n        <id>1</id>\n"
+            + "      </contributor>\n"
+            + "      <text xml:space=\"preserve\">#WEITERLEITUNG [[Größe]]</text>\n"
+            + "    </revision>\n  </page>\n"
+            + "  <page>\n    <title>Diskussion:Größe</title>\n    <ns>1</ns>\n    <id>10</id>\n"
+            + "    <revision>\n      <id>100</id>\n"
+            + "      <timestamp>2012-12-12T12:12:12Z</timestamp>\n"
+            + "      <contributor>\n        <username>Jürgen</username>\n        <id>177</id>\n"
+            + "      </contributor>\n"
+            + "      <text xml:space=\"preserve\">Frage zu &lt;ref&gt;</text>\n"
+            + "    </revision>\n  </page>\n"
+            + "</mediawiki>\n";
+
+    @Test
+    public void testParsesDump() throws Exception
+    {
+        WikipediaXMLReader reader = new WikipediaXMLReader(utf8Reader(DUMP),
+                new ArticleFilter(List.of(0, 1)));
+
+        assertTrue(reader.hasNext());
+        Task<Revision> task = reader.next();
+        assertEquals("7|Größe|0|1|" + TaskTypes.TASK_FULL, describe(task));
+        assertEquals(3, task.size());
+        assertEquals("0|70|2009-03-16 01:13:23.0|false|Jürgen|true|177|Neu &amp; frisch|"
+                + "Größe – 東京 😀 <b>fett</b> &amp;", describe(task.get(0)));
+        assertEquals("1|71|2009-03-17 10:00:00.0|true|192.0.2.1|false|null|O\\'Brien|"
+                + "Москва\nzweite Zeile", describe(task.get(1)));
+        assertEquals("2|72|2009-03-18 12:30:45.0|false|Ärger &amp; Co|true|9|null|"
+                + "\"قاهرة\"", describe(task.get(2)));
+        assertEquals(DUMP.indexOf("</page>") + "</page>".length(), reader.getBytePosition());
+
+        // The page from namespace 4 is read, but rejected by the filter
+        assertTrue(reader.hasNext());
+        assertNull(reader.next());
+
+        assertTrue(reader.hasNext());
+        task = reader.next();
+        assertEquals("9|Groesse|0|1|" + TaskTypes.TASK_FULL, describe(task));
+        assertEquals(1, task.size());
+        assertEquals("0|90|2011-05-05 05:05:05.0|false|Bot|true|1|null|#WEITERLEITUNG [[Größe]]",
+                describe(task.get(0)));
+
+        assertTrue(reader.hasNext());
+        task = reader.next();
+        assertEquals("10|Diskussion:Größe|1|1|" + TaskTypes.TASK_FULL, describe(task));
+        assertEquals(1, task.size());
+        assertEquals("0|100|2012-12-12 12:12:12.0|false|Jürgen|true|177|null|Frage zu <ref>",
+                describe(task.get(0)));
+
+        assertFalse(reader.hasNext());
+        // Every char has been counted, plus the read that hit the end of the stream
+        assertEquals(DUMP.length() + 1, reader.getBytePosition());
+    }
+
+    @Test
+    public void testParsesTextSpanningSeveralReadBuffers() throws Exception
+    {
+        String text = "ä".repeat(40000) + "東京".repeat(30000) + "😀".repeat(20000);
+        String xml = SITEINFO + page("Main Page", "0", 1).replace("Some text", text)
+                + "</mediawiki>";
+
+        WikipediaXMLReader reader = new WikipediaXMLReader(utf8Reader(xml));
+        assertTrue(reader.hasNext());
+        Task<Revision> task = reader.next();
+        assertEquals(1, task.size());
+        assertEquals(text, task.get(0).getRevisionText());
+        assertEquals("Someone", task.get(0).getContributorName());
+        assertFalse(reader.hasNext());
+        assertEquals(xml.length() + 1, reader.getBytePosition());
+    }
+
+    private static Reader utf8Reader(String xml)
+    {
+        return new InputStreamReader(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)),
+                StandardCharsets.UTF_8);
+    }
+
+    private static String describe(Task<Revision> task)
+    {
+        return task.getHeader().getArticleId() + "|" + task.getHeader().getArticleName() + "|"
+                + task.getHeader().getNamespace() + "|" + task.getPartCounter() + "|"
+                + task.getTaskType();
+    }
+
+    private static String describe(Revision revision)
+    {
+        return revision.getRevisionCounter() + "|" + revision.getRevisionID() + "|"
+                + revision.getTimeStamp() + "|" + revision.isMinor() + "|"
+                + revision.getContributorName() + "|" + revision.contributorIsRegistered() + "|"
+                + revision.getContributorId() + "|" + revision.getComment() + "|"
+                + revision.getRevisionText();
     }
 
     /**

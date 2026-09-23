@@ -29,9 +29,19 @@ public class LetterNode<V>
 {
 
     /**
-     * Alphabetic index of successor nodes
+     * Number of chars that are indexed by array
      */
-    private final HashMap<Character, LetterNode<V>> nodes;
+    private static final int ASCII_SIZE = 128;
+
+    /**
+     * Successor nodes of ASCII chars, indexed by the char itself
+     */
+    private final LetterNode<V>[] asciiNodes;
+
+    /**
+     * Successor nodes of all other chars, {@code null} until the first one is added
+     */
+    private HashMap<Character, LetterNode<V>> otherNodes;
 
     /**
      * Flag, whether this node contains a valid key or not
@@ -53,9 +63,7 @@ public class LetterNode<V>
      */
     public LetterNode()
     {
-        this.nodes = new HashMap<>();
-        this.isKeyword = false;
-        this.word = "";
+        this("");
     }
 
     /**
@@ -64,9 +72,10 @@ public class LetterNode<V>
      * @param word
      *            keyword
      */
+    @SuppressWarnings("unchecked")
     public LetterNode(final String word)
     {
-        this.nodes = new HashMap<>();
+        this.asciiNodes = new LetterNode[ASCII_SIZE];
         this.isKeyword = false;
         this.word = word;
     }
@@ -88,7 +97,15 @@ public class LetterNode<V>
         if (node == null) {
             node = new LetterNode<>(this.word + c);
         }
-        this.nodes.put(c, node);
+        if (c < ASCII_SIZE) {
+            this.asciiNodes[c] = node;
+        }
+        else {
+            if (this.otherNodes == null) {
+                this.otherNodes = new HashMap<>();
+            }
+            this.otherNodes.put(c, node);
+        }
 
         if (word.length() == 1) {
             node.isKeyword = true;
@@ -128,7 +145,10 @@ public class LetterNode<V>
      */
     public LetterNode<V> get(char c)
     {
-        return this.nodes.get(c);
+        if (c < ASCII_SIZE) {
+            return this.asciiNodes[c];
+        }
+        return this.otherNodes == null ? null : this.otherNodes.get(c);
     }
 
     /**
@@ -140,7 +160,7 @@ public class LetterNode<V>
      */
     public boolean contains(char c)
     {
-        return this.nodes.containsKey(c);
+        return get(c) != null;
     }
 
     /**
