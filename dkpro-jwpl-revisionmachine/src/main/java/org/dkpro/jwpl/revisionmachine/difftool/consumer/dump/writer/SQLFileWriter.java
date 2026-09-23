@@ -198,11 +198,13 @@ public class SQLFileWriter
 
             for (SQLEncoding sql : encoding) {
                 this.writer.write(sql.getQuery() + "\r\n");
-                this.writer.flush();
             }
 
             if (task.getTaskType() == TaskTypes.TASK_FULL
                     || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
+
+                // flush once per completed task so that the size check sees all written bytes
+                this.writer.flush();
 
                 if (this.sqlFile.length() > LIMIT_SQL_FILE_SIZE) {
                     writeHeader();

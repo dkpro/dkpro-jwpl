@@ -245,7 +245,10 @@ public class Logger
         try {
             this.writer.write(System.currentTimeMillis() + "\t" + consumerName + " ["
                     + type.toString() + "] " + "\t" + message + "\r\n");
-            this.writer.flush();
+            // routine messages stay buffered; warnings and errors are written out immediately
+            if (level.toInt() >= Level.WARN.toInt()) {
+                this.writer.flush();
+            }
         }
         catch (IOException ioe) {
             logger.error("Could not write to the log file of [{}]", consumerName, ioe);

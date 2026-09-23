@@ -180,11 +180,13 @@ public class DataFileArchiveWriter
 
             for (String d : data) {
                 this.output.write((d + ";").getBytes());
-                this.output.flush();
             }
 
             if (task.getTaskType() == TaskTypes.TASK_FULL
                     || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
+
+                // flush once per completed task so that the size check sees all written bytes
+                this.output.flush();
 
                 if (this.dataArchive.length() > LIMIT_SQL_ARCHIVE_SIZE) {
                     writeHeader();
