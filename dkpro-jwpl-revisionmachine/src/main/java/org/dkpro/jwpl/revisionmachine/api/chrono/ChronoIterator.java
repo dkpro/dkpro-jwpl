@@ -18,8 +18,9 @@
 package org.dkpro.jwpl.revisionmachine.api.chrono;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.HashMap;
@@ -39,6 +40,14 @@ public class ChronoIterator
 {
 
     private static final Logger logger = LoggerFactory.getLogger(ChronoIterator.class);
+
+    /**
+     * Query for the revisions that are needed to reconstruct a revision, starting at a primary
+     * key. The rows have to be in primary key order, as the reconstruction depends on it.
+     */
+    private static final String RANGE_QUERY = "SELECT Revision, PrimaryKey, RevisionCounter, "
+            + "RevisionID, ArticleID, Timestamp FROM revisions "
+            + "WHERE PrimaryKey >= ? ORDER BY PrimaryKey LIMIT ?";
 
     /**
      * Reference to the configuration
@@ -79,6 +88,12 @@ public class ChronoIterator
      * Mapping chronological position to revision counter
      */
     private final Map<Integer, Integer> mappingStorage;
+
+    /**
+     * Statement for the revisions needed to reconstruct a revision, prepared on first use and
+     * reused for every reconstruction until the iterator is closed
+     */
+    private PreparedStatement rangeStatement;
 
     /**
      * (Constructor) Create a ChronoIterator object
@@ -269,11 +284,10 @@ public class ChronoIterator
 
         revision = null;
 
-        try (Statement statement = this.connection.createStatement();
-                ResultSet result = statement.executeQuery(
-                        "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp "
-                                + "FROM revisions " + "WHERE PrimaryKey >= " + queryPK + " LIMIT "
-                                + limit)) {
+        PreparedStatement statement = rangeStatement();
+        statement.setInt(1, queryPK);
+        statement.setInt(2, limit);
+        try (ResultSet result = statement.executeQuery()) {
 
             // Retrieve encoded revisions
 
@@ -362,6 +376,40 @@ public class ChronoIterator
                 return null;
             }
 
+        }
+    }
+
+    /**
+     * Returns the statement for the revisions needed to reconstruct a revision, preparing it on
+     * first use.
+     *
+     * @return the prepared statement
+     * @throws SQLException
+     *             if an error occurs while preparing the statement
+     */
+    private PreparedStatement rangeStatement() throws SQLException
+    {
+        if (rangeStatement == null) {
+            rangeStatement = this.connection.prepareStatement(RANGE_QUERY);
+        }
+        return rangeStatement;
+    }
+
+    /**
+     * Closes the statement used to reconstruct revisions. The database connection is not closed.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the statement
+     */
+    public void close() throws SQLException
+    {
+        try {
+            if (rangeStatement != null) {
+                rangeStatement.close();
+            }
+        }
+        finally {
+            rangeStatement = null;
         }
     }
 

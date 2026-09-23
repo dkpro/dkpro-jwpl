@@ -385,6 +385,7 @@ public class ChronoRevisionIterator
                     return true;
                 }
 
+                closeChronoIterator();
                 reset();
 
                 if (resultArticles.next()) {
@@ -445,17 +446,40 @@ public class ChronoRevisionIterator
     public void close() throws SQLException
     {
         try {
-            closeArticleResources();
+            closeChronoIterator();
         }
         finally {
             try {
-                closeStatements();
+                closeArticleResources();
             }
             finally {
-                if (this.connection != null) {
-                    this.connection.close();
+                try {
+                    closeStatements();
+                }
+                finally {
+                    if (this.connection != null) {
+                        this.connection.close();
+                    }
                 }
             }
+        }
+    }
+
+    /**
+     * Closes the ChronoIterator of the current article, if any.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing its statement
+     */
+    private void closeChronoIterator() throws SQLException
+    {
+        try {
+            if (chronoIterator != null) {
+                chronoIterator.close();
+            }
+        }
+        finally {
+            chronoIterator = null;
         }
     }
 

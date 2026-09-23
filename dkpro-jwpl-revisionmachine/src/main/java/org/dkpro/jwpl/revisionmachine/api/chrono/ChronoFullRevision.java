@@ -165,7 +165,8 @@ public class ChronoFullRevision
      *
      * @param revisionCounter
      *            revision counter
-     * @return Revision
+     * @return the nearest revision, or {@code null} if no revision up to the revision counter is
+     *         available
      */
     public Revision getNearest(final int revisionCounter)
     {
@@ -178,7 +179,9 @@ public class ChronoFullRevision
                 current = current.getCounterNext();
             }
 
-            return previous.getRev();
+            if (previous != null) {
+                return previous.getRev();
+            }
         }
 
         return null;
