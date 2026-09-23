@@ -277,7 +277,7 @@ public class ChronoIterator
             queryPK = revision.getPrimaryKey() + 1;
             limit = revCount - revision.getRevisionCounter();
 
-            previousRevision = revision.getRevisionText();
+            previousRevision = ((ChronoRevision) revision).rawText;
             previousRevisionCounter = revision.getRevisionCounter();
 
         }
@@ -339,7 +339,7 @@ public class ChronoIterator
                 try {
                     currentRevision = diff.buildRevision(previousRevision);
 
-                    revision = new Revision(result.getInt(3));
+                    revision = new ChronoRevision(result.getInt(3), currentRevision);
                     revision.setRevisionText(currentRevision);
                     revision.setPrimaryKey(result.getInt(2));
                     revision.setRevisionID(result.getInt(4));
@@ -410,6 +410,28 @@ public class ChronoIterator
         }
         finally {
             rangeStatement = null;
+        }
+    }
+
+    /**
+     * Revision that keeps the text as it was reconstructed. Further revisions have to be
+     * reconstructed from this text, as {@link Revision#getRevisionText()} returns it unescaped.
+     */
+    private static final class ChronoRevision
+        extends Revision
+    {
+
+        private static final long serialVersionUID = 1L;
+
+        /**
+         * Reconstructed (escaped) revision text
+         */
+        private final transient String rawText;
+
+        private ChronoRevision(final int revisionCounter, final String rawText)
+        {
+            super(revisionCounter);
+            this.rawText = rawText;
         }
     }
 

@@ -29,15 +29,17 @@ public class ChronoStorageBlockTest
 {
 
     @Test
-    public void testLengthMatchesUnescapedRevisionText()
+    public void testLengthMatchesEscapedRevisionText()
     {
         Revision revision = new Revision(3);
         revision.setRevisionText("a &amp; b &lt;c&gt;");
 
         ChronoStorageBlock block = new ChronoStorageBlock(null, 3, revision);
 
-        assertEquals(revision.getRevisionText().length(), block.length());
-        assertEquals("a & b <c>".length(), block.length());
+        // The storage keeps the escaped text, which is also the base for rebuilding the next
+        // revisions, so its size is accounted with the escaped length.
+        assertEquals(revision.byteSize(), block.length());
+        assertEquals("a &amp; b &lt;c&gt;".length(), block.length());
     }
 
     @Test
