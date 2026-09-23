@@ -18,14 +18,17 @@
 package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 /**
  * Tests the hyponym counting of {@link CategoryGraph} on graphs that are built in memory, so that
@@ -106,5 +109,19 @@ class CategoryGraphHyponymCountTest
         assertEquals(numberOfNodes - 1, hyponymCountMap.get(0));
         // the leaf of the chain has none
         assertEquals(0, hyponymCountMap.get(10 * levels));
+    }
+
+    /**
+     * The nodes of a cycle never get all of their children counted. They used to be re-queued
+     * forever; now they are left unvisited and reported (see issue #571).
+     */
+    @Test
+    @Timeout(value = 10, unit = TimeUnit.SECONDS)
+    void throwsInsteadOfLoopingForeverOnAGraphWithACycle()
+    {
+        // 1 is the parent of 2 and of the leaf 4, while 2 and 3 form a cycle
+        CategoryGraph catGraph = graphOf(new int[][] { { 1, 2 }, { 1, 4 }, { 2, 3 }, { 3, 2 } });
+
+        assertThrows(WikiApiException.class, catGraph::__computeHyponymCountMap);
     }
 }

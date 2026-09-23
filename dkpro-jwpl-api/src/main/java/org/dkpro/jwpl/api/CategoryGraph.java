@@ -27,8 +27,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -784,84 +786,65 @@ public class CategoryGraph
      *
      * @return A map from each node of the graph to its hyponym count.
      * @throws WikiApiException
-     *             Thrown if not every node of the graph could be visited.
+     *             Thrown if not every node of the graph could be visited, which is the case if the
+     *             graph contains a cycle.
      */
     Map<Integer, Integer> __computeHyponymCountMap() throws WikiApiException
     {
         Map<Integer, Integer> result = new HashMap<>();
 
-        // a queue holding the nodes to process
+        // In the category graph a node may have more than one father. A node is therefore only
+        // queued once all of its children have a count, i.e. once its number of pending children
+        // drops to zero, so that each node is processed exactly once.
+        Map<Integer, Integer> pendingChildren = new HashMap<>();
 
-        // In the category graph a node may have more than one father.
-        // Thus, we check whether a node was already visited.
-        // Then, it is not expanded again.
-        Set<Integer> visited = new HashSet<>();
+        // a queue holding the nodes to process, initialized with all leaf nodes
+        Deque<Integer> queue = new ArrayDeque<>();
+        for (int node : graph.vertexSet()) {
+            int numberOfChildren = __getChildren(node).size();
+            if (numberOfChildren == 0) {
+                queue.add(node);
+            }
+            else {
+                pendingChildren.put(node, numberOfChildren);
+            }
+        }
 
-        // initialize the queue with all leaf nodes
-        Set<Integer> leafNodes = this.__getLeafNodes();
-        List<Integer> queue = new ArrayList<>(leafNodes);
-
-        logger.info("{} leaf nodes.", leafNodes.size());
+        logger.info("{} leaf nodes.", queue.size());
 
         // while the queue is not empty
         while (!queue.isEmpty()) {
             // remove first element from queue
-            int currNode = queue.get(0);
-            queue.remove(0);
-
-            // logger.info(queue.size());
-
-            if (visited.contains(currNode)) {
-                continue;
-            }
+            int currNode = queue.poll();
 
             Set<Integer> children = __getChildren(currNode);
 
-            int validChildren = 0;
             // The counts are summed in a long: a node that is reachable over several paths is
             // counted once per path, so the sum can grow far beyond the number of nodes in the
             // graph - in a Wikipedia sized graph well beyond Integer.MAX_VALUE (see issue #94).
             long sumChildHyponyms = 0;
-            boolean invalid = false;
             for (int child : children) {
-                if (graph.containsVertex(child)) {
-                    if (result.containsKey(child)) {
-                        sumChildHyponyms += result.get(child);
-                        validChildren++;
-                    }
-                    else {
-                        invalid = true;
-                    }
-                }
+                sumChildHyponyms += result.get(child);
             }
-
-            if (invalid) {
-                // One of the children is not in the hyponymCountMap yet
-                // Re-Enter the node into the queue and continue with next node
-                queue.add(currNode);
-                continue;
-            }
-
-            // mark as visited
-            visited.add(currNode);
 
             // number of hyponyms of current node is the number of its own hyponomies and the sum
             // of the hyponomies of its children.
-            long currNodeHyponymCount = validChildren + sumChildHyponyms;
+            long currNodeHyponymCount = children.size() + sumChildHyponyms;
             result.put(currNode, capHyponymCount(currNodeHyponymCount));
 
-            // add parents of current node to queue
+            // queue the parents of the current node whose children now all have a count
             for (int parent : __getParents(currNode)) {
-                if (graph.containsVertex(parent)) {
+                if (pendingChildren.merge(parent, -1, Integer::sum) == 0) {
                     queue.add(parent);
                 }
             }
 
         } // while queue not empty
 
-        logger.info("{} nodes visited", visited.size());
-        if (visited.size() != graph.vertexSet().size()) {
-            throw new WikiApiException("Visited only " + visited.size() + " out of "
+        // nodes on a cycle never get all of their children counted and are thus never visited
+        logger.info("{} nodes visited", result.size());
+        if (result.size() != graph.vertexSet().size()) {
+            throw new WikiApiException("Visited only " + result.size() + " out of "
                     + graph.vertexSet().size() + " nodes.");
         }
 
@@ -991,7 +974,7 @@ public class CategoryGraph
         rootPathMap = new HashMap<>();
 
         // a queue holding the nodes to process
-        List<Integer> queue = new ArrayList<>();
+        Deque<Integer> queue = new ArrayDeque<>();
 
         // initialize the queue with all leaf nodes
         Set<Integer> leafNodes = this.__getLeafNodes();
@@ -1027,15 +1010,14 @@ public class CategoryGraph
         this.serializeMap(rootPathMap, rootPathFile);
     }
 
-    private void fillRootPathMap(List<Integer> queue) throws WikiApiException
+    private void fillRootPathMap(Deque<Integer> queue) throws WikiApiException
     {
         int root = wiki.getMetaData().getMainCategory().getPageId();
 
         // while the queue is not empty
         while (!queue.isEmpty()) {
             // remove first element from queue
-            int currentNode = queue.get(0);
-            queue.remove(0);
+            int currentNode = queue.poll();
 
             logger.debug("Queue size: {}", queue.size());
 
@@ -1450,7 +1432,7 @@ public class CategoryGraph
         Set<Integer> alreadyExpanded = new HashSet<>();
 
         // a queue holding the newly discovered nodes with their distance to the start node
-        List<int[]> queue = new ArrayList<>();
+        Deque<int[]> queue = new ArrayDeque<>();
 
         // initialize queue with start node
         int[] innerList = new int[2];
@@ -1461,10 +1443,9 @@ public class CategoryGraph
         // while the queue is not empty
         while (!queue.isEmpty()) {
             // remove first element from queue
-            int[] queueElement = queue.get(0);
+            int[] queueElement = queue.poll();
             int currentNode = queueElement[0];
             int distance = queueElement[1];
-            queue.remove(0);
 
             // if the node was not already expanded
             if (!alreadyExpanded.contains(currentNode)) {
