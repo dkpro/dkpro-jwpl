@@ -20,6 +20,7 @@ package org.dkpro.jwpl.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Properties;
@@ -27,7 +28,8 @@ import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
 /**
- * Covers the additional Hibernate settings bag on {@link DatabaseConfiguration}.
+ * Covers the additional Hibernate settings bag and the connection pool size on
+ * {@link DatabaseConfiguration}.
  */
 public class DatabaseConfigurationTest
 {
@@ -95,6 +97,26 @@ public class DatabaseConfigurationTest
 
         bag.setProperty("hibernate.show_sql", "true");
         assertEquals("true", db.getHibernateProperties().getProperty("hibernate.show_sql"));
+    }
+
+    @Test
+    public void testConnectionPoolSizeDefaultsAndIsSettable()
+    {
+        DatabaseConfiguration db = new DatabaseConfiguration();
+        assertEquals(DatabaseConfiguration.DEFAULT_CONNECTION_POOL_SIZE, db.getConnectionPoolSize());
+        assertEquals(5, new SubclassedConfiguration().getConnectionPoolSize());
+
+        db.setConnectionPoolSize(16);
+        assertEquals(16, db.getConnectionPoolSize());
+    }
+
+    @Test
+    public void testConnectionPoolSizeRejectsNonPositive()
+    {
+        DatabaseConfiguration db = new DatabaseConfiguration();
+        assertThrows(IllegalArgumentException.class, () -> db.setConnectionPoolSize(0));
+        assertThrows(IllegalArgumentException.class, () -> db.setConnectionPoolSize(-1));
+        assertEquals(DatabaseConfiguration.DEFAULT_CONNECTION_POOL_SIZE, db.getConnectionPoolSize());
     }
 
     private static void assertBagEmpty(DatabaseConfiguration db)

@@ -515,8 +515,10 @@ public class WikiHibernateUtil
         p.setProperty("hibernate.connection.username", user);
         p.setProperty("hibernate.connection.password", password);
 
-        // JDBC connection pool (use the built-in) -->
-        p.setProperty("hibernate.connection.pool_size", "5");
+        // JDBC connection pool: the built-in one, unless C3P0 (see below) or another provider
+        // configured by the caller takes over. It fails fast rather than waits once exhausted.
+        p.setProperty("hibernate.connection.pool_size",
+                String.valueOf(config.getConnectionPoolSize()));
 
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class", "thread");
@@ -550,7 +552,15 @@ public class WikiHibernateUtil
         return p;
     }
 
-    private static Configuration getConfiguration(DatabaseConfiguration config,
+    /**
+     * Builds the Hibernate {@link Configuration} for a specified {@link DatabaseConfiguration}.
+     * Package-private for testing only.
+     *
+     * @param config         The {@link DatabaseConfiguration} to build the configuration for.
+     * @param metaDataEntity The {@code MetaData} entity to register.
+     * @return The {@link Configuration}, with the caller-supplied Hibernate settings merged last.
+     */
+    static Configuration getConfiguration(DatabaseConfiguration config,
             Class<? extends AbstractMetaData> metaDataEntity)
     {
         Configuration configuration = new Configuration().addAnnotatedClass(Category.class)
