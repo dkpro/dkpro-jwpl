@@ -596,7 +596,7 @@ public class Page
      * disambiguation category configured for the DataMachine or TimeMachine. Members of
      * subcategories only (e.g. {@code Human name disambiguation pages} in the English Wikipedia)
      * are not flagged, hence the configured category should be one that all disambiguation
-     * templates populate, such as {@code All_disambiguation_pages}.
+     * templates populate, such as {@code All_article_disambiguation_pages}.
      *
      * @return {@code True}, if the page is a disambiguation page, {@code false} otherwise.
      */

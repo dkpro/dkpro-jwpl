@@ -58,7 +58,7 @@ public class JWPLDataMachine
             + "heap of the JVM accordingly (e.g. -Xmx8g).\n"
             + "Only direct members of <DISAMBIGUATION_CATEGORY_NAME> are flagged as disambiguation\n"
             + "pages; members of its subcategories are not. For the English Wikipedia use\n"
-            + "All_disambiguation_pages, which every disambiguation template (e.g. {{hndis}}) populates.\n"
+            + "All_article_disambiguation_pages, which every disambiguation template (e.g. {{hndis}}) populates.\n"
             + "Please set up a decompressor.xml for a usage of other external archive utilities (see documentation for more help).\n";
 
     private static final long startTime = System.currentTimeMillis();
