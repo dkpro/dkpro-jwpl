@@ -32,6 +32,12 @@ public class DatabaseConfiguration
      */
     public static final int DEFAULT_CONNECTION_POOL_SIZE = 5;
 
+    /**
+     * The default maximum number of categories each {@link Wikipedia} instance keeps in memory,
+     * see {@link #setCategoryCacheSize(int)}.
+     */
+    public static final int DEFAULT_CATEGORY_CACHE_SIZE = 1000;
+
     private String host;
     private String database;
     private String user;
@@ -41,6 +47,7 @@ public class DatabaseConfiguration
     private String databaseDriver;
     private final Properties hibernateProperties = new Properties();
     private int connectionPoolSize = DEFAULT_CONNECTION_POOL_SIZE;
+    private int categoryCacheSize = DEFAULT_CATEGORY_CACHE_SIZE;
 
     /**
      * A no-arg constructor required by frameworks.
@@ -278,6 +285,48 @@ public class DatabaseConfiguration
                     "The connection pool size must be at least 1, but was " + connectionPoolSize);
         }
         this.connectionPoolSize = connectionPoolSize;
+    }
+
+    /**
+     * @return The maximum number of categories each {@link Wikipedia} instance created for this
+     *         configuration keeps in memory. Defaults to {@value #DEFAULT_CATEGORY_CACHE_SIZE};
+     *         {@code 0} means that categories are not cached.
+     *
+     * @see #setCategoryCacheSize(int)
+     */
+    public int getCategoryCacheSize()
+    {
+        return categoryCacheSize;
+    }
+
+    /**
+     * Sets the maximum number of categories each {@link Wikipedia} instance keeps in memory.
+     * <p>
+     * {@link Wikipedia#getCategory(int)} and the navigation methods built on it, such as
+     * {@link Category#getParents()} and {@link Category#getChildren()}, serve repeated lookups of
+     * the same category from this cache instead of querying the database again. Once the cache is
+     * full, the least recently used category is evicted. Only the plain columns of a category (id,
+     * page id and name) are cached; its links and pages are still read from the database whenever
+     * they are requested. Categories that do not exist are not cached.
+     * <p>
+     * The cache belongs to a {@link Wikipedia} instance and may be used from several threads. The
+     * size is read when the instance is created, so set it <i>before</i> {@code new Wikipedia(config)}.
+     * As the data is expected not to change after the import, a cached category is never refreshed;
+     * see {@link Wikipedia#clearCategoryCache()}.
+     *
+     * @param categoryCacheSize
+     *            The maximum number of cached categories. Must not be negative; {@code 0} disables
+     *            the cache.
+     *
+     * @throws IllegalArgumentException Thrown if {@code categoryCacheSize} is negative.
+     */
+    public void setCategoryCacheSize(int categoryCacheSize)
+    {
+        if (categoryCacheSize < 0) {
+            throw new IllegalArgumentException(
+                    "The category cache size must not be negative, but was " + categoryCacheSize);
+        }
+        this.categoryCacheSize = categoryCacheSize;
     }
 
     /**

@@ -28,8 +28,8 @@ import java.util.Properties;
 import org.junit.jupiter.api.Test;
 
 /**
- * Covers the additional Hibernate settings bag and the connection pool size on
- * {@link DatabaseConfiguration}.
+ * Covers the additional Hibernate settings bag, the connection pool size and the category cache
+ * size on {@link DatabaseConfiguration}.
  */
 public class DatabaseConfigurationTest
 {
@@ -117,6 +117,27 @@ public class DatabaseConfigurationTest
         assertThrows(IllegalArgumentException.class, () -> db.setConnectionPoolSize(0));
         assertThrows(IllegalArgumentException.class, () -> db.setConnectionPoolSize(-1));
         assertEquals(DatabaseConfiguration.DEFAULT_CONNECTION_POOL_SIZE, db.getConnectionPoolSize());
+    }
+
+    @Test
+    public void testCategoryCacheSizeDefaultsAndIsSettable()
+    {
+        DatabaseConfiguration db = new DatabaseConfiguration();
+        assertEquals(DatabaseConfiguration.DEFAULT_CATEGORY_CACHE_SIZE, db.getCategoryCacheSize());
+        assertEquals(1000, new SubclassedConfiguration().getCategoryCacheSize());
+
+        db.setCategoryCacheSize(50);
+        assertEquals(50, db.getCategoryCacheSize());
+        db.setCategoryCacheSize(0);
+        assertEquals(0, db.getCategoryCacheSize());
+    }
+
+    @Test
+    public void testCategoryCacheSizeRejectsNegative()
+    {
+        DatabaseConfiguration db = new DatabaseConfiguration();
+        assertThrows(IllegalArgumentException.class, () -> db.setCategoryCacheSize(-1));
+        assertEquals(DatabaseConfiguration.DEFAULT_CATEGORY_CACHE_SIZE, db.getCategoryCacheSize());
     }
 
     private static void assertBagEmpty(DatabaseConfiguration db)

@@ -18,13 +18,13 @@
 package org.dkpro.jwpl.api;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.CategoryDAO;
-import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 
 /**
  * Represents a category as conceptually defined by Wikipedia.
@@ -40,8 +40,36 @@ public class Category
     implements WikiConstants
 {
 
+    /**
+     * An immutable snapshot of the plain columns of a category row. Unlike a Hibernate entity it
+     * is never associated with a session, so one instance can safely be shared between threads and
+     * {@link Category} objects, e.g. via the {@link CategoryCache} of a {@link Wikipedia}.
+     *
+     * @param id
+     *            The internal (hibernate) id of the category.
+     * @param pageId
+     *            The page id of the category.
+     * @param name
+     *            The name of the category.
+     */
+    record Row(long id, int pageId, String name)
+    {
+
+        /**
+         * @param entity
+         *            A loaded category entity, or {@code null}.
+         * @return A snapshot of the plain columns of {@code entity}, or {@code null} if
+         *         {@code entity} is {@code null}.
+         */
+        static Row of(org.dkpro.jwpl.api.hibernate.Category entity)
+        {
+            return entity == null ? null
+                    : new Row(entity.getId(), entity.getPageId(), entity.getName());
+        }
+    }
+
     private final CategoryDAO catDAO;
-    private org.dkpro.jwpl.api.hibernate.Category hibernateCategory;
+    private Row row;
     private final Wikipedia wiki;
 
     /**
@@ -104,9 +132,11 @@ public class Category
      */
     private void createCategory(long id) throws WikiPageNotFoundException
     {
-        hibernateCategory = wiki.__inTransaction(session -> catDAO.findById(id));
+        // Not added to the category cache: this constructor is used when iterating over all
+        // categories, which would only evict the entries that are actually looked up repeatedly.
+        row = Row.of(wiki.__inTransaction(session -> catDAO.findById(id)));
 
-        if (hibernateCategory == null) {
+        if (row == null) {
             throw new WikiPageNotFoundException("No category with id " + id + " was found.");
         }
     }
@@ -116,15 +146,23 @@ public class Category
      */
     private void createCategory(int pageID) throws WikiPageNotFoundException
     {
-        hibernateCategory = wiki.__inTransaction(session -> session
+        CategoryCache cache = wiki.__getCategoryCache();
+        row = cache.get(pageID);
+        if (row != null) {
+            return;
+        }
+
+        row = Row.of(wiki.__inTransaction(session -> session
                 .createQuery("from Category where pageId = :pageId",
                         org.dkpro.jwpl.api.hibernate.Category.class)
-                .setParameter("pageId", pageID, Integer.class).uniqueResult());
+                .setParameter("pageId", pageID, Integer.class).uniqueResult()));
 
-        if (hibernateCategory == null) {
+        // misses are not cached, so a lookup of an unknown page id queries the database every time
+        if (row == null) {
             throw new WikiPageNotFoundException(
                     "No category with page id " + pageID + " was found.");
         }
+        cache.put(row);
     }
 
     /**
@@ -137,14 +175,36 @@ public class Category
         final String query = "select * from Category where name = :name"
                 + (wiki.getDatabaseConfiguration().supportsCollation() ? Wikipedia.SQL_COLLATION
                         : "");
-        hibernateCategory = wiki.__inTransaction(session -> session
+        row = Row.of(wiki.__inTransaction(session -> session
                 .createNativeQuery(query, org.dkpro.jwpl.api.hibernate.Category.class)
-                .setParameter("name", name, String.class).uniqueResult());
+                .setParameter("name", name, String.class).uniqueResult()));
 
-        // if there is no category with this name, the hibernateCategory is null
-        if (hibernateCategory == null) {
+        // if there is no category with this name, the row is null
+        if (row == null) {
             throw new WikiPageNotFoundException("No category with name " + name + " was found.");
         }
+        // The cache is keyed by page id, so it cannot serve lookups by name. Filling it here lets
+        // later lookups of this category by page id, e.g. in getParents(), skip the query.
+        wiki.__getCategoryCache().put(row);
+    }
+
+    /**
+     * Loads the elements of one of the link collections of this category. The collection is read
+     * by the id of this category instead of via a reattached entity, so no entity is ever shared
+     * between sessions.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks} or
+     *            {@code pages}.
+     * @return A new, modifiable set containing the elements of the collection.
+     */
+    private Set<Integer> loadCollection(String collection)
+    {
+        final String hql = "select l from Category c join c." + collection
+                + " l where c.id = :id";
+        List<Integer> ids = wiki.__inTransaction(session -> session
+                .createQuery(hql, Integer.class).setParameter("id", row.id()).list());
+        return new HashSet<>(ids);
     }
 
     /**
@@ -158,7 +218,7 @@ public class Category
      */
     long __getId()
     {
-        return hibernateCategory.getId();
+        return row.id();
     }
 
     /**
@@ -166,7 +226,7 @@ public class Category
      */
     public int getPageId()
     {
-        return hibernateCategory.getPageId();
+        return row.pageId();
     }
 
     /**
@@ -174,10 +234,7 @@ public class Category
      */
     public Set<Category> getParents()
     {
-        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernateCategory).getInLinks());
-        });
+        Set<Integer> tmpSet = loadCollection("inLinks");
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -213,10 +270,7 @@ public class Category
      */
     public Set<Integer> getParentIDs()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernateCategory).getInLinks());
-        });
+        return loadCollection("inLinks");
     }
 
     /**
@@ -224,10 +278,7 @@ public class Category
      */
     public Set<Category> getChildren()
     {
-        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernateCategory).getOutLinks());
-        });
+        Set<Integer> tmpSet = loadCollection("outLinks");
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -263,10 +314,7 @@ public class Category
      */
     public Set<Integer> getChildrenIDs()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernateCategory).getOutLinks());
-        });
+        return loadCollection("outLinks");
     }
 
     /**
@@ -276,7 +324,7 @@ public class Category
      */
     public Title getTitle() throws WikiTitleParsingException
     {
-        String name = hibernateCategory.getName();
+        String name = row.name();
         return new Title(name);
     }
 
@@ -300,10 +348,7 @@ public class Category
      */
     public Set<Integer> getArticleIds()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernateCategory).getPages());
-        });
+        return loadCollection("pages");
     }
 
     /**
