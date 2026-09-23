@@ -535,7 +535,7 @@ public class Page
      */
     public Title getTitle() throws WikiTitleParsingException
     {
-        String name = wiki.__inTransaction(session -> hibernatePage.getName());
+        String name = hibernatePage.getName();
         return new Title(name);
     }
 
@@ -555,7 +555,7 @@ public class Page
      */
     public String getText()
     {
-        String text = wiki.__inTransaction(session -> hibernatePage.getText());
+        String text = hibernatePage.getText();
 
         // Normalize strings read from the DB to use "\n" for all line breaks.
         StringBuilder sb = new StringBuilder(text);
@@ -602,7 +602,7 @@ public class Page
      */
     public boolean isDisambiguation()
     {
-        return wiki.__inTransaction(session -> hibernatePage.getIsDisambiguation());
+        return hibernatePage.getIsDisambiguation();
     }
 
     /**

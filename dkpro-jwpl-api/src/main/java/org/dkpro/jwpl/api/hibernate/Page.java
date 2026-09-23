@@ -61,6 +61,8 @@ public class Page
 
     // Maps to LONGTEXT on MariaDB/MySQL; on HSQLDB the test fixture pre-creates
     // a large VARCHAR and Hibernate runs with hbm2ddl.auto=none there.
+    // Loaded eagerly: api.Page#getText() reads it outside of any session. If this is ever
+    // made lazy (with bytecode enhancement), getText() must reattach inside a transaction.
     @Lob
     @Column(name = "text", length = 200_000_000)
     private String text;
