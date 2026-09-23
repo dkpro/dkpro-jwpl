@@ -253,6 +253,10 @@ public class Revision
         if (this.revisionText == null) {
             revisionApi.setRevisionTextAndParts(this);
         }
+        // All HTML entities start with '&': skip the unescaping pass (and its copy) otherwise.
+        if (this.revisionText == null || this.revisionText.indexOf('&') < 0) {
+            return this.revisionText;
+        }
         return StringEscapeUtils.unescapeHtml4(this.revisionText);
     }
 

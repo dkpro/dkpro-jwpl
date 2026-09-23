@@ -230,7 +230,7 @@ public class ChronoStorage
 
         // Subtract size
         Revision rev = block.getRev();
-        size -= rev.getRevisionText().length();
+        size -= block.length();
         return rev;
     }
 

@@ -47,6 +47,11 @@ public class ChronoStorageBlock
     private final Revision rev;
 
     /**
+     * Length of the (unescaped) revision text, computed once for the size accounting
+     */
+    private final int length;
+
+    /**
      * Flag, indicating whether the revision was already returned or not
      */
     private boolean delivered;
@@ -183,6 +188,7 @@ public class ChronoStorageBlock
 
         this.revisionIndex = revisionIndex;
         this.rev = rev;
+        this.length = rev.getRevisionText().length();
         this.delivered = false;
     }
 
@@ -232,8 +238,13 @@ public class ChronoStorageBlock
         return this.rev.getRevisionCounter();
     }
 
+    /**
+     * Returns the length of the revision text as computed when this block was created.
+     *
+     * @return length of the revision text
+     */
     public int length()
     {
-        return this.rev.getRevisionText().length();
+        return this.length;
     }
 }
