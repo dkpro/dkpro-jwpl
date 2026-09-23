@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.datamachine.dump.xml;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,6 +35,11 @@ public class BinaryDumpTableInputStream
     extends DumpTableInputStream
 {
 
+    /**
+     * Size of the read buffer placed below this wrapper if the given stream is not buffered yet.
+     */
+    private static final int BUFFER_SIZE = 1 << 16;
+
     private InputStream inputStream = null;
 
     /**
@@ -42,8 +48,14 @@ public class BinaryDumpTableInputStream
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
     {
-        // just read from the stream without any data manipulations
-        this.inputStream = inputStream;
+        // just read from the stream without any data manipulations; buffer unbuffered sources
+        // (e.g. a GZIPInputStream) so that single-byte reads do not hit the source per byte
+        if (inputStream == null || inputStream instanceof BufferedInputStream) {
+            this.inputStream = inputStream;
+        }
+        else {
+            this.inputStream = new BufferedInputStream(inputStream, BUFFER_SIZE);
+        }
     }
 
     /**
@@ -71,6 +83,26 @@ public class BinaryDumpTableInputStream
     public long skip(long n) throws IOException
     {
         return inputStream.skip(n);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int available() throws IOException
+    {
+        return inputStream.available();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void close() throws IOException
+    {
+        if (inputStream != null) {
+            inputStream.close();
+        }
     }
 
 }
