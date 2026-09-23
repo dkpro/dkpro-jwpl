@@ -18,7 +18,15 @@ name: Java CI
 env:
   BUILD_ENV: 'GitHub'
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+# Cancel a pull request's run when a newer commit is pushed to it; runs on master always finish
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
