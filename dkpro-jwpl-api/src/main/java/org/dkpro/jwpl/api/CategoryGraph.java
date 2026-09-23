@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +43,7 @@ import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.CommonUtilities;
 import org.dkpro.jwpl.api.util.GraphSerialization;
 import org.jgrapht.GraphPath;
+import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.AsUndirectedGraph;
@@ -129,6 +129,12 @@ public class CategoryGraph
      * The depth of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
      */
     private double depth = Double.NEGATIVE_INFINITY;
+
+    /**
+     * Whether the graph parameters (average shortest path length, diameter, average degree,
+     * cluster coefficient and degree distribution) have already been computed.
+     */
+    private boolean graphParametersComputed = false;
 
     /**
      * Creates an {@link CategoryGraph} using a serialized DirectedGraph object.
@@ -271,8 +277,6 @@ public class CategoryGraph
         graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         wiki = pWiki;
-
-        degreeDistribution = new HashMap<>();
 
         for (int pageID : pPageIDs) {
             if (filterList != null) {
@@ -1110,7 +1114,7 @@ public class CategoryGraph
      */
     public double getAverageShortestPathLength()
     {
-        if (averageShortestPathLength < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1127,7 +1131,7 @@ public class CategoryGraph
      */
     public double getDiameter()
     {
-        if (diameter < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1144,7 +1148,7 @@ public class CategoryGraph
      */
     public double getAverageDegree()
     {
-        if (averageDegree < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1162,7 +1166,7 @@ public class CategoryGraph
      */
     public double getClusterCoefficient()
     {
-        if (clusterCoefficient < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1179,7 +1183,7 @@ public class CategoryGraph
      */
     public Map<Integer, Integer> getDegreeDistribution()
     {
-        if (degreeDistribution == null) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1202,15 +1206,13 @@ public class CategoryGraph
 
         if (!neighbors.isEmpty()) {
             // for each pair of neighbors, test if there is a connection
-            Object[] nodeArray = neighbors.toArray();
-            // sort the Array so we can use a simple iteration with two for loops to access all
-            // pairs
-            Arrays.sort(nodeArray);
+            // the order of the nodes does not matter, as each pair i < j is visited exactly once
+            Integer[] nodeArray = neighbors.toArray(new Integer[0]);
 
-            for (int i = 0; i < neighbors.size(); i++) {
-                int outerNode = (Integer) nodeArray[i];
-                for (int j = i + 1; j < neighbors.size(); j++) {
-                    int innerNode = (Integer) nodeArray[j];
+            for (int i = 0; i < nodeArray.length; i++) {
+                int outerNode = nodeArray[i];
+                for (int j = i + 1; j < nodeArray.length; j++) {
+                    int innerNode = nodeArray[j];
                     // in case of a connection - increade connection counter
                     // order of the nodes doesn't matter for undirected graphs
                     if (undirectedGraph.containsEdge(innerNode, outerNode)) {
@@ -1248,16 +1250,6 @@ public class CategoryGraph
         return neighbors;
     }
 
-    private void updateDegreeDistribution(int nodeDegree)
-    {
-        if (degreeDistribution.containsKey(nodeDegree)) {
-            degreeDistribution.put(nodeDegree, (degreeDistribution.get(nodeDegree) + 1));
-        }
-        else {
-            degreeDistribution.put(nodeDegree, 1);
-        }
-    }
-
     /**
      * Computes and sets the diameter, the average degree and the average shortest path length of
      * the graph. Do not call this in the constructor. May run a while. It is called in the getters,
@@ -1265,6 +1257,9 @@ public class CategoryGraph
      */
     private void setGraphParameters()
     {
+        if (graphParametersComputed) {
+            return;
+        }
 
         // Diameter is the maximum of all shortest path lengths
         // Average shortest path length is (as the name says) the average of the shortest path
@@ -1274,6 +1269,7 @@ public class CategoryGraph
         double shortestPathLengthSum = 0.0;
         double degreeSum = 0.0;
         double clusterCoefficientSum = 0.0;
+        Map<Integer, Integer> degreeCounts = new HashMap<>();
 
         // iterate over all node pairs
         Set<Integer> nodes = undirectedGraph.vertexSet();
@@ -1291,7 +1287,7 @@ public class CategoryGraph
 
             int nodeDegree = undirectedGraph.degreeOf(node);
             degreeSum += nodeDegree;
-            updateDegreeDistribution(nodeDegree);
+            degreeCounts.merge(nodeDegree, 1, Integer::sum);
 
             // cluster coefficient of a node is C_v is the fraction of the connections that exist
             // between the neighbor nodes (k_v) of this node and all allowable connections between
@@ -1301,7 +1297,7 @@ public class CategoryGraph
             if (undirectedGraph.degreeOf(node) > 1) {
                 double numberOfNeighborConnections = getNumberOfNeighborConnections(node);
                 clusterCoefficientSum += (numberOfNeighborConnections
-                        / (nodeDegree * (nodeDegree - 1)));
+                        / ((double) nodeDegree * (nodeDegree - 1)));
             }
 
             // Returns the new shortestPathLengthSum and the new maxPathLength.
@@ -1317,9 +1313,10 @@ public class CategoryGraph
         }
 
         if (nodes.size() > 1) {
-            this.averageShortestPathLength = shortestPathLengthSum
-                    / (nodes.size() * (nodes.size() - 1) / 2); // sum of path lengths / (number of
-                                                               // node pairs)
+            // sum of path lengths / (number of node pairs), computed in long arithmetic to avoid
+            // an int overflow for graphs with more than 46341 nodes
+            long numberOfNodePairs = (long) nodes.size() * (nodes.size() - 1) / 2;
+            this.averageShortestPathLength = shortestPathLengthSum / numberOfNodePairs;
         }
         else {
             this.averageShortestPathLength = 0; // there is only one node
@@ -1327,6 +1324,8 @@ public class CategoryGraph
         this.diameter = maxPathLength;
         this.averageDegree = degreeSum / nodes.size();
         this.clusterCoefficient = clusterCoefficientSum / nodes.size();
+        this.degreeDistribution = degreeCounts;
+        this.graphParametersComputed = true;
     }
 
     /**
@@ -1354,56 +1353,46 @@ public class CategoryGraph
             double pMaxPathLength, Set<Integer> pWasSource)
     {
 
-        // a set of nodes that have already been expanded -> algorithm should expand nodes
-        // monotonically and not go back
-        Set<Integer> alreadyExpanded = new HashSet<>();
+        // a set of nodes that have already been discovered. Nodes are marked on enqueue, so that
+        // each node enters the queue at most once and is assigned its (minimal) BFS distance
+        Set<Integer> alreadyDiscovered = new HashSet<>();
 
-        // a queue holding the newly discovered nodes with their distance to the start node
-        Deque<int[]> queue = new ArrayDeque<>();
+        // two parallel queues holding the newly discovered nodes and their distance to the start
+        // node
+        Deque<Integer> nodeQueue = new ArrayDeque<>();
+        Deque<Integer> distanceQueue = new ArrayDeque<>();
 
         // initialize queue with start node
-        int[] innerList = new int[2];
-        innerList[0] = pStartNode; // the node
-        innerList[1] = 0; // the distance to the start node
-        queue.add(innerList);
+        alreadyDiscovered.add(pStartNode);
+        nodeQueue.add(pStartNode);
+        distanceQueue.add(0);
 
         // while the queue is not empty
-        while (!queue.isEmpty()) {
+        while (!nodeQueue.isEmpty()) {
             // remove first element from queue
-            int[] queueElement = queue.poll();
-            int currentNode = queueElement[0];
-            int distance = queueElement[1];
+            int currentNode = nodeQueue.poll();
+            int distance = distanceQueue.poll();
 
-            // if the node was not already expanded
-            if (!alreadyExpanded.contains(currentNode)) {
-                // the node gets expanded now
-                alreadyExpanded.add(currentNode);
-
-                // if the node was a source node in a previous run, we already have added this path
-                if (!pWasSource.contains(currentNode)) {
-                    // add the distance of this node to shortestPathLengthSum
-                    // check if maxPathLength must be updated
-                    pShortestPathLengthSum += distance;
-                    if (distance > pMaxPathLength) {
-                        pMaxPathLength = distance;
-                    }
+            // if the node was a source node in a previous run, we already have added this path
+            if (!pWasSource.contains(currentNode)) {
+                // add the distance of this node to shortestPathLengthSum
+                // check if maxPathLength must be updated
+                pShortestPathLengthSum += distance;
+                if (distance > pMaxPathLength) {
+                    pMaxPathLength = distance;
                 }
-                // even if the node was a source node in a previous run there can be a path to other
-                // nodes over this node, so go on
+            }
+            // even if the node was a source node in a previous run there can be a path to other
+            // nodes over this node, so go on
 
-                // get the neighbors of the queue element
-                Set<Integer> neighbors = getNeighbors(currentNode);
-
-                // iterate over all neighbors
-                for (int neighbor : neighbors) {
-                    // if the node was not already expanded
-                    if (!alreadyExpanded.contains(neighbor)) {
-                        // add the node to the queue, increase node distance by one
-                        int[] tmpList = new int[2];
-                        tmpList[0] = neighbor;
-                        tmpList[1] = (distance + 1);
-                        queue.add(tmpList);
-                    }
+            // iterate over all neighbors of the queue element
+            for (DefaultEdge edge : undirectedGraph.edgesOf(currentNode)) {
+                int neighbor = Graphs.getOppositeVertex(undirectedGraph, edge, currentNode);
+                // add the node to the queue if it was not discovered yet,
+                // increase node distance by one
+                if (alreadyDiscovered.add(neighbor)) {
+                    nodeQueue.add(neighbor);
+                    distanceQueue.add(distance + 1);
                 }
             }
         }

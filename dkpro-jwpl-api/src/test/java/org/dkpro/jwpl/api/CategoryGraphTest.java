@@ -21,11 +21,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.Map;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class CategoryGraphTest
     extends BaseJWPLTest
@@ -226,5 +231,67 @@ public class CategoryGraphTest
         double cc = freshGraph.getClusterCoefficient();
         assertTrue(cc >= 0);
         assertTrue(cc <= 1);
+    }
+
+    @Test
+    public void testDegreeDistributionCalledFirstWithFreshGraph() throws WikiApiException
+    {
+        CategoryGraph freshGraph = new CategoryGraph(wiki);
+        Map<Integer, Integer> degreeDist = freshGraph.getDegreeDistribution();
+
+        assertEquals(Map.of(0, 1, 1, 8, 2, 4, 3, 1, 4, 1, 5, 1, 6, 1), degreeDist);
+    }
+
+    @Test
+    public void testGraphMetricsWithDirectedGraphConstructor() throws WikiApiException
+    {
+        CategoryGraph graphCopy = new CategoryGraph(wiki, catGraph.getGraph());
+        assertSameGraphMetrics(catGraph, graphCopy);
+    }
+
+    @Test
+    public void testGraphMetricsWithSerializedGraph(@TempDir Path tempDir) throws WikiApiException
+    {
+        File location = tempDir.resolve("categorygraph.ser").toFile();
+        catGraph.saveGraph(location.getAbsolutePath());
+
+        CategoryGraph loadedGraph = new CategoryGraph(wiki, location);
+        assertSameGraphMetrics(catGraph, loadedGraph);
+    }
+
+    @Test
+    public void testAverageShortestPathLengthDoesNotOverflowForLargeGraphs()
+    {
+        // More than 46341 nodes, so that n * (n - 1) exceeds Integer.MAX_VALUE.
+        // A single edge keeps the all-pairs BFS cheap: all other pairs are unreachable,
+        // contribute 0 to the path length sum, but still count as node pairs.
+        int n = 50000;
+        DefaultDirectedGraph<Integer, DefaultEdge> graph = new DefaultDirectedGraph<>(
+                DefaultEdge.class);
+        for (int i = 0; i < n; i++) {
+            graph.addVertex(i);
+        }
+        graph.addEdge(0, 1);
+
+        CategoryGraph largeGraph = new CategoryGraph(null, graph);
+        double expected = 1.0 / ((double) n * (n - 1) / 2.0);
+
+        assertEquals(expected, largeGraph.getAverageShortestPathLength(), 1e-20);
+        assertEquals(1.0, largeGraph.getDiameter(), 0.00001);
+        assertEquals(2.0 / n, largeGraph.getAverageDegree(), 0.00001);
+        assertEquals(2, largeGraph.getDegreeDistribution().get(1).intValue());
+        assertEquals(n - 2, largeGraph.getDegreeDistribution().get(0).intValue());
+    }
+
+    private static void assertSameGraphMetrics(CategoryGraph expected, CategoryGraph actual)
+    {
+        // query the degree distribution first, it must not rely on other getters
+        assertEquals(expected.getDegreeDistribution(), actual.getDegreeDistribution());
+        assertEquals(expected.getAverageShortestPathLength(),
+                actual.getAverageShortestPathLength(), 0.00001);
+        assertEquals(expected.getDiameter(), actual.getDiameter(), 0.00001);
+        assertEquals(expected.getAverageDegree(), actual.getAverageDegree(), 0.00001);
+        assertEquals(expected.getClusterCoefficient(), actual.getClusterCoefficient(), 0.00001);
+        assertTrue(actual.getGraphInfo().contains("Degree distribution:"));
     }
 }
