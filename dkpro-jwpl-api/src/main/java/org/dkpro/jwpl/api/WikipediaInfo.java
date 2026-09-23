@@ -18,13 +18,11 @@
 package org.dkpro.jwpl.api;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
@@ -42,7 +40,25 @@ public class WikipediaInfo
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Counts the distinct outlinks of all pages that point to an existing page, i.e. exactly the
+     * links {@link Page#getOutlinks()} resolves.
+     */
+    private static final String SQL_COUNT_RESOLVABLE_OUTLINKS = "select count(*) from "
+            + "(select distinct o.id, o.outLinks from page_outlinks o "
+            + "join Page src on src.id = o.id "
+            + "join Page tgt on tgt.pageId = o.outLinks) links";
+
+    /**
+     * Counts the distinct outlinks of a single page that point to an existing page, i.e. the size
+     * of {@link Page#getOutlinks()} for that page.
+     */
+    private static final String SQL_COUNT_RESOLVABLE_OUTLINKS_OF_PAGE = "select "
+            + "count(distinct o.outLinks) from page_outlinks o "
+            + "join Page tgt on tgt.pageId = o.outLinks where o.id = :id";
+
     private final Iterable<Page> pages;
+    private final boolean allPages;
     private double averageFanOut;
 
     private int numberOfPages;
@@ -62,7 +78,7 @@ public class WikipediaInfo
      */
     public WikipediaInfo(Wikipedia pWiki) throws WikiApiException
     {
-        this(pWiki.getPages(), pWiki);
+        this(pWiki.getPages(), pWiki, true);
     }
 
     /**
@@ -76,6 +92,12 @@ public class WikipediaInfo
      */
     public WikipediaInfo(Iterable<Page> pPages, Wikipedia pWiki) throws WikiApiException
     {
+        this(pPages, pWiki, false);
+    }
+
+    private WikipediaInfo(Iterable<Page> pPages, Wikipedia pWiki, boolean pAllPages)
+        throws WikiApiException
+    {
         if (pPages == null) {
             throw new WikiApiException("The page set has to be initialized.");
         }
@@ -86,16 +108,26 @@ public class WikipediaInfo
 
         wiki = pWiki;
         pages = pPages;
+        allPages = pAllPages;
         averageFanOut = -1.0; // lazy initialization => it is computed and stored when it is
                               // accessed
 
-        degreeDistribution = new HashMap<>();
-        categorizedArticleSet = new HashSet<>();
+        // lazy initialization => computed on first access, see iterateCategoriesGetArticles
+        degreeDistribution = null;
+        categorizedArticleSet = null;
 
         // get number of pages
-        numberOfPages = 0;
-        for (Page page : pages) {
-            numberOfPages++;
+        if (allPages) {
+            // exactly the rows the page iterable walks, without loading any of them
+            numberOfPages = wiki.__inTransaction(session -> session
+                    .createQuery("select count(p) from Page p", Long.class).uniqueResult())
+                    .intValue();
+        }
+        else {
+            numberOfPages = 0;
+            for (Page ignored : pages) {
+                numberOfPages++;
+            }
         }
     }
 
@@ -109,12 +141,20 @@ public class WikipediaInfo
      */
     private double computeAverageFanOut(Iterable<Page> pages)
     {
-
-        final Iterator<Page> it = pages.iterator();
-
+        // Counts only outlinks to existing pages, as Page#getOutlinks() does, but without loading
+        // the link targets.
         double sum = 0;
-        while (it.hasNext()) {
-            sum += it.next().getOutlinks().size();
+        if (allPages) {
+            sum = wiki.__inTransaction(session -> session
+                    .createNativeQuery(SQL_COUNT_RESOLVABLE_OUTLINKS, Long.class).uniqueResult());
+        }
+        else {
+            for (Page page : pages) {
+                long id = page.__getId();
+                sum += wiki.__inTransaction(session -> session
+                        .createNativeQuery(SQL_COUNT_RESOLVABLE_OUTLINKS_OF_PAGE, Long.class)
+                        .setParameter("id", id, Long.class).uniqueResult());
+            }
         }
 
         return sum / this.getNumberOfPages();
@@ -223,46 +263,28 @@ public class WikipediaInfo
      *            The category graph.
      * @return The number of articles that have at least one category in common.
      */
-    private int getArticlesWithOverlappingCategories(Wikipedia pWiki, CategoryGraph pGraph)
+    int getArticlesWithOverlappingCategories(Wikipedia pWiki, CategoryGraph pGraph)
     {
-        Set<Integer> overlappingArticles = new HashSet<>();
-
-        // iterate over all node pairs
         Set<Integer> nodes = pGraph.getGraph().vertexSet();
 
         Map<Integer, Set<Integer>> categoryArticleMap = getCategoryArticleMap(pWiki, nodes);
 
-        // sort the Array so we can use a simple iteration with two for loops to access all pairs
-        Object[] nodeArray = nodes.toArray();
-        Arrays.sort(nodeArray);
-
-        int progress = 0;
-        for (int i = 0; i < nodes.size(); i++) {
-            progress++;
-            ApiUtilities.printProgressInfo(progress, nodes.size(), 100,
-                    ApiUtilities.ProgressInfoMode.TEXT, "");
-
-            int outerNode = (Integer) nodeArray[i];
-
-            for (int j = i + 1; j < nodes.size(); j++) {
-                int innerNode = (Integer) nodeArray[j];
-
-                // test whether the categories have pages in common
-                Set<Integer> outerPages = categoryArticleMap.get(outerNode);
-                Set<Integer> innerPages = categoryArticleMap.get(innerNode);
-
-                for (int outerPage : outerPages) {
-                    if (innerPages.contains(outerPage)) {
-                        if (!overlappingArticles.contains(outerPage)) {
-                            overlappingArticles.add(outerPage);
-                        }
-                    }
-                }
-
+        // An article overlaps exactly if it is contained in at least two of the categories, so a
+        // single pass that counts the categories per article replaces the pairwise comparison.
+        Map<Integer, Integer> categoriesPerArticle = new HashMap<>();
+        for (Set<Integer> articles : categoryArticleMap.values()) {
+            for (int article : articles) {
+                categoriesPerArticle.merge(article, 1, Integer::sum);
             }
         }
 
-        return overlappingArticles.size();
+        int overlappingArticles = 0;
+        for (int numberOfCategories : categoriesPerArticle.values()) {
+            if (numberOfCategories >= 2) {
+                overlappingArticles++;
+            }
+        }
+        return overlappingArticles;
     }
 
     /**
@@ -426,7 +448,7 @@ public class WikipediaInfo
 
         // a queue holding the newly discovered nodes with their and their distance to the start
         // node
-        List<int[]> queue = new ArrayList<>();
+        Queue<int[]> queue = new ArrayDeque<>();
 
         // initialize queue with start node
         int[] innerList = new int[2];
@@ -437,10 +459,9 @@ public class WikipediaInfo
         // while the queue is not empty
         while (!queue.isEmpty()) {
             // remove first element from queue
-            int[] queueElement = queue.get(0);
+            int[] queueElement = queue.poll();
             int currentNode = queueElement[0];
             int distance = queueElement[1];
-            queue.remove(0);
 
             // if the node was not already expanded
             if (!alreadyExpanded.contains(currentNode)) {
