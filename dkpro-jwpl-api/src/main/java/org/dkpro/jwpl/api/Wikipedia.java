@@ -77,6 +77,9 @@ public class Wikipedia
 
     private final MetaData metaData;
 
+    // Loaded category rows by page id, see DatabaseConfiguration#setCategoryCacheSize(int).
+    private final CategoryCache categoryCache;
+
     // Note: This should only be accessed internally. Built lazily, see getWikConfig().
     private volatile WikiConfig wikiConfig;
 
@@ -96,6 +99,7 @@ public class Wikipedia
 
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
+        this.categoryCache = new CategoryCache(dbConfig.getCategoryCacheSize());
 
         this.metaData = new MetaData(this);
 
@@ -541,6 +545,9 @@ public class Wikipedia
 
     /**
      * Gets the category for a given pageId.
+     * <p>
+     * Repeated lookups of the same category are served from a bounded cache of loaded category
+     * rows without querying the database, see {@link DatabaseConfiguration#setCategoryCacheSize(int)}.
      *
      * @param pageId The id of the {@link Category}.
      * @return The category object or {@code null} if no category with this pageId exists.
@@ -824,6 +831,27 @@ public class Wikipedia
      */
     public MetaData getMetaData() {
         return this.metaData;
+    }
+
+    /**
+     * Removes all entries from the cache of loaded categories of this instance, see
+     * {@link DatabaseConfiguration#setCategoryCacheSize(int)}. This is only needed if the
+     * underlying database is changed while this instance is in use, as the cache would otherwise
+     * keep serving the old rows.
+     */
+    public void clearCategoryCache() {
+        categoryCache.clear();
+    }
+
+    /**
+     * @return The cache of loaded category rows of this instance, never {@code null}.
+     */
+    /*
+     * Note well: Access is limited to package-private here intentionally, as it is API-internal use
+     * only.
+     */
+    CategoryCache __getCategoryCache() {
+        return categoryCache;
     }
 
     /**

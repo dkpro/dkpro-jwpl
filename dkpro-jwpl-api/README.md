@@ -138,6 +138,22 @@ Note that a sufficiently large pool makes only the connection layer usable from 
 [issue #605](https://github.com/dkpro/dkpro-jwpl/issues/605)); prefer one `Wikipedia` instance per
 thread over the same `DatabaseConfiguration`.
 
+## Category cache
+
+Each `Wikipedia` instance keeps the most recently used **1000** categories in memory, so that
+repeated lookups via `getCategory(int)` — including those made by `Category.getParents()`,
+`getChildren()` and `Page.getCategories()` — do not query the database again. Only the plain
+columns of a category (id, page id and name) are cached; its links and pages are read from the
+database on each request. Set the bound before creating the `Wikipedia` instance; `0` disables the
+cache:
+
+```java
+dbConfig.setCategoryCacheSize(10_000); // default 1000, 0 = off
+```
+
+Cached categories are never refreshed. If the database is changed while a `Wikipedia` instance is
+in use, call `wiki.clearCategoryCache()`.
+
 ## Persistence
 
 The entities live in `org.dkpro.jwpl.api.hibernate` and are mapped with JPA annotations. The
