@@ -29,7 +29,6 @@ import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
 import org.sweble.wikitext.engine.config.WikiConfig;
 import org.sweble.wikitext.engine.nodes.EngProcessedPage;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.parser.LinkTargetException;
 
 import de.fau.cs.osr.ptk.common.AstVisitor;
@@ -121,7 +120,7 @@ public class ParseUtils
     private static EngProcessedPage getCompiledPage(String text, String title, long revision)
         throws LinkTargetException, EngineException
     {
-        WikiConfig config = DefaultConfigEnWp.generate();
+        WikiConfig config = DefaultSwebleConfig.get();
 
         PageTitle pageTitle = PageTitle.make(config, title);
         PageId pageId = new PageId(pageTitle, revision);
