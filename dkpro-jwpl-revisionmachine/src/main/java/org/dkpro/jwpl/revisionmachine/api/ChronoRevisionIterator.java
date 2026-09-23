@@ -22,7 +22,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.revisionmachine.api.chrono.ChronoIterator;
@@ -51,11 +50,10 @@ public class ChronoRevisionIterator
     private ResultSet resultArticles;
 
     /**
-     * Reference to the statement that produced {@link #resultArticles}. It is kept so that it can
-     * be closed along with the result set - a statement left behind holds server side resources
-     * for the whole lifetime of the connection.
+     * Statement for the batches of the article index, prepared on first use and reused for every
+     * batch until the iterator is closed
      */
-    private Statement articlesStatement;
+    private PreparedStatement articlesStatement;
 
     /**
      * Statement for the mapping lookup in {@code index_chronological}, prepared on first use and
@@ -210,13 +208,16 @@ public class ChronoRevisionIterator
     {
         closeArticleResources();
 
-        articlesStatement = this.connection.createStatement();
+        if (articlesStatement == null) {
+            articlesStatement = this.connection.prepareStatement(
+                    "SELECT ArticleID, FullRevisionPKs, RevisionCounter "
+                            + "FROM index_articleID_rc_ts WHERE ArticleID > ? "
+                            + "ORDER BY ArticleID LIMIT ?");
+        }
+        articlesStatement.setInt(1, this.currentArticleID);
+        articlesStatement.setInt(2, MAX_NUMBER_RESULTS);
 
-        String query = "SELECT ArticleID, FullRevisionPKs, RevisionCounter "
-                + "FROM index_articleID_rc_ts " + "WHERE articleID > " + this.currentArticleID
-                + " LIMIT " + MAX_NUMBER_RESULTS;
-
-        resultArticles = articlesStatement.executeQuery(query);
+        resultArticles = articlesStatement.executeQuery();
 
         if (resultArticles.next()) {
 
@@ -454,12 +455,9 @@ public class ChronoRevisionIterator
         }
         finally {
             try {
-                if (mappingStatement != null) {
-                    mappingStatement.close();
-                }
+                closeStatements();
             }
             finally {
-                mappingStatement = null;
                 if (this.connection != null) {
                     this.connection.close();
                 }
@@ -468,22 +466,46 @@ public class ChronoRevisionIterator
     }
 
     /**
-     * Closes the statement of the current article batch, and with it the result set it produced.
+     * Closes the result set of the current article batch.
      *
      * @throws SQLException
-     *             if an error occurs while closing the statement
+     *             if an error occurs while closing the result set
      */
     private void closeArticleResources() throws SQLException
     {
         try {
+            if (resultArticles != null) {
+                resultArticles.close();
+            }
+        }
+        finally {
+            resultArticles = null;
+        }
+    }
+
+    /**
+     * Closes the prepared statements for the article batches and the mapping lookup.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing a statement
+     */
+    private void closeStatements() throws SQLException
+    {
+        try {
             if (articlesStatement != null) {
-                // Closing a statement closes the result set it produced along with it.
                 articlesStatement.close();
             }
         }
         finally {
             articlesStatement = null;
-            resultArticles = null;
+            try {
+                if (mappingStatement != null) {
+                    mappingStatement.close();
+                }
+            }
+            finally {
+                mappingStatement = null;
+            }
         }
     }
 

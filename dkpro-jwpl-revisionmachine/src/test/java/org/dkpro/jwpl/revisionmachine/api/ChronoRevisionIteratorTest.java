@@ -79,7 +79,7 @@ public class ChronoRevisionIteratorTest
     }
 
     @Test
-    public void testIterationProbesSchemaOnceAndReusesMappingStatement() throws Exception
+    public void testIterationProbesSchemaOnceAndReusesStatements() throws Exception
     {
         List<String> revisionsOfCar = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(url, "sa", "")) {
@@ -95,9 +95,10 @@ public class ChronoRevisionIteratorTest
         expected.addAll(revisionsOfCar);
 
         AtomicInteger namespaceProbes = new AtomicInteger();
+        AtomicInteger articleStatements = new AtomicInteger();
         AtomicInteger mappingStatements = new AtomicInteger();
         Connection connection = countingConnection(DriverManager.getConnection(url, "sa", ""),
-                namespaceProbes, mappingStatements);
+                namespaceProbes, articleStatements, mappingStatements);
 
         List<String> actual = new ArrayList<>();
         ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
@@ -112,6 +113,7 @@ public class ChronoRevisionIteratorTest
 
         assertEquals(expected, actual);
         assertEquals(1, namespaceProbes.get());
+        assertEquals(1, articleStatements.get());
         assertEquals(1, mappingStatements.get());
         assertTrue(connection.isClosed());
     }
@@ -124,15 +126,20 @@ public class ChronoRevisionIteratorTest
 
     /**
      * Wraps the connection to count the probes for the Namespace column and the statements
-     * prepared for the mapping lookup.
+     * prepared for the article batches and the mapping lookup.
      */
     private static Connection countingConnection(final Connection connection,
-            final AtomicInteger namespaceProbes, final AtomicInteger mappingStatements)
+            final AtomicInteger namespaceProbes, final AtomicInteger articleStatements,
+            final AtomicInteger mappingStatements)
     {
         InvocationHandler handler = (proxy, method, args) -> {
-            if (method.getName().equals("prepareStatement")
-                    && args[0].toString().contains("index_chronological")) {
-                mappingStatements.incrementAndGet();
+            if (method.getName().equals("prepareStatement")) {
+                if (args[0].toString().contains("index_articleID_rc_ts")) {
+                    articleStatements.incrementAndGet();
+                }
+                else if (args[0].toString().contains("index_chronological")) {
+                    mappingStatements.incrementAndGet();
+                }
             }
             Object result = invoke(connection, method, args);
             if (method.getName().equals("createStatement")) {
