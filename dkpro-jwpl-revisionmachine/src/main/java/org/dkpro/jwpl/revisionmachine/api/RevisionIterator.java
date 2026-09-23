@@ -154,6 +154,31 @@ public class RevisionIterator
     }
 
     /**
+     * Creates a new RevisionIterator object for which the presence of the Namespace column is
+     * already known, so that the revisions table does not have to be probed again.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index
+     * @param endPK
+     *            End index
+     * @param connection
+     *            Reference to the connection
+     * @param hasNamespaceColumn
+     *            whether the revisions table has a Namespace column, {@code null} if unknown
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
+            final Connection connection, final Boolean hasNamespaceColumn)
+        throws WikiApiException
+    {
+        this(config, startPK, endPK, connection);
+        this.hasNamespaceColumn = hasNamespaceColumn;
+    }
+
+    /**
      * Creates a new RevisionIterator object.
      *
      * @param config

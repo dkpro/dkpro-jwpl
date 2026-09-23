@@ -19,6 +19,7 @@ package org.dkpro.jwpl.revisionmachine.api;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -55,6 +56,19 @@ public class ChronoRevisionIterator
      * for the whole lifetime of the connection.
      */
     private Statement articlesStatement;
+
+    /**
+     * Statement for the mapping lookup in {@code index_chronological}, prepared on first use and
+     * reused for every article until the iterator is closed
+     */
+    private PreparedStatement mappingStatement;
+
+    /**
+     * Whether the revisions table has a Namespace column, {@code null} until it is probed. The
+     * schema does not change during an iteration, so the probe is shared by the revision
+     * iterators of all articles.
+     */
+    private Boolean hasNamespaceColumn;
 
     /**
      * Number of revisions of the current read article
@@ -116,24 +130,50 @@ public class ChronoRevisionIterator
      */
     public ChronoRevisionIterator(final RevisionAPIConfiguration config) throws WikiApiException
     {
+        this(config, openConnection(config));
+    }
 
+    /**
+     * (Constructor) Creates a new ChronoRevisionIterator that uses the given connection.
+     *
+     * @param config
+     *            Reference to the configuration parameters
+     * @param connection
+     *            Reference to the database connection, closed along with the iterator
+     */
+    ChronoRevisionIterator(final RevisionAPIConfiguration config, final Connection connection)
+    {
         this.config = config;
+        this.MAX_NUMBER_RESULTS = config.getBufferSize();
+
+        this.resultArticles = null;
+        this.currentArticleID = 0;
+        this.lastArticleID = -1;
+
+        reset();
+
+        this.connection = connection;
+    }
+
+    /**
+     * Opens the connection to the database described by the configuration.
+     *
+     * @param config
+     *            Reference to the configuration parameters
+     * @return the connection
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    private static Connection openConnection(final RevisionAPIConfiguration config)
+        throws WikiApiException
+    {
         try {
-            this.MAX_NUMBER_RESULTS = config.getBufferSize();
-
-            this.resultArticles = null;
-            this.currentArticleID = 0;
-            this.lastArticleID = -1;
-
-            reset();
-
             String driverDB = "com.mysql.jdbc.Driver";
             Class.forName(driverDB);
 
-            this.connection = DriverManager.getConnection(
+            return DriverManager.getConnection(
                     "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(),
                     config.getUser(), config.getPassword());
-
         }
         catch (SQLException | ClassNotFoundException e) {
             throw new WikiApiException(e);
@@ -188,6 +228,37 @@ public class ChronoRevisionIterator
     }
 
     /**
+     * Returns the statement for the mapping lookup, preparing it on first use.
+     *
+     * @return the prepared statement
+     * @throws SQLException
+     *             if an error occurs while preparing the statement
+     */
+    private PreparedStatement mappingStatement() throws SQLException
+    {
+        if (mappingStatement == null) {
+            mappingStatement = this.connection.prepareStatement(
+                    "SELECT Mapping FROM index_chronological WHERE ArticleID=? LIMIT 1");
+        }
+        return mappingStatement;
+    }
+
+    /**
+     * Returns whether the revisions table has a Namespace column, probing it on first use.
+     *
+     * @return {@code true} if the column exists, {@code false} otherwise
+     * @throws SQLException
+     *             if an error occurs while querying the database
+     */
+    private boolean hasNamespaceColumn() throws SQLException
+    {
+        if (hasNamespaceColumn == null) {
+            hasNamespaceColumn = RevisionsTable.hasNamespaceColumn(connection);
+        }
+        return hasNamespaceColumn;
+    }
+
+    /**
      * Resets the modus to INIT.
      */
     private void reset()
@@ -218,10 +289,9 @@ public class ChronoRevisionIterator
             this.maxRevision = Integer
                     .parseInt(revisionCounters.substring(index + 1, revisionCounters.length()));
 
-            try (Statement statement = this.connection.createStatement();
-                    ResultSet result = statement
-                            .executeQuery("SELECT Mapping " + "FROM index_chronological "
-                                    + "WHERE ArticleID=" + currentArticleID + " LIMIT 1")) {
+            PreparedStatement statement = mappingStatement();
+            statement.setInt(1, currentArticleID);
+            try (ResultSet result = statement.executeQuery()) {
 
                 if (result.next()) {
 
@@ -259,7 +329,7 @@ public class ChronoRevisionIterator
                     // TODO CHECK! -2 instead of -1 gets rid of the extra
                     // revision from the next article
                     this.revisionIterator = new RevisionIterator(config, currentPK,
-                            currentPK + maxRevision - 2, connection);
+                            currentPK + maxRevision - 2, connection, hasNamespaceColumn());
 
                     if (revisionIterator.hasNext()) {
                         return revisionIterator.next();
@@ -383,8 +453,16 @@ public class ChronoRevisionIterator
             closeArticleResources();
         }
         finally {
-            if (this.connection != null) {
-                this.connection.close();
+            try {
+                if (mappingStatement != null) {
+                    mappingStatement.close();
+                }
+            }
+            finally {
+                mappingStatement = null;
+                if (this.connection != null) {
+                    this.connection.close();
+                }
             }
         }
     }
