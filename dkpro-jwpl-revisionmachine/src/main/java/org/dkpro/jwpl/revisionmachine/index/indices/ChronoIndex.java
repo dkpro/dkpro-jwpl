@@ -130,9 +130,9 @@ public class ChronoIndex
             Collections.sort(list);
             StringBuilder mapping = new StringBuilder();
 
-            while (!list.isEmpty()) {
+            for (int i = 0; i < size; i++) {
 
-                info = list.remove(0);
+                info = list.get(i);
                 if (info.getRevisionCounter() != info.getIndex()) {
 
                     if (!mapping.isEmpty()) {
@@ -144,6 +144,7 @@ public class ChronoIndex
                     mapping.append(info.getIndex());
                 }
             }
+            list.clear();
 
             if (!mapping.isEmpty()) {
 
