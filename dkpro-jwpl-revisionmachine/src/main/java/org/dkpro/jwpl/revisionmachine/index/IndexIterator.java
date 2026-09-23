@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.revisionmachine.index;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +25,7 @@ import java.sql.Timestamp;
 import java.util.Iterator;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.dkpro.jwpl.revisionmachine.api.AbstractRevisionService;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 
@@ -109,12 +109,7 @@ public class IndexIterator
         throws WikiApiException
     {
         try {
-            String driverDB = "com.mysql.jdbc.Driver";
-            Class.forName(driverDB);
-
-            return DriverManager.getConnection(
-                    "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(),
-                    config.getUser(), config.getPassword());
+            return AbstractRevisionService.openConnection(config);
         }
         catch (SQLException | ClassNotFoundException e) {
             throw new WikiApiException(e);

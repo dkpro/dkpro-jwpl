@@ -18,10 +18,10 @@
 package org.dkpro.jwpl.revisionmachine.index.writer;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.dkpro.jwpl.revisionmachine.api.AbstractRevisionService;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 
@@ -51,12 +51,7 @@ public class DatabaseWriter
         throws ClassNotFoundException, SQLException
     {
 
-        String driverDB = "com.mysql.jdbc.Driver";
-        Class.forName(driverDB);
-
-        this.connection = DriverManager.getConnection(
-                "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(), config.getUser(),
-                config.getPassword());
+        this.connection = AbstractRevisionService.openConnection(config);
 
         Statement statement = connection.createStatement();
         statement.execute("CREATE TABLE index_articleID_rc_ts ("
