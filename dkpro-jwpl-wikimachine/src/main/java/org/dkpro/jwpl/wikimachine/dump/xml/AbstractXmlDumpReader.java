@@ -503,15 +503,9 @@ public abstract class AbstractXmlDumpReader
 
     private String bufferContents()
     {
-        // escape backslashes
-        if (len == 0) {
-            return "";
-        }
-        else {
-            String result = new String(buffer, 0, len);
-            result = result.replace("\\", "\\\\");
-            return result;
-        }
+        // Returned as is: escaping for the import format is done once by the writers
+        // (SQLEscape.escape), so doing it here too would double every backslash.
+        return len == 0 ? "" : new String(buffer, 0, len);
     }
 
     private void readSitename()
