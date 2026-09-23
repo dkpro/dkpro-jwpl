@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtNode;
 import org.sweble.wikitext.parser.nodes.WtTemplate;
 
@@ -44,31 +43,28 @@ import de.fau.cs.osr.ptk.common.ast.AstText;
 public class TemplateNameExtractor
     extends AstVisitor<WtNode>
 {
-    private final WikiConfig config;
-
     private List<String> templates;
 
     // =========================================================================
 
     /**
-     * Creates a new visitor that extracts anchors of internal links from a parsed Wikipedia article
-     * using the default Sweble config as defined in {@link org.dkpro.jwpl.api.WikiConstants#SWEBLE_CONFIG}.
+     * Creates a new visitor that extracts template names from a parsed Wikipedia article.
      */
     public TemplateNameExtractor()
     {
-        this.config = DefaultConfigEnWp.generate();
+        // no configuration required
     }
 
     /**
-     * Creates a new visitor that extracts anchors of internal links from a parsed Wikipedia
-     * article.
+     * Creates a new visitor that extracts template names from a parsed Wikipedia article.
      *
      * @param config
-     *            the Sweble configuration
+     *            the Sweble configuration; ignored, since template name extraction does not
+     *            depend on it. Retained for API compatibility.
      */
     public TemplateNameExtractor(WikiConfig config)
     {
-        this.config = config;
+        this();
     }
 
     @Override

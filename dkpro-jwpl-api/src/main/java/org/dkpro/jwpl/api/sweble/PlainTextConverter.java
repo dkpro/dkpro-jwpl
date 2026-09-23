@@ -27,7 +27,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtBody;
 import org.sweble.wikitext.parser.nodes.WtBold;
 import org.sweble.wikitext.parser.nodes.WtExternalLink;
@@ -143,7 +142,7 @@ public class PlainTextConverter
      */
     public PlainTextConverter()
     {
-        this(DefaultConfigEnWp.generate(), false, Integer.MAX_VALUE); // no fixed textwidth
+        this(DefaultSwebleConfig.get(), false, Integer.MAX_VALUE); // no fixed textwidth
     }
 
     /**
@@ -156,8 +155,7 @@ public class PlainTextConverter
      */
     public PlainTextConverter(boolean enumerateSection)
     {
-        this(DefaultConfigEnWp.generate(), enumerateSection, Integer.MAX_VALUE); // no fixed
-                                                                                 // textwidth
+        this(DefaultSwebleConfig.get(), enumerateSection, Integer.MAX_VALUE); // no fixed textwidth
     }
 
     /**

@@ -46,7 +46,6 @@ import java.util.List;
 
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.config.WikiConfig;
-import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 import org.sweble.wikitext.parser.nodes.WtBold;
 import org.sweble.wikitext.parser.nodes.WtDefinitionList;
 import org.sweble.wikitext.parser.nodes.WtDefinitionListDef;
@@ -109,7 +108,7 @@ public class SectionExtractor
      */
     public SectionExtractor()
     {
-        this.config = DefaultConfigEnWp.generate();
+        this.config = DefaultSwebleConfig.get();
     }
 
     /**
