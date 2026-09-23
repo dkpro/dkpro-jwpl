@@ -33,6 +33,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.exception.WikiApiException;
@@ -54,6 +55,23 @@ public class RevisionApi
      * Whether the revisions table has a Namespace column, {@code null} until it has been checked
      */
     private Boolean hasNamespaceColumn;
+
+    /**
+     * Indexes confirmed to exist, keyed by table name (any non-PRIMARY index) or by
+     * {@code table#indexName}. Only positive results are cached, so an index created while this
+     * instance is in use is still detected.
+     */
+    private final Set<String> knownIndexes = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Tables confirmed to exist. Only positive results are cached.
+     */
+    private final Set<String> knownTables = ConcurrentHashMap.newKeySet();
+
+    /**
+     * Whether the NumberRevisions column is known to exist in the index_articleID_rc_ts table.
+     */
+    private volatile boolean numberRevisionsColumnExists;
 
     /**
      * Creates a new {@link RevisionApi} object with an existing database connection.
@@ -122,18 +140,19 @@ public class RevisionApi
                 throw new IllegalArgumentException("minNumberRevisions needs to be >= 0");
             }
 
-            boolean columnExists;
-            // check whether the field has already been added
-            try (PreparedStatement statement = this.connection.prepareStatement(
-                    "SELECT * FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = '"
-                            + config.getDatabase()
-                            + "' AND TABLE_NAME = 'index_articleID_rc_ts' AND COLUMN_NAME = 'NumberRevisions'")) {
-                try (ResultSet result = statement.executeQuery()) {
-                    columnExists = result.next();
+            if (!numberRevisionsColumnExists) {
+                // check whether the field has already been added
+                try (PreparedStatement statement = this.connection.prepareStatement(
+                        "SELECT 1 FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ?"
+                                + " AND TABLE_NAME = 'index_articleID_rc_ts' AND COLUMN_NAME = 'NumberRevisions'")) {
+                    statement.setString(1, config.getDatabase());
+                    try (ResultSet result = statement.executeQuery()) {
+                        numberRevisionsColumnExists = result.next();
+                    }
                 }
             }
 
-            if (!columnExists) {
+            if (!numberRevisionsColumnExists) {
                 // create new column
                 try (PreparedStatement statement = this.connection.prepareStatement(
                         "ALTER TABLE index_articleID_rc_ts ADD NumberRevisions INT(10) unsigned NOT NULL")) {
@@ -150,6 +169,7 @@ public class RevisionApi
                 try (PreparedStatement statement = this.connection.prepareStatement(fill)) {
                     statement.execute();
                 }
+                numberRevisionsColumnExists = true;
             }
 
             HashSet<Integer> articles = new HashSet<>();
@@ -1693,43 +1713,27 @@ public class RevisionApi
      */
     private boolean indexExists(String table, String indexName) throws SQLException
     {
-
-        final String sql = "SHOW INDEX FROM " + table + " WHERE Key_name!= 'PRIMARY'";
-        try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
-            ResultSet result = statement.executeQuery();
-
-            // Check if an index exists because otherwise the query would
-            // be awfully slow. Note that the existence of ANY index will
-            // suffice - we might want to check for a specific index.
-            if (result == null || !result.next()) {
-                return false;
-            }
-
-            /*
-             * SOME INDEX EXISTS! We can now check for the existence of a specific index
-             */
-            if (indexName != null) {
-                // go back to first result
-
-                result.first();
-                // check all existing indexes for the specific index name
-                boolean specificIndexExists = false;
-                while (result.next()) {
-                    if (result.getString(3).equals(indexName)) {
-                        specificIndexExists = true;
-                    }
-                }
-                return specificIndexExists ? true : false;
-
-            }
-            else {
-                // we have an index, but don't want to check for an index with
-                // a specific name
-
-                return true;
-            }
+        final String key = indexName == null ? table : table + '#' + indexName;
+        if (knownIndexes.contains(key)) {
+            return true;
         }
 
+        // Check if an index exists because otherwise the query would
+        // be awfully slow. Note that the existence of ANY index will
+        // suffice - we might want to check for a specific index.
+        final String sql = "SHOW INDEX FROM " + table + " WHERE Key_name != 'PRIMARY'";
+        try (PreparedStatement statement = this.connection.prepareStatement(sql);
+                ResultSet result = statement.executeQuery()) {
+            boolean found = false;
+            while (!found && result.next()) {
+                // column 3 of SHOW INDEX is Key_name
+                found = indexName == null || indexName.equals(result.getString(3));
+            }
+            if (found) {
+                knownIndexes.add(key);
+            }
+            return found;
+        }
     }
 
     /**
@@ -1743,22 +1747,20 @@ public class RevisionApi
      */
     private boolean tableExists(String table) throws SQLException
     {
-
-        try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;")) {
-            ResultSet result = statement.executeQuery();
-            if (result == null) {
-                return false;
-            }
-            boolean found = false;
-            while (result.next()) {
-                if (table.equalsIgnoreCase(result.getString(1))) {
-                    found = true;
-                }
-            }
-            return found;
-
+        if (knownTables.contains(table)) {
+            return true;
         }
 
+        try (PreparedStatement statement = this.connection.prepareStatement("SHOW TABLES;");
+                ResultSet result = statement.executeQuery()) {
+            while (result.next()) {
+                if (table.equalsIgnoreCase(result.getString(1))) {
+                    knownTables.add(table);
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     @Deprecated(since = "1.1", forRemoval = true)
