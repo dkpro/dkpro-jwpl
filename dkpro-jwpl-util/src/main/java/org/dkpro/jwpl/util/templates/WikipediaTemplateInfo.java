@@ -1551,6 +1551,10 @@ public class WikipediaTemplateInfo
         List<Integer> revIds = getRevisionIdsContainingTemplateNames(List.of(template));
         System.out.println(revIds.size() + " revisions with given template found"); // TODO
                                                                                     // DEBUGCODE
+        // membership tests only; iteration still runs over revIds to keep the result order
+        Set<Integer> revIdSet = new HashSet<>(revIds);
+        // discussion status per article id, so that each article is looked up only once
+        Map<Integer, Boolean> discussionByArticle = new HashMap<>();
         List<RevisionPair> resultList = new LinkedList<>();
 
         // check all revisions. this WILL take a while
@@ -1566,7 +1570,7 @@ public class WikipediaTemplateInfo
             try {
                 // TODO check article/discussion status without creating Revision object
                 Revision current = revApi.getRevision(revId);
-                if (!wiki.getPage(current.getArticleID()).isDiscussion()) {
+                if (!isDiscussion(current.getArticleID(), discussionByArticle)) {
                     int currentCounter = current.getRevisionCounter();
 
                     if (type == RevisionPairType.deleteTemplate) {
@@ -1578,7 +1582,7 @@ public class WikipediaTemplateInfo
                             Revision succeeding = revApi.getRevision(current.getArticleID(),
                                     currentCounter + 1);
                             // check status of succeeding rev in tplIndex
-                            if (!revIds.contains(succeeding.getRevisionID())) {
+                            if (!revIdSet.contains(succeeding.getRevisionID())) {
                                 resultList
                                         .add(new RevisionPair(current, succeeding, template, type));
                             }
@@ -1597,7 +1601,7 @@ public class WikipediaTemplateInfo
                             Revision preceding = revApi.getRevision(current.getArticleID(),
                                     currentCounter - 1);
                             // check status of preceding rev in tplIndex
-                            if (!revIds.contains(preceding.getRevisionID())) {
+                            if (!revIdSet.contains(preceding.getRevisionID())) {
                                 resultList
                                         .add(new RevisionPair(preceding, current, template, type));
                             }
@@ -1616,6 +1620,29 @@ public class WikipediaTemplateInfo
         }
 
         return resultList;
+    }
+
+    /**
+     * Checks whether the page with the given id is a discussion page via
+     * {@link Page#isDiscussion()}. The outcome is stored in the given cache, so each page is loaded
+     * at most once per cache.
+     *
+     * @param pageId
+     *            the id of the page to check
+     * @param cache
+     *            discussion status of the pages checked so far, keyed by page id
+     * @return {@code true} if the page is a discussion page
+     * @throws WikiApiException
+     *             If the page does not exist or its title cannot be read
+     */
+    private boolean isDiscussion(int pageId, Map<Integer, Boolean> cache) throws WikiApiException
+    {
+        Boolean discussion = cache.get(pageId);
+        if (discussion == null) {
+            discussion = wiki.getPage(pageId).isDiscussion();
+            cache.put(pageId, discussion);
+        }
+        return discussion;
     }
 
     /**
