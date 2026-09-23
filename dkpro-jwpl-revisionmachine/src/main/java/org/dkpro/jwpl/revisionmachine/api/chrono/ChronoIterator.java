@@ -304,7 +304,7 @@ public class ChronoIterator
 
                 // binary or base64 encoded
                 if (binaryData) {
-                    decoder.setInput(result.getBinaryStream(1), true);
+                    decoder.setInput(result.getBytes(1));
                 }
                 else {
                     decoder.setInput(result.getString(1));

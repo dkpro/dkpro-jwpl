@@ -58,6 +58,11 @@ public class RevisionEncoder
     private final String WIKIPEDIA_ENCODING;
 
     /**
+     * Size of the buffer used to zip compress diffs
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * (Constructor) Creates a new RevisionEnocder object.
      *
      * @throws ConfigurationException
@@ -82,35 +87,51 @@ public class RevisionEncoder
         byte[] bData = encode(codecData, diff);
         if (MODE_ZIP_COMPRESSION) {
 
-            Deflater compresser = new Deflater();
-            compresser.setInput(bData);
-            compresser.finish();
-
-            byte[] output = new byte[1000];
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-            int cLength;
-            do {
-                cLength = compresser.deflate(output);
-                stream.write(output, 0, cLength);
-            }
-            while (cLength == 1000);
-
-            output = stream.toByteArray();
-            if (bData.length + 1 < output.length) {
+            // The output starts with the zip flag followed by the compressed data
+            byte[] output = deflate(bData, true);
+            if (bData.length + 1 < output.length - 1) {
                 return bData;
             }
             else {
-
-                stream = new ByteArrayOutputStream();
-                stream.write(new byte[] { -128 }, 0, 1);
-                stream.write(output, 0, output.length);
-
-                return stream.toByteArray();
+                return output;
             }
         }
 
         return bData;
+    }
+
+    /**
+     * Compresses the given data.
+     *
+     * @param input
+     *            data to compress
+     * @param zipFlag
+     *            whether the zip flag (-128) is written in front of the compressed data
+     * @return compressed data, optionally prefixed by the zip flag
+     */
+    private static byte[] deflate(final byte[] input, final boolean zipFlag)
+    {
+        final Deflater compresser = new Deflater();
+        try {
+            compresser.setInput(input);
+            compresser.finish();
+
+            final byte[] output = new byte[BUFFER_SIZE];
+            final ByteArrayOutputStream stream = new ByteArrayOutputStream(
+                    Math.max(BUFFER_SIZE, input.length / 2));
+            if (zipFlag) {
+                stream.write(-128);
+            }
+
+            while (!compresser.finished()) {
+                final int cLength = compresser.deflate(output);
+                stream.write(output, 0, cLength);
+            }
+            return stream.toByteArray();
+        }
+        finally {
+            compresser.end();
+        }
     }
 
     /**
@@ -261,21 +282,7 @@ public class RevisionEncoder
         Base64.Encoder encoder = Base64.getEncoder();
         if (MODE_ZIP_COMPRESSION) {
 
-            Deflater compresser = new Deflater();
-            compresser.setInput(bData);
-            compresser.finish();
-
-            byte[] output = new byte[1000];
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-            int cLength;
-            do {
-                cLength = compresser.deflate(output);
-                stream.write(output, 0, cLength);
-            }
-            while (cLength == 1000);
-
-            output = stream.toByteArray();
+            byte[] output = deflate(bData, false);
 
             if (bData.length + 1 < output.length) {
                 sEncoding = encoder.encodeToString(bData);

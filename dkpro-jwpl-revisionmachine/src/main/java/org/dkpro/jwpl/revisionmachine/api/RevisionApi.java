@@ -995,7 +995,7 @@ public class RevisionApi
                     boolean binaryData = result.getMetaData()
                             .getColumnType(2) == Types.LONGVARBINARY;
                     if (binaryData) {
-                        decoder.setInput(result.getBinaryStream(2), true);
+                        decoder.setInput(result.getBytes(2));
                     }
                     else {
                         decoder.setInput(result.getString(2));
@@ -1622,7 +1622,7 @@ public class RevisionApi
                     decoder = new RevisionDecoder(config.getCharacterSet());
 
                     if (binaryData) {
-                        decoder.setInput(result.getBinaryStream(1), true);
+                        decoder.setInput(result.getBytes(1));
                     }
                     else {
                         decoder.setInput(result.getString(1));

@@ -418,7 +418,7 @@ public class RevisionIterator
                 RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
 
                 if (binaryData) {
-                    decoder.setInput(result.getBinaryStream(2), true);
+                    decoder.setInput(result.getBytes(2));
                 }
                 else {
                     decoder.setInput(result.getString(2));
