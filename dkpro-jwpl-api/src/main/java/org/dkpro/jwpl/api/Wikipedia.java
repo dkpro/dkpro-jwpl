@@ -59,9 +59,19 @@ public class Wikipedia
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove
-    // it!
-    static final String SQL_COLLATION = " COLLATE utf8mb4_bin"; /* " COLLATE utf8_bin"; */
+    /**
+     * The native query {@link #existsPage(String)} runs to find the entries of a title, taking the
+     * title as parameter {@code pName}. It yields the names of the entries found.
+     * <p>
+     * Whether the comparison is case-sensitive depends on the collation of the column, and MySQL
+     * and MariaDB default to case-insensitive ones. An explicit binary collation in the query,
+     * though, keeps these databases from using the index on the column, which turns every lookup
+     * into a full scan. So the query compares in the collation of the column, and the caller keeps
+     * only the entries whose name equals the title exactly. These are few: the case variants of
+     * one title at most.
+     */
+    static final String PAGE_NAMES_BY_NAME_QUERY = "select p.name from PageMapLine as p "
+            + "where p.name = :pName";
 
     /**
      * Upper bound for the number of page ids bound into a single {@code in (..)} clause of
@@ -1117,23 +1127,14 @@ public class Wikipedia
 
         String encodedTitle = t.getWikiStyleTitle();
 
-        final String query = "select p.id from PageMapLine as p where p.name = :pName"
-                + (dbConfig.supportsCollation() ? SQL_COLLATION : "");
-
-        return __inTransaction(session -> {
-            // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
-            // NativeQuery...
-            // A name is not unique in PageMapLine: case variants of one title map to their own
-            // entry, and a database whose charset cannot represent a title stores the substituted
-            // characters, which lets unrelated titles collapse onto one name. Asking for a unique
-            // result made this method throw NonUniqueResultException - unchecked, and out of a
-            // method that promises a boolean instead of an exception. One entry is all it takes to
-            // answer the question.
-            var nativeQuery = session.createNativeQuery(query, Long.class)
-                    .setParameter("pName", encodedTitle, String.class)
-                    .setMaxResults(1);
-            return nativeQuery.uniqueResult();
-        }) != null;
+        // A name is not unique in PageMapLine: case variants of one title map to their own
+        // entry, and a database whose charset cannot represent a title stores the substituted
+        // characters, which lets unrelated titles collapse onto one name. So all entries found
+        // are fetched, and one of them matching the title exactly is all it takes.
+        List<String> names = __inTransaction(
+                session -> session.createNativeQuery(PAGE_NAMES_BY_NAME_QUERY, String.class)
+                        .setParameter("pName", encodedTitle, String.class).list());
+        return names.contains(encodedTitle);
     }
 
     /**

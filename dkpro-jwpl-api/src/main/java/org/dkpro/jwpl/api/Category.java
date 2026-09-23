@@ -75,6 +75,16 @@ public class Category
      */
     private static final int SIBLING_BATCH_SIZE = 500;
 
+    /**
+     * The native query {@link #createCategory(Title)} runs to find a category, taking its name as
+     * parameter {@code name}. It yields the category entities found. The comparison is done in the
+     * collation of the column, which keeps the index on the column usable, so the caller has to
+     * pick the exact match.
+     *
+     * @see Wikipedia#PAGE_NAMES_BY_NAME_QUERY
+     */
+    static final String CATEGORY_BY_NAME_QUERY = "select * from Category where name = :name";
+
     private final CategoryDAO catDAO;
     private Row row;
     private final Wikipedia wiki;
@@ -202,12 +212,19 @@ public class Category
     {
         String name = title.getWikiStyleTitle();
 
-        final String query = "select * from Category where name = :name"
-                + (wiki.getDatabaseConfiguration().supportsCollation() ? Wikipedia.SQL_COLLATION
-                        : "");
-        row = Row.of(wiki.__inTransaction(session -> session
-                .createNativeQuery(query, org.dkpro.jwpl.api.hibernate.Category.class)
-                .setParameter("name", name, String.class).uniqueResult()));
+        List<org.dkpro.jwpl.api.hibernate.Category> candidates = wiki.__inTransaction(
+                session -> session
+                        .createNativeQuery(CATEGORY_BY_NAME_QUERY,
+                                org.dkpro.jwpl.api.hibernate.Category.class)
+                        .setParameter("name", name, String.class).list());
+
+        // the query compares in the collation of the column, so keep the exact match only
+        for (org.dkpro.jwpl.api.hibernate.Category candidate : candidates) {
+            if (name.equals(candidate.getName())) {
+                row = Row.of(candidate);
+                break;
+            }
+        }
 
         // if there is no category with this name, the row is null
         if (row == null) {
