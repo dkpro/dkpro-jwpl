@@ -521,9 +521,6 @@ public class WikiHibernateUtil
         // Enable Hibernate's automatic session context management
         p.setProperty("hibernate.current_session_context_class", "thread");
 
-        // Disable the second-level cache
-        p.setProperty("hibernate.cache.provider_class", "org.hibernate.cache.NoCacheProvider");
-
         // Echo all executed SQL to stdout
         p.setProperty("hibernate.show_sql", "false");
 
