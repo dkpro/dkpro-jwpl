@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,12 @@ public class ChronoRevisionIteratorTest
 
     private static final int LAST_PK = 71881;
 
+    // Number of revisions of 'Car' covered by the article with a chronological mapping
+    private static final int MAPPED = 40;
+
+    // Chrono storage space that is too small to keep all of these revisions
+    private static final long STORAGE_SPACE = 20_000;
+
     @TempDir
     static Path tempDir;
 
@@ -64,22 +71,40 @@ public class ChronoRevisionIteratorTest
     @BeforeAll
     public static void setUpDatabase() throws Exception
     {
+        url = copyDatabase(tempDir);
+        config = configuration(url);
+    }
+
+    /**
+     * Copies the test data set into the given directory and lets the second article of the
+     * article index point to the revisions of the page 'Car'.
+     *
+     * @return the JDBC URL of the copy
+     */
+    private static String copyDatabase(final Path dir) throws Exception
+    {
         Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
-                tempDir.resolve(DATABASE + ".script"));
-        url = "jdbc:hsqldb:file:" + tempDir.resolve(DATABASE) + ";shutdown=true";
+                dir.resolve(DATABASE + ".script"));
+        String url = "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 Statement statement = connection.createStatement()) {
             statement.execute("UPDATE index_articleID_rc_ts SET FullRevisionPKs = '" + FIRST_PK
                     + "', RevisionCounter = '1 382' WHERE ArticleID = 3443");
         }
-        config = new RevisionAPIConfiguration(new DatabaseConfiguration("org.hsqldb.jdbcDriver",
-                url, "localhost", DATABASE, "sa", "", Language.simple_english));
-        // One article per batch, so that the article index is paged as well
-        config.setBufferSize(1);
+        return url;
     }
 
-    @Test
-    public void testIterationProbesSchemaOnceAndReusesStatements() throws Exception
+    private static RevisionAPIConfiguration configuration(final String url)
+    {
+        RevisionAPIConfiguration config = new RevisionAPIConfiguration(
+                new DatabaseConfiguration("org.hsqldb.jdbcDriver", url, "localhost", DATABASE,
+                        "sa", "", Language.simple_english));
+        // One article per batch, so that the article index is paged as well
+        config.setBufferSize(1);
+        return config;
+    }
+
+    private static List<String> revisionsOfCar(final String url) throws Exception
     {
         List<String> revisionsOfCar = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(url, "sa", "")) {
@@ -90,6 +115,13 @@ public class ChronoRevisionIteratorTest
             }
         }
         assertEquals(LAST_PK - FIRST_PK + 1, revisionsOfCar.size());
+        return revisionsOfCar;
+    }
+
+    @Test
+    public void testIterationProbesSchemaOnceAndReusesStatements() throws Exception
+    {
+        List<String> revisionsOfCar = revisionsOfCar(url);
 
         List<String> expected = new ArrayList<>(revisionsOfCar);
         expected.addAll(revisionsOfCar);
@@ -98,7 +130,8 @@ public class ChronoRevisionIteratorTest
         AtomicInteger articleStatements = new AtomicInteger();
         AtomicInteger mappingStatements = new AtomicInteger();
         Connection connection = countingConnection(DriverManager.getConnection(url, "sa", ""),
-                namespaceProbes, articleStatements, mappingStatements);
+                namespaceProbes, articleStatements, mappingStatements, new AtomicInteger(),
+                new AtomicInteger());
 
         List<String> actual = new ArrayList<>();
         ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
@@ -118,6 +151,62 @@ public class ChronoRevisionIteratorTest
         assertTrue(connection.isClosed());
     }
 
+    @Test
+    public void testIterationWithMappingReusesRangeStatement(@TempDir final Path dir)
+        throws Exception
+    {
+        String url = copyDatabase(dir);
+        RevisionAPIConfiguration config = configuration(url);
+        // Small enough to evict reconstructed revisions, so that they have to be fetched again
+        config.setChronoStorageSpace(STORAGE_SPACE);
+
+        List<String> revisionsOfCar = revisionsOfCar(url);
+
+        // The second article covers the first revisions of 'Car' and delivers them in reverse
+        // order
+        StringBuilder mapping = new StringBuilder();
+        for (int revisionCounter = 1; revisionCounter <= MAPPED; revisionCounter++) {
+            if (revisionCounter > 1) {
+                mapping.append(' ');
+            }
+            mapping.append(revisionCounter).append(' ').append(MAPPED + 1 - revisionCounter);
+        }
+        try (Connection connection = DriverManager.getConnection(url, "sa", "");
+                Statement statement = connection.createStatement()) {
+            statement.execute("UPDATE index_articleID_rc_ts SET RevisionCounter = '1 " + MAPPED
+                    + "' WHERE ArticleID = 3443");
+            statement.execute("INSERT INTO index_chronological VALUES(3443, '" + mapping + "', '"
+                    + mapping + "')");
+        }
+
+        List<String> expected = new ArrayList<>(revisionsOfCar);
+        for (int i = MAPPED - 1; i >= 0; i--) {
+            expected.add(revisionsOfCar.get(i));
+        }
+
+        AtomicInteger rangeStatements = new AtomicInteger();
+        AtomicInteger rangeQueries = new AtomicInteger();
+        Connection connection = countingConnection(DriverManager.getConnection(url, "sa", ""),
+                new AtomicInteger(), new AtomicInteger(), new AtomicInteger(), rangeStatements,
+                rangeQueries);
+
+        List<String> actual = new ArrayList<>();
+        ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
+        try {
+            while (iterator.hasNext()) {
+                actual.add(describe(iterator.next()));
+            }
+        }
+        finally {
+            iterator.close();
+        }
+
+        assertEquals(expected, actual);
+        assertEquals(1, rangeStatements.get());
+        assertTrue(rangeQueries.get() > 1, "Expected evicted revisions to be fetched again");
+        assertTrue(connection.isClosed());
+    }
+
     private static String describe(final Revision revision)
     {
         return revision.getRevisionID() + "/" + revision.getArticleID() + "/"
@@ -126,11 +215,13 @@ public class ChronoRevisionIteratorTest
 
     /**
      * Wraps the connection to count the probes for the Namespace column and the statements
-     * prepared for the article batches and the mapping lookup.
+     * prepared for the article batches, the mapping lookup and the revision ranges, as well as
+     * the executed revision range queries.
      */
     private static Connection countingConnection(final Connection connection,
             final AtomicInteger namespaceProbes, final AtomicInteger articleStatements,
-            final AtomicInteger mappingStatements)
+            final AtomicInteger mappingStatements, final AtomicInteger rangeStatements,
+            final AtomicInteger rangeQueries)
     {
         InvocationHandler handler = (proxy, method, args) -> {
             if (method.getName().equals("prepareStatement")) {
@@ -139,6 +230,18 @@ public class ChronoRevisionIteratorTest
                 }
                 else if (args[0].toString().contains("index_chronological")) {
                     mappingStatements.incrementAndGet();
+                }
+                else if (args[0].toString().contains("FROM revisions WHERE PrimaryKey >= ?")) {
+                    rangeStatements.incrementAndGet();
+                    PreparedStatement statement = (PreparedStatement) invoke(connection, method,
+                            args);
+                    return Proxy.newProxyInstance(PreparedStatement.class.getClassLoader(),
+                            new Class<?>[] { PreparedStatement.class }, (p, m, a) -> {
+                                if (m.getName().equals("executeQuery") && a == null) {
+                                    rangeQueries.incrementAndGet();
+                                }
+                                return invoke(statement, m, a);
+                            });
                 }
             }
             Object result = invoke(connection, method, args);

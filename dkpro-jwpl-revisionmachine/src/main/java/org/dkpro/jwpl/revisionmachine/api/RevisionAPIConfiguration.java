@@ -193,7 +193,10 @@ public class RevisionAPIConfiguration
     }
 
     /**
-     * Set the memory size used for the purpose of storing revisions.
+     * Set the memory size used for the purpose of storing revisions. When the revisions of an
+     * article are not in chronological order, reconstructed revisions are kept in this storage
+     * until they are delivered. Revisions evicted from a full storage have to be fetched and
+     * reconstructed again, so a larger storage reduces such repeated queries.
      *
      * @param chronoStorageSpace
      *            memory size result
