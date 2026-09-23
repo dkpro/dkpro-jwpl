@@ -20,6 +20,7 @@ package org.dkpro.jwpl.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -608,6 +609,16 @@ public class PageTest
 
         assertEquals(page2, pages.get(0));
         assertEquals(page1, pages.get(1));
+    }
+
+    @Test
+    public void testPagesShareTheDAOOfTheirWikipedia()
+    {
+        Page other = fetchPage("Unconnected_page");
+        assertNotNull(other);
+        assertNotNull(wiki.getPageDAO());
+        assertSame(wiki.getPageDAO(), wiki.getPageDAO());
+        assertSame(wiki.getCategoryDAO(), wiki.getCategoryDAO());
     }
 
     private Page fetchPage(final String title)

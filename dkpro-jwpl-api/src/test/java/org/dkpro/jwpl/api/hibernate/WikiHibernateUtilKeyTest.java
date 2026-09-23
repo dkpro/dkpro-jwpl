@@ -130,6 +130,19 @@ public class WikiHibernateUtilKeyTest
     }
 
     @Test
+    public void testMutatedPasswordYieldsDifferentKeyAndMutatedBackTheOriginalOne()
+    {
+        DatabaseConfiguration mutated = config();
+        SessionFactoryKey original = WikiHibernateUtil.keyOf(mutated);
+
+        mutated.setPassword("another-password");
+        assertNotEquals(original, WikiHibernateUtil.keyOf(mutated));
+
+        mutated.setPassword(new String(SECRET.toCharArray()));
+        assertEquals(original, WikiHibernateUtil.keyOf(mutated));
+    }
+
+    @Test
     public void testPasswordIsNeverExposedByTheKey()
     {
         SessionFactoryKey key = WikiHibernateUtil.keyOf(config());

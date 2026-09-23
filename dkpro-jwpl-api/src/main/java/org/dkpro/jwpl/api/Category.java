@@ -57,7 +57,7 @@ public class Category
     protected Category(Wikipedia wiki, long id) throws WikiPageNotFoundException
     {
         this.wiki = wiki;
-        catDAO = new CategoryDAO(wiki);
+        catDAO = wiki.getCategoryDAO();
         createCategory(id);
     }
 
@@ -74,7 +74,7 @@ public class Category
     protected Category(Wikipedia wiki, int pageID) throws WikiPageNotFoundException
     {
         this.wiki = wiki;
-        catDAO = new CategoryDAO(wiki);
+        catDAO = wiki.getCategoryDAO();
         createCategory(pageID);
     }
 
@@ -94,7 +94,7 @@ public class Category
             throw new WikiPageNotFoundException();
         }
         this.wiki = wiki;
-        catDAO = new CategoryDAO(wiki);
+        catDAO = wiki.getCategoryDAO();
         Title catTitle = new Title(pName);
         createCategory(catTitle);
     }

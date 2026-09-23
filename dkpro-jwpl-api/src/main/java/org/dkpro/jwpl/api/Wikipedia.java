@@ -68,6 +68,13 @@ public class Wikipedia
     private final Language language;
     private final DatabaseConfiguration dbConfig;
 
+    /*
+     * The data access objects shared by all Page and Category objects of this instance. Created on
+     * first use, they pin the SessionFactory the configuration maps to at that time.
+     */
+    private volatile org.dkpro.jwpl.api.hibernate.PageDAO pageDAO;
+    private volatile org.dkpro.jwpl.api.hibernate.CategoryDAO categoryDAO;
+
     private final MetaData metaData;
 
     // Note: This should only be accessed internally. Built lazily, see getWikConfig().
@@ -825,6 +832,40 @@ public class Wikipedia
      */
     public DatabaseConfiguration getDatabaseConfiguration() {
         return this.dbConfig;
+    }
+
+    /**
+     * Returns the {@link org.dkpro.jwpl.api.hibernate.PageDAO} shared by all {@link Page} objects
+     * of this instance. Like any DAO, it keeps using the SessionFactory the configuration mapped to
+     * when it was created, even if the configuration is mutated afterwards.
+     *
+     * @return The shared {@link org.dkpro.jwpl.api.hibernate.PageDAO}, never {@code null}.
+     */
+    org.dkpro.jwpl.api.hibernate.PageDAO getPageDAO() {
+        org.dkpro.jwpl.api.hibernate.PageDAO dao = pageDAO;
+        if (dao == null) {
+            // A racing thread may create a second, equivalent instance; either one is fine to keep.
+            dao = new org.dkpro.jwpl.api.hibernate.PageDAO(this);
+            pageDAO = dao;
+        }
+        return dao;
+    }
+
+    /**
+     * Returns the {@link org.dkpro.jwpl.api.hibernate.CategoryDAO} shared by all {@link Category}
+     * objects of this instance. Like any DAO, it keeps using the SessionFactory the configuration
+     * mapped to when it was created, even if the configuration is mutated afterwards.
+     *
+     * @return The shared {@link org.dkpro.jwpl.api.hibernate.CategoryDAO}, never {@code null}.
+     */
+    org.dkpro.jwpl.api.hibernate.CategoryDAO getCategoryDAO() {
+        org.dkpro.jwpl.api.hibernate.CategoryDAO dao = categoryDAO;
+        if (dao == null) {
+            // A racing thread may create a second, equivalent instance; either one is fine to keep.
+            dao = new org.dkpro.jwpl.api.hibernate.CategoryDAO(this);
+            categoryDAO = dao;
+        }
+        return dao;
     }
 
     /**
