@@ -82,8 +82,10 @@ public class Wikipedia
 
     private final MetaData metaData;
 
-    // Note: This should only be accessed internally.
-    private final WikiConfig wikiConfig;
+    // Note: This should only be accessed internally. Built lazily, see getWikConfig().
+    private volatile WikiConfig wikiConfig;
+
+    private final Object wikiConfigLock = new Object();
 
     /**
      * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig
@@ -104,7 +106,6 @@ public class Wikipedia
         this.idMapCategories = new HashMap<>();
 
         this.metaData = new MetaData(this);
-        this.wikiConfig = this.language.getWikiconfig();
 
         if (dbConfig.supportsCollation()) {
             logger.info("Wikipedia database backend supports character collation features.");
@@ -114,8 +115,26 @@ public class Wikipedia
         }
     }
 
+    /**
+     * Returns the Sweble parser configuration for the language of this instance. The configuration
+     * is built on first use rather than on construction, as it may have to be fetched from the
+     * corresponding Wikipedia edition. The returned instance may be shared and must be treated as
+     * read-only.
+     *
+     * @return The {@link WikiConfig} for the language of this instance.
+     */
     WikiConfig getWikConfig() {
-        return wikiConfig;
+        WikiConfig config = wikiConfig;
+        if (config == null) {
+            synchronized (wikiConfigLock) {
+                config = wikiConfig;
+                if (config == null) {
+                    config = language.getWikiconfig();
+                    wikiConfig = config;
+                }
+            }
+        }
+        return config;
     }
 
     /**

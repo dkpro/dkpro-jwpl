@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -40,6 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.sweble.wikitext.engine.config.WikiConfig;
 
 public class WikipediaTest
     extends BaseJWPLTest
@@ -76,6 +78,16 @@ public class WikipediaTest
         catch (Exception e) {
             fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
         }
+    }
+
+    @Test
+    public void testGetWikConfigIsBuiltOnceOnDemand() throws Exception
+    {
+        Wikipedia freshWiki = new Wikipedia(obtainDbConfiguration());
+        WikiConfig config = freshWiki.getWikConfig();
+        assertNotNull(config);
+        assertEquals("en", config.getContentLanguage());
+        assertSame(config, freshWiki.getWikConfig());
     }
 
     /*

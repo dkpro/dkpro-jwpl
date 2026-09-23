@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -190,12 +192,18 @@ public interface WikiConstants
 
         /**
          * Configures a language specific configuration for parsing wikipedia pages.
+         * <p>
+         * For all languages except {@link #_test}, the configuration is fetched once from the
+         * corresponding Wikipedia edition and cached for the lifetime of the JVM, so the returned
+         * instance is shared and must be treated as read-only. If the configuration cannot be
+         * fetched, the default English configuration is returned instead; this fallback is not
+         * cached, so a later call retries the fetch.
          *
          * @return WikiConfig
          */
         public WikiConfig getWikiconfig(Language this)
         {
-            return getWikiconfig(LanguageConfigGenerator::generateWikiConfig);
+            return getWikiconfig(CachingWikiConfigGenerator.SHARED);
         }
 
         /**
@@ -238,6 +246,45 @@ public interface WikiConstants
         {
             WikiConfig generate(String langCode)
                 throws IOException, ParserConfigurationException, SAXException;
+        }
+
+        /**
+         * Caches the configurations created by another generator by language code. A failed
+         * generation is not cached, so the next call for that language code retries it.
+         */
+        static final class CachingWikiConfigGenerator
+            implements WikiConfigGenerator
+        {
+            /**
+             * Fetches the configurations from Wikipedia, shared by all languages. A nested class
+             * avoids enum initialization ordering issues.
+             */
+            static final CachingWikiConfigGenerator SHARED = new CachingWikiConfigGenerator(
+                    LanguageConfigGenerator::generateWikiConfig);
+
+            private final ConcurrentMap<String, WikiConfig> cache = new ConcurrentHashMap<>();
+
+            private final WikiConfigGenerator delegate;
+
+            CachingWikiConfigGenerator(WikiConfigGenerator delegate)
+            {
+                this.delegate = delegate;
+            }
+
+            @Override
+            public WikiConfig generate(String langCode)
+                throws IOException, ParserConfigurationException, SAXException
+            {
+                WikiConfig cached = cache.get(langCode);
+                if (cached != null) {
+                    return cached;
+                }
+                WikiConfig config = delegate.generate(langCode);
+                // computeIfAbsent is avoided on purpose: it would hold a map lock during the
+                // network fetch. Concurrent callers may fetch twice, but share one result.
+                WikiConfig previous = cache.putIfAbsent(langCode, config);
+                return previous != null ? previous : config;
+            }
         }
     }
 }
