@@ -564,8 +564,23 @@ public class Page
     public String getText()
     {
         String text = hibernatePage.getText();
+        // Texts without '\r' already use "\n" for all line breaks and need no copy.
+        if (text.indexOf('\r') < 0) {
+            return text;
+        }
+        return normalizeLineBreaks(text);
+    }
 
-        // Normalize strings read from the DB to use "\n" for all line breaks.
+    /**
+     * Normalizes the given text to use {@code "\n"} for all line breaks. Windows ({@code "\r\n"})
+     * and Mac ({@code "\r"}) line endings are converted to a single {@code "\n"}.
+     *
+     * @param text
+     *            The text to normalize. Must not be {@code null}.
+     * @return The text with normalized line breaks.
+     */
+    static String normalizeLineBreaks(String text)
+    {
         StringBuilder sb = new StringBuilder(text);
         int t = 0;
         boolean seenLineBreak = false;
