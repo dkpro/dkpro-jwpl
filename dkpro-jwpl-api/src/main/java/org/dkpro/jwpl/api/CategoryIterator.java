@@ -17,14 +17,11 @@
  */
 package org.dkpro.jwpl.api;
 
-import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.dkpro.jwpl.api.hibernate.CategoryDAO;
 
 /**
  * An {@link Iterator} over {@link Category} objects.
@@ -32,9 +29,6 @@ import org.slf4j.LoggerFactory;
 public class CategoryIterator
     implements Iterator<Category>
 {
-
-    private static final Logger logger = LoggerFactory
-            .getLogger(MethodHandles.lookup().lookupClass());
 
     private final CategoryBuffer buffer;
 
@@ -75,22 +69,24 @@ public class CategoryIterator
     {
 
         private final Wikipedia wiki;
+        private final CategoryDAO catDAO;
 
         private final List<Category> buffer;
         private final int maxBufferSize; // the number of pages to be buffered after a query to the
                                          // database.
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset; // the offset in the buffer
-        private int dataOffset; // the overall offset in the data
+        private long lastId; // the id of the last category retrieved from the database
 
         public CategoryBuffer(int bufferSize, Wikipedia wiki)
         {
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
+            this.catDAO = new CategoryDAO(wiki);
             this.buffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
-            this.dataOffset = 0;
+            this.lastId = Long.MIN_VALUE;
             // TODO test whether this works when zero pages are retrieved
         }
 
@@ -133,18 +129,17 @@ public class CategoryIterator
         {
             Category cat = buffer.get(bufferOffset);
             bufferOffset++;
-            dataOffset++;
             return cat;
         }
 
         private boolean fillBuffer()
         {
-
-            final String sql = "SELECT c FROM Category c";
+            // keyset paging: ordered by the primary key, continue after the last retrieved id
+            final String sql = "SELECT c FROM Category c WHERE c.id > :lastId ORDER BY c.id";
             List<org.dkpro.jwpl.api.hibernate.Category> returnValues = wiki.__inTransaction(
                     session -> session
                             .createQuery(sql, org.dkpro.jwpl.api.hibernate.Category.class)
-                            .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
+                            .setParameter("lastId", lastId).setMaxResults(maxBufferSize)
                             .setFetchSize(maxBufferSize).list());
 
             // clear the old buffer and all variables regarding the state of the buffer
@@ -152,21 +147,9 @@ public class CategoryIterator
             bufferOffset = 0;
             bufferFillSize = 0;
 
-            Category apiCategory;
             for (org.dkpro.jwpl.api.hibernate.Category o : returnValues) {
-                if (o == null) {
-                    return false;
-                }
-                else {
-                    long id = o.getId();
-                    try {
-                        apiCategory = new Category(this.wiki, id);
-                        buffer.add(apiCategory);
-                    }
-                    catch (WikiApiException e) {
-                        logger.error("Page with hibernateID {} not found.", id, e);
-                    }
-                }
+                buffer.add(new Category(this.wiki, catDAO, o));
+                lastId = o.getId();
             }
             if (!buffer.isEmpty()) {
                 bufferFillSize = buffer.size();

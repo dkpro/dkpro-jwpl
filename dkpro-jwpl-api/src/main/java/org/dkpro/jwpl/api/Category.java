@@ -90,6 +90,24 @@ public class Category
     }
 
     /**
+     * Creates a category object that wraps an already retrieved, detached entity.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param catDAO
+     *            The {@link CategoryDAO} to use; may be shared among several categories.
+     * @param hibernateCategory
+     *            The {@code api.hibernate.Category} that has already been retrieved.
+     */
+    Category(Wikipedia wiki, CategoryDAO catDAO,
+            org.dkpro.jwpl.api.hibernate.Category hibernateCategory)
+    {
+        this.wiki = wiki;
+        this.catDAO = catDAO;
+        this.hibernateCategory = hibernateCategory;
+    }
+
+    /**
      * Creates a category object.
      *
      * @param wiki
