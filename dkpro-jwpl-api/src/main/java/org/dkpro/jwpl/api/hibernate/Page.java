@@ -72,13 +72,15 @@ public class Page
 
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "page_inlinks", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "page_inlinks", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "page_inlinks_index", columnList = "id, inLinks"))
     @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
 
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "page_outlinks", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "page_outlinks", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "page_outlinks_index", columnList = "id, outLinks"))
     @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
 
@@ -86,13 +88,15 @@ public class Page
     // named "pages" (historical naming preserved from the original hbm mapping).
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "page_categories", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "page_categories", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "page_categories_index", columnList = "id, pages"))
     @Column(name = "pages")
     private Set<Integer> categories = new HashSet<>();
 
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "page_redirects", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "page_redirects", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "page_redirects_index", columnList = "id, redirects"))
     @Column(name = "redirects")
     private Set<String> redirects = new HashSet<>();
 
