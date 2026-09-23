@@ -20,9 +20,13 @@ package org.dkpro.jwpl.api;
 import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.util.GraphSerialization;
@@ -44,7 +48,11 @@ public class CategoryGraphManager
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    private static Map<String, CategoryGraph> catGraphMap;
+    /**
+     * Caches the graphs built so far, keyed by {@link #getCategoryGraphKey(String, Set)}, so that
+     * the full graph and each subset of the pages of a Wikipedia have entries of their own.
+     */
+    private static final Map<String, CategoryGraph> catGraphMap = new ConcurrentHashMap<>();
 
     private final static String catGraphSerializationFilename = "catGraphSer";
 
@@ -116,26 +124,16 @@ public class CategoryGraphManager
             boolean serialize)
         throws WikiApiException
     {
-        if (catGraphMap == null) {
-            catGraphMap = new HashMap<>();
+        String key = getCategoryGraphKey(wiki.getWikipediaId(), pageIds);
+        CategoryGraph catGraph = catGraphMap.get(key);
+        if (catGraph != null) {
+            return catGraph;
         }
 
-        String wikiID = wiki.getWikipediaId();
-        if (catGraphMap.containsKey(wikiID)) {
-            return catGraphMap.get(wikiID);
-        }
-
-        String size = "";
-        if (pageIds != null) {
-            size = Integer.valueOf(pageIds.size()).toString();
-        }
-
-        CategoryGraph catGraph;
         if (serialize) {
-            catGraph = tryToLoadCategoryGraph(wiki, wikiID, size);
+            catGraph = tryToLoadCategoryGraph(wiki, key);
             if (catGraph != null) {
-                catGraphMap.put(wikiID, catGraph);
-                return catGraph;
+                return cache(key, catGraph);
             }
         }
 
@@ -147,20 +145,58 @@ public class CategoryGraphManager
             catGraph = new CategoryGraph(wiki);
         }
 
-        catGraphMap.put(wikiID, catGraph);
-
         if (serialize) {
-            saveCategoryGraph(catGraph, wikiID, size);
+            saveCategoryGraph(catGraph, key);
         }
 
-        return catGraph;
+        return cache(key, catGraph);
     }
 
-    private static CategoryGraph tryToLoadCategoryGraph(Wikipedia wiki, String wikiId, String size)
+    /**
+     * Puts {@code catGraph} into the cache unless another thread has cached a graph for
+     * {@code key} in the meantime, in which case that graph is returned instead.
+     */
+    private static CategoryGraph cache(String key, CategoryGraph catGraph)
+    {
+        CategoryGraph previous = catGraphMap.putIfAbsent(key, catGraph);
+        return previous != null ? previous : catGraph;
+    }
+
+    /**
+     * Builds the key under which a graph is cached and persisted. The full graph of a Wikipedia is
+     * keyed by its id alone, as before. A graph over a subset of the pages is keyed by the id, the
+     * size of the subset and a digest of its sorted page ids, so that different subsets, even of
+     * the same size, are told apart.
+     *
+     * @param wikiId The id of the Wikipedia the graph is built from.
+     * @param pageIds The page ids the graph is built from, or {@code null} for the full graph.
+     * @return The key for the graph.
+     */
+    static String getCategoryGraphKey(String wikiId, Set<Integer> pageIds)
+    {
+        if (pageIds == null) {
+            return wikiId;
+        }
+        int[] ids = pageIds.stream().mapToInt(Integer::intValue).sorted().toArray();
+        ByteBuffer buffer = ByteBuffer.allocate(ids.length * Integer.BYTES);
+        for (int id : ids) {
+            buffer.putInt(id);
+        }
+        try {
+            byte[] digest = MessageDigest.getInstance("SHA-256").digest(buffer.array());
+            return wikiId + "_" + ids.length + "_" + HexFormat.of().formatHex(digest, 0, 8);
+        }
+        catch (NoSuchAlgorithmException e) {
+            // every Java platform is required to support SHA-256
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static CategoryGraph tryToLoadCategoryGraph(Wikipedia wiki, String key)
         throws WikiApiException
     {
 
-        String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
+        String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(key);
         File defaulSerializedGraphFile = new File(defaultSerializedGraphLocation);
         if (defaulSerializedGraphFile.exists()) {
             try {
@@ -177,10 +213,10 @@ public class CategoryGraphManager
         }
     }
 
-    private static void saveCategoryGraph(CategoryGraph catGraph, String wikiId, String size)
+    private static void saveCategoryGraph(CategoryGraph catGraph, String key)
         throws WikiApiException
     {
-        String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(wikiId, size);
+        String defaultSerializedGraphLocation = getCategoryGraphSerializationFileName(key);
         try {
             logger.info("Saving category graph to {}", defaultSerializedGraphLocation);
             GraphSerialization.saveGraph(catGraph.getGraph(), defaultSerializedGraphLocation);
@@ -190,8 +226,8 @@ public class CategoryGraphManager
         }
     }
 
-    private static String getCategoryGraphSerializationFileName(String wikiId, String size)
+    private static String getCategoryGraphSerializationFileName(String key)
     {
-        return catGraphSerializationFilename + "_" + wikiId + size;
+        return catGraphSerializationFilename + "_" + key;
     }
 }
