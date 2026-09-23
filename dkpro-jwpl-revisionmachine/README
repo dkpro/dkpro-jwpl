@@ -74,11 +74,14 @@ maxAllowedPackets=16760832
 
 ## Indexes on the revisions table
 
-After the index tables have been generated, the index generator creates the
-following secondary indexes on the `revisions` table:
+The DiffTool declares `articleIdx (ArticleID, RevisionCounter)` when it creates
+the `revisions` table and builds it once after the bulk load. After the index
+tables have been generated, the index generator enables the keys of the
+`revisions` table and creates the following secondary indexes if they are
+missing:
 
 ```sql
-CREATE INDEX articleIdx ON revisions(ArticleID);
+CREATE INDEX articleIdx ON revisions(ArticleID, RevisionCounter);
 CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);
 ```
 

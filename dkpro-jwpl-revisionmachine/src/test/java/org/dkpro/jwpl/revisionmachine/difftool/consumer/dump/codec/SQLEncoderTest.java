@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -51,6 +53,20 @@ public class SQLEncoderTest
 
         assertTrue(encoder.getTable()[0].contains("Namespace INTEGER"));
         assertTrue(encoder.getBinaryTable()[0].contains("Namespace INTEGER"));
+    }
+
+    @Test
+    public void testTablesDeclareEngineAndArticleIndex() throws Exception
+    {
+        SQLEncoder encoder = new SQLEncoder(null);
+
+        for (String[] table : new String[][] { encoder.getTable(), encoder.getBinaryTable() }) {
+            assertEquals(2, table.length);
+            assertTrue(table[0].contains(") ENGINE = MyISAM "), table[0]);
+            assertFalse(table[0].contains("TYPE ="), table[0]);
+            assertTrue(table[0].contains("KEY articleIdx (ArticleID, RevisionCounter)"), table[0]);
+            assertEquals(SQLEncoder.DISABLE_KEYS, table[1]);
+        }
     }
 
     @Test
