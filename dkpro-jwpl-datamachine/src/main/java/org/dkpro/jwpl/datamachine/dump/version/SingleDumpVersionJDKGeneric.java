@@ -21,10 +21,6 @@ import static org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion.formatBoolean
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import org.dkpro.jwpl.wikimachine.dump.version.AbstractDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
@@ -33,9 +29,17 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+
 /**
  * A generic {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion IDumpVersion} implementation.
- * 
+ * <p>
+ * Page, category and text ids are held in fastutil primitive collections to keep the heap footprint
+ * low on large dumps. Titles are keyed by the full {@code KeyType} produced by the hash algorithm.
+ *
  * @param <KeyType>         The type of keys to use.
  * @param <HashAlgorithm>   The hash algorithm to use.
  */
@@ -48,14 +52,16 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     // Is also defined in wikipedia.api:WikiConstants.DISCUSSION_PREFIX
     // It just doesn't make sense to add a dependency just for the constant
     private static final String DISCUSSION_PREFIX = "Discussion:";
+    // Returned by the primitive maps for absent keys; page and text ids are always positive
+    private static final int NO_ID = -1;
 
-    private Map<Integer, String> pPageIdNameMap;
-    private Set<Integer> cPageIdNameMap;
-    private Map<KeyType, Integer> pNamePageIdMap;
-    private Map<KeyType, Integer> cNamePageIdMap;
-    private Map<Integer, String> rPageIdNameMap;
-    private Set<Integer> disambiguations;
-    private Map<Integer, Integer> textIdPageIdMap;
+    private Int2ObjectOpenHashMap<String> pPageIdNameMap;
+    private IntOpenHashSet cPageIdNameMap;
+    private Object2IntOpenHashMap<KeyType> pNamePageIdMap;
+    private Object2IntOpenHashMap<KeyType> cNamePageIdMap;
+    private Int2ObjectOpenHashMap<String> rPageIdNameMap;
+    private IntOpenHashSet disambiguations;
+    private Int2IntOpenHashMap textIdPageIdMap;
 
     IStringHashCode hashAlgorithm;
 
@@ -139,13 +145,16 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     @Override
     public void initialize(Timestamp timestamp)
     {
-        pPageIdNameMap = new HashMap<>(1_000_000);
-        cPageIdNameMap = new HashSet<>(1_000_000);
-        pNamePageIdMap = new HashMap<>(1_000_000);
-        cNamePageIdMap = new HashMap<>(1_000_000);
-        rPageIdNameMap = new HashMap<>(1_000_000);
-        disambiguations = new HashSet<>(1_000_000);
-        textIdPageIdMap = new HashMap<>(1_000_000);
+        pPageIdNameMap = new Int2ObjectOpenHashMap<>(1_000_000);
+        cPageIdNameMap = new IntOpenHashSet(1_000_000);
+        pNamePageIdMap = new Object2IntOpenHashMap<>(1_000_000);
+        pNamePageIdMap.defaultReturnValue(NO_ID);
+        cNamePageIdMap = new Object2IntOpenHashMap<>(1_000_000);
+        cNamePageIdMap.defaultReturnValue(NO_ID);
+        rPageIdNameMap = new Int2ObjectOpenHashMap<>(1_000_000);
+        disambiguations = new IntOpenHashSet(1_000_000);
+        textIdPageIdMap = new Int2IntOpenHashMap(1_000_000);
+        textIdPageIdMap.defaultReturnValue(NO_ID);
     }
 
     /**
@@ -155,7 +164,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     @Override
     public Integer categoryIdByTitle(String title)
     {
-        return cNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
+        return toId(cNamePageIdMap.getInt((KeyType) hashAlgorithm.hashCode(title)));
     }
 
     /**
@@ -165,7 +174,16 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     @Override
     public Integer pageIdByTitle(String title)
     {
-        return pNamePageIdMap.get((KeyType) hashAlgorithm.hashCode(title));
+        return toId(pNamePageIdMap.getInt((KeyType) hashAlgorithm.hashCode(title)));
+    }
+
+    /**
+     * @param id An id returned by one of the name maps, or {@link #NO_ID} if the name is unknown.
+     * @return The boxed {@code id}, or {@code null} if the name is unknown.
+     */
+    private static Integer toId(int id)
+    {
+        return id == NO_ID ? null : id;
     }
 
     /**
@@ -254,10 +272,9 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     @Override
     public void processTextRow(TextParser textParser)
     {
-        int text_id = textParser.getOldId();
-        if (textIdPageIdMap.containsKey(text_id)) {
+        int page_id = textIdPageIdMap.get(textParser.getOldId());
+        if (page_id != NO_ID) {
 
-            int page_id = textIdPageIdMap.get(text_id);
             String page_idValueP = pPageIdNameMap.get(page_id);
             if (page_idValueP != null) { // pages
                 page.addRow(page_id, page_id, page_idValueP, textParser.getOldText(),
@@ -271,8 +288,8 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
                     String destination = Redirects.getRedirectDestination(textParser.getOldText());
                     if (destination != null) {
                         KeyType destinationHash = (KeyType) hashAlgorithm.hashCode(destination);
-                        Integer destinationValue = pNamePageIdMap.get(destinationHash);
-                        if (destinationValue != null) {
+                        int destinationValue = pNamePageIdMap.getInt(destinationHash);
+                        if (destinationValue != NO_ID) {
 
                             pageRedirects.addRow(destinationValue, page_idValueR);
                             pageMapLine.addRow(page_id, page_idValueR, destinationValue, SQL_NULL,
