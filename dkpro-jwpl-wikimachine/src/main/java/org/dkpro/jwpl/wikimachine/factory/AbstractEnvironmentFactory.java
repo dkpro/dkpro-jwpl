@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.wikimachine.factory;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import org.dkpro.jwpl.wikimachine.debug.CompositeLogger;
@@ -27,6 +29,8 @@ import org.dkpro.jwpl.wikimachine.decompression.UniversalDecompressor;
 import org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A base {@link IEnvironmentFactory} implementation that defines several common beans
@@ -37,6 +41,15 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 public abstract class AbstractEnvironmentFactory
     implements IEnvironmentFactory
 {
+
+    /**
+     * Name of the system property that points to an optional {@code decompressor.xml}, which
+     * configures external decompression utilities (for instance {@code lbzip2} or {@code pigz})
+     * per archive extension. The external utilities are only used if this property is set.
+     */
+    public static final String DECOMPRESSOR_CONFIG_PROPERTY = "jwpl.decompressor.xml";
+
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractEnvironmentFactory.class);
 
     private static ILogger LOG_BEAN;
     private static IDecompressor DECOMPRESSOR_BEAN;
@@ -71,15 +84,39 @@ public abstract class AbstractEnvironmentFactory
     /**
      * {@inheritDoc}
      * <p>
-     * Note: Realized via a singleton instance.
+     * Note: Realized via a singleton instance. External decompression utilities are configured
+     * via the system property {@value #DECOMPRESSOR_CONFIG_PROPERTY}.
      */
     @Override
     public IDecompressor getDecompressor()
     {
         if (DECOMPRESSOR_BEAN == null) {
-            DECOMPRESSOR_BEAN = new UniversalDecompressor();
+            DECOMPRESSOR_BEAN = createDecompressor(System.getProperty(DECOMPRESSOR_CONFIG_PROPERTY));
         }
         return DECOMPRESSOR_BEAN;
+    }
+
+    /**
+     * Creates a {@link UniversalDecompressor} that additionally uses the external utilities
+     * configured in {@code configLocation}. If no location is given, or the referenced file
+     * does not exist, only the built-in decompression is available.
+     *
+     * @param configLocation The path to a {@code decompressor.xml} file, may be {@code null}.
+     * @return A {@link UniversalDecompressor} instance, never {@code null}.
+     */
+    static UniversalDecompressor createDecompressor(String configLocation)
+    {
+        if (configLocation == null || configLocation.isBlank()) {
+            return new UniversalDecompressor();
+        }
+        final Path config = Path.of(configLocation.trim());
+        if (!Files.isRegularFile(config)) {
+            LOG.warn("External decompressor configuration '{}' does not exist, "
+                    + "using the built-in decompression.", config.toAbsolutePath());
+            return new UniversalDecompressor();
+        }
+        LOG.info("Using external decompressor configuration '{}'.", config.toAbsolutePath());
+        return new UniversalDecompressor(config);
     }
 
     /**

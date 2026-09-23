@@ -23,10 +23,12 @@ import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +145,7 @@ public class UniversalDecompressor
         catch (IOException e) {
           // The external configuration is optional: if it cannot be opened, only the
           // internally supported archive formats remain available, which is a valid state.
-          LOG.debug("Could not open external decompressor configuration '{}'.", externalConfig, e);
+          LOG.warn("Could not open external decompressor configuration '{}'.", externalConfig, e);
         }
     }
 
@@ -162,7 +164,7 @@ public class UniversalDecompressor
         catch (IOException e) {
             // The external configuration is optional: if it cannot be parsed, only the
             // internally supported archive formats remain available, which is a valid state.
-            LOG.debug("Could not read external decompressor configuration.", e);
+            LOG.warn("Could not read external decompressor configuration.", e);
         }
     }
 
@@ -205,40 +207,90 @@ public class UniversalDecompressor
      *
      * @param fileName The file's name or (relative) path to read the archive from.
      * @return An InputStream to read the decompressed data from.
+     * @throws IOException Thrown if the external utility could not be started.
      */
-    private InputStream startExternal(String fileName)
+    private InputStream startExternal(String fileName) throws IOException
     {
-        try {
-            String extension = detectExtension(fileName);
-            String command = externalSupport.get(extension).replace(FILEPLACEHOLDER, fileName);
-            // The error stream is inherited rather than left to fill up: nothing here drains it,
-            // and once its buffer runs full the external decompressor blocks for good, taking the
-            // whole import with it. It must not be merged into the standard output either - that
-            // is the dump being read.
-            Process externalProcess = new ProcessBuilder(command.split("\\s+"))
-                    .redirectError(ProcessBuilder.Redirect.INHERIT).start();
-            // Closing the returned stream is what the caller does when it is done reading, and
-            // that is when the process has to go as well - it cannot be reached any other way.
-            return new FilterInputStream(externalProcess.getInputStream())
-            {
-                @Override
-                public void close() throws IOException
-                {
-                    try {
-                        super.close();
-                    }
-                    finally {
-                        externalProcess.destroy();
-                    }
+        String extension = detectExtension(fileName);
+        // The template is tokenized before the file name is substituted, so that a path
+        // containing whitespace is passed on as a single argument.
+        List<String> command = new ArrayList<>();
+        for (String token : externalSupport.get(extension).trim().split("\\s+")) {
+            command.add(token.replace(FILEPLACEHOLDER, fileName));
+        }
+        // The error stream is inherited rather than left to fill up: nothing here drains it,
+        // and once its buffer runs full the external decompressor blocks for good, taking the
+        // whole import with it. It must not be merged into the standard output either - that
+        // is the dump being read.
+        Process externalProcess = new ProcessBuilder(command)
+                .redirectError(ProcessBuilder.Redirect.INHERIT).start();
+        LOG.info("Decompressing '{}' with external utility '{}'.", fileName, command.get(0));
+        return new ExternalProcessInputStream(externalProcess);
+    }
+
+    /**
+     * Reads the standard output of an external decompression utility. The end of the stream is
+     * only reported once the utility exited successfully, so that a failed or truncated
+     * decompression is not mistaken for the regular end of the data.
+     */
+    private static final class ExternalProcessInputStream
+        extends FilterInputStream
+    {
+        private final Process process;
+
+        private ExternalProcessInputStream(Process process)
+        {
+            super(process.getInputStream());
+            this.process = process;
+        }
+
+        @Override
+        public int read() throws IOException
+        {
+            int b = super.read();
+            if (b < 0) {
+                checkExitStatus();
+            }
+            return b;
+        }
+
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException
+        {
+            int n = super.read(b, off, len);
+            if (n < 0) {
+                checkExitStatus();
+            }
+            return n;
+        }
+
+        private void checkExitStatus() throws IOException
+        {
+            try {
+                int status = process.waitFor();
+                if (status != 0) {
+                    throw new IOException("External decompressor exited with status " + status);
                 }
-            };
+            }
+            catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new InterruptedIOException(
+                        "Interrupted while waiting for the external decompressor.");
+            }
         }
-        catch (IOException e) {
-          // Handled here: the caller is signalled by the 'null' return value, so this is the
-          // only place the underlying cause is recorded.
-          LOG.error("Could not start the external decompressor for '{}'.", fileName, e);
+
+        @Override
+        public void close() throws IOException
+        {
+            // Closing the stream is what the caller does when it is done reading, and that is
+            // when the process has to go as well - it cannot be reached any other way.
+            try {
+                super.close();
+            }
+            finally {
+                process.destroy();
+            }
         }
-        return null;
     }
 
     /**
@@ -300,8 +352,23 @@ public class UniversalDecompressor
         final String extension = detectExtension(file);
 
         final InputStream inputStream;
+        InputStream external = null;
         if (isExternalSupported(extension) && fileExists(resource)) {
-            inputStream = startExternal(file);
+            try {
+                external = startExternal(file);
+            }
+            catch (IOException e) {
+                if (!isInternalSupported(extension)) {
+                    throw new IOException("Could not start the external decompressor for '"
+                            + file + "'.", e);
+                }
+                LOG.warn("Could not start the external decompressor for '{}', "
+                        + "using the built-in decompression instead.", file, e);
+            }
+        }
+
+        if (external != null) {
+            inputStream = external;
         }
         else if (isInternalSupported(extension)) {
             inputStream = internalSupport.get(extension).getInputStream(resource);

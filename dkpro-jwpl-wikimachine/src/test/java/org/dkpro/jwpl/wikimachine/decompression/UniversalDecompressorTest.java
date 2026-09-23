@@ -17,12 +17,15 @@
  */
 package org.dkpro.jwpl.wikimachine.decompression;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Properties;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -162,7 +166,107 @@ class UniversalDecompressorTest extends AbstractDecompressorTest {
         assertThrows(IOException.class, () -> udc.getInputStreamSequence(List.of(bz2, gz)));
     }
 
+    @Test
+    void testExternalToolUnavailableFallsBackToInternal() throws IOException {
+        final String content = "fallback content\n";
+        final Path bz2 = writeBz2(tmpDir.resolve("dump.xml.bz2"), content);
+        final Path gz = writeGz(tmpDir.resolve("dump.sql.gz"), content);
+        final UniversalDecompressor external = new UniversalDecompressor(writeConfig(
+                "bz2", "jwpl-no-such-decompressor-589 -dc %f",
+                "gz", "jwpl-no-such-decompressor-589 -dc %f"));
+
+        for (Path p : List.of(bz2, gz)) {
+            try (InputStream in = external.getInputStream(p)) {
+                assertEquals(content, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+            }
+        }
+    }
+
+    @Test
+    void testExternalToolUnavailableWithoutInternalSupportFails() throws IOException {
+        final Path rar = Files.createFile(tmpDir.resolve("dump.xml.rar"));
+        final UniversalDecompressor external = new UniversalDecompressor(
+                writeConfig("rar", "jwpl-no-such-decompressor-589 p %f"));
+        assertThrows(IOException.class, () -> external.getInputStream(rar));
+    }
+
+    @Test
+    @DisabledOnOs(OS.WINDOWS)
+    void testExternalToolFailureIsReported() throws IOException {
+        assumeTrue(isOnPath("false"));
+        final Path bz2 = writeBz2(tmpDir.resolve("dump.xml.bz2"), "content\n");
+        final UniversalDecompressor external = new UniversalDecompressor(
+                writeConfig("bz2", "false %f"));
+
+        try (InputStream in = external.getInputStream(bz2)) {
+            assertThrows(IOException.class, in::readAllBytes);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"bzip2", "lbzip2"})
+    @DisabledOnOs(OS.WINDOWS)
+    void testExternalBz2MatchesInternal(String tool) throws IOException {
+        assumeTrue(isOnPath(tool));
+        final Path bz2 = writeBz2(tmpDir.resolve("with space").resolve("dump.xml.bz2"), sample());
+        assertExternalMatchesInternal(writeConfig("bz2", tool + " -dc %f"), bz2);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"gzip", "pigz"})
+    @DisabledOnOs(OS.WINDOWS)
+    void testExternalGzMatchesInternal(String tool) throws IOException {
+        assumeTrue(isOnPath(tool));
+        final Path gz = writeGz(tmpDir.resolve("with space").resolve("dump.sql.gz"), sample());
+        assertExternalMatchesInternal(writeConfig("gz", tool + " -dc %f"), gz);
+    }
+
+    private void assertExternalMatchesInternal(Path config, Path archive) throws IOException {
+        final byte[] expected;
+        try (InputStream in = udc.getInputStream(archive)) {
+            expected = in.readAllBytes();
+        }
+        try (InputStream in = new UniversalDecompressor(config).getInputStream(archive)) {
+            assertArrayEquals(expected, in.readAllBytes());
+        }
+    }
+
+    private static String sample() {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 50_000; i++) {
+            sb.append("<page><id>").append(i).append("</id><title>Page ").append(i)
+                    .append("</title></page>\n");
+        }
+        return sb.toString();
+    }
+
+    private Path writeConfig(String... entries) throws IOException {
+        final Properties properties = new Properties();
+        for (int i = 0; i < entries.length; i += 2) {
+            properties.setProperty(entries[i], entries[i + 1]);
+        }
+        final Path config = Files.createTempFile(tmpDir, "decompressor", ".xml");
+        try (OutputStream os = Files.newOutputStream(config)) {
+            properties.storeToXML(os, null);
+        }
+        return config;
+    }
+
+    private static boolean isOnPath(String executable) {
+        final String path = System.getenv("PATH");
+        if (path == null) {
+            return false;
+        }
+        for (String dir : path.split(File.pathSeparator)) {
+            if (!dir.isEmpty() && Files.isExecutable(Path.of(dir, executable))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static Path writeBz2(Path out, String content) throws IOException {
+        Files.createDirectories(out.getParent());
         try (OutputStream os = new BZip2CompressorOutputStream(Files.newOutputStream(out))) {
             os.write(content.getBytes(StandardCharsets.UTF_8));
         }
@@ -170,6 +274,7 @@ class UniversalDecompressorTest extends AbstractDecompressorTest {
     }
 
     private static Path writeGz(Path out, String content) throws IOException {
+        Files.createDirectories(out.getParent());
         try (OutputStream os = new GZIPOutputStream(Files.newOutputStream(out))) {
             os.write(content.getBytes(StandardCharsets.UTF_8));
         }
