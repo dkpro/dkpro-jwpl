@@ -71,3 +71,25 @@ charset=UTF8
 buffer=15000
 maxAllowedPackets=16760832
 ```
+
+## Indexes on the revisions table
+
+After the index tables have been generated, the index generator creates the
+following secondary indexes on the `revisions` table:
+
+```sql
+CREATE INDEX articleIdx ON revisions(ArticleID);
+CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);
+```
+
+The composite index `articleTsIdx` allows timestamp-based lookups of an article
+(e.g. `getRevisionTimestamps(...)` or `getRevision(articleID, Timestamp)`) to be
+answered from the index instead of reading every revision row of the article.
+
+Revision databases created with an earlier version can be migrated with the
+following statement (on large MyISAM tables this rebuilds the index file and
+may take several hours):
+
+```sql
+ALTER TABLE revisions ADD INDEX articleTsIdx (ArticleID, Timestamp, RevisionCounter);
+```

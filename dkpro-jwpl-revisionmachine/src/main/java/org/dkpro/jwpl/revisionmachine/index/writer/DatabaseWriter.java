@@ -129,6 +129,10 @@ public class DatabaseWriter
         statement.execute("CREATE INDEX articleIdx on revisions(ArticleID);");
         statement.close();
         statement = connection.createStatement();
+        statement.execute(
+                "CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);");
+        statement.close();
+        statement = connection.createStatement();
         statement.execute("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;");
         statement.close();
         statement = connection.createStatement();
