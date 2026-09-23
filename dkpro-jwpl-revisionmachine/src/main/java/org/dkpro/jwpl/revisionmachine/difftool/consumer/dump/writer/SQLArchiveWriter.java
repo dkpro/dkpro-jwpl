@@ -201,11 +201,13 @@ public class SQLArchiveWriter
             for (SQLEncoding sql : encoding) {
                 s = sql.getQuery() + "\r\n";
                 this.output.write(s.getBytes(WIKIPEDIA_ENCODING));
-                this.output.flush();
             }
 
             if (task.getTaskType() == TaskTypes.TASK_FULL
                     || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
+
+                // flush once per completed task so that the size check sees all written bytes
+                this.output.flush();
 
                 if (this.sqlArchive.length() > LIMIT_SQL_ARCHIVE_SIZE) {
                     writeHeader();

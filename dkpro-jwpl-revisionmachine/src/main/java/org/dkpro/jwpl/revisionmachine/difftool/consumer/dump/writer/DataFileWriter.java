@@ -186,11 +186,13 @@ public class DataFileWriter
 
             for (String d : data) {
                 this.writer.write(d + ";");
-                this.writer.flush();
             }
 
             if (task.getTaskType() == TaskTypes.TASK_FULL
                     || task.getTaskType() == TaskTypes.TASK_PARTIAL_LAST) {
+
+                // flush once per completed task so that the size check sees all written bytes
+                this.writer.flush();
 
                 if (this.dataFile.length() > LIMIT_SQL_FILE_SIZE) {
                     writeHeader();

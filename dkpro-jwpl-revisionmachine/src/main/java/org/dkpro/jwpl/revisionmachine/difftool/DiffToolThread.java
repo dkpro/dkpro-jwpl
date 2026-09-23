@@ -273,12 +273,12 @@ public class DiffToolThread
     public void run()
     {
 
+        DiffCalculatorInterface diffCalc = null;
         try {
             ArchiveManager archives = new ArchiveManager();
             ArticleReaderInterface articleReader;
             ArchiveDescription description = null;
             Task<Revision> task;
-            DiffCalculatorInterface diffCalc;
 
             if (MODE_STATISTICAL_OUTPUT) {
                 diffCalc = new TimedDiffCalculator(new TaskTransmitter());
@@ -365,7 +365,19 @@ public class DiffToolThread
         }
         catch (Exception e) {
             DiffToolLogMessages.logException(logger, e);
+            if (diffCalc != null) {
+                // write out the buffered output produced before the failure
+                try {
+                    diffCalc.closeTransmitter();
+                }
+                catch (Exception ce) {
+                    e.addSuppressed(ce);
+                }
+            }
             throw new RuntimeException(e);
+        }
+        finally {
+            logger.flush();
         }
     }
 }
