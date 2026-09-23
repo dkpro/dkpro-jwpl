@@ -51,6 +51,7 @@ CREATE TABLE Page (
     isDisambiguation  BOOLEAN,
     UNIQUE (pageId)
 );
+CREATE INDEX page_name_index ON Page (name);
 
 CREATE TABLE page_categories (
     id     BIGINT  NOT NULL,
@@ -84,3 +85,4 @@ CREATE TABLE PageMapLine (
     lemma   VARCHAR(255)
 );
 CREATE INDEX name_index ON PageMapLine (name);
+CREATE INDEX pageID_index ON PageMapLine (pageID);
