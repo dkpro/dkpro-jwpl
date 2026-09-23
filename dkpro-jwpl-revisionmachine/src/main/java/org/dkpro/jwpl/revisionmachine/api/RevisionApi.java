@@ -339,8 +339,9 @@ public class RevisionApi
     {
         List<Timestamp> timestamps = new LinkedList<>();
 
-        int articleID = getPageIdForRevisionId(revisionId); // TODO do this in the SQL query
-        Timestamp ts = getRevision(revisionId).getTimeStamp(); // TODO do this in the SQL query
+        long[] articleIdAndTimestamp = getArticleIdAndTimestamp(revisionId);
+        int articleID = (int) articleIdAndTimestamp[0];
+        long ts = articleIdAndTimestamp[1];
 
         try {
             // Check if necessary index exists
@@ -352,7 +353,7 @@ public class RevisionApi
             try (PreparedStatement statement = connection.prepareStatement(sql)) {
 
                 statement.setInt(1, articleID);
-                statement.setLong(2, ts.getTime());
+                statement.setLong(2, ts);
                 ResultSet result = statement.executeQuery();
 
                 // Make the query
@@ -563,8 +564,9 @@ public class RevisionApi
                         "Please create an index on revisions(ArticleID) in order to make this query feasible.");
             }
 
-            int articleID = getPageIdForRevisionId(revisionID);
-            Timestamp ts = getRevision(revisionID).getTimeStamp();
+            long[] articleIdAndTimestamp = getArticleIdAndTimestamp(revisionID);
+            int articleID = (int) articleIdAndTimestamp[0];
+            long ts = articleIdAndTimestamp[1];
 
             int contrCount = 0;
             StringBuffer sqlString = new StringBuffer();
@@ -577,7 +579,7 @@ public class RevisionApi
             try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
 
                 statement.setInt(1, articleID);
-                statement.setLong(2, ts.getTime());
+                statement.setLong(2, ts);
                 ResultSet result = statement.executeQuery();
 
                 // Make the query
@@ -1167,6 +1169,48 @@ public class RevisionApi
 
             return pageId;
 
+        }
+        catch (WikiPageNotFoundException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    /**
+     * Returns the article ID and the timestamp of the given revision with a single query, without
+     * reconstructing the revision.
+     *
+     * @param revisionID
+     *            ID of the revision
+     * @return an array holding the article ID at index 0 and the timestamp (in milliseconds) at
+     *         index 1
+     * @throws WikiApiException
+     *             if an error occurs or the revision does not exist.
+     */
+    long[] getArticleIdAndTimestamp(final int revisionID) throws WikiApiException
+    {
+
+        try {
+            if (revisionID < 1) {
+                throw new IllegalArgumentException();
+            }
+
+            final String sql = "SELECT r.ArticleID, r.Timestamp FROM revisions as r, index_revisionID as idx "
+                    + "WHERE idx.RevisionID=? AND idx.RevisionPK=r.PrimaryKey LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+                statement.setInt(1, revisionID);
+                ResultSet result = statement.executeQuery();
+
+                if (result.next()) {
+                    return new long[] { result.getInt(1), result.getLong(2) };
+                }
+                else {
+                    throw new WikiPageNotFoundException(
+                            "The revision with the ID " + revisionID + " was not found.");
+                }
+            }
         }
         catch (WikiPageNotFoundException e) {
             throw e;

@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.revisionmachine.api;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -166,12 +165,7 @@ public class ChronoRevisionIterator
         throws WikiApiException
     {
         try {
-            String driverDB = "com.mysql.jdbc.Driver";
-            Class.forName(driverDB);
-
-            return DriverManager.getConnection(
-                    "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(),
-                    config.getUser(), config.getPassword());
+            return AbstractRevisionService.openConnection(config);
         }
         catch (SQLException | ClassNotFoundException e) {
             throw new WikiApiException(e);

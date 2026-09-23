@@ -38,6 +38,11 @@ public abstract class AbstractRevisionService
     private static final Logger logger = LoggerFactory.getLogger(AbstractRevisionService.class);
 
     /**
+     * The JDBC driver used if no JDBC URL is configured.
+     */
+    private static final String MYSQL_DRIVER = "com.mysql.jdbc.Driver";
+
+    /**
      * Reference to database connection
      */
     protected Connection connection;
@@ -62,11 +67,7 @@ public abstract class AbstractRevisionService
         Connection c;
         try {
 
-            String driverDB = config.getDatabaseDriver();
-            Class.forName(driverDB);
-
-            c = DriverManager.getConnection(config.getJdbcURL(), config.getUser(),
-                    config.getPassword());
+            c = openConnection(config);
             if (!c.isValid(5)) {
                 throw new WikiApiException("Connection could not be established.");
             }
@@ -76,6 +77,51 @@ public abstract class AbstractRevisionService
         }
 
         return c;
+    }
+
+    /**
+     * Opens a new {@link Connection} as described by the given {@link RevisionAPIConfiguration}.
+     * <p>
+     * If a JDBC URL is configured, it is used as is, and the configured database driver (if any)
+     * is loaded beforehand. Otherwise, a MySQL connection is opened via
+     * {@code jdbc:mysql://host/database}, built from the configured host and database name.
+     *
+     * @param config
+     *            Must not be {@code null}.
+     * @return A new {@link Connection} to the database endpoint. The caller must close it.
+     * @throws SQLException
+     *             Thrown if the connection could not be opened.
+     * @throws ClassNotFoundException
+     *             Thrown if the JDBC driver class could not be loaded.
+     */
+    public static Connection openConnection(RevisionAPIConfiguration config)
+        throws SQLException, ClassNotFoundException
+    {
+        final String driverDB = hasJdbcURL(config) ? config.getDatabaseDriver() : MYSQL_DRIVER;
+        if (driverDB != null && !driverDB.isBlank()) {
+            Class.forName(driverDB);
+        }
+        return DriverManager.getConnection(resolveJdbcURL(config), config.getUser(),
+                config.getPassword());
+    }
+
+    /**
+     * Returns the JDBC URL to connect to: the configured JDBC URL if present, otherwise
+     * {@code jdbc:mysql://host/database} built from the configured host and database name.
+     *
+     * @param config
+     *            Must not be {@code null}.
+     * @return The JDBC URL to use for the given configuration.
+     */
+    static String resolveJdbcURL(RevisionAPIConfiguration config)
+    {
+        return hasJdbcURL(config) ? config.getJdbcURL()
+                : "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase();
+    }
+
+    private static boolean hasJdbcURL(RevisionAPIConfiguration config)
+    {
+        return config.getJdbcURL() != null && !config.getJdbcURL().isBlank();
     }
 
     /**
