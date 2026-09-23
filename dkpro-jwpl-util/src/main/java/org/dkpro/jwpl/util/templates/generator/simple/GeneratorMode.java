@@ -18,7 +18,6 @@
 package org.dkpro.jwpl.util.templates.generator.simple;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This class represents different modes used in WikipediaTemplateInfoGenerator and is a container
@@ -32,8 +31,14 @@ public class GeneratorMode
 
     public boolean useRevisionIterator;
 
-    public Map<String, Set<Integer>> templateNameToRevId;
+    /**
+     * Maps a template name to the sorted ids of the revisions using it.
+     */
+    public Map<String, int[]> templateNameToRevId;
 
-    public Map<String, Set<Integer>> templateNameToPageId;
+    /**
+     * Maps a template name to the sorted ids of the pages using it.
+     */
+    public Map<String, int[]> templateNameToPageId;
 
 }

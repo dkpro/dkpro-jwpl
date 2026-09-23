@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -49,9 +50,17 @@ class WikipediaTemplateInfoDumpWriterTest
         GeneratorMode mode = new GeneratorMode();
         mode.active_for_pages = true;
         mode.active_for_revisions = true;
-        mode.templateNameToPageId = pages;
-        mode.templateNameToRevId = revisions;
+        mode.templateNameToPageId = sorted(pages);
+        mode.templateNameToRevId = sorted(revisions);
         return mode;
+    }
+
+    private static Map<String, int[]> sorted(Map<String, Set<Integer>> idsPerTemplate)
+    {
+        Map<String, int[]> sortedIds = new LinkedHashMap<>();
+        idsPerTemplate.forEach((name, ids) -> sortedIds.put(name,
+                ids.stream().mapToInt(Integer::intValue).sorted().toArray()));
+        return sortedIds;
     }
 
     private String writeSql(Map<String, Integer> knownIds, GeneratorMode mode) throws IOException
