@@ -20,14 +20,17 @@ package org.dkpro.jwpl.api;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
@@ -41,6 +44,7 @@ import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -86,6 +90,11 @@ public class Wikipedia
     private volatile WikiConfig wikiConfig;
 
     private final Object wikiConfigLock = new Object();
+
+    /*
+     * How the backend lower-cases PageMapLine.name, see getNameLowering(). Null until determined.
+     */
+    private volatile Optional<CaseVariantPrefixes.Lowering> nameLowering;
 
     /**
      * Creates a new {@link Wikipedia} object accessing the database indicated by the dbConfig
@@ -299,6 +308,12 @@ public class Wikipedia
 
     /**
      * Gets the page ids for a given title with case-insensitive matching.<br>
+     * <p>
+     * On HSQLDB and on MySQL or MariaDB databases whose {@code PageMapLine.name} column has a
+     * binary {@code utf8*_bin} collation, as JWPL databases have, the lookup seeks the index on
+     * {@code name} for the case variants of a short prefix of the title, see
+     * {@link CaseVariantPrefixes}. On any other collation it scans the whole table, since a
+     * case- or accent-insensitive collation lets names match that the prefix does not cover.
      *
      * @param title The title of the page.
      * @return The ids of the pages with the given title.
@@ -307,20 +322,97 @@ public class Wikipedia
     public List<Integer> getPageIdsCaseInsensitive(String title) throws WikiApiException {
         final String normalizedTitle = title.toLowerCase().replaceAll(" ", "_");
 
-        String sql = "select p.pageID from PageMapLine as p where lower(p.name) = :pName";
-        Iterator<Integer> results = __inTransaction(session -> session
-                .createQuery(sql, Integer.class)
-                .setParameter("pName", normalizedTitle, String.class).list())
-                .iterator();
+        Optional<CaseVariantPrefixes.Lowering> lowering = getNameLowering();
+        List<String> prefixPatterns = lowering.isPresent()
+                ? CaseVariantPrefixes.of(normalizedTitle, lowering.get())
+                : Collections.emptyList();
 
-        if (!results.hasNext()) {
+        List<Integer> resultList = queryPageIdsCaseInsensitive(normalizedTitle, prefixPatterns);
+        if (resultList.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
-        List<Integer> resultList = new LinkedList<>();
-        while (results.hasNext()) {
-            resultList.add(results.next());
-        }
         return resultList;
+    }
+
+    /**
+     * Selects the page ids whose name lower-cases to the given title.
+     *
+     * @param normalizedTitle The lower-cased title, with underscores instead of spaces.
+     * @param prefixPatterns  Patterns from {@link CaseVariantPrefixes#of} restricting the names to
+     *                        index ranges, or an empty list to evaluate the predicate on every row.
+     *                        They narrow the rows to look at, yet never change the result.
+     * @return The matching page ids, possibly empty.
+     */
+    List<Integer> queryPageIdsCaseInsensitive(String normalizedTitle, List<String> prefixPatterns) {
+        StringBuilder hql = new StringBuilder(
+                "select p.pageID from PageMapLine as p where lower(p.name) = :pName");
+        if (!prefixPatterns.isEmpty()) {
+            hql.append(" and (");
+            for (int i = 0; i < prefixPatterns.size(); i++) {
+                if (i > 0) {
+                    hql.append(" or ");
+                }
+                hql.append("p.name like :prefix").append(i)
+                        .append(" escape '").append(CaseVariantPrefixes.ESCAPE).append('\'');
+            }
+            hql.append(')');
+        }
+        return __inTransaction(session -> {
+            Query<Integer> query = session.createQuery(hql.toString(), Integer.class)
+                    .setParameter("pName", normalizedTitle, String.class);
+            for (int i = 0; i < prefixPatterns.size(); i++) {
+                query.setParameter("prefix" + i, prefixPatterns.get(i), String.class);
+            }
+            return new ArrayList<>(query.list());
+        });
+    }
+
+    /**
+     * @return How the backend lower-cases {@code PageMapLine.name} if a case-insensitive lookup
+     *         may narrow the names by prefix, else empty. Determined once per instance.
+     */
+    private Optional<CaseVariantPrefixes.Lowering> getNameLowering() {
+        Optional<CaseVariantPrefixes.Lowering> lowering = nameLowering;
+        if (lowering == null) {
+            lowering = detectNameLowering();
+            nameLowering = lowering;
+        }
+        return lowering;
+    }
+
+    private Optional<CaseVariantPrefixes.Lowering> detectNameLowering() {
+        String driver = dbConfig.getDatabaseDriver();
+        if (driver != null && driver.toLowerCase(Locale.ROOT).contains("hsqldb")) {
+            // HSQLDB compares strings by code point, unless a collation is set explicitly.
+            return Optional.of(CaseVariantPrefixes.Lowering.CONTEXTUAL);
+        }
+        if (!dbConfig.supportsCollation()) {
+            return Optional.empty();
+        }
+        String sql = "select c.COLLATION_NAME, @@character_set_connection"
+                + " from information_schema.COLUMNS c where c.TABLE_SCHEMA = database()"
+                + " and lower(c.TABLE_NAME) = 'pagemapline' and lower(c.COLUMN_NAME) = 'name'";
+        try {
+            List<Object[]> rows = __inTransaction(
+                    session -> session.createNativeQuery(sql, Object[].class).list());
+            if (rows.size() == 1 && rows.get(0)[0] != null && rows.get(0)[1] != null) {
+                String collation = rows.get(0)[0].toString().toLowerCase(Locale.ROOT);
+                String connectionCharset = rows.get(0)[1].toString().toLowerCase(Locale.ROOT);
+                // A binary collation compares code points, so LIKE 'Prefix%' matches exactly the
+                // names starting with Prefix. The patterns must reach the server unaltered, which
+                // any utf8 connection character set guarantees for the characters they consist of.
+                if (collation.startsWith("utf8") && collation.endsWith("_bin")
+                        && connectionCharset.startsWith("utf8")) {
+                    return Optional.of(CaseVariantPrefixes.Lowering.PER_CHARACTER);
+                }
+                logger.debug("Collation {} of PageMapLine.name (connection character set {}) "
+                        + "rules out indexed case-insensitive title lookups.", collation,
+                        connectionCharset);
+            }
+        } catch (RuntimeException e) {
+            logger.debug("Could not determine the collation of PageMapLine.name.", e);
+        }
+        return Optional.empty();
     }
 
     /**

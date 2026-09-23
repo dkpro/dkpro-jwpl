@@ -28,8 +28,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
@@ -232,6 +234,36 @@ public class WikipediaTest
         catch (WikiApiException e) {
             logger.error(e.getLocalizedMessage(), e);
             fail("Encountered WikiApiException: " + e.getLocalizedMessage());
+        }
+    }
+
+    /**
+     * Narrowing the names by the case variants of a prefix of the title must not change the result
+     * of the {@code lower(name)} lookup, whatever case the title is given in.
+     */
+    @Test
+    public void testGetPageIdsCaseInsensitivePrefixPatternsKeepResult() throws WikiApiException
+    {
+        List<String> names = wiki.__inTransaction(session -> session
+                .createQuery("select p.name from PageMapLine as p", String.class).list());
+        assertFalse(names.isEmpty());
+        for (String name : names) {
+            for (String title : List.of(name, name.toLowerCase(Locale.ROOT),
+                    name.toUpperCase(Locale.ROOT))) {
+                String normalizedTitle = title.toLowerCase().replaceAll(" ", "_");
+                List<Integer> expected = wiki.queryPageIdsCaseInsensitive(normalizedTitle,
+                        Collections.emptyList());
+                assertFalse(expected.isEmpty(), title);
+                for (CaseVariantPrefixes.Lowering lowering : CaseVariantPrefixes.Lowering
+                        .values()) {
+                    List<String> patterns = CaseVariantPrefixes.of(normalizedTitle, lowering);
+                    assertFalse(patterns.isEmpty(), title);
+                    assertEquals(new TreeSet<>(expected), new TreeSet<>(
+                            wiki.queryPageIdsCaseInsensitive(normalizedTitle, patterns)), title);
+                }
+                assertEquals(new TreeSet<>(expected),
+                        new TreeSet<>(wiki.getPageIdsCaseInsensitive(title)), title);
+            }
         }
     }
 
