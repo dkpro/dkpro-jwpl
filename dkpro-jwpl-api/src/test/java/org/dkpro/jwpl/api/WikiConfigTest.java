@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.api.WikiConstants.Language.CachingWikiConfigGenerator;
 import org.dkpro.jwpl.api.WikiConstants.Language.WikiConfigGenerator;
 import org.junit.jupiter.api.Test;
 import org.sweble.wikitext.engine.config.WikiConfig;
@@ -73,5 +75,48 @@ public class WikiConfigTest
         });
 
         assertEquals("en", conf.getContentLanguage());
+    }
+
+    @Test
+    public void testGetWikiConfTestLanguageIsNotCached()
+    {
+        WikiConfig first = Language._test.getWikiconfig();
+        WikiConfig second = Language._test.getWikiconfig();
+
+        assertEquals("en", first.getContentLanguage());
+        assertNotSame(first, second);
+    }
+
+    @Test
+    public void testGetWikiConfIsCached()
+    {
+        CachingWikiConfigGenerator cachingGenerator =
+                new CachingWikiConfigGenerator(recordingGenerator);
+
+        WikiConfig first = Language.portuguese.getWikiconfig(cachingGenerator);
+        WikiConfig second = Language.portuguese.getWikiconfig(cachingGenerator);
+
+        assertSame(generated, first);
+        assertSame(first, second);
+        assertEquals(List.of("pt"), requestedLangCodes);
+    }
+
+    @Test
+    public void testGetWikiConfFallbackIsNotCached()
+    {
+        CachingWikiConfigGenerator cachingGenerator = new CachingWikiConfigGenerator(langCode -> {
+            requestedLangCodes.add(langCode);
+            if (requestedLangCodes.size() == 1) {
+                throw new IOException("Server returned HTTP response code: 429");
+            }
+            return generated;
+        });
+
+        WikiConfig fallback = Language.portuguese.getWikiconfig(cachingGenerator);
+        WikiConfig retried = Language.portuguese.getWikiconfig(cachingGenerator);
+
+        assertEquals("en", fallback.getContentLanguage());
+        assertSame(generated, retried);
+        assertEquals(List.of("pt", "pt"), requestedLangCodes);
     }
 }
