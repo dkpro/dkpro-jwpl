@@ -39,6 +39,11 @@ public class XMLDumpTableInputStream
 
     private static final int BUFFERSIZE = 8192;
     /**
+     * capacity of the pipe between the conversion thread and the reader; the JDK default of
+     * 1 KB forces a thread hand-off roughly once per kilobyte
+     */
+    private static final int PIPE_SIZE = 1 << 20;
+    /**
      * piped result stream, that is buffered for better performance
      */
     private BufferedInputStream result;
@@ -84,7 +89,7 @@ public class XMLDumpTableInputStream
         /*
          * piped input stream, that allows to read from a <code>decodedStream</code>
          */
-        PipedInputStream unbufferedResult = new PipedInputStream();
+        PipedInputStream unbufferedResult = new PipedInputStream(PIPE_SIZE);
         /*
          * piped output stream where the conversion thread <code>XMLInputStreamThread</code> is
          * writing in
@@ -98,6 +103,18 @@ public class XMLDumpTableInputStream
     public int read() throws IOException
     {
         return result.read();
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        return result.read(b, off, len);
+    }
+
+    @Override
+    public long skip(long n) throws IOException
+    {
+        return result.skip(n);
     }
 
     @Override
