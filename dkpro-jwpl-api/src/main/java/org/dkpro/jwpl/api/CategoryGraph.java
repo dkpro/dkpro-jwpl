@@ -275,19 +275,7 @@ public class CategoryGraph
 
         for (int pageID : pPageIDs) {
             if (filterList != null) {
-                long hibernateID = pWiki.__getCategoryHibernateId(pageID);
-                if (hibernateID == -1) {
-                    throw new WikiApiException(pageID + " is not a valid pageID");
-                }
-
-                Category cat;
-                try {
-                    cat = new Category(this.wiki, hibernateID);
-                }
-                catch (WikiPageNotFoundException e) {
-                    throw new WikiApiException("Category not found", e);
-                }
-
+                Category cat = loadCategory(pageID);
                 if (matchesFilter(cat, filterList)) {
                     continue;
                 }
@@ -305,19 +293,8 @@ public class CategoryGraph
             ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
                     ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
 
-            long hibernateID = pWiki.__getCategoryHibernateId(pageID);
-            if (hibernateID == -1) {
-                throw new WikiApiException(pageID + " is not a valid pageID");
-            }
-
             // get the category
-            Category cat;
-            try {
-                cat = new Category(this.wiki, hibernateID);
-            }
-            catch (WikiPageNotFoundException e) {
-                throw new WikiApiException("Category not found", e);
-            }
+            Category cat = loadCategory(pageID);
 
             // get parents and children
             // if the corresponding nodes are in the graph (it could be a subset) => add them to the
@@ -363,6 +340,25 @@ public class CategoryGraph
         this.numberOfEdges = this.graph.edgeSet().size();
         this.undirectedGraph = new AsUndirectedGraph<>(this.graph);
 
+    }
+
+    /**
+     * Loads the category with the given pageId.
+     *
+     * @param pageID
+     *            The pageId of the category.
+     * @return The category with the given pageId.
+     * @throws WikiApiException
+     *             Thrown if there is no category with the given pageId.
+     */
+    private Category loadCategory(int pageID) throws WikiApiException
+    {
+        try {
+            return new Category(this.wiki, pageID);
+        }
+        catch (WikiPageNotFoundException e) {
+            throw new WikiApiException(pageID + " is not a valid pageID", e);
+        }
     }
 
     /**
