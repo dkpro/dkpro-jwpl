@@ -119,6 +119,28 @@ public class RevisionIteratorTest
     }
 
     @Test
+    public void pagedIteratorTest() throws WikiApiException, SQLException
+    {
+        RevisionAPIConfiguration pagedConfig = new RevisionAPIConfiguration(
+                wiki.getDatabaseConfiguration());
+        pagedConfig.setBufferSize(50);
+
+        int i = 0;
+        int previousPrimaryKey = 0;
+        try (RevisionIterator pagedIterator = new RevisionIterator(pagedConfig)) {
+            while (pagedIterator.hasNext() && i < 500) {
+                Revision revision = pagedIterator.next();
+                assertNotNull(revision);
+                assertTrue(revision.getPrimaryKey() > previousPrimaryKey);
+                previousPrimaryKey = revision.getPrimaryKey();
+                i++;
+            }
+        }
+
+        assertEquals(GLOBAL_REVISION_COUNT, i);
+    }
+
+    @Test
     public void lazyLoadingTest()
     {
         ArrayList<String> texts = new ArrayList<>();

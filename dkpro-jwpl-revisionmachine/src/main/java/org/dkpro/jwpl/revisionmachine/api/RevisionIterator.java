@@ -54,9 +54,14 @@ public class RevisionIterator
     private ResultSet result;
 
     /**
-     * Reference to the Statement
+     * Reference to the Statement, prepared once and reused for every page
      */
     private PreparedStatement statement;
+
+    /**
+     * SQL of the reused page statement, {@code null} until the first query
+     */
+    private String pageQuery;
 
     /**
      * Binary Data Flag
@@ -262,8 +267,8 @@ public class RevisionIterator
     }
 
     /**
-     * Sends the query to the database and stores the result. The {@link java.sql.Statement} and
-     * {@link ResultSet} connection will not be closed.
+     * Sends the query to the database and stores the result. The {@link java.sql.Statement} is
+     * reused for the next page, the {@link ResultSet} will not be closed.
      *
      * @return {@code true}, if the result set has another element {@code false}, otherwise
      * @throws SQLException
@@ -275,32 +280,33 @@ public class RevisionIterator
             hasNamespaceColumn = RevisionsTable.hasNamespaceColumn(connection);
         }
 
-        String query = "SELECT PrimaryKey, Revision, RevisionCounter,"
-                + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
-                + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions";
-
-        if (primaryKey > 0) {
-            query += " WHERE PrimaryKey > " + primaryKey;
-        }
-
+        int limit = -1;
         if (MAX_NUMBER_RESULTS > 0) {
-            query += " LIMIT ";
-
             if (primaryKey + MAX_NUMBER_RESULTS > endPK) {
-                query += (endPK - primaryKey + 1); // TODO: +1 ?
+                limit = endPK - primaryKey + 1; // TODO: +1 ?
             }
             else {
-                query += MAX_NUMBER_RESULTS;
+                limit = MAX_NUMBER_RESULTS;
             }
-
         }
         else if (endPK != Integer.MAX_VALUE) {
-            query += " LIMIT " + (endPK - primaryKey + 1);
+            limit = endPK - primaryKey + 1;
+        }
+
+        if (pageQuery == null) {
+            // The keyset paging continues after the last primary key read, hence the explicit order
+            pageQuery = "SELECT PrimaryKey, Revision, RevisionCounter,"
+                    + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
+                    + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions"
+                    + " WHERE PrimaryKey > ? ORDER BY PrimaryKey"
+                    + (limit >= 0 ? " LIMIT ?" : "");
         }
 
         try {
-            statement = this.connection.prepareStatement(query);
-            result = statement.executeQuery();
+            if (statement == null) {
+                statement = this.connection.prepareStatement(pageQuery);
+            }
+            result = executePageQuery(limit);
         }
         catch (Exception e) {
             logger.error(e.getLocalizedMessage(), e);
@@ -310,8 +316,8 @@ public class RevisionIterator
                 if (!connectionReady) {
                     connection = getConnection(config);
                 }
-                statement = this.connection.prepareStatement(query);
-                result = statement.executeQuery(query);
+                statement = this.connection.prepareStatement(pageQuery);
+                result = executePageQuery(limit);
             }
             catch (WikiApiException wae) {
                 logger.error(wae.getLocalizedMessage(), wae);
@@ -324,6 +330,24 @@ public class RevisionIterator
         }
 
         return false;
+    }
+
+    /**
+     * Binds the keyset cursor and the page size to the reused statement and executes it.
+     *
+     * @param limit
+     *            maximum number of rows of the page, ignored if the query has no limit
+     * @return the result of the page
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     */
+    private ResultSet executePageQuery(final int limit) throws SQLException
+    {
+        statement.setInt(1, primaryKey);
+        if (limit >= 0) {
+            statement.setInt(2, limit);
+        }
+        return statement.executeQuery();
     }
 
     /**
@@ -429,18 +453,22 @@ public class RevisionIterator
                 return true;
             }
 
-            // Close old queries
-            if (this.statement != null) {
-                this.statement.close();
-            }
+            // Close the old result, the statement is reused for the next page
             if (this.result != null) {
                 this.result.close();
+                this.result = null;
             }
 
-            if (primaryKey <= endPK) { // TODO: <= ?
-                return query();
+            if (primaryKey <= endPK && query()) { // TODO: <= ?
+                return true;
             }
 
+            // The iteration has ended - release the statement and its result set
+            if (this.statement != null) {
+                this.statement.close();
+                this.statement = null;
+            }
+            this.result = null;
             return false;
 
         }
