@@ -24,9 +24,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 
 import org.dkpro.jwpl.api.util.StringUtils;
+import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo.TemplateIds;
 import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,9 +34,9 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Tests loading all template ids at once via
- * {@link WikipediaTemplateInfo#loadTemplateIdsByLookupKey(Connection)}, which the template info
- * generator uses instead of one {@link WikipediaTemplateInfo#checkTemplateId(String)} query per
- * template name.
+ * {@link WikipediaTemplateInfo#loadTemplateIds(Connection)}, which the template info generator
+ * uses instead of one {@link WikipediaTemplateInfo#checkTemplateId(String)} query per template
+ * name.
  */
 class WikipediaTemplateInfoTemplateIdsTest
 {
@@ -73,11 +73,10 @@ class WikipediaTemplateInfoTemplateIdsTest
         }
     }
 
-    /** Builds a key the way the generator does for a template name found in a page. */
-    private static String generatorKey(String parsedName)
+    /** Escapes a template name found in a page the way the generator does. */
+    private static String generatorName(String parsedName)
     {
-        return WikipediaTemplateInfo
-                .templateLookupKey(StringUtils.sqlEscape(parsedName.toLowerCase()));
+        return StringUtils.sqlEscape(parsedName.toLowerCase());
     }
 
     @Test
@@ -86,11 +85,11 @@ class WikipediaTemplateInfoTemplateIdsTest
         insert(1, "infobox");
         insert(2, "Citation_Needed");
 
-        Map<String, Integer> ids = WikipediaTemplateInfo.loadTemplateIdsByLookupKey(connection);
+        TemplateIds ids = WikipediaTemplateInfo.loadTemplateIds(connection);
 
         assertEquals(2, ids.size());
-        assertEquals(1, ids.get(generatorKey("Infobox")));
-        assertEquals(2, ids.get(generatorKey("citation_needed")));
+        assertEquals(1, ids.getTemplateId(generatorName("Infobox")));
+        assertEquals(2, ids.getTemplateId(generatorName("citation_needed")));
     }
 
     @Test
@@ -99,10 +98,10 @@ class WikipediaTemplateInfoTemplateIdsTest
         insert(1, "o'neil");
         insert(2, "back\\slash");
 
-        Map<String, Integer> ids = WikipediaTemplateInfo.loadTemplateIdsByLookupKey(connection);
+        TemplateIds ids = WikipediaTemplateInfo.loadTemplateIds(connection);
 
-        assertEquals(1, ids.get(generatorKey("O'Neil")));
-        assertEquals(2, ids.get(generatorKey("back\\slash")));
+        assertEquals(1, ids.getTemplateId(generatorName("O'Neil")));
+        assertEquals(2, ids.getTemplateId(generatorName("back\\slash")));
     }
 
     @Test
@@ -111,10 +110,10 @@ class WikipediaTemplateInfoTemplateIdsTest
         insert(1, "cite_web");
         insert(2, "trailing   ");
 
-        Map<String, Integer> ids = WikipediaTemplateInfo.loadTemplateIdsByLookupKey(connection);
+        TemplateIds ids = WikipediaTemplateInfo.loadTemplateIds(connection);
 
-        assertEquals(1, ids.get(generatorKey("cite web")));
-        assertEquals(2, ids.get(generatorKey(" trailing")));
+        assertEquals(1, ids.getTemplateId(generatorName("cite web")));
+        assertEquals(2, ids.getTemplateId(generatorName(" trailing")));
     }
 
     @Test
@@ -124,14 +123,27 @@ class WikipediaTemplateInfoTemplateIdsTest
         insert(3, "infobox");
         insert(5, "infobox ");
 
-        Map<String, Integer> ids = WikipediaTemplateInfo.loadTemplateIdsByLookupKey(connection);
+        TemplateIds ids = WikipediaTemplateInfo.loadTemplateIds(connection);
 
-        assertEquals(Map.of("infobox", 3), ids);
+        assertEquals(1, ids.size());
+        assertEquals(3, ids.getTemplateId("infobox"));
     }
 
     @Test
-    void returnsAnEmptyMapForAnEmptyTable() throws Exception
+    void returnsNoIdsForAnEmptyTable() throws Exception
     {
-        assertEquals(Map.of(), WikipediaTemplateInfo.loadTemplateIdsByLookupKey(connection));
+        TemplateIds ids = WikipediaTemplateInfo.loadTemplateIds(connection);
+
+        assertEquals(0, ids.size());
+        assertEquals(-1, ids.getTemplateId("infobox"));
+    }
+
+    @Test
+    void returnsMinusOneForUnknownNames() throws Exception
+    {
+        insert(1, "infobox");
+
+        assertEquals(-1, WikipediaTemplateInfo.loadTemplateIds(connection)
+                .getTemplateId(generatorName("unknown")));
     }
 }

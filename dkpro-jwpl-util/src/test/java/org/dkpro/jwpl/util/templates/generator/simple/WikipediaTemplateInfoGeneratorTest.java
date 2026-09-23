@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.ToIntFunction;
 
 import org.dkpro.jwpl.api.util.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -37,10 +38,10 @@ class WikipediaTemplateInfoGeneratorTest
     void resolvesExistingIdsUnderTheOriginalTemplateNames()
     {
         String quoted = StringUtils.sqlEscape("o'neil");
-        Map<String, Integer> existing = Map.of("infobox", 1, "cite_web", 2, "o\\'neil", 3);
+        Map<String, Integer> existing = Map.of("infobox", 1, "cite web", 2, quoted, 3);
         Map<String, Integer> resolved = new HashMap<>();
 
-        WikipediaTemplateInfoGenerator.resolveTemplateIds(existing,
+        WikipediaTemplateInfoGenerator.resolveTemplateIds(name -> existing.getOrDefault(name, -1),
                 Set.of("infobox", "cite web", quoted, "unknown"), resolved);
 
         assertEquals(Map.of("infobox", 1, "cite web", 2, quoted, 3), resolved);
@@ -50,11 +51,13 @@ class WikipediaTemplateInfoGeneratorTest
     void keepsIdsAlreadyResolvedForAnotherIndex()
     {
         Map<String, Integer> existing = Map.of("infobox", 1, "stub", 2);
+        ToIntFunction<String> existingIds = name -> existing.getOrDefault(name, -1);
         Map<String, Integer> resolved = new HashMap<>();
 
-        WikipediaTemplateInfoGenerator.resolveTemplateIds(existing, Set.of("infobox"), resolved);
+        WikipediaTemplateInfoGenerator.resolveTemplateIds(existingIds, Set.of("infobox"),
+                resolved);
         resolved.put("infobox", 42);
-        WikipediaTemplateInfoGenerator.resolveTemplateIds(existing, Set.of("infobox", "stub"),
+        WikipediaTemplateInfoGenerator.resolveTemplateIds(existingIds, Set.of("infobox", "stub"),
                 resolved);
 
         assertEquals(Map.of("infobox", 42, "stub", 2), resolved);

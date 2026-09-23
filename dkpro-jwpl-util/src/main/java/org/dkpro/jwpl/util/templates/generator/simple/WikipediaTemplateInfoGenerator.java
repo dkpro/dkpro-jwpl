@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.ToIntFunction;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
@@ -42,6 +43,7 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
 import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo;
+import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo.TemplateIds;
 import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -291,12 +293,13 @@ public class WikipediaTemplateInfoGenerator
         boolean resolveRevisionTemplates = mode.active_for_revisions && revisionTableExists;
         if (resolvePageTemplates || resolveRevisionTemplates) {
             try {
-                Map<String, Integer> existingIds = info.loadTemplateIdsByLookupKey();
+                TemplateIds existingIds = info.loadTemplateIds();
                 if (resolvePageTemplates) {
-                    resolveTemplateIds(existingIds, TPLNAME_TO_PAGEIDS.keySet(), tplNameToTplId);
+                    resolveTemplateIds(existingIds::getTemplateId, TPLNAME_TO_PAGEIDS.keySet(),
+                            tplNameToTplId);
                 }
                 if (resolveRevisionTemplates) {
-                    resolveTemplateIds(existingIds, TPLNAME_TO_REVISIONIDS.keySet(),
+                    resolveTemplateIds(existingIds::getTemplateId, TPLNAME_TO_REVISIONIDS.keySet(),
                             tplNameToTplId);
                 }
             }
@@ -322,23 +325,23 @@ public class WikipediaTemplateInfoGenerator
      * without an id get a new one in the dump writer.
      *
      * @param existingIds
-     *            the ids of the existing templates as returned by
-     *            {@link WikipediaTemplateInfo#loadTemplateIdsByLookupKey()}. Must not be
+     *            returns the id of an existing template for its SQL escaped name, or {@code -1} if
+     *            there is none, such as {@link TemplateIds#getTemplateId(String)}. Must not be
      *            {@code null}.
      * @param templateNames
      *            SQL escaped template names to resolve
      * @param tplNameToTplId
      *            the map to put the resolved ids into, keyed by the given template names
      */
-    static void resolveTemplateIds(Map<String, Integer> existingIds, Set<String> templateNames,
+    static void resolveTemplateIds(ToIntFunction<String> existingIds, Set<String> templateNames,
             Map<String, Integer> tplNameToTplId)
     {
         for (String name : templateNames) {
             if (tplNameToTplId.containsKey(name)) {
                 continue;
             }
-            Integer id = existingIds.get(WikipediaTemplateInfo.templateLookupKey(name));
-            if (id != null) {
+            int id = existingIds.applyAsInt(name);
+            if (id != -1) {
                 tplNameToTplId.put(name, id);
             }
         }

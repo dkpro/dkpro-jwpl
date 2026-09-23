@@ -385,27 +385,24 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Loads the ids of all templates with a single query, keyed by
-     * {@link #templateLookupKey(String)} of their SQL escaped name. This allows resolving many
-     * template names, as collected by the template info generator, without one query per name.
-     * If several templates share a lookup key, the smallest id is kept.
+     * Loads the ids of all templates with a single query. This allows resolving many template
+     * names, as collected by the template info generator, without one query per name.
      *
-     * @return a map from template lookup key to template id
+     * @return the ids of all templates, to be looked up by their SQL escaped names
      * @throws WikiApiException
      *             If there was any error retrieving the ids from the database
      */
-    public Map<String, Integer> loadTemplateIdsByLookupKey() throws WikiApiException
+    public TemplateIds loadTemplateIds() throws WikiApiException
     {
         try {
-            return loadTemplateIdsByLookupKey(connection);
+            return loadTemplateIds(connection);
         }
         catch (SQLException e) {
             throw new WikiApiException(e);
         }
     }
 
-    static Map<String, Integer> loadTemplateIdsByLookupKey(Connection connection)
-        throws SQLException
+    static TemplateIds loadTemplateIds(Connection connection) throws SQLException
     {
         Map<String, Integer> ids = new HashMap<>();
         String sqlString = "SELECT templateId, templateName FROM "
@@ -423,27 +420,65 @@ public class WikipediaTemplateInfo
             try (ResultSet result = statement.executeQuery()) {
                 while (result.next()) {
                     int id = result.getInt(1);
-                    String key = templateLookupKey(StringUtils.sqlEscape(result.getString(2)));
+                    String key = normalizeTemplateName(StringUtils.sqlEscape(result.getString(2)));
                     ids.merge(key, id, Math::min);
                 }
             }
         }
-        return ids;
+        return new TemplateIds(ids);
     }
 
     /**
-     * Normalizes an SQL escaped template name to the key used by
-     * {@link #loadTemplateIdsByLookupKey()}. It applies the normalization of
-     * {@link #checkTemplateId(String)} (trimming, blanks replaced by underscores) and mimics the
-     * default case-insensitive MySQL collation by lower casing the name.
+     * Normalizes an SQL escaped template name for looking it up in {@link TemplateIds}. It applies
+     * the normalization of {@link #checkTemplateId(String)} (trimming, blanks replaced by
+     * underscores) and mimics the default case-insensitive MySQL collation by lower casing the
+     * name.
      *
      * @param escapedTemplateName
      *            a template name escaped via {@link StringUtils#sqlEscape(String)}
-     * @return the lookup key of the template name
+     * @return the normalized template name
      */
-    public static String templateLookupKey(String escapedTemplateName)
+    private static String normalizeTemplateName(String escapedTemplateName)
     {
         return escapedTemplateName.trim().replace(' ', '_').toLowerCase();
+    }
+
+    /**
+     * The ids of all templates as loaded by {@link WikipediaTemplateInfo#loadTemplateIds()}.
+     * Template names are normalized for the lookup the same way as by
+     * {@link WikipediaTemplateInfo#checkTemplateId(String)}, but compared case-insensitively like
+     * the default MySQL collation does. If several templates share a normalized name, the smallest
+     * id is kept.
+     */
+    public static final class TemplateIds
+    {
+
+        private final Map<String, Integer> idsByNormalizedName;
+
+        private TemplateIds(Map<String, Integer> idsByNormalizedName)
+        {
+            this.idsByNormalizedName = idsByNormalizedName;
+        }
+
+        /**
+         * Returns the id of the template with the given name.
+         *
+         * @param escapedTemplateName
+         *            the template name escaped via {@link StringUtils#sqlEscape(String)}
+         * @return the id of the template or {@code -1} if no template with that name exists
+         */
+        public int getTemplateId(String escapedTemplateName)
+        {
+            return idsByNormalizedName.getOrDefault(normalizeTemplateName(escapedTemplateName), -1);
+        }
+
+        /**
+         * @return the number of distinct normalized template names
+         */
+        int size()
+        {
+            return idsByNormalizedName.size();
+        }
     }
 
     /**
