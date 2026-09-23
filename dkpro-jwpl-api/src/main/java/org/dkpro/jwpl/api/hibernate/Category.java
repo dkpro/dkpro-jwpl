@@ -20,6 +20,8 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -39,6 +41,7 @@ import jakarta.persistence.Table;
  * It is accessed via an equally named class in the {@code api} package
  * to hide session management from the user.
  */
+@Immutable
 @Entity
 @Table(name = "Category", indexes = @Index(name = "nameIndex", columnList = "name"))
 public class Category
@@ -55,11 +58,13 @@ public class Category
     private String name;
 
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "category_inlinks", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
 
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "category_outlinks", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
@@ -67,6 +72,7 @@ public class Category
     // Set of page IDs the category groups; the underlying table column name
     // is "pages" (same convention as Page.categories → page_categories.pages).
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "category_pages", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "pages")
     private Set<Integer> pages = new HashSet<>();

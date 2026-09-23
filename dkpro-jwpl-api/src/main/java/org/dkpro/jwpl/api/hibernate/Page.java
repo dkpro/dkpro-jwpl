@@ -20,6 +20,8 @@ package org.dkpro.jwpl.api.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -40,6 +42,7 @@ import jakarta.persistence.Table;
  * It is accessed via an equally named class in the {@code api} package
  * to hide session management from the user.
  */
+@Immutable
 @Entity
 @Table(name = "Page", indexes = @Index(name = "page_name_index", columnList = "name"))
 public class Page
@@ -66,11 +69,13 @@ public class Page
     private boolean isDisambiguation;
 
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "page_inlinks", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
 
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "page_outlinks", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
@@ -78,11 +83,13 @@ public class Page
     // Set of category IDs the page belongs to; the underlying table column is
     // named "pages" (historical naming preserved from the original hbm mapping).
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "page_categories", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "pages")
     private Set<Integer> categories = new HashSet<>();
 
     @ElementCollection
+    @Immutable
     @CollectionTable(name = "page_redirects", joinColumns = @JoinColumn(name = "id"))
     @Column(name = "redirects")
     private Set<String> redirects = new HashSet<>();
