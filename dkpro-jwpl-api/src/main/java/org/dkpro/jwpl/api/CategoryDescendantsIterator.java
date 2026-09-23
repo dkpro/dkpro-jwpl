@@ -190,9 +190,9 @@ public class CategoryDescendantsIterator
                 }
                 buffer.add(currentCat);
 
-                logger.debug("buf: {}", buffer.size());
-                logger.debug("notExp: {}", notExpandedCategories);
-                logger.debug("exp: {}", expandedCategoryIds);
+                logger.trace("buf: {}", buffer.size());
+                logger.trace("notExp: {}", notExpandedCategories);
+                logger.trace("exp: {}", expandedCategoryIds);
 
                 for (int childId : currentCat.getChildrenIDs()) {
                     queue.add(childId);
