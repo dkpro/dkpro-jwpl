@@ -287,12 +287,22 @@ public class WikipediaTemplateInfoGenerator
 
         tableWithTemplatesExists = true;
 
-        if (mode.active_for_pages && pageTableExists) {
-            generateTemplateIndices(info, TPLNAME_TO_PAGEIDS.keySet());
-        }
-
-        if (mode.active_for_revisions && revisionTableExists) {
-            generateTemplateIndices(info, TPLNAME_TO_REVISIONIDS.keySet());
+        boolean resolvePageTemplates = mode.active_for_pages && pageTableExists;
+        boolean resolveRevisionTemplates = mode.active_for_revisions && revisionTableExists;
+        if (resolvePageTemplates || resolveRevisionTemplates) {
+            try {
+                Map<String, Integer> existingIds = info.loadTemplateIdsByLookupKey();
+                if (resolvePageTemplates) {
+                    resolveTemplateIds(existingIds, TPLNAME_TO_PAGEIDS.keySet(), tplNameToTplId);
+                }
+                if (resolveRevisionTemplates) {
+                    resolveTemplateIds(existingIds, TPLNAME_TO_REVISIONIDS.keySet(),
+                            tplNameToTplId);
+                }
+            }
+            catch (WikiApiException e) {
+                logger.error("Problems generating template indices!", e);
+            }
         }
 
         ////////////////////
@@ -308,26 +318,29 @@ public class WikipediaTemplateInfoGenerator
     }
 
     /**
-     * Loads existing ids into the map. If no id exists, a template will get a new one in the dump
-     * writer
+     * Puts the ids of templates that already exist in the database into the given map. Templates
+     * without an id get a new one in the dump writer.
      *
-     * @param info
-     *            Must not be {@code null}.
+     * @param existingIds
+     *            the ids of the existing templates as returned by
+     *            {@link WikipediaTemplateInfo#loadTemplateIdsByLookupKey()}. Must not be
+     *            {@code null}.
      * @param templateNames
-     *            template names to use
+     *            SQL escaped template names to resolve
+     * @param tplNameToTplId
+     *            the map to put the resolved ids into, keyed by the given template names
      */
-    private void generateTemplateIndices(WikipediaTemplateInfo info, Set<String> templateNames)
+    static void resolveTemplateIds(Map<String, Integer> existingIds, Set<String> templateNames,
+            Map<String, Integer> tplNameToTplId)
     {
-        try {
-            for (String name : templateNames) {
-                int id = info.checkTemplateId(name);
-                if (id != -1) {
-                    tplNameToTplId.put(name, id);
-                }
+        for (String name : templateNames) {
+            if (tplNameToTplId.containsKey(name)) {
+                continue;
             }
-        }
-        catch (WikiApiException e) {
-            logger.error("Problems generating template indices!", e);
+            Integer id = existingIds.get(WikipediaTemplateInfo.templateLookupKey(name));
+            if (id != null) {
+                tplNameToTplId.put(name, id);
+            }
         }
     }
 

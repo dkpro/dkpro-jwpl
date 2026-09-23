@@ -41,6 +41,7 @@ import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.util.StringUtils;
 import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
@@ -342,17 +343,29 @@ public class WikipediaTemplateInfo
         }
     }
 
+    /**
+     * Returns the id of the template with the given name.
+     * <p>
+     * The name is bound as a statement parameter and hence compared literally: it must be passed
+     * <em>unescaped</em>, not in the SQL escaped form produced by
+     * {@link StringUtils#sqlEscape(String)}. Leading and trailing whitespace is removed and blanks
+     * are replaced by underscores before the comparison. If several templates share the name, the
+     * smallest id is returned.
+     *
+     * @param templateName
+     *            the unescaped name of the template
+     * @return the id of the template or {@code -1} if no template with that name exists
+     * @throws WikiApiException
+     *             If there was any error retrieving the id from the database
+     */
     public int checkTemplateId(String templateName) throws WikiApiException
     {
         try {
-            StringBuilder sqlString = new StringBuilder();
-            sqlString.append(
-                    "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " AS tpl WHERE tpl.templateName='"
-                            + templateName.trim().replaceAll(" ", "_") + "'");
+            String sqlString = "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                    + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
 
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
+            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
+                statement.setString(1, templateName.trim().replace(' ', '_'));
                 ResultSet result = execute(statement);
 
                 if (result == null) {
@@ -369,6 +382,68 @@ public class WikipediaTemplateInfo
         catch (Exception e) {
             throw new WikiApiException(e);
         }
+    }
+
+    /**
+     * Loads the ids of all templates with a single query, keyed by
+     * {@link #templateLookupKey(String)} of their SQL escaped name. This allows resolving many
+     * template names, as collected by the template info generator, without one query per name.
+     * If several templates share a lookup key, the smallest id is kept.
+     *
+     * @return a map from template lookup key to template id
+     * @throws WikiApiException
+     *             If there was any error retrieving the ids from the database
+     */
+    public Map<String, Integer> loadTemplateIdsByLookupKey() throws WikiApiException
+    {
+        try {
+            return loadTemplateIdsByLookupKey(connection);
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    static Map<String, Integer> loadTemplateIdsByLookupKey(Connection connection)
+        throws SQLException
+    {
+        Map<String, Integer> ids = new HashMap<>();
+        String sqlString = "SELECT templateId, templateName FROM "
+                + GeneratorConstants.TABLE_TPLID_TPLNAME;
+        try (PreparedStatement statement = connection.prepareStatement(sqlString,
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            try {
+                // Lets MySQL Connector/J (and the MariaDB driver) stream the rows instead of
+                // buffering the whole table on the client
+                statement.setFetchSize(Integer.MIN_VALUE);
+            }
+            catch (SQLException e) {
+                logger.debug("Row streaming is not supported by the JDBC driver.", e);
+            }
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    int id = result.getInt(1);
+                    String key = templateLookupKey(StringUtils.sqlEscape(result.getString(2)));
+                    ids.merge(key, id, Math::min);
+                }
+            }
+        }
+        return ids;
+    }
+
+    /**
+     * Normalizes an SQL escaped template name to the key used by
+     * {@link #loadTemplateIdsByLookupKey()}. It applies the normalization of
+     * {@link #checkTemplateId(String)} (trimming, blanks replaced by underscores) and mimics the
+     * default case-insensitive MySQL collation by lower casing the name.
+     *
+     * @param escapedTemplateName
+     *            a template name escaped via {@link StringUtils#sqlEscape(String)}
+     * @return the lookup key of the template name
+     */
+    public static String templateLookupKey(String escapedTemplateName)
+    {
+        return escapedTemplateName.trim().replace(' ', '_').toLowerCase();
     }
 
     /**
