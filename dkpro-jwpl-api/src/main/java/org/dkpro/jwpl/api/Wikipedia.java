@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
@@ -622,11 +624,7 @@ public class Wikipedia
     // TODO this should be replaced with the buffered category iterator, as it might produce an
     // HeapSpace Overflow, if there are too many categories.
     protected Set<Integer> __getCategories() {
-        String sql = "select cat.pageId from Category as cat";
-        List<Integer> idList = __inTransaction(
-                session -> session.createQuery(sql, Integer.class).list());
-
-        return new HashSet<>(idList);
+        return __getIdSet("select cat.pageId from Category as cat");
     }
 
     /**
@@ -661,11 +659,22 @@ public class Wikipedia
      * @return A set with all {@code pageIDs}. Returning all pages is much to expensive.
      */
     protected Set<Integer> __getPages() {
-        String sql = "select page.pageId from Page as page";
-        List<Integer> idList = __inTransaction(
-                session -> session.createQuery(sql, Integer.class).list());
+        return __getIdSet("select page.pageId from Page as page");
+    }
 
-        return new HashSet<>(idList);
+    /**
+     * Runs the given id projection query and collects its rows directly into a {@link HashSet},
+     * without materializing an intermediate {@link List} first.
+     *
+     * @param hql An HQL query selecting a single {@link Integer} column.
+     * @return A mutable set with the selected ids.
+     */
+    private Set<Integer> __getIdSet(String hql) {
+        return __inTransaction(session -> {
+            try (Stream<Integer> ids = session.createQuery(hql, Integer.class).getResultStream()) {
+                return ids.collect(Collectors.toCollection(HashSet::new));
+            }
+        });
     }
 
     /**

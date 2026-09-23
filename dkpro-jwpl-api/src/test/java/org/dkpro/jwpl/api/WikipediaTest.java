@@ -618,6 +618,26 @@ public class WikipediaTest
         assertEquals(count1, count2, "Both getPageIds() calls must return the same count");
     }
 
+    /** Verifies that the id sets are filled directly from the query and contain every id. */
+    @Test
+    public void testGetPageAndCategoryIdSets() {
+        Set<Integer> pageIds = wiki.__getPages();
+        assertTrue(pageIds.contains(A_FAMOUS_PAGE_ID));
+        int count = 0;
+        for (Integer id : wiki.getPageIds()) {
+            assertTrue(pageIds.contains(id));
+            count++;
+        }
+        assertEquals(pageIds.size(), count);
+        assertTrue(pageIds.add(-1), "__getPages() must return a mutable set");
+
+        Set<Integer> categoryIds = wiki.__getCategories();
+        assertFalse(categoryIds.isEmpty());
+        for (Category category : wiki.getCategories()) {
+            assertTrue(categoryIds.contains(category.getPageId()));
+        }
+    }
+
     /** Kills: NegateConditionalsMutator on hibernateId == -1 check in getCategory(int) (line 490).
      *  Verifies getCategory with a valid category pageId returns non-null. */
     @Test
