@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.api.hibernate;
 
 import java.lang.invoke.MethodHandles;
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -241,6 +242,20 @@ public class WikiHibernateUtil
     }
 
     /**
+     * The digest computed last, together with a weak reference to the very password instance it
+     * was computed for. Matching by identity keeps the lookup cheap and makes a stale memo
+     * harmless, while the weak reference keeps the password from being retained by this class.
+     *
+     * @param password The password instance the digest was computed for.
+     * @param digest   The SHA-256 hex digest of {@code password}.
+     */
+    private record DigestMemo(WeakReference<String> password, String digest)
+    {
+    }
+
+    private static volatile DigestMemo lastDigest;
+
+    /**
      * Digests a password so that it can take part in the cache key without being retained in the
      * clear.
      *
@@ -253,10 +268,17 @@ public class WikiHibernateUtil
         if (password == null) {
             return null;
         }
+        // Keys are derived on every query, nearly always from the same password instance.
+        DigestMemo memo = lastDigest;
+        if (memo != null && memo.password().get() == password) {
+            return memo.digest();
+        }
         try {
             MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
-            return HexFormat.of()
+            String digest = HexFormat.of()
                     .formatHex(sha256.digest(password.getBytes(StandardCharsets.UTF_8)));
+            lastDigest = new DigestMemo(new WeakReference<>(password), digest);
+            return digest;
         }
         catch (NoSuchAlgorithmException e) {
             // Every JDK is required to provide SHA-256, so this is unreachable in practice.

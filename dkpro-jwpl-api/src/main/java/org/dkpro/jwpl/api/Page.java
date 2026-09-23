@@ -76,7 +76,7 @@ public class Page
     protected Page(Wikipedia wiki, long id) throws WikiApiException
     {
         this.wiki = wiki;
-        this.pageDAO = new PageDAO(wiki);
+        this.pageDAO = wiki.getPageDAO();
         fetchByHibernateId(id);
     }
 
@@ -93,7 +93,7 @@ public class Page
     protected Page(Wikipedia wiki, int pageID) throws WikiApiException
     {
         this.wiki = wiki;
-        this.pageDAO = new PageDAO(wiki);
+        this.pageDAO = wiki.getPageDAO();
         fetchByPageId(pageID);
     }
 
@@ -130,7 +130,7 @@ public class Page
             throw new WikiPageNotFoundException();
         }
         this.wiki = wiki;
-        this.pageDAO = new PageDAO(wiki);
+        this.pageDAO = wiki.getPageDAO();
         Title pageTitle = new Title(pName);
         fetchByTitle(pageTitle, useExactTitle);
     }
@@ -151,7 +151,7 @@ public class Page
         throws WikiApiException
     {
         this.wiki = wiki;
-        this.pageDAO = new PageDAO(wiki);
+        this.pageDAO = wiki.getPageDAO();
         this.hibernatePage = hibernatePage;
     }
 
