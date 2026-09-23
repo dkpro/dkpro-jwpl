@@ -17,36 +17,61 @@
  */
 package org.dkpro.jwpl.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.api.WikiConstants.Language.WikiConfigGenerator;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.sweble.wikitext.engine.config.WikiConfig;
+import org.sweble.wikitext.engine.utils.DefaultConfigEnWp;
 
+/**
+ * Tests {@link Language#getWikiconfig()} without fetching the configuration from Wikipedia, whose
+ * API rate limits the build servers.
+ */
 public class WikiConfigTest
 {
+
+    private final WikiConfig generated = DefaultConfigEnWp.generate();
+
+    private final List<String> requestedLangCodes = new ArrayList<>();
+
+    private final WikiConfigGenerator recordingGenerator = langCode -> {
+        requestedLangCodes.add(langCode);
+        return generated;
+    };
 
     @Test
     public void testGetWikiConf()
     {
-        WikiConfig portugueseConf = WikiConstants.Language.portuguese.getWikiconfig();
-        WikiConfig englishConf = WikiConstants.Language.english.getWikiconfig();
-        WikiConfig testConf = WikiConstants.Language._test.getWikiconfig();
-        // assertion block
-        assertSame("pt", portugueseConf.getContentLanguage());
-        assertSame("en", englishConf.getContentLanguage());
-        assertSame("en", testConf.getContentLanguage());
+        assertSame(generated, Language.portuguese.getWikiconfig(recordingGenerator));
+        assertSame(generated, Language.english.getWikiconfig(recordingGenerator));
+        assertSame(generated, Language.french.getWikiconfig(recordingGenerator));
+        assertEquals(List.of("pt", "en", "fr"), requestedLangCodes);
     }
 
-    /*
-     * Note:
-     * This is not working in a GitHub build env due to an HTTP 429 response by french Wikipedia - reason is unclear?!
-     */
     @Test
-    @DisabledIfEnvironmentVariable(named = "BUILD_ENV", matches = "GitHub")
-    public void testGetWikiConfFrench()
+    public void testGetWikiConfForTestLanguageUsesDefault()
     {
-        WikiConfig frenchConf = WikiConstants.Language.french.getWikiconfig();
-        assertSame("fr", frenchConf.getContentLanguage());
+        WikiConfig testConf = Language._test.getWikiconfig(recordingGenerator);
+
+        assertEquals("en", testConf.getContentLanguage());
+        assertTrue(requestedLangCodes.isEmpty());
+    }
+
+    @Test
+    public void testGetWikiConfFallsBackToDefaultIfGenerationFails()
+    {
+        WikiConfig conf = Language.portuguese.getWikiconfig(langCode -> {
+            throw new IOException("Server returned HTTP response code: 429");
+        });
+
+        assertEquals("en", conf.getContentLanguage());
     }
 }

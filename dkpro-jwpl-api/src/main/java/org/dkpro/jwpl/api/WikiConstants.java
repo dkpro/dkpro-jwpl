@@ -195,6 +195,20 @@ public interface WikiConstants
          */
         public WikiConfig getWikiconfig(Language this)
         {
+            return getWikiconfig(LanguageConfigGenerator::generateWikiConfig);
+        }
+
+        /**
+         * Configures a language specific configuration for parsing wikipedia pages, using the given
+         * generator to create the configuration of a language other than {@link #_test}.
+         *
+         * @param generator
+         *            Creates the configuration for a language code, as {@code pt}. Must not be
+         *            {@code null}.
+         * @return WikiConfig
+         */
+        WikiConfig getWikiconfig(WikiConfigGenerator generator)
+        {
             WikiConfig config = DefaultConfigEnWp.generate();
             if (this != Language._test) {
                 // We need to capitalize the language name otherwise the locale lib cannot find it.
@@ -204,7 +218,7 @@ public interface WikiConstants
                     List<LanguageCode> langCodes = LanguageCode.findByName(langName);
                     if (!langCodes.isEmpty()) {
                         String langCode = langCodes.get(0).name();
-                        return LanguageConfigGenerator.generateWikiConfig(langCode);
+                        return generator.generate(langCode);
                     }
                 }
                 catch (IOException | ParserConfigurationException | SAXException e) {
@@ -213,6 +227,17 @@ public interface WikiConstants
                 }
             }
             return config;
+        }
+
+        /**
+         * Creates the {@link WikiConfig} for a language code. The default implementation fetches
+         * it from the corresponding Wikipedia edition, tests use a generator that works offline.
+         */
+        @FunctionalInterface
+        interface WikiConfigGenerator
+        {
+            WikiConfig generate(String langCode)
+                throws IOException, ParserConfigurationException, SAXException;
         }
     }
 }
