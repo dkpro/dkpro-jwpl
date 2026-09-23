@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
@@ -149,6 +149,8 @@ public class DiffCalculator
         this.articleID = -1;
         this.partCounter = 0;
 
+        Arrays.fill(positionHead, -1);
+
         // Load config parameters
         ConfigurationManager config = ConfigurationManager.getInstance();
 
@@ -238,9 +240,31 @@ public class DiffCalculator
     private boolean[] revBBlocked;
 
     /**
-     * Temporary variable - Mapping of characters and their positions in the previous revision
+     * Number of distinct {@code char} values
      */
-    private HashMap<Character, ArrayList<Integer>> positions;
+    private static final int CHAR_RANGE = Character.MAX_VALUE + 1;
+
+    /**
+     * Temporary variable - First position of each character in the scanned range of the previous
+     * revision, or -1 if the character does not occur there
+     */
+    private final int[] positionHead = new int[CHAR_RANGE];
+
+    /**
+     * Temporary variable - Next position of the same character in the scanned range of the
+     * previous revision, or -1 if there is none; indexed by position
+     */
+    private int[] positionNext = new int[0];
+
+    /**
+     * Temporary variable - Characters whose entry in {@link #positionHead} is currently set
+     */
+    private final int[] positionTouched = new int[CHAR_RANGE];
+
+    /**
+     * Temporary variable - Number of valid entries in {@link #positionTouched}
+     */
+    private int positionTouchedCount;
 
     /**
      * Temporary variable - Queue for blocks of the previous revision
@@ -650,16 +674,14 @@ public class DiffCalculator
 
         scan(revA, revAStartIndex, revAEndIndex);
 
-        ArrayList<Integer> list;
-        char c;
+        int first;
 
         int i = revBStartIndex;
         while (i < revBEndIndex) {
 
-            c = revB[i];
-            list = positions.get(c);
+            first = positionHead[revB[i]];
 
-            if (list != null && findLongestMatch(revA, list, revB, i)) {
+            if (first != -1 && findLongestMatch(revA, first, revB, i)) {
 
                 i += longestMatch_size;
             }
@@ -704,7 +726,8 @@ public class DiffCalculator
     }
 
     /**
-     * Scans the input and creates the character -> position mapping.
+     * Scans the input and creates the character -> position mapping. The positions of each
+     * character are chained in ascending order.
      *
      * @param input
      *            character array
@@ -716,16 +739,23 @@ public class DiffCalculator
     private void scan(final char[] input, final int start, final int end)
     {
 
-        this.positions = new HashMap<>();
-        ArrayList<Integer> list;
+        for (int t = 0; t < positionTouchedCount; t++) {
+            positionHead[positionTouched[t]] = -1;
+        }
+        positionTouchedCount = 0;
 
-        char c;
-        for (int i = start; i < end; i++) {
+        if (positionNext.length < input.length) {
+            positionNext = new int[Math.max(input.length, 2 * positionNext.length)];
+        }
+
+        int c;
+        for (int i = end - 1; i >= start; i--) {
             c = input[i];
-
-            list = positions.computeIfAbsent(c, k -> new ArrayList<>());
-
-            list.add(i);
+            if (positionHead[c] == -1) {
+                positionTouched[positionTouchedCount++] = c;
+            }
+            positionNext[i] = positionHead[c];
+            positionHead[c] = i;
         }
     }
 
@@ -734,30 +764,48 @@ public class DiffCalculator
      *
      * @param revA
      *            current revision
-     * @param list
-     *            list of start positions for this substring search
+     * @param first
+     *            first start position for this substring search; further start positions are
+     *            chained in ascending order
      * @param revB
      *            previous revision
      * @param index
      *            start index previous revision
      * @return TRUE if a legal substring was found {@code false} otherwise
      */
-    private boolean findLongestMatch(final char[] revA, final ArrayList<Integer> list,
-            final char[] revB, final int index)
+    private boolean findLongestMatch(final char[] revA, final int first, final char[] revB,
+            final int index)
     {
 
         int match;
         longestMatch_size = -1;
 
-        int size = list.size();
+        // No candidate can be extended if the next character of revB is blocked
+        if (revBBlocked[index + 1]) {
+            return false;
+        }
+
         int revAsize = revA.length;
         int revBsize = revB.length;
 
-        int start, end, count;
-        for (int i = 0; i < size; i++) {
+        // No match can be longer than the remainder of revB
+        int maxMatch = revBsize - index;
 
-            start = list.get(i);
-            if (!revABlocked[start] && !revBBlocked[index + 1]) {
+        // A candidate only matters if its match is longer than both the current longest match
+        // and the minimum legal length. Such a match covers the offset 'bound', which allows
+        // rejecting candidates with a single comparison before extending them.
+        int bound;
+        int start, end, count;
+        for (start = first; start != -1; start = positionNext[start]) {
+
+            if (!revABlocked[start]) {
+
+                bound = Math.max(longestMatch_size, VALUE_MINIMUM_LONGEST_COMMON_SUBSTRING);
+                if (bound > 0 && (bound >= maxMatch || start + bound >= revAsize
+                        || revA[start + bound] != revB[index + bound]
+                        || revABlocked[start + bound] || revBBlocked[index + bound])) {
+                    continue;
+                }
 
                 count = index + 1;
                 end = start + 1;
@@ -772,6 +820,10 @@ public class DiffCalculator
                 if (match > longestMatch_size) {
                     longestMatch_size = match;
                     longestMatch_start = start;
+
+                    if (match == maxMatch) {
+                        break;
+                    }
                 }
             }
         }
