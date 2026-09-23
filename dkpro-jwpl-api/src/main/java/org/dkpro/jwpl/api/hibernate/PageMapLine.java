@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +31,7 @@ import jakarta.persistence.Table;
  * An object-relational entity to reflect data attributes in a database.
  * Eventually, those are retrieved by an OR mapper, such as Hibernate.
  */
+@Immutable
 @Entity
 @Table(name = "PageMapLine", indexes = @Index(name = "name_index", columnList = "name"))
 public class PageMapLine

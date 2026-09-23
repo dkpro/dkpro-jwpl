@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -33,6 +35,7 @@ import jakarta.persistence.Table;
  * column. For databases generated before that column was introduced, {@link WikiHibernateUtil}
  * binds {@link LegacyMetaData} instead.
  */
+@Immutable
 @Entity
 @Table(name = "MetaData")
 public class MetaData

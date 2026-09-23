@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.api.hibernate;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
@@ -39,6 +41,7 @@ import jakarta.persistence.Table;
  * because exactly one of them is ever registered in a given session factory. Their entity names
  * differ, following the default simple-class-name rule.
  */
+@Immutable
 @Entity
 @Table(name = "MetaData")
 public class LegacyMetaData
