@@ -165,10 +165,12 @@ public class WikipediaTemplateInfoDumpWriter
     {
         StringBuffer output = new StringBuffer();
 
-        // Statement creates table for Template Id -> Template Name
+        // Statement creates table for Template Id -> Template Name; the prefix index on the name
+        // serves the lookups by name and is declared inline because the table may already exist
         output.append("CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_TPLNAME + " ("
                 + "templateId INTEGER NOT NULL AUTO_INCREMENT,"
-                + "templateName MEDIUMTEXT NOT NULL, " + "PRIMARY KEY(templateId)); \r\n");
+                + "templateName MEDIUMTEXT NOT NULL, " + "PRIMARY KEY(templateId), "
+                + "INDEX tplNameIdx(templateName(191))); \r\n");
 
         if (!tableExists) {
             output.append("CREATE INDEX tplIdx ON " + GeneratorConstants.TABLE_TPLID_TPLNAME

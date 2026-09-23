@@ -119,4 +119,18 @@ class WikipediaTemplateInfoDumpWriterTest
         assertTrue(sql.contains("REPLACE INTO " + GeneratorConstants.TABLE_TPLID_REVISIONID
                 + " VALUES (42, 100);"), sql);
     }
+
+    @Test
+    void declaresTheTemplateNameIndexWhenCreatingTheTemplateTable() throws Exception
+    {
+        String sql = writeSql(Map.of(),
+                modeOf(Map.of("Infobox", Set.of(1)), Map.of("Infobox", Set.of(100))));
+
+        int createTable = sql.indexOf(
+                "CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_TPLNAME + " (");
+        assertTrue(createTable >= 0, sql);
+        String ddl = sql.substring(createTable, sql.indexOf(");", createTable));
+        assertTrue(ddl.contains("INDEX tplNameIdx(templateName(191))"),
+                "the template table lacks an index on templateName: " + ddl);
+    }
 }
