@@ -30,7 +30,9 @@ import jakarta.persistence.Table;
  * Eventually, those are retrieved by an OR mapper, such as Hibernate.
  */
 @Entity
-@Table(name = "PageMapLine", indexes = @Index(name = "name_index", columnList = "name"))
+@Table(name = "PageMapLine", indexes = {
+        @Index(name = "name_index", columnList = "name"),
+        @Index(name = "pageID_index", columnList = "pageID") })
 public class PageMapLine
 {
     @Id

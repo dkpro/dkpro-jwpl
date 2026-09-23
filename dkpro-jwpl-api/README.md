@@ -13,6 +13,21 @@ names.
 
 ## Upgrading / schema changes
 
+### Recommended indexes on Page.name and PageMapLine.pageID
+
+The reference layout indexes `Page.name` (`page_name_index`) and `PageMapLine.pageID`
+(`pageID_index`). Without them, `Wikipedia#getCategories(String)` and `Wikipedia#existsPage(int)`
+scan the whole `Page` or `PageMapLine` table on every call. Databases generated before
+[issue #606](https://github.com/dkpro/dkpro-jwpl/issues/606) lack both indexes. Adding them is
+**optional**: query results do not change, and `hbm2ddl=validate` does not check indexes, so
+existing databases keep working without them. On a full-size wiki, building them takes minutes
+and several hundred MB to a few GB of disk space:
+
+```sql
+ALTER TABLE PageMapLine ADD INDEX pageID_index (pageID);
+ALTER TABLE Page        ADD INDEX page_name_index (name);
+```
+
 ### MetaData.version
 
 **What changed.** The `MetaData` table carries a `version VARCHAR(255)` column. It has always been

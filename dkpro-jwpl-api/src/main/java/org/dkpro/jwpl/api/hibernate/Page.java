@@ -41,7 +41,7 @@ import jakarta.persistence.Table;
  * to hide session management from the user.
  */
 @Entity
-@Table(name = "Page", indexes = @Index(name = "nameIndex", columnList = "name"))
+@Table(name = "Page", indexes = @Index(name = "page_name_index", columnList = "name"))
 public class Page
 {
 
