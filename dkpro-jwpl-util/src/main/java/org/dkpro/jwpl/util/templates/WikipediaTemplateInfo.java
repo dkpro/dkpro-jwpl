@@ -346,14 +346,13 @@ public class WikipediaTemplateInfo
     /**
      * Returns the id of the template with the given name.
      * <p>
-     * The name is bound as a statement parameter and hence compared literally: it must be passed
-     * <em>unescaped</em>, not in the SQL escaped form produced by
+     * As in previous versions, the name is expected in the SQL escaped form produced by
      * {@link StringUtils#sqlEscape(String)}. Leading and trailing whitespace is removed and blanks
-     * are replaced by underscores before the comparison. If several templates share the name, the
-     * smallest id is returned.
+     * are replaced by underscores, then the name is unescaped and bound as a statement parameter.
+     * If several templates share the name, the smallest id is returned.
      *
      * @param templateName
-     *            the unescaped name of the template
+     *            the SQL escaped name of the template
      * @return the id of the template or {@code -1} if no template with that name exists
      * @throws WikiApiException
      *             If there was any error retrieving the id from the database
@@ -365,7 +364,7 @@ public class WikipediaTemplateInfo
                     + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
 
             try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
-                statement.setString(1, templateName.trim().replace(' ', '_'));
+                statement.setString(1, sqlUnescape(templateName.trim().replace(' ', '_')));
                 ResultSet result = execute(statement);
 
                 if (result == null) {
@@ -382,6 +381,60 @@ public class WikipediaTemplateInfo
         catch (Exception e) {
             throw new WikiApiException(e);
         }
+    }
+
+    /**
+     * Reverts {@link StringUtils#sqlEscape(String)}, following the rules MySQL applies to escape
+     * sequences in string literals: {@code \0}, {@code \b}, {@code \n}, {@code \r},
+     * {@code \t} and {@code \Z} denote control characters, a backslash before any other
+     * character denotes that character, and a doubled single quote denotes a single quote. This
+     * keeps names that callers escaped for the formerly concatenated query working with a bound
+     * parameter.
+     *
+     * @param escaped
+     *            an SQL escaped string, must not be {@code null}
+     * @return the unescaped string
+     */
+    static String sqlUnescape(String escaped)
+    {
+        StringBuilder unescaped = new StringBuilder(escaped.length());
+        for (int i = 0; i < escaped.length(); i++) {
+            char c = escaped.charAt(i);
+            if (c == '\\' && i + 1 < escaped.length()) {
+                char next = escaped.charAt(++i);
+                switch (next) {
+                case '0':
+                    unescaped.append('\u0000');
+                    break;
+                case 'b':
+                    unescaped.append('\b');
+                    break;
+                case 'n':
+                    unescaped.append('\n');
+                    break;
+                case 'r':
+                    unescaped.append('\r');
+                    break;
+                case 't':
+                    unescaped.append('\t');
+                    break;
+                case 'Z':
+                    unescaped.append('\u001a');
+                    break;
+                default:
+                    unescaped.append(next);
+                    break;
+                }
+            }
+            else if (c == '\'' && i + 1 < escaped.length() && escaped.charAt(i + 1) == '\'') {
+                unescaped.append('\'');
+                i++;
+            }
+            else {
+                unescaped.append(c);
+            }
+        }
+        return unescaped.toString();
     }
 
     /**
