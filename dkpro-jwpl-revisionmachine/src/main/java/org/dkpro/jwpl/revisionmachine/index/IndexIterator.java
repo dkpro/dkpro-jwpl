@@ -19,9 +19,9 @@ package org.dkpro.jwpl.revisionmachine.index;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Iterator;
 
@@ -40,6 +40,14 @@ public class IndexIterator
 {
 
     /**
+     * Keyset query for one page of revisions. The explicit ordering by primary key is required for
+     * the paging to be correct, as the next page starts after the last primary key read.
+     */
+    private static final String PAGE_QUERY = "SELECT PrimaryKey, RevisionCounter,"
+            + " RevisionID, ArticleID, Timestamp, FullRevisionID FROM revisions"
+            + " WHERE PrimaryKey > ? ORDER BY PrimaryKey";
+
+    /**
      * Reference to the database connection
      */
     private final Connection connection;
@@ -50,9 +58,9 @@ public class IndexIterator
     private ResultSet result;
 
     /**
-     * Reference to the statement
+     * Reference to the prepared statement, reused for every page
      */
-    private Statement statement;
+    private PreparedStatement statement;
 
     /**
      * Currently used primary kes
@@ -74,22 +82,39 @@ public class IndexIterator
      */
     public IndexIterator(final RevisionAPIConfiguration config) throws WikiApiException
     {
+        this(openConnection(config), config.getBufferSize());
+    }
 
+    /**
+     * Creates the IndexIterator object on top of an existing connection, which the iterator then
+     * owns and closes.
+     *
+     * @param connection
+     *            Reference to the database connection
+     * @param bufferSize
+     *            maximum size of a result set, a value {@code <= 0} disables paging
+     */
+    IndexIterator(final Connection connection, final int bufferSize)
+    {
+        this.primaryKey = -1;
+
+        this.statement = null;
+        this.result = null;
+
+        this.MAX_NUMBER_RESULTS = bufferSize;
+        this.connection = connection;
+    }
+
+    private static Connection openConnection(final RevisionAPIConfiguration config)
+        throws WikiApiException
+    {
         try {
-            this.primaryKey = -1;
-
-            this.statement = null;
-            this.result = null;
-
             String driverDB = "com.mysql.jdbc.Driver";
             Class.forName(driverDB);
 
-            MAX_NUMBER_RESULTS = config.getBufferSize();
-
-            this.connection = DriverManager.getConnection(
+            return DriverManager.getConnection(
                     "jdbc:mysql://" + config.getHost() + "/" + config.getDatabase(),
                     config.getUser(), config.getPassword());
-
         }
         catch (SQLException | ClassNotFoundException e) {
             throw new WikiApiException(e);
@@ -105,20 +130,16 @@ public class IndexIterator
      */
     private boolean query() throws SQLException
     {
-        statement = this.connection.createStatement();
-
-        String query = "SELECT PrimaryKey, RevisionCounter,"
-                + " RevisionID, ArticleID, Timestamp, FullRevisionID FROM revisions";
-
-        if (primaryKey > 0) {
-            query += " WHERE PrimaryKey > " + primaryKey;
+        if (statement == null) {
+            String query = PAGE_QUERY;
+            if (MAX_NUMBER_RESULTS > 0) {
+                query += " LIMIT " + MAX_NUMBER_RESULTS;
+            }
+            statement = this.connection.prepareStatement(query);
         }
 
-        if (MAX_NUMBER_RESULTS > 0) {
-            query += " LIMIT " + MAX_NUMBER_RESULTS;
-        }
-
-        result = statement.executeQuery(query);
+        statement.setInt(1, primaryKey);
+        result = statement.executeQuery();
         return result.next();
     }
 
@@ -162,14 +183,14 @@ public class IndexIterator
                 return true;
             }
 
-            closeResultResources();
+            closeResultSet();
 
             if (query()) {
                 return true;
             }
 
-            // The batch came back empty - release what the query opened right away instead of
-            // holding a statement and a result set until the iterator itself is closed.
+            // The iteration has ended - release the statement and its result set right away
+            // instead of holding them until the iterator itself is closed.
             closeResultResources();
             return false;
         }
@@ -179,8 +200,26 @@ public class IndexIterator
     }
 
     /**
-     * Closes the {@link Statement} of the current batch, and with it the {@link ResultSet} it
-     * produced, so that a new batch can be queried.
+     * Closes the {@link ResultSet} of the current batch, so that a new batch can be queried with
+     * the same statement.
+     *
+     * @throws SQLException
+     *             if an error occurs while closing the result set
+     */
+    private void closeResultSet() throws SQLException
+    {
+        try {
+            if (result != null) {
+                result.close();
+            }
+        }
+        finally {
+            result = null;
+        }
+    }
+
+    /**
+     * Closes the reused {@link PreparedStatement}, and with it the {@link ResultSet} it produced.
      *
      * @throws SQLException
      *             if an error occurs while closing the statement
