@@ -121,4 +121,31 @@ public class CategoryDescendantsIteratorTest
 
         }
     }
+
+    /**
+     * The category UKP has the children 7, 8 and 9; 7 has the children 10 and 11, 8 has the
+     * children 12-15. The descendants are expected in breadth-first order, independent of the
+     * buffer size.
+     */
+    @Test
+    public void test_categoryIteratorTestSequence()
+    {
+        Category cat = null;
+        try {
+            cat = wiki.getCategory("UKP");
+        }
+        catch (WikiApiException e) {
+            fail("A WikiApiException occurred while getting the category 'UKP'", e);
+        }
+
+        List<Integer> expectedPageIds = List.of(7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+        for (int bufferSize = 1; bufferSize <= 100; bufferSize++) {
+            List<Integer> isIds = new ArrayList<>();
+            for (Category descendant : cat.getDescendants(bufferSize)) {
+                isIds.add(descendant.getPageId());
+            }
+            assertEquals(expectedPageIds, isIds, "descendants with bufferSize " + bufferSize);
+        }
+    }
 }
