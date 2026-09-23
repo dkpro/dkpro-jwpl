@@ -82,6 +82,62 @@ cache key is derived from the connection-affecting values -- language, host, dat
 driver, user and password -- so two configurations differing in any of them get their own factory.
 The Hibernate settings bag above is deliberately *not* part of that key.
 
+## Connection pooling
+
+By default, JWPL uses Hibernate's built-in connection pool with at most **5** connections. That
+pool is not meant for production use: it keeps no prepared-statement cache and, once all of its
+connections are in use, it does **not** wait for one to be returned — the next transaction fails
+immediately with a `HibernateException` ("The internal connection pool has reached its maximum
+size and no connection is currently available").
+
+Single-threaded use never gets near that limit. Parallel use does: session factories are shared
+JVM-wide per database configuration, and sessions are bound to the current thread, so every thread
+that is inside a JWPL call holds one connection. Threads sharing one configuration therefore need a
+pool of at least as many connections as threads.
+
+As with the Hibernate settings above, configure the pool **before** the first
+`new Wikipedia(config)` for a given database configuration; the pool settings are not part of the
+session-factory cache key.
+
+**Built-in pool.** Raise its size to at least the number of threads:
+
+```java
+dbConfig.setConnectionPoolSize(16); // hibernate.connection.pool_size, default 5
+```
+
+A `hibernate.connection.pool_size` given through `setHibernateProperty` takes precedence.
+
+**C3P0.** For MySQL and MariaDB, JWPL switches to C3P0 automatically as soon as Hibernate's C3P0
+integration is on the classpath (between 3 and 15 connections, 100 cached statements). Unlike the
+built-in pool, C3P0 blocks until a connection becomes available. Use the `hibernate-c3p0` artifact
+that matches your `hibernate-core` version:
+
+```xml
+<dependency>
+  <groupId>org.hibernate.orm</groupId>
+  <artifactId>hibernate-c3p0</artifactId>
+  <version>${hibernate.version}</version>
+</dependency>
+```
+
+Its defaults can be overridden like any other setting, e.g.
+`dbConfig.setHibernateProperty("hibernate.c3p0.max_size", "32")`.
+
+**HikariCP.** Add `hibernate-hikaricp` (again matching your `hibernate-core` version) and select
+it explicitly. Selecting it matters when C3P0 is on the classpath too, since Hibernate would pick
+C3P0 otherwise. Set the pool size as a `hibernate.hikari.*` setting, because Hibernate 6 does not
+map `hibernate.connection.pool_size` onto HikariCP:
+
+```java
+dbConfig.setHibernateProperty("hibernate.connection.provider_class", "hikari");
+dbConfig.setHibernateProperty("hibernate.hikari.maximumPoolSize", "16");
+```
+
+Note that a sufficiently large pool makes only the connection layer usable from several threads.
+`Wikipedia` itself is not documented as thread-safe (see
+[issue #605](https://github.com/dkpro/dkpro-jwpl/issues/605)); prefer one `Wikipedia` instance per
+thread over the same `DatabaseConfiguration`.
+
 ## Persistence
 
 The entities live in `org.dkpro.jwpl.api.hibernate` and are mapped with JPA annotations. The

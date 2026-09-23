@@ -26,6 +26,12 @@ import java.util.Properties;
 public class DatabaseConfiguration
 {
 
+    /**
+     * The default size of Hibernate's built-in connection pool, see
+     * {@link #setConnectionPoolSize(int)}.
+     */
+    public static final int DEFAULT_CONNECTION_POOL_SIZE = 5;
+
     private String host;
     private String database;
     private String user;
@@ -34,6 +40,7 @@ public class DatabaseConfiguration
     private String jdbcURL;
     private String databaseDriver;
     private final Properties hibernateProperties = new Properties();
+    private int connectionPoolSize = DEFAULT_CONNECTION_POOL_SIZE;
 
     /**
      * A no-arg constructor required by frameworks.
@@ -229,6 +236,48 @@ public class DatabaseConfiguration
     public String getJdbcURL()
     {
         return jdbcURL;
+    }
+
+    /**
+     * @return The size of Hibernate's built-in connection pool, i.e. the value JWPL applies as
+     *         {@code hibernate.connection.pool_size}. Defaults to
+     *         {@value #DEFAULT_CONNECTION_POOL_SIZE}.
+     *
+     * @see #setConnectionPoolSize(int)
+     */
+    public int getConnectionPoolSize()
+    {
+        return connectionPoolSize;
+    }
+
+    /**
+     * Sets the size of Hibernate's built-in connection pool ({@code hibernate.connection.pool_size}).
+     * <p>
+     * The built-in pool does not wait for a connection to become available: once all of its
+     * connections are in use, the next transaction fails immediately with a
+     * {@code HibernateException}. As JWPL binds a session to the current thread, every thread that
+     * uses the API concurrently holds one connection while a transaction is open. Callers using one
+     * configuration from several threads therefore need a pool of at least as many connections as
+     * threads - or a production grade pool such as C3P0 or HikariCP, see
+     * {@code dkpro-jwpl-api/README.md}.
+     * <p>
+     * A value given for {@code hibernate.connection.pool_size} via
+     * {@link #setHibernateProperty(String, String)} takes precedence over this one. Like those
+     * settings, the size is read only when the session factory for this configuration is built, so
+     * set it <i>before</i> the first {@code new Wikipedia(config)}.
+     *
+     * @param connectionPoolSize
+     *            The maximum number of pooled connections. Must be at least {@code 1}.
+     *
+     * @throws IllegalArgumentException Thrown if {@code connectionPoolSize} is less than {@code 1}.
+     */
+    public void setConnectionPoolSize(int connectionPoolSize)
+    {
+        if (connectionPoolSize < 1) {
+            throw new IllegalArgumentException(
+                    "The connection pool size must be at least 1, but was " + connectionPoolSize);
+        }
+        this.connectionPoolSize = connectionPoolSize;
     }
 
     /**
