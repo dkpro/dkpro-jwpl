@@ -56,6 +56,9 @@ public class JWPLDataMachine
             + "GZip, BZip2, and 7z compressed archives of above-named files are also allowed.\n"
             + "Note that the linktarget table is loaded into memory; for large wikis increase the\n"
             + "heap of the JVM accordingly (e.g. -Xmx8g).\n"
+            + "Only direct members of <DISAMBIGUATION_CATEGORY_NAME> are flagged as disambiguation\n"
+            + "pages; members of its subcategories are not. For the English Wikipedia use\n"
+            + "All_disambiguation_pages, which every disambiguation template (e.g. {{hndis}}) populates.\n"
             + "Please set up a decompressor.xml for a usage of other external archive utilities (see documentation for more help).\n";
 
     private static final long startTime = System.currentTimeMillis();

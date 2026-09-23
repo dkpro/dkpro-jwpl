@@ -28,7 +28,7 @@ EXAMPLE FILE:
 
  * language - The used language. The language string must correspond to one of the values enumerated in WikiConstants.Language in the JWPL. Examples: english, german, frensh, arabic.
  * mainCategory - The title of the main category of the Wikipedia language version used. For example, "Categories" for the English Wikipedia or "!Hauptkategorie" for the German Wikipedia.
- * isambiguationCategory - The title of the disambiguation category of the Wikipedia language version used. For example, "Disambiguation" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia.
+ * disambiguationCategory - The title of the disambiguation category of the Wikipedia language version used. For example, "All_disambiguation_pages" for the English Wikipedia or "Begriffsklärung" for the German Wikipedia. Only direct members of this category are flagged as disambiguation pages; members of its subcategories are not. For the English Wikipedia, "Disambiguation_pages" therefore misses pages tagged with specialised templates such as {{hndis}} or {{geodis}}, whereas "All_disambiguation_pages" is populated by every disambiguation template.
  * fromTimestamp - yyyymmddhhmmss - The timestamp of the first version to be extracted.
  * toTimestamp - yyyymmddhhmmss - The timestamp of the last version to be extracted.
  * each - The number of days to be used as regular interval for extracting versions.
