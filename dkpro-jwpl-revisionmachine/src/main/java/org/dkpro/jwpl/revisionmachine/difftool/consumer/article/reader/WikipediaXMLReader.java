@@ -71,6 +71,26 @@ public class WikipediaXMLReader
     private Reader input;
 
     /**
+     * Size of the read buffer in chars
+     */
+    private static final int READ_BUFFER_SIZE = 1 << 16;
+
+    /**
+     * Chars read from the input in bulk, handed out one at a time by {@link #read()}
+     */
+    private final char[] readBuffer = new char[READ_BUFFER_SIZE];
+
+    /**
+     * Index of the next char to return from the read buffer
+     */
+    private int readPosition;
+
+    /**
+     * Number of valid chars in the read buffer
+     */
+    private int readLength;
+
+    /**
      * Current position in the XML content
      */
     private long bytePosition;
@@ -267,7 +287,20 @@ public class WikipediaXMLReader
     private int read() throws IOException
     {
         this.bytePosition++;
-        return input.read();
+        if (this.readPosition == this.readLength) {
+            int length;
+            do {
+                length = input.read(this.readBuffer, 0, this.readBuffer.length);
+            }
+            while (length == 0);
+
+            if (length == -1) {
+                return -1;
+            }
+            this.readPosition = 0;
+            this.readLength = length;
+        }
+        return this.readBuffer[this.readPosition++];
     }
 
     /**
