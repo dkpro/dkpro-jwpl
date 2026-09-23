@@ -55,4 +55,22 @@ public class BinaryDumpTableInputStream
         return inputStream.read();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException
+    {
+        return inputStream.read(b, off, len);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long skip(long n) throws IOException
+    {
+        return inputStream.skip(n);
+    }
+
 }

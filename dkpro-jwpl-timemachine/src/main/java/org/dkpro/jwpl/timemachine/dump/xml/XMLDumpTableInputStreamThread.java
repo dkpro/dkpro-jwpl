@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.timemachine.dump.xml;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -45,6 +46,12 @@ class XMLDumpTableInputStreamThread
      * Enable the main and category pages as well as discussions.
      */
     private static final String ENABLED_NAMESPACES = "NS_MAIN,NS_TALK,NS_CATEGORY";
+
+    /**
+     * Size of the write buffer in front of the pipe. The writers flush it in
+     * {@code writeEndWiki()} and on {@code close()}, which also closes the pipe.
+     */
+    private static final int WRITE_BUFFER_SIZE = 1 << 16;
 
     /** Parses the bound input into SQL. May throw {@link IOException}. */
     @FunctionalInterface
@@ -99,13 +106,14 @@ class XMLDumpTableInputStreamThread
 
     private static DumpWriter createWriter(OutputStream oStream, DumpTableEnum table)
     {
+        final OutputStream buffered = new BufferedOutputStream(oStream, WRITE_BUFFER_SIZE);
         switch (table) {
         case PAGE:
-            return new NamespaceFilter(new PageWriter(oStream), ENABLED_NAMESPACES);
+            return new NamespaceFilter(new PageWriter(buffered), ENABLED_NAMESPACES);
         case REVISION:
-            return new NamespaceFilter(new RevisionWriter(oStream), ENABLED_NAMESPACES);
+            return new NamespaceFilter(new RevisionWriter(buffered), ENABLED_NAMESPACES);
         case TEXT:
-            return new NamespaceFilter(new TextWriter(oStream), ENABLED_NAMESPACES);
+            return new NamespaceFilter(new TextWriter(buffered), ENABLED_NAMESPACES);
         default:
             throw new IllegalArgumentException("Unsupported table type: " + table);
         }

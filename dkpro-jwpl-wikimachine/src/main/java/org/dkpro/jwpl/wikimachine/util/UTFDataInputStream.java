@@ -79,7 +79,7 @@ public class UTFDataInputStream
     public String readUTFAsArray() throws IOException
     {
         byte[] buffer = new byte[super.readInt()];
-        super.read(buffer, 0, buffer.length);
+        super.readFully(buffer);
         return new String(buffer, StandardCharsets.UTF_8);
     }
 
