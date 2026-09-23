@@ -40,9 +40,9 @@ public class SqlServerStream
 
     public void writeStatement(CharSequence sql) throws IOException
     {
-        Statement statement;
-        try {
-            statement = connection.createStatement();
+        // The statement is closed after each call so that it is deregistered from the
+        // connection instead of being retained until the connection is closed.
+        try (Statement statement = connection.createStatement()) {
             statement.setEscapeProcessing(false);
             statement.execute(sql.toString());
         }
