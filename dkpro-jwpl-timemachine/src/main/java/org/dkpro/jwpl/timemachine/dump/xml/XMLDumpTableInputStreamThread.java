@@ -20,11 +20,13 @@ package org.dkpro.jwpl.timemachine.dump.xml;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
 
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
+import org.dkpro.jwpl.mwdumper.importer.MultiWriter;
 import org.dkpro.jwpl.mwdumper.importer.NamespaceFilter;
 import org.dkpro.jwpl.wikimachine.dump.xml.AbstractXmlDumpReader;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
@@ -66,6 +68,9 @@ class XMLDumpTableInputStreamThread
     /** completion flag for the conversion process */
     private boolean isComplete;
 
+    /** the error that ended the conversion, if any */
+    private volatile Throwable failure;
+
     /**
      * Drive the conversion of a single-file dump.
      *
@@ -102,6 +107,30 @@ class XMLDumpTableInputStreamThread
         // Abort is a best-effort signal to the single-file reader; the multi-part pipeline
         // has no equivalent per-part hook, so it is a no-op here.
         this.abortAction = () -> { /* no-op */ };
+    }
+
+    /**
+     * Drive the conversion of the revision and the page table of a (multi-part) dump in a single
+     * pass. Both writers share one {@link NamespaceFilter}, so they see the very same pages.
+     *
+     * @param iStreams       Ordered list of XML part input streams (ascending page-range).
+     * @param revisionStream Output stream for the revision table.
+     * @param pageStream     Output stream for the page table.
+     */
+    public XMLDumpTableInputStreamThread(List<InputStream> iStreams, OutputStream revisionStream,
+            OutputStream pageStream)
+    {
+        super("xml2sql");
+        // The page writer comes first, so that it is flushed and closed before the revision
+        // stream is, i.e. before a reader of the revision table observes the end of its stream.
+        final MultiWriter tee = new MultiWriter();
+        tee.add(new PageWriter(new BufferedOutputStream(pageStream, WRITE_BUFFER_SIZE)));
+        tee.add(new RevisionWriter(new BufferedOutputStream(revisionStream, WRITE_BUFFER_SIZE)));
+        final DumpWriter writer = new NamespaceFilter(tee, ENABLED_NAMESPACES);
+        // PageReader and RevisionReader handle the very same elements.
+        this.parseTask = () -> MultiPartXmlDumpReader.readDumps(iStreams, writer,
+                RevisionReader::new);
+        this.abortAction = () -> { /* no-op, see the other multi-part constructor */ };
     }
 
     private static DumpWriter createWriter(OutputStream oStream, DumpTableEnum table)
@@ -142,11 +171,35 @@ class XMLDumpTableInputStreamThread
             isComplete = true;
         }
         catch (IOException e) {
-            // The rethrown exception dies with this thread - no caller ever joins it, the
-            // consumer only observes a broken pipe. Hence this log is the only record of the
-            // original cause and must not be removed as 'redundant'.
+            failure = e;
+            // The rethrown exception dies with this thread - unless a caller uses
+            // awaitCompletion(), the consumer only observes a broken pipe. Hence this log is
+            // the only record of the original cause and must not be removed as 'redundant'.
             logger.error(e.getMessage(), e);
             throw new RuntimeException(e);
+        }
+        catch (RuntimeException e) {
+            failure = e;
+            throw e;
+        }
+    }
+
+    /**
+     * Waits until the conversion has finished and all of its output streams are closed.
+     *
+     * @throws IOException Thrown if the conversion failed or waiting for it was interrupted.
+     */
+    public void awaitCompletion() throws IOException
+    {
+        try {
+            join();
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new InterruptedIOException("Interrupted while waiting for the XML conversion.");
+        }
+        if (failure != null) {
+            throw new IOException("The XML conversion failed.", failure);
         }
     }
 

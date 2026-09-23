@@ -1,0 +1,2 @@
+5	5	Letters
+6	6	Greek

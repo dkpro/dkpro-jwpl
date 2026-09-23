@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" version="0.11" xml:lang="en">
+  <siteinfo>
+    <sitename>Golden Wiki</sitename>
+    <dbname>goldenwiki</dbname>
+    <base>http://golden.example/wiki/Main_Page</base>
+    <generator>MediaWiki 1.46.0</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Category:Letters</title>
+    <ns>14</ns>
+    <id>5</id>
+    <revision>
+      <id>501</id>
+      <timestamp>2019-12-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="16" xml:space="preserve">All the letters.</text>
+    </revision>
+  </page>
+  <page>
+    <title>Category:Greek</title>
+    <ns>14</ns>
+    <id>6</id>
+    <revision>
+      <id>601</id>
+      <timestamp>2020-01-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="14" xml:space="preserve">Greek letters.</text>
+    </revision>
+    <revision>
+      <id>602</id>
+      <timestamp>2021-08-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="44" xml:space="preserve">Greek letters, revised. [[Category:Letters]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>User:Bob</title>
+    <ns>2</ns>
+    <id>7</id>
+    <revision>
+      <id>701</id>
+      <timestamp>2020-01-15T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="20" xml:space="preserve">Bob likes [[Alpha]].</text>
+    </revision>
+  </page>
+  <page>
+    <title>Delta</title>
+    <ns>0</ns>
+    <id>8</id>
+    <revision>
+      <id>801</id>
+      <timestamp>2021-09-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="36" xml:space="preserve">Delta is new and links to [[Alpha]].</text>
+    </revision>
+  </page>
+</mediawiki>

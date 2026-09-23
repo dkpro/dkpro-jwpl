@@ -1,0 +1,2 @@
+1	1	Alpha	Alpha links to [[Beta]]. [[Category:Letters]]	
+3	3	Gamma	#REDIRECT [[Alpha]]	

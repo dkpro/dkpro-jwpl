@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/" version="0.11" xml:lang="en">
+  <siteinfo>
+    <sitename>Golden Wiki</sitename>
+    <dbname>goldenwiki</dbname>
+    <base>http://golden.example/wiki/Main_Page</base>
+    <generator>MediaWiki 1.46.0</generator>
+    <case>first-letter</case>
+    <namespaces>
+      <namespace key="0" case="first-letter" />
+      <namespace key="1" case="first-letter">Talk</namespace>
+      <namespace key="2" case="first-letter">User</namespace>
+      <namespace key="14" case="first-letter">Category</namespace>
+    </namespaces>
+  </siteinfo>
+  <page>
+    <title>Alpha</title>
+    <ns>0</ns>
+    <id>1</id>
+    <revision>
+      <id>101</id>
+      <timestamp>2020-01-10T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="45" xml:space="preserve">Alpha links to [[Beta]]. [[Category:Letters]]</text>
+    </revision>
+    <revision>
+      <id>102</id>
+      <timestamp>2021-06-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="76" xml:space="preserve">Alpha, second version, links to [[Gamma]] and [[Beta]]. [[Category:Letters]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Beta</title>
+    <ns>0</ns>
+    <id>2</id>
+    <revision>
+      <id>201</id>
+      <timestamp>2020-02-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="40" xml:space="preserve">Beta is an article linking to [[Alpha]].</text>
+    </revision>
+    <revision>
+      <id>202</id>
+      <timestamp>2021-03-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="19" xml:space="preserve">#REDIRECT [[Alpha]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Gamma</title>
+    <ns>0</ns>
+    <id>3</id>
+    <revision>
+      <id>301</id>
+      <timestamp>2020-03-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="19" xml:space="preserve">#REDIRECT [[Alpha]]</text>
+    </revision>
+    <revision>
+      <id>302</id>
+      <timestamp>2021-04-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="47" xml:space="preserve">Gamma became a real article. [[Category:Greek]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>Talk:Alpha</title>
+    <ns>1</ns>
+    <id>4</id>
+    <revision>
+      <id>401</id>
+      <timestamp>2020-05-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="17" xml:space="preserve">Talk about Alpha.</text>
+    </revision>
+  </page>
+  <page>
+    <title>Category:Letters</title>
+    <ns>14</ns>
+    <id>5</id>
+    <revision>
+      <id>501</id>
+      <timestamp>2019-12-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="16" xml:space="preserve">All the letters.</text>
+    </revision>
+  </page>
+  <page>
+    <title>Category:Greek</title>
+    <ns>14</ns>
+    <id>6</id>
+    <revision>
+      <id>601</id>
+      <timestamp>2020-01-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="14" xml:space="preserve">Greek letters.</text>
+    </revision>
+    <revision>
+      <id>602</id>
+      <timestamp>2021-08-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="44" xml:space="preserve">Greek letters, revised. [[Category:Letters]]</text>
+    </revision>
+  </page>
+  <page>
+    <title>User:Bob</title>
+    <ns>2</ns>
+    <id>7</id>
+    <revision>
+      <id>701</id>
+      <timestamp>2020-01-15T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="20" xml:space="preserve">Bob likes [[Alpha]].</text>
+    </revision>
+  </page>
+  <page>
+    <title>Delta</title>
+    <ns>0</ns>
+    <id>8</id>
+    <revision>
+      <id>801</id>
+      <timestamp>2021-09-01T12:00:00Z</timestamp>
+      <contributor>
+        <username>Alice</username>
+        <id>42</id>
+      </contributor>
+      <model>wikitext</model>
+      <format>text/x-wiki</format>
+      <text bytes="36" xml:space="preserve">Delta is new and links to [[Alpha]].</text>
+    </revision>
+  </page>
+</mediawiki>
