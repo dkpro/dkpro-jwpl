@@ -69,10 +69,7 @@ public class ArticleIndex
             StringBuilder revCountBuffer = new StringBuilder();
 
             boolean first = true;
-            ArticleIndexData info;
-            while (!infoList.isEmpty()) {
-
-                info = infoList.remove(0);
+            for (ArticleIndexData info : infoList) {
 
                 if (!first) {
                     fullRevBuffer.append(" ");
@@ -87,6 +84,8 @@ public class ArticleIndex
 
                 first = false;
             }
+            // the caller reuses the list for the next article, hence it has to be emptied
+            infoList.clear();
 
             boolean sql = !insertStatement.isEmpty();
             if (buffer.length() + fullRevBuffer.length() + revCountBuffer.length()
