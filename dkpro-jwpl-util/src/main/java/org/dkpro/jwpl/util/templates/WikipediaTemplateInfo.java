@@ -41,6 +41,7 @@ import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.util.StringUtils;
 import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
@@ -342,17 +343,28 @@ public class WikipediaTemplateInfo
         }
     }
 
+    /**
+     * Returns the id of the template with the given name.
+     * <p>
+     * As in previous versions, the name is expected in the SQL escaped form produced by
+     * {@link StringUtils#sqlEscape(String)}. Leading and trailing whitespace is removed and blanks
+     * are replaced by underscores, then the name is unescaped and bound as a statement parameter.
+     * If several templates share the name, the smallest id is returned.
+     *
+     * @param templateName
+     *            the SQL escaped name of the template
+     * @return the id of the template or {@code -1} if no template with that name exists
+     * @throws WikiApiException
+     *             If there was any error retrieving the id from the database
+     */
     public int checkTemplateId(String templateName) throws WikiApiException
     {
         try {
-            StringBuilder sqlString = new StringBuilder();
-            sqlString.append(
-                    "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " AS tpl WHERE tpl.templateName='"
-                            + templateName.trim().replaceAll(" ", "_") + "'");
+            String sqlString = "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                    + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
 
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
+            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
+                statement.setString(1, sqlUnescape(templateName.trim().replace(' ', '_')));
                 ResultSet result = execute(statement);
 
                 if (result == null) {
@@ -368,6 +380,157 @@ public class WikipediaTemplateInfo
         }
         catch (Exception e) {
             throw new WikiApiException(e);
+        }
+    }
+
+    /**
+     * Reverts {@link StringUtils#sqlEscape(String)}, following the rules MySQL applies to escape
+     * sequences in string literals: {@code \0}, {@code \b}, {@code \n}, {@code \r},
+     * {@code \t} and {@code \Z} denote control characters, a backslash before any other
+     * character denotes that character, and a doubled single quote denotes a single quote. This
+     * keeps names that callers escaped for the formerly concatenated query working with a bound
+     * parameter.
+     *
+     * @param escaped
+     *            an SQL escaped string, must not be {@code null}
+     * @return the unescaped string
+     */
+    static String sqlUnescape(String escaped)
+    {
+        StringBuilder unescaped = new StringBuilder(escaped.length());
+        for (int i = 0; i < escaped.length(); i++) {
+            char c = escaped.charAt(i);
+            if (c == '\\' && i + 1 < escaped.length()) {
+                char next = escaped.charAt(++i);
+                switch (next) {
+                case '0':
+                    unescaped.append('\u0000');
+                    break;
+                case 'b':
+                    unescaped.append('\b');
+                    break;
+                case 'n':
+                    unescaped.append('\n');
+                    break;
+                case 'r':
+                    unescaped.append('\r');
+                    break;
+                case 't':
+                    unescaped.append('\t');
+                    break;
+                case 'Z':
+                    unescaped.append('\u001a');
+                    break;
+                default:
+                    unescaped.append(next);
+                    break;
+                }
+            }
+            else if (c == '\'' && i + 1 < escaped.length() && escaped.charAt(i + 1) == '\'') {
+                unescaped.append('\'');
+                i++;
+            }
+            else {
+                unescaped.append(c);
+            }
+        }
+        return unescaped.toString();
+    }
+
+    /**
+     * Loads the ids of all templates with a single query. This allows resolving many template
+     * names, as collected by the template info generator, without one query per name.
+     *
+     * @return the ids of all templates, to be looked up by their SQL escaped names
+     * @throws WikiApiException
+     *             If there was any error retrieving the ids from the database
+     */
+    public TemplateIds loadTemplateIds() throws WikiApiException
+    {
+        try {
+            return loadTemplateIds(connection);
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    static TemplateIds loadTemplateIds(Connection connection) throws SQLException
+    {
+        Map<String, Integer> ids = new HashMap<>();
+        String sqlString = "SELECT templateId, templateName FROM "
+                + GeneratorConstants.TABLE_TPLID_TPLNAME;
+        try (PreparedStatement statement = connection.prepareStatement(sqlString,
+                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY)) {
+            try {
+                // Lets MySQL Connector/J (and the MariaDB driver) stream the rows instead of
+                // buffering the whole table on the client
+                statement.setFetchSize(Integer.MIN_VALUE);
+            }
+            catch (SQLException e) {
+                logger.debug("Row streaming is not supported by the JDBC driver.", e);
+            }
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    int id = result.getInt(1);
+                    String key = normalizeTemplateName(StringUtils.sqlEscape(result.getString(2)));
+                    ids.merge(key, id, Math::min);
+                }
+            }
+        }
+        return new TemplateIds(ids);
+    }
+
+    /**
+     * Normalizes an SQL escaped template name for looking it up in {@link TemplateIds}. It applies
+     * the normalization of {@link #checkTemplateId(String)} (trimming, blanks replaced by
+     * underscores) and mimics the default case-insensitive MySQL collation by lower casing the
+     * name.
+     *
+     * @param escapedTemplateName
+     *            a template name escaped via {@link StringUtils#sqlEscape(String)}
+     * @return the normalized template name
+     */
+    private static String normalizeTemplateName(String escapedTemplateName)
+    {
+        return escapedTemplateName.trim().replace(' ', '_').toLowerCase();
+    }
+
+    /**
+     * The ids of all templates as loaded by {@link WikipediaTemplateInfo#loadTemplateIds()}.
+     * Template names are normalized for the lookup the same way as by
+     * {@link WikipediaTemplateInfo#checkTemplateId(String)}, but compared case-insensitively like
+     * the default MySQL collation does. If several templates share a normalized name, the smallest
+     * id is kept.
+     */
+    public static final class TemplateIds
+    {
+
+        private final Map<String, Integer> idsByNormalizedName;
+
+        private TemplateIds(Map<String, Integer> idsByNormalizedName)
+        {
+            this.idsByNormalizedName = idsByNormalizedName;
+        }
+
+        /**
+         * Returns the id of the template with the given name.
+         *
+         * @param escapedTemplateName
+         *            the template name escaped via {@link StringUtils#sqlEscape(String)}
+         * @return the id of the template or {@code -1} if no template with that name exists
+         */
+        public int getTemplateId(String escapedTemplateName)
+        {
+            return idsByNormalizedName.getOrDefault(normalizeTemplateName(escapedTemplateName), -1);
+        }
+
+        /**
+         * @return the number of distinct normalized template names
+         */
+        int size()
+        {
+            return idsByNormalizedName.size();
         }
     }
 

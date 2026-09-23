@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.ToIntFunction;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
@@ -42,6 +43,7 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
 import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo;
+import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo.TemplateIds;
 import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -287,12 +289,23 @@ public class WikipediaTemplateInfoGenerator
 
         tableWithTemplatesExists = true;
 
-        if (mode.active_for_pages && pageTableExists) {
-            generateTemplateIndices(info, TPLNAME_TO_PAGEIDS.keySet());
-        }
-
-        if (mode.active_for_revisions && revisionTableExists) {
-            generateTemplateIndices(info, TPLNAME_TO_REVISIONIDS.keySet());
+        boolean resolvePageTemplates = mode.active_for_pages && pageTableExists;
+        boolean resolveRevisionTemplates = mode.active_for_revisions && revisionTableExists;
+        if (resolvePageTemplates || resolveRevisionTemplates) {
+            try {
+                TemplateIds existingIds = info.loadTemplateIds();
+                if (resolvePageTemplates) {
+                    resolveTemplateIds(existingIds::getTemplateId, TPLNAME_TO_PAGEIDS.keySet(),
+                            tplNameToTplId);
+                }
+                if (resolveRevisionTemplates) {
+                    resolveTemplateIds(existingIds::getTemplateId, TPLNAME_TO_REVISIONIDS.keySet(),
+                            tplNameToTplId);
+                }
+            }
+            catch (WikiApiException e) {
+                logger.error("Problems generating template indices!", e);
+            }
         }
 
         ////////////////////
@@ -308,26 +321,29 @@ public class WikipediaTemplateInfoGenerator
     }
 
     /**
-     * Loads existing ids into the map. If no id exists, a template will get a new one in the dump
-     * writer
+     * Puts the ids of templates that already exist in the database into the given map. Templates
+     * without an id get a new one in the dump writer.
      *
-     * @param info
-     *            Must not be {@code null}.
+     * @param existingIds
+     *            returns the id of an existing template for its SQL escaped name, or {@code -1} if
+     *            there is none, such as {@link TemplateIds#getTemplateId(String)}. Must not be
+     *            {@code null}.
      * @param templateNames
-     *            template names to use
+     *            SQL escaped template names to resolve
+     * @param tplNameToTplId
+     *            the map to put the resolved ids into, keyed by the given template names
      */
-    private void generateTemplateIndices(WikipediaTemplateInfo info, Set<String> templateNames)
+    static void resolveTemplateIds(ToIntFunction<String> existingIds, Set<String> templateNames,
+            Map<String, Integer> tplNameToTplId)
     {
-        try {
-            for (String name : templateNames) {
-                int id = info.checkTemplateId(name);
-                if (id != -1) {
-                    tplNameToTplId.put(name, id);
-                }
+        for (String name : templateNames) {
+            if (tplNameToTplId.containsKey(name)) {
+                continue;
             }
-        }
-        catch (WikiApiException e) {
-            logger.error("Problems generating template indices!", e);
+            int id = existingIds.applyAsInt(name);
+            if (id != -1) {
+                tplNameToTplId.put(name, id);
+            }
         }
     }
 
