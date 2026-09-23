@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.datamachine.dump.xml;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -101,6 +102,20 @@ class BinaryDumpTableInputStreamTest
         in.initialize(source, DumpTableEnum.TEXT);
         in.close();
         assertThrows(IOException.class, source::read);
+    }
+
+    @Test
+    void testInitializeRejectsNullStream()
+    {
+        BinaryDumpTableInputStream in = new BinaryDumpTableInputStream();
+        assertThrows(IllegalArgumentException.class, () -> in.initialize((InputStream) null, DumpTableEnum.TEXT));
+    }
+
+    @Test
+    void testCloseWithoutInitialize()
+    {
+        BinaryDumpTableInputStream in = new BinaryDumpTableInputStream();
+        assertDoesNotThrow(in::close);
     }
 
     private static void writeRows(OutputStream out) throws IOException

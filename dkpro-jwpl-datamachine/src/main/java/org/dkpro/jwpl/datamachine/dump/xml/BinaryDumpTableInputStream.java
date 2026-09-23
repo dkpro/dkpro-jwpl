@@ -43,14 +43,22 @@ public class BinaryDumpTableInputStream
     private InputStream inputStream = null;
 
     /**
-     * {@inheritDoc}
+     * Initializes this stream to read from the given {@link InputStream} without any data
+     * manipulations. Unbuffered sources (e.g. a {@code GZIPInputStream}) are wrapped in a
+     * {@link BufferedInputStream} so that single-byte reads do not hit the source per byte.
+     *
+     * @param inputStream   The input stream to read from. Must not be {@code null}.
+     * @param table         The {@link DumpTableEnum table type} as additional context information.
+     * @throws IOException  Thrown if IO errors occurred.
+     * @throws IllegalArgumentException Thrown if {@code inputStream} is {@code null}.
      */
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
     {
-        // just read from the stream without any data manipulations; buffer unbuffered sources
-        // (e.g. a GZIPInputStream) so that single-byte reads do not hit the source per byte
-        if (inputStream == null || inputStream instanceof BufferedInputStream) {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("'inputStream' must not be null.");
+        }
+        if (inputStream instanceof BufferedInputStream) {
             this.inputStream = inputStream;
         }
         else {
@@ -95,7 +103,7 @@ public class BinaryDumpTableInputStream
     }
 
     /**
-     * {@inheritDoc}
+     * Closes the underlying stream. Does nothing if this stream was never initialized.
      */
     @Override
     public void close() throws IOException
