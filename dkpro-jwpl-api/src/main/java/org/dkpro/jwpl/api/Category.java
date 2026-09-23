@@ -158,9 +158,7 @@ public class Category
      */
     long __getId()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateCategory.getId();
-        });
+        return hibernateCategory.getId();
     }
 
     /**
@@ -168,9 +166,7 @@ public class Category
      */
     public int getPageId()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateCategory.getPageId();
-        });
+        return hibernateCategory.getPageId();
     }
 
     /**
@@ -280,9 +276,7 @@ public class Category
      */
     public Title getTitle() throws WikiTitleParsingException
     {
-        String name = wiki.__inTransaction(session -> {
-            return hibernateCategory.getName();
-        });
+        String name = hibernateCategory.getName();
         return new Title(name);
     }
 

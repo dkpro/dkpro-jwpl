@@ -70,9 +70,7 @@ public class MetaData
      */
     long getId()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getId();
-        });
+        return hibernateMetaData.getId();
     }
 
     /**
@@ -80,9 +78,7 @@ public class MetaData
      */
     public long getNumberOfCategories()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getNrofCategories();
-        });
+        return hibernateMetaData.getNrofCategories();
     }
 
     /**
@@ -90,9 +86,7 @@ public class MetaData
      */
     public long getNumberOfPages()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getNrofPages();
-        });
+        return hibernateMetaData.getNrofPages();
     }
 
     /**
@@ -100,9 +94,7 @@ public class MetaData
      */
     public long getNumberOfDisambiguationPages()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getNrofDisambiguationPages();
-        });
+        return hibernateMetaData.getNrofDisambiguationPages();
     }
 
     /**
@@ -110,9 +102,7 @@ public class MetaData
      */
     public long getNumberOfRedirectPages()
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getNrofRedirects();
-        });
+        return hibernateMetaData.getNrofRedirects();
     }
 
     /**
@@ -122,9 +112,7 @@ public class MetaData
      */
     public Category getDisambiguationCategory() throws WikiApiException
     {
-        String disambCategoryTitle = wiki.__inTransaction(session -> {
-            return hibernateMetaData.getDisambiguationCategory();
-        });
+        String disambCategoryTitle = hibernateMetaData.getDisambiguationCategory();
         return wiki.getCategory(disambCategoryTitle);
     }
 
@@ -135,9 +123,7 @@ public class MetaData
      */
     public Category getMainCategory() throws WikiApiException
     {
-        String mainCategoryTitle = wiki.__inTransaction(session -> {
-            return hibernateMetaData.getMainCategory();
-        });
+        String mainCategoryTitle = hibernateMetaData.getMainCategory();
         return wiki.getCategory(mainCategoryTitle);
     }
 
@@ -153,9 +139,7 @@ public class MetaData
      */
     public String getVersion() throws WikiApiException
     {
-        return wiki.__inTransaction(session -> {
-            return hibernateMetaData.getVersion();
-        });
+        return hibernateMetaData.getVersion();
     }
 
     /**
