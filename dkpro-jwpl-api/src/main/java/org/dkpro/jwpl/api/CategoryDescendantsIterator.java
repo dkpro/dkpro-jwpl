@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * An {@link Iterator} over category objects retrieved by {@link Category#getDescendants()}.
+ * <p>
+ * The traversal works on category page ids and loads a {@link Category} only once, when it is
+ * added to the buffer. Child ids that do not resolve to a category are skipped.
  */
 public class CategoryDescendantsIterator
     implements Iterator<Category>
@@ -66,9 +69,7 @@ public class CategoryDescendantsIterator
         buffer = new CategoryBuffer(bufferSize);
         notExpandedCategories = new HashSet<>();
         // initialize with children of start category
-        for (Category catItem : startCategory.getChildren()) {
-            notExpandedCategories.add(catItem.getPageId());
-        }
+        notExpandedCategories.addAll(startCategory.getChildrenIDs());
 
         expandedCategoryIds = new HashSet<>();
     }
@@ -173,23 +174,29 @@ public class CategoryDescendantsIterator
             // expand until buffer size is reached
             while (!queue.isEmpty() && buffer.size() < maxBufferSize) {
                 // remove first element from queue
-                Category currentCat = wiki.getCategory(queue.get(0));
-                queue.remove(0);
+                int currentId = queue.remove(0);
 
-                // if the node was not previously expanded
-                if (!expandedCategoryIds.contains(currentCat.getPageId())) {
-                    buffer.add(currentCat);
-                    notExpandedCategories.remove(currentCat.getPageId());
-                    expandedCategoryIds.add(currentCat.getPageId());
+                // skip nodes that were already expanded before loading them
+                if (expandedCategoryIds.contains(currentId)) {
+                    continue;
+                }
+                notExpandedCategories.remove(currentId);
+                expandedCategoryIds.add(currentId);
 
-                    logger.debug("buf: {}", buffer.size());
-                    logger.debug("notExp: {}", notExpandedCategories);
-                    logger.debug("exp: {}", expandedCategoryIds);
+                Category currentCat = wiki.getCategory(currentId);
+                if (currentCat == null) {
+                    logger.debug("Skipping dangling category id {}", currentId);
+                    continue;
+                }
+                buffer.add(currentCat);
 
-                    for (Category child : currentCat.getChildren()) {
-                        queue.add(child.getPageId());
-                        notExpandedCategories.add(child.getPageId());
-                    }
+                logger.trace("buf: {}", buffer.size());
+                logger.trace("notExp: {}", notExpandedCategories);
+                logger.trace("exp: {}", expandedCategoryIds);
+
+                for (int childId : currentCat.getChildrenIDs()) {
+                    queue.add(childId);
+                    notExpandedCategories.add(childId);
                 }
             }
 
