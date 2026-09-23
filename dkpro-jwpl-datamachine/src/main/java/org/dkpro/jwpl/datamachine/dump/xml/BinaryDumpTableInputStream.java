@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.datamachine.dump.xml;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,16 +35,35 @@ public class BinaryDumpTableInputStream
     extends DumpTableInputStream
 {
 
+    /**
+     * Size of the read buffer placed below this wrapper if the given stream is not buffered yet.
+     */
+    private static final int BUFFER_SIZE = 1 << 16;
+
     private InputStream inputStream = null;
 
     /**
-     * {@inheritDoc}
+     * Initializes this stream to read from the given {@link InputStream} without any data
+     * manipulations. Unbuffered sources (e.g. a {@code GZIPInputStream}) are wrapped in a
+     * {@link BufferedInputStream} so that single-byte reads do not hit the source per byte.
+     *
+     * @param inputStream   The input stream to read from. Must not be {@code null}.
+     * @param table         The {@link DumpTableEnum table type} as additional context information.
+     * @throws IOException  Thrown if IO errors occurred.
+     * @throws IllegalArgumentException Thrown if {@code inputStream} is {@code null}.
      */
     @Override
     public void initialize(InputStream inputStream, DumpTableEnum table) throws IOException
     {
-        // just read from the stream without any data manipulations
-        this.inputStream = inputStream;
+        if (inputStream == null) {
+            throw new IllegalArgumentException("'inputStream' must not be null.");
+        }
+        if (inputStream instanceof BufferedInputStream) {
+            this.inputStream = inputStream;
+        }
+        else {
+            this.inputStream = new BufferedInputStream(inputStream, BUFFER_SIZE);
+        }
     }
 
     /**
@@ -71,6 +91,26 @@ public class BinaryDumpTableInputStream
     public long skip(long n) throws IOException
     {
         return inputStream.skip(n);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public int available() throws IOException
+    {
+        return inputStream.available();
+    }
+
+    /**
+     * Closes the underlying stream. Does nothing if this stream was never initialized.
+     */
+    @Override
+    public void close() throws IOException
+    {
+        if (inputStream != null) {
+            inputStream.close();
+        }
     }
 
 }
