@@ -116,7 +116,15 @@ public class Category
      */
     private void createCategory(int pageID) throws WikiPageNotFoundException
     {
-        createCategory(wiki.__getCategoryHibernateId(pageID));
+        hibernateCategory = wiki.__inTransaction(session -> session
+                .createQuery("from Category where pageId = :pageId",
+                        org.dkpro.jwpl.api.hibernate.Category.class)
+                .setParameter("pageId", pageID, Integer.class).uniqueResult());
+
+        if (hibernateCategory == null) {
+            throw new WikiPageNotFoundException(
+                    "No category with page id " + pageID + " was found.");
+        }
     }
 
     /**
@@ -126,21 +134,16 @@ public class Category
     {
         String name = title.getWikiStyleTitle();
 
-        final String query = "select cat.pageId from Category as cat where cat.name = :name"
+        final String query = "select * from Category where name = :name"
                 + (wiki.getDatabaseConfiguration().supportsCollation() ? Wikipedia.SQL_COLLATION
                         : "");
-        Integer returnValue = wiki.__inTransaction(
-                session -> session.createNativeQuery(query, Integer.class)
-                        .setParameter("name", name, String.class).uniqueResult());
+        hibernateCategory = wiki.__inTransaction(session -> session
+                .createNativeQuery(query, org.dkpro.jwpl.api.hibernate.Category.class)
+                .setParameter("name", name, String.class).uniqueResult());
 
         // if there is no category with this name, the hibernateCategory is null
-        if (returnValue == null) {
-            hibernateCategory = null;
+        if (hibernateCategory == null) {
             throw new WikiPageNotFoundException("No category with name " + name + " was found.");
-        }
-        else {
-            int pageID = returnValue;
-            createCategory(pageID);
         }
     }
 

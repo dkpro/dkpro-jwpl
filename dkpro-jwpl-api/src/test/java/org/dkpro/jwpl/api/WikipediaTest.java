@@ -394,7 +394,7 @@ public class WikipediaTest
         long objectID = wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID);
         assertTrue(objectID > 0);
 
-        // query a 2nd time to validate caching of IDs
+        // query a 2nd time to validate that the lookup is stable
         assertEquals(objectID, wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID));
     }
 
@@ -499,15 +499,13 @@ public class WikipediaTest
 
     // ---- Tests targeting surviving PIT mutants ----
 
-    /** Kills: ConstructorCallMutator on HashMap init (line 94).
-     *  Verifies idMapPages is functional by exercising the cache path. */
+    /** Verifies that repeated page hibernate ID lookups return the same ID. */
     @Test
-    public void testConstructorInitializesIdMapPages() {
-        // First call populates the cache; second call must hit the cache
+    public void testGetPageHibernateIdIsStable() {
         long id1 = wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID);
         assertTrue(id1 > 0, "Hibernate ID should be positive");
         long id2 = wiki.__getPageHibernateId(A_FAMOUS_PAGE_ID);
-        assertEquals(id1, id2, "Cached ID must match on second call");
+        assertEquals(id1, id2, "ID must match on second call");
     }
 
     /** Kills: MemberVariableMutator removing metaData assignment (line 96).
@@ -522,15 +520,14 @@ public class WikipediaTest
         assertTrue(md.getNumberOfCategories() > 0, "MetaData should report categories");
     }
 
-    /** Kills: RemoveConditionalMutator_EQUAL_ELSE on cache check in __getCategoryHibernateId (line 771).
-     *  Verifies the cache path works by querying a category twice. */
+    /** Verifies that repeated category hibernate ID lookups return the same ID. */
     @Test
-    public void testGetCategoryHibernateIdCachesResult() {
+    public void testGetCategoryHibernateIdIsStable() {
         // Category with pageId=9 exists in test data
         long id1 = wiki.__getCategoryHibernateId(9);
         assertTrue(id1 > 0, "Category hibernate ID should be positive");
         long id2 = wiki.__getCategoryHibernateId(9);
-        assertEquals(id1, id2, "Cached category ID must match on second call");
+        assertEquals(id1, id2, "Category ID must match on second call");
     }
 
     /** Kills: NonVoidMethodCallMutator removing isEmpty() call in existsPage(String) (line 669).

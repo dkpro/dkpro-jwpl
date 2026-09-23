@@ -68,18 +68,6 @@ public class Wikipedia
     private final Language language;
     private final DatabaseConfiguration dbConfig;
 
-    /*
-     * A mapping from page pageIDs to hibernateIDs. It is a kind of cache. It is only filled, if a
-     * pageID was previously accessed. The wikiapi startup time is way too long otherwise.
-     */
-    private final Map<Integer, Long> idMapPages;
-
-    /*
-     * A mapping from categories pageIDs to hibernateIDs. It is a kind of cache. It is only filled,
-     * if a pageID was previously accessed. The wikiapi startup time is way too long otherwise.
-     */
-    private final Map<Integer, Long> idMapCategories;
-
     private final MetaData metaData;
 
     // Note: This should only be accessed internally.
@@ -99,9 +87,6 @@ public class Wikipedia
 
         this.language = dbConfig.getLanguage();
         this.dbConfig = dbConfig;
-
-        this.idMapPages = new HashMap<>();
-        this.idMapCategories = new HashMap<>();
 
         this.metaData = new MetaData(this);
         this.wikiConfig = this.language.getWikiconfig();
@@ -535,13 +520,8 @@ public class Wikipedia
      * @return The category object or {@code null} if no category with this pageId exists.
      */
     public Category getCategory(int pageId) {
-        long hibernateId = __getCategoryHibernateId(pageId);
-        if (hibernateId == -1) {
-            return null;
-        }
-
         try {
-            return new Category(this, hibernateId);
+            return new Category(this, pageId);
         } catch (WikiPageNotFoundException e) {
             // The exception is used here as a control-flow signal only: the contract of this
             // method is to return null if no category exists for the given id, so there is
@@ -793,26 +773,10 @@ public class Wikipedia
      * @return The hibernateID of the page with pageID or -1, if the pageID is not valid
      */
     protected long __getPageHibernateId(int pageID) {
-        long hibernateID = -1;
-
-        // first look in the id mapping cache
-        if (idMapPages.containsKey(pageID)) {
-            return idMapPages.get(pageID);
-        }
-
-        // The id was not found in the id mapping cache.
-        // It may not be in the cahe or may not exist at all.
         String sql = "select page.id from Page as page where page.pageId = :pageId";
-        Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
+        Long hibernateID = __inTransaction(session -> session.createQuery(sql, Long.class)
                 .setParameter("pageId", pageID, Integer.class).uniqueResult());
-        if (retObjectPage != null) {
-            hibernateID = retObjectPage;
-            // add it to the cache
-            idMapPages.put(pageID, hibernateID);
-            return hibernateID;
-        }
-
-        return hibernateID;
+        return hibernateID != null ? hibernateID : -1;
     }
 
     /**
@@ -823,25 +787,10 @@ public class Wikipedia
      * @return The hibernateID of the page with pageID or -1, if the pageID is not valid
      */
     protected long __getCategoryHibernateId(int pageID) {
-        long hibernateID = -1;
-
-        // first look in the id mapping cache
-        if (idMapCategories.containsKey(pageID)) {
-            return idMapCategories.get(pageID);
-        }
-
-        // The id was not found in the id mapping cache.
-        // It may not be in the cahe or may not exist at all.
         String sql = "select cat.id from Category as cat where cat.pageId = :pageId";
-        Long retObjectPage = __inTransaction(session -> session.createQuery(sql, Long.class)
+        Long hibernateID = __inTransaction(session -> session.createQuery(sql, Long.class)
                 .setParameter("pageId", pageID, Integer.class).uniqueResult());
-        if (retObjectPage != null) {
-            hibernateID = retObjectPage;
-            // add it to the cache
-            idMapCategories.put(pageID, hibernateID);
-        }
-
-        return hibernateID;
+        return hibernateID != null ? hibernateID : -1;
     }
 
     /**

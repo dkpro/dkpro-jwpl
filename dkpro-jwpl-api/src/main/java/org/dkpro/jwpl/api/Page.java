@@ -194,16 +194,24 @@ public class Page
                 : pTitle.getWikiStyleTitle();
 
         String sql = "select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1";
-        Integer pageId = wiki.__inTransaction(
-                session -> session.createNativeQuery(sql, Integer.class)
-                        .setParameter("pagetitle", searchString, String.class)
-                        .uniqueResult());
+        // Both lookups share one transaction. They stay two statements so that the PageMapLine
+        // row picked by LIMIT 1 is the same as before, which the redirect handling below relies on.
+        hibernatePage = wiki.__inTransaction(session -> {
+            Integer pageId = session.createNativeQuery(sql, Integer.class)
+                    .setParameter("pagetitle", searchString, String.class).uniqueResult();
+            if (pageId == null) {
+                return null;
+            }
+            return session
+                    .createQuery("from Page where pageId = :id",
+                            org.dkpro.jwpl.api.hibernate.Page.class)
+                    .setParameter("id", pageId, Integer.class).uniqueResult();
+        });
 
-        if (pageId == null) {
+        if (hibernatePage == null) {
             throw new WikiPageNotFoundException(
                     "No page with name " + searchString + " was found.");
         }
-        fetchByPageId(pageId);
         if (!this.isRedirect && searchString != null
                 && !searchString.equals(getTitle().getRawTitleText())) {
             if (this.isRedirect) {

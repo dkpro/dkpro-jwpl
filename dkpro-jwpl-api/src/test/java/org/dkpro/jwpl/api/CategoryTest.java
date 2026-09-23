@@ -20,6 +20,7 @@ package org.dkpro.jwpl.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -294,6 +295,14 @@ public class CategoryTest
     }
 
     @Test
+    public void testCreateCategoryByPageIDInvalidThrows()
+    {
+        WikiPageNotFoundException e = assertThrows(WikiPageNotFoundException.class,
+                () -> new Category(wiki, -42));
+        assertTrue(e.getMessage().contains("-42"));
+    }
+
+    @Test
     public void testCreateCategoryByObjectID()
     {
         try {
@@ -331,6 +340,14 @@ public class CategoryTest
         catch (WikiApiException e) {
             fail("A WikiApiException occurred creating a page: " + e.getLocalizedMessage());
         }
+    }
+
+    @Test
+    public void testCreateCategoryByNameIsCaseSensitive()
+    {
+        // the name lookup uses a binary collation where supported, so a variant that only
+        // differs in case must not match
+        assertThrows(WikiPageNotFoundException.class, () -> new Category(wiki, "People of ukp"));
     }
 
     @Test
