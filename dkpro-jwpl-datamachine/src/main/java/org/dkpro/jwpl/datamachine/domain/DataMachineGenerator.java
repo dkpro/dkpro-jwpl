@@ -33,7 +33,9 @@ import org.dkpro.jwpl.wikimachine.dump.sql.FastUtilLinkTargetResolver;
 import org.dkpro.jwpl.wikimachine.dump.sql.LinkTargetResolver;
 import org.dkpro.jwpl.wikimachine.dump.sql.LinktargetParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
+import org.dkpro.jwpl.wikimachine.dump.sql.ResolvedLinkTargets;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
+import org.dkpro.jwpl.wikimachine.dump.version.LinkRowSink;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
@@ -205,6 +207,11 @@ public class DataMachineGenerator
      * Loads the {@code linktarget} dump, if one is present in the input directory. It only exists
      * for dumps produced by MediaWiki 1.43 and later; for older dumps {@code null} is returned and
      * the link parsers use the target titles carried by the link tables themselves.
+     * <p>
+     * The {@code page} table has been processed at this point and the DataMachine has a single
+     * dump version, so every target is resolved to its final page id right away through a
+     * {@link ResolvedLinkTargets}. A dump version that is not a {@link LinkRowSink} falls back to
+     * the title based {@link FastUtilLinkTargetResolver}.
      *
      * @return A populated {@link LinkTargetResolver}, or {@code null} if no dump is available.
      * @throws IOException Thrown if the dump is present but cannot be read.
@@ -216,9 +223,13 @@ public class DataMachineGenerator
             logger.log("No linktarget dump found - assuming a legacy (pre-normalisation) dump set.");
             return null;
         }
-        return FastUtilLinkTargetResolver.load(
-                new LinktargetParser(decompressor.getInputStream(linkTargetFile)),
-                FastUtilLinkTargetResolver.ARTICLE_TALK_AND_CATEGORY);
+        final LinktargetParser parser = new LinktargetParser(
+                decompressor.getInputStream(linkTargetFile));
+        if (version instanceof LinkRowSink sink) {
+            return ResolvedLinkTargets.load(parser, sink);
+        }
+        return FastUtilLinkTargetResolver.load(parser,
+                FastUtilLinkTargetResolver.ARTICLE_AND_CATEGORY);
     }
 
     private CategorylinksParser createCategorylinksParser(LinkTargetResolver linkTargets)
