@@ -21,6 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
@@ -355,5 +361,134 @@ public class CycleHandlerTest
 
         CycleHandler handler = new CycleHandler(wiki, catGraph);
         assertFalse(handler.containsCycle());
+    }
+
+    /*-----------------------------------------------------------*/
+    /* Single-pass removal matches the former restart algorithm   */
+    /*-----------------------------------------------------------*/
+    @Test
+    public void testRemoveCyclesMatchesRestartingAlgorithm() throws WikiApiException
+    {
+        // overlapping cycles: 1->2->3->1, 2->4->2, 3->4, 4->1, 5->5, 5->6->5, 6->3
+        int[][] edges = { { 1, 2 }, { 2, 3 }, { 3, 1 }, { 2, 4 }, { 4, 2 }, { 3, 4 }, { 4, 1 },
+                { 5, 5 }, { 5, 6 }, { 6, 5 }, { 6, 3 } };
+        assertSameRemovedEdges(new int[] { 1, 2, 3, 4, 5, 6 }, edges);
+    }
+
+    @Test
+    public void testRemoveCyclesMatchesRestartingAlgorithmOnRandomGraphs() throws WikiApiException
+    {
+        Random random = new Random(572);
+        for (int run = 0; run < 50; run++) {
+            int n = 5 + random.nextInt(30);
+            int[] vertices = new int[n];
+            for (int i = 0; i < n; i++) {
+                vertices[i] = 1 + random.nextInt(1000) * 1000 + i;
+            }
+            int m = random.nextInt(4 * n);
+            int[][] edges = new int[m][];
+            for (int i = 0; i < m; i++) {
+                edges[i] = new int[] { vertices[random.nextInt(n)], vertices[random.nextInt(n)] };
+            }
+            assertSameRemovedEdges(vertices, edges);
+        }
+    }
+
+    @Test
+    public void testRemoveCyclesOnDeepChain() throws WikiApiException
+    {
+        int n = 100_000;
+        CategoryGraph catGraph = buildGraph();
+        for (int v = 1; v <= n; v++) {
+            catGraph.getGraph().addVertex(v);
+            if (v > 1) {
+                addEdge(catGraph, v - 1, v);
+            }
+        }
+        addEdge(catGraph, n, 1);
+
+        new CycleHandler(wiki, catGraph).removeCycles();
+
+        assertEquals(n - 1, catGraph.getGraph().edgeSet().size());
+        assertFalse(catGraph.getGraph().containsEdge(n, 1));
+    }
+
+    private void assertSameRemovedEdges(int[] vertices, int[][] edges) throws WikiApiException
+    {
+        CategoryGraph actual = buildGraph(vertices);
+        CategoryGraph expected = buildGraph(vertices);
+        for (int[] edge : edges) {
+            addEdge(actual, edge[0], edge[1]);
+            addEdge(expected, edge[0], edge[1]);
+        }
+        Set<String> before = edgeSet(actual);
+
+        List<String> expectedRemoved = removeCyclesByRestarting(expected.getGraph());
+        CycleHandler handler = new CycleHandler(wiki, actual);
+        handler.removeCycles();
+
+        Set<String> actualRemoved = new LinkedHashSet<>(before);
+        actualRemoved.removeAll(edgeSet(actual));
+        assertEquals(new LinkedHashSet<>(expectedRemoved), actualRemoved);
+        assertEquals(edgeSet(expected), edgeSet(actual));
+        assertFalse(handler.containsCycle());
+    }
+
+    private static Set<String> edgeSet(CategoryGraph catGraph)
+    {
+        DefaultDirectedGraph<Integer, DefaultEdge> graph = catGraph.getGraph();
+        Set<String> result = new LinkedHashSet<>();
+        for (DefaultEdge e : graph.edgeSet()) {
+            result.add(graph.getEdgeSource(e) + "->" + graph.getEdgeTarget(e));
+        }
+        return result;
+    }
+
+    /* Reference: the former algorithm, restarting a recursive DFS after every removed edge. */
+    private static List<String> removeCyclesByRestarting(DefaultDirectedGraph<Integer, DefaultEdge> graph)
+    {
+        List<String> removed = new ArrayList<>();
+        DefaultEdge edge;
+        while ((edge = findFirstBackEdge(graph)) != null) {
+            removed.add(graph.getEdgeSource(edge) + "->" + graph.getEdgeTarget(edge));
+            graph.removeEdge(edge);
+        }
+        return removed;
+    }
+
+    private static DefaultEdge findFirstBackEdge(DefaultDirectedGraph<Integer, DefaultEdge> graph)
+    {
+        Map<Integer, Integer> colors = new HashMap<>();
+        for (int node : graph.vertexSet()) {
+            if (!colors.containsKey(node)) {
+                DefaultEdge e = visit(graph, colors, node);
+                if (e != null) {
+                    return e;
+                }
+            }
+        }
+        return null;
+    }
+
+    // colors: absent = white, 1 = grey, 2 = black
+    private static DefaultEdge visit(DefaultDirectedGraph<Integer, DefaultEdge> graph,
+            Map<Integer, Integer> colors, int node)
+    {
+        colors.put(node, 1);
+        for (DefaultEdge edge : graph.outgoingEdgesOf(node)) {
+            int outNode = graph.getEdgeTarget(edge);
+            Integer color = colors.get(outNode);
+            if (color != null && color == 1) {
+                return edge;
+            }
+            else if (color == null) {
+                DefaultEdge e = visit(graph, colors, outNode);
+                if (e != null) {
+                    return e;
+                }
+            }
+        }
+        colors.put(node, 2);
+        return null;
     }
 }

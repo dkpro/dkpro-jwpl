@@ -18,11 +18,15 @@
 package org.dkpro.jwpl.api;
 
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,8 +49,6 @@ public class CycleHandler
     {
         white, grey, black
     }
-
-    private Map<Integer, Color> colorMap;
 
     /**
      * Creates a cycle handler object.
@@ -72,12 +74,13 @@ public class CycleHandler
      */
     public boolean containsCycle() throws WikiApiException
     {
-        DefaultEdge edge = findCycle();
-        if (edge != null) {
-            Category sourceCat = wiki.getCategory(categoryGraph.getGraph().getEdgeSource(edge));
-            Category targetCat = wiki.getCategory(categoryGraph.getGraph().getEdgeTarget(edge));
-
-            logger.info("Cycle: {} - {}", sourceCat.getTitle(), targetCat.getTitle());
+        List<int[]> backEdges = findBackEdges(false);
+        if (!backEdges.isEmpty()) {
+            if (logger.isInfoEnabled()) {
+                int[] edge = backEdges.get(0);
+                logger.info("Cycle: {} - {}", wiki.getCategory(edge[0]).getTitle(),
+                        wiki.getCategory(edge[1]).getTitle());
+            }
             return true;
         }
         else {
@@ -87,59 +90,95 @@ public class CycleHandler
 
     /**
      * Removes cycles from the graph that was used to construct the cycle handler.
+     * <p>
+     * A single colored DFS is performed and every back edge is removed as soon as it is found.
+     * This removes exactly the edges that restarting the DFS after each removal would remove,
+     * because a restart would repeat the identical traversal prefix and then continue with the
+     * next outgoing edge of the same vertex.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
     public void removeCycles() throws WikiApiException
     {
-        DefaultEdge edge;
-        while ((edge = findCycle()) != null) {
-            Category sourceCat = wiki.getCategory(categoryGraph.getGraph().getEdgeSource(edge));
-            Category targetCat = wiki.getCategory(categoryGraph.getGraph().getEdgeTarget(edge));
-
-            logger.info("Removing cycle: {} - {}", sourceCat.getTitle(), targetCat.getTitle());
-
-            categoryGraph.getGraph().removeEdge(edge);
+        List<int[]> removedEdges = findBackEdges(true);
+        if (logger.isDebugEnabled()) {
+            for (int[] edge : removedEdges) {
+                logger.debug("Removing cycle: {} - {}", wiki.getCategory(edge[0]).getTitle(),
+                        wiki.getCategory(edge[1]).getTitle());
+            }
         }
+        logger.info("Removed {} cycle edges.", removedEdges.size());
     }
 
-    private DefaultEdge findCycle()
+    /**
+     * Performs an iterative colored DFS over the category graph, visiting vertices and outgoing
+     * edges in the order provided by the graph.
+     *
+     * @param remove
+     *            If {@code true}, every back edge is removed from the graph when found and the
+     *            traversal continues. If {@code false}, the traversal stops at the first back edge
+     *            and the graph is left unchanged.
+     * @return The back edges found, as {@code (source, target)} pairs of page ids.
+     */
+    private List<int[]> findBackEdges(boolean remove)
     {
-        colorMap = new HashMap<>();
+        DefaultDirectedGraph<Integer, DefaultEdge> graph = categoryGraph.getGraph();
+        Map<Integer, Color> colorMap = new HashMap<>();
         // initialize all nodes with white
-        for (int node : categoryGraph.getGraph().vertexSet()) {
+        for (Integer node : graph.vertexSet()) {
             colorMap.put(node, Color.white);
         }
 
-        for (int node : categoryGraph.getGraph().vertexSet()) {
-            if (colorMap.get(node).equals(Color.white)) {
-                DefaultEdge e = visit(node);
-                if (e != null) {
-                    return e;
+        List<int[]> backEdges = new ArrayList<>();
+        Deque<Frame> stack = new ArrayDeque<>();
+        for (Integer root : graph.vertexSet()) {
+            if (colorMap.get(root) != Color.white) {
+                continue;
+            }
+            colorMap.put(root, Color.grey);
+            stack.push(new Frame(root, new ArrayList<>(graph.outgoingEdgesOf(root))));
+            while (!stack.isEmpty()) {
+                Frame frame = stack.peek();
+                if (frame.pos == frame.edges.size()) {
+                    // all children are finished
+                    colorMap.put(frame.node, Color.black);
+                    stack.pop();
+                    continue;
+                }
+                DefaultEdge edge = frame.edges.get(frame.pos++);
+                Integer target = graph.getEdgeTarget(edge);
+                Color targetColor = colorMap.get(target);
+                if (targetColor == Color.grey) {
+                    backEdges.add(new int[] { frame.node, target });
+                    if (!remove) {
+                        return backEdges;
+                    }
+                    graph.removeEdge(edge);
+                }
+                else if (targetColor == Color.white) {
+                    colorMap.put(target, Color.grey);
+                    stack.push(new Frame(target, new ArrayList<>(graph.outgoingEdgesOf(target))));
                 }
             }
         }
-        return null;
+        return backEdges;
     }
 
-    private DefaultEdge visit(int node)
+    /**
+     * A vertex on the DFS stack together with a snapshot of its outgoing edges and the position
+     * of the next edge to examine.
+     */
+    private static final class Frame
     {
-        colorMap.put(node, Color.grey);
-        Set<DefaultEdge> outgoingEdges = categoryGraph.getGraph().outgoingEdgesOf(node);
-        for (DefaultEdge edge : outgoingEdges) {
-            int outNode = categoryGraph.getGraph().getEdgeTarget(edge);
-            if (colorMap.get(outNode).equals(Color.grey)) {
-                return edge;
-            }
-            else if (colorMap.get(outNode).equals(Color.white)) {
-                DefaultEdge e = visit(outNode);
-                if (e != null) {
-                    return e;
-                }
-            }
+        private final int node;
+        private final List<DefaultEdge> edges;
+        private int pos;
+
+        private Frame(int node, List<DefaultEdge> edges)
+        {
+            this.node = node;
+            this.edges = edges;
         }
-        colorMap.put(node, Color.black);
-        return null;
     }
 }
