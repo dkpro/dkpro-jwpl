@@ -27,12 +27,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -877,31 +875,15 @@ public class WikipediaTemplateInfo
 
         List<Integer> matchedPages = new LinkedList<>();
         try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString
-                    .append("SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                            + " AS r WHERE tpl.templateId = r.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
+            String sqlString = "SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
+                    + " AS r WHERE tpl.templateId = r.templateId "
+                    + (whitelist ? "AND " : "AND NOT ")
+                    + buildTemplateNameCondition(templateFragments.size(), true);
 
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
+            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
 
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase().trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
+                bindTemplateNames(statement, templateFragments, true);
 
                 ResultSet result = execute(statement);
 
@@ -963,6 +945,9 @@ public class WikipediaTemplateInfo
     /**
      * Returns the ids of all pages that ever contained any of the given template names in the
      * history of their existence.
+     * <p>
+     * Revisions listed in the template index that cannot be found in the revision tables are
+     * ignored.
      *
      * @param templateNames
      *            template names to look for
@@ -974,24 +959,15 @@ public class WikipediaTemplateInfo
     public List<Integer> getIdsOfPagesThatEverContainedTemplateNames(List<String> templateNames)
         throws WikiApiException
     {
-        if (revApi == null) {
-            revApi = new RevisionApi(wiki.getDatabaseConfiguration());
-        }
-        Set<Integer> pageIdSet = new HashSet<>();
-
-        // TODO instead of getting rev ids and then getting page ids, do one query and make the join
-        // in the db directly
-        List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateNames(templateNames);
-        for (int revId : revsWithTemplate) {
-            pageIdSet.add(revApi.getPageIdForRevisionId(revId));
-        }
-
-        return new LinkedList<>(pageIdSet);
+        return getIdsOfPagesWithRevisionsMatching(templateNames, false);
     }
 
     /**
      * Returns the ids of all pages that ever contained any template that started with any of the
-     * given template fragments
+     * given template fragments.
+     * <p>
+     * Revisions listed in the template index that cannot be found in the revision tables are
+     * ignored.
      *
      * @param templateFragments
      *            template-fragments to look for
@@ -1005,20 +981,119 @@ public class WikipediaTemplateInfo
             List<String> templateFragments)
         throws WikiApiException
     {
-        if (revApi == null) {
-            revApi = new RevisionApi(wiki.getDatabaseConfiguration());
-        }
-        Set<Integer> pageIdSet = new HashSet<>();
+        return getIdsOfPagesWithRevisionsMatching(templateFragments, true);
+    }
 
-        // TODO instead of getting rev ids and then getting page ids, do one query and make the join
-        // in the db directly
-        List<Integer> revsWithTemplate = getRevisionIdsContainingTemplateFragments(
-                templateFragments);
-        for (int revId : revsWithTemplate) {
-            pageIdSet.add(revApi.getPageIdForRevisionId(revId));
+    /**
+     * Returns the ids of all pages that have at least one revision containing a template whose
+     * name equals (or, if {@code prefix} is set, starts with) any of the given Strings. The
+     * revision ids are resolved to page ids with a single join in the database.
+     * <p>
+     * Revisions listed in the template index that cannot be found in the revision tables are
+     * ignored.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @return list of the distinct ids of the matching pages
+     * @throws WikiApiException
+     *             If there was any error retrieving the page ids
+     */
+    private List<Integer> getIdsOfPagesWithRevisionsMatching(List<String> templateNames,
+            boolean prefix)
+        throws WikiApiException
+    {
+        List<Integer> pageIds = new LinkedList<>();
+        if (templateNames == null || templateNames.isEmpty()) {
+            return pageIds;
         }
 
-        return new LinkedList<>(pageIdSet);
+        try (PreparedStatement statement = connection
+                .prepareStatement(buildPageIdQuery(templateNames.size(), prefix))) {
+            bindTemplateNames(statement, templateNames, prefix);
+
+            try (ResultSet result = execute(statement)) {
+                while (result.next()) {
+                    pageIds.add(result.getInt(1));
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+        return pageIds;
+    }
+
+    /**
+     * Builds the query that selects the distinct ids of all pages which have at least one revision
+     * containing any of the given templates. It joins the template index with the RevisionMachine
+     * tables {@code index_revisionID} and {@code revisions}.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildPageIdQuery(int nameCount, boolean prefix)
+    {
+        return "SELECT DISTINCT rev.ArticleID FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                + " AS tpl JOIN " + GeneratorConstants.TABLE_TPLID_REVISIONID
+                + " AS tr ON tr.templateId = tpl.templateId"
+                + " JOIN index_revisionID AS idx ON idx.RevisionID = tr.revisionId"
+                + " JOIN revisions AS rev ON rev.PrimaryKey = idx.RevisionPK WHERE "
+                + buildTemplateNameCondition(nameCount, prefix);
+    }
+
+    /**
+     * Builds a parenthesized condition that matches {@code tpl.templateName} against the given
+     * number of parameters, joined by {@code OR}.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) to match
+     * @param prefix
+     *            whether to match with {@code LIKE} (true) or with {@code =} (false)
+     * @return the condition
+     */
+    static String buildTemplateNameCondition(int nameCount, boolean prefix)
+    {
+        String single = prefix ? "tpl.templateName LIKE ?" : "tpl.templateName = ?";
+        StringBuilder condition = new StringBuilder("(");
+        for (int i = 0; i < nameCount; i++) {
+            if (i > 0) {
+                condition.append(" OR ");
+            }
+            condition.append(single);
+        }
+        return condition.append(")").toString();
+    }
+
+    /**
+     * Binds the given template names (or fragments) to the parameters of a statement built with
+     * {@link #buildTemplateNameCondition(int, boolean)}. The names are normalized the way they are
+     * stored in the template index (lower case, trimmed, spaces replaced by underscores).
+     *
+     * @param statement
+     *            the statement to bind the names to, starting at parameter index 1
+     * @param templateNames
+     *            the template names (or fragments)
+     * @param prefix
+     *            whether the names are bound as prefix patterns for {@code LIKE}
+     * @throws SQLException
+     *             If a parameter could not be set
+     */
+    static void bindTemplateNames(PreparedStatement statement, List<String> templateNames,
+            boolean prefix)
+        throws SQLException
+    {
+        int curIdx = 1;
+        for (String name : templateNames) {
+            name = name.toLowerCase().trim().replaceAll(" ", "_");
+            statement.setString(curIdx++, prefix ? name + "%" : name);
+        }
     }
 
     ///////////////////
@@ -1140,32 +1215,15 @@ public class WikipediaTemplateInfo
     {
         List<Integer> matchedPages = new LinkedList<>();
         try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString
-                    .append("SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                            + " AS r WHERE tpl.templateId = r.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
+            String sqlString = "SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
+                    + " AS r WHERE tpl.templateId = r.templateId "
+                    + (whitelist ? "AND " : "AND NOT ")
+                    + buildTemplateNameCondition(templateNames.size(), false);
 
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
+            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
 
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
+                bindTemplateNames(statement, templateNames, false);
 
                 ResultSet result = execute(statement);
 
