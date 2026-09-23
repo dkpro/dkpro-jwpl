@@ -37,6 +37,9 @@ public class Redirects
 
     private static final Pattern PATTERN = Pattern.compile("\\[\\[\\s*(.+?)\\s*]]");
 
+    // Namespace prefix: only when there is no whitespace right after the colon
+    private static final Pattern NAMESPACE_PATTERN = Pattern.compile(":([^\\s].+)");
+
     private Redirects()
     {
     }
@@ -122,18 +125,12 @@ public class Redirects
             // above)
             redirectString = redirectString.trim();
 
-            // remove whitespace (case: "Article " - when splitting the example
-            // above)
-            redirectString = redirectString.trim();
-
             // remove namespace string (case:
             // "#REDIRECT [[Portal:Recht/Liste der Rechtsthemen]]")
             // but there are names with colons in it => consider only cases
             // where
             // there are no spaces around the colon
-            String regexNamespace = ":([^\\s].+)";
-            Pattern patternNamespace = Pattern.compile(regexNamespace);
-            Matcher matcherNamespace = patternNamespace.matcher(redirectString);
+            Matcher matcherNamespace = NAMESPACE_PATTERN.matcher(redirectString);
 
             // group 0 is the whole match
             if (matcherNamespace.find()) {
