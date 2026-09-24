@@ -125,15 +125,21 @@ public class RevisionIterator
 
     /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
      *
      * @param config
      *            Reference to the configuration object
      * @param startPK
-     *            Start index
+     *            Start index, not negative
      * @param endPK
-     *            End index
+     *            End index, at least {@code startPK}
      * @param connection
-     *            Reference to the connection
+     *            Reference to the connection, not {@code null}
+     * @throws IllegalArgumentException
+     *             if {@code startPK} is negative, {@code endPK} is less than {@code startPK} or
+     *             {@code connection} is {@code null}
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -141,9 +147,70 @@ public class RevisionIterator
             final int endPK, final Connection connection)
         throws WikiApiException
     {
+        this(config, connection, startPK, endPK);
+        if (startPK < 0 || endPK < startPK) {
+            throw new IllegalArgumentException("Expected 0 <= startPK <= endPK, but got startPK "
+                    + startPK + " and endPK " + endPK);
+        }
+    }
 
-        if (startPK < 0 || endPK < 0 || startPK > endPK || connection == null) {
-            throw new IllegalArgumentException("Illegal argument");
+    /**
+     * Creates a new RevisionIterator object for which the presence of the Namespace column is
+     * already known, so that the revisions table does not have to be probed again.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}. Unlike for the
+     * public constructors, {@code endPK} may be {@code startPK - 1}, so that the iteration
+     * returns the revision at {@code startPK} only.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index, not negative
+     * @param endPK
+     *            End index, at least {@code startPK - 1}
+     * @param connection
+     *            Reference to the connection, not {@code null}
+     * @param hasNamespaceColumn
+     *            whether the revisions table has a Namespace column, {@code null} if unknown
+     * @throws IllegalArgumentException
+     *             if {@code startPK} is negative, {@code endPK} is less than {@code startPK - 1}
+     *             or {@code connection} is {@code null}
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
+            final Connection connection, final Boolean hasNamespaceColumn)
+        throws WikiApiException
+    {
+        this(config, connection, startPK, endPK);
+        if (startPK < 0 || endPK < startPK - 1) {
+            throw new IllegalArgumentException("Expected 0 <= startPK <= endPK + 1, but got"
+                    + " startPK " + startPK + " and endPK " + endPK);
+        }
+        this.hasNamespaceColumn = hasNamespaceColumn;
+    }
+
+    /**
+     * Initializes the fields shared by the constructors that iterate over a range of primary
+     * keys with a given connection. The range is validated by the calling constructor.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param connection
+     *            Reference to the connection, not {@code null}
+     * @param startPK
+     *            Start index
+     * @param endPK
+     *            End index
+     * @throws IllegalArgumentException
+     *             if {@code connection} is {@code null}
+     */
+    private RevisionIterator(final RevisionAPIConfiguration config, final Connection connection,
+            final int startPK, final int endPK)
+    {
+        if (connection == null) {
+            throw new IllegalArgumentException("The connection must not be null");
         }
 
         this.primaryKey = startPK - 1;
@@ -156,39 +223,6 @@ public class RevisionIterator
         MAX_NUMBER_RESULTS = config.getBufferSize();
 
         this.connection = connection;
-    }
-
-    /**
-     * Creates a new RevisionIterator object for which the presence of the Namespace column is
-     * already known, so that the revisions table does not have to be probed again.
-     * <p>
-     * Like the public constructors, the iteration also returns the revision that follows
-     * {@code endPK}. Unlike them, {@code endPK} may be {@code startPK - 1}, so that the iteration
-     * returns the revision at {@code startPK} only.
-     *
-     * @param config
-     *            Reference to the configuration object
-     * @param startPK
-     *            Start index
-     * @param endPK
-     *            End index, at least {@code startPK - 1}
-     * @param connection
-     *            Reference to the connection
-     * @param hasNamespaceColumn
-     *            whether the revisions table has a Namespace column, {@code null} if unknown
-     * @throws WikiApiException
-     *             if an error occurs
-     */
-    RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
-            final Connection connection, final Boolean hasNamespaceColumn)
-        throws WikiApiException
-    {
-        this(config, startPK, Math.max(startPK, endPK), connection);
-        if (endPK < startPK - 1) {
-            throw new IllegalArgumentException("Illegal argument");
-        }
-        this.endPK = endPK;
-        this.hasNamespaceColumn = hasNamespaceColumn;
     }
 
     /**
@@ -216,6 +250,9 @@ public class RevisionIterator
 
     /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
      *
      * @param config
      *            Reference to the configuration object

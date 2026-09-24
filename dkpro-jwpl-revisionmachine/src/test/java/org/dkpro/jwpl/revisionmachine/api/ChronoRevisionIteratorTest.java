@@ -40,6 +40,8 @@ import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Iterates in chronological order over a copy of the stripped test data set. In the copy, the
@@ -61,6 +63,9 @@ public class ChronoRevisionIteratorTest
 
     // Chrono storage space that is too small to keep all of these revisions
     private static final long STORAGE_SPACE = 20_000;
+
+    // Revision ID of the first added revision, above those of the test data set
+    private static final int FIRST_ADDED_REVISION_ID = 2_000_000;
 
     @TempDir
     static Path tempDir;
@@ -84,15 +89,25 @@ public class ChronoRevisionIteratorTest
      */
     private static String copyDatabase(final Path dir) throws Exception
     {
-        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
-                dir.resolve(DATABASE + ".script"));
-        String url = "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
+        String url = copyTestData(dir);
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 Statement statement = connection.createStatement()) {
             statement.execute("UPDATE index_articleID_rc_ts SET FullRevisionPKs = '" + FIRST_PK
                     + "', RevisionCounter = '1 382' WHERE ArticleID = 3443");
         }
         return url;
+    }
+
+    /**
+     * Copies the unmodified test data set into the given directory.
+     *
+     * @return the JDBC URL of the copy
+     */
+    private static String copyTestData(final Path dir) throws Exception
+    {
+        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
+                dir.resolve(DATABASE + ".script"));
+        return "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
     }
 
     private static RevisionAPIConfiguration configuration(final String url)
@@ -134,16 +149,7 @@ public class ChronoRevisionIteratorTest
                 namespaceProbes, articleStatements, mappingStatements, new AtomicInteger(),
                 new AtomicInteger());
 
-        List<String> actual = new ArrayList<>();
-        ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
-        try {
-            while (iterator.hasNext()) {
-                actual.add(describe(iterator.next()));
-            }
-        }
-        finally {
-            iterator.close();
-        }
+        List<String> actual = iterateChronologically(config, connection);
 
         assertEquals(expected, actual);
         assertEquals(1, namespaceProbes.get());
@@ -191,16 +197,7 @@ public class ChronoRevisionIteratorTest
                 new AtomicInteger(), new AtomicInteger(), new AtomicInteger(), rangeStatements,
                 rangeQueries);
 
-        List<String> actual = new ArrayList<>();
-        ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
-        try {
-            while (iterator.hasNext()) {
-                actual.add(describe(iterator.next()));
-            }
-        }
-        finally {
-            iterator.close();
-        }
+        List<String> actual = iterateChronologically(config, connection);
 
         assertEquals(expected, actual);
         assertEquals(1, rangeStatements.get());
@@ -208,23 +205,24 @@ public class ChronoRevisionIteratorTest
         assertTrue(connection.isClosed());
     }
 
-    @Test
-    public void testIterationOverArticlesWithOneAndTwoRevisions(@TempDir final Path dir)
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 1000 })
+    public void testIterationOverArticlesWithOneAndTwoRevisions(final int bufferSize,
+            @TempDir final Path dir)
         throws Exception
     {
-        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
-                dir.resolve(DATABASE + ".script"));
-        String url = "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
+        String url = copyTestData(dir);
 
         // Articles appended after 'Car' (3442, 382 revisions): 3443 with one revision, 3444 with
         // two, 3445 and 3446 with one each. The test data set indexes 3443 without its revision.
         int[][] articles = { { 3443, 1 }, { 3444, 2 }, { 3445, 1 }, { 3446, 1 } };
+        int addedRevisions = 0;
         List<Integer> revisionIDs = new ArrayList<>();
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 Statement statement = connection.createStatement()) {
             statement.execute("DELETE FROM index_articleID_rc_ts WHERE ArticleID = 3443");
             int pk = LAST_PK + 1;
-            int revisionID = 2_000_000;
+            int revisionID = FIRST_ADDED_REVISION_ID;
             for (int[] article : articles) {
                 int firstPK = pk;
                 int fullRevisionID = revisionID;
@@ -244,6 +242,7 @@ public class ChronoRevisionIteratorTest
                 }
                 statement.execute("INSERT INTO index_articleID_rc_ts VALUES(" + article[0] + ", '"
                         + firstPK + "', '1 " + article[1] + "', 0, 0)");
+                addedRevisions += article[1];
             }
             try (ResultSet result = statement
                     .executeQuery("SELECT RevisionID FROM revisions ORDER BY PrimaryKey")) {
@@ -252,33 +251,44 @@ public class ChronoRevisionIteratorTest
                 }
             }
         }
-        assertEquals(LAST_PK - FIRST_PK + 1 + 5, revisionIDs.size());
+        assertEquals(LAST_PK - FIRST_PK + 1 + addedRevisions, revisionIDs.size());
 
-        for (int bufferSize : new int[] { 1, 1000 }) {
-            RevisionAPIConfiguration config = configuration(url);
-            config.setBufferSize(bufferSize);
+        RevisionAPIConfiguration config = configuration(url);
+        config.setBufferSize(bufferSize);
 
-            List<String> expected = new ArrayList<>();
-            try (RevisionApi revisionApi = new RevisionApi(config)) {
-                for (int revisionID : revisionIDs) {
-                    expected.add(describe(revisionApi.getRevision(revisionID)));
-                }
+        List<String> expected = new ArrayList<>();
+        try (RevisionApi revisionApi = new RevisionApi(config)) {
+            for (int revisionID : revisionIDs) {
+                expected.add(describe(revisionApi.getRevision(revisionID)));
             }
-
-            List<String> actual = new ArrayList<>();
-            ChronoRevisionIterator iterator = new ChronoRevisionIterator(config,
-                    DriverManager.getConnection(url, "sa", ""));
-            try {
-                while (iterator.hasNext()) {
-                    actual.add(describe(iterator.next()));
-                }
-            }
-            finally {
-                iterator.close();
-            }
-
-            assertEquals(expected, actual, "Buffer size " + bufferSize);
         }
+
+        List<String> actual = iterateChronologically(config,
+                DriverManager.getConnection(url, "sa", ""));
+
+        assertEquals(expected, actual);
+    }
+
+    /**
+     * Iterates in chronological order over all revisions and closes the iterator afterwards.
+     *
+     * @return the descriptions of the revisions in the order of the iteration
+     */
+    private static List<String> iterateChronologically(final RevisionAPIConfiguration config,
+            final Connection connection)
+        throws Exception
+    {
+        List<String> revisions = new ArrayList<>();
+        ChronoRevisionIterator iterator = new ChronoRevisionIterator(config, connection);
+        try {
+            while (iterator.hasNext()) {
+                revisions.add(describe(iterator.next()));
+            }
+        }
+        finally {
+            iterator.close();
+        }
+        return revisions;
     }
 
     private static String describe(final Revision revision)
