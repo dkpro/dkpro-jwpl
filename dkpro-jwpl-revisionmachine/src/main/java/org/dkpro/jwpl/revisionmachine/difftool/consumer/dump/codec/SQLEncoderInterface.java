@@ -18,6 +18,8 @@
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
@@ -52,13 +54,19 @@ public interface SQLEncoderInterface
     String[] getBinaryTable();
 
     /**
-     * Returns the binary encoding of the given DiffTask.
+     * Binds the rows of the given DiffTask with their binary encoded diffs to the given statement
+     * and sends them to the database in batches.
      * <p>
-     * Each array entry will contain a single SQL command.
+     * The statement has to be prepared from {@link SQLEncoder#INSERT_REVISION}, and the revisions
+     * table has to be created with {@link #getBinaryTable()}. A batch is sent as soon as the next
+     * row would exceed the maximum packet size of the server, and the remaining rows are sent
+     * before this method returns.
      *
      * @param task
      *            DiffTask
-     * @return binary encoding of the task.
+     * @param statement
+     *            statement prepared from {@link SQLEncoder#INSERT_REVISION}
+     * @return estimated number of bytes sent for the rows of the task
      * @throws ConfigurationException
      *             if problems occurred while initializing the components
      * @throws UnsupportedEncodingException
@@ -69,10 +77,12 @@ public interface SQLEncoderInterface
      *             if the encoding process fails
      * @throws SQLConsumerException
      *             if the verification process fails
+     * @throws SQLException
+     *             if binding the rows or sending them to the database fails
      */
-    SQLEncoding[] binaryTask(final Task<Diff> task)
+    long binaryTask(final Task<Diff> task, final PreparedStatement statement)
         throws ConfigurationException, UnsupportedEncodingException, DecodingException,
-        EncodingException, SQLConsumerException;
+        EncodingException, SQLConsumerException, SQLException;
 
     /**
      * Returns the textual encoding of the given DiffTask.
