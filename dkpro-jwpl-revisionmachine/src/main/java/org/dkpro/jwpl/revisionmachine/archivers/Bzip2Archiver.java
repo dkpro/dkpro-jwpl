@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
@@ -45,6 +46,9 @@ public class Bzip2Archiver
     // Size to write in memory while decompressing (in bytes)
     private static final int DECOMPRESSION_CACHE = 10000000;
 
+    // Start of files written by earlier versions: a superfluous "BZ" followed by the real header
+    private static final byte[] LEGACY_HEADER = { 'B', 'Z', 'B', 'Z', 'h' };
+
     /**
      * Creates bz2 archive file from file in path
      *
@@ -63,8 +67,6 @@ public class Bzip2Archiver
 
             try (FileOutputStream fos = new FileOutputStream(archivedFile)) {
                 BufferedOutputStream bufStr = new BufferedOutputStream(fos);
-                // added bzip2 prefix
-                fos.write("BZ".getBytes());
 
                 try (BZip2CompressorOutputStream bzip2 = new BZip2CompressorOutputStream(bufStr)) {
                     byte[] bytes = new byte[COMPRESSION_CACHE];
@@ -96,9 +98,7 @@ public class Bzip2Archiver
         FileOutputStream fos = new FileOutputStream(archivedFile);
 
         BufferedOutputStream bufStr = new BufferedOutputStream(fos);
-        // added bzip2 prefix
-        fos.write("BZ".getBytes());
-
+        // BZip2CompressorOutputStream writes the complete "BZh" header itself
         return new BZip2CompressorOutputStream(bufStr);
     }
 
@@ -115,7 +115,7 @@ public class Bzip2Archiver
     public InputStreamReader getDecompressionStream(String path, String encoding) throws IOException
     {
         BZip2CompressorInputStream input = new BZip2CompressorInputStream(
-                new BufferedInputStream(new FileInputStream(path)));
+                skipLegacyPrefix(new BufferedInputStream(new FileInputStream(path))));
         return new InputStreamReader(input, encoding);
     }
 
@@ -137,12 +137,8 @@ public class Bzip2Archiver
 
         try (BufferedInputStream inputStr = new BufferedInputStream(new FileInputStream(bzip2))) {
 
-            // read bzip2 prefix
-            inputStr.read();
-            inputStr.read();
-
             try (BZip2CompressorInputStream input = new BZip2CompressorInputStream(
-                    new BufferedInputStream(inputStr));
+                    skipLegacyPrefix(inputStr));
                     FileOutputStream outStr = new FileOutputStream(unarchived)) {
 
                 byte[] compressedBytes = new byte[DECOMPRESSION_CACHE];
@@ -155,6 +151,28 @@ public class Bzip2Archiver
                 }
             }
         }
+    }
+
+    /**
+     * Skips the extra {@code "BZ"} that earlier versions of this class wrote in front of the
+     * bzip2 stream header (resulting in files starting with {@code "BZBZh"}), so such files remain
+     * readable. Standard bzip2 streams are returned unchanged.
+     *
+     * @param input
+     *            buffered stream positioned at the start of the bzip2 data
+     * @return the same stream, positioned at the {@code "BZh"} header
+     * @throws IOException
+     *             if reading from the stream fails
+     */
+    static BufferedInputStream skipLegacyPrefix(BufferedInputStream input) throws IOException
+    {
+        input.mark(LEGACY_HEADER.length);
+        byte[] head = input.readNBytes(LEGACY_HEADER.length);
+        input.reset();
+        if (Arrays.equals(head, LEGACY_HEADER)) {
+            input.skipNBytes(2);
+        }
+        return input;
     }
 
 }
