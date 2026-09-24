@@ -20,6 +20,7 @@ package org.dkpro.jwpl.wikimachine.decompression;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -79,6 +80,50 @@ class BZip2DecompressorTest extends AbstractDecompressorTest {
             assertNotNull(in);
             assertEquals(content, new String(in.readAllBytes(), StandardCharsets.UTF_8));
         }
+    }
+
+    @Test
+    void testGetInputStreamReadsAllStreamsOfMultistreamFile(@TempDir Path dir) throws IOException {
+        final String contentA = "<page>first stream</page>\n";
+        final String contentB = "<page>second stream</page>\n";
+        final String contentC = "<page>third stream</page>\n";
+        final Path multistream = writeMultistreamBz2(dir.resolve("dump-multistream.xml.bz2"),
+                contentA, contentB, contentC);
+
+        try (InputStream in = decomp.getInputStream(multistream)) {
+            assertNotNull(in);
+            assertEquals(contentA + contentB + contentC,
+                    new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void testGetInputStreamSequenceReadsAllStreamsOfMultistreamParts(@TempDir Path dir)
+        throws IOException {
+        final Path partA = writeMultistreamBz2(dir.resolve("dump.xml-p1p10.bz2"), "a1\n", "a2\n");
+        final Path partB = writeMultistreamBz2(dir.resolve("dump.xml-p11p20.bz2"), "b1\n", "b2\n");
+
+        try (InputStream in = decomp.getInputStreamSequence(List.of(partA, partB))) {
+            assertNotNull(in);
+            assertEquals("a1\na2\nb1\nb2\n", new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    /**
+     * Writes each chunk as an independent bzip2 stream and concatenates them, as found in
+     * Wikimedia's multistream dumps.
+     */
+    private static Path writeMultistreamBz2(Path out, String... chunks) throws IOException {
+        try (OutputStream os = Files.newOutputStream(out)) {
+            for (String chunk : chunks) {
+                final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                try (OutputStream bz2 = new BZip2CompressorOutputStream(stream)) {
+                    bz2.write(chunk.getBytes(StandardCharsets.UTF_8));
+                }
+                stream.writeTo(os);
+            }
+        }
+        return out;
     }
 
     private static Path writeBz2(Path out, String content) throws IOException {

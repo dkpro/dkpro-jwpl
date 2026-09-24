@@ -115,7 +115,7 @@ public class Bzip2Archiver
     public InputStreamReader getDecompressionStream(String path, String encoding) throws IOException
     {
         BZip2CompressorInputStream input = new BZip2CompressorInputStream(
-                skipLegacyPrefix(new BufferedInputStream(new FileInputStream(path))));
+                skipLegacyPrefix(new BufferedInputStream(new FileInputStream(path))), true);
         return new InputStreamReader(input, encoding);
     }
 
@@ -138,7 +138,7 @@ public class Bzip2Archiver
         try (BufferedInputStream inputStr = new BufferedInputStream(new FileInputStream(bzip2))) {
 
             try (BZip2CompressorInputStream input = new BZip2CompressorInputStream(
-                    skipLegacyPrefix(inputStr));
+                    skipLegacyPrefix(inputStr), true);
                     FileOutputStream outStr = new FileOutputStream(unarchived)) {
 
                 byte[] compressedBytes = new byte[DECOMPRESSION_CACHE];
