@@ -56,9 +56,13 @@ public enum ConfigurationKeys
     MODE_ZIP_COMPRESSION_ENABLED,
 
     /**
-     * Type: boolean Used by: RevisionApi
+     * Type: boolean Used by: SQLDatabaseWriter
      * <p>
-     * Description: Enables the binary output
+     * Description: Stores the diffs binary in a MEDIUMBLOB column instead of base 64 encoded in a
+     * MEDIUMTEXT column. Only applies to the DATABASE output mode; the SQL file and archive output
+     * is always textual.
+     * <p>
+     * Recommendation / Default: false
      */
     MODE_BINARY_OUTPUT_ENABLED,
 

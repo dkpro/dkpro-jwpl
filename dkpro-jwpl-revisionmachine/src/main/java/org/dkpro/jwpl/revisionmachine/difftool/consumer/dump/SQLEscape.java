@@ -87,4 +87,64 @@ public class SQLEscape
         return sql.toString();
     }
 
+    /**
+     * Reverses {@link #escape(String)}: every escape sequence that it creates is replaced by the
+     * character it stands for, which is also how the server reads the escaped value when it is
+     * embedded in a string literal. Values that are bound as parameters of a prepared statement
+     * have to be unescaped this way, as they are stored exactly as given.
+     *
+     * @param str
+     *            String with escape characters, may be {@code null}
+     * @return unescaped String, or {@code null} if {@code str} is {@code null}
+     */
+    public static String unescape(String str)
+    {
+        if (str == null || str.indexOf('\\') < 0) {
+            return str;
+        }
+
+        final int len = str.length();
+        StringBuilder text = new StringBuilder(len);
+
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            if (c != '\\' || i + 1 == len) {
+                text.append(c);
+                continue;
+            }
+
+            char next = str.charAt(++i);
+            switch (next) {
+            case '0':
+                text.append('\u0000');
+                break;
+            case 'n':
+                text.append('\n');
+                break;
+            case 't':
+                text.append('\t');
+                break;
+            case 'r':
+                text.append('\r');
+                break;
+            case 'Z':
+                text.append('\u001a');
+                break;
+            case 'b':
+                text.append('\b');
+                break;
+            case '\'':
+            case '"':
+            case '\\':
+                text.append(next);
+                break;
+            default:
+                // not created by escape(): keep the sequence as it is
+                text.append(c).append(next);
+                break;
+            }
+        }
+        return text.toString();
+    }
+
 }

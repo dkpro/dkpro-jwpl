@@ -24,12 +24,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.Iterator;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
+import org.dkpro.jwpl.revisionmachine.common.util.BinaryColumns;
 import org.dkpro.jwpl.revisionmachine.common.util.Time;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
@@ -350,7 +350,7 @@ public class RevisionIterator
         }
 
         if (result.next()) {
-            binaryData = result.getMetaData().getColumnType(2) == Types.LONGVARBINARY;
+            binaryData = BinaryColumns.isBinary(result.getMetaData(), 2);
             return true;
         }
 
