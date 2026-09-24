@@ -125,8 +125,26 @@ public class DiffCalculator
     public DiffCalculator(final TaskTransmitterInterface taskTransmitter)
         throws ConfigurationException
     {
+        this(taskTransmitter, new BlockManagement());
+    }
+
+    /**
+     * (Constructor) Creates a new DiffCalculator object which uses the given block management to
+     * calculate the diff operations. Only intended for tests within this package.
+     *
+     * @param taskTransmitter
+     *            Reference to the TaskTransmitter
+     * @param blocks
+     *            Block management used to turn the matched blocks into diff operations
+     * @throws ConfigurationException
+     *             if an error occurred while accessing the configuration
+     */
+    DiffCalculator(final TaskTransmitterInterface taskTransmitter,
+            final BlockManagementInterface blocks)
+        throws ConfigurationException
+    {
         this.taskTransmitter = taskTransmitter;
-        this.blocks = new BlockManagement();
+        this.blocks = blocks;
 
         this.articleID = -1;
         this.partCounter = 0;
@@ -582,7 +600,7 @@ public class DiffCalculator
      * @throws UnsupportedEncodingException
      *             if the character encoding is unsupported
      */
-    private Diff generateDiff(final char[] revA, final char[] revB)
+    Diff generateDiff(final char[] revA, final char[] revB)
         throws UnsupportedEncodingException
     {
 

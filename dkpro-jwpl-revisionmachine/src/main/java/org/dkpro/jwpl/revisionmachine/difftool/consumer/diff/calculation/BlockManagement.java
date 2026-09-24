@@ -44,9 +44,9 @@ public class BlockManagement
     private static String WIKIPEDIA_ENCODING;
 
     /**
-     * Temporary variable - Just in Time revision
+     * Temporary variable - Length (in chars) of the just in time revision
      */
-    private StringBuilder version;
+    private int versionLength;
 
     /**
      * Temporary variable - Diff
@@ -54,9 +54,9 @@ public class BlockManagement
     private Diff diff;
 
     /**
-     * Temporary variable - Storage for intermediate blocks
+     * Temporary variable - Lengths (in chars) of the intermediate blocks
      */
-    private Map<Integer, String> bufferMap;
+    private Map<Integer, Integer> bufferMap;
 
     /**
      * Reference to the codec
@@ -88,7 +88,7 @@ public class BlockManagement
         this.codecData = new RevisionCodecData();
 
         this.bufferMap = new HashMap<>();
-        this.version = new StringBuilder();
+        this.versionLength = 0;
 
         DiffBlock curA = null, curB = null;
         while (!queueA.isEmpty() || !queueB.isEmpty() || curB != null) {
@@ -108,7 +108,7 @@ public class BlockManagement
                         replace(revA, revB, curA, curB);
                     }
                     else {
-                        version.append(copy(revA, curA.getRevAStart(), curA.getRevAEnd()));
+                        versionLength += curA.getRevAEnd() - curA.getRevAStart();
                     }
 
                     curA = null;
@@ -138,7 +138,7 @@ public class BlockManagement
                     }
                     else {
 
-                        cut(revA, curA);
+                        cut(curA);
                         curA = null;
 
                         // System.out.println("@TO CUT: " + curA.getId() + "\t<"
@@ -188,12 +188,7 @@ public class BlockManagement
      */
     private String copy(final char[] array, final int start, final int end)
     {
-        StringBuilder text = new StringBuilder();
-        for (int j = start; j < end; j++) {
-            text.append(array[j]);
-        }
-
-        return text.toString();
+        return new String(array, start, end - start);
     }
 
     /**
@@ -215,8 +210,8 @@ public class BlockManagement
         DiffPart action = new DiffPart(DiffAction.INSERT);
 
         // S
-        action.setStart(version.length());
-        codecData.checkBlocksizeS(version.length());
+        action.setStart(versionLength);
+        codecData.checkBlocksizeS(versionLength);
 
         // L T
         action.setText(text);
@@ -224,7 +219,7 @@ public class BlockManagement
 
         diff.add(action);
 
-        version.append(text);
+        versionLength += text.length();
     }
 
     /**
@@ -240,8 +235,8 @@ public class BlockManagement
         DiffPart action = new DiffPart(DiffAction.DELETE);
 
         // S
-        action.setStart(version.length());
-        codecData.checkBlocksizeS(version.length());
+        action.setStart(versionLength);
+        codecData.checkBlocksizeS(versionLength);
 
         // E
         action.setLength(curA.getRevAEnd() - curA.getRevAStart());
@@ -275,8 +270,8 @@ public class BlockManagement
         DiffPart action = new DiffPart(DiffAction.REPLACE);
 
         // S
-        action.setStart(version.length());
-        codecData.checkBlocksizeS(version.length());
+        action.setStart(versionLength);
+        codecData.checkBlocksizeS(versionLength);
 
         // E
         action.setLength(curA.getRevAEnd() - curA.getRevAStart());
@@ -288,28 +283,24 @@ public class BlockManagement
 
         diff.add(action);
 
-        version.append(text);
+        versionLength += text.length();
     }
 
     /**
      * Creates a cut operation.
      *
-     * @param revA
-     *            Reference to revision A
      * @param curA
      *            Reference to current block A
      */
-    private void cut(final char[] revA, final DiffBlock curA)
+    private void cut(final DiffBlock curA)
     {
-
-        String text = copy(revA, curA.getRevAStart(), curA.getRevAEnd());
 
         // Cut (C S E B)
         DiffPart action = new DiffPart(DiffAction.CUT);
 
         // S
-        action.setStart(version.length());
-        codecData.checkBlocksizeS(version.length());
+        action.setStart(versionLength);
+        codecData.checkBlocksizeS(versionLength);
 
         // E
         action.setLength(curA.getRevAEnd() - curA.getRevAStart());
@@ -321,7 +312,7 @@ public class BlockManagement
 
         diff.add(action);
 
-        bufferMap.put(curA.getId(), text);
+        bufferMap.put(curA.getId(), action.getLength());
     }
 
     /**
@@ -333,14 +324,14 @@ public class BlockManagement
     private void paste(final DiffBlock curB)
     {
 
-        String text = bufferMap.remove(curB.getId());
+        int length = bufferMap.remove(curB.getId());
 
         // Paste (C S B)
         DiffPart action = new DiffPart(DiffAction.PASTE);
 
         // S
-        action.setStart(version.length());
-        codecData.checkBlocksizeS(version.length());
+        action.setStart(versionLength);
+        codecData.checkBlocksizeS(versionLength);
 
         // B
         action.setText(Integer.toString(curB.getId()));
@@ -348,6 +339,6 @@ public class BlockManagement
 
         diff.add(action);
 
-        version.append(text);
+        versionLength += length;
     }
 }
