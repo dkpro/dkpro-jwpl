@@ -228,12 +228,45 @@ public class SpanManager
         return indexOf(str, s.getStart(), s.getEnd());
     }
 
+    /**
+     * Returns the index of the first occurrence of {@code str} that starts at or after
+     * {@code fromIndex} and before {@code toIndex}. A match may extend beyond {@code toIndex}; only
+     * its start position is bounded. A negative {@code fromIndex} is treated as {@code 0}. The
+     * search does not scan beyond {@code toIndex}.
+     *
+     * @param str the substring to search for
+     * @param fromIndex the index to start the search from
+     * @param toIndex the exclusive upper bound for the start index of a match
+     * @return the index of the match, or {@code -1} if there is no such occurrence
+     */
     public int indexOf(String str, int fromIndex, int toIndex)
     {
-        int result = sb.indexOf(str, fromIndex);
-        if (result >= toIndex)
-            return -1;
-        return result;
+        final int len = str.length();
+        final int n = sb.length();
+        final int from = Math.max(fromIndex, 0);
+
+        if (len == 0) {
+            final int r = Math.min(from, n);
+            return r < toIndex ? r : -1;
+        }
+
+        // exclusive bound for the start position: before toIndex and the match must fit into sb
+        final int end = Math.min(toIndex, n - len + 1);
+        final char first = str.charAt(0);
+
+        for (int i = from; i < end; i++) {
+            if (sb.charAt(i) != first) {
+                continue;
+            }
+            int k = 1;
+            while (k < len && sb.charAt(i + k) == str.charAt(k)) {
+                k++;
+            }
+            if (k == len) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public String substring(int start)
