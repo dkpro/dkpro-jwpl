@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.parser.mediawiki;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.dkpro.jwpl.parser.Span;
@@ -34,7 +35,12 @@ public class SpanManager
     private final StringBuilder sb;
     private final List<List<Span>> managedLists;
 
-    private List<Integer> ib;
+    /**
+     * Maps each index of {@link #sb} to its source position, or {@code -1} for inserted chars.
+     * Only the first {@link #ibSize} slots are valid.
+     */
+    private int[] ib;
+    private int ibSize;
     private boolean calculateSrcPositions;
 
     /**
@@ -57,9 +63,10 @@ public class SpanManager
     {
         calculateSrcPositions = true;
         final int len = sb.length();
-        ib = new ArrayList<>(len);
+        ib = new int[len];
         for (int i = 0; i < len; i++)
-            ib.add(i);
+            ib[i] = i;
+        ibSize = len;
     }
 
     /**
@@ -71,7 +78,8 @@ public class SpanManager
     public int getSrcPos(int index)
     {
         if (calculateSrcPositions) {
-            return ib.get(index);
+            checkIbIndex(index);
+            return ib[index];
         }
         else {
             System.err.println("SrcSpanCalculation not enabled!");
@@ -100,6 +108,44 @@ public class SpanManager
         spans.remove(listIdentifer);
     }
 
+    private void checkIbIndex(int index)
+    {
+        if (index < 0 || index >= ibSize) {
+            throw new IndexOutOfBoundsException(
+                    "Index " + index + " out of bounds for length " + ibSize);
+        }
+    }
+
+    /**
+     * Removes the source positions between start (included) and end (excluded) with a single shift.
+     */
+    private void ibDelete(int start, int end)
+    {
+        if (start < 0 || end > ibSize || start > end) {
+            throw new IndexOutOfBoundsException(
+                    "Range [" + start + ", " + end + ") out of bounds for length " + ibSize);
+        }
+        System.arraycopy(ib, end, ib, start, ibSize - end);
+        ibSize -= end - start;
+    }
+
+    /**
+     * Inserts len positions of value -1 at offset with a single shift.
+     */
+    private void ibInsertUnmapped(int offset, int len)
+    {
+        if (offset < 0 || offset > ibSize) {
+            throw new IndexOutOfBoundsException(
+                    "Index " + offset + " out of bounds for length " + ibSize);
+        }
+        if (ibSize + len > ib.length) {
+            ib = Arrays.copyOf(ib, Math.max(ibSize + len, ib.length + (ib.length >> 1)));
+        }
+        System.arraycopy(ib, offset, ib, offset + len, ibSize - offset);
+        Arrays.fill(ib, offset, offset + len, -1);
+        ibSize += len;
+    }
+
     private void adjustLists(int offset, int n)
     {
         for (List<Span> list : managedLists)
@@ -124,8 +170,7 @@ public class SpanManager
         adjustLists(start, start - end);
 
         if (calculateSrcPositions)
-            for (int i = 0; i < end - start; i++)
-                ib.remove(start);
+            ibDelete(start, end);
 
         return this;
     }
@@ -139,8 +184,7 @@ public class SpanManager
         adjustLists(offset, str.length());
 
         if (calculateSrcPositions)
-            for (int i = 0; i < str.length(); i++)
-                ib.add(offset, -1);
+            ibInsertUnmapped(offset, str.length());
 
         return this;
     }
@@ -161,10 +205,8 @@ public class SpanManager
         sb.replace(start, end, str);
 
         if (calculateSrcPositions) {
-            for (int i = 0; i < end - start; i++)
-                ib.remove(start);
-            for (int i = 0; i < str.length(); i++)
-                ib.add(start, -1);
+            ibDelete(start, end);
+            ibInsertUnmapped(start, str.length());
         }
 
         adjustLists(start, str.length() - (end - start));
@@ -242,8 +284,10 @@ public class SpanManager
     public SpanManager setCharAt(int index, char c)
     {
         sb.setCharAt(index, c);
-        if (calculateSrcPositions)
-            ib.set(index, -1);
+        if (calculateSrcPositions) {
+            checkIbIndex(index);
+            ib[index] = -1;
+        }
         return this;
     }
 
