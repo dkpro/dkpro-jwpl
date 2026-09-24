@@ -1,5 +1,8 @@
 # Config Examples
 
+A step-by-step tutorial, from a meta-history dump to the Revision API, with runnable example
+classes is in [dkpro-jwpl-tutorial/README.md](../dkpro-jwpl-tutorial/README.md).
+
 ## Diff Tool Config
 
 ```xml
@@ -21,10 +24,11 @@
 		</archive>
 	</input>
 	<output>
-		<OUTPUT_MODE>SQL</OUTPUT_MODE>
+		<OUTPUT_MODE>UNCOMPRESSED</OUTPUT_MODE>
 		<PATH>""</PATH>
 		<LIMIT_SQL_FILE_SIZE>1000000000</LIMIT_SQL_FILE_SIZE>
 		<MODE_ZIP_COMPRESSION_ENABLED>true</MODE_ZIP_COMPRESSION_ENABLED>
+		<MODE_DATAFILE_OUTPUT>false</MODE_DATAFILE_OUTPUT>
 	</output>
 	<cache>
 		<LIMIT_TASK_SIZE_REVISIONS>5000000</LIMIT_TASK_SIZE_REVISIONS>
