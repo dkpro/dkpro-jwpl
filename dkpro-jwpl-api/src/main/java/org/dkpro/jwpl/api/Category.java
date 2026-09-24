@@ -90,21 +90,26 @@ public class Category
     }
 
     /**
-     * Creates a category object that wraps an already retrieved, detached entity.
+     * Creates a category object from an already retrieved row. The row is not added to the category
+     * cache, because this is used when iterating over all categories.
      *
      * @param wiki
      *            The wikipedia object.
-     * @param catDAO
-     *            The {@link CategoryDAO} to use; may be shared among several categories.
-     * @param hibernateCategory
-     *            The {@code api.hibernate.Category} that has already been retrieved.
+     * @param row
+     *            The {@link Row} of a category entity that has already been retrieved.
+     * @return A category object backed by {@code row}.
      */
-    Category(Wikipedia wiki, CategoryDAO catDAO,
-            org.dkpro.jwpl.api.hibernate.Category hibernateCategory)
+    static Category fromRow(Wikipedia wiki, Row row)
+    {
+        return new Category(wiki, row);
+    }
+
+    // private, so that it does not make public calls like new Category(wiki, null) ambiguous
+    private Category(Wikipedia wiki, Row row)
     {
         this.wiki = wiki;
-        this.catDAO = catDAO;
-        this.hibernateCategory = hibernateCategory;
+        this.catDAO = wiki.getCategoryDAO();
+        this.row = row;
     }
 
     /**

@@ -21,8 +21,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.dkpro.jwpl.api.hibernate.CategoryDAO;
-
 /**
  * An {@link Iterator} over {@link Category} objects.
  */
@@ -69,7 +67,6 @@ public class CategoryIterator
     {
 
         private final Wikipedia wiki;
-        private final CategoryDAO catDAO;
 
         private final List<Category> buffer;
         private final int maxBufferSize; // the number of pages to be buffered after a query to the
@@ -82,7 +79,6 @@ public class CategoryIterator
         {
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
-            this.catDAO = new CategoryDAO(wiki);
             this.buffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
@@ -148,7 +144,7 @@ public class CategoryIterator
             bufferFillSize = 0;
 
             for (org.dkpro.jwpl.api.hibernate.Category o : returnValues) {
-                buffer.add(new Category(this.wiki, catDAO, o));
+                buffer.add(Category.fromRow(this.wiki, Category.Row.of(o)));
                 lastId = o.getId();
             }
             if (!buffer.isEmpty()) {
