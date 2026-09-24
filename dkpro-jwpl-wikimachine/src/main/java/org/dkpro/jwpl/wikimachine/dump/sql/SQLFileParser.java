@@ -17,7 +17,6 @@
  */
 package org.dkpro.jwpl.wikimachine.dump.sql;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -100,7 +99,10 @@ abstract class SQLFileParser implements AutoCloseable
     protected void init(InputStream inputStream) throws IOException
     {
         stream = inputStream;
-        st = new StreamTokenizer(new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8)));
+        // StreamTokenizer reads one char at a time; an unsynchronised buffer avoids taking a lock
+        // per char (see issue #552). The InputStreamReader remains the UTF-8 decoder.
+        st = new StreamTokenizer(new UnsyncBufferedReader(
+                new InputStreamReader(stream, StandardCharsets.UTF_8)));
         // Under the default syntax table '_' is an ordinary character, which would split
         // 'cl_from' into three tokens and make capturing column names impossible. An unquoted
         // '_' never occurs inside a VALUES tuple, so widening the word characters is safe.
