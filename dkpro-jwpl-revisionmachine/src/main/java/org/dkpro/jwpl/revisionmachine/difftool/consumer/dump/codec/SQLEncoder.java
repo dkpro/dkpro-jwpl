@@ -51,10 +51,13 @@ public class SQLEncoder
     /**
      * Statement which disables the non-unique keys of the revisions table for the bulk load
      */
-    public static final String DISABLE_KEYS = "ALTER TABLE revisions DISABLE KEYS;";
+    static final String DISABLE_KEYS = "ALTER TABLE revisions DISABLE KEYS;";
 
     /**
-     * Statement which (re-)builds the non-unique keys of the revisions table after the bulk load
+     * Statement which (re-)builds the non-unique keys of the revisions table after the bulk load.
+     * It is public because it is shared with the DiffTool writers
+     * ({@code difftool.consumer.dump.writer}) and the index writers ({@code index.writer}), which
+     * issue it once their load is done.
      */
     public static final String ENABLE_KEYS = "ALTER TABLE revisions ENABLE KEYS;";
 
