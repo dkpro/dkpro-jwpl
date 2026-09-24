@@ -28,9 +28,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +46,9 @@ public class DiffToolE2ETest {
   private static final String CONF_FILE = BASE.getFile() + "difftool-config-e2e.xml";
   private static final String OUTPUT_DIR = TARGET + "tool-exec";
   private static final String LOGS_DIR = OUTPUT_DIR + File.separator + "logs";
+
+  // A row of the revisions table; group 1 is the ArticleID
+  private static final Pattern ROW = Pattern.compile("\\(null,-?\\d+,\\d+,\\d+,(\\d+),");
 
   private static final String TOOL_NAME;
   private static final String EXEC_CLASS;
@@ -61,6 +66,8 @@ public class DiffToolE2ETest {
 
   @BeforeAll
   public static void initEnv() throws IOException {
+    // Start from empty logs: the error log of an earlier run would otherwise be appended to
+    deleteRecursively(Path.of(LOGS_DIR));
     Files.createDirectories(Path.of(OUTPUT_DIR));
     Files.createDirectories(Path.of(LOGS_DIR));
     // Copy (do not move) the fixtures: keeping the originals in place makes repeated
@@ -80,6 +87,16 @@ public class DiffToolE2ETest {
     }
   }
 
+  private static void deleteRecursively(Path dir) throws IOException {
+    if (Files.exists(dir)) {
+      try (Stream<Path> paths = Files.walk(dir)) {
+        for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) {
+          Files.delete(path);
+        }
+      }
+    }
+  }
+
   @BeforeEach
   public void setup() {
     // Define the command to run the JAR file
@@ -95,6 +112,18 @@ public class DiffToolE2ETest {
     // The revisions table records the namespace of each revision
     String sql = Files.readString(Path.of(OUTPUT_DIR, "output_1.sql"));
     assertTrue(sql.contains("Namespace INTEGER"), sql);
+    // The fixture holds four pages in the configured namespaces 0 and 1, each with a single
+    // revision. The text of "Main Page" is empty (a self-closing <text/> element) and skipped,
+    // the other three revisions are written as rows: (null, FullRevisionID, RevisionCounter,
+    // RevisionID, ArticleID, ...)
+    List<String> revisions = ROW.matcher(sql).results().map(r -> r.group(1)).toList();
+    assertEquals(List.of("1271", "1426", "1508"), revisions.stream().sorted().toList(), sql);
+    // No article failed to be read or processed
+    Path errors = Path.of(LOGS_DIR, "DiffToolErrors.log");
+    if (Files.exists(errors)) {
+      String errorLog = Files.readString(errors);
+      assertTrue(errorLog.isBlank(), errorLog);
+    }
   }
 
   @Test
