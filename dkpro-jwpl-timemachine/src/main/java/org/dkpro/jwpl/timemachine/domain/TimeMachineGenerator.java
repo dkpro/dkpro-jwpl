@@ -17,12 +17,16 @@
  */
 package org.dkpro.jwpl.timemachine.domain;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.dkpro.jwpl.timemachine.dump.xml.XMLDumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.domain.Files;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
@@ -122,11 +126,23 @@ public class TimeMachineGenerator
 
         dumpVersionProcessor.setDumpVersions(versions);
 
-        logger.log("Processing the revision table");
-        dumpVersionProcessor.processRevision(createRevisionParser());
+        // The revision and the page table are read in a single pass over the meta-history dump.
+        // The page rows are buffered in a temporary file, because processing them requires the
+        // state that processing the revision rows leaves behind.
+        final Path pageTable = createPageTableFile();
+        try {
+            logger.log("Processing the revision table");
+            final XMLDumpTableInputStream revisionTable = createRevisionAndPageTableInputStream(
+                    pageTable);
+            dumpVersionProcessor.processRevision(createRevisionParser(revisionTable));
+            revisionTable.awaitCompletion();
 
-        logger.log("Processing the page table");
-        dumpVersionProcessor.processPage(createPageParser());
+            logger.log("Processing the page table");
+            dumpVersionProcessor.processPage(createPageParser(pageTable));
+        }
+        finally {
+            java.nio.file.Files.deleteIfExists(pageTable);
+        }
 
         logger.log("Processing the linktarget table");
         final LinkTargetResolver linkTargets = loadLinkTargets();
@@ -144,24 +160,49 @@ public class TimeMachineGenerator
         dumpVersionProcessor.writeMetaData();
     }
 
-    private RevisionParser createRevisionParser() throws IOException
+    /**
+     * Creates the temporary file the page table is buffered in. It is placed in the output
+     * directory rather than the system's temporary directory, as it can grow to a few hundred MB
+     * for large wikis.
+     */
+    private Path createPageTableFile() throws IOException
     {
-        DumpTableInputStream revisionTableInputStream = envFactory.getDumpTableInputStream();
-        revisionTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.REVISION);
+        final Path outputDirectory = initialFiles.getOutputDirectory().toPath();
+        java.nio.file.Files.createDirectories(outputDirectory);
+        return java.nio.file.Files.createTempFile(outputDirectory, "page", ".bin");
+    }
 
+    /**
+     * @return A stream delivering the revision table, while the page table is written to
+     *         {@code pageTable} in the course of the very same pass over the meta-history dump.
+     */
+    private XMLDumpTableInputStream createRevisionAndPageTableInputStream(Path pageTable)
+        throws IOException
+    {
+        final DumpTableInputStream tableInputStream = envFactory.getDumpTableInputStream();
+        if (!(tableInputStream instanceof XMLDumpTableInputStream xmlTableInputStream)) {
+            throw new IllegalStateException("Reading the revision and page table in one pass "
+                    + "requires an " + XMLDumpTableInputStream.class.getSimpleName() + ", got "
+                    + tableInputStream.getClass().getName());
+        }
+        final OutputStream pageOutput = java.nio.file.Files.newOutputStream(pageTable);
+        xmlTableInputStream.initializeRevisionAndPage(openMetaHistoryStreams(), pageOutput);
+        return xmlTableInputStream;
+    }
+
+    private RevisionParser createRevisionParser(InputStream revisionTable)
+    {
         RevisionParser revisionParser = envFactory.getRevisionParser();
-        revisionParser.setInputStream(revisionTableInputStream);
+        revisionParser.setInputStream(revisionTable);
 
         return revisionParser;
     }
 
-    private PageParser createPageParser() throws IOException
+    private PageParser createPageParser(Path pageTable) throws IOException
     {
-        DumpTableInputStream pageTableInputStream = envFactory.getDumpTableInputStream();
-        pageTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.PAGE);
-
         PageParser pageParser = envFactory.getPageParser();
-        pageParser.setInputStream(pageTableInputStream);
+        pageParser.setInputStream(
+                new BufferedInputStream(java.nio.file.Files.newInputStream(pageTable)));
 
         return pageParser;
     }

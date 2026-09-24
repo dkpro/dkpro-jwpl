@@ -20,6 +20,7 @@ package org.dkpro.jwpl.timemachine.dump.xml;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
@@ -82,6 +83,37 @@ public class XMLDumpTableInputStream
         final PipedOutputStream decodedStream = openPipe();
         xmlInputThread = new XMLDumpTableInputStreamThread(inputStreams, decodedStream, table);
         xmlInputThread.start();
+    }
+
+    /**
+     * Reads the revision and the page table in a single pass over a (multi-part) dump. This
+     * stream delivers the revision table, while the page table is written to {@code pageOutput},
+     * which is closed at the end of the conversion. Call {@link #awaitCompletion()} before
+     * reading what was written to {@code pageOutput}.
+     *
+     * @param inputStreams Ordered list of XML part streams (ascending page-range). Must not be
+     *                     {@code null} or empty and must not contain {@code null} elements.
+     * @param pageOutput   The sink for the page table. Must not be {@code null}.
+     * @throws IOException Thrown if IO errors occurred while setting up the pipe.
+     */
+    public void initializeRevisionAndPage(List<InputStream> inputStreams, OutputStream pageOutput)
+        throws IOException
+    {
+        final PipedOutputStream decodedStream = openPipe();
+        xmlInputThread = new XMLDumpTableInputStreamThread(inputStreams, decodedStream,
+                pageOutput);
+        xmlInputThread.start();
+    }
+
+    /**
+     * Waits until the conversion started by one of the {@code initialize} methods has finished
+     * and closed all of its output streams.
+     *
+     * @throws IOException Thrown if the conversion failed or waiting for it was interrupted.
+     */
+    public void awaitCompletion() throws IOException
+    {
+        xmlInputThread.awaitCompletion();
     }
 
     private PipedOutputStream openPipe() throws IOException

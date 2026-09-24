@@ -1,0 +1,1 @@
+NULL	english	n/a	Letters	2	1	0	2	20200601000000

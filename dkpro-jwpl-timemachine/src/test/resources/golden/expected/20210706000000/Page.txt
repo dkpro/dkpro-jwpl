@@ -1,0 +1,2 @@
+1	1	Alpha	Alpha, second version, links to [[Gamma]] and [[Beta]]. [[Category:Letters]]	
+3	3	Gamma	Gamma became a real article. [[Category:Greek]]	
