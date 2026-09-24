@@ -17,6 +17,8 @@
  */
 package org.dkpro.jwpl.revisionmachine.api;
 
+import static org.dkpro.jwpl.revisionmachine.api.ChronoTestData.FIRST_PK;
+import static org.dkpro.jwpl.revisionmachine.api.ChronoTestData.LAST_PK;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -24,7 +26,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,8 +36,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.dkpro.jwpl.api.DatabaseConfiguration;
-import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,24 +50,15 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class ChronoRevisionIteratorTest
 {
 
-    private static final String DATABASE = "wikiapi_simple_20090119_stripped";
-
-    // Primary keys of the revisions of the page 'Car', the only page in the test data set
-    private static final int FIRST_PK = 71500;
-
-    private static final int LAST_PK = 71881;
-
-    // Number of revisions of 'Car' covered by the article with a chronological mapping
-    private static final int MAPPED = 40;
+    // Number of revisions of 'Car' covered by the article with a chronological mapping: all of
+    // them
+    private static final int MAPPED = ChronoTestData.REVISIONS;
 
     // Chrono storage space that is too small to keep all of these revisions
     private static final long STORAGE_SPACE = 20_000;
 
     // Revision ID of the first added revision, above those of the test data set
     private static final int FIRST_ADDED_REVISION_ID = 2_000_000;
-
-    // Number of revisions of 'Car'
-    private static final int CAR_REVISIONS = LAST_PK - FIRST_PK + 1;
 
     // Buffer size with which every article is fetched in a batch of its own
     private static final int SINGLE_ARTICLE_BATCH = 1;
@@ -103,32 +93,19 @@ public class ChronoRevisionIteratorTest
      */
     private static String copyDatabase(final Path dir) throws Exception
     {
-        String url = copyTestData(dir);
+        String url = ChronoTestData.copyDatabase(dir);
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 Statement statement = connection.createStatement()) {
             statement.execute("UPDATE index_articleID_rc_ts SET FullRevisionPKs = '" + FIRST_PK
-                    + "', RevisionCounter = '1 382' WHERE ArticleID = 3443");
+                    + "', RevisionCounter = '1 " + ChronoTestData.REVISIONS
+                    + "' WHERE ArticleID = 3443");
         }
         return url;
     }
 
-    /**
-     * Copies the unmodified test data set into the given directory.
-     *
-     * @return the JDBC URL of the copy
-     */
-    private static String copyTestData(final Path dir) throws Exception
-    {
-        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
-                dir.resolve(DATABASE + ".script"));
-        return "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
-    }
-
     private static RevisionAPIConfiguration configuration(final String url)
     {
-        RevisionAPIConfiguration config = new RevisionAPIConfiguration(
-                new DatabaseConfiguration("org.hsqldb.jdbcDriver", url, "localhost", DATABASE,
-                        "sa", "", Language.simple_english));
+        RevisionAPIConfiguration config = ChronoTestData.configuration(url);
         // One article per batch, so that the article index is paged as well
         config.setBufferSize(1);
         return config;
@@ -137,14 +114,9 @@ public class ChronoRevisionIteratorTest
     private static List<String> revisionsOfCar(final String url) throws Exception
     {
         List<String> revisionsOfCar = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(url, "sa", "")) {
-            RevisionIterator revisionIterator = new RevisionIterator(config, FIRST_PK, LAST_PK,
-                    connection);
-            while (revisionIterator.hasNext()) {
-                revisionsOfCar.add(describe(revisionIterator.next()));
-            }
+        for (Revision revision : ChronoTestData.revisionsOfCar(config, url)) {
+            revisionsOfCar.add(describe(revision));
         }
-        assertEquals(CAR_REVISIONS, revisionsOfCar.size());
         return revisionsOfCar;
     }
 
@@ -183,15 +155,9 @@ public class ChronoRevisionIteratorTest
 
         List<String> revisionsOfCar = revisionsOfCar(url);
 
-        // The second article covers the first revisions of 'Car' and delivers them in reverse
-        // order
-        StringBuilder mapping = new StringBuilder();
-        for (int revisionCounter = 1; revisionCounter <= MAPPED; revisionCounter++) {
-            if (revisionCounter > 1) {
-                mapping.append(' ');
-            }
-            mapping.append(revisionCounter).append(' ').append(MAPPED + 1 - revisionCounter);
-        }
+        // The second article covers the first MAPPED revisions of 'Car' and delivers them in
+        // reverse order
+        String mapping = ChronoTestData.reversedMapping(MAPPED, MAPPED);
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 Statement statement = connection.createStatement()) {
             statement.execute("UPDATE index_articleID_rc_ts SET RevisionCounter = '1 " + MAPPED
@@ -201,9 +167,7 @@ public class ChronoRevisionIteratorTest
         }
 
         List<String> expected = new ArrayList<>(revisionsOfCar);
-        for (int i = MAPPED - 1; i >= 0; i--) {
-            expected.add(revisionsOfCar.get(i));
-        }
+        expected.addAll(ChronoTestData.reversedTail(revisionsOfCar.subList(0, MAPPED), MAPPED));
 
         AtomicInteger rangeStatements = new AtomicInteger();
         AtomicInteger rangeQueries = new AtomicInteger();
@@ -264,7 +228,7 @@ public class ChronoRevisionIteratorTest
             final List<AddedArticle> articles)
         throws Exception
     {
-        String url = copyTestData(dir);
+        String url = ChronoTestData.copyDatabase(dir);
         try (Connection connection = DriverManager.getConnection(url, "sa", "");
                 PreparedStatement deleteIndexEntry = connection.prepareStatement(
                         "DELETE FROM index_articleID_rc_ts WHERE ArticleID = ?");
@@ -343,7 +307,7 @@ public class ChronoRevisionIteratorTest
     {
         int addedRevisions = ARTICLES_WITH_ONE_AND_TWO_REVISIONS.stream()
                 .mapToInt(AddedArticle::revisions).sum();
-        assertEquals(CAR_REVISIONS + addedRevisions, revisionIDs.size());
+        assertEquals(ChronoTestData.REVISIONS + addedRevisions, revisionIDs.size());
         assertEquals(revisionIDs.size(), actual.size());
     }
 

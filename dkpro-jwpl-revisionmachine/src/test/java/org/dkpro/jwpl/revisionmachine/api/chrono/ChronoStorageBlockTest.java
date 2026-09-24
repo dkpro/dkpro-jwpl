@@ -31,15 +31,14 @@ public class ChronoStorageBlockTest
     @Test
     public void testLengthMatchesEscapedRevisionText()
     {
+        String escapedText = "a &amp; b &lt;c&gt;";
         Revision revision = new Revision(3);
-        revision.setRevisionText("a &amp; b &lt;c&gt;");
+        revision.setRevisionText(escapedText);
 
-        ChronoStorageBlock block = new ChronoStorageBlock(null, 3, revision);
+        ChronoStorageBlock block = new ChronoStorageBlock(null, 3, revision, escapedText);
 
-        // The storage keeps the escaped text, which is also the base for rebuilding the next
-        // revisions, so its size is accounted with the escaped length.
-        assertEquals(revision.byteSize(), block.length());
-        assertEquals("a &amp; b &lt;c&gt;".length(), block.length());
+        assertEquals(escapedText, block.getEscapedText());
+        assertEquals(escapedText.length(), block.length());
     }
 
     @Test
@@ -48,7 +47,7 @@ public class ChronoStorageBlockTest
         Revision revision = new Revision(1);
         revision.setRevisionText("plain text");
 
-        ChronoStorageBlock block = new ChronoStorageBlock(null, 1, revision);
+        ChronoStorageBlock block = new ChronoStorageBlock(null, 1, revision, "plain text");
         int added = block.length();
 
         // A consumer may replace the text of a revision it received.

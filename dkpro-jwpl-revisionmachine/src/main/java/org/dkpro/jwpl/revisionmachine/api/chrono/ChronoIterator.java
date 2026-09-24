@@ -259,8 +259,8 @@ public class ChronoIterator
 
         // Determine the nearest revision that could be used to construct
         // the specified revision
-        revision = cfr.getNearest(revCount);
-        if (revision == null) {
+        ChronoStorageBlock nearest = cfr.getNearestBlock(revCount);
+        if (nearest == null) {
 
             // Create query bounds (all revisions from the full revision till
             // now)
@@ -274,11 +274,12 @@ public class ChronoIterator
         else {
 
             // Create query bounds (only new revisions, last known + 1 till now)
-            queryPK = revision.getPrimaryKey() + 1;
-            limit = revCount - revision.getRevisionCounter();
+            queryPK = nearest.getRev().getPrimaryKey() + 1;
+            limit = revCount - nearest.getRevisionCounter();
 
-            previousRevision = ((ChronoRevision) revision).rawText;
-            previousRevisionCounter = revision.getRevisionCounter();
+            // Rebuild from the escaped text, getRevisionText() returns it unescaped
+            previousRevision = nearest.getEscapedText();
+            previousRevisionCounter = nearest.getRevisionCounter();
 
         }
 
@@ -339,7 +340,7 @@ public class ChronoIterator
                 try {
                     currentRevision = diff.buildRevision(previousRevision);
 
-                    revision = new ChronoRevision(result.getInt(3), currentRevision);
+                    revision = new Revision(result.getInt(3));
                     revision.setRevisionText(currentRevision);
                     revision.setPrimaryKey(result.getInt(2));
                     revision.setRevisionID(result.getInt(4));
@@ -361,7 +362,7 @@ public class ChronoIterator
 
                 // Add the reconstructed revision to the storage
                 if (revision != null) {
-                    chronoStorage.add(revision);
+                    chronoStorage.add(revision, currentRevision);
                 }
             }
 
@@ -410,28 +411,6 @@ public class ChronoIterator
         }
         finally {
             rangeStatement = null;
-        }
-    }
-
-    /**
-     * Revision that keeps the text as it was reconstructed. Further revisions have to be
-     * reconstructed from this text, as {@link Revision#getRevisionText()} returns it unescaped.
-     */
-    private static final class ChronoRevision
-        extends Revision
-    {
-
-        private static final long serialVersionUID = 1L;
-
-        /**
-         * Reconstructed (escaped) revision text
-         */
-        private final transient String rawText;
-
-        private ChronoRevision(final int revisionCounter, final String rawText)
-        {
-            super(revisionCounter);
-            this.rawText = rawText;
         }
     }
 

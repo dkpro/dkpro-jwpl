@@ -105,12 +105,26 @@ public class ChronoStorage
     }
 
     /**
-     * Adds a revision to the chrono storage.
+     * Adds a revision to the chrono storage. The text returned by
+     * {@link Revision#getRevisionText()} is kept as the text of the revision.
      *
      * @param rev
      *            reference to the revision
      */
     public void add(final Revision rev)
+    {
+        add(rev, rev.getRevisionText());
+    }
+
+    /**
+     * Adds a revision to the chrono storage.
+     *
+     * @param rev
+     *            reference to the revision
+     * @param escapedText
+     *            escaped revision text, as reconstructed from the diffs
+     */
+    void add(final Revision rev, final String escapedText)
     {
 
         int revIndex = rev.getRevisionCounter();
@@ -122,7 +136,7 @@ public class ChronoStorage
         // revIndex);
 
         ChronoFullRevision cfr = this.fullRevStorage.get(rev.getRevisionCounter());
-        ChronoStorageBlock block = new ChronoStorageBlock(cfr, revIndex, rev);
+        ChronoStorageBlock block = new ChronoStorageBlock(cfr, revIndex, rev, escapedText);
         cfr.add(block);
 
         if (revIndex < revisionIndex) {
