@@ -83,6 +83,11 @@ public class UniversalDecompressor
     private final Map<String, IDecompressor> internalSupport;
 
     /**
+     * Whether the built-in decompression runs on a separate thread, ahead of the consumer.
+     */
+    private final boolean readAhead;
+
+    /**
      * Check if the file extension is supported by the external utility
      *
      * @param extension The file extension to check for.
@@ -112,6 +117,20 @@ public class UniversalDecompressor
    */
     public UniversalDecompressor()
     {
+        this(false);
+    }
+
+    /**
+     * Instantiates a {@link UniversalDecompressor} supporting bz2, gz and 7z
+     * compressed archives.
+     *
+     * @param readAhead If {@code true}, the built-in decompression runs on a separate thread
+     *                  that stays ahead of the consumer, see {@link ReadAheadInputStream}.
+     *                  External utilities always run in a process of their own.
+     */
+    public UniversalDecompressor(boolean readAhead)
+    {
+        this.readAhead = readAhead;
         internalSupport = new HashMap<>();
         internalSupport.put("bz2", new BZip2Decompressor());
         internalSupport.put("gz", new GZipDecompressor());
@@ -130,8 +149,49 @@ public class UniversalDecompressor
      */
     public UniversalDecompressor(Path externalXML)
     {
-        this();
+        this(externalXML, false);
+    }
+
+    /**
+     * Instantiates a {@link UniversalDecompressor} via an external
+     * {@link Path} reference to a custom "decompressor.xml" file.
+     * <p>
+     * By default, bz2, gz and 7z compressed archives are supported.
+     *
+     * @param externalXML A valid {@link Path} reference to a
+     *                    "decompressor.xml" file.
+     * @param readAhead   If {@code true}, the built-in decompression runs on a separate thread
+     *                    that stays ahead of the consumer, see {@link ReadAheadInputStream}.
+     *                    External utilities always run in a process of their own.
+     */
+    public UniversalDecompressor(Path externalXML, boolean readAhead)
+    {
+        this(readAhead);
         loadExternal(externalXML);
+    }
+
+    /**
+     * @return {@code true} if the built-in decompression runs on a separate thread.
+     */
+    public boolean isReadAhead()
+    {
+        return readAhead;
+    }
+
+    /**
+     * Moves the decompression of {@code decompressed} to a separate thread, if enabled.
+     *
+     * @param decompressed The stream produced by a built-in decompressor, may be {@code null}.
+     * @param name         Names the stream in the thread name and in error messages.
+     * @return {@code decompressed} itself, or a {@link ReadAheadInputStream} wrapping it.
+     */
+    private InputStream readAhead(InputStream decompressed, String name)
+    {
+        if (!readAhead || decompressed == null) {
+            return decompressed;
+        }
+        LOG.debug("Decompressing '{}' on a separate thread.", name);
+        return new ReadAheadInputStream(decompressed, name);
     }
 
     /**
@@ -371,7 +431,8 @@ public class UniversalDecompressor
             inputStream = external;
         }
         else if (isInternalSupported(extension)) {
-            inputStream = internalSupport.get(extension).getInputStream(resource);
+            inputStream = readAhead(internalSupport.get(extension).getInputStream(resource),
+                    resource.getFileName().toString());
         }
         else {
             inputStream = getDefault(file);
@@ -402,7 +463,8 @@ public class UniversalDecompressor
         // 7z multi-file archives are not supported yet; only the internally supported
         // streamable formats (bz2, gz) can be concatenated at the decompressor level.
         if (isInternalSupported(extension) && !"7z".equals(extension)) {
-            return internalSupport.get(extension).getInputStreamSequence(resources);
+            return readAhead(internalSupport.get(extension).getInputStreamSequence(resources),
+                    resources.get(0).getFileName().toString());
         }
         throw new IOException("Multi-file dumps of '" + extension + "' archives "
                 + "are currently not supported.");

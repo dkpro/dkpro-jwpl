@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.datamachine.domain;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -178,6 +179,32 @@ public class JWPLDataMachineE2ETest {
     assertTrue(fields[0].length() > 0);
   }
 
+  /**
+   * Decompressing on a separate thread must not change a single byte of the generated tables.
+   */
+  @Test
+  void testExecJWPLDataMachineWithReadAheadProducesIdenticalOutput() throws IOException {
+    Path outputDir = Path.of(OUTPUT_DIR + File.separator + "output");
+    List<String> args = List.of("aa", "n/a", "n/a", OUTPUT_DIR);
+
+    List<String> sequential = new ArrayList<>(cmd);
+    sequential.addAll(args);
+    assertEquals(0, execTool(sequential));
+    Map<String, byte[]> expected = contents(outputDir);
+    assertEquals(11, expected.size());
+
+    List<String> readAhead = new ArrayList<>(cmd);
+    readAhead.add(1, "-Djwpl.decompressor.readahead=true");
+    readAhead.addAll(args);
+    assertEquals(0, execTool(readAhead));
+    Map<String, byte[]> actual = contents(outputDir);
+
+    assertEquals(expected.keySet(), actual.keySet());
+    for (Map.Entry<String, byte[]> table : expected.entrySet()) {
+      assertArrayEquals(table.getValue(), actual.get(table.getKey()), table.getKey());
+    }
+  }
+
   @Test
   void testExecJWPLDataMachineWithNoArgumentsShouldFail() {
     // Simulating an execution without config file
@@ -202,6 +229,22 @@ public class JWPLDataMachineE2ETest {
     expected.put("page_redirects.txt", 1);
     expected.put("MetaData.txt", 1);
     return expected;
+  }
+
+  /**
+   * @param outputDir The directory holding the generated tables.
+   * @return The content of every generated table, keyed by file name. The files are deleted, so
+   *         that a subsequent run cannot leave a stale table behind unnoticed.
+   */
+  private static Map<String, byte[]> contents(Path outputDir) throws IOException {
+    Map<String, byte[]> contents = new HashMap<>();
+    try (Stream<Path> results = Files.list(outputDir)) {
+      for (Path table : results.filter(p -> p.toString().endsWith(".txt")).toList()) {
+        contents.put(table.getFileName().toString(), Files.readAllBytes(table));
+        Files.delete(table);
+      }
+    }
+    return contents;
   }
 
   private static Map<String, Integer> rowCounts(Path outputDir) throws IOException {

@@ -49,6 +49,13 @@ public abstract class AbstractEnvironmentFactory
      */
     public static final String DECOMPRESSOR_CONFIG_PROPERTY = "jwpl.decompressor.xml";
 
+    /**
+     * Name of the system property that, if set to {@code true}, runs the built-in decompression
+     * on a separate thread, so that it overlaps with the parsing of the decompressed data. It is
+     * disabled by default. External decompression utilities always run in a process of their own.
+     */
+    public static final String DECOMPRESSOR_READ_AHEAD_PROPERTY = "jwpl.decompressor.readahead";
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractEnvironmentFactory.class);
 
     private static ILogger LOG_BEAN;
@@ -85,13 +92,16 @@ public abstract class AbstractEnvironmentFactory
      * {@inheritDoc}
      * <p>
      * Note: Realized via a singleton instance. External decompression utilities are configured
-     * via the system property {@value #DECOMPRESSOR_CONFIG_PROPERTY}.
+     * via the system property {@value #DECOMPRESSOR_CONFIG_PROPERTY}. Decompressing on a
+     * separate thread is enabled via the system property
+     * {@value #DECOMPRESSOR_READ_AHEAD_PROPERTY}.
      */
     @Override
     public IDecompressor getDecompressor()
     {
         if (DECOMPRESSOR_BEAN == null) {
-            DECOMPRESSOR_BEAN = createDecompressor(System.getProperty(DECOMPRESSOR_CONFIG_PROPERTY));
+            DECOMPRESSOR_BEAN = createDecompressor(System.getProperty(DECOMPRESSOR_CONFIG_PROPERTY),
+                    Boolean.getBoolean(DECOMPRESSOR_READ_AHEAD_PROPERTY));
         }
         return DECOMPRESSOR_BEAN;
     }
@@ -106,17 +116,34 @@ public abstract class AbstractEnvironmentFactory
      */
     static UniversalDecompressor createDecompressor(String configLocation)
     {
+        return createDecompressor(configLocation, false);
+    }
+
+    /**
+     * Creates a {@link UniversalDecompressor} that additionally uses the external utilities
+     * configured in {@code configLocation}. If no location is given, or the referenced file
+     * does not exist, only the built-in decompression is available.
+     *
+     * @param configLocation The path to a {@code decompressor.xml} file, may be {@code null}.
+     * @param readAhead      Whether the built-in decompression runs on a separate thread.
+     * @return A {@link UniversalDecompressor} instance, never {@code null}.
+     */
+    static UniversalDecompressor createDecompressor(String configLocation, boolean readAhead)
+    {
+        if (readAhead) {
+            LOG.info("Decompressing on a separate thread, ahead of the parser.");
+        }
         if (configLocation == null || configLocation.isBlank()) {
-            return new UniversalDecompressor();
+            return new UniversalDecompressor(readAhead);
         }
         final Path config = Path.of(configLocation.trim());
         if (!Files.isRegularFile(config)) {
             LOG.warn("External decompressor configuration '{}' does not exist, "
                     + "using the built-in decompression.", config.toAbsolutePath());
-            return new UniversalDecompressor();
+            return new UniversalDecompressor(readAhead);
         }
         LOG.info("Using external decompressor configuration '{}'.", config.toAbsolutePath());
-        return new UniversalDecompressor(config);
+        return new UniversalDecompressor(config, readAhead);
     }
 
     /**

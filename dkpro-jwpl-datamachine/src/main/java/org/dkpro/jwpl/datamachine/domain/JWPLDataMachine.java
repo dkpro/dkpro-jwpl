@@ -60,7 +60,9 @@ public class JWPLDataMachine
             + "pages; members of its subcategories are not. For the English Wikipedia use\n"
             + "All_article_disambiguation_pages, which every disambiguation template (e.g. {{hndis}}) populates.\n"
             + "External archive utilities (e.g. lbzip2 or pigz) can be configured in a decompressor.xml,\n"
-            + "which is enabled via -Djwpl.decompressor.xml=<PATH> (see documentation for more help).\n";
+            + "which is enabled via -Djwpl.decompressor.xml=<PATH> (see documentation for more help).\n"
+            + "With -Djwpl.decompressor.readahead=true the built-in decompression runs on a separate\n"
+            + "thread, overlapping with the parsing of the dump.\n";
 
     private static final long startTime = System.currentTimeMillis();
 

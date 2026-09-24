@@ -40,6 +40,11 @@ public final class GZipDecompressor
 {
 
     /**
+     * The size of the inflater's input buffer; the default of 512 bytes is needlessly small.
+     */
+    private static final int BUFFER_SIZE = 1 << 16;
+
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -55,7 +60,7 @@ public final class GZipDecompressor
     public InputStream getInputStream(Path resource) throws IOException
     {
         checkResource(resource);
-        return new GZIPInputStream(new BufferedInputStream(openStream(resource)));
+        return new GZIPInputStream(new BufferedInputStream(openStream(resource)), BUFFER_SIZE);
     }
 
     /**
@@ -75,7 +80,7 @@ public final class GZipDecompressor
         final List<InputStream> streams = new ArrayList<>(resources.size());
         try {
             for (Path p : resources) {
-                streams.add(new GZIPInputStream(new BufferedInputStream(openStream(p))));
+                streams.add(new GZIPInputStream(new BufferedInputStream(openStream(p)), BUFFER_SIZE));
             }
             return new SequenceInputStream(Collections.enumeration(streams));
         } catch (IOException | RuntimeException e) {

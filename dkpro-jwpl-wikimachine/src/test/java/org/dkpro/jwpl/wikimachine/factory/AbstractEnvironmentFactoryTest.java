@@ -57,6 +57,16 @@ class AbstractEnvironmentFactoryTest
     }
 
     @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"src/test/resources/decompressor-ar.xml"})
+    void testCreateDecompressorWithReadAhead(String configLocation)
+    {
+        assertTrue(AbstractEnvironmentFactory.createDecompressor(configLocation, true).isReadAhead());
+        assertFalse(AbstractEnvironmentFactory.createDecompressor(configLocation, false).isReadAhead());
+        assertFalse(AbstractEnvironmentFactory.createDecompressor(configLocation).isReadAhead());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"missing-decompressor.xml"})
     void testCreateDecompressorFallsBackIfConfigIsAbsent(String configLocation)
     {
