@@ -17,8 +17,6 @@
  */
 package org.dkpro.jwpl.wikimachine.dump.sql;
 
-import java.util.Locale;
-
 /**
  * The kind of membership a {@code categorylinks} row describes, as recorded in the
  * {@code cl_type} column MediaWiki introduced with the {@code categorylinks} table revision
@@ -50,15 +48,48 @@ public enum CategoryLinkType
         if (value == null) {
             return UNKNOWN;
         }
-        switch (value.toLowerCase(Locale.ROOT)) {
-        case "page":
+        if (equalsAsciiIgnoreCase(value, "page")) {
             return PAGE;
-        case "subcat":
-            return SUBCAT;
-        case "file":
-            return FILE;
-        default:
-            return UNKNOWN;
         }
+        if (equalsAsciiIgnoreCase(value, "subcat")) {
+            return SUBCAT;
+        }
+        if (equalsAsciiIgnoreCase(value, "file")) {
+            return FILE;
+        }
+        return UNKNOWN;
+    }
+
+    /**
+     * Compares {@code value} to a lower case ASCII {@code expected} without allocating, folding
+     * only the ASCII letters {@code A-Z} of {@code value}.
+     * <p>
+     * This yields exactly the result of {@code value.toLowerCase(Locale.ROOT).equals(expected)}
+     * for the values MediaWiki defines: the only non-ASCII characters that {@code toLowerCase}
+     * maps into ASCII are the Kelvin sign (to {@code k}) and the dotted capital I (to {@code i}
+     * followed by a combining dot, which changes the length), and neither can produce
+     * {@code page}, {@code subcat} or {@code file}. {@link String#equalsIgnoreCase(String)} would
+     * in contrast also accept, for example, the long s {@code U+017F} for {@code s}.
+     *
+     * @param value    The value to test.
+     * @param expected The expected value, lower case ASCII only.
+     * @return {@code true} if {@code value} equals {@code expected} ignoring ASCII case.
+     */
+    private static boolean equalsAsciiIgnoreCase(String value, String expected)
+    {
+        final int length = expected.length();
+        if (value.length() != length) {
+            return false;
+        }
+        for (int i = 0; i < length; i++) {
+            char c = value.charAt(i);
+            if (c >= 'A' && c <= 'Z') {
+                c = (char) (c + ('a' - 'A'));
+            }
+            if (c != expected.charAt(i)) {
+                return false;
+            }
+        }
+        return true;
     }
 }
