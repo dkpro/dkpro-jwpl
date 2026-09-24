@@ -22,29 +22,50 @@ on:
   push:
     branches: [ master ]
   pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review ]
 
-# Cancel a pull request's run when a newer commit is pushed to it; runs on master always finish
+# A newer commit on a pull request cancels its run still in progress; runs on master always finish.
+# Draft pull requests share one group without cancellation, so at most one draft build runs at a
+# time and ready pull requests keep the runners. Note that a group holds only one pending run: a
+# newer pending draft run replaces an older pending one.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ${{ github.event.pull_request.draft && format('{0}-drafts', github.workflow) || format('{0}-{1}', github.workflow, github.event.pull_request.number || github.ref) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
 
 jobs:
+  matrix:
+    name: Select builds
+    runs-on: ubuntu-latest
+    outputs:
+      include: ${{ steps.select.outputs.include }}
+    steps:
+      - id: select
+        env:
+          DRAFT: ${{ github.event.pull_request.draft == true }}
+        # One build per line. Draft pull requests only run the build marked as smoke; the full
+        # matrix runs once they are marked ready for review.
+        # The artifacts are built against Hibernate 6 but must also run with Hibernate 7.
+        run: |
+          jq -cs 'map(select(env.DRAFT != "true" or .smoke == true))' > include.json <<'EOF'
+          { "java": 17, "db": "hsqldb" }
+          { "java": 21, "db": "hsqldb", "smoke": true }
+          { "java": 25, "db": "hsqldb" }
+          { "java": 21, "db": "mariadb" }
+          { "java": 21, "db": "mysql" }
+          { "java": 21, "db": "hsqldb", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
+          { "java": 21, "db": "mariadb", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
+          { "java": 21, "db": "mysql", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
+          EOF
+          echo "include=$(cat include.json)" >> "$GITHUB_OUTPUT"
+
   build:
     name: "JDK ${{ matrix.java }} / ${{ matrix.db }}${{ matrix.label }}"
-    runs-on: ${{ matrix.os }}
+    needs: matrix
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - { os: ubuntu-latest, java: 17, db: hsqldb }
-          - { os: ubuntu-latest, java: 21, db: hsqldb }
-          - { os: ubuntu-latest, java: 25, db: hsqldb }
-          - { os: ubuntu-latest, java: 21, db: mariadb }
-          - { os: ubuntu-latest, java: 21, db: mysql }
-          # The artifacts are built against Hibernate 6 but must also run with Hibernate 7
-          - { os: ubuntu-latest, java: 21, db: hsqldb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
-          - { os: ubuntu-latest, java: 21, db: mariadb, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
-          - { os: ubuntu-latest, java: 21, db: mysql, label: ' / Hibernate 7', args: '-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0' }
+        include: ${{ fromJSON(needs.matrix.outputs.include) }}
 
     steps:
       - uses: actions/checkout@v7
