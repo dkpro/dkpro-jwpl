@@ -17,16 +17,11 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.diff.calculation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.assertDecodes;
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.configure;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.charset.StandardCharsets;
-
 import org.dkpro.jwpl.revisionmachine.api.Revision;
-import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
-import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
-import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
-import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionEncoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -38,14 +33,10 @@ import org.junit.jupiter.api.Test;
 class DiffCalculatorEmptyRevisionTest
 {
 
-    private static final String ENCODING = StandardCharsets.UTF_8.toString();
-
     @BeforeAll
     static void setUpConfiguration()
     {
-        ConfigSettings settings = new ConfigSettings();
-        settings.defaultConfiguration();
-        new ConfigurationManager(settings);
+        configure(true);
     }
 
     @Test
@@ -61,14 +52,6 @@ class DiffCalculatorEmptyRevisionTest
         Diff diff = calculator.processRevision(revision);
         assertTrue(diff.isFullRevision());
 
-        RevisionEncoder encoder = new RevisionEncoder();
-
-        RevisionDecoder decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(encoder.binaryDiff(diff.getCodecData(), diff));
-        assertEquals("", decoder.decode().buildRevision((String) null));
-
-        decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(encoder.encodeDiff(diff.getCodecData(), diff));
-        assertEquals("", decoder.decode().buildRevision((String) null));
+        assertDecodes(diff, diff.getCodecData(), null, "");
     }
 }

@@ -47,8 +47,9 @@ public class DiffToolE2ETest {
   private static final String OUTPUT_DIR = TARGET + "tool-exec";
   private static final String LOGS_DIR = OUTPUT_DIR + File.separator + "logs";
 
-  // A row of the revisions table; group 1 is the ArticleID
-  private static final Pattern ROW = Pattern.compile("\\(null,-?\\d+,\\d+,\\d+,(\\d+),");
+  // A row of the revisions table; group 1 is the ArticleID. The binary SQL path writes a space
+  // after the leading null.
+  private static final Pattern ROW = Pattern.compile("\\(null, ?-?\\d+,\\d+,\\d+,(\\d+),");
 
   private static final String TOOL_NAME;
   private static final String EXEC_CLASS;
@@ -87,6 +88,12 @@ public class DiffToolE2ETest {
     }
   }
 
+  /**
+   * Deletes the given directory including its content, if it exists.
+   *
+   * @param dir the directory to delete
+   * @throws IOException if a file or directory cannot be deleted
+   */
   private static void deleteRecursively(Path dir) throws IOException {
     if (Files.exists(dir)) {
       try (Stream<Path> paths = Files.walk(dir)) {
