@@ -74,6 +74,12 @@ public class RevisionIterator
     private String previousRevision;
 
     /**
+     * Primary key of the revision whose text is stored in {@link #previousRevision}, {@code -1}
+     * if none has been reconstructed yet
+     */
+    private int previousRevisionPK = -1;
+
+    /**
      * Current primary key
      */
     private int primaryKey;
@@ -436,7 +442,8 @@ public class RevisionIterator
             articleID = result.getInt(5);
 
             if (articleID != this.currentArticleID) {
-                this.currentRevCounter = 0;
+                // The first revision of the iteration may be in the middle of an article
+                this.currentRevCounter = this.currentArticleID > 0 ? 0 : revCount - 1;
                 this.currentArticleID = articleID;
             }
 
@@ -470,6 +477,12 @@ public class RevisionIterator
                 }
                 diff = decoder.decode();
 
+                if (!diff.isFullRevision() && previousRevisionPK != this.primaryKey - 1) {
+                    // The iteration did not decode the preceding revision of the diff chain,
+                    // e.g. due to the start position or a switch from lazy mode
+                    previousRevision = reconstructPreviousRevision(result.getInt(4));
+                }
+
                 try {
                     currentRevision = diff.buildRevision(previousRevision);
                 }
@@ -481,6 +494,7 @@ public class RevisionIterator
                 }
 
                 previousRevision = currentRevision;
+                previousRevisionPK = this.primaryKey;
                 revision.setRevisionText(currentRevision);
             }
             else {
@@ -510,6 +524,61 @@ public class RevisionIterator
         catch (DecodingException | SQLException | IOException | WikiApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Reconstructs the text of the revision that precedes the current one in its diff chain,
+     * starting from the full revision the chain is based on.
+     *
+     * @param revisionID
+     *            ID of the current revision
+     * @return text of the preceding revision
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws WikiApiException
+     *             if the current revision is not indexed
+     * @throws DecodingException
+     *             if a diff could not be decoded
+     * @throws IOException
+     *             if a diff could not be read
+     */
+    private String reconstructPreviousRevision(final int revisionID)
+        throws SQLException, WikiApiException, DecodingException, IOException
+    {
+        int fullRevisionPK;
+        try (PreparedStatement indexStatement = connection.prepareStatement(
+                "SELECT FullRevisionPK FROM index_revisionID WHERE RevisionID=? LIMIT 1")) {
+            indexStatement.setInt(1, revisionID);
+            try (ResultSet indexResult = indexStatement.executeQuery()) {
+                if (!indexResult.next()) {
+                    throw new WikiApiException("The diff chain of the revision with the ID "
+                            + revisionID + " cannot be reconstructed, it is not indexed.");
+                }
+                fullRevisionPK = indexResult.getInt(1);
+            }
+        }
+
+        String text = null;
+        try (PreparedStatement chainStatement = connection.prepareStatement(
+                "SELECT Revision FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ?"
+                        + " ORDER BY PrimaryKey")) {
+            chainStatement.setInt(1, fullRevisionPK);
+            chainStatement.setInt(2, primaryKey);
+            try (ResultSet chain = chainStatement.executeQuery()) {
+                boolean binary = chain.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+                while (chain.next()) {
+                    RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
+                    if (binary) {
+                        decoder.setInput(chain.getBytes(1));
+                    }
+                    else {
+                        decoder.setInput(chain.getString(1));
+                    }
+                    text = decoder.decode().buildRevision(text);
+                }
+            }
+        }
+        return text;
     }
 
     /**
