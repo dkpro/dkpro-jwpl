@@ -433,18 +433,21 @@ public class DiffCalculator
         // TO REMOVE FAULTY REVISIONS FROM FURTHER PROCESSING //
         // ----------------------------------------------------//
 
+        // getRevisionText() loads the text lazily and unescapes it on every call, so fetch it once.
+        final String revisionText;
         try {
-            if (revision.getRevisionText() == null) {
-                return null;
-            }
+            revisionText = revision.getRevisionText();
         }
         catch (NullPointerException e) {
             // A faulty revision without accessible text is skipped. The exception is only used to
             // detect that condition and carries no additional information, hence it is not chained.
             return null;
         }
+        if (revisionText == null) {
+            return null;
+        }
 
-        revTemp = handleSurrogates(MODE_SURROGATES, revision.getRevisionText().toCharArray(),
+        revTemp = handleSurrogates(MODE_SURROGATES, revisionText.toCharArray(),
                 revision.getRevisionID());
 
         // Ignore revisions discarded because of surrogate characters

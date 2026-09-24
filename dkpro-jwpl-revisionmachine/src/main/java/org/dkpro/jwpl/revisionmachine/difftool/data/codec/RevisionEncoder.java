@@ -151,7 +151,8 @@ public class RevisionEncoder
         throws UnsupportedEncodingException, EncodingException
     {
 
-        this.data = new BitWriter(codecData.totalSizeInBits());
+        // totalSizeInBits() is a bit count, the BitWriter expects a capacity in bytes
+        this.data = new BitWriter((codecData.totalSizeInBits() + 7) / 8);
         encodeCodecData(codecData);
 
         DiffPart part;
