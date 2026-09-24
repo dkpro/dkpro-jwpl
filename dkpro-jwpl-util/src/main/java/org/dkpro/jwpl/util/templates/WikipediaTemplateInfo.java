@@ -31,10 +31,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
@@ -67,6 +64,11 @@ public class WikipediaTemplateInfo
     private RevisionApi revApi = null;
     private MediaWikiParser parser = null;
 
+    /**
+     * The maximum number of revision ids per template index query
+     */
+    static final int REVISION_ID_BATCH_SIZE = 1000;
+
     private Connection connection;
 
     public WikipediaTemplateInfo(Wikipedia pWiki) throws SQLException, WikiApiException
@@ -78,6 +80,18 @@ public class WikipediaTemplateInfo
             System.err.println(
                     "No Template Database could be found. You can only use methods that work without a template index");
         }
+    }
+
+    /**
+     * Creates an instance on the given connection and revision API, e.g. for tests. Methods that
+     * need the {@link Wikipedia} object are not available.
+     */
+    WikipediaTemplateInfo(Connection connection, RevisionApi revApi, MediaWikiParser parser)
+    {
+        this.wiki = null;
+        this.connection = connection;
+        this.revApi = revApi;
+        this.parser = parser;
     }
 
     /**
@@ -1479,6 +1493,18 @@ public class WikipediaTemplateInfo
         if (revApi == null) {
             revApi = new RevisionApi(wiki.getDatabaseConfiguration());
         }
+        return textContainsTemplateName(revApi.getRevision(revId).getRevisionText(), templateName);
+    }
+
+    /**
+     * Parses the given revision text and determines whether it contains the given template name.
+     *
+     * @param text The revision text to parse.
+     * @param templateName A template name to check for.
+     * @return {@code true} if the text contains {@code templateName}, {@code false} otherwise.
+     */
+    private boolean textContainsTemplateName(String text, String templateName)
+    {
         if (parser == null) {
             // TODO switch to SWEBLE
             MediaWikiParserFactory pf = new MediaWikiParserFactory(wiki.getDatabaseConfiguration().getLanguage());
@@ -1486,8 +1512,7 @@ public class WikipediaTemplateInfo
             parser = pf.createParser();
         }
 
-        List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText())
-                .getTemplates();
+        List<Template> tplList = parser.parse(text).getTemplates();
         for (Template tpl : tplList) {
             if (tpl.getName().equalsIgnoreCase(templateName)) {
                 return true;
@@ -1669,42 +1694,19 @@ public class WikipediaTemplateInfo
             revApi = new RevisionApi(wiki.getDatabaseConfiguration());
         }
 
-        List<RevisionPair> resultList = new LinkedList<>();
-        Map<Timestamp, Boolean> tplIndexMap = new HashMap<>();
-
-        List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
-        for (Timestamp ts : revTsList) {
-            tplIndexMap.put(ts, revisionContainsTemplateName(
-                    revApi.getRevision(pageId, ts).getRevisionID(), template));
+        List<Revision> revisions = revApi.getRevisionMetaData(pageId);
+        List<Integer> revisionIds = new ArrayList<>(revisions.size());
+        for (Revision revision : revisions) {
+            revisionIds.add(revision.getRevisionID());
         }
-
-        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(Entry.comparingByKey());
-        entries.addAll(tplIndexMap.entrySet());
-
-        Entry<Timestamp, Boolean> prev = null;
-        Entry<Timestamp, Boolean> current;
-        for (Entry<Timestamp, Boolean> e : entries) {
-            current = e;
-            // check pair
-            if (prev != null && prev.getValue() != current.getValue()) {
-                // case: template has been deleted since last revision
-                if (prev.getValue() && !current.getValue()
-                        && type == RevisionPairType.deleteTemplate) {
-                    resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),
-                            revApi.getRevision(pageId, current.getKey()), template,
-                            RevisionPairType.deleteTemplate));
-                }
-                // case: template has been added since last revision
-                if (!prev.getValue() && current.getValue()
-                        && type == RevisionPairType.addTemplate) {
-                    resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),
-                            revApi.getRevision(pageId, current.getKey()), template,
-                            RevisionPairType.addTemplate));
-                }
-            }
-            prev = current;
+        try {
+            return findRevisionPairs(revisions,
+                    getRevisionIdsContainingTemplateName(connection, template, revisionIds),
+                    template, type);
         }
-        return resultList;
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
     }
 
     /**
@@ -1731,42 +1733,99 @@ public class WikipediaTemplateInfo
             revApi = new RevisionApi(wiki.getDatabaseConfiguration());
         }
 
-        List<RevisionPair> resultList = new LinkedList<>();
-        Map<Timestamp, Boolean> tplIndexMap = new HashMap<>();
-
-        List<Timestamp> revTsList = revApi.getRevisionTimestamps(pageId);
-        for (Timestamp ts : revTsList) {
-            tplIndexMap.put(ts, revisionContainsTemplateNameWithoutIndex(
-                    revApi.getRevision(pageId, ts).getRevisionID(), template));
+        List<Revision> revisions = revApi.getRevisionMetaData(pageId);
+        Set<Integer> revisionIdsWithTemplate = new HashSet<>();
+        for (Revision revision : revisions) {
+            // load the text into a copy, so that the texts of all revisions are not kept in memory
+            Revision textRevision = new Revision(revision.getRevisionCounter(), revApi);
+            textRevision.setRevisionID(revision.getRevisionID());
+            if (textContainsTemplateName(textRevision.getRevisionText(), template)) {
+                revisionIdsWithTemplate.add(revision.getRevisionID());
+            }
         }
+        return findRevisionPairs(revisions, revisionIdsWithTemplate, template, type);
+    }
 
-        SortedSet<Entry<Timestamp, Boolean>> entries = new TreeSet<>(Entry.comparingByKey());
-        entries.addAll(tplIndexMap.entrySet());
-
-        Entry<Timestamp, Boolean> prev = null;
-        Entry<Timestamp, Boolean> current;
-        for (Entry<Timestamp, Boolean> e : entries) {
-            current = e;
-            // check pair
-            if (prev != null && prev.getValue() != current.getValue()) {
+    /**
+     * Returns all adjacent revision pairs in which the given template has been removed or added
+     * (depending on the RevisionPairType) in the second pair part.
+     *
+     * @param revisions
+     *            the revisions of a page in chronological order
+     * @param revisionIdsWithTemplate
+     *            the ids of the revisions that contain the template
+     * @param template
+     *            the template to look for
+     * @param type
+     *            the type of template change (add or remove) that should be extracted
+     * @return list of revision pairs containing the desired template changes
+     */
+    static List<RevisionPair> findRevisionPairs(List<Revision> revisions,
+            Set<Integer> revisionIdsWithTemplate, String template, RevisionPairType type)
+    {
+        List<RevisionPair> resultList = new ArrayList<>();
+        Revision prev = null;
+        for (Revision current : revisions) {
+            if (prev != null) {
+                boolean prevContains = revisionIdsWithTemplate.contains(prev.getRevisionID());
+                boolean currentContains = revisionIdsWithTemplate
+                        .contains(current.getRevisionID());
                 // case: template has been deleted since last revision
-                if (prev.getValue() && !current.getValue()
-                        && type == RevisionPairType.deleteTemplate) {
-                    resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),
-                            revApi.getRevision(pageId, current.getKey()), template,
-                            RevisionPairType.deleteTemplate));
+                if (prevContains && !currentContains && type == RevisionPairType.deleteTemplate) {
+                    resultList.add(new RevisionPair(prev, current, template, type));
                 }
                 // case: template has been added since last revision
-                if (!prev.getValue() && current.getValue()
-                        && type == RevisionPairType.addTemplate) {
-                    resultList.add(new RevisionPair(revApi.getRevision(pageId, prev.getKey()),
-                            revApi.getRevision(pageId, current.getKey()), template,
-                            RevisionPairType.addTemplate));
+                if (!prevContains && currentContains && type == RevisionPairType.addTemplate) {
+                    resultList.add(new RevisionPair(prev, current, template, type));
                 }
             }
             prev = current;
         }
         return resultList;
+    }
+
+    /**
+     * Returns those of the given revisions that contain the given template according to the
+     * template index. The template name is compared case-insensitively, like
+     * {@link #revisionContainsTemplateName(int, String)} does. The revisions are looked up in
+     * batches of {@link #REVISION_ID_BATCH_SIZE} instead of one query per revision.
+     *
+     * @param connection
+     *            the connection to the database holding the template index
+     * @param templateName
+     *            the template to look for
+     * @param revisionIds
+     *            the ids of the revisions to check
+     * @return the ids of the given revisions that contain the template
+     * @throws SQLException
+     *             if an error occurs while querying the template index
+     */
+    static Set<Integer> getRevisionIdsContainingTemplateName(Connection connection,
+            String templateName, List<Integer> revisionIds)
+        throws SQLException
+    {
+        Set<Integer> result = new HashSet<>();
+        for (int from = 0; from < revisionIds.size(); from += REVISION_ID_BATCH_SIZE) {
+            List<Integer> batch = revisionIds.subList(from,
+                    Math.min(from + REVISION_ID_BATCH_SIZE, revisionIds.size()));
+            String sql = "SELECT DISTINCT p.revisionId FROM "
+                    + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl, "
+                    + GeneratorConstants.TABLE_TPLID_REVISIONID + " AS p "
+                    + "WHERE tpl.templateId = p.templateId AND LOWER(tpl.templateName) = LOWER(?) "
+                    + "AND p.revisionId IN (" + "?,".repeat(batch.size() - 1) + "?)";
+            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+                statement.setString(1, templateName);
+                for (int i = 0; i < batch.size(); i++) {
+                    statement.setInt(i + 2, batch.get(i));
+                }
+                try (ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(rs.getInt(1));
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     /**

@@ -52,6 +52,13 @@ public class RevisionApi
 {
 
     /**
+     * The meta data columns of the revisions table, i.e. all columns except the Revision diff
+     */
+    private static final String META_DATA_COLUMNS = "PrimaryKey, RevisionCounter, RevisionID, "
+            + "ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, "
+            + "ContributorIsRegistered";
+
+    /**
      * Whether the revisions table has a Namespace column, {@code null} until it has been checked
      */
     private Boolean hasNamespaceColumn;
@@ -1382,6 +1389,81 @@ public class RevisionApi
         }
     }
 
+    /**
+     * Returns all revisions of the specified article in chronological order, revisions with the
+     * same timestamp ordered by their revision counter. Only the meta data is read, with one query
+     * and without the diffs: the text of a revision is loaded when it is accessed for the first
+     * time.
+     *
+     * @param articleID
+     *            ID of the article
+     * @return the revisions of the article
+     * @throws WikiApiException
+     *             if an error occurs or the article does not exist.
+     */
+    public List<Revision> getRevisionMetaData(final int articleID) throws WikiApiException
+    {
+
+        try {
+            if (articleID < 1) {
+                throw new IllegalArgumentException();
+            }
+
+            int firstPK, lastPK;
+            final String sql = "SELECT FullRevisionPKs, RevisionCounter " +
+                    "FROM index_articleID_rc_ts WHERE ArticleID=? LIMIT 1";
+            try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
+                statement.setInt(1, articleID);
+                ResultSet result = statement.executeQuery();
+
+                if (result.next()) {
+
+                    String fullRevisions = result.getString(1);
+                    String revisionCounters = result.getString(2);
+
+                    // The revisions of an article are stored with consecutive PKs, starting at
+                    // the first full revision
+                    int index = fullRevisions.indexOf(' ');
+                    if (index == -1) {
+                        index = fullRevisions.length();
+                    }
+                    firstPK = Integer.parseInt(fullRevisions.substring(0, index));
+
+                    index = revisionCounters.lastIndexOf(' ') + 1;
+                    lastPK = firstPK + Integer.parseInt(revisionCounters.substring(index));
+                }
+                else {
+                    throw new WikiPageNotFoundException(
+                            "The article with the ID " + articleID + " was not found.");
+                }
+            }
+
+            final boolean namespaceColumn = hasNamespaceColumn();
+            final String query = "SELECT " + META_DATA_COLUMNS
+                    + (namespaceColumn ? ", Namespace" : "")
+                    + " FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ?"
+                    + " ORDER BY Timestamp, RevisionCounter";
+            List<Revision> revisions = new ArrayList<>();
+            try (PreparedStatement statement = this.connection.prepareStatement(query)) {
+                statement.setInt(1, firstPK);
+                statement.setInt(2, lastPK);
+                ResultSet result = statement.executeQuery();
+
+                while (result.next()) {
+                    revisions.add(readRevisionMetaData(result, 1, namespaceColumn));
+                }
+            }
+            return revisions;
+
+        }
+        catch (WikiPageNotFoundException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new WikiApiException(e);
+        }
+    }
+
     /*--------------------------------------------------------------------------*/
     /* Internal methods */
     /*--------------------------------------------------------------------------*/
@@ -1665,7 +1747,7 @@ public class RevisionApi
     {
 
         final boolean namespaceColumn = hasNamespaceColumn();
-        final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered"
+        final String query = "SELECT Revision, " + META_DATA_COLUMNS
                 + (namespaceColumn ? ", Namespace" : "") + " FROM revisions "
                 + "WHERE PrimaryKey >= ? LIMIT " + limit;
         /*
@@ -1685,32 +1767,54 @@ public class RevisionApi
             Revision revision = null;
 
             if (result.last()) {
-                revision = new Revision(result.getInt(3), this);
-
-                revision.setPrimaryKey(result.getInt(2));
-                revision.setRevisionID(result.getInt(4));
-                revision.setArticleID(result.getInt(5));
-                revision.setTimeStamp(new Timestamp(result.getLong(6)));
-                revision.setComment(result.getString(7));
-                revision.setMinor(result.getBoolean(8));
-                revision.setContributorName(result.getString(9));
-
-                // we should not use getInt(), because result may be null
-                String contribIdString = result.getString(10);
-                Integer contributorId = contribIdString == null ? null
-                        : Integer.parseInt(contribIdString);
-                revision.setContributorId(contributorId);
-
-                revision.setContributorIsRegistered(result.getBoolean(11));
-
-                if (namespaceColumn) {
-                    revision.setNamespace(RevisionsTable.getNamespace(result, 12));
-                }
+                revision = readRevisionMetaData(result, 2, namespaceColumn);
             }
             return revision;
 
         }
 
+    }
+
+    /**
+     * Builds a revision without its text from the meta data columns of the current row, which
+     * are expected in the order of {@link #META_DATA_COLUMNS}, followed by the Namespace column if
+     * it exists. The text is loaded when it is accessed for the first time.
+     *
+     * @param result
+     *            the result set positioned at the row to read
+     * @param firstColumn
+     *            index of the PrimaryKey column, the first of the meta data columns
+     * @param namespaceColumn
+     *            whether the Namespace column is selected
+     * @return Revision
+     * @throws SQLException
+     *             if an error occurs while reading the result set
+     */
+    private Revision readRevisionMetaData(final ResultSet result, final int firstColumn,
+            final boolean namespaceColumn)
+        throws SQLException
+    {
+        Revision revision = new Revision(result.getInt(firstColumn + 1), this);
+
+        revision.setPrimaryKey(result.getInt(firstColumn));
+        revision.setRevisionID(result.getInt(firstColumn + 2));
+        revision.setArticleID(result.getInt(firstColumn + 3));
+        revision.setTimeStamp(new Timestamp(result.getLong(firstColumn + 4)));
+        revision.setComment(result.getString(firstColumn + 5));
+        revision.setMinor(result.getBoolean(firstColumn + 6));
+        revision.setContributorName(result.getString(firstColumn + 7));
+
+        // we should not use getInt(), because result may be null
+        String contribIdString = result.getString(firstColumn + 8);
+        Integer contributorId = contribIdString == null ? null : Integer.parseInt(contribIdString);
+        revision.setContributorId(contributorId);
+
+        revision.setContributorIsRegistered(result.getBoolean(firstColumn + 9));
+
+        if (namespaceColumn) {
+            revision.setNamespace(RevisionsTable.getNamespace(result, firstColumn + 10));
+        }
+        return revision;
     }
 
     /**
