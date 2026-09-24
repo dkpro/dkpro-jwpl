@@ -1,0 +1,56 @@
+Intro paragraph with [[Intro link]] and {{intro template}}.
+
+== Table ==
+{| class="wikitable"
+|+ Caption with [[Caption link]]
+! Header 1 !! Header 2 !! [[Header link]]
+|-
+| Cell [[A1]] || Cell {{A2}} || Cell ''A3''
+|-
+| [[B1|b one]] || '''B2''' || [[File:B3.png|thumb|b3]]
+|-
+| colspan="2" | Spanning [[C1]] {{c|1}}
+| style="x" | C3 [[C3 link]]
+|-
+|
+{| 
+| Nested [[N1]] || Nested {{N2}}
+|-
+| [[N3]] || [[N4]]
+|}
+| After nested [[D2]]
+|}
+
+Text between tables with [[Between]].
+
+{| border="1"
+| [[T2-1]] || [[T2-2]] || [[T2-3]] || [[T2-4]]
+|-
+| {{t|1}} || {{t|2}} || {{t|3}} || {{t|4}}
+|-
+| a || b [[x]] || c [[y]] || d [[z]]
+|}
+
+== Lists ==
+* Item [[L1]]
+* Item {{L2}}
+** Sub item [[L2.1]]
+** Sub item [[L2.2|two]]
+*** Deep item [[L2.2.1]]
+* Item [[L3]]
+# First [[N1]]
+# Second {{N2}}
+## Second.a [[N2a]]
+# Third
+#* Mixed [[M1]]
+
+; Term [[DT1]]
+: Definition [[DD1]]
+: Second definition {{DD2}}
+; Term two
+: Def two [[DD3]]
+
+=== Sub section with [[Title link]] ===
+Paragraph in sub section [[S1]].
+==== Level four ====
+Deep [[S2]] paragraph.
