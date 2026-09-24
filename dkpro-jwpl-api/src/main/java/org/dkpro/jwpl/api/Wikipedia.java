@@ -70,6 +70,55 @@ public class Wikipedia
      */
     private static final int TITLE_BATCH_SIZE = 500;
 
+    /**
+     * Fetch size that makes MySQL Connector/J stream a forward-only, read-only result set row by
+     * row. Any other value, positive ones included, makes it read the complete result set into
+     * memory unless the connection property {@code useCursorFetch=true} is set. While the result
+     * set is open, no other query may be issued on the connection.
+     *
+     * @see <a href=
+     *      "https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html">
+     *      MySQL Connector/J: JDBC API Implementation Notes, ResultSet</a>
+     */
+    static final int MYSQL_STREAMING_FETCH_SIZE = Integer.MIN_VALUE;
+
+    /**
+     * Number of rows MariaDB Connector/J keeps in memory while streaming a result set. It rejects a
+     * negative fetch size with an {@link java.sql.SQLException}, so the MySQL Connector/J value
+     * {@link Integer#MIN_VALUE} must not be passed to it. A query issued on the same connection
+     * before the result set is read completely makes it read all remaining rows into memory.
+     *
+     * @see <a href=
+     *      "https://mariadb.com/docs/connectors/mariadb-connector-j/about-mariadb-connector-j">
+     *      About MariaDB Connector/J, Streaming Result Sets</a>
+     */
+    static final int MARIADB_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Number of rows pgJDBC fetches per round trip from a server-side cursor. The driver uses a
+     * cursor only if the fetch size is positive, the connection is not in autocommit mode, the
+     * result set is {@link java.sql.ResultSet#TYPE_FORWARD_ONLY} and the query is a single
+     * statement; otherwise it silently reads the complete result set.
+     *
+     * @see <a href="https://jdbc.postgresql.org/documentation/query/">pgJDBC: Issuing a Query and
+     *      Processing the Result, Getting results based on a cursor</a>
+     */
+    static final int POSTGRESQL_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Fetch size passed to HSQLDB and to any driver not handled explicitly. The JDBC specification
+     * defines it as a hint that must be {@code >= 0}; HSQLDB uses it as such and may process more
+     * or fewer rows.
+     *
+     * @see <a href=
+     *      "https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Statement.html#setFetchSize(int)">
+     *      java.sql.Statement#setFetchSize(int)</a>
+     * @see <a href=
+     *      "https://hsqldb.org/doc/2.0/apidocs/org.hsqldb/org/hsqldb/jdbc/JDBCStatement.html#setFetchSize(int)">
+     *      HSQLDB: JDBCStatement#setFetchSize(int)</a>
+     */
+    static final int DEFAULT_STREAMING_FETCH_SIZE = 1000;
+
     private final Language language;
     private final DatabaseConfiguration dbConfig;
 
@@ -583,9 +632,10 @@ public class Wikipedia
         final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
         final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
                 + " from PageMapLine as pml";
-        final int fetchSize = getStreamingFetchSize();
+        final int fetchSize = streamingFetchSize(dbConfig.getDatabaseDriver());
         // The rows are streamed rather than materialized, so the heap holds the current top
-        // entries only. This keeps the connection open for the duration of the scan.
+        // entries only. This keeps the connection open for the duration of the scan; no other
+        // query may run on it until the stream is closed (see MYSQL_STREAMING_FETCH_SIZE).
         __inTransaction(session -> {
             try (Stream<PageTuple> rows = session.createQuery(query, PageTuple.class)
                     .setFetchSize(fetchSize).getResultStream()) {
@@ -1077,15 +1127,33 @@ public class Wikipedia
     }
 
     /**
-     * @return A JDBC fetch size that makes the configured driver stream a result set instead of
-     * buffering it completely. MySQL Connector/J streams only with {@link Integer#MIN_VALUE}.
+     * Selects the fetch size for streaming a result set through
+     * {@link Query#getResultStream()}, which Hibernate executes as a
+     * {@link java.sql.ResultSet#TYPE_FORWARD_ONLY}, {@link java.sql.ResultSet#CONCUR_READ_ONLY}
+     * result set, within the transaction of {@link #__inTransaction(Function)} and thus with
+     * autocommit disabled.
+     *
+     * @param databaseDriver The fully qualified class name of the JDBC driver, may be {@code null}.
+     * @return {@link #MYSQL_STREAMING_FETCH_SIZE} for MySQL Connector/J ({@code com.mysql.*}),
+     * {@link #MARIADB_STREAMING_FETCH_SIZE} for MariaDB Connector/J ({@code org.mariadb.*}),
+     * {@link #POSTGRESQL_STREAMING_FETCH_SIZE} for pgJDBC ({@code org.postgresql.*}), else
+     * {@link #DEFAULT_STREAMING_FETCH_SIZE}. The driver decides, not the server: MySQL Connector/J
+     * connected to a MariaDB server needs {@link #MYSQL_STREAMING_FETCH_SIZE}.
      */
-    private int getStreamingFetchSize() {
-        String driver = getDatabaseConfiguration().getDatabaseDriver();
-        if (driver != null && driver.startsWith("com.mysql")) {
-            return Integer.MIN_VALUE;
+    static int streamingFetchSize(String databaseDriver) {
+        if (databaseDriver == null) {
+            return DEFAULT_STREAMING_FETCH_SIZE;
         }
-        return 1000;
+        if (databaseDriver.startsWith("com.mysql.")) {
+            return MYSQL_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.mariadb.")) {
+            return MARIADB_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.postgresql.")) {
+            return POSTGRESQL_STREAMING_FETCH_SIZE;
+        }
+        return DEFAULT_STREAMING_FETCH_SIZE;
     }
 
     private record PageTuple(int id, String name) {
