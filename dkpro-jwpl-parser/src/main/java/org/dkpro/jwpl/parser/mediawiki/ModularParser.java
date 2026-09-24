@@ -914,8 +914,13 @@ public class ModularParser
 
             ResolvedTemplate rt = templateParser.parseTemplate(t, pp);
 
-            List<Span> nestedSpans = takeNestedTemplates(ts, resolvedTemplateSpans,
-                    resolvedTemplates);
+            // the spans are in descending start order, so the nested templates are the tail
+            int nestedFrom = resolvedTemplateSpans.size();
+            while (nestedFrom > 0 && ts.contains(resolvedTemplateSpans.get(nestedFrom - 1))) {
+                nestedFrom--;
+                resolvedTemplates.get(nestedFrom).setPostParseReplacement(null);
+            }
+            int nestedTo = resolvedTemplateSpans.size();
 
             resolvedTemplateSpans.add(ts);
             resolvedTemplates.add(rt);
@@ -923,36 +928,14 @@ public class ModularParser
             sm.replace(ts, rt.getPreParseReplacement());
 
             // the nested templates now share the replacement of this template
-            for (Span nested : nestedSpans) {
-                nested.setStart(ts.getStart()).setEnd(ts.getEnd());
+            for (int i = nestedFrom; i < nestedTo; i++) {
+                resolvedTemplateSpans.get(i).setStart(ts.getStart()).setEnd(ts.getEnd());
             }
         }
 
         if (resolvedTemplateSpans.isEmpty()) {
             sm.removeManagedList(resolvedTemplateSpans);
         }
-    }
-
-    /**
-     * Returns the spans of the already resolved templates which lie inside the given template, that
-     * is, the templates nested in it. Replacing the enclosing template would shrink their spans,
-     * down to an empty span at its start if they end further than the length of the replacement
-     * before its end, and such a span is never attached to a content element. The caller therefore
-     * sets them to the span of the replacement of the enclosing template. Their post-parse
-     * replacements are dropped, as the enclosing template replaces the text anyway.
-     */
-    private static List<Span> takeNestedTemplates(Span ts, List<Span> resolvedTemplateSpans,
-            List<ResolvedTemplate> resolvedTemplates)
-    {
-        List<Span> nestedSpans = new ArrayList<>();
-        for (int i = 0; i < resolvedTemplateSpans.size(); i++) {
-            Span s = resolvedTemplateSpans.get(i);
-            if (ts.getStart() <= s.getStart() && s.getEnd() <= ts.getEnd()) {
-                nestedSpans.add(s);
-                resolvedTemplates.get(i).setPostParseReplacement(null);
-            }
-        }
-        return nestedSpans;
     }
 
     private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans)

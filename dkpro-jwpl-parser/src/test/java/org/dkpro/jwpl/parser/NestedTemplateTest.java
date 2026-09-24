@@ -18,18 +18,21 @@
 package org.dkpro.jwpl.parser;
 
 import static java.util.List.of;
+import static org.dkpro.jwpl.parser.mediawiki.ResolvedTemplate.TEMPLATESPACER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 import org.dkpro.jwpl.parser.mediawiki.ShowTemplateNamesAndParameters;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Tests that templates nested in another template are part of the parsed page, no matter whether
@@ -38,6 +41,18 @@ import org.junit.jupiter.api.Test;
 class NestedTemplateTest
 {
 
+    /** Templates of the Americium page which are not nested in another template. */
+    private static final int AMERICIUM_TOP_LEVEL_TEMPLATES = 13;
+
+    /** Templates nested in the infobox and in the isotope table of the Americium page. */
+    private static final int AMERICIUM_NESTED_TEMPLATES = 25;
+
+    /** {@code ZahlExp} is used ten times inside the infobox of the Americium page. */
+    private static final int AMERICIUM_ZAHLEXP_TEMPLATES = 10;
+
+    /** The isotope table of the Americium page uses one isotope template and eight nested ones. */
+    private static final int AMERICIUM_ISOTOPE_TEMPLATES = 1 + 8;
+
     private static MediaWikiParser parser(Language language)
     {
         MediaWikiParserFactory factory = new MediaWikiParserFactory(language);
@@ -45,21 +60,40 @@ class NestedTemplateTest
         return factory.createParser();
     }
 
-    private static List<String> templateNames(ParsedPage pp)
+    private static List<String> names(List<Template> templates)
     {
-        return pp.getTemplates().stream().map(Template::getName).toList();
+        return templates.stream().map(Template::getName).toList();
+    }
+
+    static Stream<Arguments> issueReproductions()
+    {
+        return Stream.of(
+                Arguments.of("single-line", "{{Outer|a={{Inner|x}}|b=y}}\nText."),
+                Arguments.of("multi-line at the start of a paragraph", """
+                        {{Outer
+                        | a = {{Inner|x}}
+                        | b = y
+                        }}
+                        Text."""),
+                Arguments.of("multi-line in the middle of a paragraph", """
+                        Some text {{Outer
+                        | a = {{Inner|x}}
+                        | b = y
+                        }} more."""));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("issueReproductions")
+    void keepsANestedTemplate(String description, String wikitext)
+    {
+        ParsedPage pp = parser(Language.english).parse(wikitext);
+
+        assertEquals(of("Outer", "Inner"), names(pp.getTemplates()));
+        assertEquals(of("Outer", "Inner"), names(pp.getParagraph(0).getTemplates()));
     }
 
     @Test
-    void keepsATemplateNestedInASingleLineTemplate()
-    {
-        ParsedPage pp = parser(Language.english).parse("{{Outer|a={{Inner|x}}|b=y}}\nText.");
-
-        assertEquals(of("Outer", "Inner"), templateNames(pp));
-    }
-
-    @Test
-    void keepsATemplateNestedInAMultiLineTemplate()
+    void keepsTheTextOfAMultiLineTemplateWithANestedTemplate()
     {
         ParsedPage pp = parser(Language.english).parse("""
                 {{Outer
@@ -68,10 +102,7 @@ class NestedTemplateTest
                 }}
                 Text.""");
 
-        assertEquals(of("Outer", "Inner"), templateNames(pp));
-        assertEquals(of("Outer", "Inner"),
-                pp.getParagraph(0).getTemplates().stream().map(Template::getName).toList());
-        assertEquals("TEMPLATE[Outer, a = (TEMPLATE), b = y]\nText.", pp.getText());
+        assertEquals("TEMPLATE[Outer, a = " + TEMPLATESPACER + ", b = y]\nText.", pp.getText());
     }
 
     @Test
@@ -87,27 +118,40 @@ class NestedTemplateTest
                 }}
                 Text.""");
 
-        assertEquals(of("A", "B", "C"), templateNames(pp).stream().sorted().toList());
+        assertEquals(of("A", "B", "C"), names(pp.getTemplates()));
+    }
+
+    @Test
+    void doesNotTreatTheNextTemplateAsNested()
+    {
+        ParsedPage pp = parser(Language.english).parse("""
+                {{Outer
+                | a = {{Inner|x}}
+                | b = y
+                }} {{Next}}
+                Text.""");
+
+        assertEquals(of("Outer", "Inner", "Next"), names(pp.getTemplates()));
+        assertEquals(
+                "TEMPLATE[Outer, a = " + TEMPLATESPACER + ", b = y] TEMPLATE[Next]\nText.",
+                pp.getText());
     }
 
     @Test
     void keepsTheTemplatesNestedInTheInfoboxOfAnArticle() throws Exception
     {
-        String text;
-        try (InputStream in = Thread.currentThread().getContextClassLoader()
-                .getResourceAsStream("pages/Wiki-Article-Americium.txt")) {
-            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
+        String text = BaseJWPLTest.readResource("pages/Wiki-Article-Americium.txt");
 
-        List<String> names = templateNames(parser(Language.german).parse(text));
+        List<String> names = names(parser(Language.german).parse(text).getTemplates());
 
         for (String nested : of("CASRN", "ZahlExp", "NIST-ASD", "Webelements", "GHS-Piktogramme",
                 "H-Sätze", "EUH-Sätze", "P-Sätze")) {
             assertTrue(names.contains(nested), nested + " is missing in " + names);
         }
-        assertEquals(10, names.stream().filter("ZahlExp"::equals).count());
-        assertEquals(9,
+        assertEquals(AMERICIUM_ZAHLEXP_TEMPLATES,
+                names.stream().filter("ZahlExp"::equals).count());
+        assertEquals(AMERICIUM_ISOTOPE_TEMPLATES,
                 names.stream().filter("Infobox_Chemisches_Element/Isotop"::equals).count());
-        assertEquals(38, names.size());
+        assertEquals(AMERICIUM_TOP_LEVEL_TEMPLATES + AMERICIUM_NESTED_TEMPLATES, names.size());
     }
 }
