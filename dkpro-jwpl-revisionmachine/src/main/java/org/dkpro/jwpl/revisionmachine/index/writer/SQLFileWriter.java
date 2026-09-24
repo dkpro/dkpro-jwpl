@@ -121,6 +121,8 @@ public class SQLFileWriter
     {
 
         writer.write("CREATE INDEX articleIdx ON revisions(ArticleID);\r\n");
+        writer.write(
+                "CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);\r\n");
         writer.write("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_revisionID ENABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_chronological ENABLE KEYS;\r\n");
