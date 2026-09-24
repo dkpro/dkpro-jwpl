@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
@@ -66,11 +67,46 @@ public class WikipediaXMLReaderTest
         assertEquals(List.of(0, 1, 4), readNamespaces(xml));
     }
 
+    @Test
+    public void testReadsTextWithAttributes() throws Exception
+    {
+        // Current dumps (export-0.10 and later) put the size and hash before xml:space.
+        String xml = SITEINFO
+                + page("Main Page", "0", 1,
+                        "<text bytes=\"9\" sha1=\"abc\" xml:space=\"preserve\">Some text</text>")
+                + page("Talk:Main Page", "1", 2,
+                        "<text xml:space=\"preserve\" bytes=\"5\">Other</text>")
+                + "</mediawiki>";
+
+        assertEquals(Arrays.asList("Some text", "Other"), readTexts(xml));
+    }
+
+    @Test
+    public void testLeavesSelfClosingTextUnset() throws Exception
+    {
+        // Empty and deleted texts are written as self-closing elements; they must neither fail
+        // nor swallow the text of the following revision.
+        String xml = SITEINFO
+                + page("Main Page", "0", 1, "<text bytes=\"0\" sha1=\"phoiac9\" />")
+                + page("Talk:Main Page", "1", 2, "<text deleted=\"deleted\" />")
+                + page("Wikipedia:About", "4", 3, "<text xml:space=\"preserve\" />")
+                + page("Main page", "0", 4,
+                        "<text bytes=\"9\" xml:space=\"preserve\">Some text</text>")
+                + "</mediawiki>";
+
+        assertEquals(Arrays.asList(null, null, null, "Some text"), readTexts(xml));
+    }
+
+    private static String page(String title, String namespace, int id)
+    {
+        return page(title, namespace, id, "<text xml:space=\"preserve\">Some text</text>");
+    }
+
     /**
      * Creates a page with a single revision, laid out like in the dumps: the reader relies on the
      * whitespace between the elements.
      */
-    private static String page(String title, String namespace, int id)
+    private static String page(String title, String namespace, int id, String text)
     {
         return "\n  <page>\n    <title>" + title + "</title>\n"
                 + (namespace == null ? "" : "    <ns>" + namespace + "</ns>\n")
@@ -79,8 +115,35 @@ public class WikipediaXMLReaderTest
                 + "      <timestamp>2009-03-16T01:13:23Z</timestamp>\n"
                 + "      <contributor>\n        <username>Someone</username>\n"
                 + "        <id>177</id>\n      </contributor>\n"
-                + "      <text xml:space=\"preserve\">Some text</text>\n"
+                + "      " + text + "\n"
                 + "    </revision>\n  </page>";
+    }
+
+    private static List<String> readTexts(String xml) throws Exception
+    {
+        WikipediaXMLReader reader = new WikipediaXMLReader(new StringReader(xml));
+        List<String> texts = new ArrayList<>();
+        while (reader.hasNext()) {
+            Task<Revision> task = reader.next();
+            assertEquals(1, task.size());
+            texts.add(textOf(task.getContainer().get(0)));
+        }
+        return texts;
+    }
+
+    /**
+     * Returns the text read for a revision, or {@code null} if none was read. Revision falls back
+     * to loading an unset text through the RevisionApi, which fails without one; DiffCalculator
+     * likewise treats that as a revision without text.
+     */
+    private static String textOf(Revision revision)
+    {
+        try {
+            return revision.getRevisionText();
+        }
+        catch (NullPointerException e) {
+            return null;
+        }
     }
 
     private static List<Integer> readNamespaces(String xml) throws Exception
