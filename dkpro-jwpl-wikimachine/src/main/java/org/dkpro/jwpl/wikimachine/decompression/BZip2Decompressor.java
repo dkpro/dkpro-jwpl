@@ -57,7 +57,7 @@ public final class BZip2Decompressor
     public InputStream getInputStream(Path resource) throws IOException
     {
         checkResource(resource);
-        return new BZip2CompressorInputStream(new BufferedInputStream(openStream(resource)));
+        return new BZip2CompressorInputStream(new BufferedInputStream(openStream(resource)), true);
     }
 
     /**
@@ -76,7 +76,7 @@ public final class BZip2Decompressor
         final List<InputStream> streams = new ArrayList<>(resources.size());
         try {
             for (Path p : resources) {
-                streams.add(new BZip2CompressorInputStream(new BufferedInputStream(openStream(p))));
+                streams.add(new BZip2CompressorInputStream(new BufferedInputStream(openStream(p)), true));
             }
             return new SequenceInputStream(Collections.enumeration(streams));
         } catch (IOException | RuntimeException e) {
