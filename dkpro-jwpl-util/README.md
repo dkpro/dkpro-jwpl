@@ -3,9 +3,17 @@
 ## Template Schema
 
 ```sql
-CREATE TABLE IF NOT EXISTS templateId_pageId (templateId INTEGER UNSIGNED NOT NULL,pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId)) ENGINE = MYISAM;
-CREATE TABLE IF NOT EXISTS templates (templateId INTEGER NOT NULL AUTO_INCREMENT,templateName TEXT NOT NULL,PRIMARY KEY(templateId)) ENGINE = MYISAM;
-CREATE TABLE IF NOT EXISTS templateId_revisionId(templateId INTEGER UNSIGNED NOT NULL,revisionId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, revisionId)) ENGINE = MYISAM;
+CREATE TABLE IF NOT EXISTS templateId_pageId (templateId INTEGER UNSIGNED NOT NULL,pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId), INDEX pageIdx(pageId)) ENGINE = MYISAM;
+CREATE TABLE IF NOT EXISTS templates (templateId INTEGER NOT NULL AUTO_INCREMENT,templateName TEXT NOT NULL,PRIMARY KEY(templateId), INDEX tplNameIdx(templateName(191))) ENGINE = MYISAM;
+CREATE TABLE IF NOT EXISTS templateId_revisionId(templateId INTEGER UNSIGNED NOT NULL,revisionId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, revisionId), INDEX revisionIdx(revisionId)) ENGINE = MYISAM;
+```
+
+Tables created without these indexes can be migrated once (this may take a while on large tables):
+
+```sql
+CREATE INDEX tplNameIdx ON templates(templateName(191));
+CREATE INDEX pageIdx ON templateId_pageId(pageId);
+CREATE INDEX revisionIdx ON templateId_revisionId(revisionId);
 ```
 
 ## Properties Sample
