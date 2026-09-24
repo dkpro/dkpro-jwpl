@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,79 @@ public class ChronoRevisionIteratorTest
         assertEquals(1, rangeStatements.get());
         assertTrue(rangeQueries.get() > 1, "Expected evicted revisions to be fetched again");
         assertTrue(connection.isClosed());
+    }
+
+    @Test
+    public void testIterationOverArticlesWithOneAndTwoRevisions(@TempDir final Path dir)
+        throws Exception
+    {
+        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
+                dir.resolve(DATABASE + ".script"));
+        String url = "jdbc:hsqldb:file:" + dir.resolve(DATABASE) + ";shutdown=true";
+
+        // Articles appended after 'Car' (3442, 382 revisions): 3443 with one revision, 3444 with
+        // two, 3445 and 3446 with one each. The test data set indexes 3443 without its revision.
+        int[][] articles = { { 3443, 1 }, { 3444, 2 }, { 3445, 1 }, { 3446, 1 } };
+        List<Integer> revisionIDs = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(url, "sa", "");
+                Statement statement = connection.createStatement()) {
+            statement.execute("DELETE FROM index_articleID_rc_ts WHERE ArticleID = 3443");
+            int pk = LAST_PK + 1;
+            int revisionID = 2_000_000;
+            for (int[] article : articles) {
+                int firstPK = pk;
+                int fullRevisionID = revisionID;
+                for (int revisionCounter = 1; revisionCounter <= article[1]; revisionCounter++) {
+                    // Copies the texts of the first revisions of 'Car', a full revision
+                    // followed by a diff
+                    statement.execute("INSERT INTO revisions SELECT " + pk + ", "
+                            + fullRevisionID + ", " + revisionCounter + ", " + revisionID + ", "
+                            + article[0] + ", Timestamp, Revision, Comment, Minor,"
+                            + " ContributorName, ContributorIsRegistered, ContributorId"
+                            + " FROM revisions WHERE PrimaryKey = "
+                            + (FIRST_PK + revisionCounter - 1));
+                    statement.execute("INSERT INTO index_revisionID VALUES(" + revisionID + ", "
+                            + pk + ", " + firstPK + ")");
+                    pk++;
+                    revisionID++;
+                }
+                statement.execute("INSERT INTO index_articleID_rc_ts VALUES(" + article[0] + ", '"
+                        + firstPK + "', '1 " + article[1] + "', 0, 0)");
+            }
+            try (ResultSet result = statement
+                    .executeQuery("SELECT RevisionID FROM revisions ORDER BY PrimaryKey")) {
+                while (result.next()) {
+                    revisionIDs.add(result.getInt(1));
+                }
+            }
+        }
+        assertEquals(LAST_PK - FIRST_PK + 1 + 5, revisionIDs.size());
+
+        for (int bufferSize : new int[] { 1, 1000 }) {
+            RevisionAPIConfiguration config = configuration(url);
+            config.setBufferSize(bufferSize);
+
+            List<String> expected = new ArrayList<>();
+            try (RevisionApi revisionApi = new RevisionApi(config)) {
+                for (int revisionID : revisionIDs) {
+                    expected.add(describe(revisionApi.getRevision(revisionID)));
+                }
+            }
+
+            List<String> actual = new ArrayList<>();
+            ChronoRevisionIterator iterator = new ChronoRevisionIterator(config,
+                    DriverManager.getConnection(url, "sa", ""));
+            try {
+                while (iterator.hasNext()) {
+                    actual.add(describe(iterator.next()));
+                }
+            }
+            finally {
+                iterator.close();
+            }
+
+            assertEquals(expected, actual, "Buffer size " + bufferSize);
+        }
     }
 
     private static String describe(final Revision revision)

@@ -161,13 +161,17 @@ public class RevisionIterator
     /**
      * Creates a new RevisionIterator object for which the presence of the Namespace column is
      * already known, so that the revisions table does not have to be probed again.
+     * <p>
+     * Like the public constructors, the iteration also returns the revision that follows
+     * {@code endPK}. Unlike them, {@code endPK} may be {@code startPK - 1}, so that the iteration
+     * returns the revision at {@code startPK} only.
      *
      * @param config
      *            Reference to the configuration object
      * @param startPK
      *            Start index
      * @param endPK
-     *            End index
+     *            End index, at least {@code startPK - 1}
      * @param connection
      *            Reference to the connection
      * @param hasNamespaceColumn
@@ -179,7 +183,11 @@ public class RevisionIterator
             final Connection connection, final Boolean hasNamespaceColumn)
         throws WikiApiException
     {
-        this(config, startPK, endPK, connection);
+        this(config, startPK, Math.max(startPK, endPK), connection);
+        if (endPK < startPK - 1) {
+            throw new IllegalArgumentException("Illegal argument");
+        }
+        this.endPK = endPK;
         this.hasNamespaceColumn = hasNamespaceColumn;
     }
 
