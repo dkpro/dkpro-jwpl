@@ -86,6 +86,18 @@ public class CategorylinksParser
     private long unresolvedCount;
 
     /**
+     * Instantiates a {@link CategorylinksParser} that is not attached to any input. It is meant for
+     * subclasses that provide the row values by other means, for instance by replaying rows
+     * that were copied from a parser reading the dump. Such subclasses must override the
+     * getters of the row values and {@link #next()}.
+     */
+    protected CategorylinksParser()
+    {
+        resolver = null;
+        rowReader = null;
+    }
+
+    /**
      * Instantiates a {@link CategorylinksParser} via an input stream. Suitable for dumps that use
      * the legacy layout only.
      *

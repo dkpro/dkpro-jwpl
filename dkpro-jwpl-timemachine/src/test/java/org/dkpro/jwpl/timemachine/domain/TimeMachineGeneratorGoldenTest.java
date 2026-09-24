@@ -36,10 +36,13 @@ import org.dkpro.jwpl.timemachine.factory.DefaultTimeMachineEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.debug.Slf4JLogger;
 import org.dkpro.jwpl.wikimachine.decompression.IDecompressor;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
+import org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Runs the complete TimeMachine on a tiny hand-written dump set and compares every generated
@@ -90,6 +93,24 @@ class TimeMachineGeneratorGoldenTest
         assertMatchesGolden(output);
     }
 
+    /**
+     * The snapshots are processed on worker threads, in batches of rows (issue #613). Neither the
+     * number of threads nor the size of the batches may change the output.
+     */
+    @ParameterizedTest(name = "{0} version threads, batches of {1} rows")
+    @CsvSource({ "1, 4096", "2, 1", "3, 1", "3, 2", "3, 4096" })
+    void outputDoesNotDependOnTheVersionThreads(int threads, int batchSize,
+            @TempDir Path output)
+        throws Exception
+    {
+        final DumpVersionProcessor processor = new DumpVersionProcessor(new Slf4JLogger());
+        processor.setVersionThreads(threads);
+        processor.setBatchSize(batchSize);
+        run(List.of("golden-pages-meta-history1.xml", "golden-pages-meta-history2.xml"),
+                output, processor);
+        assertMatchesGolden(output);
+    }
+
     @Test
     void metaHistoryIsDecompressedTwicePerPart(@TempDir Path output) throws Exception
     {
@@ -104,6 +125,17 @@ class TimeMachineGeneratorGoldenTest
      * @return The number of streams opened on a meta-history part.
      */
     private static AtomicInteger run(List<String> metaHistoryParts, Path output) throws Exception
+    {
+        return run(metaHistoryParts, output, null);
+    }
+
+    /**
+     * @param processor The processor to use, or {@code null} for the default one.
+     * @return The number of streams opened on a meta-history part.
+     */
+    private static AtomicInteger run(List<String> metaHistoryParts, Path output,
+            DumpVersionProcessor processor)
+        throws Exception
     {
         final Slf4JLogger logger = new Slf4JLogger();
 
@@ -127,7 +159,7 @@ class TimeMachineGeneratorGoldenTest
         files.setOutputDirectory(output.toString());
 
         final CountingEnvironmentFactory factory = new CountingEnvironmentFactory(
-                metaHistoryFiles);
+                metaHistoryFiles, processor);
         final TimeMachineGenerator generator = new TimeMachineGenerator(factory);
         generator.setConfiguration(config);
         generator.setFiles(files);
@@ -171,10 +203,18 @@ class TimeMachineGeneratorGoldenTest
     {
         private final AtomicInteger metaHistoryStreams = new AtomicInteger();
         private final List<String> metaHistoryFiles;
+        private final DumpVersionProcessor processor;
 
-        CountingEnvironmentFactory(List<String> metaHistoryFiles)
+        CountingEnvironmentFactory(List<String> metaHistoryFiles, DumpVersionProcessor processor)
         {
             this.metaHistoryFiles = metaHistoryFiles;
+            this.processor = processor;
+        }
+
+        @Override
+        public DumpVersionProcessor getDumpVersionProcessor()
+        {
+            return processor != null ? processor : super.getDumpVersionProcessor();
         }
 
         @Override

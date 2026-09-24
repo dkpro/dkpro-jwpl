@@ -35,11 +35,16 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 public class DumpVersionProcessor
 {
 
+    /** The default number of rows handed to the worker threads at once. */
+    public static final int DEFAULT_BATCH_SIZE = 4096;
+
     private static ILogger logger;
 
     private Integer step2Log = 100000;
     private Integer step2GC = step2Log * 10;
     private Integer step2Flush = step2GC;
+    private int versionThreads = 0;
+    private int batchSize = DEFAULT_BATCH_SIZE;
     private IDumpVersion[] versions;
 
     /**
@@ -89,6 +94,47 @@ public class DumpVersionProcessor
     }
 
     /**
+     * Configures the number of worker threads that process the rows of the {@code page},
+     * {@code categorylinks} and {@code pagelinks} tables for several versions concurrently. The
+     * number of threads never exceeds the number of versions.
+     * <p>
+     * Every row is handed to every {@link IDumpVersion version}, in the order the rows appear in
+     * the dump. With more than one thread, the rows are copied into batches (see
+     * {@link #setBatchSize(int)}) and the versions process each batch concurrently, while the next
+     * batch is read from the dump. A single version is still called from one thread at a time and
+     * sees the rows in dump order, so its output does not change. The parsers it receives on a
+     * worker thread are read-only views of a copied row and must not be retained. The revision
+     * and text tables are always processed on the thread reading the dump.
+     *
+     * @param versionThreads {@code 0} (the default) to use as many threads as there are
+     *                       processors available, {@code 1} to process all versions on the thread
+     *                       reading the dump, or any greater value to use at most that many.
+     */
+    public void setVersionThreads(int versionThreads)
+    {
+        if (versionThreads < 0) {
+            throw new IllegalArgumentException(
+                    "versionThreads must not be negative: " + versionThreads);
+        }
+        this.versionThreads = versionThreads;
+    }
+
+    /**
+     * Configures the number of rows handed to the worker threads at once, see
+     * {@link #setVersionThreads(int)}. At most two batches are held in memory at a time: one being
+     * processed by the versions and one being filled from the dump.
+     *
+     * @param batchSize A positive number of rows; {@value #DEFAULT_BATCH_SIZE} by default.
+     */
+    public void setBatchSize(int batchSize)
+    {
+        if (batchSize < 1) {
+            throw new IllegalArgumentException("batchSize must be positive: " + batchSize);
+        }
+        this.batchSize = batchSize;
+    }
+
+    /**
      * Processes a revision row.
      *
      * @param revisionParser A valid {@link RevisionParser} instance.
@@ -126,18 +172,19 @@ public class DumpVersionProcessor
      */
     public void processPage(PageParser pageParser) throws IOException
     {
-        try (pageParser) {
+        try (pageParser; RowDispatcher<PageParser> dispatcher = RowDispatcher.create(
+                versions, getWorkerThreads(), batchSize, RowBatch.Pages::new,
+                IDumpVersion::processPageRow)) {
             for (IDumpVersion version : versions) {
                 version.initPageParsing();
             }
 
             int counter = 0;
             while (pageParser.next()) {
-                for (IDumpVersion version : versions) {
-                    version.processPageRow(pageParser);
-                }
+                dispatcher.accept(pageParser);
                 logAndClear(++counter, "Pages");
             }
+            dispatcher.finish();
 
             for (IDumpVersion version : versions) {
                 version.exportAfterPageParsing();
@@ -154,18 +201,20 @@ public class DumpVersionProcessor
      */
     public void processCategorylinks(CategorylinksParser categorylinksParser) throws IOException
     {
-        try (categorylinksParser) {
+        try (categorylinksParser;
+                RowDispatcher<CategorylinksParser> dispatcher = RowDispatcher.create(versions,
+                        getWorkerThreads(), batchSize, RowBatch.Categorylinks::new,
+                        IDumpVersion::processCategoryLinksRow)) {
             for (IDumpVersion version : versions) {
                 version.initCategoryLinksParsing();
             }
 
             int counter = 0;
             while (categorylinksParser.next()) {
-                for (IDumpVersion version : versions) {
-                    version.processCategoryLinksRow(categorylinksParser);
-                }
+                dispatcher.accept(categorylinksParser);
                 logAndClear(++counter, "Categorylinks");
             }
+            dispatcher.finish();
             categorylinksParser.checkPostConditions();
 
             for (IDumpVersion version : versions) {
@@ -184,18 +233,19 @@ public class DumpVersionProcessor
      */
     public void processPagelinks(PagelinksParser pagelinksParser) throws IOException
     {
-        try (pagelinksParser) {
+        try (pagelinksParser; RowDispatcher<PagelinksParser> dispatcher = RowDispatcher.create(
+                versions, getWorkerThreads(), batchSize, RowBatch.Pagelinks::new,
+                IDumpVersion::processPageLinksRow)) {
             for (IDumpVersion version : versions) {
                 version.initPageLinksParsing();
             }
 
             int counter = 0;
             while (pagelinksParser.next()) {
-                for (IDumpVersion version : versions) {
-                    version.processPageLinksRow(pagelinksParser);
-                }
+                dispatcher.accept(pagelinksParser);
                 logAndClear(++counter, "Pagelinks");
             }
+            dispatcher.finish();
             pagelinksParser.checkPostConditions();
 
             for (IDumpVersion version : versions) {
@@ -250,6 +300,17 @@ public class DumpVersionProcessor
         for (IDumpVersion version : versions) {
             version.writeMetaData();
         }
+    }
+
+    /**
+     * @return The number of worker threads to process the versions with; {@code 1} means that
+     *         the versions are processed on the thread reading the dump.
+     */
+    int getWorkerThreads()
+    {
+        final int limit = versionThreads > 0 ? versionThreads
+                : Runtime.getRuntime().availableProcessors();
+        return Math.max(1, Math.min(limit, versions.length));
     }
 
     private void logAndClear(int counter, String event)
