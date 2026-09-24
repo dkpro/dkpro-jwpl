@@ -64,11 +64,11 @@ public class Wikipedia
 
     /**
      * Upper bound for the number of page ids bound into a single {@code in (..)} clause of
-     * {@link Wikipedia#getTitles(Collection)}. Pages with several thousand outgoing links exist,
-     * and neither the JDBC drivers nor the query planners deal well with parameter lists of that
-     * size.
+     * {@link Wikipedia#getTitles(Collection)} and {@link Wikipedia#getPages(List)}. Pages with
+     * several thousand outgoing links exist, and neither the JDBC drivers nor the query planners
+     * deal well with parameter lists of that size.
      */
-    private static final int TITLE_BATCH_SIZE = 500;
+    private static final int ID_BATCH_SIZE = 500;
 
     /**
      * Fetch size that makes MySQL Connector/J stream a forward-only, read-only result set row by
@@ -261,30 +261,53 @@ public class Wikipedia
     }
 
     /**
-     * Loads the pages with the given ids, in one query per {@value Wikipedia#TITLE_BATCH_SIZE}
-     * ids instead of one query per page as {@link Wikipedia#getPage(int)} does.
+     * Loads the pages with the given ids, in one query per {@value Wikipedia#ID_BATCH_SIZE} ids
+     * instead of one query per page as {@link Wikipedia#getPage(int)} does.
      * <p>
-     * The pages are returned in the order of the given ids. Ids that have no matching page are
-     * skipped; callers that need to detect them have to compare the result against the ids they
-     * passed in. Like {@link Wikipedia#getPage(int)}, every page is loaded including its text, so
-     * the result of a large number of ids can occupy a lot of memory.
+     * The result is positional: the pages are returned in the order of the given ids, and an id
+     * that occurs several times yields a page at each of its positions. This is why the ids are
+     * passed as a {@link List}, while {@link Wikipedia#getTitles(Collection)} accepts any
+     * {@link Collection}: its result is keyed by page id, so neither order nor duplicates matter
+     * there.
+     * <p>
+     * Ids that have no matching page are skipped; callers that need to detect them have to compare
+     * the result against the ids they passed in. Like {@link Wikipedia#getPage(int)}, every page is
+     * loaded including its text, so the result of a large number of ids can occupy a lot of
+     * memory.
      *
-     * @param pageIds The ids of the pages to load. Must not be {@code null}.
-     * @return The loaded pages. Never {@code null}.
-     * @throws WikiApiException Thrown if errors occurred.
+     * @param pageIds The ids of the pages to load. Must not be {@code null} and must not contain
+     *                {@code null}.
+     * @return The loaded pages, in the order of {@code pageIds}. Never {@code null}.
+     * @throws IllegalArgumentException Thrown if {@code pageIds} is {@code null} or contains
+     *                                  {@code null}.
+     * @throws WikiApiException Declared for consistency with {@link Wikipedia#getPage(int)}, but
+     *                          not thrown by this implementation: missing pages are skipped, and a
+     *                          failing query surfaces as the unchecked
+     *                          {@link org.hibernate.HibernateException} of the underlying
+     *                          Hibernate call, as in {@link Wikipedia#getTitles(Collection)}.
      */
     public List<Page> getPages(List<Integer> pageIds) throws WikiApiException {
+        if (pageIds == null) {
+            throw new IllegalArgumentException("pageIds must not be null");
+        }
+        // Not List#contains(null): immutable lists such as List.of(..) reject a null argument.
+        for (Integer pageId : pageIds) {
+            if (pageId == null) {
+                throw new IllegalArgumentException("pageIds must not contain null");
+            }
+        }
+
         List<Page> pages = new ArrayList<>(pageIds.size());
-        for (int from = 0; from < pageIds.size(); from += TITLE_BATCH_SIZE) {
+        Map<Integer, org.dkpro.jwpl.api.hibernate.Page> rowsByPageId = new HashMap<>();
+        for (int from = 0; from < pageIds.size(); from += ID_BATCH_SIZE) {
             List<Integer> batch = pageIds.subList(from,
-                    Math.min(from + TITLE_BATCH_SIZE, pageIds.size()));
-            // A session is acquired per batch, see getTitles(Collection)
+                    Math.min(from + ID_BATCH_SIZE, pageIds.size()));
             List<org.dkpro.jwpl.api.hibernate.Page> rows = __inTransaction(session -> session
                     .createQuery("from Page as p where p.pageId in (:ids)",
                             org.dkpro.jwpl.api.hibernate.Page.class)
                     .setParameterList("ids", batch).list());
 
-            Map<Integer, org.dkpro.jwpl.api.hibernate.Page> rowsByPageId = new HashMap<>();
+            rowsByPageId.clear();
             for (org.dkpro.jwpl.api.hibernate.Page row : rows) {
                 rowsByPageId.put(row.getPageId(), row);
             }
@@ -327,7 +350,7 @@ public class Wikipedia
      * <p>
      * Obtaining the same titles via {@link Wikipedia#getPage(int)} and {@link Page#getTitle()}
      * costs one full entity load - article text included - per page. This reads nothing but the
-     * page names, in one query per {@value Wikipedia#TITLE_BATCH_SIZE} ids.
+     * page names, in one query per {@value Wikipedia#ID_BATCH_SIZE} ids.
      * <p>
      * Ids that have no matching page are absent from the result, as are pages whose name cannot be
      * parsed into a {@link Title}. Callers that need to tell those cases apart have to compare the
@@ -343,8 +366,8 @@ public class Wikipedia
         }
 
         List<Integer> ids = new ArrayList<>(pageIds);
-        for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
-            List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
             // A session is acquired per batch on purpose: the thread-bound session context unbinds
             // and closes the session once its transaction completes, so it must not be reused
             // across batches.

@@ -22,10 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -902,6 +904,24 @@ public class WikipediaTest
     public void testGetPagesForPageIdsEmpty() throws WikiApiException
     {
         assertTrue(wiki.getPages(Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsKeepsDuplicates() throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(List.of(1014, 1041, 1014));
+        assertEquals(3, pages.size());
+        assertEquals(1014, pages.get(0).getPageId());
+        assertEquals(1041, pages.get(1).getPageId());
+        assertEquals(1014, pages.get(2).getPageId());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsRejectsNull()
+    {
+        assertThrows(IllegalArgumentException.class, () -> wiki.getPages((List<Integer>) null));
+        assertThrows(IllegalArgumentException.class,
+                () -> wiki.getPages(Arrays.asList(1014, null)));
     }
 
     private void checkGetPageByExactTitle(String pageTitle) throws WikiApiException
