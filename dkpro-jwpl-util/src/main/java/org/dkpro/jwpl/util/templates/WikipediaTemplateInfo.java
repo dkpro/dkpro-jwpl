@@ -42,7 +42,6 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.util.StringUtils;
-import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
@@ -729,9 +728,8 @@ public class WikipediaTemplateInfo
                 }
 
                 // Parse templates and check if the revision contains the template
-                ParsedPage pp = parser.parse(rev.getRevisionText());
                 boolean containsTpl = false;
-                tplLoop: for (Template tpl : pp.getTemplates()) {
+                tplLoop: for (Template tpl : parser.parseTemplatesOnly(rev.getRevisionText())) {
                     if (tpl.getName().equalsIgnoreCase(templateName)) {
                         containsTpl = true;
                         break tplLoop;
@@ -1486,8 +1484,8 @@ public class WikipediaTemplateInfo
             parser = pf.createParser();
         }
 
-        List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText())
-                .getTemplates();
+        List<Template> tplList = parser
+                .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
         for (Template tpl : tplList) {
             if (tpl.getName().equalsIgnoreCase(templateName)) {
                 return true;
@@ -1520,8 +1518,8 @@ public class WikipediaTemplateInfo
             parser = pf.createParser();
         }
 
-        List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText())
-                .getTemplates();
+        List<Template> tplList = parser
+                .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
         for (Template tpl : tplList) {
             if (tpl.getName().toLowerCase().startsWith(templateFragment.toLowerCase())) {
                 return true;
