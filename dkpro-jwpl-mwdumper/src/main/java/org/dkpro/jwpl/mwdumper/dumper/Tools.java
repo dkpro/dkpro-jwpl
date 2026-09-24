@@ -71,7 +71,7 @@ public class Tools
         if (Arrays.equals(head, LEGACY_BZIP2_HEADER)) {
             in.skipNBytes(2);
         }
-        return new BZip2CompressorInputStream(in);
+        return new BZip2CompressorInputStream(in, true);
     }
 
     static OutputStream openStandardOutput()

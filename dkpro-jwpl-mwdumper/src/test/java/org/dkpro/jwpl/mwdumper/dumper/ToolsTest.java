@@ -82,6 +82,20 @@ class ToolsTest
     }
 
     @Test
+    void readsAllStreamsOfAMultistreamFile() throws IOException
+    {
+        // Multistream dumps (and files written by pbzip2 or lbzip2) concatenate bzip2 streams
+        Path file = dir.resolve("multistream.xml.bz2");
+        byte[] first = compress(CONTENT);
+        byte[] second = compress(CONTENT);
+        byte[] multistream = Arrays.copyOf(first, first.length + second.length);
+        System.arraycopy(second, 0, multistream, first.length, second.length);
+        Files.write(file, multistream);
+
+        assertEquals(CONTENT + CONTENT, read(file));
+    }
+
+    @Test
     void readsAFileWithTheLegacyExtraPrefix() throws IOException
     {
         // Earlier versions wrote a superfluous "BZ" in front of the stream header ("BZBZh...")
