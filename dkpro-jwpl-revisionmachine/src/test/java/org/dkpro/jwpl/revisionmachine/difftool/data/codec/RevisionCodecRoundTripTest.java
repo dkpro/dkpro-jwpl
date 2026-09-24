@@ -56,6 +56,62 @@ public class RevisionCodecRoundTripTest
     }
 
     @Test
+    public void testEmptyRevision() throws Exception
+    {
+        assertRoundTrip("");
+    }
+
+    @Test
+    public void testEmptyRevisionWithoutZipCompression() throws Exception
+    {
+        ConfigSettings settings = new ConfigSettings();
+        settings.defaultConfiguration();
+        settings.setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, false);
+        new ConfigurationManager(settings);
+        try {
+            assertRoundTrip("");
+            assertRoundTrip("Some text");
+        }
+        finally {
+            setUpConfiguration();
+        }
+    }
+
+    @Test
+    public void testEmptyTextFollowedByFurtherParts() throws Exception
+    {
+        // an empty text block has to be followed by the fill bits like a non-empty one
+        Diff diff = new Diff();
+        diff.add(part(DiffAction.REPLACE, 2, 3, ""));
+        diff.add(part(DiffAction.INSERT, 4, 0, ""));
+        diff.add(part(DiffAction.DELETE, 0, 1, null));
+        diff.add(part(DiffAction.INSERT, 1, 0, "xy"));
+
+        RevisionCodecData codecData = new RevisionCodecData();
+        codecData.checkBlocksizeS(4);
+        codecData.checkBlocksizeE(3);
+        codecData.checkBlocksizeL(0);
+        codecData.checkBlocksizeS(2);
+        codecData.checkBlocksizeL(0);
+        codecData.checkBlocksizeS(0);
+        codecData.checkBlocksizeE(1);
+        codecData.checkBlocksizeS(1);
+        codecData.checkBlocksizeL(2);
+
+        String previous = "abcdefgh";
+        String expected = diff.buildRevision(previous);
+
+        RevisionEncoder encoder = new RevisionEncoder();
+        RevisionDecoder decoder = new RevisionDecoder(ENCODING);
+        decoder.setInput(encoder.binaryDiff(codecData, diff));
+        assertEquals(expected, decoder.decode().buildRevision(previous));
+
+        decoder = new RevisionDecoder(ENCODING);
+        decoder.setInput(encoder.encodeDiff(codecData, diff));
+        assertEquals(expected, decoder.decode().buildRevision(previous));
+    }
+
+    @Test
     public void testCompressedRevisionLargerThanBuffer() throws Exception
     {
         String text = repeat(50_000);
@@ -136,6 +192,15 @@ public class RevisionCodecRoundTripTest
         RevisionCodecData codecData = new RevisionCodecData();
         codecData.checkBlocksizeL(text.getBytes(StandardCharsets.UTF_8).length);
         return codecData;
+    }
+
+    private static DiffPart part(DiffAction action, int start, int length, String text)
+    {
+        DiffPart part = new DiffPart(action);
+        part.setStart(start);
+        part.setLength(length);
+        part.setText(text);
+        return part;
     }
 
     private static Diff diff(String text)
