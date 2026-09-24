@@ -29,7 +29,6 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -37,7 +36,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 /**
  * A generic {@link org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion IDumpVersion} implementation.
  * <p>
- * Page, category and text ids are held in fastutil primitive collections to keep the heap footprint
+ * Page and category ids are held in fastutil primitive collections to keep the heap footprint
  * low on large dumps. Titles are keyed by the full {@code KeyType} produced by the hash algorithm.
  *
  * @param <KeyType>         The type of keys to use.
@@ -52,7 +51,7 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     // Is also defined in wikipedia.api:WikiConstants.DISCUSSION_PREFIX
     // It just doesn't make sense to add a dependency just for the constant
     private static final String DISCUSSION_PREFIX = "Discussion:";
-    // Returned by the primitive maps for absent keys; page and text ids are always positive
+    // Returned by the primitive maps for absent keys; page ids are always positive
     private static final int NO_ID = -1;
 
     private Int2ObjectOpenHashMap<String> pPageIdNameMap;
@@ -61,7 +60,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     private Object2IntOpenHashMap<KeyType> cNamePageIdMap;
     private Int2ObjectOpenHashMap<String> rPageIdNameMap;
     private IntOpenHashSet disambiguations;
-    private Int2IntOpenHashMap textIdPageIdMap;
 
     IStringHashCode hashAlgorithm;
 
@@ -136,7 +134,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         cNamePageIdMap.clear();
         rPageIdNameMap.clear();
         disambiguations.clear();
-        textIdPageIdMap.clear();
     }
 
     /**
@@ -153,8 +150,6 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
         cNamePageIdMap.defaultReturnValue(NO_ID);
         rPageIdNameMap = new Int2ObjectOpenHashMap<>(1_000_000);
         disambiguations = new IntOpenHashSet(1_000_000);
-        textIdPageIdMap = new Int2IntOpenHashMap(1_000_000);
-        textIdPageIdMap.defaultReturnValue(NO_ID);
     }
 
     /**
@@ -257,12 +252,13 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     }
 
     /**
-     * {@inheritDoc}
+     * Does nothing: the text rows already carry the id of their page, so no revision table is
+     * needed to join them with the page table.
      */
     @Override
     public void processRevisionRow(RevisionParser revisionParser)
     {
-        textIdPageIdMap.put(revisionParser.getRevTextId(), revisionParser.getRevPage());
+        // nothing to do
     }
 
     /**
@@ -272,30 +268,28 @@ public class SingleDumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringH
     @Override
     public void processTextRow(TextParser textParser)
     {
-        int page_id = textIdPageIdMap.get(textParser.getOldId());
-        if (page_id != NO_ID) {
+        // text rows are keyed by page id; ids unknown to the page table are dropped
+        int page_id = textParser.getOldId();
+        String page_idValueP = pPageIdNameMap.get(page_id);
+        if (page_idValueP != null) { // pages
+            page.addRow(page_id, page_id, page_idValueP, textParser.getOldText(),
+                    formatBoolean(disambiguations.contains(page_id)));
+            pageMapLine.addRow(page_id, page_idValueP, page_id, SQL_NULL, SQL_NULL);
 
-            String page_idValueP = pPageIdNameMap.get(page_id);
-            if (page_idValueP != null) { // pages
-                page.addRow(page_id, page_id, page_idValueP, textParser.getOldText(),
-                        formatBoolean(disambiguations.contains(page_id)));
-                pageMapLine.addRow(page_id, page_idValueP, page_id, SQL_NULL, SQL_NULL);
+        }
+        else {
+            String page_idValueR = rPageIdNameMap.get(page_id);
+            if (page_idValueR != null) { // Redirects
+                String destination = Redirects.getRedirectDestination(textParser.getOldText());
+                if (destination != null) {
+                    KeyType destinationHash = (KeyType) hashAlgorithm.hashCode(destination);
+                    int destinationValue = pNamePageIdMap.getInt(destinationHash);
+                    if (destinationValue != NO_ID) {
 
-            }
-            else {
-                String page_idValueR = rPageIdNameMap.get(page_id);
-                if (page_idValueR != null) { // Redirects
-                    String destination = Redirects.getRedirectDestination(textParser.getOldText());
-                    if (destination != null) {
-                        KeyType destinationHash = (KeyType) hashAlgorithm.hashCode(destination);
-                        int destinationValue = pNamePageIdMap.getInt(destinationHash);
-                        if (destinationValue != NO_ID) {
-
-                            pageRedirects.addRow(destinationValue, page_idValueR);
-                            pageMapLine.addRow(page_id, page_idValueR, destinationValue, SQL_NULL,
-                                    SQL_NULL);
-                            metaData.addRedirect();
-                        }
+                        pageRedirects.addRow(destinationValue, page_idValueR);
+                        pageMapLine.addRow(page_id, page_idValueR, destinationValue, SQL_NULL,
+                                SQL_NULL);
+                        metaData.addRedirect();
                     }
                 }
             }

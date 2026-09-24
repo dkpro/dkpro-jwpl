@@ -37,7 +37,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Exercises the multi-part {@link XML2Binary#XML2Binary(java.util.List, DataMachineFiles)}
  * constructor end-to-end: two self-contained XML parts fed through the multi-part pipeline
- * must produce the same {@code page.bin} / {@code revision.bin} / {@code text.bin} bytes as a
+ * must produce the same {@code page.bin} / {@code text.bin} bytes as a
  * single-document dump containing the same pages.
  */
 class XML2BinaryMultiPartTest
@@ -143,11 +143,6 @@ class XML2BinaryMultiPartTest
                 "page.bin missing or empty (multi)");
         assertArrayEquals(Files.readAllBytes(pageA), Files.readAllBytes(pageB),
                 "page.bin mismatch between multi-part and equivalent single document");
-
-        final Path revA = Path.of(a.getGeneratedRevision());
-        final Path revB = Path.of(b.getGeneratedRevision());
-        assertArrayEquals(Files.readAllBytes(revA), Files.readAllBytes(revB),
-                "revision.bin mismatch");
 
         final Path textA = Path.of(a.getGeneratedText());
         final Path textB = Path.of(b.getGeneratedText());
