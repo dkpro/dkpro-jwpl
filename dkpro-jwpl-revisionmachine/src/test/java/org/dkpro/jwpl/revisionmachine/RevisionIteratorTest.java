@@ -19,13 +19,19 @@ package org.dkpro.jwpl.revisionmachine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +44,15 @@ import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
-import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffAction;
-import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
+import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class RevisionIteratorTest
     extends BaseJWPLTest
@@ -52,8 +61,23 @@ public class RevisionIteratorTest
     // Note: In the stripped HSQLDB data set only 382 revisions exist for the Page 'Car'
     private static final int GLOBAL_REVISION_COUNT = 382;
 
+    private static final String DATABASE = "wikiapi_simple_20090119_stripped";
+
+    // Iteration indices at which switchFromEagerToLazyAndBackTest switches the loading mode
+    private static final int SWITCH_TO_LAZY_INDEX = 20;
+    private static final int SWITCH_TO_EAGER_INDEX = 40;
+
     private static Wikipedia wiki = null;
     private static RevisionAPIConfiguration config = null;
+
+    // Reconstructs the expected revision texts, shared by all tests
+    private static RevisionApi revisionApi = null;
+
+    // Revision IDs of all revisions, ordered by their primary key
+    private static Map<Integer, Integer> revisionIDs = null;
+
+    @TempDir
+    static Path tempDir;
 
     // The object under test
     private RevisionIterator revisionIterator = null;
@@ -66,11 +90,12 @@ public class RevisionIteratorTest
     @BeforeAll
     public static void setupWikipedia()
     {
-        DatabaseConfiguration db = obtainHSDLDBConfiguration("wikiapi_simple_20090119_stripped",
-                Language.simple_english);
+        DatabaseConfiguration db = obtainHSDLDBConfiguration(DATABASE, Language.simple_english);
         try {
             wiki = new Wikipedia(db);
             config = new RevisionAPIConfiguration(wiki.getDatabaseConfiguration());
+            revisionApi = new RevisionApi(config);
+            revisionIDs = readRevisionIDsByPrimaryKey();
         }
         catch (Exception e) {
             fail("Wikipedia could not be initialized: " + e.getLocalizedMessage());
@@ -78,6 +103,14 @@ public class RevisionIteratorTest
         assertNotNull(wiki);
         assertNotNull(config);
 
+    }
+
+    @AfterAll
+    public static void closeRevisionApi() throws SQLException
+    {
+        if (revisionApi != null) {
+            revisionApi.close();
+        }
     }
 
     @BeforeEach
@@ -197,49 +230,39 @@ public class RevisionIteratorTest
     }
 
 
-    @Test
-    public void startInsideDiffChainTest() throws WikiApiException, SQLException
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 12, 200, 329 })
+    public void startInsideDiffChainTest(int startIndex) throws WikiApiException, SQLException
     {
-        Map<Integer, Integer> revisionIDs = readRevisionIDsByPrimaryKey();
         List<Integer> primaryKeys = new ArrayList<>(revisionIDs.keySet());
+        int startPK = primaryKeys.get(startIndex);
         int endPK = primaryKeys.get(primaryKeys.size() - 1);
+        assertStartsInsideDiffChain(revisionIDs.get(startPK));
 
-        // Start positions in the middle of the diff chain of 'Car'
-        for (int startIndex : new int[] { 1, 12, 200, 329 }) {
-            int startPK = primaryKeys.get(startIndex);
-            assertStartsInsideDiffChain(revisionIDs.get(startPK));
-
-            try (RevisionIterator iterator = new RevisionIterator(config, startPK, endPK)) {
-                assertTextsOfRemainingRevisions(iterator, revisionIDs, startIndex, -1);
-            }
+        try (RevisionIterator iterator = new RevisionIterator(config, startPK, endPK)) {
+            assertTextsOfRemainingRevisions(iterator, startIndex, -1);
         }
     }
 
-    @Test
-    public void switchFromLazyToEagerTest() throws WikiApiException, SQLException
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 10, 100 })
+    public void switchFromLazyToEagerTest(int switchIndex) throws WikiApiException, SQLException
     {
-        Map<Integer, Integer> revisionIDs = readRevisionIDsByPrimaryKey();
-
-        for (int switchIndex : new int[] { 1, 10, 100 }) {
-            try (RevisionIterator iterator = new RevisionIterator(config, true)) {
-                assertTextsOfRemainingRevisions(iterator, revisionIDs, 0, switchIndex);
-            }
+        try (RevisionIterator iterator = new RevisionIterator(config, true)) {
+            assertTextsOfRemainingRevisions(iterator, 0, switchIndex);
         }
     }
 
     @Test
     public void switchFromEagerToLazyAndBackTest() throws WikiApiException, SQLException
     {
-        Map<Integer, Integer> revisionIDs = readRevisionIDsByPrimaryKey();
-
-        try (RevisionIterator iterator = new RevisionIterator(config);
-                RevisionApi revisionApi = new RevisionApi(config)) {
+        try (RevisionIterator iterator = new RevisionIterator(config)) {
             int i = 0;
             while (iterator.hasNext()) {
-                if (i == 20) {
+                if (i == SWITCH_TO_LAZY_INDEX) {
                     iterator.setShouldLoadRevisionText(true);
                 }
-                else if (i == 40) {
+                else if (i == SWITCH_TO_EAGER_INDEX) {
                     iterator.setShouldLoadRevisionText(false);
                 }
                 Revision revision = iterator.next();
@@ -252,7 +275,38 @@ public class RevisionIteratorTest
         }
     }
 
+    @Test
+    public void startInsideDiffChainOfUnindexedRevisionTest() throws Exception
+    {
+        List<Integer> primaryKeys = new ArrayList<>(revisionIDs.keySet());
+        int startPK = primaryKeys.get(12);
+        int revisionID = revisionIDs.get(startPK);
+        assertStartsInsideDiffChain(revisionID);
+
+        // Remove the start revision from the index in a copy of the test data set
+        Files.copy(Path.of("src/test/resources/db", DATABASE + ".script"),
+                tempDir.resolve(DATABASE + ".script"));
+        String url = "jdbc:hsqldb:file:" + tempDir.resolve(DATABASE) + ";shutdown=true";
+        try (Connection connection = DriverManager.getConnection(url, "sa", "");
+                Statement statement = connection.createStatement()) {
+            assertEquals(1, statement.executeUpdate(
+                    "DELETE FROM index_revisionID WHERE RevisionID = " + revisionID));
+        }
+        RevisionAPIConfiguration copyConfig = new RevisionAPIConfiguration(
+                new DatabaseConfiguration("org.hsqldb.jdbcDriver", url, "localhost", DATABASE,
+                        "sa", "", Language.simple_english));
+
+        try (RevisionIterator iterator = new RevisionIterator(copyConfig, startPK,
+                primaryKeys.get(primaryKeys.size() - 1))) {
+            assertTrue(iterator.hasNext());
+            RuntimeException e = assertThrows(RuntimeException.class, iterator::next);
+            assertInstanceOf(WikiApiException.class, e.getCause());
+        }
+    }
+
     /**
+     * Reads the revision IDs of all revisions with a lazily loading iterator.
+     *
      * @return the revision IDs of all revisions, ordered by their primary key
      */
     private static Map<Integer, Integer> readRevisionIDsByPrimaryKey()
@@ -269,17 +323,17 @@ public class RevisionIteratorTest
         return revisionIDs;
     }
 
-    private static void assertStartsInsideDiffChain(int revisionID)
-        throws WikiApiException, SQLException
+    /**
+     * Asserts that a revision is stored as a diff, i.e. that it is not the start of a diff chain.
+     *
+     * @param revisionID
+     *            ID of the revision
+     */
+    private static void assertStartsInsideDiffChain(int revisionID) throws WikiApiException
     {
-        try (RevisionApi revisionApi = new RevisionApi(config)) {
-            Revision revision = revisionApi.getRevision(revisionID);
-            revision.getRevisionText();
-            Collection<DiffPart> parts = revision.getParts();
-            assertFalse(parts.size() == 1 && parts.iterator().next()
-                    .getAction() == DiffAction.FULL_REVISION_UNCOMPRESSED,
-                    "Revision " + revisionID + " is expected to be a diff");
-        }
+        Diff diff = new Diff();
+        revisionApi.getRevision(revisionID).getParts().forEach(diff::add);
+        assertFalse(diff.isFullRevision(), "Revision " + revisionID + " is expected to be a diff");
     }
 
     /**
@@ -288,35 +342,31 @@ public class RevisionIteratorTest
      *
      * @param iterator
      *            the iterator under test
-     * @param revisionIDs
-     *            the revision IDs of all revisions, ordered by their primary key
      * @param startIndex
      *            index of the first revision returned by the iterator
      * @param switchIndex
      *            number of revisions after which the iterator switches to eager mode, {@code -1}
      *            to keep the mode
      */
-    private static void assertTextsOfRemainingRevisions(RevisionIterator iterator,
-            Map<Integer, Integer> revisionIDs, int startIndex, int switchIndex)
-        throws WikiApiException, SQLException
+    private static void assertTextsOfRemainingRevisions(RevisionIterator iterator, int startIndex,
+            int switchIndex)
+        throws WikiApiException
     {
         List<Integer> expectedIDs = new ArrayList<>(revisionIDs.values())
                 .subList(startIndex, revisionIDs.size());
-        try (RevisionApi revisionApi = new RevisionApi(config)) {
-            int i = 0;
-            while (iterator.hasNext()) {
-                if (i == switchIndex) {
-                    iterator.setShouldLoadRevisionText(false);
-                }
-                Revision revision = iterator.next();
-                assertNotNull(revision, "Revision " + expectedIDs.get(i) + " is missing");
-                assertEquals(expectedIDs.get(i), revision.getRevisionID());
-                assertEquals(revisionApi.getRevision(revision.getRevisionID()).getRevisionText(),
-                        revision.getRevisionText(), "Text of revision " + revision.getRevisionID());
-                i++;
+        int i = 0;
+        while (iterator.hasNext()) {
+            if (i == switchIndex) {
+                iterator.setShouldLoadRevisionText(false);
             }
-            assertEquals(expectedIDs.size(), i);
+            Revision revision = iterator.next();
+            assertNotNull(revision, "Revision " + expectedIDs.get(i) + " is missing");
+            assertEquals(expectedIDs.get(i), revision.getRevisionID());
+            assertEquals(revisionApi.getRevision(revision.getRevisionID()).getRevisionText(),
+                    revision.getRevisionText(), "Text of revision " + revision.getRevisionID());
+            i++;
         }
+        assertEquals(expectedIDs.size(), i);
     }
 
 }
