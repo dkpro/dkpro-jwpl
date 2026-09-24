@@ -51,7 +51,8 @@ public class DatabaseWriter
     static final String ARTICLE_TIMESTAMP_INDEX = "articleTsIdx";
 
     /**
-     * Statement which creates the composite timestamp index on the revisions table
+     * Statement which creates the composite timestamp index on revisions tables that do not
+     * declare it
      */
     static final String CREATE_ARTICLE_TIMESTAMP_INDEX = "CREATE INDEX " + ARTICLE_TIMESTAMP_INDEX
             + " ON revisions(ArticleID, Timestamp, RevisionCounter)";
@@ -153,8 +154,8 @@ public class DatabaseWriter
         Statement statement = connection.createStatement();
         statement.execute(SQLEncoder.ENABLE_KEYS);
         statement.close();
-        // tables created by older versions of the DiffTool do not declare the article index yet,
-        // and the composite timestamp index is only created here, so it may already exist on reruns
+        // the DiffTool declares both indexes when it creates the revisions table, tables created
+        // by older versions lack one or both of them
         createIndexIfMissing(ARTICLE_INDEX, CREATE_ARTICLE_INDEX);
         createIndexIfMissing(ARTICLE_TIMESTAMP_INDEX, CREATE_ARTICLE_TIMESTAMP_INDEX);
         statement = connection.createStatement();

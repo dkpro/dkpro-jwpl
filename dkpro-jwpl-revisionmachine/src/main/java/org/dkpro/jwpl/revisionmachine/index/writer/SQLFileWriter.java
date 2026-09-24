@@ -123,8 +123,8 @@ public class SQLFileWriter
 
         // build the keys of the revisions table in case they are still disabled from the bulk load
         writer.write(SQLEncoder.ENABLE_KEYS + "\r\n");
-        // tables created by older versions of the DiffTool do not declare the article index yet,
-        // and the composite timestamp index is only created here, so it may already exist on reruns
+        // the DiffTool declares both indexes when it creates the revisions table, tables created
+        // by older versions lack one or both of them
         writeCreateIndexIfMissing(DatabaseWriter.ARTICLE_INDEX,
                 DatabaseWriter.CREATE_ARTICLE_INDEX);
         writeCreateIndexIfMissing(DatabaseWriter.ARTICLE_TIMESTAMP_INDEX,
