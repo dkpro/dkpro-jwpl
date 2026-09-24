@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
@@ -34,6 +35,9 @@ public class Tools
 {
     static final int IN_BUF_SZ = 1024 * 1024;
     private static final int OUT_BUF_SZ = 1024 * 1024;
+
+    // Start of files written by earlier versions: a superfluous "BZ" followed by the real header
+    private static final byte[] LEGACY_BZIP2_HEADER = { 'B', 'Z', 'B', 'Z', 'h' };
 
     public static InputStream openInputFile(String arg) throws IOException
     {
@@ -59,12 +63,15 @@ public class Tools
 
     static InputStream openBZip2Stream(InputStream infile) throws IOException
     {
-        int first = infile.read();
-        int second = infile.read();
-        if (first != 'B' || second != 'Z') {
-            throw new IOException("Didn't find BZ file signature in .bz2 file");
+        InputStream in = infile.markSupported() ? infile : new BufferedInputStream(infile);
+        // Earlier versions wrote an extra "BZ" in front of the stream header; skip it if present
+        in.mark(LEGACY_BZIP2_HEADER.length);
+        byte[] head = in.readNBytes(LEGACY_BZIP2_HEADER.length);
+        in.reset();
+        if (Arrays.equals(head, LEGACY_BZIP2_HEADER)) {
+            in.skipNBytes(2);
         }
-        return new BZip2CompressorInputStream(infile);
+        return new BZip2CompressorInputStream(in);
     }
 
     static OutputStream openStandardOutput()
@@ -74,11 +81,8 @@ public class Tools
 
     static OutputStream createBZip2File(String param) throws IOException
     {
-        OutputStream outfile = createOutputFile(param);
-        // bzip2 expects a two-byte 'BZ' signature header
-        outfile.write('B');
-        outfile.write('Z');
-        return new BZip2CompressorOutputStream(outfile);
+        // BZip2CompressorOutputStream writes the complete "BZh" header itself
+        return new BZip2CompressorOutputStream(createOutputFile(param));
     }
 
     static OutputStream createOutputFile(String param) throws IOException
