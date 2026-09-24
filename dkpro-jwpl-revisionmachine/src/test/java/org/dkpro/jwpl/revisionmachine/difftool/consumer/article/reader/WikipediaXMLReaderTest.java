@@ -92,18 +92,34 @@ public class WikipediaXMLReaderTest
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "<text/>", "<text />", "<text bytes=\"0\" sha1=\"phoiac9\" />",
-            "<text deleted=\"deleted\" />", "<text xml:space=\"preserve\" />" })
+    @ValueSource(strings = { "<text/>", "<text />", "<text deleted=\"deleted\" />",
+            "<text bytes=\"5\" deleted=\"deleted\" />", "<text bytes=\"0\" deleted=\"deleted\" />",
+            "<text xml:space=\"preserve\" />" })
     public void testLeavesSelfClosingTextUnset(String text) throws Exception
     {
-        // Empty and deleted texts are written as self-closing elements; they must neither fail
-        // nor swallow the text of the following revision.
+        // Deleted texts, and legacy texts without a size, are written as self-closing elements;
+        // they must neither fail nor swallow the text of the following revision.
         String xml = SITEINFO + page("Main Page", "0", 1, text)
                 + page("Talk:Main Page", "1", 2,
                         "<text bytes=\"9\" xml:space=\"preserve\">Some text</text>")
                 + "</mediawiki>";
 
         assertEquals(Arrays.asList(null, "Some text"), readTexts(xml));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "<text bytes=\"0\" sha1=\"phoiac9\" />",
+            "<text xml:space=\"preserve\" bytes=\"0\" sha1=\"phoiac9\"/>",
+            "<text bytes=\"0\" xml:space=\"preserve\"></text>" })
+    public void testReadsEmptyText(String text) throws Exception
+    {
+        // Current dumps write an empty text, e.g. of a blanked page, as a self-closing element
+        String xml = SITEINFO + page("Main Page", "0", 1, text)
+                + page("Talk:Main Page", "1", 2,
+                        "<text bytes=\"9\" xml:space=\"preserve\">Some text</text>")
+                + "</mediawiki>";
+
+        assertEquals(List.of("", "Some text"), readTexts(xml));
     }
 
     @ParameterizedTest
