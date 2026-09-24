@@ -28,6 +28,39 @@ ALTER TABLE PageMapLine ADD INDEX pageID_index (pageID);
 ALTER TABLE Page        ADD INDEX page_name_index (name);
 ```
 
+### Recommended indexes on the link and collection tables
+
+The reference layout gives each of the seven collection tables a composite index on `(id, <value
+column>)`. With only the foreign-key index on `id`, loading a collection (for example
+`Page#getInlinkIDs()`) and the `count(...)` queries behind `Page#getNumberOfInlinks()` or
+`Category#getNumberOfPages()` need one row lookup per element. The composite index covers these
+queries, so they read a single contiguous index range instead. The gain is largest for
+`page_inlinks`, `category_inlinks` and `category_pages`: the DataMachine and TimeMachine write
+their rows in source order, so the rows of one `id` are spread across the whole table.
+
+The index is deliberately non-unique. A `PRIMARY KEY (id, <value column>)` fails when an import
+contains duplicate pairs, and `page_redirects` can contain titles that differ only in case, which a
+case-insensitive collation treats as equal. Databases generated before
+[issue #577](https://github.com/dkpro/dkpro-jwpl/issues/577) lack these indexes. Adding them is
+**optional**: query results do not change, and `hbm2ddl=validate` does not check indexes. On a
+full-size wiki, each `ALTER TABLE` rebuilds the table, which can take hours and needs temporary
+disk space of about the size of the table. For a new import, load the data first and add the
+indexes afterwards. The first three statements give the largest gain:
+
+```sql
+ALTER TABLE page_inlinks      ADD INDEX page_inlinks_index (id, inLinks);
+ALTER TABLE category_inlinks  ADD INDEX category_inlinks_index (id, inLinks);
+ALTER TABLE category_pages    ADD INDEX category_pages_index (id, pages);
+ALTER TABLE page_outlinks     ADD INDEX page_outlinks_index (id, outLinks);
+ALTER TABLE category_outlinks ADD INDEX category_outlinks_index (id, outLinks);
+ALTER TABLE page_categories   ADD INDEX page_categories_index (id, pages);
+ALTER TABLE page_redirects    ADD INDEX page_redirects_index (id, redirects);
+```
+
+The index on `page_redirects` includes a `VARCHAR(255)` column. With `utf8mb4`, it needs the
+`DYNAMIC` or `COMPRESSED` row format (the default since MySQL 5.7 and MariaDB 10.2), because the
+key exceeds the 767-byte limit of the older `COMPACT` and `REDUNDANT` formats.
+
 ### MetaData.version
 
 **What changed.** The `MetaData` table carries a `version VARCHAR(255)` column. It has always been

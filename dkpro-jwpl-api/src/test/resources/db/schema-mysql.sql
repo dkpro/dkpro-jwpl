@@ -16,18 +16,21 @@ CREATE TABLE category_inlinks (
     inLinks  INTEGER,
     CONSTRAINT fk_category_inlinks FOREIGN KEY (id) REFERENCES Category (id)
 );
+CREATE INDEX category_inlinks_index ON category_inlinks (id, inLinks);
 
 CREATE TABLE category_outlinks (
     id        BIGINT  NOT NULL,
     outLinks  INTEGER,
     CONSTRAINT fk_category_outlinks FOREIGN KEY (id) REFERENCES Category (id)
 );
+CREATE INDEX category_outlinks_index ON category_outlinks (id, outLinks);
 
 CREATE TABLE category_pages (
     id     BIGINT  NOT NULL,
     pages  INTEGER,
     CONSTRAINT fk_category_pages FOREIGN KEY (id) REFERENCES Category (id)
 );
+CREATE INDEX category_pages_index ON category_pages (id, pages);
 
 CREATE TABLE MetaData (
     id                       BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -56,24 +59,28 @@ CREATE TABLE page_categories (
     pages  INTEGER,
     CONSTRAINT fk_page_categories FOREIGN KEY (id) REFERENCES Page (id)
 );
+CREATE INDEX page_categories_index ON page_categories (id, pages);
 
 CREATE TABLE page_inlinks (
     id       BIGINT  NOT NULL,
     inLinks  INTEGER,
     CONSTRAINT fk_page_inlinks FOREIGN KEY (id) REFERENCES Page (id)
 );
+CREATE INDEX page_inlinks_index ON page_inlinks (id, inLinks);
 
 CREATE TABLE page_outlinks (
     id        BIGINT  NOT NULL,
     outLinks  INTEGER,
     CONSTRAINT fk_page_outlinks FOREIGN KEY (id) REFERENCES Page (id)
 );
+CREATE INDEX page_outlinks_index ON page_outlinks (id, outLinks);
 
 CREATE TABLE page_redirects (
     id         BIGINT        NOT NULL,
     redirects  VARCHAR(255),
     CONSTRAINT fk_page_redirects FOREIGN KEY (id) REFERENCES Page (id)
 );
+CREATE INDEX page_redirects_index ON page_redirects (id, redirects);
 
 CREATE TABLE PageMapLine (
     id      BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,

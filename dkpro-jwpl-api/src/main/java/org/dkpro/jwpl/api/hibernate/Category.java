@@ -59,13 +59,15 @@ public class Category
 
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "category_inlinks", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "category_inlinks", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "category_inlinks_index", columnList = "id, inLinks"))
     @Column(name = "inLinks")
     private Set<Integer> inLinks = new HashSet<>();
 
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "category_outlinks", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "category_outlinks", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "category_outlinks_index", columnList = "id, outLinks"))
     @Column(name = "outLinks")
     private Set<Integer> outLinks = new HashSet<>();
 
@@ -73,7 +75,8 @@ public class Category
     // is "pages" (same convention as Page.categories → page_categories.pages).
     @ElementCollection
     @Immutable
-    @CollectionTable(name = "category_pages", joinColumns = @JoinColumn(name = "id"))
+    @CollectionTable(name = "category_pages", joinColumns = @JoinColumn(name = "id"),
+            indexes = @Index(name = "category_pages_index", columnList = "id, pages"))
     @Column(name = "pages")
     private Set<Integer> pages = new HashSet<>();
 
