@@ -190,6 +190,11 @@ public class ConfigurationReader
     private static final String KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET = "LIMIT_SQLSERVER_MAX_ALLOWED_PACKET";
 
     /**
+     * Key identifier - Cache >> Number of archives processed in parallel
+     */
+    private static final String KEY_LIMIT_ARCHIVE_THREADS = "LIMIT_ARCHIVE_THREADS";
+
+    /**
      * Section identifier - Logging
      */
     private static final String SECTION_LOGGING = "LOGGING";
@@ -642,6 +647,14 @@ public class ConfigurationReader
             else if (name.equals(KEY_LIMIT_SQLSERVER_MAX_ALLOWED_PACKET)) {
                 long lValue = Long.parseLong(nnode.getChildNodes().item(0).getNodeValue());
                 config.setConfigParameter(ConfigurationKeys.LIMIT_SQLSERVER_MAX_ALLOWED_PACKET, lValue);
+            }
+            else if (name.equals(KEY_LIMIT_ARCHIVE_THREADS)) {
+                int iValue = Integer.parseInt(nnode.getChildNodes().item(0).getNodeValue().trim());
+                if (iValue < 1) {
+                    throw new IllegalArgumentException(
+                            KEY_LIMIT_ARCHIVE_THREADS + " must be at least 1, was " + iValue);
+                }
+                config.setConfigParameter(ConfigurationKeys.LIMIT_ARCHIVE_THREADS, iValue);
             }
         }
     }

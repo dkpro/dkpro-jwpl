@@ -41,7 +41,7 @@ public class BlockManagement
     /**
      * Configuration parameter - Charset name of the input data
      */
-    private static String WIKIPEDIA_ENCODING;
+    private final String WIKIPEDIA_ENCODING;
 
     /**
      * Temporary variable - Length (in chars) of the just in time revision
