@@ -760,6 +760,8 @@ public class WikipediaTemplateInfo
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the revisions that contain templates beginning with any
      *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -785,6 +787,8 @@ public class WikipediaTemplateInfo
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the revisions that do not contain templates beginning with
      *         any String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -976,8 +980,12 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-        return selectIndexedIds(GeneratorConstants.TABLE_TPLID_PAGEID, "pageId", templateNames,
-                prefix, whitelist);
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return selectIds(buildIndexedPageIdQuery(templateNames.size(), prefix, whitelist),
+                templateNames, prefix);
     }
 
     /**
@@ -995,6 +1003,8 @@ public class WikipediaTemplateInfo
      *            whether to select revisions containing these templates (true) or revisions NOT
      *            containing these templates (false)
      * @return the distinct ids of the matching revisions in ascending order
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the revision ids
      */
@@ -1002,23 +1012,33 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-        return selectIndexedIds(GeneratorConstants.TABLE_TPLID_REVISIONID, "revisionId",
-                templateNames == null ? List.of() : templateNames, prefix, whitelist);
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return selectIds(buildIndexedRevisionIdQuery(templateNames.size(), prefix, whitelist),
+                templateNames, prefix);
     }
 
-    private List<Integer> selectIndexedIds(String indexTable, String idColumn,
-            List<String> templateNames, boolean prefix, boolean whitelist)
+    /**
+     * Runs a query built by {@link #buildIndexedPageIdQuery(int, boolean, boolean)} or
+     * {@link #buildIndexedRevisionIdQuery(int, boolean, boolean)}.
+     *
+     * @param query
+     *            the query, with one parameter per template name
+     * @param templateNames
+     *            the template names or fragments to bind
+     * @param prefix
+     *            whether the names are bound as prefix patterns
+     * @return the ids the query selected, in the order of the result
+     * @throws WikiApiException
+     *             If there was any error running the query
+     */
+    private List<Integer> selectIds(String query, List<String> templateNames, boolean prefix)
         throws WikiApiException
     {
-        checkTemplateNames(templateNames);
         List<Integer> ids = new ArrayList<>();
-        if (whitelist && templateNames.isEmpty()) {
-            return ids;
-        }
-
-        try (PreparedStatement statement = connection.prepareStatement(
-                buildIndexedIdQuery(indexTable, idColumn, templateNames.size(), prefix,
-                        whitelist))) {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             bindTemplateNames(statement, templateNames, prefix);
 
             try (ResultSet result = execute(statement)) {
@@ -1140,8 +1160,7 @@ public class WikipediaTemplateInfo
      */
     static String buildIndexedPageIdQuery(int nameCount, boolean prefix, boolean whitelist)
     {
-        return buildIndexedIdQuery(GeneratorConstants.TABLE_TPLID_PAGEID, "pageId", nameCount,
-                prefix, whitelist);
+        return buildIndexedIdQuery(TemplateIndex.PAGES, nameCount, prefix, whitelist);
     }
 
     /**
@@ -1166,16 +1185,15 @@ public class WikipediaTemplateInfo
      */
     static String buildIndexedRevisionIdQuery(int nameCount, boolean prefix, boolean whitelist)
     {
-        return buildIndexedIdQuery(GeneratorConstants.TABLE_TPLID_REVISIONID, "revisionId",
-                nameCount, prefix, whitelist);
+        return buildIndexedIdQuery(TemplateIndex.REVISIONS, nameCount, prefix, whitelist);
     }
 
-    private static String buildIndexedIdQuery(String indexTable, String idColumn, int nameCount,
-            boolean prefix, boolean whitelist)
+    private static String buildIndexedIdQuery(TemplateIndex index, int nameCount, boolean prefix,
+            boolean whitelist)
     {
-        return "SELECT DISTINCT i." + idColumn
-                + buildIndexFilter(indexTable, idColumn, nameCount, prefix, whitelist)
-                + " ORDER BY i." + idColumn;
+        return "SELECT DISTINCT i." + index.idColumn
+                + buildIndexFilter(index, nameCount, prefix, whitelist)
+                + " ORDER BY i." + index.idColumn;
     }
 
     /**
@@ -1194,29 +1212,51 @@ public class WikipediaTemplateInfo
      */
     static String buildIndexedPageCountQuery(int nameCount, boolean prefix, boolean whitelist)
     {
-        return "SELECT COUNT(DISTINCT i.pageId)" + buildIndexFilter(
-                GeneratorConstants.TABLE_TPLID_PAGEID, "pageId", nameCount, prefix, whitelist);
+        return "SELECT COUNT(DISTINCT i." + TemplateIndex.PAGES.idColumn + ")"
+                + buildIndexFilter(TemplateIndex.PAGES, nameCount, prefix, whitelist);
     }
 
-    private static String buildIndexFilter(String indexTable, String idColumn, int nameCount,
-            boolean prefix, boolean whitelist)
+    private static String buildIndexFilter(TemplateIndex index, int nameCount, boolean prefix,
+            boolean whitelist)
     {
         if (whitelist) {
             if (nameCount < 1) {
                 throw new IllegalArgumentException("A whitelist needs at least one template name");
             }
             return " FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl JOIN "
-                    + indexTable + " AS i ON i.templateId = tpl.templateId WHERE "
+                    + index.table + " AS i ON i.templateId = tpl.templateId WHERE "
                     + buildTemplateNameCondition(nameCount, prefix);
         }
-        String from = " FROM " + indexTable + " AS i";
+        String from = " FROM " + index.table + " AS i";
         if (nameCount < 1) {
             return from;
         }
-        return from + " WHERE i." + idColumn + " NOT IN (SELECT i2." + idColumn + " FROM "
-                + indexTable + " AS i2 JOIN " + GeneratorConstants.TABLE_TPLID_TPLNAME
+        return from + " WHERE i." + index.idColumn + " NOT IN (SELECT i2." + index.idColumn
+                + " FROM " + index.table + " AS i2 JOIN " + GeneratorConstants.TABLE_TPLID_TPLNAME
                 + " AS tpl ON tpl.templateId = i2.templateId WHERE "
                 + buildTemplateNameCondition(nameCount, prefix) + ")";
+    }
+
+    /**
+     * The template index tables the id queries select from, each with the column that holds the
+     * ids it associates templates with.
+     */
+    private enum TemplateIndex
+    {
+        /** The page template index, {@code templateId_pageId}. */
+        PAGES(GeneratorConstants.TABLE_TPLID_PAGEID, "pageId"),
+
+        /** The revision template index, {@code templateId_revisionId}. */
+        REVISIONS(GeneratorConstants.TABLE_TPLID_REVISIONID, "revisionId");
+
+        private final String table;
+        private final String idColumn;
+
+        TemplateIndex(String table, String idColumn)
+        {
+            this.table = table;
+            this.idColumn = idColumn;
+        }
     }
 
     ///////////////////
@@ -1322,6 +1362,8 @@ public class WikipediaTemplateInfo
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all revisions that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1347,6 +1389,8 @@ public class WikipediaTemplateInfo
      *            the names of the template that we want to match
      * @return A list with the ids of all revisions that do not contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
