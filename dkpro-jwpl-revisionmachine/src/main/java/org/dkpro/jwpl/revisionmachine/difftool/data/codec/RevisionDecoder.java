@@ -45,6 +45,11 @@ public class RevisionDecoder
     private BitReader r;
 
     /**
+     * Size of the buffer used to inflate zip compressed diffs
+     */
+    private static final int BUFFER_SIZE = 8192;
+
+    /**
      * Configuration Parameter - Wikipedia Encoding
      */
     private final String WIKIPEDIA_ENCODING;
@@ -419,28 +424,31 @@ public class RevisionDecoder
      */
     private byte[] inflateInput(final byte[] zipinput, final int start)
     {
-        ByteArrayOutputStream stream;
+        final int length = zipinput.length - start;
+        final Inflater decompresser = new Inflater();
         try {
-            byte[] compressedInput = zipinput;
-            Inflater decompresser = new Inflater();
-            decompresser.setInput(compressedInput, start, compressedInput.length - start);
+            decompresser.setInput(zipinput, start, length);
 
-            byte[] output = new byte[1000];
-            stream = new ByteArrayOutputStream();
+            final byte[] output = new byte[BUFFER_SIZE];
+            final ByteArrayOutputStream stream = new ByteArrayOutputStream(
+                    (int) Math.min(Integer.MAX_VALUE - 8, Math.max(BUFFER_SIZE, 4L * length)));
 
-            int cLength;
-            do {
-                cLength = decompresser.inflate(output);
+            while (!decompresser.finished()) {
+                final int cLength = decompresser.inflate(output);
+                if (cLength == 0
+                        && (decompresser.needsInput() || decompresser.needsDictionary())) {
+                    throw new RuntimeException("Truncated or invalid compressed diff");
+                }
                 stream.write(output, 0, cLength);
             }
-            while (cLength == 1000);
-
+            return stream.toByteArray();
         }
         catch (DataFormatException e) {
             throw new RuntimeException(e);
         }
-
-        return stream.toByteArray();
+        finally {
+            decompresser.end();
+        }
     }
 
     /**
@@ -499,37 +507,7 @@ public class RevisionDecoder
             }
         }
         else {
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-            byte[] bData;
-            int l = input.available();
-            while (l != 0) {
-
-                bData = new byte[l];
-
-                if (input.read(bData) != l) {
-                    throw new RuntimeException("ILLEGAL NUMBER OF BYTES READ");
-                }
-                stream.write(bData);
-
-                l = input.available();
-            }
-
-            if (input.read() != -1) {
-                throw new RuntimeException("END OF STREAM NOT REACHED");
-            }
-
-            bData = stream.toByteArray();
-
-            boolean zipFlag = bData[0] == -128;
-
-            if (zipFlag) {
-                r = new BitReader(inflateInput(bData, 1));
-            }
-            else {
-                r = new BitReader(bData);
-            }
+            setInput(input.readAllBytes());
         }
     }
 
