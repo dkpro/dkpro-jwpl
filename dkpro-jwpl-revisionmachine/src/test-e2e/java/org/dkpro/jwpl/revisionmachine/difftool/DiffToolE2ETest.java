@@ -135,6 +135,12 @@ public class DiffToolE2ETest {
   }
 
   @Test
+  void testExecJWPLDiffToolWithMissingConfigFileShouldFail() {
+    cmd.add(TARGET + File.separator + "non-existent-difftool-config.xml");
+    assertEquals(1,  execTool(cmd));
+  }
+
+  @Test
   void testExecJWPLDiffToolWithNoArgumentsShouldFail() {
     // Simulating an execution without config file
     int exitCode = execTool(cmd);

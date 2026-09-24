@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.revisionmachine.difftool;
 
 import java.lang.invoke.MethodHandles;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationReader;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
@@ -53,18 +54,48 @@ public class DiffTool
      */
     public static void main(final String[] args)
     {
+        int status = run(args);
+        if (status != 0) {
+            System.exit(status);
+        }
+    }
+
+    /**
+     * Runs the DiffTool application without terminating the JVM.
+     *
+     * @param args
+     *            program arguments args[0] has to be the path to the configuration file
+     * @return {@code 0} on success, {@code 255} if the configuration file argument is missing,
+     *         and {@code 1} if the DiffTool terminated abnormally.
+     */
+    static int run(final String[] args)
+    {
 
         if (args.length == 1) {
             try {
                 ConfigSettings config = new ConfigurationReader(args[0]).read();
-                new DiffToolThread(config).start();
+                DiffToolThread thread = new DiffToolThread(config);
+                AtomicBoolean failed = new AtomicBoolean();
+                thread.setUncaughtExceptionHandler((t, e) -> {
+                    failed.set(true);
+                    // Keep the default reporting of the uncaught exception.
+                    t.getThreadGroup().uncaughtException(t, e);
+                });
+                thread.start();
+                thread.join();
+                return failed.get() ? 1 : 0;
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("The DiffTool terminated abnormally.", e);
+                return 1;
             } catch (Exception e) {
                 logger.error("The DiffTool terminated abnormally.", e);
+                return 1;
             }
         } else {
             // Arg for configuration file is missing
             System.out.println(USAGE);
-            System.exit(255);
+            return 255;
         }
     }
 }

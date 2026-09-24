@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -210,6 +211,32 @@ public class JWPLDataMachineE2ETest {
     // Simulating an execution without config file
     int exitCode = execTool(cmd);
     assertEquals(255,  exitCode);
+  }
+
+  @Test
+  void testExecJWPLDataMachineWithTruncatedDumpShouldFail() throws IOException {
+    // A copy of the fixtures whose single-block 'pages-meta-current' archive is cut in half
+    Path truncatedDir = Files.createDirectories(Path.of(OUTPUT_DIR + "-truncated"));
+    try (Stream<Path> fixtures = Files.list(Path.of(OUTPUT_DIR))) {
+      for (Path fixture : fixtures.filter(p -> p.getFileName().toString().startsWith(WIKI_NAME)).toList()) {
+        Path target = truncatedDir.resolve(fixture.getFileName());
+        if (fixture.getFileName().toString().endsWith("pages-meta-current.xml.bz2")) {
+          byte[] content = Files.readAllBytes(fixture);
+          Files.write(target, Arrays.copyOf(content, content.length / 2));
+        } else {
+          Files.copy(fixture, target, StandardCopyOption.REPLACE_EXISTING);
+        }
+      }
+    }
+    cmd.addAll(List.of("aa", "n/a", "n/a", truncatedDir.toString()));
+    assertEquals(1, execTool(cmd));
+  }
+
+  @Test
+  void testExecJWPLDataMachineWithMissingSourceFilesShouldFail() throws IOException {
+    Path emptyDir = Files.createDirectories(Path.of(OUTPUT_DIR + "-empty"));
+    cmd.addAll(List.of("aa", "n/a", "n/a", emptyDir.toString()));
+    assertEquals(1, execTool(cmd));
   }
 
   /**

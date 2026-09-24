@@ -81,6 +81,21 @@ public class TemplateInfoGeneratorStarter
      */
     public static void main(String[] args)
     {
+        int status = run(args);
+        if (status != 0) {
+            System.exit(status);
+        }
+    }
+
+    /**
+     * Runs the tool described in {@link #main(String[])} without terminating the JVM.
+     *
+     * @param args
+     *            allows only one entry that contains the path to the config file
+     * @return {@code 0} on success, {@code 1} if the generation of the template information failed.
+     */
+    static int run(String[] args)
+    {
 
         if (args == null || args.length != 1) {
             System.out.println(("You need to specify the database configuration file. \n"
@@ -181,9 +196,11 @@ public class TemplateInfoGeneratorStarter
 
                 // Start processing now
                 generator.process();
+                return 0;
             }
             catch (Exception e) {
                 logger.error("Could not generate the template information.", e);
+                return 1;
             }
         }
     }

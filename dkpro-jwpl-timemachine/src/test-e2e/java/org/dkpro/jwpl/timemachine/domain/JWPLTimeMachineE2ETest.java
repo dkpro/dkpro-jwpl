@@ -192,6 +192,12 @@ public class JWPLTimeMachineE2ETest {
   }
 
   @Test
+  void testExecJWPLTimeMachineWithMissingConfigFileShouldFail() {
+    cmd.add(TARGET + File.separator + "non-existent-timemachine-config.xml");
+    assertEquals(1,  execTool(cmd));
+  }
+
+  @Test
   void testExecJWPLTimeMachineWithNoArgumentsShouldFail() {
     // Simulating an execution without config file
     int exitCode = execTool(cmd);

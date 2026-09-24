@@ -41,6 +41,10 @@ public class JWPLTimeMachine
      */
     private static final String NO_LIMIT = "0";
 
+    private static final int EXIT_SUCCESS = 0;
+    private static final int EXIT_FAILURE = 1;
+    private static final int EXIT_USAGE = 255;
+
     private static final IEnvironmentFactory environmentFactory;
     private static final ILogger logger;
 
@@ -70,7 +74,30 @@ public class JWPLTimeMachine
         return args.length > 0;
     }
 
+    /**
+     * The entry point of the TimeMachine tool.
+     * <p>
+     * Terminates the JVM with a non-zero exit status if the arguments are incomplete or the
+     * processing fails, see {@link #run(String[])}.
+     *
+     * @param args args[0] the settings file like described in {@link SettingsXML}
+     */
     public static void main(String[] args)
+    {
+        int status = run(args);
+        if (status != EXIT_SUCCESS) {
+            System.exit(status);
+        }
+    }
+
+    /**
+     * Runs the TimeMachine tool without terminating the JVM.
+     *
+     * @param args The arguments as described for {@link #main(String[])}.
+     * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
+     *         the configuration is invalid or the processing failed.
+     */
+    static int run(String[] args)
     {
         try {
             if (checkArgs(args)) {
@@ -93,15 +120,18 @@ public class JWPLTimeMachine
 
                         logger.log("End of the application. Working time = "
                                 + (System.currentTimeMillis() - startTime) + " ms");
+                        return EXIT_SUCCESS;
                     }
                 }
+                return EXIT_FAILURE;
             } else {
                 logger.log("Usage: java -jar JWPLTimeMachine.jar <CONFIG_FILE>");
-                System.exit(255);
+                return EXIT_USAGE;
             }
         }
         catch (Exception e) {
             logger.log(e);
+            return EXIT_FAILURE;
         }
     }
 }

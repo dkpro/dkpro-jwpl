@@ -41,6 +41,10 @@ public class JWPLDataMachine
      */
     private static final String NO_LIMIT = "0";
 
+    private static final int EXIT_SUCCESS = 0;
+    private static final int EXIT_FAILURE = 1;
+    private static final int EXIT_USAGE = 255;
+
     private static final int LANG_ARG = 0;
     private static final int MAINCATEGORY_ARG = 1;
     private static final int DISAMBIGUATION_ARG = 2;
@@ -82,11 +86,29 @@ public class JWPLDataMachine
 
     /**
      * The entry point of the DataMachine tool.
+     * <p>
+     * Terminates the JVM with a non-zero exit status if the arguments are incomplete or the
+     * transformation fails, see {@link #run(String[])}.
      *
      * @param args Expects four arguments. Must be in the ordering as specified as follows:
      *        {@code <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>}.
      */
     public static void main(String[] args)
+    {
+        int status = run(args);
+        if (status != EXIT_SUCCESS) {
+            System.exit(status);
+        }
+    }
+
+    /**
+     * Runs the DataMachine tool without terminating the JVM.
+     *
+     * @param args The arguments as described for {@link #main(String[])}.
+     * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
+     *         the source files are missing or the transformation failed.
+     */
+    static int run(String[] args)
     {
         if (args.length > 3) {
             // The dumps processed here are trusted input whose entity sizes legitimately
@@ -106,16 +128,19 @@ public class JWPLDataMachine
 
                     logger.log("End of the application. Working time = "
                             + (System.currentTimeMillis() - startTime) + " ms");
+                    return EXIT_SUCCESS;
                 } catch (Exception e) {
                     logger.log(e);
+                    return EXIT_FAILURE;
                 }
             } else {
                 logger.log("Not all necessary source files could be found in " + args[DATADIR_ARG]);
+                return EXIT_FAILURE;
             }
 
         } else {
             System.out.println(USAGE);
-            System.exit(255);
+            return EXIT_USAGE;
         }
     }
 

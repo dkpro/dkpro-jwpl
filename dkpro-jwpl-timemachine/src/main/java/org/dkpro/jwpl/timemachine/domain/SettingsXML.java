@@ -135,6 +135,7 @@ public class SettingsXML
             }
             catch (IOException e) {
                 LOG.error("Could not generate a sample configuration file at '{}'.", args[0], e);
+                System.exit(1);
             }
         }
 
