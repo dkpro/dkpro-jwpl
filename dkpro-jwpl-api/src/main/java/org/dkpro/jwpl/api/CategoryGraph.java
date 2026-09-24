@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -491,88 +490,7 @@ public class CategoryGraph
     public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException
     {
         int lcsid = getLCSId(categoryPageId1, categoryPageId2);
-        return lcsid > -1 ? wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)) : null;
-    }
-
-    /**
-     * Returns the shortest path from node to root as a list of pageIds of the nodes on the path.
-     * Node and root are included in the path node list.
-     *
-     * @param root
-     *            The root node of the graph.
-     * @param node
-     *            A node of the graph.
-     * @return The shortest path from node to root as a list of pagIs of the nodes on the path; or
-     *         null if no path exists
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
-     */
-    private List<Integer> getPathToRoot(int root, int node) throws WikiApiException
-    {
-        List<Integer> pathToRoot = new LinkedList<>();
-        List<Integer> shortestPath = new ArrayList<>();
-
-        expandPath(root, node, pathToRoot, shortestPath);
-
-        if (shortestPath.isEmpty()) {
-            return null;
-        }
-        else {
-            return shortestPath;
-        }
-    }
-
-    private void expandPath(int root, int currentNode, List<Integer> currentPath,
-            List<Integer> shortestPath)
-    {
-
-        // add the current node to the path
-        currentPath.add(currentNode);
-
-        // if root node reached, check whether it is the shortest path
-        if (currentNode == root) {
-            logger.debug("found root");
-
-            if (!shortestPath.isEmpty()) {
-                if (currentPath.size() < shortestPath.size()) {
-                    logger.debug("setting new shortest path");
-                    shortestPath.clear();
-                    shortestPath.addAll(currentPath);
-                }
-            }
-            else {
-                logger.debug("initializing shortest path");
-                shortestPath.addAll(currentPath);
-            }
-        }
-
-        // do not expand paths that are longer or equal than the current shortest path
-        // this is a runtime efficiency optimization!
-        if (!shortestPath.isEmpty() && currentPath.size() >= shortestPath.size()) {
-            return;
-        }
-
-        Set<DefaultEdge> incomingEdges = this.graph.incomingEdgesOf(currentNode);
-
-        // no incoming edges => return path without adding this node
-        if (incomingEdges == null || incomingEdges.isEmpty()) {
-            logger.debug("found non-root source");
-            return;
-        }
-
-        for (DefaultEdge incomingEdge : incomingEdges) {
-            int sourceNode = graph.getEdgeSource(incomingEdge);
-
-            if (sourceNode == currentNode) {
-                logger.warn("Source node equals current node.");
-                System.exit(1);
-            }
-            List<Integer> savedPath = new LinkedList<>(currentPath);
-            expandPath(root, sourceNode, currentPath, shortestPath);
-            currentPath.clear();
-            currentPath.addAll(savedPath);
-        }
-
+        return lcsid > -1 ? wiki.getCategory(lcsid) : null;
     }
 
     /**
@@ -939,13 +857,14 @@ public class CategoryGraph
     }
 
     /**
-     * Computes the paths from each category node to the root. Computing n paths will take some
-     * time. Thus, efficient computing is based on the assumption that all subpaths in the shortest
-     * path to the root, are also the shortest paths for the corresponding nodes. Starting with the
-     * leaf nodes gives the longest initial paths with most subpaths.
+     * Computes the shortest path from each category node to the root. The paths are computed with
+     * a single breadth-first search that starts at the root and follows the edges from the parent
+     * to the child categories. A category that is not reachable from the root is mapped to an
+     * empty path.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.
+     * @see #getRootPathMap()
      */
     public void createRootPathMap() throws WikiApiException
     {
@@ -967,35 +886,22 @@ public class CategoryGraph
         }
 
         logger.info("Computing rootPathMap");
-        rootPathMap = new HashMap<>();
+        int root = wiki.getMetaData().getMainCategory().getPageId();
+        rootPathMap = __computeRootPathMap(root);
 
-        // a queue holding the nodes to process
-        Deque<Integer> queue = new ArrayDeque<>();
-
-        // initialize the queue with all leaf nodes
-        Set<Integer> leafNodes = this.__getLeafNodes();
-        queue.addAll(leafNodes);
-
-        logger.info("{} leaf nodes.", queue.size());
-        fillRootPathMap(queue);
-
-        queue.clear(); // queue should be empty now, but clear anyway
-
-        // add non-leaf nodes that have not been on the shortest, yet
+        // categories that are not part of this graph have no path to the root either
         for (Category cat : wiki.getCategories()) {
-            if (!rootPathMap.containsKey(cat.getPageId())) {
-                queue.add(cat.getPageId());
-            }
+            rootPathMap.putIfAbsent(cat.getPageId(), new ArrayList<>());
         }
 
-        logger.info("{} non leaf nodes not on a shortest leaf-node to root path.", queue.size());
-        fillRootPathMap(queue);
-
-        for (Category cat : wiki.getCategories()) {
-            if (!rootPathMap.containsKey(cat.getPageId())) {
-                logger.info("no path for {}", cat.getPageId());
+        int withoutPath = 0;
+        for (List<Integer> path : rootPathMap.values()) {
+            if (path.isEmpty()) {
+                withoutPath++;
             }
         }
+        logger.info("{} of {} categories have no path to the root.", withoutPath,
+                rootPathMap.size());
 
         // from the root path map, we can very easily get the depth
         this.depth = getDepthFromRootPathMap();
@@ -1006,59 +912,84 @@ public class CategoryGraph
         this.serializeMap(rootPathMap, rootPathFile);
     }
 
-    private void fillRootPathMap(Deque<Integer> queue) throws WikiApiException
+    /**
+     * Computes the shortest path from each node of the graph to the given root, using a single
+     * breadth-first search that starts at the root and follows the outgoing edges, i.e. the edges
+     * from a parent to its children. This takes time linear in the size of the graph and also
+     * terminates on graphs that still contain cycles.
+     * <p>
+     * If a node has more than one shortest path to the root, the path is chosen in the same way as
+     * the depth-first search that was used before: at each node, the first parent (in the order of
+     * the incoming edges of the node) that lies on a shortest path is taken. As a consequence, each
+     * suffix of a path is the path of the node it starts with.
+     *
+     * @param root
+     *            The pageId of the root node.
+     * @return A map from each node of the graph to the list of nodes on its shortest path to the
+     *         root, starting with the node itself and ending with the root. Nodes that are not
+     *         reachable from the root are mapped to an empty list.
+     */
+    Map<Integer, List<Integer>> __computeRootPathMap(int root)
     {
-        int root = wiki.getMetaData().getMainCategory().getPageId();
+        Map<Integer, List<Integer>> result = new HashMap<>();
+        if (!graph.containsVertex(root)) {
+            logger.warn("The root node {} is not part of this graph.", root);
+            for (int node : graph.vertexSet()) {
+                result.put(node, new ArrayList<>());
+            }
+            return result;
+        }
 
-        // while the queue is not empty
+        // breadth-first search from the root: the distance of each reachable node to the root,
+        // and the reachable nodes in the order of increasing distance
+        Map<Integer, Integer> distances = new HashMap<>();
+        List<Integer> nodesByDistance = new ArrayList<>();
+        Deque<Integer> queue = new ArrayDeque<>();
+        distances.put(root, 0);
+        queue.add(root);
         while (!queue.isEmpty()) {
-            // remove first element from queue
             int currentNode = queue.poll();
+            nodesByDistance.add(currentNode);
+            int childDistance = distances.get(currentNode) + 1;
+            for (DefaultEdge outgoingEdge : graph.outgoingEdgesOf(currentNode)) {
+                int child = graph.getEdgeTarget(outgoingEdge);
+                if (!distances.containsKey(child)) {
+                    distances.put(child, childDistance);
+                    queue.add(child);
+                }
+            }
+        }
 
-            logger.debug("Queue size: {}", queue.size());
-
-            // if we have already inserted a path for this node => continue with the next
-            if (getRootPathMap().containsKey(currentNode)) {
+        // the path of a node is the node itself followed by the path of its first parent that is
+        // one step closer to the root; as the nodes are processed in the order of increasing
+        // distance, the path of that parent is always known already
+        for (int node : nodesByDistance) {
+            if (node == root) {
+                List<Integer> path = new ArrayList<>(1);
+                path.add(root);
+                result.put(root, path);
                 continue;
             }
-
-            // compute path from current node to root
-            List<Integer> nodesOnPath = getPathToRoot(root, currentNode);
-
-            // if there is no path => skip
-            if (nodesOnPath == null) {
-                getRootPathMap().put(currentNode, new ArrayList<>());
-                continue;
-            }
-
-            // the first entry should be the current Node, the last entry should be the root
-            // check whether this assumption is valid
-            if (nodesOnPath.get(0) != currentNode || // the first node of the list should always be
-                                                     // the current node
-                    nodesOnPath.get(nodesOnPath.size() - 1) != root) { // the last node of the list
-                                                                       // should always be the root
-                                                                       // node
-                logger.error("Something is wrong with the path to the root");
-                logger.error("{} -- {}", nodesOnPath.get(0), currentNode);
-                logger.error("{} -- {}", nodesOnPath.get(nodesOnPath.size() - 1), root);
-                logger.error("size = {}", nodesOnPath.size());
-                System.exit(1);
-            }
-
-            int i = 0;
-            for (int nodeOnPath : nodesOnPath) {
-                // if we have already inserted a path for this node => continue with the next
-                if (getRootPathMap().containsKey(nodeOnPath)) {
-                    continue;
+            int parentDistance = distances.get(node) - 1;
+            for (DefaultEdge incomingEdge : graph.incomingEdgesOf(node)) {
+                int parent = graph.getEdgeSource(incomingEdge);
+                Integer distance = distances.get(parent);
+                if (distance != null && distance == parentDistance) {
+                    List<Integer> parentPath = result.get(parent);
+                    List<Integer> path = new ArrayList<>(parentPath.size() + 1);
+                    path.add(node);
+                    path.addAll(parentPath);
+                    result.put(node, path);
+                    break;
                 }
-                // insert path
-                else {
-                    getRootPathMap().put(nodeOnPath,
-                            new ArrayList<>(nodesOnPath.subList(i, nodesOnPath.size())));
-                }
-                i++;
             }
-        } // while queue not empty
+        }
+
+        // nodes that are not reachable from the root have no path
+        for (int node : graph.vertexSet()) {
+            result.putIfAbsent(node, new ArrayList<>());
+        }
+        return result;
     }
 
     /**
