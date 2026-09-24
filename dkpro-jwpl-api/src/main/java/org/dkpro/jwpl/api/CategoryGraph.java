@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.CommonUtilities;
@@ -271,67 +270,14 @@ public class CategoryGraph
             List<String> filterList)
         throws WikiApiException
     {
+        wiki = pWiki;
+
         // create the graph as a directed Graph
         // algorithms that need to be called on an undirected graph or should ignore direction
         // can be called on an AsUndirectedGraph view of the directed graph
-        graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-
-        wiki = pWiki;
-
-        for (int pageID : pPageIDs) {
-            if (filterList != null) {
-                Category cat = loadCategory(pageID);
-                if (matchesFilter(cat, filterList)) {
-                    continue;
-                }
-            }
-
-            graph.addVertex(pageID);
-        }
-
+        graph = buildGraph(pWiki, pPageIDs, filterList,
+                CategoryGraphData.load(pWiki, pPageIDs, filterList != null));
         numberOfNodes = graph.vertexSet().size();
-
-        // add edges
-        int progress = 0;
-        for (int pageID : graph.vertexSet()) {
-            progress++;
-            ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
-                    ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
-
-            // get the category
-            Category cat = loadCategory(pageID);
-
-            // get parents and children
-            // if the corresponding nodes are in the graph (it could be a subset) => add them to the
-            // graph
-            Set<Integer> inLinks = cat.getParentIDs();
-            Set<Integer> outLinks = cat.getChildrenIDs();
-
-            // add edges
-            // If an edge already exits, it is silently ignored by JGraphT. So we do not have to
-            // check this.
-            for (int inLink : inLinks) {
-                if (graph.vertexSet().contains(inLink)) {
-                    if (inLink == pageID) {
-                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
-                    }
-                    else {
-                        graph.addEdge(inLink, pageID);
-                    }
-                }
-            }
-            for (int outLink : outLinks) {
-                if (graph.vertexSet().contains(outLink)) {
-                    if (outLink == pageID) {
-                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
-                    }
-                    else {
-                        graph.addEdge(pageID, outLink);
-                    }
-                }
-            }
-        }
-
         numberOfEdges = graph.edgeSet().size();
 
         logger.info("Added {} nodes.", this.getNumberOfNodes());
@@ -348,21 +294,103 @@ public class CategoryGraph
     }
 
     /**
-     * Loads the category with the given pageId.
+     * Builds the category graph over the given categories, before any cycles are removed.
      *
-     * @param pageID
-     *            The pageId of the category.
-     * @return The category with the given pageId.
+     * @param pWiki
+     *            The wiki object, only used to look up titles for debug logging.
+     * @param pPageIDs
+     *            The page ids of the categories to add as nodes.
+     * @param filterList
+     *            A list of strings. All categories starting with such a string are not added to
+     *            the graph. May be {@code null}.
+     * @param data
+     *            The category rows and links of (at least) the given categories. The names must
+     *            have been loaded if {@code filterList} is not {@code null}.
+     * @return The graph, with its nodes and edges in the order the per-category loading produced.
      * @throws WikiApiException
-     *             Thrown if there is no category with the given pageId.
+     *             Thrown if a page id is not the page id of a category, or if errors occurred.
      */
-    private Category loadCategory(int pageID) throws WikiApiException
+    static DefaultDirectedGraph<Integer, DefaultEdge> buildGraph(Wikipedia pWiki,
+            Set<Integer> pPageIDs, List<String> filterList, CategoryGraphData data)
+        throws WikiApiException
     {
-        try {
-            return new Category(this.wiki, pageID);
+        DefaultDirectedGraph<Integer, DefaultEdge> directedGraph = new DefaultDirectedGraph<>(
+                DefaultEdge.class);
+
+        for (int pageID : pPageIDs) {
+            if (filterList != null) {
+                requireId(data, pageID);
+                if (matchesFilter(new Title(data.getName(pageID)), filterList)) {
+                    continue;
+                }
+            }
+
+            directedGraph.addVertex(pageID);
         }
-        catch (WikiPageNotFoundException e) {
-            throw new WikiApiException(pageID + " is not a valid pageID", e);
+
+        // add edges
+        int progress = 0;
+        for (int pageID : directedGraph.vertexSet()) {
+            progress++;
+            ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
+                    ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
+
+            long id = requireId(data, pageID);
+
+            // get parents and children
+            // if the corresponding nodes are in the graph (it could be a subset) => add them to the
+            // graph
+            Set<Integer> inLinks = data.getParentIDs(id);
+            Set<Integer> outLinks = data.getChildrenIDs(id);
+
+            // add edges
+            // If an edge already exits, it is silently ignored by JGraphT. So we do not have to
+            // check this.
+            for (int inLink : inLinks) {
+                if (directedGraph.vertexSet().contains(inLink)) {
+                    if (inLink == pageID) {
+                        logSelfLoop(pWiki, data, pageID);
+                    }
+                    else {
+                        directedGraph.addEdge(inLink, pageID);
+                    }
+                }
+            }
+            for (int outLink : outLinks) {
+                if (directedGraph.vertexSet().contains(outLink)) {
+                    if (outLink == pageID) {
+                        logSelfLoop(pWiki, data, pageID);
+                    }
+                    else {
+                        directedGraph.addEdge(pageID, outLink);
+                    }
+                }
+            }
+        }
+        return directedGraph;
+    }
+
+    /**
+     * @return The hibernate id of the category with the given page id.
+     * @throws WikiApiException
+     *             Thrown if there is no category with the given page id.
+     */
+    private static long requireId(CategoryGraphData data, int pageID) throws WikiApiException
+    {
+        Long id = data.getId(pageID);
+        if (id == null) {
+            throw new WikiApiException(pageID + " is not a valid pageID");
+        }
+        return id;
+    }
+
+    private static void logSelfLoop(Wikipedia pWiki, CategoryGraphData data, int pageID)
+        throws WikiApiException
+    {
+        if (logger.isDebugEnabled()) {
+            String name = data.getName(pageID);
+            Title title = name != null ? new Title(name) : pWiki.getCategory(pageID).getTitle();
+            logger.debug("Self-loop for node {} ({})", pageID, title);
         }
     }
 
@@ -370,8 +398,8 @@ public class CategoryGraph
      * Checks whether the category title matches the filter (a filter matches a string, if the
      * string starts with the filter expression).
      *
-     * @param cat
-     *            A category.
+     * @param title
+     *            The title of a category.
      * @param filterList
      *            A list of filter strings.
      * @return True, if the category title starts with or is equal to a string in the filter list.
@@ -379,10 +407,10 @@ public class CategoryGraph
      * @throws WikiTitleParsingException
      *             Thrown if errors occurred.
      */
-    private boolean matchesFilter(Category cat, List<String> filterList)
+    private static boolean matchesFilter(Title title, List<String> filterList)
         throws WikiTitleParsingException
     {
-        String categoryTitle = cat.getTitle().getPlainTitle();
+        String categoryTitle = title.getPlainTitle();
         for (String filter : filterList) {
             if (categoryTitle.startsWith(filter)) {
                 logger.info("{} starts with {} => removing", categoryTitle, filter);
