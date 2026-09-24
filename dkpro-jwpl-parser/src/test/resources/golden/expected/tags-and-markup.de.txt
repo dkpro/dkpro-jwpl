@@ -1,0 +1,108 @@
+FIRST_PARAGRAPH: 0
+CATEGORIES:
+  ContentElement ""
+LANGUAGES:
+  ContentElement ""
+SectionContent level=2
+  TITLE:
+    null
+  Paragraph "Start  of text with Visible.
+Line with [[not a link]] {{not a template}} and After nowiki."
+    NOWIKI: (39, 47)
+    LINK INTERNAL "Visible" (20, 27) "Visible" []
+    LINK INTERNAL "After_nowiki" (77, 89) "After nowiki" []
+  Paragraph "Preformatted line with Pre link
+ 
+Pre block [[not a link either]]
+"
+    NOWIKI: (33, 38)
+    LINK INTERNAL "Pre_link" (23, 31) "Pre link" []
+  Paragraph "Math a^2 + b^2 = c^2 inline with Pythagoras and \sqrt{2}.
+Another ''no italics'' nowiki after pre.
+Tags red Red link and  break and Ref Ref link and .
+
+Div content with  and Div link.
+
+Small 1 2 under strike"
+    MATH: (5, 20) (48, 56)
+    NOWIKI: (66, 74)
+    LINK INTERNAL "Pythagoras" (33, 43) "Pythagoras" []
+    LINK INTERNAL "Red_link" (108, 116) "Red link" []
+    LINK INTERNAL "Ref_link" (136, 144) "Ref link" []
+    LINK INTERNAL "Div_link" (174, 182) "Div link" []
+SectionContent level=2
+  TITLE:
+    ContentElement "Gallery"
+  ContentElement "Gallery"
+  Paragraph "Some images
+
+
+"
+    LINK IMAGE "Bild:File:G1.jpg" (12, 12) "Bild:File:G1.jpg" [Caption one with G link]
+    LINK INTERNAL "G_link" (12, 12) "G_link" []
+    LINK IMAGE "Bild:G2.jpg" (13, 13) "Bild:G2.jpg" []
+    LINK IMAGE "Image:G3.png" (14, 14) "Image:G3.png" [Third]
+  Paragraph "Text after gallery After gallery."
+    LINK INTERNAL "After_gallery" (19, 32) "After gallery" []
+SectionContent level=2
+  TITLE:
+    ContentElement "Formatting"
+  ContentElement "Formatting"
+  Paragraph "Bold and italic and both and italic with Link and bold .
+Unclosed bold on one line
+Unclosed italic
+Mixed bold and italic end.
+Unclosed tag and unclosed math
+
+"
+    BOLD: (0, 4) (20, 24) (50, 55) (57, 82) (105, 120)
+    ITALIC: (9, 15) (20, 24) (29, 45) (83, 98) (110, 120)
+    MATH: (143, 158)
+    LINK INTERNAL "Link" (41, 45) "Link" []
+CONTENT_ELEMENT:
+  ContentElement "__TOC__
+Start <!-- a comment with Hidden link --> of text with Visible.
+<!-- whole line comment -->
+Line with <nowiki>not a link {{not a template}}</nowiki> and After nowiki.
+ Preformatted line with Pre link
+<pre>
+Pre block not a link either
+</pre>
+Math <math>a^2 + b^2 = c^2</math> inline with Pythagoras and <math>\sqrt{2}</math>.
+Another <nowiki>no italics</nowiki> nowiki after pre.
+Tags <span style="color:red">red Red link</span> and <br/> break and <ref name="r1">Ref Ref link</ref> and <ref name="r1"/>.
+<div>
+Div content with {{tpl|x}} and Div link.
+</div>
+<small>Small</small> <sup>1</sup> <sub>2</sub> <u>under</u> <s>strike</s>
+
+== Gallery ==
+<gallery caption="Some images">
+File:G1.jpg|Caption one with G link
+G2.jpg
+Image:G3.png|Third
+</gallery>
+Text after gallery After gallery.
+
+== Formatting ==
+Bold and italic and both and italic with Link and bold {{tpl}}.
+Unclosed bold on one line
+Unclosed italic
+Mixed bold and italic end.
+Unclosed <span>tag and <math>unclosed math
+__NOTOC__"
+    BOLD: (812, 816) (832, 836) (862, 874) (876, 901) (924, 939)
+    ITALIC: (349, 359) (821, 827) (832, 836) (841, 857) (902, 917) (929, 939)
+    LINK INTERNAL "Hidden_link" (34, 45) "Hidden link" []
+    LINK INTERNAL "Visible" (63, 70) "Visible" []
+    LINK INTERNAL "not_a_link" (118, 128) "not a link" []
+    LINK INTERNAL "After_nowiki" (161, 173) "After nowiki" []
+    LINK INTERNAL "Pre_link" (199, 207) "Pre link" []
+    LINK INTERNAL "not_a_link_either" (224, 241) "not a link either" []
+    LINK INTERNAL "Pythagoras" (295, 305) "Pythagoras" []
+    LINK INTERNAL "Red_link" (420, 428) "Red link" []
+    LINK INTERNAL "Ref_link" (475, 483) "Ref link" []
+    LINK INTERNAL "Div_link" (549, 557) "Div link" []
+    LINK INTERNAL "G_link" (716, 722) "G link" []
+    LINK INTERNAL "After_gallery" (779, 792) "After gallery" []
+    LINK INTERNAL "Link" (853, 857) "Link" []
