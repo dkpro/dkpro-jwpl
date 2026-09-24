@@ -19,7 +19,6 @@ package org.dkpro.jwpl.parser.mediawiki;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -56,6 +55,8 @@ public class ModularParser
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     public static final String SYMBOL_PIPE = "|";
+    private static final String LINK_OPEN = "[[";
+    private static final String LINK_CLOSE = "]]";
 
     // Options, set by the ParserFactory
     private String lineSeparator;
@@ -382,7 +383,7 @@ public class ModularParser
 
         // Converting &lt;gallery>s to normal Images, this is not beautiful, but
         // a simple solution...
-        convertGalleriesToImages(sm, cepp.tagSpans, cepp.templateSpans);
+        convertGalleriesToImages(sm, cepp.tagSpans, cepp.templateSpans, cepp.templates);
 
         // Parsing Links and Images.
         parseImagesAndInternalLinks(sm, cepp.linkSpans, cepp.links);
@@ -795,7 +796,12 @@ public class ModularParser
 
     private String getTagText(SpanManager sm, Span tag)
     {
-        return sm.substring(new Span(tag.getStart() + 1, tag.getEnd() - 1).trim(sm));
+        return sm.substring(getTagTextSpan(sm, tag));
+    }
+
+    private static Span getTagTextSpan(SpanManager sm, Span tag)
+    {
+        return new Span(tag.getStart() + 1, tag.getEnd() - 1).trim(sm);
     }
 
     private void parseSpecifiedTag(SpanManager sm, List<Span> spans, List<String> strings,
@@ -940,13 +946,14 @@ public class ModularParser
     }
 
     private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans,
-            List<Span> templateSpans)
+            List<Span> templateSpans, List<ResolvedTemplate> templates)
     {
         // Quick Hack, not very efficient, should be improved, won't work with
         // calculateSrcSpans == true !
 
         for (int i = 0; i < tagSpans.size() - 1; i++) {
-            String openText = getTagText(sm, tagSpans.get(i));
+            Span openTextSpan = getTagTextSpan(sm, tagSpans.get(i));
+            String openText = sm.substring(openTextSpan);
             if (startsWithIgnoreCase(openText, "GALLERY")) {
 
                 if (startsWithIgnoreCase(getTagText(sm, tagSpans.get(i + 1)), "/GALLERY")) {
@@ -957,12 +964,11 @@ public class ModularParser
                     i--;
 
                     StringBuilder sb = new StringBuilder();
-                    GalleryTemplates templates = new GalleryTemplates(templateSpans,
-                            startSpan.getStart(), endSpan.getEnd());
+                    GalleryTemplates galleryTemplates = new GalleryTemplates(templateSpans,
+                            templates, new Span(startSpan.getStart(), endSpan.getEnd()));
 
                     // caption (any option will be treated as caption)
-                    int openTextStart = new Span(startSpan.getStart() + 1, startSpan.getEnd() - 1)
-                            .trim(sm).getStart();
+                    int openTextStart = openTextSpan.getStart();
                     int eqPos = openText.indexOf('=');
                     if (eqPos != -1) {
                         int captionStart = eqPos + 1;
@@ -975,8 +981,8 @@ public class ModularParser
                         }
 
                         if (captionStart < captionEnd) {
-                            templates.copied(openTextStart + captionStart, sb.length(),
-                                    captionEnd - captionStart);
+                            galleryTemplates.copied(new Span(openTextStart + captionStart,
+                                    openTextStart + captionEnd), sb.length());
                             sb.append(openText.substring(captionStart, captionEnd) + lineSeparator);
                         }
                     }
@@ -987,16 +993,17 @@ public class ModularParser
                             lineSeparator)) {
                         String qualified = qualifyGalleryEntry(s);
                         entryStart = sm.indexOf(s, entryStart, endSpan.getStart());
-                        templates.copied(entryStart,
-                                sb.length() + 2 + qualified.length() - s.length(), s.length());
+                        // the entry follows the link markup and the prefix qualifyGalleryEntry adds
+                        galleryTemplates.copied(new Span(entryStart, entryStart + s.length()),
+                                sb.length() + LINK_OPEN.length() + qualified.length() - s.length());
                         entryStart += s.length();
-                        sb.append("[[" + qualified + "]]" + lineSeparator);
+                        sb.append(LINK_OPEN + qualified + LINK_CLOSE + lineSeparator);
                     }
 
                     // replace the source and remove the tags
                     int replacementStart = startSpan.getStart();
                     sm.replace(replacementStart, endSpan.getEnd(), sb.toString());
-                    templates.moveTo(replacementStart);
+                    galleryTemplates.moveTo(replacementStart);
                 }
             }
         }
@@ -1029,97 +1036,116 @@ public class ModularParser
     }
 
     /**
-     * Deletes the text of an image from the text of the content element, except for the
-     * placeholders of the templates in it, which the templates replace afterwards. Deleting them
-     * as well would shrink the spans of these templates to an empty span at the start of the
-     * image, which is never attached to a content element that starts or ends there. The text
-     * is the same, as the replacement of a template is inserted at the start of the image either
-     * way. The span of the image becomes the empty span at its start, as before.
+     * Deletes the text of an image, except for the placeholders of the templates in it, which the
+     * templates replace afterwards, and sets the span of the image to the empty span at its start.
+     *
+     * @param sm The span manager holding the text.
+     * @param linkSpan The span of the image.
+     * @param templateSpans The spans of the templates not attached yet, in descending start order.
+     * @param templates The templates of {@code templateSpans}, in the same order.
      */
     private static void deleteImageText(SpanManager sm, Span linkSpan, List<Span> templateSpans,
             List<ResolvedTemplate> templates)
     {
-        List<Span> inText = new ArrayList<>();
-        for (int i = 0; i < templateSpans.size(); i++) {
+        // walking backwards goes through the templates in ascending start order
+        int i = templateSpans.size() - 1;
+        while (i >= 0 && templateSpans.get(i).getStart() < linkSpan.getStart()) {
+            i--;
+        }
+        if (i < 0 || !linkSpan.contains(templateSpans.get(i))) {
+            sm.delete(linkSpan);
+            return;
+        }
+
+        int keptEnd = linkSpan.getStart();
+        for (; i >= 0 && templateSpans.get(i).getStart() < linkSpan.getEnd(); i--) {
             Span ts = templateSpans.get(i);
-            if (ts.getStart() < ts.getEnd() && linkSpan.getStart() <= ts.getStart()
-                    && ts.getEnd() <= linkSpan.getEnd()
-                    && templates.get(i).getPostParseReplacement() != null) {
-                inText.add(ts);
+            if (linkSpan.contains(ts) && templates.get(i).getPostParseReplacement() != null) {
+                sm.delete(keptEnd, ts.getStart());
+                keptEnd = ts.getEnd();
             }
         }
-        inText.sort(Comparator.comparingInt(Span::getStart));
-
-        // the ranges to keep, merging nested templates into the ones containing them
-        List<int[]> kept = new ArrayList<>();
-        for (Span ts : inText) {
-            int[] last = kept.isEmpty() ? null : kept.get(kept.size() - 1);
-            if (last != null && ts.getStart() < last[1]) {
-                last[1] = Math.max(last[1], ts.getEnd());
-            }
-            else {
-                kept.add(new int[] { ts.getStart(), ts.getEnd() });
-            }
-        }
-
-        // deletes the text around them, from the end of the image text to its start
-        int end = linkSpan.getEnd();
-        for (int i = kept.size() - 1; i >= 0; i--) {
-            sm.delete(kept.get(i)[1], end);
-            end = kept.get(i)[0];
-        }
-        sm.delete(linkSpan.getStart(), end);
+        sm.delete(keptEnd, linkSpan.getEnd());
         linkSpan.setEnd(linkSpan.getStart());
     }
 
     /**
-     * The spans of the templates in a gallery. {@link #convertGalleriesToImages} replaces the whole
-     * gallery at once, which would shift these spans by the difference in length and shrink them
-     * to the start of the gallery, where they end up at another place or as an empty span which is
-     * never attached to a content element (see issue #733). As the text of a template is copied
-     * into the replacement unchanged, each span is moved to the place of its copy instead.
+     * Moves the spans of the templates in a gallery to the copies of their text in the replacement
+     * of the gallery.
      */
     private static class GalleryTemplates
     {
-        private final List<Span> spans = new ArrayList<>();
-        private final List<Integer> lengths = new ArrayList<>();
-        private final List<Integer> offsets = new ArrayList<>();
-
-        GalleryTemplates(List<Span> templateSpans, int start, int end)
-        {
-            for (Span s : templateSpans) {
-                if (start <= s.getStart() && s.getEnd() <= end) {
-                    spans.add(s);
-                    lengths.add(s.length());
-                    offsets.add(-1);
-                }
-            }
-        }
+        private final List<Span> templateSpans;
+        private final List<ResolvedTemplate> templates;
+        private final int from;
+        private final int[] lengths;
+        private final int[] offsets;
 
         /**
-         * Notes that the text of the given length at {@code srcStart} is copied to the given
-         * offset of the replacement.
+         * Collects the templates in a gallery.
+         *
+         * @param templateSpans The spans of the templates, in descending start order.
+         * @param templates The templates of {@code templateSpans}, in the same order.
+         * @param gallery The span of the gallery, including its tags.
          */
-        void copied(int srcStart, int offset, int length)
+        GalleryTemplates(List<Span> templateSpans, List<ResolvedTemplate> templates, Span gallery)
         {
-            for (int i = 0; i < spans.size(); i++) {
-                Span s = spans.get(i);
-                if (srcStart <= s.getStart() && s.getEnd() <= srcStart + length) {
-                    offsets.set(i, offset + s.getStart() - srcStart);
+            this.templateSpans = templateSpans;
+            this.templates = templates;
+
+            int i = templateSpans.size();
+            while (i > 0 && templateSpans.get(i - 1).getStart() < gallery.getStart()) {
+                i--;
+            }
+            int to = i;
+            while (i > 0 && gallery.contains(templateSpans.get(i - 1))) {
+                i--;
+            }
+            from = i;
+
+            lengths = new int[to - from];
+            offsets = new int[to - from];
+            for (int k = 0; k < lengths.length; k++) {
+                lengths[k] = templateSpans.get(from + k).length();
+                offsets[k] = -1;
+            }
+        }
+
+        /**
+         * Notes that the given text of the gallery is copied to the given offset of the
+         * replacement.
+         *
+         * @param source The span of the copied text.
+         * @param offset The offset of the copy in the replacement.
+         */
+        void copied(Span source, int offset)
+        {
+            for (int k = 0; k < offsets.length; k++) {
+                Span s = templateSpans.get(from + k);
+                if (source.contains(s)) {
+                    offsets[k] = offset + s.getStart() - source.getStart();
                 }
             }
         }
 
         /**
-         * Moves the spans to their copies in the replacement starting at the given position. The
-         * span of a template whose text is not copied becomes the empty span at that position.
+         * Moves the spans to their copies in the replacement. A template whose text is not copied
+         * gets the empty span at the start of the replacement and no post-parse replacement.
+         *
+         * @param replacementStart The position of the replacement.
          */
         void moveTo(int replacementStart)
         {
-            for (int i = 0; i < spans.size(); i++) {
-                int offset = offsets.get(i);
-                int start = replacementStart + Math.max(offset, 0);
-                spans.get(i).setStart(start).setEnd(offset < 0 ? start : start + lengths.get(i));
+            for (int k = 0; k < offsets.length; k++) {
+                Span s = templateSpans.get(from + k);
+                if (offsets[k] < 0) {
+                    s.setStart(replacementStart).setEnd(replacementStart);
+                    templates.get(from + k).setPostParseReplacement(null);
+                }
+                else {
+                    s.setStart(replacementStart + offsets[k])
+                            .setEnd(replacementStart + offsets[k] + lengths[k]);
+                }
             }
         }
     }

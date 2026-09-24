@@ -18,10 +18,13 @@
 package org.dkpro.jwpl.parser;
 
 import static java.util.List.of;
+import static org.dkpro.jwpl.parser.mediawiki.ResolvedTemplate.TEMPLATESPACER;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
@@ -29,12 +32,14 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 import org.dkpro.jwpl.parser.mediawiki.ShowTemplateNamesAndParameters;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Tests that templates in a {@code <gallery>} and in the caption of an image are part of the
  * parsed page, wherever they are in the gallery or the paragraph, and that their replacement ends
- * up at their place in the text (see issue #733).
+ * up at their place in the text.
  */
 class GalleryTemplateTest
 {
@@ -47,16 +52,16 @@ class GalleryTemplateTest
         return factory.createParser();
     }
 
-    private static List<String> templateNames(ParsedPage pp)
+    private static List<String> names(List<Template> templates)
     {
-        return pp.getTemplates().stream().map(Template::getName).toList();
+        return templates.stream().map(Template::getName).toList();
     }
 
     private static List<String> paragraphTemplateNames(ParsedPage pp)
     {
         List<String> names = new ArrayList<>();
         for (Paragraph p : pp.getParagraphs()) {
-            p.getTemplates().forEach(t -> names.add(t.getName()));
+            names.addAll(names(p.getTemplates()));
         }
         return names;
     }
@@ -71,23 +76,20 @@ class GalleryTemplateTest
         return sb.append("</gallery>\nEnd.").toString();
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = { 0, 1, 2 })
-    void keepsATemplateInAnyEntryOfAGalleryAfterAHeading(int entry)
+    static Stream<Arguments> galleries()
     {
-        ParsedPage pp = parser(false).parse(gallery("Intro.\n\n== Gallery ==\n", entry));
-
-        assertEquals(of("T"), templateNames(pp));
-        assertEquals(of("T"), paragraphTemplateNames(pp));
+        return Stream.of("Intro.\n\n== Gallery ==\n", "Intro.\n")
+                .flatMap(before -> IntStream.range(0, 3)
+                        .mapToObj(entry -> Arguments.of(gallery(before, entry))));
     }
 
     @ParameterizedTest
-    @ValueSource(ints = { 0, 1, 2 })
-    void keepsATemplateInAnyEntryOfAGalleryAfterALineOfText(int entry)
+    @MethodSource("galleries")
+    void keepsATemplateInAnyEntryOfAGallery(String wikitext)
     {
-        ParsedPage pp = parser(false).parse(gallery("Intro.\n", entry));
+        ParsedPage pp = parser(false).parse(wikitext);
 
-        assertEquals(of("T"), templateNames(pp));
+        assertEquals(of("T"), names(pp.getTemplates()));
         assertEquals(of("T"), paragraphTemplateNames(pp));
     }
 
@@ -96,8 +98,28 @@ class GalleryTemplateTest
     {
         ParsedPage pp = parser(false).parse("Intro.\n<gallery>\nA.jpg|{{T|x}}\n</gallery>\nEnd.");
 
-        assertEquals(of("T"), templateNames(pp));
+        assertEquals(of("T"), names(pp.getTemplates()));
         assertEquals("Intro.\nTEMPLATE[T, x] End.", pp.getText());
+    }
+
+    @Test
+    void keepsATemplateNestedInAMultiLineTemplateInAGalleryEntry()
+    {
+        ParsedPage pp = parser(false).parse("""
+                Intro.
+                <gallery>
+                A.jpg|{{Outer
+                | a = {{Inner|x}}
+                | b = y
+                }}
+                B.jpg|b
+                </gallery>
+                End.""");
+
+        assertEquals(of("Outer", "Inner"), names(pp.getTemplates()));
+        assertEquals(of("Outer", "Inner"), names(pp.getParagraph(0).getTemplates()));
+        assertEquals("Intro.\nTEMPLATE[Outer, a = " + TEMPLATESPACER + ", b = y]\n End.",
+                pp.getText());
     }
 
     @Test
@@ -106,7 +128,7 @@ class GalleryTemplateTest
         ParsedPage pp = parser(false)
                 .parse("Intro.\n<gallery caption=\"Cap {{C|c}}\">\nA.jpg|a\n</gallery>\nEnd.");
 
-        assertEquals(of("C"), templateNames(pp));
+        assertEquals(of("C"), names(pp.getTemplates()));
         assertEquals("Intro.\nCap TEMPLATE[C, c]\n End.", pp.getText());
     }
 
@@ -115,25 +137,44 @@ class GalleryTemplateTest
     {
         ParsedPage pp = parser(true).parse(gallery("Intro.\n", 1));
 
-        assertEquals(of("T"), templateNames(pp));
+        assertEquals(of("T"), names(pp.getTemplates()));
         assertEquals("Intro.\ncap0\nTEMPLATE[T, x]\ncap2 End.", pp.getText());
     }
 
     @Test
-    void keepsATemplateInTheCaptionOfAnImageAtTheStartOfAParagraph()
+    void dropsTheReplacementOfATemplateInTheGalleryTagOutsideTheCaption()
     {
-        ParsedPage pp = parser(false).parse("[[Image:A.jpg|thumb|A {{T|x}} B]]\nText.");
+        ParsedPage pp = parser(true).parse("Intro.\n<gallery {{T|x}}>\nA.jpg|a\n</gallery>\nEnd.");
 
-        assertEquals(of("T"), templateNames(pp));
-        assertEquals("TEMPLATE[T, x]\nText.", pp.getText());
+        assertEquals("Intro.\na End.", pp.getText());
+    }
+
+    @ParameterizedTest
+    @CsvSource(delimiterString = "=>", value = {
+            "[[Image:A.jpg|thumb|A {{T|x}} B]] Text.        => TEMPLATE[T, x] Text.",
+            "Intro [[Image:A.jpg|thumb|A {{T|x}} B]] more.  => Intro TEMPLATE[T, x] more.",
+            "Text [[Image:A.jpg|thumb|A {{T|x}} B]]         => Text TEMPLATE[T, x]" })
+    void keepsATemplateInTheCaptionOfAnImage(String wikitext, String text)
+    {
+        ParsedPage pp = parser(false).parse(wikitext);
+
+        assertEquals(of("T"), names(pp.getTemplates()));
+        assertEquals(of("T"), names(pp.getParagraph(0).getTemplates()));
+        assertEquals(text, pp.getText());
     }
 
     @Test
-    void keepsTheTextOfAnImageWithATemplateInsideAParagraph()
+    void keepsATemplateNestedInAMultiLineTemplateInTheCaptionOfAnImage()
     {
-        ParsedPage pp = parser(false).parse("Intro [[Image:A.jpg|thumb|A {{T|x}} B]] more.");
+        ParsedPage pp = parser(false).parse("""
+                [[Image:A.jpg|thumb|A {{Outer
+                | a = {{Inner|x}}
+                | b = y
+                }} B]]
+                Text.""");
 
-        assertEquals(of("T"), templateNames(pp));
-        assertEquals("Intro TEMPLATE[T, x] more.", pp.getText());
+        assertEquals(of("Outer", "Inner"), names(pp.getTemplates()));
+        assertEquals(of("Outer", "Inner"), names(pp.getParagraph(0).getTemplates()));
+        assertEquals("TEMPLATE[Outer, a = " + TEMPLATESPACER + ", b = y]\nText.", pp.getText());
     }
 }
