@@ -119,6 +119,13 @@ public class Wikipedia
      */
     static final int DEFAULT_STREAMING_FETCH_SIZE = 1000;
 
+    /**
+     * Selects the metadata columns of a page, i.e. every column but its text, in the order
+     * {@link #toPageWithoutText(Object[])} expects them. The alias of the page is {@code p}.
+     */
+    static final String PAGE_METADATA_SELECT =
+            "select p.id, p.pageId, p.name, p.isDisambiguation from Page as p";
+
     private final Language language;
     private final DatabaseConfiguration dbConfig;
 
@@ -390,6 +397,44 @@ public class Wikipedia
             }
         }
         return titles;
+    }
+
+    /**
+     * Loads the pages with the given page ids without their text, in one query per
+     * {@value Wikipedia#TITLE_BATCH_SIZE} ids. The text of each page is queried on the first call
+     * of {@link Page#getText()}.
+     * <p>
+     * Ids that have no matching page are absent from the result.
+     *
+     * @param pageIds The ids of the pages to load. Must not be {@code null}.
+     * @return A new, modifiable set with the loaded pages. Never {@code null}.
+     */
+    Set<Page> __getPagesWithoutText(Collection<Integer> pageIds) {
+        Set<Page> pages = new HashSet<>();
+        // Copied first, as the isEmpty() of UnmodifiableArraySet cannot be relied upon.
+        List<Integer> ids = new ArrayList<>(pageIds);
+        for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
+            // A session is acquired per batch, as in getTitles(Collection).
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery(PAGE_METADATA_SELECT + " where p.pageId in (:ids)",
+                            Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] row : rows) {
+                pages.add(Page.of(this, toPageWithoutText(row)));
+            }
+        }
+        return pages;
+    }
+
+    /**
+     * @param row A row selected by {@link #PAGE_METADATA_SELECT}.
+     * @return A hibernate page that holds the metadata of the row, but no text.
+     */
+    static org.dkpro.jwpl.api.hibernate.Page toPageWithoutText(Object[] row) {
+        return new org.dkpro.jwpl.api.hibernate.Page((Long) row[0], (Integer) row[1],
+                (String) row[2], Boolean.TRUE.equals(row[3]));
     }
 
     /**

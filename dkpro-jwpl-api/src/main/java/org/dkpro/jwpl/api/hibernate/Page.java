@@ -33,6 +33,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 /**
  * An object-relational entity which maps a {@link org.dkpro.jwpl.api.Page}
@@ -63,6 +64,7 @@ public class Page
     // a large VARCHAR and Hibernate runs with hbm2ddl.auto=none there.
     // Loaded eagerly: api.Page#getText() reads it outside of any session. If this is ever
     // made lazy (with bytecode enhancement), getText() must reattach inside a transaction.
+    // Paths that do not need the text select the other columns only, see isTextLoaded().
     @Lob
     @Column(name = "text", length = 200_000_000)
     private String text;
@@ -100,11 +102,45 @@ public class Page
     @Column(name = "redirects")
     private Set<String> redirects = new HashSet<>();
 
+    // Not persistent. False only for instances created by the text-free constructor below, which
+    // hold neither the text nor the collections of the page.
+    @Transient
+    private boolean textLoaded = true;
+
     /**
      * A no argument constructor as required by Hibernate.
      */
     public Page()
     {
+    }
+
+    /**
+     * Creates an instance that holds the metadata of a page, but not its text. Such an instance
+     * is not managed by Hibernate: its text is {@code null}, its collections are empty, and it
+     * cannot be reassociated with a session. Its text and collections have to be queried by
+     * {@link #getId() id}.
+     *
+     * @param id               The primary key of the page.
+     * @param pageId           The page identifier as used in Wikipedia.
+     * @param name             The page title as used in Wikipedia.
+     * @param isDisambiguation {@code True} if the page is a disambiguation page.
+     */
+    public Page(long id, int pageId, String name, boolean isDisambiguation)
+    {
+        this.id = id;
+        this.pageId = pageId;
+        this.name = name;
+        this.isDisambiguation = isDisambiguation;
+        this.textLoaded = false;
+    }
+
+    /**
+     * @return {@code True} if this instance was loaded with its text, {@code false} if it was
+     *         created by {@link #Page(long, int, String, boolean)} and holds metadata only.
+     */
+    public boolean isTextLoaded()
+    {
+        return textLoaded;
     }
 
     /**

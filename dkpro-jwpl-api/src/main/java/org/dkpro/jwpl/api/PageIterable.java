@@ -40,6 +40,11 @@ public class PageIterable
      */
     private int bufferSize = 500;
 
+    /*
+     * Whether the text of the pages is loaded together with them.
+     */
+    private final boolean withText;
+
     /**
      * Initializes a {@link PageIterable} instance.
      *
@@ -49,8 +54,26 @@ public class PageIterable
      */
     public PageIterable(Wikipedia wiki, boolean onlyArticles)
     {
+        this(wiki, onlyArticles, true);
+    }
+
+    /**
+     * Initializes a {@link PageIterable} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param onlyArticles {@code True} if only full article pages shall be processed, yet no disambiguation pages.
+     *                     {@code False} if disambiguation pages shall be considered as well.
+     * @param withText {@code True} if the text of the pages shall be loaded together with them.
+     *                 {@code False} if the pages shall be loaded without their text, which suits
+     *                 callers that need their metadata only. The text of such a page is queried
+     *                 on the first call of its {@link Page#getText()}.
+     * @see PageIterator#PageIterator(Wikipedia, boolean, int, boolean)
+     */
+    public PageIterable(Wikipedia wiki, boolean onlyArticles, boolean withText)
+    {
         this.wiki = wiki;
         this.onlyArticles = onlyArticles;
+        this.withText = withText;
     }
 
     /**
@@ -67,11 +90,12 @@ public class PageIterable
         this.wiki = wiki;
         this.onlyArticles = onlyArticles;
         this.bufferSize = bufferSize;
+        this.withText = true;
     }
 
     @Override
     public Iterator<Page> iterator()
     {
-        return new PageIterator(wiki, onlyArticles, bufferSize);
+        return new PageIterator(wiki, onlyArticles, bufferSize, withText);
     }
 }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,26 @@ public class PageIterator
      */
     public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize)
     {
-        buffer = new PageBuffer(bufferSize, wiki, onlyArticles);
+        this(wiki, onlyArticles, bufferSize, true);
+    }
+
+    /**
+     * Initializes a {@link PageIterator} instance.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param onlyArticles {@code True} if only full article pages shall be processed, yet no disambiguation pages.
+     *                     {@code False} if disambiguation pages shall be considered as well.
+     * @param bufferSize The number of pages to be buffered after a query to the database.
+     *                   Higher bufferSize gives better performance, but require more memory.
+     * @param withText {@code True} if the text of the pages shall be loaded together with them,
+     *                 which suits callers that process the text of (nearly) every page.
+     *                 {@code False} if the pages shall be loaded without their text, which suits
+     *                 callers that need their metadata only. The text of such a page is queried
+     *                 on the first call of its {@link Page#getText()}.
+     */
+    public PageIterator(Wikipedia wiki, boolean onlyArticles, int bufferSize, boolean withText)
+    {
+        buffer = new PageBuffer(bufferSize, wiki, onlyArticles, withText);
     }
 
     @Override
@@ -96,6 +116,7 @@ public class PageIterator
 
         private final Wikipedia wiki;
         private final boolean onlyArticles;
+        private final boolean withText;
 
         private final List<Page> buffer;
         private final int maxBufferSize; // the number of pages to be buffered after a query to the
@@ -112,9 +133,15 @@ public class PageIterator
 
         public PageBuffer(int bufferSize, Wikipedia wiki, boolean onlyArticles)
         {
+            this(bufferSize, wiki, onlyArticles, true);
+        }
+
+        PageBuffer(int bufferSize, Wikipedia wiki, boolean onlyArticles, boolean withText)
+        {
             this.maxBufferSize = bufferSize;
             this.wiki = wiki;
             this.onlyArticles = onlyArticles;
+            this.withText = withText;
             this.buffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
@@ -129,6 +156,7 @@ public class PageIterator
             this.wiki = wiki;
             this.buffer = new ArrayList<>();
             this.onlyArticles = false;
+            this.withText = true;
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
             this.lastPage = 0;
@@ -228,26 +256,8 @@ public class PageIterator
                 }
             }
             else {
-                List<org.dkpro.jwpl.api.hibernate.Page> returnValues = wiki
-                        .__inTransaction(session -> {
-                            TypedQuery<org.dkpro.jwpl.api.hibernate.Page> query;
-                            String sql;
-                            if (onlyArticles) {
-                                sql = "SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId";
-                                query = session.createQuery(sql,
-                                        org.dkpro.jwpl.api.hibernate.Page.class);
-                                query.setParameter("isDisambiguation", false);
-                                query.setParameter("pageId", lastPage);
-                            }
-                            else {
-                                sql = "SELECT p FROM Page p WHERE p.id > :pageId";
-                                query = session.createQuery(sql,
-                                        org.dkpro.jwpl.api.hibernate.Page.class);
-                                query.setParameter("pageId", lastPage);
-                            }
-                            query.setMaxResults(maxBufferSize);
-                            return query.getResultList();
-                        });
+                List<org.dkpro.jwpl.api.hibernate.Page> returnValues = withText
+                        ? loadPagesWithText() : loadPagesWithoutText();
 
                 // clear the old buffer and all variables regarding the state of the buffer
                 buffer.clear();
@@ -287,6 +297,49 @@ public class PageIterator
                 }
             }
         } // fillBuffer
+
+        private List<org.dkpro.jwpl.api.hibernate.Page> loadPagesWithText()
+        {
+            return wiki.__inTransaction(session -> {
+                TypedQuery<org.dkpro.jwpl.api.hibernate.Page> query;
+                String sql;
+                if (onlyArticles) {
+                    sql = "SELECT p FROM Page p WHERE p.isDisambiguation = :isDisambiguation AND p.id > :pageId";
+                    query = session.createQuery(sql,
+                            org.dkpro.jwpl.api.hibernate.Page.class);
+                    query.setParameter("isDisambiguation", false);
+                    query.setParameter("pageId", lastPage);
+                }
+                else {
+                    sql = "SELECT p FROM Page p WHERE p.id > :pageId";
+                    query = session.createQuery(sql,
+                            org.dkpro.jwpl.api.hibernate.Page.class);
+                    query.setParameter("pageId", lastPage);
+                }
+                query.setMaxResults(maxBufferSize);
+                return query.getResultList();
+            });
+        }
+
+        private List<org.dkpro.jwpl.api.hibernate.Page> loadPagesWithoutText()
+        {
+            String hql = Wikipedia.PAGE_METADATA_SELECT + " where p.id > :pageId"
+                    + (onlyArticles ? " and p.isDisambiguation = :isDisambiguation" : "")
+                    + " order by p.id";
+            List<Object[]> rows = wiki.__inTransaction(session -> {
+                Query<Object[]> query = session.createQuery(hql, Object[].class)
+                        .setParameter("pageId", lastPage);
+                if (onlyArticles) {
+                    query.setParameter("isDisambiguation", false);
+                }
+                return query.setMaxResults(maxBufferSize).list();
+            });
+            List<org.dkpro.jwpl.api.hibernate.Page> pages = new ArrayList<>(rows.size());
+            for (Object[] row : rows) {
+                pages.add(Wikipedia.toPageWithoutText(row));
+            }
+            return pages;
+        }
 
     }
 }
