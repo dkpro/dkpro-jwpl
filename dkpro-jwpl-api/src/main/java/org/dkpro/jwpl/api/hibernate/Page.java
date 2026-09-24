@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -31,7 +33,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
@@ -60,12 +61,13 @@ public class Page
     @Column(name = "name")
     private String name;
 
-    // Maps to LONGTEXT on MariaDB/MySQL; on HSQLDB the test fixture pre-creates
-    // a large VARCHAR and Hibernate runs with hbm2ddl.auto=none there.
+    // Maps to LONGTEXT on MariaDB/MySQL and to TEXT on PostgreSQL; on HSQLDB the test fixture
+    // pre-creates a large VARCHAR and Hibernate runs with hbm2ddl.auto=none there. Not @Lob: on
+    // PostgreSQL that maps to a large object (oid) and cannot read a plain text column.
     // Loaded eagerly: api.Page#getText() reads it outside of any session. If this is ever
     // made lazy (with bytecode enhancement), getText() must reattach inside a transaction.
     // Paths that do not need the text select the other columns only, see isTextLoaded().
-    @Lob
+    @JdbcTypeCode(SqlTypes.LONG32VARCHAR)
     @Column(name = "text", length = 200_000_000)
     private String text;
 

@@ -25,7 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Shared base class that hands subclasses a {@link DatabaseConfiguration} pointing
  * at the JVM-wide test database managed by {@link JwplTestDatabase}. Pick the engine
  * via the {@code jwpl.test.db} system property ({@code hsqldb}, {@code mariadb},
- * {@code mysql}); tests needing Docker are skipped automatically when Docker is absent.
+ * {@code mysql}, {@code postgresql}); tests needing Docker are skipped automatically when Docker
+ * is absent.
  */
 @ExtendWith(DbEngineCondition.class)
 public abstract class BaseJWPLTest
