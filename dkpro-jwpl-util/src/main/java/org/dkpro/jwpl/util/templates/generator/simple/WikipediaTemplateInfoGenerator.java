@@ -20,11 +20,13 @@ package org.dkpro.jwpl.util.templates.generator.simple;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.ToIntFunction;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
@@ -40,6 +42,7 @@ import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
 import org.dkpro.jwpl.parser.mediawiki.ShowTemplateNamesAndParameters;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
+import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.api.RevisionApi;
 import org.dkpro.jwpl.revisionmachine.api.RevisionIterator;
 import org.dkpro.jwpl.util.templates.WikipediaTemplateInfo;
@@ -152,10 +155,11 @@ public class WikipediaTemplateInfoGenerator
     private void extractTemplates() throws WikiApiException
     {
         PageIterator pageIter = new PageIterator(getWiki(), true, pageBuffer);
-        RevisionApi revApi = new RevisionApi(dbConf);
+        RevisionAPIConfiguration revConfig = new RevisionAPIConfiguration(dbConf);
+        RevisionApi revApi = new RevisionApi(revConfig);
 
         int pageCounter = 0;
-        long revisionCounter = 0L;
+        long[] revisionCounter = { 0L };
 
         while (pageIter.hasNext()) {
             pageCounter++;
@@ -176,19 +180,64 @@ public class WikipediaTemplateInfoGenerator
             // PROCESS REVISIONS
             if (mode.active_for_revisions) {
                 List<Timestamp> tsList = revApi.getRevisionTimestamps(curPageId);
-                for (Timestamp ts : tsList) {
-
-                    revisionCounter++;
-                    if (revisionCounter % (VERBOSITY * 10) == 0) {
-                        logger.info("{} revisions processed ...", revisionCounter);
+                forEachRevisionOfPage(revApi, revConfig, curPageId, tsList, curRevision -> {
+                    revisionCounter[0]++;
+                    if (revisionCounter[0] % (VERBOSITY * 10) == 0) {
+                        logger.info("{} revisions processed ...", revisionCounter[0]);
                     }
 
-                    Revision curRevision = revApi.getRevision(curPageId, ts);
-                    int curRevisionId = curRevision.getRevisionID();
-
                     fillMapWithTemplateData(curRevision.getRevisionText(), revisionFilter,
-                            curRevisionId, TPLNAME_TO_REVISIONIDS);
-                }
+                            curRevision.getRevisionID(), TPLNAME_TO_REVISIONIDS);
+                });
+            }
+        }
+    }
+
+    /**
+     * Passes all revisions of the given page, with their text, to the given action. The revisions
+     * are read in one sequential pass over the primary key range of the page, so that every diff
+     * is applied once instead of rebuilding each revision from its preceding full revision.
+     *
+     * @param revApi
+     *            the revision API whose connection is used; must not be {@code null}
+     * @param revConfig
+     *            the configuration of {@code revApi}; must not be {@code null}
+     * @param pageId
+     *            the id of the page
+     * @param timestamps
+     *            the timestamps of all revisions of the page
+     * @param action
+     *            the action to apply to each revision
+     * @throws WikiApiException
+     *             if the revisions cannot be accessed
+     */
+    static void forEachRevisionOfPage(RevisionApi revApi, RevisionAPIConfiguration revConfig,
+            int pageId, List<Timestamp> timestamps, Consumer<Revision> action)
+        throws WikiApiException
+    {
+        if (timestamps.isEmpty()) {
+            return;
+        }
+
+        // The revisions of a page occupy consecutive primary keys in revision counter order.
+        Revision anchor = revApi.getRevision(pageId, Collections.min(timestamps));
+        int firstPK = anchor.getPrimaryKey() - anchor.getRevisionCounter() + 1;
+        int lastPK = firstPK + timestamps.size() - 1;
+
+        // The iterator shares the connection of revApi and must therefore not be closed; draining
+        // it closes its statement. It may read one row beyond lastPK that belongs to another page.
+        RevisionIterator revIter = new RevisionIterator(revConfig, firstPK, lastPK,
+                revApi.getConnection());
+        int rowsRead = 0;
+        while (revIter.hasNext()) {
+            if (rowsRead++ > timestamps.size()) {
+                logger.warn("Unexpected revision data for page {}, skipping remaining revisions.",
+                        pageId);
+                break;
+            }
+            Revision curRevision = revIter.next();
+            if (curRevision != null && curRevision.getArticleID() == pageId) {
+                action.accept(curRevision);
             }
         }
     }
