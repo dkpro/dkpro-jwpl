@@ -19,6 +19,7 @@ package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
@@ -129,6 +131,58 @@ public class PageCollectionTest
             checked++;
         }
         assertTrue(checked > 0);
+    }
+
+    /**
+     * The collection getters hand out a new, modifiable set on each call, so modifying a result
+     * does not affect this page or later results.
+     */
+    @Test
+    public void testCollectionGettersReturnNewModifiableSets() throws Exception
+    {
+        Page page = wiki.getPage(A_FAMOUS_PAGE_ID);
+
+        assertNewModifiableSet(page::getInlinkIDs, Function.identity());
+        assertNewModifiableSet(page::getOutlinkIDs, Function.identity());
+        assertNewModifiableSet(page::getRedirects, Function.identity());
+        // Category and Page do not implement equals(), so they are compared by their page ids
+        assertNewModifiableSet(page::getCategories, Category::getPageId);
+        assertNewModifiableSet(page::getVisibleCategories, Category::getPageId);
+        assertNewModifiableSet(page::getInlinks, Page::getPageId);
+        assertNewModifiableSet(page::getOutlinks, Page::getPageId);
+    }
+
+    private static <T, K> void assertNewModifiableSet(CollectionGetter<T> getter,
+            Function<T, K> key)
+        throws Exception
+    {
+        Set<T> first = getter.get();
+        Set<K> expected = keys(first, key);
+
+        // must not throw, as the result is modifiable
+        first.clear();
+        first.add(null);
+
+        Set<T> second = getter.get();
+        assertNotSame(first, second);
+        assertFalse(second.contains(null), "modifying a result must not affect later results");
+        assertEquals(expected, keys(second, key),
+                "modifying a result must not affect later results");
+    }
+
+    private static <T, K> Set<K> keys(Set<T> elements, Function<T, K> key)
+    {
+        Set<K> keys = new HashSet<>();
+        for (T element : elements) {
+            keys.add(key.apply(element));
+        }
+        return keys;
+    }
+
+    @FunctionalInterface
+    private interface CollectionGetter<T>
+    {
+        Set<T> get() throws Exception;
     }
 
     /**

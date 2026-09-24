@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -266,7 +267,8 @@ public class Page
      *            The type of the elements of the collection.
      * @param <T>
      *            The type of the elements of the collection.
-     * @return A new, modifiable set containing the elements of the collection.
+     * @return A new, modifiable set containing the elements of the collection. It is handed out
+     *         as is by the public getters of the id and redirect collections.
      */
     private <T> Set<T> loadCollection(String collection, Class<T> elementType)
     {
@@ -275,6 +277,20 @@ public class Page
         List<T> elements = wiki.__inTransaction(session -> session
                 .createQuery(hql, elementType).setParameter("id", id).list());
         return new HashSet<>(elements);
+    }
+
+    /**
+     * Loads the page ids of one of the collections of this page for internal use only, i.e. to
+     * resolve them to {@link Page} or {@link Category} objects. The result is never exposed.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks} or
+     *            {@code categories}.
+     * @return An unmodifiable set containing the page ids of the collection.
+     */
+    private Set<Integer> loadIds(String collection)
+    {
+        return Collections.unmodifiableSet(loadCollection(collection, Integer.class));
     }
 
     /**
@@ -298,11 +314,12 @@ public class Page
     }
 
     /**
-     * @return A set of categories that this page belongs to.
+     * @return A set of categories that this page belongs to. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Category> getCategories()
     {
-        Set<Integer> tmp = loadCollection("categories", Integer.class);
+        Set<Integer> tmp = loadIds("categories");
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmp) {
@@ -344,7 +361,9 @@ public class Page
      * edition's hidden-categories category.
      *
      * @return The categories of this page that are not hidden. If there is no
-     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page.
+     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page. A new,
+     *         modifiable set is returned on each call, so callers may modify it without affecting
+     *         this page.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
@@ -361,7 +380,8 @@ public class Page
      *            The title of the category that holds the hidden categories, e.g.
      *            {@value #HIDDEN_CATEGORIES_TITLE}. Must not be {@code null} or blank.
      * @return The categories of this page that are not hidden. If there is no category with the
-     *         given title, all categories of this page.
+     *         given title, all categories of this page. A new, modifiable set is returned on each
+     *         call, so callers may modify it without affecting this page.
      * @throws IllegalArgumentException
      *             Thrown if {@code hiddenCategoriesTitle} is {@code null} or blank.
      * @throws WikiApiException
@@ -399,11 +419,12 @@ public class Page
      * {@link Page#getInlinks()}.size(). This is too slow. Use {@link Page#getNumberOfInlinks()}
      * instead.
      *
-     * @return The set of pages that have a link pointing to this page.
+     * @return The set of pages that have a link pointing to this page. A new, modifiable set is
+     *         returned on each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getInlinks()
     {
-        Set<Integer> pageIDs = loadCollection("inLinks", Integer.class);
+        Set<Integer> pageIDs = loadIds("inLinks");
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : pageIDs) {
@@ -445,7 +466,8 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the inLinks of this page.
+     * @return Returns the IDs of the inLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getInlinkIDs()
     {
@@ -473,11 +495,12 @@ public class Page
      * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too
      * slow. Use {@link Page#getNumberOfOutlinks()} instead.
      *
-     * @return The set of pages that are linked from this page.
+     * @return The set of pages that are linked from this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getOutlinks()
     {
-        Set<Integer> tmpSet = loadCollection("outLinks", Integer.class);
+        Set<Integer> tmpSet = loadIds("outLinks");
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -518,7 +541,8 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the outLinks of this page.
+     * @return Returns the IDs of the outLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getOutlinkIDs()
     {
@@ -552,7 +576,8 @@ public class Page
     }
 
     /**
-     * @return The set of strings that are redirects to this page.
+     * @return The set of strings that are redirects to this page. A new, modifiable set is returned
+     *         on each call, so callers may modify it without affecting this page.
      */
     public Set<String> getRedirects()
     {
