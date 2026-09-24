@@ -227,6 +227,8 @@ public class RevisionDecoder
 
         int s = r.read(blockSize_S);
         int l = r.read(blockSize_L);
+        // the text starts at the next byte boundary, skip the fill bits even if the text is empty
+        r.skip();
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         for (int i = 0; i < l; i++) {
@@ -328,6 +330,8 @@ public class RevisionDecoder
         }
 
         int l = r.read(blockSize_L);
+        // the text starts at the next byte boundary, skip the fill bits even if the text is empty
+        r.skip();
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         for (int i = 0; i < l; i++) {
@@ -399,6 +403,8 @@ public class RevisionDecoder
         int s = r.read(blockSize_S);
         int e = r.read(blockSize_E);
         int l = r.read(blockSize_L);
+        // the text starts at the next byte boundary, skip the fill bits even if the text is empty
+        r.skip();
 
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         for (int i = 0; i < l; i++) {
