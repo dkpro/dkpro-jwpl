@@ -19,6 +19,7 @@ package org.dkpro.jwpl.parser.mediawiki;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
@@ -381,7 +382,7 @@ public class ModularParser
 
         // Converting &lt;gallery>s to normal Images, this is not beautiful, but
         // a simple solution...
-        convertGalleriesToImages(sm, cepp.tagSpans);
+        convertGalleriesToImages(sm, cepp.tagSpans, cepp.templateSpans);
 
         // Parsing Links and Images.
         parseImagesAndInternalLinks(sm, cepp.linkSpans, cepp.links);
@@ -938,7 +939,8 @@ public class ModularParser
         }
     }
 
-    private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans)
+    private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans,
+            List<Span> templateSpans)
     {
         // Quick Hack, not very efficient, should be improved, won't work with
         // calculateSrcSpans == true !
@@ -955,8 +957,12 @@ public class ModularParser
                     i--;
 
                     StringBuilder sb = new StringBuilder();
+                    GalleryTemplates templates = new GalleryTemplates(templateSpans,
+                            startSpan.getStart(), endSpan.getEnd());
 
                     // caption (any option will be treated as caption)
+                    int openTextStart = new Span(startSpan.getStart() + 1, startSpan.getEnd() - 1)
+                            .trim(sm).getStart();
                     int eqPos = openText.indexOf('=');
                     if (eqPos != -1) {
                         int captionStart = eqPos + 1;
@@ -969,18 +975,28 @@ public class ModularParser
                         }
 
                         if (captionStart < captionEnd) {
+                            templates.copied(openTextStart + captionStart, sb.length(),
+                                    captionEnd - captionStart);
                             sb.append(openText.substring(captionStart, captionEnd) + lineSeparator);
                         }
                     }
 
                     // images
+                    int entryStart = startSpan.getEnd();
                     for (String s : tokenize(sm, startSpan.getEnd(), endSpan.getStart(),
                             lineSeparator)) {
-                        sb.append("[[" + qualifyGalleryEntry(s) + "]]" + lineSeparator);
+                        String qualified = qualifyGalleryEntry(s);
+                        entryStart = sm.indexOf(s, entryStart, endSpan.getStart());
+                        templates.copied(entryStart,
+                                sb.length() + 2 + qualified.length() - s.length(), s.length());
+                        entryStart += s.length();
+                        sb.append("[[" + qualified + "]]" + lineSeparator);
                     }
 
                     // replace the source and remove the tags
-                    sm.replace(startSpan.getStart(), endSpan.getEnd(), sb.toString());
+                    int replacementStart = startSpan.getStart();
+                    sm.replace(replacementStart, endSpan.getEnd(), sb.toString());
+                    templates.moveTo(replacementStart);
                 }
             }
         }
@@ -1010,6 +1026,102 @@ public class ModularParser
         // prefix is conventionally capitalized
         String identifier = imageIdentifiers.get(0);
         return Character.toUpperCase(identifier.charAt(0)) + identifier.substring(1) + ":" + entry;
+    }
+
+    /**
+     * Deletes the text of an image from the text of the content element, except for the
+     * placeholders of the templates in it, which the templates replace afterwards. Deleting them
+     * as well would shrink the spans of these templates to an empty span at the start of the
+     * image, which is never attached to a content element that starts or ends there. The text
+     * is the same, as the replacement of a template is inserted at the start of the image either
+     * way. The span of the image becomes the empty span at its start, as before.
+     */
+    private static void deleteImageText(SpanManager sm, Span linkSpan, List<Span> templateSpans,
+            List<ResolvedTemplate> templates)
+    {
+        List<Span> inText = new ArrayList<>();
+        for (int i = 0; i < templateSpans.size(); i++) {
+            Span ts = templateSpans.get(i);
+            if (ts.getStart() < ts.getEnd() && linkSpan.getStart() <= ts.getStart()
+                    && ts.getEnd() <= linkSpan.getEnd()
+                    && templates.get(i).getPostParseReplacement() != null) {
+                inText.add(ts);
+            }
+        }
+        inText.sort(Comparator.comparingInt(Span::getStart));
+
+        // the ranges to keep, merging nested templates into the ones containing them
+        List<int[]> kept = new ArrayList<>();
+        for (Span ts : inText) {
+            int[] last = kept.isEmpty() ? null : kept.get(kept.size() - 1);
+            if (last != null && ts.getStart() < last[1]) {
+                last[1] = Math.max(last[1], ts.getEnd());
+            }
+            else {
+                kept.add(new int[] { ts.getStart(), ts.getEnd() });
+            }
+        }
+
+        // deletes the text around them, from the end of the image text to its start
+        int end = linkSpan.getEnd();
+        for (int i = kept.size() - 1; i >= 0; i--) {
+            sm.delete(kept.get(i)[1], end);
+            end = kept.get(i)[0];
+        }
+        sm.delete(linkSpan.getStart(), end);
+        linkSpan.setEnd(linkSpan.getStart());
+    }
+
+    /**
+     * The spans of the templates in a gallery. {@link #convertGalleriesToImages} replaces the whole
+     * gallery at once, which would shift these spans by the difference in length and shrink them
+     * to the start of the gallery, where they end up at another place or as an empty span which is
+     * never attached to a content element (see issue #733). As the text of a template is copied
+     * into the replacement unchanged, each span is moved to the place of its copy instead.
+     */
+    private static class GalleryTemplates
+    {
+        private final List<Span> spans = new ArrayList<>();
+        private final List<Integer> lengths = new ArrayList<>();
+        private final List<Integer> offsets = new ArrayList<>();
+
+        GalleryTemplates(List<Span> templateSpans, int start, int end)
+        {
+            for (Span s : templateSpans) {
+                if (start <= s.getStart() && s.getEnd() <= end) {
+                    spans.add(s);
+                    lengths.add(s.length());
+                    offsets.add(-1);
+                }
+            }
+        }
+
+        /**
+         * Notes that the text of the given length at {@code srcStart} is copied to the given
+         * offset of the replacement.
+         */
+        void copied(int srcStart, int offset, int length)
+        {
+            for (int i = 0; i < spans.size(); i++) {
+                Span s = spans.get(i);
+                if (srcStart <= s.getStart() && s.getEnd() <= srcStart + length) {
+                    offsets.set(i, offset + s.getStart() - srcStart);
+                }
+            }
+        }
+
+        /**
+         * Moves the spans to their copies in the replacement starting at the given position. The
+         * span of a template whose text is not copied becomes the empty span at that position.
+         */
+        void moveTo(int replacementStart)
+        {
+            for (int i = 0; i < spans.size(); i++) {
+                int offset = offsets.get(i);
+                int start = replacementStart + Math.max(offset, 0);
+                spans.get(i).setStart(start).setEnd(offset < 0 ? start : start + lengths.get(i));
+            }
+        }
     }
 
     private Table buildTable(SpanManager sm, ContentElementParsingParameters cepp,
@@ -1766,7 +1878,7 @@ public class ModularParser
                 localLinks.add(l);
                 if (!showImageText && l.getType() == Link.type.IMAGE) {
                     // deletes the Image Text from the ContentElement Text.
-                    sm.delete(linkSpan);
+                    deleteImageText(sm, linkSpan, cepp.templateSpans, cepp.templates);
                 }
             }
             else {
