@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,7 +31,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -70,6 +69,55 @@ public class Wikipedia
      * size.
      */
     private static final int TITLE_BATCH_SIZE = 500;
+
+    /**
+     * Fetch size that makes MySQL Connector/J stream a forward-only, read-only result set row by
+     * row. Any other value, positive ones included, makes it read the complete result set into
+     * memory unless the connection property {@code useCursorFetch=true} is set. While the result
+     * set is open, no other query may be issued on the connection.
+     *
+     * @see <a href=
+     *      "https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html">
+     *      MySQL Connector/J: JDBC API Implementation Notes, ResultSet</a>
+     */
+    static final int MYSQL_STREAMING_FETCH_SIZE = Integer.MIN_VALUE;
+
+    /**
+     * Number of rows MariaDB Connector/J keeps in memory while streaming a result set. It rejects a
+     * negative fetch size with an {@link java.sql.SQLException}, so the MySQL Connector/J value
+     * {@link Integer#MIN_VALUE} must not be passed to it. A query issued on the same connection
+     * before the result set is read completely makes it read all remaining rows into memory.
+     *
+     * @see <a href=
+     *      "https://mariadb.com/docs/connectors/mariadb-connector-j/about-mariadb-connector-j">
+     *      About MariaDB Connector/J, Streaming Result Sets</a>
+     */
+    static final int MARIADB_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Number of rows pgJDBC fetches per round trip from a server-side cursor. The driver uses a
+     * cursor only if the fetch size is positive, the connection is not in autocommit mode, the
+     * result set is {@link java.sql.ResultSet#TYPE_FORWARD_ONLY} and the query is a single
+     * statement; otherwise it silently reads the complete result set.
+     *
+     * @see <a href="https://jdbc.postgresql.org/documentation/query/">pgJDBC: Issuing a Query and
+     *      Processing the Result, Getting results based on a cursor</a>
+     */
+    static final int POSTGRESQL_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Fetch size passed to HSQLDB and to any driver not handled explicitly. The JDBC specification
+     * defines it as a hint that must be {@code >= 0}; HSQLDB uses it as such and may process more
+     * or fewer rows.
+     *
+     * @see <a href=
+     *      "https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Statement.html#setFetchSize(int)">
+     *      java.sql.Statement#setFetchSize(int)</a>
+     * @see <a href=
+     *      "https://hsqldb.org/doc/2.0/apidocs/org.hsqldb/org/hsqldb/jdbc/JDBCStatement.html#setFetchSize(int)">
+     *      HSQLDB: JDBCStatement#setFetchSize(int)</a>
+     */
+    static final int DEFAULT_STREAMING_FETCH_SIZE = 1000;
 
     private final Language language;
     private final DatabaseConfiguration dbConfig;
@@ -577,35 +625,40 @@ public class Wikipedia
         Map<Page, Double> pageMap = new HashMap<>();
 
         // holds a mapping of the best distance values to page IDs
-        Map<Integer, Double> distanceMap = new HashMap<>();
+        final Map<Integer, Double> distanceMap = new HashMap<>();
+        // how many entries of distanceMap carry each distance value, the largest one last
+        final TreeMap<Double, Integer> distanceCounts = new TreeMap<>();
 
         final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
         final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
                 + " from PageMapLine as pml";
-        // The whole table is materialized by the query anyway, so the scoring below runs outside
-        // the transaction rather than holding a connection for its duration.
-        for (PageTuple o : __inTransaction(
-                session -> session.createQuery(query, PageTuple.class).list())) {
+        final int fetchSize = streamingFetchSize(dbConfig.getDatabaseDriver());
+        // The rows are streamed rather than materialized, so the heap holds the current top
+        // entries only. This keeps the connection open for the duration of the scan; no other
+        // query may run on it until the stream is closed (see MYSQL_STREAMING_FETCH_SIZE).
+        __inTransaction(session -> {
+            try (Stream<PageTuple> rows = session.createQuery(query, PageTuple.class)
+                    .setFetchSize(fetchSize).getResultStream()) {
+                rows.forEach(o -> {
+                    // this returns a similarity - if we want to use it, we have to change the
+                    // semantics the ordering of the results
+                    double distance = lsd.distance(o.name(), pattern);
 
-            // this returns a similarity - if we want to use it, we have to change the semantics the
-            // ordering of the results
-            double distance = lsd.distance(o.name(), pattern);
+                    Double previous = distanceMap.put(o.id(), distance);
+                    if (previous != null) {
+                        decrementDistanceCount(distanceCounts, previous);
+                    }
+                    distanceCounts.merge(distance, 1, Integer::sum);
 
-            distanceMap.put(o.id(), distance);
-
-            // if there are more than "pSize" entries in the map remove the last one (it has the
-            // biggest distance)
-            if (distanceMap.size() > pSize) {
-                Set<Entry<Integer, Double>> valueSortedSet = new TreeSet<>(new ValueComparator());
-                valueSortedSet.addAll(distanceMap.entrySet());
-                Iterator<Entry<Integer, Double>> it = valueSortedSet.iterator();
-                // remove the first element
-                if (it.hasNext()) {
-                    // get the id of this entry and remove it in the distanceMap
-                    distanceMap.remove(it.next().getKey());
-                }
+                    // if there are more than "pSize" entries in the map remove the one with the
+                    // biggest distance
+                    if (distanceMap.size() > pSize) {
+                        removeLargestDistance(distanceMap, distanceCounts, o.id(), distance);
+                    }
+                });
             }
-        }
+            return null;
+        });
 
         for (int pageID : distanceMap.keySet()) {
             Page page = null;
@@ -1037,13 +1090,70 @@ public class Wikipedia
         return sb.toString();
     }
 
-    private static class ValueComparator
-            implements Comparator<Entry<Integer, Double>> {
-
-        @Override
-        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
-            return Double.compare(e2.getValue(), e1.getValue());
+    /**
+     * Removes the entry with the largest distance from {@code distanceMap}. Among several entries
+     * with that distance, the first one in the iteration order of {@code distanceMap} is removed,
+     * which is the entry a {@link java.util.TreeSet} ordering the entries by descending distance
+     * alone would yield first.
+     *
+     * @param distanceMap    The distances by page ID.
+     * @param distanceCounts The number of entries in {@code distanceMap} per distance value.
+     * @param latestId       The page ID put into {@code distanceMap} last.
+     * @param latestDistance The distance put into {@code distanceMap} last.
+     */
+    private static void removeLargestDistance(Map<Integer, Double> distanceMap,
+            TreeMap<Double, Integer> distanceCounts, int latestId, double latestDistance) {
+        Entry<Double, Integer> largest = distanceCounts.lastEntry();
+        Integer victim = null;
+        if (largest.getValue() == 1 && Double.compare(latestDistance, largest.getKey()) == 0) {
+            // the latest entry is the only one with the largest distance
+            victim = latestId;
         }
+        else {
+            for (Entry<Integer, Double> e : distanceMap.entrySet()) {
+                if (Double.compare(e.getValue(), largest.getKey()) == 0) {
+                    victim = e.getKey();
+                    break;
+                }
+            }
+        }
+        distanceMap.remove(victim);
+        decrementDistanceCount(distanceCounts, largest.getKey());
+    }
+
+    private static void decrementDistanceCount(TreeMap<Double, Integer> distanceCounts,
+            Double distance) {
+        distanceCounts.computeIfPresent(distance, (d, count) -> count == 1 ? null : count - 1);
+    }
+
+    /**
+     * Selects the fetch size for streaming a result set through
+     * {@link Query#getResultStream()}, which Hibernate executes as a
+     * {@link java.sql.ResultSet#TYPE_FORWARD_ONLY}, {@link java.sql.ResultSet#CONCUR_READ_ONLY}
+     * result set, within the transaction of {@link #__inTransaction(Function)} and thus with
+     * autocommit disabled.
+     *
+     * @param databaseDriver The fully qualified class name of the JDBC driver, may be {@code null}.
+     * @return {@link #MYSQL_STREAMING_FETCH_SIZE} for MySQL Connector/J ({@code com.mysql.*}),
+     * {@link #MARIADB_STREAMING_FETCH_SIZE} for MariaDB Connector/J ({@code org.mariadb.*}),
+     * {@link #POSTGRESQL_STREAMING_FETCH_SIZE} for pgJDBC ({@code org.postgresql.*}), else
+     * {@link #DEFAULT_STREAMING_FETCH_SIZE}. The driver decides, not the server: MySQL Connector/J
+     * connected to a MariaDB server needs {@link #MYSQL_STREAMING_FETCH_SIZE}.
+     */
+    static int streamingFetchSize(String databaseDriver) {
+        if (databaseDriver == null) {
+            return DEFAULT_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("com.mysql.")) {
+            return MYSQL_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.mariadb.")) {
+            return MARIADB_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.postgresql.")) {
+            return POSTGRESQL_STREAMING_FETCH_SIZE;
+        }
+        return DEFAULT_STREAMING_FETCH_SIZE;
     }
 
     private record PageTuple(int id, String name) {
