@@ -21,8 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -129,15 +127,9 @@ class BlockManagementTest
         char[] revB = b.toCharArray();
 
         ComparingBlockManagement comparing = new ComparingBlockManagement();
-        DiffCalculator calculator = new DiffCalculator(null);
-        Field blocks = DiffCalculator.class.getDeclaredField("blocks");
-        blocks.setAccessible(true);
-        blocks.set(calculator, comparing);
-        Method generateDiff = DiffCalculator.class.getDeclaredMethod("generateDiff", char[].class,
-                char[].class);
-        generateDiff.setAccessible(true);
+        DiffCalculator calculator = new DiffCalculator(null, comparing);
 
-        Diff actual = (Diff) generateDiff.invoke(calculator, revA, revB);
+        Diff actual = calculator.generateDiff(revA, revB);
         Diff expected = comparing.expected;
 
         assertEquals(expected.size(), actual.size(), actual.toString());
