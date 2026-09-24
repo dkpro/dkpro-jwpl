@@ -1017,19 +1017,21 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Loads the pages with the given ids, in the given order.
+     * Loads the pages with the given ids, in the given order, with one query per batch of ids.
      *
      * @param pageIds
      *            the ids of the pages to load
      * @return the loaded pages
      * @throws WikiApiException
-     *             If a page could not be loaded
+     *             If a page could not be loaded, in particular a {@link WikiPageNotFoundException}
+     *             if the template index refers to a page that does not exist
      */
     private List<Page> loadPages(List<Integer> pageIds) throws WikiApiException
     {
-        List<Page> pages = new ArrayList<>(pageIds.size());
-        for (int pageId : pageIds) {
-            pages.add(wiki.getPage(pageId));
+        List<Page> pages = wiki.getPages(pageIds);
+        if (pages.size() != pageIds.size()) {
+            throw new WikiPageNotFoundException((pageIds.size() - pages.size())
+                    + " of the pages referenced by the template index were not found.");
         }
         return pages;
     }

@@ -866,6 +866,44 @@ public class WikipediaTest
                 wiki.getTitles(List.of(pageId)).get(pageId).getPlainTitle());
     }
 
+    @Test
+    public void testGetPagesForPageIdsKeepsTheirOrder() throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(List.of(1041, 1014, 1022));
+        assertEquals(3, pages.size());
+        assertEquals(1041, pages.get(0).getPageId());
+        assertEquals(1014, pages.get(1).getPageId());
+        assertEquals(1022, pages.get(2).getPageId());
+        assertEquals("UKP", pages.get(0).getTitle().getPlainTitle());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsMatchesGetPage() throws WikiApiException
+    {
+        int pageId = 1014;
+        Page expected = wiki.getPage(pageId);
+        Page actual = wiki.getPages(List.of(pageId)).get(0);
+        assertEquals(expected.getTitle().getPlainTitle(), actual.getTitle().getPlainTitle());
+        assertEquals(expected.getText(), actual.getText());
+        assertEquals(expected.getNumberOfInlinks(), actual.getNumberOfInlinks());
+        assertEquals(expected.getNumberOfCategories(), actual.getNumberOfCategories());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsSkipsUnknownIds() throws WikiApiException
+    {
+        // Page id 1012 has no matching page
+        List<Page> pages = wiki.getPages(List.of(1012, 1014));
+        assertEquals(1, pages.size());
+        assertEquals(1014, pages.get(0).getPageId());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsEmpty() throws WikiApiException
+    {
+        assertTrue(wiki.getPages(Collections.emptyList()).isEmpty());
+    }
+
     private void checkGetPageByExactTitle(String pageTitle) throws WikiApiException
     {
         Page page = wiki.getPageByExactTitle(pageTitle);

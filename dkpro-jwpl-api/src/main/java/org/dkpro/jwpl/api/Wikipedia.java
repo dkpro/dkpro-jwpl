@@ -261,6 +261,44 @@ public class Wikipedia
     }
 
     /**
+     * Loads the pages with the given ids, in one query per {@value Wikipedia#TITLE_BATCH_SIZE}
+     * ids instead of one query per page as {@link Wikipedia#getPage(int)} does.
+     * <p>
+     * The pages are returned in the order of the given ids. Ids that have no matching page are
+     * skipped; callers that need to detect them have to compare the result against the ids they
+     * passed in. Like {@link Wikipedia#getPage(int)}, every page is loaded including its text, so
+     * the result of a large number of ids can occupy a lot of memory.
+     *
+     * @param pageIds The ids of the pages to load. Must not be {@code null}.
+     * @return The loaded pages. Never {@code null}.
+     * @throws WikiApiException Thrown if errors occurred.
+     */
+    public List<Page> getPages(List<Integer> pageIds) throws WikiApiException {
+        List<Page> pages = new ArrayList<>(pageIds.size());
+        for (int from = 0; from < pageIds.size(); from += TITLE_BATCH_SIZE) {
+            List<Integer> batch = pageIds.subList(from,
+                    Math.min(from + TITLE_BATCH_SIZE, pageIds.size()));
+            // A session is acquired per batch, see getTitles(Collection)
+            List<org.dkpro.jwpl.api.hibernate.Page> rows = __inTransaction(session -> session
+                    .createQuery("from Page as p where p.pageId in (:ids)",
+                            org.dkpro.jwpl.api.hibernate.Page.class)
+                    .setParameterList("ids", batch).list());
+
+            Map<Integer, org.dkpro.jwpl.api.hibernate.Page> rowsByPageId = new HashMap<>();
+            for (org.dkpro.jwpl.api.hibernate.Page row : rows) {
+                rowsByPageId.put(row.getPageId(), row);
+            }
+            for (Integer pageId : batch) {
+                org.dkpro.jwpl.api.hibernate.Page row = rowsByPageId.get(pageId);
+                if (row != null) {
+                    pages.add(new Page(this, row.getId(), row));
+                }
+            }
+        }
+        return pages;
+    }
+
+    /**
      * Gets the title for a given pageId.
      *
      * @param pageId The id of the page.
