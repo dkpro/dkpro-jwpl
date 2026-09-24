@@ -1,0 +1,142 @@
+FIRST_PARAGRAPH: 0
+CATEGORIES:
+  ContentElement ""
+LANGUAGES:
+  ContentElement "fr:Jane Doe"
+    LINK UNKNOWN "fr:Jane_Doe" (0, 11) "fr:Jane Doe" []
+SectionContent level=2
+  TITLE:
+    null
+  Paragraph "
+Jane Doe (born ) is a fictional person who lives in Springfield.
+She is known for Foo, bars and Baz. See the site and http://example.com/plain for details."
+    BOLD: (1, 9)
+    ITALIC: (33, 39)
+    LINK INTERNAL "fiction" (23, 32) "fictional" []
+    LINK INTERNAL "Springfield" (53, 64) "Springfield" []
+    LINK INTERNAL "Foo" (83, 86) "Foo" []
+    LINK INTERNAL "Bar" (88, 92) "bars" []
+    LINK INTERNAL "Baz" (97, 100) "Baz" []
+    LINK EXTERNAL "http://example.org" (106, 114) "the site" []
+    LINK EXTERNAL "http://example.com/plain" (119, 143) "http://example.com/plain" []
+  Paragraph "
+Link in parameter|thumb|caption after the link
+thumb|Only link
+thumb|first line second line with Second line link"
+    ITALIC: (0, 0)
+    LINK IMAGE "Image:Portrait.png" (0, 0) "Image:Portrait.png" [thumb, left, A portrait with a Link in caption and ''italics'']
+    LINK INTERNAL "Link_in_caption" (0, 0) "Link_in_caption" []
+    LINK UNKNOWN "File:Params.jpg" (1, 47) "Link in parameter|thumb|caption after the link" []
+    LINK INTERNAL "Link_in_parameter" (1, 18) "Link in parameter" []
+    LINK UNKNOWN "File:Nested.jpg" (48, 63) "thumb|Only link" []
+    LINK INTERNAL "Only_link" (54, 63) "Only link" []
+    LINK UNKNOWN "File:Multiline.jpg" (64, 114) "thumb|first line second line with Second line link" []
+    LINK INTERNAL "Second_line_link" (98, 114) "Second line link" []
+SectionContainer level=2
+  TITLE:
+    ContentElement "Career"
+  SectionContent level=3
+    TITLE:
+      null
+    Paragraph "
+In  she joined Acme. Later she moved to Globex and Initech.
+
+
+A paragraph with {} and {} triple braces and Trailing link."
+      LINK INTERNAL "Acme_Corporation" (16, 20) "Acme" []
+      LINK INTERNAL "Globex" (41, 47) "Globex" []
+      LINK INTERNAL "Initech" (52, 59) "Initech" []
+      LINK INTERNAL "Trailing_link" (108, 121) "Trailing link" []
+  SectionContent level=3
+    TITLE:
+      ContentElement "Awards"
+    ContentElement "Awards"
+    Paragraph "Bold italic text with Award A, Award B, C and the category.
+Unclosed link [[Broken and unclosed template {{broken
+Next line Recovered."
+      BOLD: (0, 11)
+      ITALIC: (0, 11)
+      LINK INTERNAL "Award_A" (22, 29) "Award A" []
+      LINK INTERNAL "Award_B" (31, 38) "Award B" []
+      LINK INTERNAL "Award_C" (40, 41) "C" []
+      LINK UNKNOWN ":Category:Awards" (46, 58) "the category" []
+      LINK INTERNAL "Recovered" (124, 133) "Recovered" []
+SectionContent level=2
+  TITLE:
+    ContentElement "See also"
+  ContentElement "See also"
+  Paragraph "Wiktionary:Doe Special link de:Jane Doe Category:People
+Doe, Jane"
+    LINK UNKNOWN "Wiktionary:Doe" (0, 14) "Wiktionary:Doe" []
+    LINK INTERNAL "Special_link" (15, 27) "Special link" []
+    LINK UNKNOWN "de:Jane_Doe" (28, 39) "de:Jane Doe" []
+    LINK UNKNOWN "Category:People" (40, 55) "Category:People" []
+    LINK UNKNOWN "Category:Fictional_people" (56, 65) "Doe, Jane" []
+CONTENT_ELEMENT:
+  ContentElement "{{Infobox person
+| name = Jane Doe
+| birth_place = the city, {{flag|USA}}
+| image = thumb|Jane at work
+}}
+Jane Doe (born {{birth date|1970|1|1}}) is a fictional person who lives in Springfield.<ref>{{cite web|url=http://example.org|title=Source}}</ref>
+She is known for Foo, bars and Baz{{citation needed}}. See the site and http://example.com/plain for details.
+
+
+Link in parameter|thumb|caption after the link
+thumb|Only link
+thumb|first line second line with Second line link
+
+== Career ==
+{{Main|Career of Jane Doe}}
+In {{year|1990}} she joined Acme.{{sfn|Smith|2001|p=12}} Later she moved to Globex and Initech.
+{{quote|text=Life is good.|author=Jane Doe}}
+{{outer|{{inner|{{innermost|x}}}}|Link inside template}}
+A paragraph with {{{param|default}}} and {{{another}}} triple braces and Trailing link.
+
+=== Awards ===
+Bold italic text with Award A, Award B{{efn|Note}}, C and the category.
+Unclosed link [[Broken and unclosed template {{broken
+Next line Recovered.
+
+== See also ==
+Wiktionary:Doe Special link de:Jane Doe Category:People
+Doe, Jane
+fr:Jane Doe"
+    BOLD: (106, 114) (823, 834)
+    ITALIC: (161, 167) (364, 364) (823, 834)
+    LINK INTERNAL "Doe" (31, 34) "Doe" []
+    LINK INTERNAL "Springfield" (51, 59) "the city" []
+    LINK UNKNOWN "File:Jane.jpg" (84, 102) "thumb|Jane at work" []
+    LINK INTERNAL "fiction" (151, 160) "fictional" []
+    LINK INTERNAL "Springfield" (181, 192) "Springfield" []
+    LINK INTERNAL "Foo" (270, 273) "Foo" []
+    LINK INTERNAL "Bar" (275, 279) "bars" []
+    LINK INTERNAL "Baz" (284, 287) "Baz" []
+    LINK EXTERNAL "http://example.org" (312, 320) "the site" []
+    LINK EXTERNAL "http://example.com/plain" (325, 349) "http://example.com/plain" []
+    LINK IMAGE "Image:Portrait.png" (364, 364) "Image:Portrait.png" [thumb, left, A portrait with a Link in caption and ''italics'']
+    LINK INTERNAL "Link_in_caption" (364, 364) "Link_in_caption" []
+    LINK UNKNOWN "File:Params.jpg" (365, 411) "Link in parameter|thumb|caption after the link" []
+    LINK INTERNAL "Link_in_parameter" (365, 382) "Link in parameter" []
+    LINK UNKNOWN "File:Nested.jpg" (412, 427) "thumb|Only link" []
+    LINK INTERNAL "Only_link" (418, 427) "Only link" []
+    LINK UNKNOWN "File:Multiline.jpg" (428, 478) "thumb|first line second line with Second line link" []
+    LINK INTERNAL "Second_line_link" (462, 478) "Second line link" []
+    LINK INTERNAL "Acme_Corporation" (549, 553) "Acme" []
+    LINK INTERNAL "Globex" (597, 603) "Globex" []
+    LINK INTERNAL "Initech" (608, 615) "Initech" []
+    LINK INTERNAL "good" (638, 642) "good" []
+    LINK INTERNAL "Jane_Doe" (651, 659) "Jane Doe" []
+    LINK INTERNAL "Link_inside_template" (696, 716) "Link inside template" []
+    LINK INTERNAL "Trailing_link" (792, 805) "Trailing link" []
+    LINK INTERNAL "Award_A" (845, 852) "Award A" []
+    LINK INTERNAL "Award_B" (854, 861) "Award B" []
+    LINK INTERNAL "Award_C" (875, 876) "C" []
+    LINK UNKNOWN ":Category:Awards" (881, 893) "the category" []
+    LINK INTERNAL "Recovered" (959, 968) "Recovered" []
+    LINK UNKNOWN "Wiktionary:Doe" (986, 1000) "Wiktionary:Doe" []
+    LINK INTERNAL "Special_link" (1001, 1013) "Special link" []
+    LINK UNKNOWN "de:Jane_Doe" (1014, 1025) "de:Jane Doe" []
+    LINK UNKNOWN "Category:People" (1026, 1041) "Category:People" []
+    LINK UNKNOWN "Category:Fictional_people" (1042, 1051) "Doe, Jane" []
+    LINK UNKNOWN "fr:Jane_Doe" (1052, 1063) "fr:Jane Doe" []
