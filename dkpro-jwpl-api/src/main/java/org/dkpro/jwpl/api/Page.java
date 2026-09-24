@@ -18,15 +18,14 @@
 package org.dkpro.jwpl.api;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.PageDAO;
-import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
-import org.dkpro.jwpl.api.util.UnmodifiableArraySet;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
@@ -256,6 +255,29 @@ public class Page
     }
 
     /**
+     * Loads the elements of one of the collections of this page. The collection is read by the id
+     * of this page instead of via a reattached entity, so the page row, including its text, is not
+     * loaded again, and the entity of this page is never associated with a session.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks},
+     *            {@code categories} or {@code redirects}.
+     * @param elementType
+     *            The type of the elements of the collection.
+     * @param <T>
+     *            The type of the elements of the collection.
+     * @return A new, modifiable set containing the elements of the collection.
+     */
+    private <T> Set<T> loadCollection(String collection, Class<T> elementType)
+    {
+        final String hql = "select l from Page p join p." + collection + " l where p.id = :id";
+        final long id = __getId();
+        List<T> elements = wiki.__inTransaction(session -> session
+                .createQuery(hql, elementType).setParameter("id", id).list());
+        return new HashSet<>(elements);
+    }
+
+    /**
      * @return Returns the id.
      */
     /*
@@ -280,10 +302,7 @@ public class Page
      */
     public Set<Category> getCategories()
     {
-        Set<Integer> tmp = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getCategories());
-        });
+        Set<Integer> tmp = loadCollection("categories", Integer.class);
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmp) {
@@ -384,11 +403,7 @@ public class Page
      */
     public Set<Page> getInlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> pageIDs = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        Set<Integer> pageIDs = loadCollection("inLinks", Integer.class);
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : pageIDs) {
@@ -434,10 +449,7 @@ public class Page
      */
     public Set<Integer> getInlinkIDs()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        return loadCollection("inLinks", Integer.class);
     }
 
     /**
@@ -465,11 +477,7 @@ public class Page
      */
     public Set<Page> getOutlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        Set<Integer> tmpSet = loadCollection("outLinks", Integer.class);
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -514,11 +522,7 @@ public class Page
      */
     public Set<Integer> getOutlinkIDs()
     {
-
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        return loadCollection("outLinks", Integer.class);
     }
 
     /**
@@ -552,10 +556,7 @@ public class Page
      */
     public Set<String> getRedirects()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getRedirects());
-        });
+        return loadCollection("redirects", String.class);
     }
 
     /**
