@@ -37,7 +37,6 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
-import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.util.DumpFileDiscovery;
@@ -162,9 +161,6 @@ public class DataMachineGenerator
         }, () -> {
             logger.log("Processing table pagelinks...");
             dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
-        }, () -> {
-            logger.log("Processing table revision...");
-            dumpVersionProcessor.processRevision(createRevisionParser());
         }));
 
         logger.log("Processing table text...");
@@ -279,20 +275,6 @@ public class DataMachineGenerator
     {
         String pagelinksFile = files.getInputPageLinks();
         return new PagelinksParser(decompressor.getInputStream(pagelinksFile), linkTargets);
-    }
-
-    private RevisionParser createRevisionParser() throws IOException
-    {
-        String revisionFile = files.getGeneratedRevision();
-
-        DumpTableInputStream revisionTableInputStream = envFactory
-                .getDumpTableInputStream();
-        revisionTableInputStream.initialize(decompressor.getInputStream(revisionFile),
-                DumpTableEnum.REVISION);
-
-        RevisionParser revisionParser = envFactory.getRevisionParser();
-        revisionParser.setInputStream(revisionTableInputStream);
-        return revisionParser;
     }
 
     private TextParser createTextParser() throws IOException

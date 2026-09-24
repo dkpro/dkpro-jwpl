@@ -34,17 +34,18 @@ import org.dkpro.jwpl.wikimachine.debug.Slf4JLogger;
 import org.dkpro.jwpl.wikimachine.domain.MetaData;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersionFactory;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
-import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Feeds a fixed set of page, revision and text rows through {@link SingleDumpVersionJDKGeneric}
+ * Feeds a fixed set of page and text rows through {@link SingleDumpVersionJDKGeneric}
  * and pins both the lookup results and the exact content of the tables written by the page and the
  * text pass. The expected content was recorded with the boxed JDK collections used before issue
- * #554, so the primitive collections used since then have to reproduce it byte for byte.
+ * #554, so the primitive collections used since then have to reproduce it byte for byte. Since
+ * issue #555 the text rows are keyed by page id rather than by revision id, which must not change
+ * that content either.
  */
 class SingleDumpVersionJDKGenericTest {
 
@@ -80,12 +81,6 @@ class SingleDumpVersionJDKGenericTest {
     version.setFiles(files);
     version.setMetaData(metaData);
     version.initialize(new Timestamp(0));
-
-    // revision pass: text id -> page id, including a page that is never imported (7)
-    for (int[] revision : new int[][] {{101, 1}, {102, 2}, {103, 3}, {104, 4}, {107, 7},
-        {109, 9}}) {
-      version.processRevisionRow(new FixedRevisionParser(revision[1], revision[0]));
-    }
 
     // page pass
     version.initPageParsing();
@@ -125,14 +120,16 @@ class SingleDumpVersionJDKGenericTest {
     version.freeAfterCategoryLinksParsing();
     version.freeAfterPageLinksParsing();
 
-    // text pass, including a text id without a revision (999)
+    // text pass, keyed by page id, including a category (5), a page that is never imported (7)
+    // and a page id unknown to the page table (999)
     version.initTextParsing();
-    version.processTextRow(new FixedTextParser(101, "Welcome"));
-    version.processTextRow(new FixedTextParser(102, "Let us talk"));
-    version.processTextRow(new FixedTextParser(103, "#REDIRECT [[Main Page]]"));
-    version.processTextRow(new FixedTextParser(104, "#REDIRECT [[Nowhere]]"));
-    version.processTextRow(new FixedTextParser(107, "User page"));
-    version.processTextRow(new FixedTextParser(109, "Mercury may refer to"));
+    version.processTextRow(new FixedTextParser(1, "Welcome"));
+    version.processTextRow(new FixedTextParser(2, "Let us talk"));
+    version.processTextRow(new FixedTextParser(3, "#REDIRECT [[Main Page]]"));
+    version.processTextRow(new FixedTextParser(4, "#REDIRECT [[Nowhere]]"));
+    version.processTextRow(new FixedTextParser(5, "Category text"));
+    version.processTextRow(new FixedTextParser(7, "User page"));
+    version.processTextRow(new FixedTextParser(9, "Mercury may refer to"));
     version.processTextRow(new FixedTextParser(999, "Orphaned text"));
     version.exportAfterTextParsing();
     version.freeAfterTextParsing();
@@ -181,19 +178,6 @@ class SingleDumpVersionJDKGenericTest {
     @Override
     public boolean getPageIsRedirect() {
       return redirect;
-    }
-  }
-
-  private static final class FixedRevisionParser extends RevisionParser {
-
-    private FixedRevisionParser(int page, int textId) {
-      revPage = page;
-      revTextId = textId;
-    }
-
-    @Override
-    public boolean next() {
-      return false;
     }
   }
 
