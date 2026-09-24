@@ -41,6 +41,8 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * This class holds the data for a specific dump version.
  * <p>
@@ -343,6 +345,15 @@ public class OriginalDumpVersion
         page = new TxtFileWriter(versionFiles.getOutputPage());
         pageMapLine = new TxtFileWriter(versionFiles.getOutputPageMapLine());
         pageRedirects = new TxtFileWriter(versionFiles.getOutputPageRedirects());
+    }
+
+    @Override
+    public boolean addWantedTextIds(IntSet textIds)
+    {
+        for (int textId : textIdPageIdMap.keySet()) {
+            textIds.add(textId);
+        }
+        return true;
     }
 
     @Override

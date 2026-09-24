@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.wikimachine.domain;
 
 import java.io.IOException;
+import java.util.function.IntPredicate;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.dump.sql.CategorylinksParser;
@@ -26,6 +27,9 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
+
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A processor of Wikipedias dump related revisions.
@@ -203,6 +207,25 @@ public class DumpVersionProcessor
                 version.freeAfterPageLinksParsing();
             }
         }
+    }
+
+    /**
+     * Collects the ids of the text rows that at least one version may make use of, see
+     * {@link IDumpVersion#addWantedTextIds(IntSet)}. Call it after {@link #processPage(PageParser)}
+     * and before {@link #processText(TextParser)}.
+     *
+     * @return A predicate accepting the ids of all text rows that are needed. It accepts every id,
+     *         if a version cannot tell which ones it needs.
+     */
+    public IntPredicate getWantedTextIds()
+    {
+        final IntSet textIds = new IntOpenHashSet();
+        for (IDumpVersion version : versions) {
+            if (!version.addWantedTextIds(textIds)) {
+                return textId -> true;
+            }
+        }
+        return textIds::contains;
     }
 
     /**
