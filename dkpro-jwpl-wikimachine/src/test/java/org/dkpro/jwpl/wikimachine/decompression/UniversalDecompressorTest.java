@@ -19,6 +19,7 @@ package org.dkpro.jwpl.wikimachine.decompression;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.zip.GZIPOutputStream;
@@ -219,6 +221,70 @@ class UniversalDecompressorTest extends AbstractDecompressorTest {
         assumeTrue(isOnPath(tool));
         final Path gz = writeGz(tmpDir.resolve("with space").resolve("dump.sql.gz"), sample());
         assertExternalMatchesInternal(writeConfig("gz", tool + " -dc %f"), gz);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"src/test/resources/archive.txt.gz", "src/test/resources/archive.txt.bz2",
+            "src/test/resources/archive.txt.7z", "archive.txt.gz", "archive.txt.bz2"})
+    void testReadAheadGetInputStream(String input) throws IOException {
+        final UniversalDecompressor readAhead = new UniversalDecompressor(true);
+        assertTrue(readAhead.isReadAhead());
+        try (InputStream in = readAhead.getInputStream(input)) {
+            assertTrue(in instanceof ReadAheadInputStream);
+            assertEquals(EXPECTED_CONTENT,
+                    new String(in.readAllBytes(), StandardCharsets.UTF_8).trim());
+        }
+    }
+
+    @Test
+    void testReadAheadMatchesInternal() throws IOException {
+        final String content = sample();
+        final Path bz2 = writeBz2(tmpDir.resolve("dump.xml.bz2"), content);
+        final Path gz = writeGz(tmpDir.resolve("dump.sql.gz"), content);
+        final UniversalDecompressor readAhead = new UniversalDecompressor(true);
+        for (Path p : List.of(bz2, gz)) {
+            final byte[] expected;
+            try (InputStream in = udc.getInputStream(p)) {
+                expected = in.readAllBytes();
+            }
+            try (InputStream in = readAhead.getInputStream(p)) {
+                assertArrayEquals(expected, in.readAllBytes());
+            }
+        }
+    }
+
+    @Test
+    void testReadAheadGetInputStreamSequence() throws IOException {
+        final String a = sample();
+        final String b = "beta\n";
+        final Path partA = writeBz2(tmpDir.resolve("dump.xml-p1p10.bz2"), a);
+        final Path partB = writeBz2(tmpDir.resolve("dump.xml-p11p20.bz2"), b);
+
+        try (InputStream in = new UniversalDecompressor(true)
+                .getInputStreamSequence(List.of(partA, partB))) {
+            assertTrue(in instanceof ReadAheadInputStream);
+            assertEquals(a + b, new String(in.readAllBytes(), StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void testReadAheadReportsTruncatedArchive() throws IOException {
+        final Path complete = writeBz2(tmpDir.resolve("complete.xml.bz2"), sample());
+        final byte[] bytes = Files.readAllBytes(complete);
+        final Path truncated = tmpDir.resolve("truncated.xml.bz2");
+        Files.write(truncated, Arrays.copyOf(bytes, bytes.length / 2));
+
+        try (InputStream in = new UniversalDecompressor(true).getInputStream(truncated)) {
+            assertThrows(IOException.class, in::readAllBytes);
+        }
+    }
+
+    @Test
+    void testReadAheadDoesNotWrapUncompressed() throws IOException {
+        try (InputStream in = new UniversalDecompressor(true)
+                .getInputStream(Path.of("src/test/resources/uncompressed.txt"))) {
+            assertFalse(in instanceof ReadAheadInputStream);
+        }
     }
 
     private void assertExternalMatchesInternal(Path config, Path archive) throws IOException {
