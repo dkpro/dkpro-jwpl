@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Writer;
 
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
+import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec.SQLEncoder;
 import org.dkpro.jwpl.revisionmachine.index.indices.AbstractIndex;
 
 /**
@@ -120,13 +121,41 @@ public class SQLFileWriter
     public void finish() throws IOException
     {
 
-        writer.write("CREATE INDEX articleIdx ON revisions(ArticleID);\r\n");
-        writer.write(
-                "CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);\r\n");
+        // build the keys of the revisions table in case they are still disabled from the bulk load
+        writer.write(SQLEncoder.ENABLE_KEYS + "\r\n");
+        // tables created by older versions of the DiffTool do not declare the article index yet,
+        // and the composite timestamp index is only created here, so it may already exist on reruns
+        writeCreateIndexIfMissing(DatabaseWriter.ARTICLE_INDEX,
+                DatabaseWriter.CREATE_ARTICLE_INDEX);
+        writeCreateIndexIfMissing(DatabaseWriter.ARTICLE_TIMESTAMP_INDEX,
+                DatabaseWriter.CREATE_ARTICLE_TIMESTAMP_INDEX);
         writer.write("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_revisionID ENABLE KEYS;\r\n");
         writer.write("ALTER TABLE index_chronological ENABLE KEYS;\r\n");
         writer.flush();
 
+    }
+
+    /**
+     * Writes statements which create an index on the revisions table unless it already exists.
+     *
+     * @param name
+     *            name of the index
+     * @param createStatement
+     *            statement which creates the index
+     * @throws IOException
+     *             if an error occurred while writing to the file
+     */
+    private void writeCreateIndexIfMissing(final String name, final String createStatement)
+        throws IOException
+    {
+        writer.write("SET @jwplHasIndex = (SELECT COUNT(*) FROM information_schema.statistics"
+                + " WHERE table_schema = DATABASE() AND table_name = 'revisions'"
+                + " AND index_name = '" + name + "');\r\n");
+        writer.write("SET @jwplCreateIndex = IF(@jwplHasIndex = 0, '" + createStatement
+                + "', 'DO 0');\r\n");
+        writer.write("PREPARE jwplCreateIndex FROM @jwplCreateIndex;\r\n");
+        writer.write("EXECUTE jwplCreateIndex;\r\n");
+        writer.write("DEALLOCATE PREPARE jwplCreateIndex;\r\n");
     }
 }

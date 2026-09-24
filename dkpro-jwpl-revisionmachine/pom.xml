@@ -63,7 +63,39 @@
       <artifactId>mariadb-java-client</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Testcontainers-based DB tests (see RevisionsTableIndexTest) -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>jdbc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mariadb</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mysql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
+
+  <properties>
+    <!-- Selects the DB engine of the Testcontainers-based tests; see db-* profiles. -->
+    <jwpl.test.db>hsqldb</jwpl.test.db>
+  </properties>
 
   <profiles>
     <profile>
@@ -74,6 +106,23 @@
           End2End tests are run when the test-e2e-tools profile is active
         -->
         <skip.e2e.tests>false</skip.e2e.tests>
+      </properties>
+    </profile>
+
+    <!--
+      DB engine selection profiles for the unit test suite. db-mariadb/db-mysql spin up a
+      Testcontainers-managed database. Tests are auto-skipped when Docker is absent.
+    -->
+    <profile>
+      <id>db-mariadb</id>
+      <properties>
+        <jwpl.test.db>mariadb</jwpl.test.db>
+      </properties>
+    </profile>
+    <profile>
+      <id>db-mysql</id>
+      <properties>
+        <jwpl.test.db>mysql</jwpl.test.db>
       </properties>
     </profile>
   </profiles>
@@ -163,6 +212,9 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <argLine>-Xms256m -Xmx256m -Dfile.encoding=UTF-8 --add-opens=java.base/java.lang=ALL-UNNAMED</argLine>
+          <systemPropertyVariables>
+            <jwpl.test.db>${jwpl.test.db}</jwpl.test.db>
+          </systemPropertyVariables>
           <excludes>
             **/*E2ETest.java
           </excludes>

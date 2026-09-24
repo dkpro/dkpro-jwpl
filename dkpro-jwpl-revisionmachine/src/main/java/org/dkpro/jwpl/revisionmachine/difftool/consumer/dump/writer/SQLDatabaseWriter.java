@@ -122,7 +122,7 @@ public class SQLDatabaseWriter
     private void closeQuietly(Exception primary)
     {
         try {
-            close();
+            closeConnection();
         }
         catch (SQLException e) {
             primary.addSuppressed(e);
@@ -130,13 +130,31 @@ public class SQLDatabaseWriter
     }
 
     /**
-     * This method will close the connection to the output.
+     * This method will build the keys of the revisions table, which were disabled for the bulk
+     * load, and close the connection to the output.
+     *
+     * @throws SQLException
+     *             if problems occurred while building the keys or closing the connection to the
+     *             database.
+     */
+    @Override
+    public void close() throws SQLException
+    {
+        try (Statement query = connection.createStatement()) {
+            query.executeUpdate(SQLEncoder.ENABLE_KEYS);
+        }
+        finally {
+            closeConnection();
+        }
+    }
+
+    /**
+     * Closes the database connection.
      *
      * @throws SQLException
      *             if problems occurred while closing the connection to the database.
      */
-    @Override
-    public void close() throws SQLException
+    private void closeConnection() throws SQLException
     {
         this.connection.close();
         this.connection = null;

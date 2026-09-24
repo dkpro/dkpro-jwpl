@@ -49,6 +49,19 @@ public class SQLEncoder
 {
 
     /**
+     * Statement which disables the non-unique keys of the revisions table for the bulk load
+     */
+    static final String DISABLE_KEYS = "ALTER TABLE revisions DISABLE KEYS;";
+
+    /**
+     * Statement which (re-)builds the non-unique keys of the revisions table after the bulk load.
+     * It is public because it is shared with the DiffTool writers
+     * ({@code difftool.consumer.dump.writer}) and the index writers ({@code index.writer}), which
+     * issue it once their load is done.
+     */
+    public static final String ENABLE_KEYS = "ALTER TABLE revisions ENABLE KEYS;";
+
+    /**
      * UNCOMPRESSED Statement for tables containing binary encoded diff information
      */
     private final String binaryTableRevision;
@@ -149,8 +162,8 @@ public class SQLEncoder
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
                 + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
-                + "PRIMARY KEY(PrimaryKey)"
-                + ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
+                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter)"
+                + ") ENGINE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
         binaryTableRevision = "CREATE TABLE IF NOT EXISTS revisions ("
                 + "PrimaryKey INT UNSIGNED NOT NULL AUTO_INCREMENT, "
@@ -161,8 +174,8 @@ public class SQLEncoder
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
                 + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
-                + "PRIMARY KEY(PrimaryKey)"
-                + ") TYPE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
+                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter)"
+                + ") ENGINE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
     }
 
@@ -385,16 +398,32 @@ public class SQLEncoder
         return list.toArray(queries);
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The non-unique keys of the revisions table are disabled right after its creation, so that
+     * the bulk load does not maintain them row by row. They are built in one pass by
+     * {@link #ENABLE_KEYS} once the load is done: by the database writer when it is closed, and by
+     * the index generator for loads from SQL files.
+     */
     @Override
     public String[] getBinaryTable()
     {
-        return new String[] { binaryTableRevision };
+        return new String[] { binaryTableRevision, DISABLE_KEYS };
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The non-unique keys of the revisions table are disabled right after its creation, so that
+     * the bulk load does not maintain them row by row. They are built in one pass by
+     * {@link #ENABLE_KEYS} once the load is done: by the database writer when it is closed, and by
+     * the index generator for loads from SQL files.
+     */
     @Override
     public String[] getTable()
     {
-        return new String[] { tableRevision };
+        return new String[] { tableRevision, DISABLE_KEYS };
     }
 
     /**

@@ -43,9 +43,13 @@ public class SQLFileWriterTest
         writer.close();
 
         String sql = Files.readString(outputDir.resolve("revisionIndex.sql"));
-        assertTrue(sql.contains("CREATE INDEX articleIdx ON revisions(ArticleID);"), sql);
-        assertTrue(sql.contains(
-                "CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter);"),
+        assertTrue(sql.contains("ALTER TABLE revisions ENABLE KEYS;"), sql);
+        assertTrue(sql.contains("'CREATE INDEX articleIdx ON revisions(ArticleID, RevisionCounter)'"),
                 sql);
+        assertTrue(sql.contains(
+                "'CREATE INDEX articleTsIdx ON revisions(ArticleID, Timestamp, RevisionCounter)'"),
+                sql);
+        assertTrue(sql.indexOf("ALTER TABLE revisions ENABLE KEYS;") < sql
+                .indexOf("CREATE INDEX articleTsIdx"), sql);
     }
 }
