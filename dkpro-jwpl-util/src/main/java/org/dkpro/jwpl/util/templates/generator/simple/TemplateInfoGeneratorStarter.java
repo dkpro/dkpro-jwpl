@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.util.templates.generator.simple;
 
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_USAGE;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants.Language;
+import org.dkpro.jwpl.revisionmachine.common.util.ExitStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,20 +86,18 @@ public class TemplateInfoGeneratorStarter
      */
     public static void main(String[] args)
     {
-        int status = run(args);
-        if (status != 0) {
-            System.exit(status);
-        }
+        ExitStatus.exitOnFailure(run(args));
     }
 
     /**
-     * Runs the tool described in {@link #main(String[])} without terminating the JVM.
+     * Runs the tool described in {@link #main(String[])}.
      *
      * @param args
      *            allows only one entry that contains the path to the config file
-     * @return {@code 0} on success, {@code 1} if the generation of the template information failed.
+     * @return {@code 0} on success, {@code 255} if the configuration file argument is missing,
+     *         and {@code 1} if the generation of the template information failed.
      */
-    static int run(String[] args)
+    private static int run(String[] args)
     {
 
         if (args == null || args.length != 1) {
@@ -104,7 +107,7 @@ public class TemplateInfoGeneratorStarter
                     + "  password=pwd \n" + "  language=english \n" + "  output=outputFile \n"
                     + "  charset=UTF8 (optional)\n" + "  pagebuffer=5000 (optional)\n"
                     + "  maxAllowedPackets=16760832 (optional)"));
-            throw new IllegalArgumentException();
+            return EXIT_USAGE;
         }
         else {
             Properties props = load(args[0]);
@@ -196,11 +199,11 @@ public class TemplateInfoGeneratorStarter
 
                 // Start processing now
                 generator.process();
-                return 0;
+                return EXIT_SUCCESS;
             }
             catch (Exception e) {
                 logger.error("Could not generate the template information.", e);
-                return 1;
+                return EXIT_FAILURE;
             }
         }
     }

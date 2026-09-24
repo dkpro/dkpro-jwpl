@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.timemachine.domain;
 
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_USAGE;
+
 import java.util.Optional;
 import java.util.ServiceLoader;
 
@@ -24,6 +28,7 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 
 /**
  * The command line tool of the DBMapping Tool of the JWPL.<br>
@@ -40,10 +45,6 @@ public class JWPLTimeMachine
      * Indicates that the corresponding JAXP limit is not enforced.
      */
     private static final String NO_LIMIT = "0";
-
-    private static final int EXIT_SUCCESS = 0;
-    private static final int EXIT_FAILURE = 1;
-    private static final int EXIT_USAGE = 255;
 
     private static final IEnvironmentFactory environmentFactory;
     private static final ILogger logger;
@@ -77,27 +78,24 @@ public class JWPLTimeMachine
     /**
      * The entry point of the TimeMachine tool.
      * <p>
-     * Terminates the JVM with a non-zero exit status if the arguments are incomplete or the
-     * processing fails, see {@link #run(String[])}.
+     * Terminates the JVM with exit status 255 if the arguments are incomplete, and with 1 if the
+     * configuration is invalid or the processing fails.
      *
      * @param args args[0] the settings file like described in {@link SettingsXML}
      */
     public static void main(String[] args)
     {
-        int status = run(args);
-        if (status != EXIT_SUCCESS) {
-            System.exit(status);
-        }
+        ExitStatus.exitOnFailure(run(args));
     }
 
     /**
-     * Runs the TimeMachine tool without terminating the JVM.
+     * Runs the TimeMachine tool.
      *
      * @param args The arguments as described for {@link #main(String[])}.
      * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
      *         the configuration is invalid or the processing failed.
      */
-    static int run(String[] args)
+    private static int run(String[] args)
     {
         try {
             if (checkArgs(args)) {

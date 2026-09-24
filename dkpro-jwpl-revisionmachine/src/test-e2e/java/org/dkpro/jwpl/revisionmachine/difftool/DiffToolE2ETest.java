@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +39,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class DiffToolE2ETest {
 
@@ -137,7 +139,24 @@ public class DiffToolE2ETest {
   @Test
   void testExecJWPLDiffToolWithMissingConfigFileShouldFail() {
     cmd.add(TARGET + File.separator + "non-existent-difftool-config.xml");
-    assertEquals(1,  execTool(cmd));
+    assertEquals(1, execTool(cmd));
+  }
+
+  @Test
+  void testExecJWPLDiffToolWithTruncatedArchiveShouldFail(@TempDir Path dir) throws IOException {
+    // The fixture archive cut in half, and a copy of the configuration that reads it
+    String archiveName = WIKI_NAME + "-20260101-pages-meta-current.xml.bz2";
+    byte[] content = Files.readAllBytes(Path.of(OUTPUT_DIR, archiveName));
+    Files.write(dir.resolve(archiveName), Arrays.copyOf(content, content.length / 2));
+    Path logsDir = Files.createDirectories(dir.resolve("logs"));
+    String config = Files.readString(Path.of(CONF_FILE))
+            .replace("\"./tool-exec/logs/\"", "\"" + logsDir + File.separator + "\"")
+            .replace("\"./tool-exec/" + archiveName + "\"", "\"" + dir.resolve(archiveName) + "\"")
+            .replace("\"./tool-exec/\"", "\"" + dir + File.separator + "\"");
+    Path configFile = dir.resolve("difftool-config-truncated.xml");
+    Files.writeString(configFile, config);
+    cmd.add(configFile.toString());
+    assertEquals(1, execTool(cmd));
   }
 
   @Test

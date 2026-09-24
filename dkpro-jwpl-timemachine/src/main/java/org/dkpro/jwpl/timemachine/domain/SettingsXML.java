@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.timemachine.domain;
 
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_USAGE;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -29,6 +33,7 @@ import java.util.Properties;
 
 import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 import org.dkpro.jwpl.wikimachine.util.TimestampUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,18 +132,42 @@ public class SettingsXML
         return result;
     }
 
+    /**
+     * Writes a sample configuration file to be edited before running the TimeMachine.
+     * <p>
+     * Terminates the JVM with exit status 255 if the argument is missing, and with 1 if the file
+     * cannot be written.
+     *
+     * @param args args[0] the path of the configuration file to generate
+     */
     public static void main(String[] args)
+    {
+        ExitStatus.exitOnFailure(run(args));
+    }
+
+    /**
+     * Writes the sample configuration file.
+     *
+     * @param args The arguments as described for {@link #main(String[])}.
+     * @return {@code 0} on success, {@code 255} if the argument is missing, and {@code 1} if the
+     *         file could not be written.
+     */
+    private static int run(String[] args)
     {
         if (args.length > 0) {
             try {
                 generateSample(args[0]);
+                return EXIT_SUCCESS;
             }
             catch (IOException e) {
                 LOG.error("Could not generate a sample configuration file at '{}'.", args[0], e);
-                System.exit(1);
+                return EXIT_FAILURE;
             }
         }
-
+        else {
+            System.out.println("Usage: java " + SettingsXML.class.getName() + " <CONFIG_FILE>");
+            return EXIT_USAGE;
+        }
     }
 
 }

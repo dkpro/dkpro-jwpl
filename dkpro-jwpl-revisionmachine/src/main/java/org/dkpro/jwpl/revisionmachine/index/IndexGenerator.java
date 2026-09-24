@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.revisionmachine.index;
 
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.revisionmachine.common.util.ExitStatus.EXIT_USAGE;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,6 +31,7 @@ import java.util.Properties;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
+import org.dkpro.jwpl.revisionmachine.common.util.ExitStatus;
 import org.dkpro.jwpl.revisionmachine.common.util.Time;
 import org.dkpro.jwpl.revisionmachine.difftool.config.OutputTypes;
 import org.slf4j.Logger;
@@ -128,20 +133,18 @@ public class IndexGenerator
      */
     public static void main(String[] args)
     {
-        int status = run(args);
-        if (status != 0) {
-            System.exit(status);
-        }
+        ExitStatus.exitOnFailure(run(args));
     }
 
     /**
-     * Runs the tool described in {@link #main(String[])} without terminating the JVM.
+     * Runs the tool described in {@link #main(String[])}.
      *
      * @param args
      *            allows only one entry that contains the path to the config file
-     * @return {@code 0} on success, {@code 1} if the index generation failed.
+     * @return {@code 0} on success, {@code 255} if the configuration file argument is missing,
+     *         and {@code 1} if the index generation failed.
      */
-    static int run(String[] args)
+    private static int run(String[] args)
     {
 
         if (args == null || args.length != 1) {
@@ -153,7 +156,7 @@ public class IndexGenerator
                     + "  outputDatafile=true|false (optional)\n" + "  charset=UTF8 (optional)\n"
                     + "  buffer=15000 (optional)\n" + "  maxAllowedPackets=16760832 (optional)\n\n"
                     + "  The default output mode is SQL Dump"));
-            throw new IllegalArgumentException();
+            return EXIT_USAGE;
         }
         else {
             Properties props = load(args[0]);
@@ -206,13 +209,13 @@ public class IndexGenerator
                 config.setOutputPath(outfile.getParentFile().getPath());
             }
 
-            int status = 0;
+            int status = EXIT_SUCCESS;
             try {
                 new IndexGenerator(config).generate();
             }
             catch (Exception e) {
                 logger.error("Index generation failed.", e);
-                status = 1;
+                status = EXIT_FAILURE;
             }
 
             System.out.println("TERMINATED");

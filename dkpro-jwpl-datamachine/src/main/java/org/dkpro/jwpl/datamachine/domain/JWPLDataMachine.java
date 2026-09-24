@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.datamachine.domain;
 
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_USAGE;
+
 import java.util.Optional;
 import java.util.ServiceLoader;
 
@@ -24,6 +28,7 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 
 /**
  * The command line tool that starts the transformation
@@ -40,10 +45,6 @@ public class JWPLDataMachine
      * Indicates that the corresponding JAXP limit is not enforced.
      */
     private static final String NO_LIMIT = "0";
-
-    private static final int EXIT_SUCCESS = 0;
-    private static final int EXIT_FAILURE = 1;
-    private static final int EXIT_USAGE = 255;
 
     private static final int LANG_ARG = 0;
     private static final int MAINCATEGORY_ARG = 1;
@@ -87,28 +88,25 @@ public class JWPLDataMachine
     /**
      * The entry point of the DataMachine tool.
      * <p>
-     * Terminates the JVM with a non-zero exit status if the arguments are incomplete or the
-     * transformation fails, see {@link #run(String[])}.
+     * Terminates the JVM with exit status 255 if the arguments are incomplete, and with 1 if the
+     * source files are missing or the transformation fails.
      *
      * @param args Expects four arguments. Must be in the ordering as specified as follows:
      *        {@code <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>}.
      */
     public static void main(String[] args)
     {
-        int status = run(args);
-        if (status != EXIT_SUCCESS) {
-            System.exit(status);
-        }
+        ExitStatus.exitOnFailure(run(args));
     }
 
     /**
-     * Runs the DataMachine tool without terminating the JVM.
+     * Runs the DataMachine tool.
      *
      * @param args The arguments as described for {@link #main(String[])}.
      * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
      *         the source files are missing or the transformation failed.
      */
-    static int run(String[] args)
+    private static int run(String[] args)
     {
         if (args.length > 3) {
             // The dumps processed here are trusted input whose entity sizes legitimately

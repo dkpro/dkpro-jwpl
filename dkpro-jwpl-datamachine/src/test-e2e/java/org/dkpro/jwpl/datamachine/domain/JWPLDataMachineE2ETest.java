@@ -45,6 +45,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class JWPLDataMachineE2ETest {
 
@@ -214,27 +215,25 @@ public class JWPLDataMachineE2ETest {
   }
 
   @Test
-  void testExecJWPLDataMachineWithTruncatedDumpShouldFail() throws IOException {
-    // A copy of the fixtures whose single-block 'pages-meta-current' archive is cut in half
-    Path truncatedDir = Files.createDirectories(Path.of(OUTPUT_DIR + "-truncated"));
+  void testExecJWPLDataMachineWithTruncatedDumpShouldFail(@TempDir Path dir) throws IOException {
+    // A copy of the fixtures whose 'pages-meta-current' archive is cut in half
     try (Stream<Path> fixtures = Files.list(Path.of(OUTPUT_DIR))) {
       for (Path fixture : fixtures.filter(p -> p.getFileName().toString().startsWith(WIKI_NAME)).toList()) {
-        Path target = truncatedDir.resolve(fixture.getFileName());
+        Path target = dir.resolve(fixture.getFileName());
         if (fixture.getFileName().toString().endsWith("pages-meta-current.xml.bz2")) {
           byte[] content = Files.readAllBytes(fixture);
           Files.write(target, Arrays.copyOf(content, content.length / 2));
         } else {
-          Files.copy(fixture, target, StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(fixture, target);
         }
       }
     }
-    cmd.addAll(List.of("aa", "n/a", "n/a", truncatedDir.toString()));
+    cmd.addAll(List.of("aa", "n/a", "n/a", dir.toString()));
     assertEquals(1, execTool(cmd));
   }
 
   @Test
-  void testExecJWPLDataMachineWithMissingSourceFilesShouldFail() throws IOException {
-    Path emptyDir = Files.createDirectories(Path.of(OUTPUT_DIR + "-empty"));
+  void testExecJWPLDataMachineWithMissingSourceFilesShouldFail(@TempDir Path emptyDir) {
     cmd.addAll(List.of("aa", "n/a", "n/a", emptyDir.toString()));
     assertEquals(1, execTool(cmd));
   }
