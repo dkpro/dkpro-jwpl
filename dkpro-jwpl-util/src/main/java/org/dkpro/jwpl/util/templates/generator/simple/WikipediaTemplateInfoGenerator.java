@@ -20,10 +20,14 @@ package org.dkpro.jwpl.util.templates.generator.simple;
 import java.lang.invoke.MethodHandles;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
@@ -48,6 +52,9 @@ import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * This class determines which page in a JWPL database contains which templates. It produces an SQL
  * file that will add this data to the existing database. It can then be accessed by the
@@ -64,12 +71,12 @@ public class WikipediaTemplateInfoGenerator
 
     private final int pageBuffer;
 
-    private final Map<String, Set<Integer>> TPLNAME_TO_REVISIONIDS = new HashMap<>();
-    private final Map<String, Set<Integer>> TPLNAME_TO_PAGEIDS = new HashMap<>();
+    private final Map<String, IntSet> TPLNAME_TO_REVISIONIDS = new HashMap<>();
+    private final Map<String, IntSet> TPLNAME_TO_PAGEIDS = new HashMap<>();
     private final Map<String, Integer> tplNameToTplId = new HashMap<>();
 
     private final String charset;
-    // private final long maxAllowedPacket;
+    private final long maxAllowedPacket;
     private final String outputPath;
 
     private final int VERBOSITY = 500;
@@ -96,7 +103,7 @@ public class WikipediaTemplateInfoGenerator
         pf.setTemplateParserClass(ShowTemplateNamesAndParameters.class);
         parser = pf.createParser();
 
-        // this.maxAllowedPacket = maxAllowedPacket;
+        this.maxAllowedPacket = maxAllowedPacket;
         this.charset = charset;
         this.outputPath = outputPath;
 
@@ -120,7 +127,7 @@ public class WikipediaTemplateInfoGenerator
      *            map to fill with data
      */
     private void fillMapWithTemplateData(String textForTemplateExtraction,
-            TemplateFilter filterToApply, int id, Map<String, Set<Integer>> mapToFill)
+            TemplateFilter filterToApply, int id, Map<String, IntSet> mapToFill)
     {
         Set<String> names = getTemplateNames(textForTemplateExtraction);
         // Update the map with template values for current page
@@ -130,18 +137,7 @@ public class WikipediaTemplateInfoGenerator
             // whitelist
             if (filterToApply.acceptTemplate(name)) {
                 // Create records for TEMPLATE->PAGES/REVISION map
-                if (mapToFill.containsKey(name)) {
-                    // add the page id to the set for the current template
-                    Set<Integer> pIdList = mapToFill.remove(name);
-                    pIdList.add(id);
-                    mapToFill.put(name, pIdList);
-                }
-                else {
-                    // add new list with page id of current page
-                    Set<Integer> newIdList = new HashSet<>();
-                    newIdList.add(id);
-                    mapToFill.put(name, newIdList);
-                }
+                mapToFill.computeIfAbsent(name, k -> new IntOpenHashSet()).add(id);
             }
         }
     }
@@ -312,12 +308,35 @@ public class WikipediaTemplateInfoGenerator
         logger.info("Writing SQL dump ...");
 
         WikipediaTemplateInfoDumpWriter writer = new WikipediaTemplateInfoDumpWriter(
-                this.outputPath, this.charset, this.tplNameToTplId, tableWithTemplatesExists);
-        mode.templateNameToPageId = TPLNAME_TO_PAGEIDS;
-        mode.templateNameToRevId = TPLNAME_TO_REVISIONIDS;
+                this.outputPath, this.charset, this.tplNameToTplId, tableWithTemplatesExists,
+                this.maxAllowedPacket);
+        mode.templateNameToPageId = toSortedIdArrays(TPLNAME_TO_PAGEIDS);
+        mode.templateNameToRevId = toSortedIdArrays(TPLNAME_TO_REVISIONIDS);
         writer.writeSQL(revisionTableExists, pageTableExists, mode);
 
         ////////////////////
+    }
+
+    /**
+     * Moves the ids collected per template into sorted arrays, releasing each set as soon as it
+     * has been copied. The template order of {@code idsPerTemplate} is kept.
+     *
+     * @param idsPerTemplate
+     *            the ids collected per template; it is empty afterwards
+     * @return the sorted ids per template
+     */
+    static Map<String, int[]> toSortedIdArrays(Map<String, IntSet> idsPerTemplate)
+    {
+        Map<String, int[]> sortedIds = new LinkedHashMap<>();
+        Iterator<Entry<String, IntSet>> it = idsPerTemplate.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String, IntSet> e = it.next();
+            int[] ids = e.getValue().toIntArray();
+            Arrays.sort(ids);
+            sortedIds.put(e.getKey(), ids);
+            it.remove();
+        }
+        return sortedIds;
     }
 
     /**
