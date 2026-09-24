@@ -18,12 +18,20 @@
 package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class CategoryIteratorTest
     extends BaseJWPLTest
@@ -77,6 +85,47 @@ public class CategoryIteratorTest
                 nrOfPages++;
             }
             assertEquals(17, nrOfPages, "Number of categories == 17");
+        }
+    }
+
+    /**
+     * Every category must be returned exactly once, independent of the batch boundaries.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 3, 5, 16, 17, 18, 500 })
+    public void test_categoryIteratorCompleteAndWithoutDuplicates(int bufferSize)
+    {
+        Set<Integer> expected = wiki.__getCategories();
+
+        List<Integer> pageIds = new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
+        for (Category c : wiki.getCategories(bufferSize)) {
+            assertNotNull(c);
+            pageIds.add(c.getPageId());
+            ids.add(c.__getId());
+        }
+
+        assertEquals(expected.size(), pageIds.size());
+        assertEquals(pageIds.size(), new HashSet<>(pageIds).size());
+        assertEquals(expected, new HashSet<>(pageIds));
+        for (int i = 1; i < ids.size(); i++) {
+            assertTrue(ids.get(i - 1) < ids.get(i), "Categories must be ordered by id");
+        }
+    }
+
+    /**
+     * Lazy collections of categories returned by the iterator must remain accessible.
+     */
+    @Test
+    public void test_categoryIteratorLazyAccess() throws Exception
+    {
+        for (Category c : wiki.getCategories(3)) {
+            Category loaded = wiki.getCategory(c.getPageId());
+            assertEquals(loaded.getParentIDs(), c.getParentIDs());
+            assertEquals(loaded.getChildrenIDs(), c.getChildrenIDs());
+            assertEquals(loaded.getArticleIds(), c.getArticleIds());
+            assertEquals(loaded.getParents().size(), c.getParents().size());
+            assertEquals(loaded.getChildren().size(), c.getChildren().size());
         }
     }
 }

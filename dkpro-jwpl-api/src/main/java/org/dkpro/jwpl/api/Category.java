@@ -90,6 +90,29 @@ public class Category
     }
 
     /**
+     * Creates a category object from an already retrieved row. The row is not added to the category
+     * cache, because this is used when iterating over all categories.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param row
+     *            The {@link Row} of a category entity that has already been retrieved.
+     * @return A category object backed by {@code row}.
+     */
+    static Category fromRow(Wikipedia wiki, Row row)
+    {
+        return new Category(wiki, row);
+    }
+
+    // private, so that it does not make public calls like new Category(wiki, null) ambiguous
+    private Category(Wikipedia wiki, Row row)
+    {
+        this.wiki = wiki;
+        this.catDAO = wiki.getCategoryDAO();
+        this.row = row;
+    }
+
+    /**
      * Creates a category object.
      *
      * @param wiki
