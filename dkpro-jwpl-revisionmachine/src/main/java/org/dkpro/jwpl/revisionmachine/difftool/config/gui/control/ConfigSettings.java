@@ -205,6 +205,8 @@ public class ConfigSettings
 
         setConfigParameter(ConfigurationKeys.MODE_DATAFILE_OUTPUT, false);
 
+        setConfigParameter(ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED, false);
+
         setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, true);
 
         setConfigParameter(ConfigurationKeys.LIMIT_SQL_FILE_SIZE, 1000000000L);

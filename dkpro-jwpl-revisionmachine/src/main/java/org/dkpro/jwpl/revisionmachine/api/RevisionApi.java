@@ -23,7 +23,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,6 +39,7 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
+import org.dkpro.jwpl.revisionmachine.common.util.BinaryColumns;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
@@ -992,8 +992,7 @@ public class RevisionApi
                 while (result.next()) {
 
                     // Decode String and create Diff-Object
-                    boolean binaryData = result.getMetaData()
-                            .getColumnType(2) == Types.LONGVARBINARY;
+                    boolean binaryData = BinaryColumns.isBinary(result.getMetaData(), 2);
                     if (binaryData) {
                         decoder.setInput(result.getBytes(2));
                     }
@@ -1615,7 +1614,7 @@ public class RevisionApi
                 Diff diff = null;
                 RevisionDecoder decoder;
 
-                boolean binaryData = result.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+                boolean binaryData = BinaryColumns.isBinary(result.getMetaData(), 1);
 
                 while (result.next()) {
 
