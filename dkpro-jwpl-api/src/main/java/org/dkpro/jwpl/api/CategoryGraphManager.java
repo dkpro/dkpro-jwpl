@@ -57,6 +57,19 @@ public class CategoryGraphManager
     private final static String catGraphSerializationFilename = "catGraphSer";
 
     /**
+     * The algorithm of the digest over the page ids in the key of a graph over a subset of the
+     * pages.
+     */
+    private static final String KEY_DIGEST_ALGORITHM = "SHA-256";
+
+    /**
+     * Whether {@link #KEY_DIGEST_ALGORITHM} is available, resolved once when the class is
+     * initialized so that the key of a subset is not built only to find out that it cannot be
+     * digested.
+     */
+    private static final boolean KEY_DIGEST_AVAILABLE = isAlgorithmAvailable(KEY_DIGEST_ALGORITHM);
+
+    /**
      * Retrieves a {@link CategoryGraph} instance for all categories in a {@link Wikipedia} instance.
      * Additionally, the graph is persisted if it could be constructed successfully.
      *
@@ -177,17 +190,43 @@ public class CategoryGraphManager
         if (pageIds == null) {
             return wikiId;
         }
+        if (!KEY_DIGEST_AVAILABLE) {
+            // every Java platform is required to support SHA-256
+            throw new IllegalStateException(KEY_DIGEST_ALGORITHM + " is not available");
+        }
         int[] ids = pageIds.stream().mapToInt(Integer::intValue).sorted().toArray();
         ByteBuffer buffer = ByteBuffer.allocate(ids.length * Integer.BYTES);
         for (int id : ids) {
             buffer.putInt(id);
         }
+        byte[] digest = newKeyDigest().digest(buffer.array());
+        return wikiId + "_" + ids.length + "_" + HexFormat.of().formatHex(digest, 0, 8);
+    }
+
+    private static boolean isAlgorithmAvailable(String algorithm)
+    {
         try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(buffer.array());
-            return wikiId + "_" + ids.length + "_" + HexFormat.of().formatHex(digest, 0, 8);
+            MessageDigest.getInstance(algorithm);
+            return true;
         }
         catch (NoSuchAlgorithmException e) {
-            // every Java platform is required to support SHA-256
+            logger.warn("{} is not available, graphs over a subset of the pages cannot be keyed",
+                    algorithm, e);
+            return false;
+        }
+    }
+
+    /**
+     * Creates a new digest for each key, as {@link MessageDigest} instances are not thread-safe.
+     * Must only be called if {@link #KEY_DIGEST_AVAILABLE} is {@code true}.
+     */
+    private static MessageDigest newKeyDigest()
+    {
+        try {
+            return MessageDigest.getInstance(KEY_DIGEST_ALGORITHM);
+        }
+        catch (NoSuchAlgorithmException e) {
+            // cannot happen, the availability was checked when the class was initialized
             throw new IllegalStateException(e);
         }
     }
