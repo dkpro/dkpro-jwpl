@@ -20,6 +20,7 @@ package org.dkpro.jwpl.api.util;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -64,7 +65,7 @@ public class UnmodifiableArraySet<E>
     @Override
     public boolean isEmpty()
     {
-        return data != null ? data.length > 0 : true;
+        return data == null || data.length == 0;
     }
 
     @Override
@@ -74,7 +75,7 @@ public class UnmodifiableArraySet<E>
             return false;
         }
         for (Object d : data) {
-            if (d.equals(aO)) {
+            if (Objects.equals(d, aO)) {
                 return true;
             }
         }
@@ -91,16 +92,20 @@ public class UnmodifiableArraySet<E>
     @Override
     public Object[] toArray()
     {
-        return data;
+        return Arrays.copyOf(data, data.length);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] aA)
     {
-        if (aA.length != data.length) {
-            throw new IllegalArgumentException("Target array too small");
+        if (aA.length < data.length) {
+            return (T[]) Arrays.copyOf(data, data.length, aA.getClass());
         }
-        System.arraycopy(data, 0, aA, 0, aA.length);
+        System.arraycopy(data, 0, aA, 0, data.length);
+        if (aA.length > data.length) {
+            aA[data.length] = null;
+        }
         return aA;
     }
 
@@ -149,5 +154,27 @@ public class UnmodifiableArraySet<E>
     public void clear()
     {
         throw new UnsupportedOperationException("Unmodifiable set");
+    }
+
+    @Override
+    public boolean equals(Object aO)
+    {
+        if (aO == this) {
+            return true;
+        }
+        if (!(aO instanceof Set<?> other)) {
+            return false;
+        }
+        return other.size() == size() && containsAll(other);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int h = 0;
+        for (Object d : data) {
+            h += Objects.hashCode(d);
+        }
+        return h;
     }
 }
