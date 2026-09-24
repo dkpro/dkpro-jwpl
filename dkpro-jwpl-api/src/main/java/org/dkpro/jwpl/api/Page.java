@@ -17,16 +17,16 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.PageDAO;
-import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
-import org.dkpro.jwpl.api.util.UnmodifiableArraySet;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
@@ -256,6 +256,44 @@ public class Page
     }
 
     /**
+     * Loads the elements of one of the collections of this page. The collection is read by the id
+     * of this page instead of via a reattached entity, so the page row, including its text, is not
+     * loaded again, and the entity of this page is never associated with a session.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks},
+     *            {@code categories} or {@code redirects}.
+     * @param elementType
+     *            The type of the elements of the collection.
+     * @param <T>
+     *            The type of the elements of the collection.
+     * @return A new, modifiable set containing the elements of the collection. It is handed out
+     *         as is by the public getters of the id and redirect collections.
+     */
+    private <T> Set<T> loadCollection(String collection, Class<T> elementType)
+    {
+        final String hql = "select l from Page p join p." + collection + " l where p.id = :id";
+        final long id = __getId();
+        List<T> elements = wiki.__inTransaction(session -> session
+                .createQuery(hql, elementType).setParameter("id", id).list());
+        return new HashSet<>(elements);
+    }
+
+    /**
+     * Loads the page ids of one of the collections of this page for internal use only, i.e. to
+     * resolve them to {@link Page} or {@link Category} objects. The result is never exposed.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks} or
+     *            {@code categories}.
+     * @return An unmodifiable set containing the page ids of the collection.
+     */
+    private Set<Integer> loadIds(String collection)
+    {
+        return Collections.unmodifiableSet(loadCollection(collection, Integer.class));
+    }
+
+    /**
      * @return Returns the id.
      */
     /*
@@ -276,14 +314,12 @@ public class Page
     }
 
     /**
-     * @return A set of categories that this page belongs to.
+     * @return A set of categories that this page belongs to. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Category> getCategories()
     {
-        Set<Integer> tmp = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getCategories());
-        });
+        Set<Integer> tmp = loadIds("categories");
 
         Set<Category> categories = new HashSet<>();
         for (int pageID : tmp) {
@@ -325,7 +361,9 @@ public class Page
      * edition's hidden-categories category.
      *
      * @return The categories of this page that are not hidden. If there is no
-     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page.
+     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page. A new,
+     *         modifiable set is returned on each call, so callers may modify it without affecting
+     *         this page.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
@@ -342,7 +380,8 @@ public class Page
      *            The title of the category that holds the hidden categories, e.g.
      *            {@value #HIDDEN_CATEGORIES_TITLE}. Must not be {@code null} or blank.
      * @return The categories of this page that are not hidden. If there is no category with the
-     *         given title, all categories of this page.
+     *         given title, all categories of this page. A new, modifiable set is returned on each
+     *         call, so callers may modify it without affecting this page.
      * @throws IllegalArgumentException
      *             Thrown if {@code hiddenCategoriesTitle} is {@code null} or blank.
      * @throws WikiApiException
@@ -380,15 +419,12 @@ public class Page
      * {@link Page#getInlinks()}.size(). This is too slow. Use {@link Page#getNumberOfInlinks()}
      * instead.
      *
-     * @return The set of pages that have a link pointing to this page.
+     * @return The set of pages that have a link pointing to this page. A new, modifiable set is
+     *         returned on each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getInlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> pageIDs = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        Set<Integer> pageIDs = loadIds("inLinks");
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : pageIDs) {
@@ -430,14 +466,12 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the inLinks of this page.
+     * @return Returns the IDs of the inLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getInlinkIDs()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        return loadCollection("inLinks", Integer.class);
     }
 
     /**
@@ -461,15 +495,12 @@ public class Page
      * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too
      * slow. Use {@link Page#getNumberOfOutlinks()} instead.
      *
-     * @return The set of pages that are linked from this page.
+     * @return The set of pages that are linked from this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getOutlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        Set<Integer> tmpSet = loadIds("outLinks");
 
         Set<Page> pages = new HashSet<>();
         for (int pageID : tmpSet) {
@@ -510,15 +541,12 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the outLinks of this page.
+     * @return Returns the IDs of the outLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getOutlinkIDs()
     {
-
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        return loadCollection("outLinks", Integer.class);
     }
 
     /**
@@ -548,14 +576,12 @@ public class Page
     }
 
     /**
-     * @return The set of strings that are redirects to this page.
+     * @return The set of strings that are redirects to this page. A new, modifiable set is returned
+     *         on each call, so callers may modify it without affecting this page.
      */
     public Set<String> getRedirects()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getRedirects());
-        });
+        return loadCollection("redirects", String.class);
     }
 
     /**

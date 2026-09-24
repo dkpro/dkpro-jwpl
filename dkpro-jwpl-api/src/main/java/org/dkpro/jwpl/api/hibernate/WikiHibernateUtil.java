@@ -433,7 +433,13 @@ public class WikiHibernateUtil
      * @param entity  The detached entity. Must not be {@code null}.
      * @param <T>     The type of the entity.
      * @return An instance of the entity that is associated with {@code session}.
+     * @deprecated JWPL no longer uses this. On Hibernate 7 it loads the whole row of the entity
+     *             again, and on Hibernate 6 it associates the given instance with the session,
+     *             which is unsafe if the instance is shared between threads. Query the required
+     *             data by the identifier of the entity instead, e.g.
+     *             {@code select l from Page p join p.inLinks l where p.id = :id}.
      */
+    @Deprecated(since = "2.3.0", forRemoval = true)
     @SuppressWarnings("unchecked")
     public static <T> T reattach(Session session, T entity)
     {
