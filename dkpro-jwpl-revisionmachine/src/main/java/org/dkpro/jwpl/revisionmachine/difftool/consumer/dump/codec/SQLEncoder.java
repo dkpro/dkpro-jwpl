@@ -162,7 +162,8 @@ public class SQLEncoder
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
                 + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
-                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter)"
+                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter), "
+                + "KEY articleTsIdx (ArticleID, Timestamp, RevisionCounter)"
                 + ") ENGINE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
         binaryTableRevision = "CREATE TABLE IF NOT EXISTS revisions ("
@@ -174,7 +175,8 @@ public class SQLEncoder
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
                 + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
-                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter)"
+                + "PRIMARY KEY(PrimaryKey), " + "KEY articleIdx (ArticleID, RevisionCounter), "
+                + "KEY articleTsIdx (ArticleID, Timestamp, RevisionCounter)"
                 + ") ENGINE = MyISAM DEFAULT CHARSET utf8 COLLATE utf8_general_ci;";
 
     }

@@ -56,7 +56,7 @@ public class SQLEncoderTest
     }
 
     @Test
-    public void testTablesDeclareEngineAndArticleIndex() throws Exception
+    public void testTablesDeclareEngineAndArticleIndexes() throws Exception
     {
         SQLEncoder encoder = new SQLEncoder(null);
 
@@ -65,6 +65,8 @@ public class SQLEncoderTest
             assertTrue(table[0].contains(") ENGINE = MyISAM "), table[0]);
             assertFalse(table[0].contains("TYPE ="), table[0]);
             assertTrue(table[0].contains("KEY articleIdx (ArticleID, RevisionCounter)"), table[0]);
+            assertTrue(table[0].contains("KEY articleTsIdx (ArticleID, Timestamp, RevisionCounter)"),
+                    table[0]);
             assertEquals(SQLEncoder.DISABLE_KEYS, table[1]);
         }
     }

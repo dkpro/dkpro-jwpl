@@ -31,8 +31,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.dkpro.jwpl.revisionmachine.api.RevisionAPIConfiguration;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
@@ -75,7 +77,7 @@ public class RevisionsTableIndexTest
             "index_chronological" };
 
     /**
-     * DDL of the revisions table as created by earlier versions, i.e. without the article index
+     * DDL of the revisions table as created by earlier versions, i.e. without the article indexes
      * (and with the engine syntax fixed, as the original one does not run on current servers).
      */
     private static final String LEGACY_TABLE = "CREATE TABLE revisions ("
@@ -95,6 +97,13 @@ public class RevisionsTableIndexTest
      */
     private static final String MIGRATE_TIMESTAMP_INDEX = "ALTER TABLE revisions"
             + " ADD INDEX articleTsIdx (ArticleID, Timestamp, RevisionCounter);";
+
+    /**
+     * Adds the article index the way revisions tables declared it before they also declared the
+     * composite timestamp index.
+     */
+    private static final String ADD_ARTICLE_INDEX = "ALTER TABLE revisions"
+            + " ADD INDEX articleIdx (ArticleID, RevisionCounter);";
 
     private static JdbcDatabaseContainer<?> container;
 
@@ -141,7 +150,7 @@ public class RevisionsTableIndexTest
     }
 
     @Test
-    public void testDiffToolDeclaresArticleIndexAndBuildsItAfterTheLoad() throws Exception
+    public void testDiffToolDeclaresArticleIndexesAndBuildsThemAfterTheLoad() throws Exception
     {
         String database = createDatabase();
         settings.setConfigParameter(ConfigurationKeys.SQL_DATABASE, database);
@@ -149,75 +158,73 @@ public class RevisionsTableIndexTest
         SQLDatabaseWriter writer = new SQLDatabaseWriter(null);
         try (Connection connection = connect(database)) {
             assertEquals("MyISAM", engine(connection));
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals("disabled", articleIndexComment(connection));
+            assertRevisionsIndexes(connection);
+            assertEquals("disabled", indexComment(connection, "articleIdx"));
+            assertEquals("disabled", indexComment(connection, "articleTsIdx"));
 
             for (Task<Diff> task : tasks()) {
                 writer.process(task);
             }
             writer.close();
 
-            assertEquals("", articleIndexComment(connection));
+            // both keys are built by the single ENABLE KEYS after the load
+            assertRevisionsIndexes(connection);
+            assertEquals("", indexComment(connection, "articleIdx"));
+            assertEquals("", indexComment(connection, "articleTsIdx"));
             assertEquals(9, count(connection, "revisions"));
         }
     }
 
     @Test
-    public void testIndexGeneratorKeepsDeclaredArticleIndex() throws Exception
+    public void testIndexGeneratorKeepsDeclaredArticleIndexes() throws Exception
     {
         String database = createDatabase(new SQLEncoder(null).getTable());
         generate(database, OutputTypes.DATABASE);
 
         try (Connection connection = connect(database)) {
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals("", articleIndexComment(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
+            assertEquals("", indexComment(connection, "articleIdx"));
+            assertEquals("", indexComment(connection, "articleTsIdx"));
             assertIndexTables(connection);
         }
     }
 
     @Test
-    public void testIndexGeneratorCreatesMissingArticleIndex() throws Exception
+    public void testIndexGeneratorCreatesMissingArticleIndexes() throws Exception
     {
         String database = createDatabase(LEGACY_TABLE);
         generate(database, OutputTypes.DATABASE);
 
         try (Connection connection = connect(database)) {
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
             assertIndexTables(connection);
         }
     }
 
     @Test
-    public void testIndexSqlFileKeepsDeclaredArticleIndex() throws Exception
+    public void testIndexSqlFileKeepsDeclaredArticleIndexes() throws Exception
     {
         String database = createDatabase(new SQLEncoder(null).getTable());
         generate(database, OutputTypes.SQL);
 
         try (Connection connection = connect(database)) {
             runIndexSqlFile(connection);
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals("", articleIndexComment(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
+            assertEquals("", indexComment(connection, "articleIdx"));
+            assertEquals("", indexComment(connection, "articleTsIdx"));
             assertIndexTables(connection);
         }
     }
 
     @Test
-    public void testIndexSqlFileCreatesMissingArticleIndex() throws Exception
+    public void testIndexSqlFileCreatesMissingArticleIndexes() throws Exception
     {
         String database = createDatabase(LEGACY_TABLE);
         generate(database, OutputTypes.SQL);
 
         try (Connection connection = connect(database)) {
             runIndexSqlFile(connection);
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
             assertIndexTables(connection);
         }
     }
@@ -229,9 +236,7 @@ public class RevisionsTableIndexTest
         generate(database, OutputTypes.DATABASE);
 
         try (Connection connection = connect(database)) {
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
             assertIndexTables(connection);
         }
     }
@@ -244,9 +249,32 @@ public class RevisionsTableIndexTest
 
         try (Connection connection = connect(database)) {
             runIndexSqlFile(connection);
-            assertEquals(List.of("ArticleID", "RevisionCounter"), articleIndex(connection));
-            assertEquals(List.of("ArticleID", "Timestamp", "RevisionCounter"),
-                    indexColumns(connection, "articleTsIdx"));
+            assertRevisionsIndexes(connection);
+            assertIndexTables(connection);
+        }
+    }
+
+    @Test
+    public void testIndexGeneratorCreatesMissingTimestampIndex() throws Exception
+    {
+        String database = createDatabase(LEGACY_TABLE, ADD_ARTICLE_INDEX);
+        generate(database, OutputTypes.DATABASE);
+
+        try (Connection connection = connect(database)) {
+            assertRevisionsIndexes(connection);
+            assertIndexTables(connection);
+        }
+    }
+
+    @Test
+    public void testIndexSqlFileCreatesMissingTimestampIndex() throws Exception
+    {
+        String database = createDatabase(LEGACY_TABLE, ADD_ARTICLE_INDEX);
+        generate(database, OutputTypes.SQL);
+
+        try (Connection connection = connect(database)) {
+            runIndexSqlFile(connection);
+            assertRevisionsIndexes(connection);
             assertIndexTables(connection);
         }
     }
@@ -340,30 +368,41 @@ public class RevisionsTableIndexTest
         }
     }
 
-    private static List<String> articleIndex(Connection connection) throws SQLException
+    /**
+     * Checks that the revisions table has exactly the primary key, {@code articleIdx} and
+     * {@code articleTsIdx} with their expected columns, i.e. that no index is missing and that the
+     * index writers did not add a duplicate one.
+     */
+    private static void assertRevisionsIndexes(Connection connection) throws SQLException
     {
-        return indexColumns(connection, "articleIdx");
+        assertEquals(Map.of("PRIMARY", List.of("PrimaryKey"), //
+                "articleIdx", List.of("ArticleID", "RevisionCounter"), //
+                "articleTsIdx", List.of("ArticleID", "Timestamp", "RevisionCounter")),
+                indexes(connection));
     }
 
-    private static List<String> indexColumns(Connection connection, String index)
-        throws SQLException
+    /**
+     * Returns the columns of each index of the revisions table. {@code SHOW INDEX} lists the
+     * columns of an index in their order within the index.
+     */
+    private static Map<String, List<String>> indexes(Connection connection) throws SQLException
     {
-        List<String> columns = new ArrayList<>();
+        Map<String, List<String>> indexes = new HashMap<>();
+        try (Statement statement = connection.createStatement();
+                ResultSet result = statement.executeQuery("SHOW INDEX FROM revisions")) {
+            while (result.next()) {
+                indexes.computeIfAbsent(result.getString("Key_name"), k -> new ArrayList<>())
+                        .add(result.getString("Column_name"));
+            }
+        }
+        return indexes;
+    }
+
+    private static String indexComment(Connection connection, String index) throws SQLException
+    {
         try (Statement statement = connection.createStatement();
                 ResultSet result = statement.executeQuery(
                         "SHOW INDEX FROM revisions WHERE Key_name = '" + index + "'")) {
-            while (result.next()) {
-                columns.add(result.getString("Column_name"));
-            }
-        }
-        return columns;
-    }
-
-    private static String articleIndexComment(Connection connection) throws SQLException
-    {
-        try (Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery(
-                        "SHOW INDEX FROM revisions WHERE Key_name = 'articleIdx'")) {
             result.next();
             return result.getString("Comment");
         }

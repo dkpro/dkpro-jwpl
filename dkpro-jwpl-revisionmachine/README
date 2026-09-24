@@ -74,11 +74,14 @@ maxAllowedPackets=16760832
 
 ## Indexes on the revisions table
 
-The DiffTool declares `articleIdx (ArticleID, RevisionCounter)` when it creates
-the `revisions` table and builds it once after the bulk load. After the index
-tables have been generated, the index generator enables the keys of the
-`revisions` table and creates the following secondary indexes if they are
-missing:
+The DiffTool declares the secondary indexes
+`articleIdx (ArticleID, RevisionCounter)` and
+`articleTsIdx (ArticleID, Timestamp, RevisionCounter)` when it creates the
+`revisions` table and builds both in one pass after the bulk load. Declaring them up front matters for MyISAM: every later `CREATE INDEX`
+copies the whole table, diff payloads included. After the index tables have
+been generated, the index generator enables the keys of the `revisions` table
+and, for tables created by earlier versions, creates the following indexes if
+they are missing:
 
 ```sql
 CREATE INDEX articleIdx ON revisions(ArticleID, RevisionCounter);
