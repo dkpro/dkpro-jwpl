@@ -61,6 +61,11 @@ public class WikipediaXMLReader
             .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
+     * Beginning of the text start tag, which is followed by a varying list of attributes
+     */
+    private static final String TEXT_START_TAG_NAME = "<text";
+
+    /**
      * Reference to the reader
      */
     private Reader input;
@@ -74,11 +79,6 @@ public class WikipediaXMLReader
      * Reference to the XML keyword tree
      */
     private SingleKeywordTree<WikipediaXMLKeys> keys;
-
-    /**
-     * Beginning of the text start tag, which is followed by a varying list of attributes
-     */
-    private static final String TEXT_START_TAG_NAME = "<text";
 
     /**
      * Configuration parameter - Maximum size of a revision task

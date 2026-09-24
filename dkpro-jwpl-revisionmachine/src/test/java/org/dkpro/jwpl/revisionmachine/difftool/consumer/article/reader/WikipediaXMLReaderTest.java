@@ -18,18 +18,29 @@
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.article.reader;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.StringReader;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
+import org.dkpro.jwpl.revisionmachine.common.exceptions.ArticleReaderException;
+import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
+import org.dkpro.jwpl.revisionmachine.common.exceptions.ErrorKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
 import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
+import org.dkpro.jwpl.revisionmachine.difftool.consumer.diff.calculation.DiffCalculator;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
+import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class WikipediaXMLReaderTest
 {
@@ -67,36 +78,64 @@ public class WikipediaXMLReaderTest
         assertEquals(List.of(0, 1, 4), readNamespaces(xml));
     }
 
-    @Test
-    public void testReadsTextWithAttributes() throws Exception
+    @ParameterizedTest
+    @ValueSource(strings = { "<text>", "<text xml:space=\"preserve\">",
+            // Current dumps (export-0.10 and later) put the size and hash before xml:space.
+            "<text bytes=\"9\" sha1=\"abc\" xml:space=\"preserve\">",
+            "<text xml:space=\"preserve\" bytes=\"9\">" })
+    public void testReadsTextWithStartTag(String startTag) throws Exception
     {
-        // Current dumps (export-0.10 and later) put the size and hash before xml:space.
-        String xml = SITEINFO
-                + page("Main Page", "0", 1,
-                        "<text bytes=\"9\" sha1=\"abc\" xml:space=\"preserve\">Some text</text>")
-                + page("Talk:Main Page", "1", 2,
-                        "<text xml:space=\"preserve\" bytes=\"5\">Other</text>")
-                + "</mediawiki>";
+        String xml = SITEINFO + page("Main Page", "0", 1, startTag + "Some text</text>")
+                + page("Talk:Main Page", "1", 2, startTag + "Other</text>") + "</mediawiki>";
 
-        assertEquals(Arrays.asList("Some text", "Other"), readTexts(xml));
+        assertEquals(List.of("Some text", "Other"), readTexts(xml));
     }
 
-    @Test
-    public void testLeavesSelfClosingTextUnset() throws Exception
+    @ParameterizedTest
+    @ValueSource(strings = { "<text/>", "<text />", "<text bytes=\"0\" sha1=\"phoiac9\" />",
+            "<text deleted=\"deleted\" />", "<text xml:space=\"preserve\" />" })
+    public void testLeavesSelfClosingTextUnset(String text) throws Exception
     {
         // Empty and deleted texts are written as self-closing elements; they must neither fail
         // nor swallow the text of the following revision.
-        String xml = SITEINFO
-                + page("Main Page", "0", 1, "<text bytes=\"0\" sha1=\"phoiac9\" />")
-                + page("Talk:Main Page", "1", 2, "<text deleted=\"deleted\" />")
-                + page("Wikipedia:About", "4", 3, "<text xml:space=\"preserve\" />")
-                + page("Main page", "0", 4,
+        String xml = SITEINFO + page("Main Page", "0", 1, text)
+                + page("Talk:Main Page", "1", 2,
                         "<text bytes=\"9\" xml:space=\"preserve\">Some text</text>")
                 + "</mediawiki>";
 
-        assertEquals(Arrays.asList(null, null, null, "Some text"), readTexts(xml));
+        assertEquals(Arrays.asList(null, "Some text"), readTexts(xml));
     }
 
+    @ParameterizedTest
+    @ValueSource(strings = { "<text", "<text bytes=\"1\"", "<text bytes=\"0\" /" })
+    public void testFailsIfInputEndsWithinTextStartTag(String truncatedTag) throws Exception
+    {
+        String page = page("Main Page", "0", 1, truncatedTag);
+        String xml = SITEINFO
+                + page.substring(0, page.indexOf(truncatedTag) + truncatedTag.length());
+
+        WikipediaXMLReader reader = new WikipediaXMLReader(new StringReader(xml));
+        assertTrue(reader.hasNext());
+        // The reader must not wait for the end of the tag forever
+        ArticleReaderException e = assertTimeoutPreemptively(Duration.ofSeconds(10),
+                () -> assertThrows(ArticleReaderException.class, reader::next));
+        assertEquals(
+                ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE
+                        .toString(),
+                e.getMessage());
+    }
+
+    /**
+     * Creates a page with a single revision whose text is {@code Some text}.
+     *
+     * @param title
+     *            the page title
+     * @param namespace
+     *            the content of the {@code <ns>} element, or {@code null} to omit it
+     * @param id
+     *            the page id; the revision id is derived from it
+     * @return the page element
+     */
     private static String page(String title, String namespace, int id)
     {
         return page(title, namespace, id, "<text xml:space=\"preserve\">Some text</text>");
@@ -105,6 +144,16 @@ public class WikipediaXMLReaderTest
     /**
      * Creates a page with a single revision, laid out like in the dumps: the reader relies on the
      * whitespace between the elements.
+     *
+     * @param title
+     *            the page title
+     * @param namespace
+     *            the content of the {@code <ns>} element, or {@code null} to omit it
+     * @param id
+     *            the page id; the revision id is derived from it
+     * @param text
+     *            the complete text element of the revision
+     * @return the page element
      */
     private static String page(String title, String namespace, int id, String text)
     {
@@ -119,30 +168,44 @@ public class WikipediaXMLReaderTest
                 + "    </revision>\n  </page>";
     }
 
+    /**
+     * Reads all revisions of the given dump and passes each one to the {@link DiffCalculator}.
+     *
+     * @param xml
+     *            the dump, holding pages with a single revision each
+     * @return for each revision the text the DiffCalculator stores, or {@code null} if it skips
+     *         the revision because it has no text
+     */
     private static List<String> readTexts(String xml) throws Exception
     {
         WikipediaXMLReader reader = new WikipediaXMLReader(new StringReader(xml));
+        TextCalculator calculator = new TextCalculator();
         List<String> texts = new ArrayList<>();
         while (reader.hasNext()) {
             Task<Revision> task = reader.next();
             assertEquals(1, task.size());
-            texts.add(textOf(task.getContainer().get(0)));
+            texts.add(calculator.storedText(task.getContainer().get(0)));
         }
         return texts;
     }
 
     /**
-     * Returns the text read for a revision, or {@code null} if none was read. Revision falls back
-     * to loading an unset text through the RevisionApi, which fails without one; DiffCalculator
-     * likewise treats that as a revision without text.
+     * Exposes {@link DiffCalculator#processRevision(Revision)}, which returns {@code null} for a
+     * revision without text.
      */
-    private static String textOf(Revision revision)
+    private static final class TextCalculator
+        extends DiffCalculator
     {
-        try {
-            return revision.getRevisionText();
+        TextCalculator() throws ConfigurationException
+        {
+            super(null);
         }
-        catch (NullPointerException e) {
-            return null;
+
+        String storedText(Revision revision) throws Exception
+        {
+            // processRevision() does not advance the revision counter, so this is a full revision
+            Diff diff = processRevision(revision);
+            return diff == null ? null : diff.buildRevision((String) null);
         }
     }
 

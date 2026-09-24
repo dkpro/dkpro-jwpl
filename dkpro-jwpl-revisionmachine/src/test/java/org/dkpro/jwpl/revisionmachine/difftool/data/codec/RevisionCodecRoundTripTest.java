@@ -17,64 +17,92 @@
  */
 package org.dkpro.jwpl.revisionmachine.difftool.data.codec;
 
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.ENCODING;
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.assertDecodes;
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.codecData;
+import static org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecTestSupport.configure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Stream;
 
-import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
-import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
-import org.dkpro.jwpl.revisionmachine.difftool.config.gui.control.ConfigSettings;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffAction;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.DiffPart;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class RevisionCodecRoundTripTest
 {
 
-    private static final String ENCODING = StandardCharsets.UTF_8.toString();
+    private static final String PREVIOUS = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    @BeforeAll
-    public static void setUpConfiguration()
+    @BeforeEach
+    @AfterEach
+    public void setUpConfiguration()
     {
-        ConfigSettings settings = new ConfigSettings();
-        settings.defaultConfiguration();
-        settings.setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, true);
-        new ConfigurationManager(settings);
+        configure(true);
     }
 
-    @Test
-    public void testSmallRevision() throws Exception
+    @ParameterizedTest
+    @CsvSource({ "'', true", "'', false", "Some text, true", "Some text, false" })
+    public void testRoundTrip(String text, boolean zipCompression) throws Exception
     {
-        assertRoundTrip("Some text");
+        configure(zipCompression);
+        assertRoundTrip(text);
     }
 
-    @Test
-    public void testEmptyRevision() throws Exception
+    static Stream<Arguments> emptyTextParts()
     {
-        assertRoundTrip("");
+        // The encoder pads each text block to the next byte boundary. The empty part is followed
+        // by an insert, so the decoder has to skip the fill bits before it reads the next part.
+        // The start and the length of the following text vary the block sizes, so that the
+        // empty part never ends on a byte boundary.
+        return Stream.of(
+                Arguments.of(part(DiffAction.FULL_REVISION_UNCOMPRESSED, 0, 0, ""), "x"),
+                Arguments.of(part(DiffAction.FULL_REVISION_UNCOMPRESSED, 0, 0, ""), "xy"),
+                Arguments.of(part(DiffAction.FULL_REVISION_UNCOMPRESSED, 0, 0, ""), "wxyz"),
+                Arguments.of(part(DiffAction.FULL_REVISION_UNCOMPRESSED, 0, 0, ""), "stuvwxyz"),
+                Arguments.of(part(DiffAction.INSERT, 1, 0, ""), "xy"),
+                Arguments.of(part(DiffAction.INSERT, 2, 0, ""), "xy"),
+                Arguments.of(part(DiffAction.INSERT, 9, 0, ""), "xy"),
+                Arguments.of(part(DiffAction.INSERT, 20, 0, ""), "xy"),
+                Arguments.of(part(DiffAction.REPLACE, 1, 1, ""), "xy"),
+                Arguments.of(part(DiffAction.REPLACE, 4, 1, ""), "xy"),
+                Arguments.of(part(DiffAction.REPLACE, 9, 1, ""), "xy"),
+                Arguments.of(part(DiffAction.REPLACE, 20, 1, ""), "xy"));
     }
 
-    @Test
-    public void testEmptyRevisionWithoutZipCompression() throws Exception
+    @ParameterizedTest
+    @MethodSource("emptyTextParts")
+    public void testEmptyTextIsFollowedByFillBits(DiffPart emptyPart, String followingText)
+        throws Exception
     {
-        ConfigSettings settings = new ConfigSettings();
-        settings.defaultConfiguration();
-        settings.setConfigParameter(ConfigurationKeys.MODE_ZIP_COMPRESSION_ENABLED, false);
-        new ConfigurationManager(settings);
-        try {
-            assertRoundTrip("");
-            assertRoundTrip("Some text");
+        Diff diff = new Diff();
+        diff.add(emptyPart);
+        diff.add(part(DiffAction.INSERT, 0, 0, followingText));
+
+        RevisionCodecData codecData = codecData(diff);
+        codecData.totalSizeInBits();
+        int bits = 3 + codecData.getBlocksizeL();
+        if (emptyPart.getAction() != DiffAction.FULL_REVISION_UNCOMPRESSED) {
+            bits += codecData.getBlocksizeS();
         }
-        finally {
-            setUpConfiguration();
+        if (emptyPart.getAction() == DiffAction.REPLACE) {
+            bits += codecData.getBlocksizeE();
         }
+        assertNotEquals(0, bits % 8, "the empty part has to end within a byte");
+
+        assertDecodes(diff, codecData, PREVIOUS, diff.buildRevision(PREVIOUS));
     }
 
     @Test
@@ -87,37 +115,17 @@ public class RevisionCodecRoundTripTest
         diff.add(part(DiffAction.DELETE, 0, 1, null));
         diff.add(part(DiffAction.INSERT, 1, 0, "xy"));
 
-        RevisionCodecData codecData = new RevisionCodecData();
-        codecData.checkBlocksizeS(4);
-        codecData.checkBlocksizeE(3);
-        codecData.checkBlocksizeL(0);
-        codecData.checkBlocksizeS(2);
-        codecData.checkBlocksizeL(0);
-        codecData.checkBlocksizeS(0);
-        codecData.checkBlocksizeE(1);
-        codecData.checkBlocksizeS(1);
-        codecData.checkBlocksizeL(2);
-
-        String previous = "abcdefgh";
-        String expected = diff.buildRevision(previous);
-
-        RevisionEncoder encoder = new RevisionEncoder();
-        RevisionDecoder decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(encoder.binaryDiff(codecData, diff));
-        assertEquals(expected, decoder.decode().buildRevision(previous));
-
-        decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(encoder.encodeDiff(codecData, diff));
-        assertEquals(expected, decoder.decode().buildRevision(previous));
+        assertDecodes(diff, codecData(diff), PREVIOUS, diff.buildRevision(PREVIOUS));
     }
 
     @Test
     public void testCompressedRevisionLargerThanBuffer() throws Exception
     {
         String text = repeat(50_000);
-        byte[] binary = new RevisionEncoder().binaryDiff(codecData(text), diff(text));
+        Diff diff = diff(text);
+        byte[] binary = new RevisionEncoder().binaryDiff(codecData(diff), diff);
         assertEquals(-128, binary[0]);
-        assertTrue(new RevisionEncoder().encodeDiff(codecData(text), diff(text)).startsWith("_"));
+        assertTrue(new RevisionEncoder().encodeDiff(codecData(diff), diff).startsWith("_"));
 
         assertRoundTrip(text);
     }
@@ -146,7 +154,8 @@ public class RevisionCodecRoundTripTest
     public void testTruncatedCompressedRevisionFails() throws Exception
     {
         String text = repeat(50_000);
-        byte[] binary = new RevisionEncoder().binaryDiff(codecData(text), diff(text));
+        Diff diff = diff(text);
+        byte[] binary = new RevisionEncoder().binaryDiff(codecData(diff), diff);
         assertEquals(-128, binary[0]);
 
         byte[] truncated = Arrays.copyOf(binary, binary.length / 2);
@@ -156,26 +165,8 @@ public class RevisionCodecRoundTripTest
 
     private static void assertRoundTrip(String text) throws Exception
     {
-        RevisionEncoder encoder = new RevisionEncoder();
-        byte[] binary = encoder.binaryDiff(codecData(text), diff(text));
-        String base64 = encoder.encodeDiff(codecData(text), diff(text));
-
-        RevisionDecoder decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(binary);
-        assertEquals(text, decoder.decode().buildRevision((String) null));
-
-        decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(new ByteArrayInputStream(binary), true);
-        assertEquals(text, decoder.decode().buildRevision((String) null));
-
-        decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(base64);
-        assertEquals(text, decoder.decode().buildRevision((String) null));
-
-        decoder = new RevisionDecoder(ENCODING);
-        decoder.setInput(new ByteArrayInputStream(base64.getBytes(StandardCharsets.US_ASCII)),
-                false);
-        assertEquals(text, decoder.decode().buildRevision((String) null));
+        Diff diff = diff(text);
+        assertDecodes(diff, codecData(diff), null, text);
     }
 
     private static String repeat(int length)
@@ -185,13 +176,6 @@ public class RevisionCodecRoundTripTest
             builder.append((char) ('a' + i % 26));
         }
         return builder.toString();
-    }
-
-    private static RevisionCodecData codecData(String text)
-    {
-        RevisionCodecData codecData = new RevisionCodecData();
-        codecData.checkBlocksizeL(text.getBytes(StandardCharsets.UTF_8).length);
-        return codecData;
     }
 
     private static DiffPart part(DiffAction action, int start, int length, String text)
