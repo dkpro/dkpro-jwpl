@@ -19,6 +19,7 @@ package org.dkpro.jwpl.api;
 
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -116,19 +117,32 @@ public class WikipediaInfo
         degreeDistribution = null;
         categorizedArticleSet = null;
 
-        // get number of pages
+        numberOfPages = -1; // lazy initialization => computed on first access
+    }
+
+    /**
+     * Counts the pages of the page set.
+     *
+     * @return The number of pages in the page set.
+     */
+    private int computeNumberOfPages()
+    {
         if (allPages) {
             // exactly the rows the page iterable walks, without loading any of them
-            numberOfPages = wiki.__inTransaction(session -> session
+            return wiki.__inTransaction(session -> session
                     .createQuery("select count(p) from Page p", Long.class).uniqueResult())
                     .intValue();
         }
-        else {
-            numberOfPages = 0;
-            for (Page ignored : pages) {
-                numberOfPages++;
-            }
+        if (pages instanceof Collection<?> collection) {
+            return collection.size();
         }
+        // A caller-supplied iterable can only be counted by walking it, as there is no query
+        // that selects exactly its pages.
+        int count = 0;
+        for (Page page : pages) {
+            count++;
+        }
+        return count;
     }
 
     /**
@@ -177,6 +191,9 @@ public class WikipediaInfo
      */
     public int getNumberOfPages()
     {
+        if (numberOfPages < 0) { // not yet initialized
+            numberOfPages = computeNumberOfPages();
+        }
         return numberOfPages;
     }
 

@@ -22,10 +22,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.AbstractCollection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -72,7 +75,7 @@ public class WikipediaInfoTest
     public void testGetNumberOfPagesMatchesIteration()
     {
         int iterated = 0;
-        for (Page ignored : wiki.getPages()) {
+        for (Page page : wiki.getPages()) {
             iterated++;
         }
         assertTrue(iterated > 0);
@@ -111,6 +114,93 @@ public class WikipediaInfoTest
         assertEquals(subset.size(), subsetInfo.getNumberOfPages());
         assertTrue(subsetInfo.getAverageFanOut() > 0);
         assertEquals(sum / subset.size(), subsetInfo.getAverageFanOut());
+    }
+
+    @Test
+    public void testNumberOfPagesIsComputedLazilyForIterable() throws WikiApiException
+    {
+        List<Page> subset = firstPages(5);
+        CountingIterable countingPages = new CountingIterable(subset);
+
+        WikipediaInfo info = new WikipediaInfo(countingPages, wiki);
+        assertEquals(0, countingPages.iteratorCalls);
+
+        assertEquals(subset.size(), info.getNumberOfPages());
+        assertEquals(1, countingPages.iteratorCalls);
+
+        // the count is cached, the page set is not walked again
+        assertEquals(subset.size(), info.getNumberOfPages());
+        assertEquals(1, countingPages.iteratorCalls);
+    }
+
+    @Test
+    public void testNumberOfPagesUsesSizeForCollection() throws WikiApiException
+    {
+        List<Page> subset = firstPages(5);
+        Collection<Page> nonIterableCollection = new AbstractCollection<>()
+        {
+            @Override
+            public Iterator<Page> iterator()
+            {
+                throw new AssertionError("The page collection must not be iterated.");
+            }
+
+            @Override
+            public int size()
+            {
+                return subset.size();
+            }
+        };
+
+        WikipediaInfo info = new WikipediaInfo(nonIterableCollection, wiki);
+        assertEquals(subset.size(), info.getNumberOfPages());
+    }
+
+    @Test
+    public void testNumberOfPagesForAllPagesIsComputedLazily() throws WikiApiException
+    {
+        int iterated = 0;
+        for (Page page : wiki.getPages()) {
+            iterated++;
+        }
+        WikipediaInfo info = new WikipediaInfo(wiki);
+        assertEquals(iterated, info.getNumberOfPages());
+        assertEquals(iterated, info.getNumberOfPages());
+    }
+
+    private static List<Page> firstPages(int limit)
+    {
+        List<Page> subset = new ArrayList<>();
+        for (Page page : wiki.getPages()) {
+            subset.add(page);
+            if (subset.size() == limit) {
+                break;
+            }
+        }
+        assertEquals(limit, subset.size());
+        return subset;
+    }
+
+    /**
+     * An iterable that is not a {@link Collection} and records how often it is iterated.
+     */
+    private static final class CountingIterable
+        implements Iterable<Page>
+    {
+        private final Iterable<Page> delegate;
+        private int iteratorCalls;
+
+        private CountingIterable(Iterable<Page> delegate)
+        {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public Iterator<Page> iterator()
+        {
+            iteratorCalls++;
+            return delegate.iterator();
+        }
     }
 
     @Test
