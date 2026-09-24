@@ -67,6 +67,20 @@ public class ChronoRevisionIteratorTest
     // Revision ID of the first added revision, above those of the test data set
     private static final int FIRST_ADDED_REVISION_ID = 2_000_000;
 
+    // Number of revisions of 'Car'
+    private static final int CAR_REVISIONS = LAST_PK - FIRST_PK + 1;
+
+    // Buffer size with which every article is fetched in a batch of its own
+    private static final int SINGLE_ARTICLE_BATCH = 1;
+
+    // Buffer size with which all articles are fetched in a single batch
+    private static final int LARGE_BATCH = 1000;
+
+    // Articles appended after 'Car' (3442): one with two revisions between articles with one
+    private static final List<AddedArticle> ARTICLES_WITH_ONE_AND_TWO_REVISIONS = List.of(
+            new AddedArticle(3443, 1), new AddedArticle(3444, 2), new AddedArticle(3445, 1),
+            new AddedArticle(3446, 1));
+
     @TempDir
     static Path tempDir;
 
@@ -130,7 +144,7 @@ public class ChronoRevisionIteratorTest
                 revisionsOfCar.add(describe(revisionIterator.next()));
             }
         }
-        assertEquals(LAST_PK - FIRST_PK + 1, revisionsOfCar.size());
+        assertEquals(CAR_REVISIONS, revisionsOfCar.size());
         return revisionsOfCar;
     }
 
@@ -205,67 +219,148 @@ public class ChronoRevisionIteratorTest
         assertTrue(connection.isClosed());
     }
 
+    /**
+     * Iterates over articles with one and two revisions and compares the result with the
+     * {@link RevisionApi}. The helpers close their connections and the iteration closes its
+     * connection, JUnit deletes the copy of the database in {@code dir} afterwards.
+     */
     @ParameterizedTest
-    @ValueSource(ints = { 1, 1000 })
+    @ValueSource(ints = { SINGLE_ARTICLE_BATCH, LARGE_BATCH })
     public void testIterationOverArticlesWithOneAndTwoRevisions(final int bufferSize,
             @TempDir final Path dir)
         throws Exception
     {
-        String url = copyTestData(dir);
-
-        // Articles appended after 'Car' (3442, 382 revisions): 3443 with one revision, 3444 with
-        // two, 3445 and 3446 with one each. The test data set indexes 3443 without its revision.
-        int[][] articles = { { 3443, 1 }, { 3444, 2 }, { 3445, 1 }, { 3446, 1 } };
-        int addedRevisions = 0;
-        List<Integer> revisionIDs = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(url, "sa", "");
-                Statement statement = connection.createStatement()) {
-            statement.execute("DELETE FROM index_articleID_rc_ts WHERE ArticleID = 3443");
-            int pk = LAST_PK + 1;
-            int revisionID = FIRST_ADDED_REVISION_ID;
-            for (int[] article : articles) {
-                int firstPK = pk;
-                int fullRevisionID = revisionID;
-                for (int revisionCounter = 1; revisionCounter <= article[1]; revisionCounter++) {
-                    // Copies the texts of the first revisions of 'Car', a full revision
-                    // followed by a diff
-                    statement.execute("INSERT INTO revisions SELECT " + pk + ", "
-                            + fullRevisionID + ", " + revisionCounter + ", " + revisionID + ", "
-                            + article[0] + ", Timestamp, Revision, Comment, Minor,"
-                            + " ContributorName, ContributorIsRegistered, ContributorId"
-                            + " FROM revisions WHERE PrimaryKey = "
-                            + (FIRST_PK + revisionCounter - 1));
-                    statement.execute("INSERT INTO index_revisionID VALUES(" + revisionID + ", "
-                            + pk + ", " + firstPK + ")");
-                    pk++;
-                    revisionID++;
-                }
-                statement.execute("INSERT INTO index_articleID_rc_ts VALUES(" + article[0] + ", '"
-                        + firstPK + "', '1 " + article[1] + "', 0, 0)");
-                addedRevisions += article[1];
-            }
-            try (ResultSet result = statement
-                    .executeQuery("SELECT RevisionID FROM revisions ORDER BY PrimaryKey")) {
-                while (result.next()) {
-                    revisionIDs.add(result.getInt(1));
-                }
-            }
-        }
-        assertEquals(LAST_PK - FIRST_PK + 1 + addedRevisions, revisionIDs.size());
-
+        String url = prepareDatabaseWithArticles(dir, ARTICLES_WITH_ONE_AND_TWO_REVISIONS);
         RevisionAPIConfiguration config = configuration(url);
         config.setBufferSize(bufferSize);
 
+        List<Integer> revisionIDs = revisionIDsInStorageOrder(url);
+        List<String> actual = iterateChronologically(config,
+                DriverManager.getConnection(url, "sa", ""));
+
+        assertAllRevisionsInOrder(revisionIDs, actual);
+        assertMatchesRevisionApi(config, revisionIDs, actual);
+    }
+
+    /**
+     * An article appended to the test data set.
+     *
+     * @param articleID
+     *            ID of the article
+     * @param revisions
+     *            number of revisions of the article, at most that of 'Car'
+     */
+    private record AddedArticle(int articleID, int revisions)
+    {
+    }
+
+    /**
+     * Copies the test data set into the given directory and appends the given articles after the
+     * revisions of 'Car'.
+     *
+     * @return the JDBC URL of the copy
+     */
+    private static String prepareDatabaseWithArticles(final Path dir,
+            final List<AddedArticle> articles)
+        throws Exception
+    {
+        String url = copyTestData(dir);
+        try (Connection connection = DriverManager.getConnection(url, "sa", "");
+                PreparedStatement deleteIndexEntry = connection.prepareStatement(
+                        "DELETE FROM index_articleID_rc_ts WHERE ArticleID = ?");
+                PreparedStatement insertRevision = connection.prepareStatement(
+                        "INSERT INTO revisions SELECT CAST(? AS BIGINT), CAST(? AS BIGINT),"
+                                + " CAST(? AS BIGINT), CAST(? AS BIGINT), CAST(? AS BIGINT),"
+                                + " Timestamp, Revision, Comment, Minor, ContributorName,"
+                                + " ContributorIsRegistered, ContributorId"
+                                + " FROM revisions WHERE PrimaryKey = ?");
+                PreparedStatement insertRevisionIndexEntry = connection
+                        .prepareStatement("INSERT INTO index_revisionID VALUES(?, ?, ?)");
+                PreparedStatement insertArticleIndexEntry = connection.prepareStatement(
+                        "INSERT INTO index_articleID_rc_ts VALUES(?, ?, ?, 0, 0)")) {
+            int pk = LAST_PK + 1;
+            int revisionID = FIRST_ADDED_REVISION_ID;
+            for (AddedArticle article : articles) {
+                // The test data set indexes some of these articles without their revisions
+                deleteIndexEntry.setInt(1, article.articleID());
+                deleteIndexEntry.executeUpdate();
+
+                int firstPK = pk;
+                int fullRevisionID = revisionID;
+                for (int revisionCounter = 1; revisionCounter <= article.revisions();
+                        revisionCounter++) {
+                    // Copies the text of the revision of 'Car' with the same revision counter,
+                    // a full revision followed by diffs
+                    insertRevision.setInt(1, pk);
+                    insertRevision.setInt(2, fullRevisionID);
+                    insertRevision.setInt(3, revisionCounter);
+                    insertRevision.setInt(4, revisionID);
+                    insertRevision.setInt(5, article.articleID());
+                    insertRevision.setInt(6, FIRST_PK + revisionCounter - 1);
+                    insertRevision.executeUpdate();
+
+                    insertRevisionIndexEntry.setInt(1, revisionID);
+                    insertRevisionIndexEntry.setInt(2, pk);
+                    insertRevisionIndexEntry.setInt(3, firstPK);
+                    insertRevisionIndexEntry.executeUpdate();
+
+                    pk++;
+                    revisionID++;
+                }
+
+                insertArticleIndexEntry.setInt(1, article.articleID());
+                insertArticleIndexEntry.setString(2, String.valueOf(firstPK));
+                insertArticleIndexEntry.setString(3, "1 " + article.revisions());
+                insertArticleIndexEntry.executeUpdate();
+            }
+        }
+        return url;
+    }
+
+    /**
+     * Returns the IDs of all revisions in the order of their primary keys, which is the
+     * chronological order within each article.
+     */
+    private static List<Integer> revisionIDsInStorageOrder(final String url) throws Exception
+    {
+        List<Integer> revisionIDs = new ArrayList<>();
+        try (Connection connection = DriverManager.getConnection(url, "sa", "");
+                Statement statement = connection.createStatement();
+                ResultSet result = statement
+                        .executeQuery("SELECT RevisionID FROM revisions ORDER BY PrimaryKey")) {
+            while (result.next()) {
+                revisionIDs.add(result.getInt(1));
+            }
+        }
+        return revisionIDs;
+    }
+
+    /**
+     * Asserts that the iteration returned the revisions of 'Car' and of all added articles.
+     */
+    private static void assertAllRevisionsInOrder(final List<Integer> revisionIDs,
+            final List<String> actual)
+    {
+        int addedRevisions = ARTICLES_WITH_ONE_AND_TWO_REVISIONS.stream()
+                .mapToInt(AddedArticle::revisions).sum();
+        assertEquals(CAR_REVISIONS + addedRevisions, revisionIDs.size());
+        assertEquals(revisionIDs.size(), actual.size());
+    }
+
+    /**
+     * Asserts that the iteration returned, in the given order, the revisions that the
+     * {@link RevisionApi} returns for the given IDs.
+     */
+    private static void assertMatchesRevisionApi(final RevisionAPIConfiguration config,
+            final List<Integer> revisionIDs, final List<String> actual)
+        throws Exception
+    {
         List<String> expected = new ArrayList<>();
         try (RevisionApi revisionApi = new RevisionApi(config)) {
             for (int revisionID : revisionIDs) {
                 expected.add(describe(revisionApi.getRevision(revisionID)));
             }
         }
-
-        List<String> actual = iterateChronologically(config,
-                DriverManager.getConnection(url, "sa", ""));
-
         assertEquals(expected, actual);
     }
 
