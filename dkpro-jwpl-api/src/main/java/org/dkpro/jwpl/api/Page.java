@@ -343,6 +343,10 @@ public class Page
     }
 
     /**
+     * Returns the categories of this page. The categories are loaded in batches rather than one by
+     * one, and those held by the category cache are not queried again. Categories that do not
+     * exist are left out.
+     *
      * @return A set of categories that this page belongs to. A new, modifiable set is returned on
      *         each call, so callers may modify it without affecting this page.
      */
@@ -350,12 +354,7 @@ public class Page
     {
         Set<Integer> tmp = loadIds("categories");
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmp) {
-            categories.add(wiki.getCategory(pageID));
-        }
-
-        return categories;
+        return wiki.__getCategoriesByPageIds(tmp);
     }
 
     /**

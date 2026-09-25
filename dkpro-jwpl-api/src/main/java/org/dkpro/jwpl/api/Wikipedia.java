@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
@@ -438,6 +439,53 @@ public class Wikipedia
     }
 
     /**
+     * Loads the categories with the given page ids. Categories held by the category cache of this
+     * instance are taken from there, the others are read in one query per
+     * {@value Wikipedia#TITLE_BATCH_SIZE} ids and added to the cache, as
+     * {@link #getCategory(int)} does.
+     * <p>
+     * Ids that have no matching category are absent from the result.
+     *
+     * @param pageIds The page ids of the categories to load. Must not be {@code null}.
+     * @return A new, modifiable set with the loaded categories. Never {@code null}.
+     */
+    Set<Category> __getCategoriesByPageIds(Collection<Integer> pageIds) {
+        Set<Category> categories = new HashSet<>();
+        List<Integer> missing = new ArrayList<>();
+        // Copied into a set first, so that a duplicate id yields a single category, and iterated
+        // rather than checked with isEmpty(), which UnmodifiableArraySet gets wrong.
+        for (Integer pageId : new HashSet<>(pageIds)) {
+            if (pageId == null) {
+                continue;
+            }
+            Category.Row row = categoryCache.get(pageId);
+            if (row != null) {
+                categories.add(Category.fromRow(this, row));
+            } else {
+                missing.add(pageId);
+            }
+        }
+
+        for (int from = 0; from < missing.size(); from += TITLE_BATCH_SIZE) {
+            List<Integer> batch = missing.subList(from,
+                    Math.min(from + TITLE_BATCH_SIZE, missing.size()));
+            // A session is acquired per batch, as in getTitles(Collection).
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery("select c.id, c.pageId, c.name from Category as c"
+                            + " where c.pageId in (:ids)", Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] columns : rows) {
+                Category.Row row = new Category.Row((Long) columns[0], (Integer) columns[1],
+                        (String) columns[2]);
+                categoryCache.put(row);
+                categories.add(Category.fromRow(this, row));
+            }
+        }
+        return categories;
+    }
+
+    /**
      * Gets the page ids for a given title.
      *
      * @param title The title of the page.
@@ -840,16 +888,16 @@ public class Wikipedia
         }
 
         String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
-        List<Integer> categoryHibernateIds = __inTransaction(session -> session
+        // The elements of the collection are the page ids of the categories. The left join yields
+        // a single null for a page without categories, which is skipped.
+        List<Integer> categoryPageIds = __inTransaction(session -> session
                 .createQuery(sql, Integer.class).setParameter("pageTitle", pageTitle).list());
 
-        Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
-        for (int hibernateId : categoryHibernateIds) {
-            try {
-                categorySet.add(new Category(this, hibernateId));
-            } catch (WikiPageNotFoundException e) {
-                logger.warn("Could not load Category by it's HibernateId = '{}'", hibernateId, e);
-            }
+        Set<Category> categorySet = __getCategoriesByPageIds(categoryPageIds);
+        long expected = categoryPageIds.stream().filter(Objects::nonNull).distinct().count();
+        if (categorySet.size() < expected) {
+            logger.warn("Could not load {} of the {} categories of the page '{}'",
+                    expected - categorySet.size(), expected, pageTitle);
         }
         return categorySet;
     }
