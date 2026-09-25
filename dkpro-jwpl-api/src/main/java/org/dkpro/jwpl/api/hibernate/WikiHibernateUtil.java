@@ -522,6 +522,7 @@ public class WikiHibernateUtil
         Properties p = new Properties();
         boolean useMySQL = false;
         boolean useMariaDB = false;
+        boolean usePostgreSQL = false;
         boolean useHSQL = false;
         // XXX other backends might be interesting here as well...
         if (jdbcURL.toLowerCase().contains("mysql")) {
@@ -530,9 +531,13 @@ public class WikiHibernateUtil
         else if (jdbcURL.toLowerCase().contains("mariadb")) {
             useMariaDB = true;
         }
+        else if (jdbcURL.toLowerCase().contains("postgresql")) {
+            usePostgreSQL = true;
+        }
         else if (jdbcURL.toLowerCase().contains("hsql")) {
             useHSQL = true;
         }
+        boolean useServerBackend = useMySQL || useMariaDB || usePostgreSQL;
 
         // Database connection settings
         p.setProperty("hibernate.connection.driver_class", databaseDriverClass);
@@ -558,7 +563,7 @@ public class WikiHibernateUtil
         p.setProperty("hibernate.show_sql", "false");
 
         // Do only update schema on changes
-        if (useMySQL || useMariaDB) {
+        if (useServerBackend) {
             p.setProperty("hibernate.hbm2ddl.auto", "validate");
         }
 
@@ -569,7 +574,7 @@ public class WikiHibernateUtil
         // Leave this set 'true' as this is required for dynamic Dialect resolution!
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
-        if ((useMySQL || useMariaDB) && C3P0_AVAILABLE) {
+        if (useServerBackend && C3P0_AVAILABLE) {
             // Set C3P0 Connection Pool in case somebody wants to use it in production settings.
             // Only if it is available at runtime: Hibernate 6 falls back to the built-in CP
             // otherwise, but Hibernate 7 then ends up without any connection provider.

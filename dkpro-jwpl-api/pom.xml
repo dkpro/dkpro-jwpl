@@ -113,6 +113,16 @@
       <artifactId>mysql-connector-java</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -162,8 +172,8 @@
 
     <!--
       DB engine selection profiles for the unit test suite (see JwplTestDatabase).
-      db-hsqldb is the default and is always-on; db-mariadb/db-mysql spin up a
-      Testcontainers-managed database. Tests are auto-skipped when Docker is absent.
+      db-hsqldb is the default and is always-on; db-mariadb/db-mysql/db-postgresql spin
+      up a Testcontainers-managed database. Tests are auto-skipped when Docker is absent.
     -->
     <profile>
       <id>db-hsqldb</id>
@@ -184,6 +194,12 @@
       <id>db-mysql</id>
       <properties>
         <jwpl.test.db>mysql</jwpl.test.db>
+      </properties>
+    </profile>
+    <profile>
+      <id>db-postgresql</id>
+      <properties>
+        <jwpl.test.db>postgresql</jwpl.test.db>
       </properties>
     </profile>
 
