@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.lang.invoke.MethodHandles;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -64,6 +65,16 @@ public class WikipediaXMLReader
      * Beginning of the text start tag, which is followed by a varying list of attributes
      */
     private static final String TEXT_START_TAG_NAME = "<text";
+
+    /**
+     * Attribute of a text start tag that marks an empty text
+     */
+    private static final Pattern EMPTY_TEXT_ATTRIBUTE = Pattern.compile("\\sbytes=[\"']0[\"']");
+
+    /**
+     * Attribute of a text start tag that marks a deleted text
+     */
+    private static final Pattern DELETED_TEXT_ATTRIBUTE = Pattern.compile("\\sdeleted=");
 
     /**
      * Reference to the reader
@@ -472,8 +483,19 @@ public class WikipediaXMLReader
                 switch (this.keys.getValue()) {
 
                 case KEY_START_TEXT:
-                    // A self-closing text element (empty or deleted text) leaves the text unset
-                    buffer = readTextStartTag() ? new StringBuilder() : null;
+                    String textStartTag = readTextStartTag();
+                    if (!textStartTag.endsWith("/>")) {
+                        buffer = new StringBuilder();
+                    }
+                    else {
+                        // A self-closing text element is either empty or deleted. An empty text
+                        // is kept, a deleted text is left unset and the revision skipped.
+                        buffer = null;
+                        if (EMPTY_TEXT_ATTRIBUTE.matcher(textStartTag).find()
+                                && !DELETED_TEXT_ATTRIBUTE.matcher(textStartTag).find()) {
+                            revision.setRevisionText("");
+                        }
+                    }
                     break;
 
                 case KEY_START_TIMESTAMP:
@@ -575,25 +597,25 @@ public class WikipediaXMLReader
      * Reads the remainder of a text start tag, i.e. its attributes up to and including the closing
      * {@code >}.
      *
-     * @return {@code true} if the text element has content, {@code false} if it is self-closing
+     * @return the remainder of the tag, ending with {@code />} if the text element is self-closing
      * @throws IOException
      *             if an error occurs while reading from the input
      * @throws ArticleReaderException
      *             if the input ends within the tag
      */
-    private boolean readTextStartTag() throws IOException, ArticleReaderException
+    private String readTextStartTag() throws IOException, ArticleReaderException
     {
-        int previous = -1;
+        StringBuilder tag = new StringBuilder();
         int r = read();
         while (r != '>') {
             if (r == -1) {
                 throw ErrorFactory.createArticleReaderException(
                         ErrorKeys.DELTA_CONSUMERS_TASK_READER_WIKIPEDIAXMLREADER_UNEXPECTED_END_OF_FILE);
             }
-            previous = r;
+            tag.append((char) r);
             r = read();
         }
-        return previous != '/';
+        return tag.append('>').toString();
     }
 
     /**

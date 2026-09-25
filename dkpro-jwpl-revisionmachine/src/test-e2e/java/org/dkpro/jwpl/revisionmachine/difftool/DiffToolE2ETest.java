@@ -120,11 +120,12 @@ public class DiffToolE2ETest {
     String sql = Files.readString(Path.of(OUTPUT_DIR, "output_1.sql"));
     assertTrue(sql.contains("Namespace INTEGER"), sql);
     // The fixture holds four pages in the configured namespaces 0 and 1, each with a single
-    // revision. The text of "Main Page" is empty (a self-closing <text/> element) and skipped,
-    // the other three revisions are written as rows: (null, FullRevisionID, RevisionCounter,
+    // revision. The text of "Main Page" (1269) is empty (a self-closing <text bytes="0"/>
+    // element). Each revision is written as a row: (null, FullRevisionID, RevisionCounter,
     // RevisionID, ArticleID, ...)
     List<String> revisions = ROW.matcher(sql).results().map(r -> r.group(1)).toList();
-    assertEquals(List.of("1271", "1426", "1508"), revisions.stream().sorted().toList(), sql);
+    assertEquals(List.of("1269", "1271", "1426", "1508"), revisions.stream().sorted().toList(),
+            sql);
     // No article failed to be read or processed
     Path errors = Path.of(LOGS_DIR, "DiffToolErrors.log");
     if (Files.exists(errors)) {
