@@ -97,58 +97,22 @@ public class WikipediaTemplateInfo
     private Integer countFragmentFilteredPages(List<String> templateFragments, boolean whitelist)
         throws WikiApiException
     {
-        try {
-            int count = 0;
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT distinct(count(*)) FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " as tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                            + " AS p WHERE tpl.templateId = p.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase();
-                    fragment = fragment.trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    return 0;
-                }
-
-                if (result.next()) {
-                    count = result.getInt(1);
-                }
-            }
-
-            return count;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return countIndexedPages(templateFragments, true, whitelist);
     }
 
     /**
      * Returns the number of all pages that contain a template the name of which starts with any of
      * the given Strings.
      *
+     * <p>
+     * Each page is counted once, however many of its templates match.
+     * An empty list of templates matches no page, so the count is 0.
+     *
      * @param templateFragments
      *            a list Strings containing the beginnings of the desired templates
      * @return the number of pages that contain any template starting with templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -160,12 +124,19 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Returns the number of all pages that contain a template the name of which starts with any of
-     * the given Strings.
+     * Returns the number of all pages that do not contain a template the name of which starts with
+     * any of the given Strings.
+     *
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not counted if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is counted.
      *
      * @param templateFragments
      *            a list Strings containing the beginnings of the desired templates
-     * @return the number of pages that contain any template starting with templateFragment
+     * @return the number of pages that do not contain any template starting with templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -194,61 +165,23 @@ public class WikipediaTemplateInfo
     private Integer countFilteredPages(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-
-        int count = 0;
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append(
-                    "SELECT distinct(count(*)) FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " as tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                            + " AS p WHERE tpl.templateId = p.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    return 0;
-                }
-
-                if (result.next()) {
-                    count = result.getInt(1);
-                }
-            }
-
-            return count;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return countIndexedPages(templateNames, false, whitelist);
     }
 
     /**
      * Returns the number of all pages that contain a template the name of which equals the given
      * String.
      *
+     * <p>
+     * Each page is counted once, however many of its templates match.
+     * An empty list of templates matches no page, so the count is 0.
+     *
      * @param templateNames
      *            a list of String containing the beginnings of the templates that have to be
      *            matched
      * @return the number of pages that contain a template starting with any templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -263,10 +196,17 @@ public class WikipediaTemplateInfo
      * Returns the number of all pages that do not contain a template the name of which equals the
      * given String.
      *
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not counted if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is counted.
+     *
      * @param templateNames
      *            a list of String containing the beginnings of the templates that have to be
      *            matched
      * @return the number of pages that do not contain a template starting with any templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -296,51 +236,7 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-
-        List<Page> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase().trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    int pageID = result.getInt(1);
-                    matchedPages.add(wiki.getPage(pageID));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return loadPages(selectIndexedPageIds(templateFragments, true, whitelist));
     }
 
     /**
@@ -538,10 +434,20 @@ public class WikipediaTemplateInfo
      * Return an iterable containing all pages that contain a template the name of which starts with
      * any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsContainingTemplateFragments(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return An iterable with the page objects that contain templates beginning with any String in
      *         templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -553,13 +459,26 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Return an iterable containing all pages that contain a template the name of which starts with
-     * any of the given Strings.
+     * Return an iterable containing all pages that do not contain a template the name of which
+     * starts with any of the given Strings.
+     *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsNotContainingTemplateFragments(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates excludes no page, so every page in the index is returned.
      *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
-     * @return An iterable with the page objects that contain templates beginning with any String in
-     *         templateFragments
+     * @return An iterable with the page objects that do not contain templates beginning with any
+     *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -587,60 +506,26 @@ public class WikipediaTemplateInfo
     private Iterable<Page> getFilteredPages(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-        List<Page> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    int pageID = result.getInt(1);
-                    matchedPages.add(wiki.getPage(pageID));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return loadPages(selectIndexedPageIds(templateNames, false, whitelist));
     }
 
     /**
      * Return an iterable containing all pages that contain a template the name of which equals any
      * of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsContainingTemplateNames(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return An iterable with the page objects that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -655,10 +540,23 @@ public class WikipediaTemplateInfo
      * Return an iterable containing all pages that do NOT contain a template the name of which
      * equals of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsNotContainingTemplateNames(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates excludes no page, so every page in the index is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return An iterable with the page objects that do NOT contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -772,59 +670,23 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase().trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedPageIds(templateFragments, true, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all pages that contain a template the name of which
      * starts with any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the pages that contain templates beginning with any String in
      *         templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -836,13 +698,22 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Returns a list containing the ids of all pages that contain a template the name of which
-     * starts with any of the given Strings.
+     * Returns a list containing the ids of all pages that do not contain a template the name of
+     * which starts with any of the given Strings.
+     *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is returned.
      *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the pages that do not contain templates beginning with any
      *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -1098,6 +969,206 @@ public class WikipediaTemplateInfo
         }
     }
 
+    /**
+     * Selects the ids of the pages that the page template index ({@code templateId_pageId})
+     * associates with any of the given templates (whitelist), or of the pages in the index that
+     * are associated with none of them (blacklist). Each page id is returned once, in ascending
+     * order.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select pages containing these templates (true) or pages NOT
+     *            containing these templates (false)
+     * @return the distinct ids of the matching pages in ascending order
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     * @throws WikiApiException
+     *             If there was any error retrieving the page ids
+     */
+    private List<Integer> selectIndexedPageIds(List<String> templateNames, boolean prefix,
+            boolean whitelist)
+        throws WikiApiException
+    {
+        checkTemplateNames(templateNames);
+        List<Integer> pageIds = new ArrayList<>();
+        if (whitelist && templateNames.isEmpty()) {
+            return pageIds;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                buildIndexedPageIdQuery(templateNames.size(), prefix, whitelist))) {
+            bindTemplateNames(statement, templateNames, prefix);
+
+            try (ResultSet result = execute(statement)) {
+                while (result.next()) {
+                    pageIds.add(result.getInt(1));
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+        return pageIds;
+    }
+
+    /**
+     * Counts the pages {@link #selectIndexedPageIds(List, boolean, boolean)} would select.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to count pages containing these templates (true) or pages NOT containing
+     *            these templates (false)
+     * @return the number of distinct matching pages
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     * @throws WikiApiException
+     *             If there was any error counting the pages
+     */
+    private Integer countIndexedPages(List<String> templateNames, boolean prefix,
+            boolean whitelist)
+        throws WikiApiException
+    {
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return 0;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                buildIndexedPageCountQuery(templateNames.size(), prefix, whitelist))) {
+            bindTemplateNames(statement, templateNames, prefix);
+
+            try (ResultSet result = execute(statement)) {
+                return result.next() ? result.getInt(1) : 0;
+            }
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    /**
+     * Rejects a {@code null} list of template names or fragments, and {@code null} elements in
+     * it. Up to 2.2.0 such a list failed with a {@link WikiApiException} wrapping a
+     * {@link NullPointerException}; an empty list is valid and has a defined meaning.
+     *
+     * @param templateNames
+     *            the template names or fragments passed to a public method
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     */
+    static void checkTemplateNames(List<String> templateNames)
+    {
+        if (templateNames == null) {
+            throw new IllegalArgumentException("The list of templates must not be null");
+        }
+        // Not List#contains(null): immutable lists such as List.of(..) reject a null argument.
+        for (String name : templateNames) {
+            if (name == null) {
+                throw new IllegalArgumentException("The list of templates must not contain null");
+            }
+        }
+    }
+
+    /**
+     * Loads the pages with the given ids, in the given order, with one query per batch of ids.
+     *
+     * @param pageIds
+     *            the ids of the pages to load
+     * @return the loaded pages
+     * @throws WikiApiException
+     *             If a page could not be loaded, in particular a {@link WikiPageNotFoundException}
+     *             if the template index refers to a page that does not exist
+     */
+    private List<Page> loadPages(List<Integer> pageIds) throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(pageIds);
+        if (pages.size() != pageIds.size()) {
+            throw new WikiPageNotFoundException((pageIds.size() - pages.size())
+                    + " of the pages referenced by the template index were not found.");
+        }
+        return pages;
+    }
+
+    /**
+     * Builds the query that selects the distinct ids of the pages in the page template index
+     * ({@code templateId_pageId}) that contain any of the given templates (whitelist) or none of
+     * them (blacklist), ordered by page id. The blacklist is evaluated per page, not per template
+     * of a page: a page is selected only if none of its templates matches. Pages that do not
+     * appear in the index, i.e. pages without any template, are never selected.
+     * <p>
+     * The blacklist excludes the pages of a non-correlated {@code NOT IN} subquery, which the
+     * database can evaluate once instead of once per row of the index. This is equivalent to a
+     * per-page {@code NOT EXISTS} only because the id columns of the index are {@code NOT NULL}:
+     * a single {@code NULL} in the subquery would make {@code NOT IN} select nothing.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match; must be
+     *            positive for a whitelist, a blacklist without names selects every indexed page
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select pages containing the templates (true) or pages not containing
+     *            them (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildIndexedPageIdQuery(int nameCount, boolean prefix, boolean whitelist)
+    {
+        return "SELECT DISTINCT p.pageId" + buildIndexedPageFilter(nameCount, prefix, whitelist)
+                + " ORDER BY p.pageId";
+    }
+
+    /**
+     * Builds the query that counts the pages selected by
+     * {@link #buildIndexedPageIdQuery(int, boolean, boolean)}.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to count pages containing the templates (true) or pages not containing
+     *            them (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildIndexedPageCountQuery(int nameCount, boolean prefix, boolean whitelist)
+    {
+        return "SELECT COUNT(DISTINCT p.pageId)"
+                + buildIndexedPageFilter(nameCount, prefix, whitelist);
+    }
+
+    private static String buildIndexedPageFilter(int nameCount, boolean prefix,
+            boolean whitelist)
+    {
+        if (whitelist) {
+            if (nameCount < 1) {
+                throw new IllegalArgumentException("A whitelist needs at least one template name");
+            }
+            return " FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl JOIN "
+                    + GeneratorConstants.TABLE_TPLID_PAGEID
+                    + " AS p ON p.templateId = tpl.templateId WHERE "
+                    + buildTemplateNameCondition(nameCount, prefix);
+        }
+        String from = " FROM " + GeneratorConstants.TABLE_TPLID_PAGEID + " AS p";
+        if (nameCount < 1) {
+            return from;
+        }
+        return from + " WHERE p.pageId NOT IN (SELECT p2.pageId FROM "
+                + GeneratorConstants.TABLE_TPLID_PAGEID + " AS p2 JOIN "
+                + GeneratorConstants.TABLE_TPLID_TPLNAME
+                + " AS tpl ON tpl.templateId = p2.templateId WHERE "
+                + buildTemplateNameCondition(nameCount, prefix) + ")";
+    }
+
     ///////////////////
 
     /**
@@ -1117,59 +1188,22 @@ public class WikipediaTemplateInfo
     private List<Integer> getFilteredPageIds(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedPageIds(templateNames, false, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all pages that contain a template the name of which
      * equals any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all pages that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1184,10 +1218,19 @@ public class WikipediaTemplateInfo
      * Returns a list containing the ids of all pages that do not contain a template the name of
      * which equals any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all pages that do not contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)

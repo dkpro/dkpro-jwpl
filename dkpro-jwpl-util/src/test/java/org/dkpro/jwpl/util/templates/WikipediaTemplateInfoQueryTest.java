@@ -19,17 +19,12 @@ package org.dkpro.jwpl.util.templates;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.dkpro.jwpl.util.templates.generator.GeneratorConstants;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,61 +35,41 @@ import org.junit.jupiter.api.Test;
  */
 class WikipediaTemplateInfoQueryTest
 {
-    private Connection connection;
+    private TemplateIndexTestDatabase database;
 
     @BeforeEach
     void setUp() throws SQLException
     {
-        connection = DriverManager.getConnection("jdbc:hsqldb:mem:tplinfo", "sa", "");
-        try (Statement st = connection.createStatement()) {
-            st.execute("CREATE TABLE templates (templateId INTEGER, templateName VARCHAR(255))");
-            st.execute("CREATE TABLE templateId_revisionId (templateId INTEGER, revisionId INTEGER)");
-            st.execute("CREATE TABLE index_revisionID (RevisionID INTEGER PRIMARY KEY, "
-                    + "RevisionPK INTEGER)");
-            st.execute("CREATE TABLE revisions (PrimaryKey INTEGER PRIMARY KEY, "
-                    + "RevisionID INTEGER, ArticleID INTEGER)");
-
-            st.execute("INSERT INTO templates VALUES (1, 'infobox_city'), (2, 'infobox_person'), "
-                    + "(3, 'cite_web'), (4, 'stub')");
-
-            // page 10: revisions 100, 101; page 20: revisions 200, 201; page 30: revision 300
-            st.execute("INSERT INTO revisions VALUES (1, 100, 10), (2, 101, 10), (3, 200, 20), "
-                    + "(4, 201, 20), (5, 300, 30)");
-            st.execute("INSERT INTO index_revisionID VALUES (100, 1), (101, 2), (200, 3), "
-                    + "(201, 4), (300, 5)");
-
-            st.execute("INSERT INTO templateId_revisionId VALUES "
-                    // infobox_city in both revisions of page 10
-                    + "(1, 100), (1, 101), "
-                    // infobox_person in page 20, cite_web in pages 20 and 30
-                    + "(2, 201), (3, 200), (3, 300), "
-                    // stub in page 30 and in revision 999 which is missing in the revision tables
-                    + "(4, 300), (4, 999)");
-        }
+        database = TemplateIndexTestDatabase.open("tplinfo");
+        database.createIndex(GeneratorConstants.TABLE_TPLID_REVISIONID, "revisionId",
+                // infobox_city in both revisions of page 10
+                new int[] { 1, 100 }, new int[] { 1, 101 },
+                // infobox_person in page 20, cite_web in pages 20 and 30
+                new int[] { 2, 201 }, new int[] { 3, 200 }, new int[] { 3, 300 },
+                // stub in page 30 and in revision 999 which is missing in the revision tables
+                new int[] { 4, 300 }, new int[] { 4, 999 });
+        database.execute(
+                "CREATE TABLE index_revisionID (RevisionID INTEGER PRIMARY KEY, "
+                        + "RevisionPK INTEGER)",
+                "CREATE TABLE revisions (PrimaryKey INTEGER PRIMARY KEY, "
+                        + "RevisionID INTEGER, ArticleID INTEGER)",
+                // page 10: revisions 100, 101; page 20: revisions 200, 201; page 30: revision 300
+                "INSERT INTO revisions VALUES (1, 100, 10), (2, 101, 10), (3, 200, 20), "
+                        + "(4, 201, 20), (5, 300, 30)",
+                "INSERT INTO index_revisionID VALUES (100, 1), (101, 2), (200, 3), "
+                        + "(201, 4), (300, 5)");
     }
 
     @AfterEach
     void tearDown() throws SQLException
     {
-        try (Statement st = connection.createStatement()) {
-            st.execute("SHUTDOWN");
-        }
-        connection.close();
+        database.close();
     }
 
     private List<Integer> queryPageIds(List<String> names, boolean prefix) throws SQLException
     {
-        List<Integer> pageIds = new ArrayList<>();
-        try (PreparedStatement statement = connection.prepareStatement(
-                WikipediaTemplateInfo.buildPageIdQuery(names.size(), prefix))) {
-            WikipediaTemplateInfo.bindTemplateNames(statement, names, prefix);
-            try (ResultSet result = statement.executeQuery()) {
-                while (result.next()) {
-                    pageIds.add(result.getInt(1));
-                }
-            }
-        }
-        return pageIds;
+        return database.queryInts(WikipediaTemplateInfo.buildPageIdQuery(names.size(), prefix),
+                names, prefix);
     }
 
     private static Set<Integer> set(List<Integer> ids)
