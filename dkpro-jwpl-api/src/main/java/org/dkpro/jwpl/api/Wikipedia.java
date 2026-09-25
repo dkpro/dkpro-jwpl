@@ -441,7 +441,7 @@ public class Wikipedia
     /**
      * Loads the categories with the given page ids. Categories held by the category cache of this
      * instance are taken from there, the others are read in one query per
-     * {@value Wikipedia#TITLE_BATCH_SIZE} ids and added to the cache, as
+     * {@value Wikipedia#ID_BATCH_SIZE} ids and added to the cache, as
      * {@link #getCategory(int)} does.
      * <p>
      * Ids that have no matching category are absent from the result.
@@ -466,9 +466,9 @@ public class Wikipedia
             }
         }
 
-        for (int from = 0; from < missing.size(); from += TITLE_BATCH_SIZE) {
+        for (int from = 0; from < missing.size(); from += ID_BATCH_SIZE) {
             List<Integer> batch = missing.subList(from,
-                    Math.min(from + TITLE_BATCH_SIZE, missing.size()));
+                    Math.min(from + ID_BATCH_SIZE, missing.size()));
             // A session is acquired per batch, as in getTitles(Collection).
             List<Object[]> rows = __inTransaction(session -> session
                     .createQuery("select c.id, c.pageId, c.name from Category as c"
