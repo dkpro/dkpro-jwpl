@@ -17,7 +17,11 @@
  */
 package org.dkpro.jwpl.parser.mediawiki;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dkpro.jwpl.parser.ParsedPage;
+import org.dkpro.jwpl.parser.Template;
 
 /**
  * This is an Interface for MediaWiki Parsers. Which simply "converts" MediaWiki Source, given as a
@@ -29,6 +33,23 @@ public interface MediaWikiParser
      * Parses MediaWiki Source, given as parameter src, and returns a ParsedPage.
      */
     ParsedPage parse(String src);
+
+    /**
+     * Parses MediaWiki Source, given as parameter src, only as far as needed to return the
+     * templates it contains. Implementations may skip the parsing of everything else, so this can
+     * be much faster than {@code parse(src).getTemplates()}.
+     * <p>
+     * The default implementation returns the templates of a full {@link #parse(String)}.
+     *
+     * @param src
+     *            the MediaWiki source to parse
+     * @return the templates of the source, never {@code null}
+     */
+    default List<Template> parseTemplatesOnly(String src)
+    {
+        ParsedPage pp = parse(src);
+        return pp == null ? new ArrayList<>() : pp.getTemplates();
+    }
 
     /**
      * Retruns information about the configuration of the parser.

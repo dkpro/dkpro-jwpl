@@ -34,7 +34,6 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiInitializationException;
 import org.dkpro.jwpl.api.util.StringUtils;
-import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
@@ -362,9 +361,7 @@ public class WikipediaTemplateInfoGenerator
         Set<String> names = new HashSet<>();
         if (!pageText.isEmpty()) {
             try {
-                ParsedPage pp = parser.parse(pageText);
-                List<Template> templates = pp.getTemplates();
-                for (Template t : templates) {
+                for (Template t : parser.parseTemplatesOnly(pageText)) {
                     names.add(StringUtils.sqlEscape(t.getName().toLowerCase()));
                 }
             }

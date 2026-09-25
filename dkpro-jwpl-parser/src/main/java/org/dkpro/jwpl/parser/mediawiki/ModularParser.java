@@ -352,31 +352,9 @@ public class ModularParser
         // Creating a new Parameter Container
         ContentElementParsingParameters cepp = new ContentElementParsingParameters();
 
-        // Deletes comments out of the Source
-        deleteComments(sm);
-
-        // Deletes any TOC Tags, these are not used in this parser.
-        deleteTOCTag(sm);
-
-        // Removing the Content which should not parsed but integrated later in
-        // the resulting text
-        sm.manageList(cepp.noWikiSpans);
-        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "PRE", " ");
-        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "NOWIKI");
-        if (cepp.noWikiSpans.isEmpty()) {
-            sm.removeManagedList(cepp.noWikiSpans);
-        }
-
-        // Parsing the Math Tags...
-        sm.manageList(cepp.mathSpans);
-        parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
-        if (cepp.mathSpans.isEmpty()) {
-            sm.removeManagedList(cepp.mathSpans);
-        }
-
-        // Parsing the Templates (the Span List will be added to the managed
-        // lists by the function)
-        parseTemplates(sm, cepp.templateSpans, cepp.templates, ppResult);
+        // Deletes comments and TOC tags, masks the <pre>, <nowiki> and <math>
+        // content, and parses the templates.
+        preprocessAndParseTemplates(sm, cepp, ppResult);
 
         // Parsing all other Tags
         parseTags(sm, cepp.tagSpans);
@@ -418,6 +396,86 @@ public class ModularParser
 
         // So it is done...
         return ppResult;
+    }
+
+    /**
+     * Parses only the templates of the given MediaWiki source, skipping the parsing of links, tags,
+     * lines, sections and paragraphs that {@link #parse(String)} does afterwards. The source is
+     * preprocessed exactly as by {@link #parse(String)}, so templates in comments or in
+     * {@code <nowiki>}, {@code <pre>} and {@code <math>} content are not returned, and nested
+     * templates are resolved in the same order.
+     * <p>
+     * The templates are those the configured template parser resolves to a {@link Template}, as
+     * {@link ParsedPage#getTemplates()} returns them after a full parse. Unlike there, templates
+     * which the full parse does not attach to any content element of the page are included, too.
+     * The list is ordered from the last template of the page to the first, with nested templates
+     * before the templates containing them.
+     *
+     * @param src
+     *            the MediaWiki source to parse
+     * @return the templates of the source; an empty list if the source is {@code null} or empty,
+     *         or if the configuration of the parser is not runnable
+     */
+    @Override
+    public List<Template> parseTemplatesOnly(String src)
+    {
+        if (!runConfig() || src == null || src.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        SpanManager sm = new SpanManager(src.replace('\t', ' ') + lineSeparator);
+        if (calculateSrcSpans) {
+            sm.enableSrcPosCalculation();
+        }
+        ContentElementParsingParameters cepp = new ContentElementParsingParameters();
+        preprocessAndParseTemplates(sm, cepp, new ParsedPage());
+
+        // collect the templates as parseContentElement(..) attaches them
+        List<Template> result = new ArrayList<>(cepp.templates.size());
+        for (ResolvedTemplate rt : cepp.templates) {
+            Object parsedObject = rt.getParsedObject();
+            if (parsedObject == null || parsedObject.getClass() == Link.class) {
+                continue;
+            }
+            result.add(parsedObject.getClass() == Template.class ? (Template) parsedObject
+                    : rt.getTemplate());
+        }
+        return result;
+    }
+
+    /**
+     * The first steps of {@link #parse(String)}, shared with {@link #parseTemplatesOnly(String)}:
+     * deletes comments and TOC tags, moves the {@code <pre>}, {@code <nowiki>} and {@code <math>}
+     * content out of the way, and parses the templates into {@code cepp}.
+     */
+    private void preprocessAndParseTemplates(SpanManager sm, ContentElementParsingParameters cepp,
+            ParsedPage pp)
+    {
+        // Deletes comments out of the Source
+        deleteComments(sm);
+
+        // Deletes any TOC Tags, these are not used in this parser.
+        deleteTOCTag(sm);
+
+        // Removing the Content which should not parsed but integrated later in
+        // the resulting text
+        sm.manageList(cepp.noWikiSpans);
+        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "PRE", " ");
+        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "NOWIKI");
+        if (cepp.noWikiSpans.isEmpty()) {
+            sm.removeManagedList(cepp.noWikiSpans);
+        }
+
+        // Parsing the Math Tags...
+        sm.manageList(cepp.mathSpans);
+        parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
+        if (cepp.mathSpans.isEmpty()) {
+            sm.removeManagedList(cepp.mathSpans);
+        }
+
+        // Parsing the Templates (the Span List will be added to the managed
+        // lists by the function)
+        parseTemplates(sm, cepp.templateSpans, cepp.templates, pp);
     }
 
     /**
