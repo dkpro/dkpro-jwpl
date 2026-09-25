@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -41,9 +42,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class JWPLDataMachineE2ETest {
 
@@ -210,6 +213,30 @@ public class JWPLDataMachineE2ETest {
     // Simulating an execution without config file
     int exitCode = execTool(cmd);
     assertEquals(255,  exitCode);
+  }
+
+  @Test
+  void testExecJWPLDataMachineWithTruncatedDumpShouldFail(@TempDir Path dir) throws IOException {
+    // A copy of the fixtures whose 'pages-meta-current' archive is cut in half
+    try (Stream<Path> fixtures = Files.list(Path.of(OUTPUT_DIR))) {
+      for (Path fixture : fixtures.filter(p -> p.getFileName().toString().startsWith(WIKI_NAME)).toList()) {
+        Path target = dir.resolve(fixture.getFileName());
+        if (fixture.getFileName().toString().endsWith("pages-meta-current.xml.bz2")) {
+          byte[] content = Files.readAllBytes(fixture);
+          Files.write(target, Arrays.copyOf(content, content.length / 2));
+        } else {
+          Files.copy(fixture, target);
+        }
+      }
+    }
+    cmd.addAll(List.of("aa", "n/a", "n/a", dir.toString()));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
+  }
+
+  @Test
+  void testExecJWPLDataMachineWithMissingSourceFilesShouldFail(@TempDir Path emptyDir) {
+    cmd.addAll(List.of("aa", "n/a", "n/a", emptyDir.toString()));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   /**

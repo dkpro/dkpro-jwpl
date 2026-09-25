@@ -125,20 +125,21 @@ public class InputFactory
      * @param archivePath
      *            path to the archive
      * @return InputStreamReader
+     * @throws ArticleReaderException
+     *             if the decompression stream cannot be opened, for example for a truncated archive
      */
     private static InputStreamReader decompressWithBZip2(final String archivePath)
+        throws ArticleReaderException
     {
 
         Bzip2Archiver archiver = new Bzip2Archiver();
-        InputStreamReader reader = null;
         try {
-            reader = archiver.getDecompressionStream(archivePath, WIKIPEDIA_ENCODING);
+            return archiver.getDecompressionStream(archivePath, WIKIPEDIA_ENCODING);
         }
         catch (IOException e) {
-            logger.error("Could not open a BZip2 decompression stream for [{}].", archivePath, e);
+            throw new ArticleReaderException(
+                    "Could not open a BZip2 decompression stream for '" + archivePath + "'.", e);
         }
-
-        return reader;
     }
 
     /**

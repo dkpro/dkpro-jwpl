@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.datamachine.domain;
 
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_USAGE;
+
 import java.util.Optional;
 import java.util.ServiceLoader;
 
@@ -24,6 +28,7 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 
 /**
  * The command line tool that starts the transformation
@@ -82,11 +87,26 @@ public class JWPLDataMachine
 
     /**
      * The entry point of the DataMachine tool.
+     * <p>
+     * Terminates the JVM with exit status 255 if the arguments are incomplete, and with 1 if the
+     * source files are missing or the transformation fails.
      *
      * @param args Expects four arguments. Must be in the ordering as specified as follows:
      *        {@code <LANGUAGE> <TOP_CATEGORY_NAME> <DISAMBIGUATION_CATEGORY_NAME> <SOURCE_DIRECTORY>}.
      */
     public static void main(String[] args)
+    {
+        ExitStatus.exitOnFailure(run(args));
+    }
+
+    /**
+     * Runs the DataMachine tool.
+     *
+     * @param args The arguments as described for {@link #main(String[])}.
+     * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
+     *         the source files are missing or the transformation failed.
+     */
+    private static int run(String[] args)
     {
         if (args.length > 3) {
             // The dumps processed here are trusted input whose entity sizes legitimately
@@ -106,16 +126,19 @@ public class JWPLDataMachine
 
                     logger.log("End of the application. Working time = "
                             + (System.currentTimeMillis() - startTime) + " ms");
+                    return EXIT_SUCCESS;
                 } catch (Exception e) {
                     logger.log(e);
+                    return EXIT_FAILURE;
                 }
             } else {
                 logger.log("Not all necessary source files could be found in " + args[DATADIR_ARG]);
+                return EXIT_FAILURE;
             }
 
         } else {
             System.out.println(USAGE);
-            System.exit(255);
+            return EXIT_USAGE;
         }
     }
 
