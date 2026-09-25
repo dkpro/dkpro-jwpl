@@ -47,7 +47,12 @@ public class ChronoStorageBlock
     private final Revision rev;
 
     /**
-     * Length of the (unescaped) revision text, computed once for the size accounting
+     * Escaped revision text, as reconstructed from the diffs
+     */
+    private final String escapedText;
+
+    /**
+     * Length of the escaped revision text, computed once for the size accounting
      */
     private final int length;
 
@@ -171,7 +176,8 @@ public class ChronoStorageBlock
     }
 
     /**
-     * (Constructor) Creates a new ChronoStorageBlock.
+     * (Constructor) Creates a new ChronoStorageBlock. The text returned by
+     * {@link Revision#getRevisionText()} is kept as the text of this block.
      *
      * @param cfr
      *            Reference to the chrono full revision
@@ -183,18 +189,48 @@ public class ChronoStorageBlock
     public ChronoStorageBlock(final ChronoFullRevision cfr, final int revisionIndex,
             final Revision rev)
     {
+        this(cfr, revisionIndex, rev, rev.getRevisionText());
+    }
+
+    /**
+     * (Constructor) Creates a new ChronoStorageBlock.
+     *
+     * @param cfr
+     *            Reference to the chrono full revision
+     * @param revisionIndex
+     *            Index of this revision
+     * @param rev
+     *            Reference to the revision
+     * @param escapedText
+     *            Escaped revision text, as reconstructed from the diffs
+     */
+    ChronoStorageBlock(final ChronoFullRevision cfr, final int revisionIndex, final Revision rev,
+            final String escapedText)
+    {
 
         this.cfr = cfr;
 
         this.revisionIndex = revisionIndex;
         this.rev = rev;
-        this.length = rev.getRevisionText().length();
+        this.escapedText = escapedText;
+        this.length = escapedText == null ? 0 : escapedText.length();
         this.delivered = false;
     }
 
     public Revision getRev()
     {
         return rev;
+    }
+
+    /**
+     * Returns the escaped revision text. Following revisions have to be rebuilt from this text,
+     * as {@link Revision#getRevisionText()} returns it unescaped.
+     *
+     * @return escaped revision text
+     */
+    String getEscapedText()
+    {
+        return escapedText;
     }
 
     /**
@@ -239,9 +275,15 @@ public class ChronoStorageBlock
     }
 
     /**
-     * Returns the length of the revision text as computed when this block was created.
+     * Returns the length of the escaped revision text as computed when this block was created.
+     * <p>
+     * The storage keeps the escaped text, which is also the base for rebuilding the following
+     * revisions, so its size is accounted with the escaped length rather than with the length of
+     * the (unescaped) text returned by {@link Revision#getRevisionText()}. The length is computed
+     * once, so that adding and removing the block account the same size, even if a consumer
+     * replaces the text of a revision it received.
      *
-     * @return length of the revision text
+     * @return length of the escaped revision text
      */
     public int length()
     {
