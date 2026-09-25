@@ -401,7 +401,7 @@ public class Wikipedia
 
     /**
      * Loads the pages with the given page ids without their text, in one query per
-     * {@value Wikipedia#TITLE_BATCH_SIZE} ids. The text of each page is queried on the first call
+     * {@value Wikipedia#ID_BATCH_SIZE} ids. The text of each page is queried on the first call
      * of {@link Page#getText()}.
      * <p>
      * Ids that have no matching page are absent from the result.
@@ -413,8 +413,8 @@ public class Wikipedia
         Set<Page> pages = new HashSet<>();
         // Copied first, as the isEmpty() of UnmodifiableArraySet cannot be relied upon.
         List<Integer> ids = new ArrayList<>(pageIds);
-        for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
-            List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
             // A session is acquired per batch, as in getTitles(Collection).
             List<Object[]> rows = __inTransaction(session -> session
                     .createQuery(PAGE_METADATA_SELECT + " where p.pageId in (:ids)",
