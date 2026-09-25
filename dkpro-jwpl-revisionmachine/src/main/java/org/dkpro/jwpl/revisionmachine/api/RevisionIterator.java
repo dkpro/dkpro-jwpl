@@ -40,6 +40,17 @@ import org.slf4j.LoggerFactory;
  * Part of the JWPL Revision API
  * <p>
  * This class represents the interface to iterate through multiple revisions.
+ * <p>
+ * If the revision texts are loaded eagerly (see {@link #setShouldLoadRevisionText(boolean)}) and
+ * the iteration reaches a diff whose preceding revision it did not decode itself, e.g. because it
+ * started in the middle of a diff chain or switched from lazy to eager loading, the chain is
+ * rebuilt from the full revision that {@code index_revisionID} records for the current revision:
+ * <ul>
+ * <li>If the current revision is not indexed, the chain cannot be rebuilt and {@link #next()}
+ * fails with a {@link RuntimeException} caused by a {@link WikiApiException}.</li>
+ * <li>If a diff of the chain cannot be decoded, the failure is logged and {@link #next()} returns
+ * {@code null}, as for any other reconstruction failure.</li>
+ * </ul>
  */
 public class RevisionIterator
     extends AbstractRevisionService
@@ -47,6 +58,19 @@ public class RevisionIterator
 {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    /**
+     * Looks up the primary key of the full revision the diff chain of a revision is based on
+     */
+    private static final String SELECT_FULL_REVISION_PK =
+            "SELECT FullRevisionPK FROM index_revisionID WHERE RevisionID=? LIMIT 1";
+
+    /**
+     * Selects the diffs of a chain in the order they have to be applied
+     */
+    private static final String SELECT_DIFF_CHAIN =
+            "SELECT Revision FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ?"
+                    + " ORDER BY PrimaryKey";
 
     /**
      * Reference to the ResultSet
@@ -72,6 +96,17 @@ public class RevisionIterator
      * Text of the previous revision
      */
     private String previousRevision;
+
+    /**
+     * Primary key of the revision whose text is stored in {@link #previousRevision}, {@code -1}
+     * if none has been reconstructed yet
+     */
+    private int previousRevisionPK = -1;
+
+    /**
+     * Whether no revision has been read yet
+     */
+    private boolean firstRevision = true;
 
     /**
      * Current primary key
@@ -118,6 +153,15 @@ public class RevisionIterator
         return shouldLoadRevisionText;
     }
 
+    /**
+     * Sets whether the revision texts are loaded lazily. When switching to eager loading, the diff
+     * chain of the next revision is rebuilt from {@code index_revisionID}, see the
+     * {@link RevisionIterator class description} for the case the revision is not indexed.
+     *
+     * @param shouldLoadRevisionText
+     *            {@code true} to load the revision texts lazily, {@code false} to decode them
+     *            during the iteration
+     */
     public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
     {
         this.shouldLoadRevisionText = shouldLoadRevisionText;
@@ -128,6 +172,9 @@ public class RevisionIterator
      * <p>
      * The iteration returns the revisions with a primary key from {@code startPK} to
      * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
@@ -227,6 +274,9 @@ public class RevisionIterator
 
     /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
@@ -253,6 +303,9 @@ public class RevisionIterator
      * <p>
      * The iteration returns the revisions with a primary key from {@code startPK} to
      * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
@@ -305,7 +358,7 @@ public class RevisionIterator
      * @param config
      *            Reference to the configuration object
      * @param shouldLoadRevisionText
-     *            should load revision text
+     *            should load revision text, see {@link #setShouldLoadRevisionText(boolean)}
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -436,9 +489,11 @@ public class RevisionIterator
             articleID = result.getInt(5);
 
             if (articleID != this.currentArticleID) {
-                this.currentRevCounter = 0;
+                // The first revision of the iteration may be in the middle of an article
+                this.currentRevCounter = firstRevision ? revCount - 1 : 0;
                 this.currentArticleID = articleID;
             }
+            firstRevision = false;
 
             if (revCount - 1 != this.currentRevCounter) {
 
@@ -459,18 +514,19 @@ public class RevisionIterator
             if (!shouldLoadRevisionText) {
                 String currentRevision;
 
-                Diff diff;
-                RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
+                Diff diff = decode(result, 2, binaryData);
 
-                if (binaryData) {
-                    decoder.setInput(result.getBytes(2));
+                int fullRevisionPK = -1;
+                if (!diff.isFullRevision() && previousRevisionPK != this.primaryKey - 1) {
+                    // The iteration did not decode the preceding revision of the diff chain,
+                    // e.g. due to the start position or a switch from lazy mode
+                    fullRevisionPK = findFullRevisionPK(result.getInt(4));
                 }
-                else {
-                    decoder.setInput(result.getString(2));
-                }
-                diff = decoder.decode();
 
                 try {
+                    if (fullRevisionPK != -1) {
+                        previousRevision = reconstructPreviousRevision(fullRevisionPK);
+                    }
                     currentRevision = diff.buildRevision(previousRevision);
                 }
                 catch (Exception e) {
@@ -481,6 +537,7 @@ public class RevisionIterator
                 }
 
                 previousRevision = currentRevision;
+                previousRevisionPK = this.primaryKey;
                 revision.setRevisionText(currentRevision);
             }
             else {
@@ -510,6 +567,92 @@ public class RevisionIterator
         catch (DecodingException | SQLException | IOException | WikiApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Looks up the full revision the diff chain of a revision is based on.
+     *
+     * @param revisionID
+     *            ID of the revision
+     * @return primary key of the full revision
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws WikiApiException
+     *             if the revision is not indexed in {@code index_revisionID}
+     */
+    private int findFullRevisionPK(final int revisionID) throws SQLException, WikiApiException
+    {
+        try (PreparedStatement indexStatement = connection.prepareStatement(SELECT_FULL_REVISION_PK)) {
+            indexStatement.setInt(1, revisionID);
+            try (ResultSet indexResult = indexStatement.executeQuery()) {
+                if (!indexResult.next()) {
+                    throw new WikiApiException("The diff chain of the revision with the ID "
+                            + revisionID + " cannot be reconstructed, it is not indexed.");
+                }
+                return indexResult.getInt(1);
+            }
+        }
+    }
+
+    /**
+     * Reconstructs the text of the revision that precedes the current one in its diff chain,
+     * starting from the full revision the chain is based on.
+     *
+     * @param fullRevisionPK
+     *            primary key of the full revision the chain is based on
+     * @return text of the preceding revision
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws DecodingException
+     *             if a diff could not be decoded
+     * @throws IOException
+     *             if a diff could not be read
+     */
+    private String reconstructPreviousRevision(final int fullRevisionPK)
+        throws SQLException, DecodingException, IOException
+    {
+        String text = null;
+        try (PreparedStatement chainStatement = connection.prepareStatement(SELECT_DIFF_CHAIN)) {
+            chainStatement.setInt(1, fullRevisionPK);
+            chainStatement.setInt(2, primaryKey);
+            try (ResultSet chain = chainStatement.executeQuery()) {
+                boolean binary = chain.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+                while (chain.next()) {
+                    text = decode(chain, 1, binary).buildRevision(text);
+                }
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Decodes the diff stored in a column of the current row of a result set.
+     *
+     * @param resultSet
+     *            the result set positioned on the row
+     * @param column
+     *            index of the column holding the encoded diff
+     * @param binary
+     *            whether the column is of type {@link Types#LONGVARBINARY}
+     * @return the decoded diff
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws DecodingException
+     *             if the diff could not be decoded
+     * @throws IOException
+     *             if the diff could not be read
+     */
+    private Diff decode(final ResultSet resultSet, final int column, final boolean binary)
+        throws SQLException, DecodingException, IOException
+    {
+        RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
+        if (binary) {
+            decoder.setInput(resultSet.getBytes(column));
+        }
+        else {
+            decoder.setInput(resultSet.getString(column));
+        }
+        return decoder.decode();
     }
 
     /**
