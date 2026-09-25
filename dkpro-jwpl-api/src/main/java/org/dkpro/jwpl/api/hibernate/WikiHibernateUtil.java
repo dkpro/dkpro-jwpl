@@ -428,6 +428,9 @@ public class WikiHibernateUtil
      * Hibernate 6 reassociates the given instance itself, without a round trip to the database.
      * Hibernate 7 no longer supports reassociation, so the managed instance with the same
      * identifier is loaded instead. Callers must therefore continue with the returned instance.
+     * The same happens on Hibernate 6 for a {@link Page} that holds metadata only (see
+     * {@link Page#isTextLoaded()}), as such an instance was never loaded by Hibernate and cannot
+     * be reassociated.
      *
      * @param session The {@link Session} to use the entity in. Must not be {@code null}.
      * @param entity  The detached entity. Must not be {@code null}.
@@ -443,7 +446,7 @@ public class WikiHibernateUtil
     @SuppressWarnings("unchecked")
     public static <T> T reattach(Session session, T entity)
     {
-        if (REASSOCIATION_SUPPORTED) {
+        if (REASSOCIATION_SUPPORTED && !(entity instanceof Page page && !page.isTextLoaded())) {
             session.lock(entity, LockMode.NONE);
             return entity;
         }

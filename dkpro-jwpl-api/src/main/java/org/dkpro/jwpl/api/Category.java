@@ -352,16 +352,24 @@ public class Category
     }
 
     /**
+     * Returns the articles that are categorized under this category.
+     * <p>
+     * The pages are loaded without their text, in batches rather than one by one. The text of a
+     * returned page is queried on the first call of its {@link Page#getText()}, which therefore
+     * requires the {@link Wikipedia} this category belongs to to still be usable.
+     *
      * @return The set of articles that are categorized under this category.
      * @throws WikiApiException
-     *             Thrown if errors occurred.
+     *             Thrown if errors occurred, e.g. if an article of this category does not exist.
      */
     public Set<Page> getArticles() throws WikiApiException
     {
         Set<Integer> tmpSet = getArticleIds();
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : tmpSet) {
-            pages.add(this.wiki.getPage(pageID));
+        Set<Page> pages = wiki.__getPagesWithoutText(tmpSet);
+        if (pages.size() < tmpSet.size()) {
+            // As before, when every article was loaded by its own getPage(int) call.
+            throw new WikiPageNotFoundException("Not all of the " + tmpSet.size()
+                    + " articles of the category with page id " + getPageId() + " were found.");
         }
         return pages;
     }
