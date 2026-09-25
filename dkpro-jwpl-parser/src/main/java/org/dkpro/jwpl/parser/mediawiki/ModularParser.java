@@ -914,10 +914,23 @@ public class ModularParser
 
             ResolvedTemplate rt = templateParser.parseTemplate(t, pp);
 
+            // the spans are in descending start order, so the nested templates are the tail
+            int nestedFrom = resolvedTemplateSpans.size();
+            while (nestedFrom > 0 && ts.contains(resolvedTemplateSpans.get(nestedFrom - 1))) {
+                nestedFrom--;
+                resolvedTemplates.get(nestedFrom).setPostParseReplacement(null);
+            }
+            int nestedTo = resolvedTemplateSpans.size();
+
             resolvedTemplateSpans.add(ts);
             resolvedTemplates.add(rt);
 
             sm.replace(ts, rt.getPreParseReplacement());
+
+            // the nested templates now share the replacement of this template
+            for (int i = nestedFrom; i < nestedTo; i++) {
+                resolvedTemplateSpans.get(i).setStart(ts.getStart()).setEnd(ts.getEnd());
+            }
         }
 
         if (resolvedTemplateSpans.isEmpty()) {

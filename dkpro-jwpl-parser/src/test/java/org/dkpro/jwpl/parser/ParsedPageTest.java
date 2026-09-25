@@ -21,11 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.WikiConstants;
@@ -55,8 +50,7 @@ public class ParsedPageTest
     public static void setupWikipedia() throws Exception
     {
 
-        Path p = getResource("pages/Wiki-Article-Americium.txt");
-        wikiArticleOnAmericium = Files.readString(p, StandardCharsets.UTF_8);
+        wikiArticleOnAmericium = readResource("pages/Wiki-Article-Americium.txt");
 
         DatabaseConfiguration db = obtainHSQLDBConfiguration();
         try {
@@ -120,10 +114,5 @@ public class ParsedPageTest
         assertNotNull(parsedPageText);
         assertNotNull(pp.getLanguages());
         assertNotNull(pp.getCategories());
-    }
-
-    private static Path getResource(String r) throws Exception {
-        URL resource = Thread.currentThread().getContextClassLoader().getResource(r);
-        return Path.of(resource.toURI());
     }
 }

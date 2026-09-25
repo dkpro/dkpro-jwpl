@@ -17,6 +17,11 @@
  */
 package org.dkpro.jwpl.parser;
 
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants.Language;
 import org.dkpro.jwpl.api.Wikipedia;
@@ -43,5 +48,18 @@ public abstract class BaseJWPLTest
         db.setJdbcURL("jdbc:hsqldb:file:./src/test/resources/db/wikiapi_test");
         db.setDatabaseDriver("org.hsqldb.jdbcDriver");
         return db;
+    }
+
+    /**
+     * Reads a test resource from the class path.
+     *
+     * @param name The path of the resource, e.g. {@code pages/Wiki-Article-Americium.txt}.
+     * @return The content of the resource, decoded as UTF-8.
+     * @throws Exception Thrown if the resource cannot be found or read.
+     */
+    protected static String readResource(String name) throws Exception
+    {
+        URL resource = Thread.currentThread().getContextClassLoader().getResource(name);
+        return Files.readString(Path.of(resource.toURI()), StandardCharsets.UTF_8);
     }
 }
