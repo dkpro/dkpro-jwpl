@@ -229,7 +229,7 @@ public class TimeMachineGenerator
         }
         return FastUtilLinkTargetResolver.load(
                 new LinktargetParser(decompressor.getInputStream(linkTargetFile)),
-                FastUtilLinkTargetResolver.ARTICLE_TALK_AND_CATEGORY);
+                FastUtilLinkTargetResolver.ARTICLE_AND_CATEGORY);
     }
 
     private CategorylinksParser createCategorylinksParser(LinkTargetResolver linkTargets)
