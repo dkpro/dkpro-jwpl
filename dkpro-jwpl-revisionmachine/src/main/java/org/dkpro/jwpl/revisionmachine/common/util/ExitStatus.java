@@ -24,17 +24,17 @@ public final class ExitStatus
 {
 
     /**
-     * The tool completed successfully.
+     * A tool completed successfully.
      */
     public static final int EXIT_SUCCESS = 0;
 
     /**
-     * The tool failed, for instance because an input file is missing or corrupt.
+     * A tool failed, for instance because an input file is missing or corrupt.
      */
     public static final int EXIT_FAILURE = 1;
 
     /**
-     * The tool was called with missing or invalid arguments.
+     * A tool was called with missing or invalid arguments.
      */
     public static final int EXIT_USAGE = 255;
 
@@ -48,7 +48,7 @@ public final class ExitStatus
      * A successful run returns normally from {@code main}, so the JVM exits once all non-daemon
      * threads have finished.
      *
-     * @param status The exit status of the tool.
+     * @param status The exit status of a tool.
      */
     public static void exitOnFailure(int status)
     {

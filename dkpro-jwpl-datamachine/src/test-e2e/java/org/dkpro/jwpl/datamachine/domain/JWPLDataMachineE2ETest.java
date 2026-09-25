@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -229,13 +230,13 @@ public class JWPLDataMachineE2ETest {
       }
     }
     cmd.addAll(List.of("aa", "n/a", "n/a", dir.toString()));
-    assertEquals(1, execTool(cmd));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   @Test
   void testExecJWPLDataMachineWithMissingSourceFilesShouldFail(@TempDir Path emptyDir) {
     cmd.addAll(List.of("aa", "n/a", "n/a", emptyDir.toString()));
-    assertEquals(1, execTool(cmd));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   /**

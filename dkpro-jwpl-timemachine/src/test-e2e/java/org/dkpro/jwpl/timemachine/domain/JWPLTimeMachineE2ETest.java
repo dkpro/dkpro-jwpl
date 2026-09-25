@@ -41,6 +41,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -194,7 +195,7 @@ public class JWPLTimeMachineE2ETest {
   @Test
   void testExecJWPLTimeMachineWithMissingConfigFileShouldFail() {
     cmd.add(TARGET + File.separator + "non-existent-timemachine-config.xml");
-    assertEquals(1, execTool(cmd));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   @Test

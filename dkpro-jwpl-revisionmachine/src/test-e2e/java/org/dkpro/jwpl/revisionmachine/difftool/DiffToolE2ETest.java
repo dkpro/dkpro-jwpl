@@ -36,6 +36,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.dkpro.jwpl.revisionmachine.common.util.ExitStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -139,7 +140,7 @@ public class DiffToolE2ETest {
   @Test
   void testExecJWPLDiffToolWithMissingConfigFileShouldFail() {
     cmd.add(TARGET + File.separator + "non-existent-difftool-config.xml");
-    assertEquals(1, execTool(cmd));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   @Test
@@ -156,7 +157,7 @@ public class DiffToolE2ETest {
     Path configFile = dir.resolve("difftool-config-truncated.xml");
     Files.writeString(configFile, config);
     cmd.add(configFile.toString());
-    assertEquals(1, execTool(cmd));
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   @Test

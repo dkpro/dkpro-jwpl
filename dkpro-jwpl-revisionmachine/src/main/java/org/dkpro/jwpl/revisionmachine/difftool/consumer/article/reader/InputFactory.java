@@ -138,7 +138,7 @@ public class InputFactory
         }
         catch (IOException e) {
             throw new ArticleReaderException(
-                    "Could not open a BZip2 decompression stream for [" + archivePath + "].", e);
+                    "Could not open a BZip2 decompression stream for '" + archivePath + "'.", e);
         }
     }
 
