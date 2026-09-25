@@ -37,7 +37,6 @@ import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
-import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
 import org.dkpro.jwpl.wikimachine.util.DumpFileDiscovery;
@@ -91,11 +90,11 @@ public class DataMachineGenerator
      * Configures how many of the mutually independent processing passes may run at the same time.
      * <p>
      * With the default of {@code 1} every pass runs on the calling thread, one after another. With
-     * a larger value the {@code categorylinks}, {@code pagelinks} and {@code revision} passes,
-     * which only depend on the {@code page} pass, run concurrently on up to that many worker
-     * threads. The generated tables are identical in both modes, since each of them is still
-     * written by exactly one pass, in input order. The peak heap usage may grow, though, because
-     * the in-memory state of the concurrent passes is alive at the same time.
+     * a larger value the {@code categorylinks} and {@code pagelinks} passes, which only depend
+     * on the {@code page} pass, run concurrently on up to that many worker threads. The generated
+     * tables are identical in both modes, since each of them is still written by exactly one
+     * pass, in input order. The peak heap usage may grow, though, because the in-memory state of
+     * the concurrent passes is alive at the same time.
      *
      * @param parallelism The maximum number of passes to run at the same time. Must be positive.
      * @throws IllegalArgumentException Thrown if {@code parallelism} is less than {@code 1}.
@@ -162,9 +161,6 @@ public class DataMachineGenerator
         }, () -> {
             logger.log("Processing table pagelinks...");
             dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
-        }, () -> {
-            logger.log("Processing table revision...");
-            dumpVersionProcessor.processRevision(createRevisionParser());
         }));
 
         logger.log("Processing table text...");
@@ -279,20 +275,6 @@ public class DataMachineGenerator
     {
         String pagelinksFile = files.getInputPageLinks();
         return new PagelinksParser(decompressor.getInputStream(pagelinksFile), linkTargets);
-    }
-
-    private RevisionParser createRevisionParser() throws IOException
-    {
-        String revisionFile = files.getGeneratedRevision();
-
-        DumpTableInputStream revisionTableInputStream = envFactory
-                .getDumpTableInputStream();
-        revisionTableInputStream.initialize(decompressor.getInputStream(revisionFile),
-                DumpTableEnum.REVISION);
-
-        RevisionParser revisionParser = envFactory.getRevisionParser();
-        revisionParser.setInputStream(revisionTableInputStream);
-        return revisionParser;
     }
 
     private TextParser createTextParser() throws IOException

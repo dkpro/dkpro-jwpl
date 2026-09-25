@@ -51,7 +51,6 @@ public class DataMachineFiles
     private final static String INPUT_PAGESMETACURRENT = "pages-meta-current";
 
     private final static String GENERATED_PAGE = "page.bin";
-    private final static String GENERATED_REVISION = "revision.bin";
     private final static String GENERATED_TEXT = "text.bin";
     /*
      * discussions.bin is currently unused. Discussions are put in pages.bin
@@ -167,14 +166,6 @@ public class DataMachineFiles
     public String getGeneratedPage()
     {
         return getGeneratedPath(GENERATED_PAGE);
-    }
-
-    /**
-     * @return Retrieves the absolute path of the {@link #GENERATED_REVISION} file.
-     */
-    public String getGeneratedRevision()
-    {
-        return getGeneratedPath(GENERATED_REVISION);
     }
 
     /**
