@@ -351,4 +351,50 @@ public class JWPLDataMachineE2ETest {
       return exitCode;
     }
   }
+
+  /**
+   * Running the independent passes concurrently must not change a single byte of the generated
+   * tables. The concurrent run is repeated to give different interleavings a chance to show up.
+   */
+  @Test
+  void testExecJWPLDataMachineInParallelProducesIdenticalOutput() throws IOException {
+    Path outputDir = Path.of(OUTPUT_DIR + File.separator + "output");
+    List<String> args = List.of("aa", "n/a", "n/a", OUTPUT_DIR);
+
+    List<String> sequential = new ArrayList<>(cmd);
+    sequential.add(1, "-D" + DataMachineGenerator.PARALLELISM_PROPERTY + "=1");
+    sequential.addAll(args);
+    assertEquals(0, execTool(sequential));
+    Map<String, byte[]> expected = tables(outputDir);
+    assertEquals(EXPECTED_ROWS.keySet(), expected.keySet());
+
+    List<String> parallel = new ArrayList<>(cmd);
+    parallel.add(1, "-D" + DataMachineGenerator.PARALLELISM_PROPERTY + "=4");
+    parallel.addAll(args);
+    for (int run = 0; run < 5; run++) {
+      assertEquals(0, execTool(parallel));
+      Map<String, byte[]> actual = tables(outputDir);
+      assertEquals(expected.keySet(), actual.keySet());
+      for (Map.Entry<String, byte[]> table : expected.entrySet()) {
+        assertArrayEquals(table.getValue(), actual.get(table.getKey()),
+                table.getKey() + " differs in parallel run " + run);
+      }
+    }
+  }
+
+  /**
+   * @param outputDir The directory holding the generated tables.
+   * @return The content of every generated table, keyed by file name. The files are deleted, so
+   *         that a subsequent run cannot leave a stale table behind unnoticed.
+   */
+  private static Map<String, byte[]> tables(Path outputDir) throws IOException {
+    Map<String, byte[]> tables = new HashMap<>();
+    try (Stream<Path> results = Files.list(outputDir)) {
+      for (Path table : results.filter(p -> p.toString().endsWith(".txt")).toList()) {
+        tables.put(table.getFileName().toString(), Files.readAllBytes(table));
+        Files.delete(table);
+      }
+    }
+    return tables;
+  }
 }
