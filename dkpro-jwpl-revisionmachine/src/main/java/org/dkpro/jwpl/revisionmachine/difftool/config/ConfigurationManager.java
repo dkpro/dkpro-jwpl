@@ -131,6 +131,9 @@ public class ConfigurationManager
         else if (configParameter == ConfigurationKeys.MODE_DATAFILE_OUTPUT) {
             return false;
         }
+        else if (configParameter == ConfigurationKeys.LIMIT_ARCHIVE_THREADS) {
+            return 1;
+        }
         else {
             throw ErrorFactory.createConfigurationException(
                     ErrorKeys.CONFIGURATION_CONFIGURATIONMANAGER_UNKNOWN_CONFIG_PARAMETER,
