@@ -69,8 +69,9 @@ public class Wikipedia
      * and MariaDB default to case-insensitive ones. An explicit binary collation in the query,
      * though, keeps these databases from using the index on the column, which turns every lookup
      * into a full scan. So the query compares in the collation of the column, and the caller keeps
-     * only the entries whose name equals the title exactly. These are few: the case variants of
-     * one title at most.
+     * only the entries whose name equals the title exactly. These are the names the collation of
+     * the column treats as equal to the title: its case variants, and with accent-insensitive
+     * collations also accent, {@code ß}/{@code ss} or width variants.
      */
     static final String PAGE_NAMES_BY_NAME_QUERY = "select p.name from PageMapLine as p "
             + "where p.name = :pName";
