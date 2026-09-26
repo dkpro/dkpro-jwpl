@@ -88,6 +88,12 @@ public class RevisionIterator
     private String pageQuery;
 
     /**
+     * Whether {@link #pageQuery} selects the {@code Revision} column, i.e. was built for the eager
+     * mode
+     */
+    private boolean pageQuerySelectsText;
+
+    /**
      * Binary Data Flag
      */
     private boolean binaryData;
@@ -134,7 +140,8 @@ public class RevisionIterator
     private final int MAX_NUMBER_RESULTS;
 
     /**
-     * Should load revision text?
+     * Lazy mode flag: {@code true} if the revision text is not decoded while iterating, see
+     * {@link #setShouldLoadRevisionText(boolean)}.
      */
     private boolean shouldLoadRevisionText;
 
@@ -148,19 +155,34 @@ public class RevisionIterator
      */
     private Boolean hasNamespaceColumn;
 
+    /**
+     * @return {@code true} if the iterator runs in lazy mode, i.e. does not decode the revision
+     *         texts while iterating, see {@link #setShouldLoadRevisionText(boolean)}
+     */
     public boolean shouldLoadRevisionText()
     {
         return shouldLoadRevisionText;
     }
 
     /**
-     * Sets whether the revision texts are loaded lazily. When switching to eager loading, the diff
-     * chain of the next revision is rebuilt from {@code index_revisionID}, see the
+     * Switches between eager and lazy mode. Note that the name is inverted: {@code true} means
+     * lazy, the revision text is <em>not</em> loaded while iterating.
+     * <p>
+     * In eager mode (the default) the stored diffs are read and applied one by one while
+     * iterating, so every returned {@link Revision} carries its text at the cost of one diff per
+     * revision. Use it whenever the text of (almost) every revision is needed.
+     * <p>
+     * In lazy mode the stored diffs are not read at all, the returned revisions only carry their
+     * metadata. It is meant for metadata-only passes or sparse text access: every call of
+     * {@link Revision#getRevisionText()} on such a revision issues two queries and reconstructs
+     * the text from the last full revision, which can mean applying up to about a thousand diffs.
+     * <p>
+     * A change takes effect for the next page read from the database. When switching to eager
+     * mode, the diff chain of the next revision is rebuilt from {@code index_revisionID}, see the
      * {@link RevisionIterator class description} for the case the revision is not indexed.
      *
      * @param shouldLoadRevisionText
-     *            {@code true} to load the revision texts lazily, {@code false} to decode them
-     *            during the iteration
+     *            {@code true} for lazy mode, {@code false} for eager mode
      */
     public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
     {
@@ -358,7 +380,8 @@ public class RevisionIterator
      * @param config
      *            Reference to the configuration object
      * @param shouldLoadRevisionText
-     *            should load revision text, see {@link #setShouldLoadRevisionText(boolean)}
+     *            {@code true} for lazy mode, i.e. the revision text is <em>not</em> loaded while
+     *            iterating, see {@link #setShouldLoadRevisionText(boolean)}
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -416,9 +439,19 @@ public class RevisionIterator
             limit = endPK - primaryKey + 1;
         }
 
-        if (pageQuery == null) {
-            // The keyset paging continues after the last primary key read, hence the explicit order
-            pageQuery = "SELECT PrimaryKey, Revision, RevisionCounter,"
+        final boolean selectText = !shouldLoadRevisionText;
+        if (pageQuery == null || pageQuerySelectsText != selectText) {
+            // Built on first use and again after a mode switch, the reused statement is replaced
+            if (statement != null) {
+                statement.close();
+                statement = null;
+            }
+            pageQuerySelectsText = selectText;
+            // The keyset paging continues after the last primary key read, hence the explicit order.
+            // The lazy mode never reads the Revision blob, so PrimaryKey takes its place to keep
+            // the column positions of both modes the same.
+            pageQuery = "SELECT PrimaryKey, " + (selectText ? "Revision" : "PrimaryKey")
+                    + ", RevisionCounter,"
                     + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
                     + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions"
                     + " WHERE PrimaryKey > ? ORDER BY PrimaryKey"
@@ -511,7 +544,7 @@ public class RevisionIterator
 
             Revision revision = new Revision(revCount);
             revision.setPrimaryKey(this.primaryKey);
-            if (!shouldLoadRevisionText) {
+            if (!shouldLoadRevisionText && pageQuerySelectsText) {
                 String currentRevision;
 
                 Diff diff = decode(result, 2, binaryData);
@@ -541,6 +574,10 @@ public class RevisionIterator
                 revision.setRevisionText(currentRevision);
             }
             else {
+                // The texts are not reconstructed, the next one cannot build on this revision and
+                // has to rebuild its diff chain
+                previousRevision = null;
+                previousRevisionPK = -1;
                 if (revApi == null) {
                     revApi = new RevisionApi(config);
                 }
