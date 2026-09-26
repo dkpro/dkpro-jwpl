@@ -34,6 +34,8 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.hashing.IStringHashCode;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * <i>Please be sure, that {@link HashAlgorithm#hashCode(String)} of the provided HashAlgorithm type
  * returns the same type as KeyType</i>
@@ -309,6 +311,15 @@ public class DumpVersionJDKGeneric<KeyType, HashAlgorithm extends IStringHashCod
         pageIdRevMap.put(rev_page,
                 Revision.createRevision(revisionParser.getRevTextId(), rev_timestamp));
         textIdPageIdMap.put(revisionParser.getRevTextId(), rev_page);
+    }
+
+    @Override
+    public boolean addWantedTextIds(IntSet textIds)
+    {
+        for (int textId : textIdPageIdMap.keySet()) {
+            textIds.add(textId);
+        }
+        return true;
     }
 
     @Override
