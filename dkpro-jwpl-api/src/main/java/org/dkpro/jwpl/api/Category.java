@@ -26,6 +26,7 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.CategoryDAO;
+import org.hibernate.JDBCException;
 
 /**
  * Represents a category as conceptually defined by Wikipedia.
@@ -79,11 +80,12 @@ public class Category
      * The native query {@link #createCategory(Title)} runs to find a category, taking its name as
      * parameter {@code name}. It yields the category entities found. The comparison is done in the
      * collation of the column, which keeps the index on the column usable, so the caller has to
-     * pick the exact match.
+     * pick the exact match. Among several categories of that name, the one with the lowest id
+     * wins, so the rows are ordered by id.
      *
      * @see Wikipedia#PAGE_NAMES_BY_NAME_QUERY
      */
-    static final String CATEGORY_BY_NAME_QUERY = "select * from Category where name = :name";
+    static final String CATEGORY_BY_NAME_QUERY = "select * from Category where name = :name order by id";
 
     private final CategoryDAO catDAO;
     private Row row;
@@ -212,11 +214,20 @@ public class Category
     {
         String name = title.getWikiStyleTitle();
 
-        List<org.dkpro.jwpl.api.hibernate.Category> candidates = wiki.__inTransaction(
-                session -> session
-                        .createNativeQuery(CATEGORY_BY_NAME_QUERY,
-                                org.dkpro.jwpl.api.hibernate.Category.class)
-                        .setParameter("name", name, String.class).list());
+        List<org.dkpro.jwpl.api.hibernate.Category> candidates;
+        try {
+            candidates = wiki.__inTransaction(session -> session
+                    .createNativeQuery(CATEGORY_BY_NAME_QUERY,
+                            org.dkpro.jwpl.api.hibernate.Category.class)
+                    .setParameter("name", name, String.class).list());
+        }
+        catch (JDBCException e) {
+            if (!Wikipedia.isCollationMismatch(e)) {
+                throw e;
+            }
+            // the column cannot hold the name, so no category can have it
+            candidates = List.of();
+        }
 
         // the query compares in the collation of the column, so keep the exact match only
         for (org.dkpro.jwpl.api.hibernate.Category candidate : candidates) {
