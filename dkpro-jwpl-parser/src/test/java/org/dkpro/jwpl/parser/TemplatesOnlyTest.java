@@ -140,10 +140,9 @@ class TemplatesOnlyTest
     }
 
     /**
-     * The full parse drops some templates, as it does not attach them to any content element of
-     * the page: those nested in a template whose remaining text is long enough that the nested
-     * span collapses to an empty one when the outer template is replaced, those in the text of a
-     * category link, and those in a gallery. Every other template is returned by both.
+     * The full parse drops templates in the text of a category link, as it does not attach them to
+     * any content element of the page. Every other template is returned by both, including those
+     * nested in multi-line templates (#729) and those in a gallery (#733).
      */
     @ParameterizedTest
     @MethodSource("parsers")
@@ -165,22 +164,29 @@ class TemplatesOnlyTest
     {
         MediaWikiParser english = createParser(Language.english,
                 ShowTemplateNamesAndParameters.class);
-        MediaWikiParser german = createParser(Language.german,
-                ShowTemplateNamesAndParameters.class);
-
-        String nested = PAGES.get("nested-multiline");
-        assertEquals(Set.of("Outer", "After"), namesOfFullParse(english, nested));
-        assertEquals(Set.of("Outer", "Inner", "After"),
-                names(english.parseTemplatesOnly(nested)));
 
         String links = PAGES.get("links");
         assertEquals(Set.of("Infobox", "InImage", "OnLanguageLine"),
                 namesOfFullParse(english, links));
         assertEquals(Set.of("Infobox", "InImage", "InCategory", "OnLanguageLine"),
                 names(english.parseTemplatesOnly(links)));
+    }
+
+    @Test
+    void returnsTheTemplatesOfTheFullParseForNestedAndGalleryTemplates()
+    {
+        MediaWikiParser english = createParser(Language.english,
+                ShowTemplateNamesAndParameters.class);
+        MediaWikiParser german = createParser(Language.german,
+                ShowTemplateNamesAndParameters.class);
+
+        String nested = PAGES.get("nested-multiline");
+        assertEquals(Set.of("Outer", "Inner", "After"), namesOfFullParse(english, nested));
+        assertEquals(Set.of("Outer", "Inner", "After"),
+                names(english.parseTemplatesOnly(nested)));
 
         String gallery = PAGES.get("gallery-and-table");
-        assertEquals(Set.of("InHeading", "InCell", "InList", "Cite_web"),
+        assertEquals(Set.of("InHeading", "InGallery", "InCell", "InList", "Cite_web"),
                 namesOfFullParse(german, gallery));
         assertEquals(Set.of("InHeading", "InGallery", "InCell", "InList", "Cite_web"),
                 names(german.parseTemplatesOnly(gallery)));
