@@ -1,0 +1,80 @@
+# Known divergences from the name lookup contract. Columns: caseId, engine, profiles (comma
+# separated), observed outcome (with \uXXXX escapes), issue. An entry must occur exactly as
+# recorded on every listed profile, otherwise the contract test fails it as stale: remove it
+# once the issue is fixed. Placeholders #NEW-... name issues still to be filed.
+
+# #NEW-categories-of-exact
+categories-of-normalized	HSQLDB	DEFAULT,IGNORECASE	cats:[]	#NEW-categories-of-exact
+categories-of-normalized	MARIADB	MB4_BIN	cats:[]	#NEW-categories-of-exact
+categories-of-normalized	MYSQL	MB4_BIN	cats:[]	#NEW-categories-of-exact
+categories-of-normalized	POSTGRESQL	DEFAULT	cats:[]	#NEW-categories-of-exact
+categories-of-unstored	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	cats:[800001]	#NEW-categories-of-exact
+categories-of-unstored	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	cats:[800001]	#NEW-categories-of-exact
+categories-of-unstored	POSTGRESQL	ICU_CI_ND	cats:[800001]	#NEW-categories-of-exact
+
+# #NEW-ci-lookup-ignorecase
+case-ids-ci	HSQLDB	IGNORECASE	NOT_FOUND	#NEW-ci-lookup-ignorecase
+
+# #NEW-exact-title-underscores
+exact-title-multiword	HSQLDB	DEFAULT,IGNORECASE	NOT_FOUND	#NEW-exact-title-underscores
+exact-title-multiword	MARIADB	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	NOT_FOUND	#NEW-exact-title-underscores
+exact-title-multiword	MYSQL	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	NOT_FOUND	#NEW-exact-title-underscores
+exact-title-multiword	POSTGRESQL	DEFAULT,ICU_CI_ND	NOT_FOUND	#NEW-exact-title-underscores
+
+# #NEW-fetch-by-title-exact
+accent-stripped-page	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI	page:800020	#NEW-fetch-by-title-exact
+accent-stripped-page	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI	page:800020	#NEW-fetch-by-title-exact
+case-exact-2-page	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-exact-2-page	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-exact-2-page	POSTGRESQL	ICU_CI_ND	page:800001	#NEW-fetch-by-title-exact
+case-exact-3-page	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-exact-3-page	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-exact-3-page	POSTGRESQL	ICU_CI_ND	page:800001	#NEW-fetch-by-title-exact
+case-unstored-get-page	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-unstored-get-page	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800001	#NEW-fetch-by-title-exact
+case-unstored-get-page	POSTGRESQL	ICU_CI_ND	page:800001	#NEW-fetch-by-title-exact
+cjk-unstored-page	MARIADB	LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+cjk-unstored-page	MYSQL	LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+emoji-stored-page	MARIADB	MB3_GENERAL_CI,LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+emoji-stored-page	MYSQL	MB3_GENERAL_CI,LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+emoji-unstored-page	MARIADB	MB3_GENERAL_CI,LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+emoji-unstored-page	MARIADB	MB4_GENERAL_CI	page:800040	#NEW-fetch-by-title-exact
+emoji-unstored-page	MYSQL	MB3_GENERAL_CI,LATIN1_SWEDISH_CI	EXC:1267	#NEW-fetch-by-title-exact
+emoji-unstored-page	MYSQL	MB4_GENERAL_CI	page:800040	#NEW-fetch-by-title-exact
+foo-upper-page	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800010	#NEW-fetch-by-title-exact
+foo-upper-page	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800010	#NEW-fetch-by-title-exact
+foo-upper-page	POSTGRESQL	ICU_CI_ND	page:800010	#NEW-fetch-by-title-exact
+sharp-s-ss-page	MARIADB	DEFAULT	page:800021	#NEW-fetch-by-title-exact
+sharp-s-ss-page	MYSQL	DEFAULT	page:800021	#NEW-fetch-by-title-exact
+trailing-space-page	HSQLDB	DEFAULT,IGNORECASE	page:800050	#NEW-fetch-by-title-exact
+trailing-space-page	MARIADB	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800050	#NEW-fetch-by-title-exact
+trailing-space-page	MYSQL	MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	page:800050	#NEW-fetch-by-title-exact
+
+# #NEW-like-escape
+archives-underscore	HSQLDB	DEFAULT,IGNORECASE	ids:[800063,\u0020800064]	#NEW-like-escape
+archives-underscore	MARIADB	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800063,\u0020800064]	#NEW-like-escape
+archives-underscore	MYSQL	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800063,\u0020800064]	#NEW-like-escape
+archives-underscore	POSTGRESQL	DEFAULT	ids:[800063,\u0020800064]	#NEW-like-escape
+
+# #NEW-page-ids-exact
+case-ids	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+case-ids	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+case-ids	POSTGRESQL	ICU_CI_ND	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+case-ids-unstored	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+case-ids-unstored	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+case-ids-unstored	POSTGRESQL	ICU_CI_ND	ids:[800001,\u0020800002,\u0020800003]	#NEW-page-ids-exact
+normalized-ids	HSQLDB	DEFAULT,IGNORECASE	NOT_FOUND	#NEW-page-ids-exact
+normalized-ids	MARIADB	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	NOT_FOUND	#NEW-page-ids-exact
+normalized-ids	MYSQL	DEFAULT,MB4_BIN,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	NOT_FOUND	#NEW-page-ids-exact
+normalized-ids	POSTGRESQL	DEFAULT,ICU_CI_ND	NOT_FOUND	#NEW-page-ids-exact
+
+# #NEW-page-query-collation
+like-case	MARIADB	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800060,\u0020800061]	#NEW-page-query-collation
+like-case	MYSQL	DEFAULT,MB4_GENERAL_CI,MB3_GENERAL_CI,LATIN1_SWEDISH_CI	ids:[800060,\u0020800061]	#NEW-page-query-collation
+
+# #NEW-pg-nondeterministic-like
+archives-plain	POSTGRESQL	ICU_CI_ND	EXC:0A000	#NEW-pg-nondeterministic-like
+archives-underscore	POSTGRESQL	ICU_CI_ND	EXC:0A000	#NEW-pg-nondeterministic-like
+like-case	POSTGRESQL	ICU_CI_ND	EXC:0A000	#NEW-pg-nondeterministic-like
+like-percent	POSTGRESQL	ICU_CI_ND	EXC:0A000	#NEW-pg-nondeterministic-like
+like-underscore	POSTGRESQL	ICU_CI_ND	EXC:0A000	#NEW-pg-nondeterministic-like
