@@ -401,6 +401,63 @@ public class Wikipedia
     }
 
     /**
+     * Reads the page ids of the categories of many pages at once, without loading the pages or the
+     * categories.
+     * <p>
+     * Calling {@link Page#getCategoryIDs()} on each page costs one query per page. This reads the
+     * category ids of all given pages in one query per {@value Wikipedia#ID_BATCH_SIZE} page ids,
+     * so a caller that knows its pages in advance can prefetch their categories and check
+     * membership without further queries.
+     * <p>
+     * A page without categories maps to an empty set. Ids that have no matching page are absent
+     * from the result, so callers that need to detect them have to compare the key set of the
+     * result against the ids they passed in. As with {@link Page#getCategoryIDs()}, the sets may
+     * contain the ids of categories that do not exist.
+     *
+     * @param pageIds The ids of the pages to read the category ids for. Must not be {@code null}
+     *                and must not contain {@code null}.
+     * @return The page ids of the categories, keyed by the page id of the page they belong to. The
+     *         map and its sets are new and modifiable. Never {@code null}.
+     * @throws IllegalArgumentException Thrown if {@code pageIds} is {@code null} or contains
+     *                                  {@code null}.
+     */
+    public Map<Integer, Set<Integer>> getCategoryIDs(Collection<Integer> pageIds) {
+        if (pageIds == null) {
+            throw new IllegalArgumentException("pageIds must not be null");
+        }
+        // Copied into a set first, which also drops duplicates. Not Collection#contains(null), as
+        // immutable collections such as Set.of(..) reject a null argument.
+        Set<Integer> distinct = new HashSet<>();
+        for (Integer pageId : pageIds) {
+            if (pageId == null) {
+                throw new IllegalArgumentException("pageIds must not contain null");
+            }
+            distinct.add(pageId);
+        }
+
+        Map<Integer, Set<Integer>> categoryIds = new HashMap<>();
+        List<Integer> ids = new ArrayList<>(distinct);
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
+            // A session is acquired per batch, as in getTitles(Collection). The left join yields a
+            // single null category for a page without categories, so that it maps to an empty set.
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery("select p.pageId, c from Page p left join p.categories c"
+                            + " where p.pageId in (:ids)", Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] row : rows) {
+                Set<Integer> categories = categoryIds.computeIfAbsent((Integer) row[0],
+                        pageId -> new HashSet<>());
+                if (row[1] != null) {
+                    categories.add((Integer) row[1]);
+                }
+            }
+        }
+        return categoryIds;
+    }
+
+    /**
      * Loads the pages with the given page ids without their text, in one query per
      * {@value Wikipedia#ID_BATCH_SIZE} ids. The text of each page is queried on the first call
      * of {@link Page#getText()}.

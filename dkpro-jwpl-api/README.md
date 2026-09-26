@@ -242,6 +242,18 @@ dbConfig.setCategoryCacheSize(10_000); // default 1000, 0 = off
 Cached categories are never refreshed. If the database is changed while a `Wikipedia` instance is
 in use, call `wiki.clearCategoryCache()`.
 
+To check whether a page belongs to certain categories, compare page ids instead of loading the
+categories. `Page.getCategoryIDs()` reads only the page ids of the categories of a page, in one
+query, and `Wikipedia.getCategoryIDs(Collection)` reads them for many pages at once, in one query
+per 500 pages:
+
+```java
+Set<Integer> domain = Set.of(wiki.getCategory("Physics").getPageId());
+boolean inDomain = !Collections.disjoint(page.getCategoryIDs(), domain);
+
+Map<Integer, Set<Integer>> categoriesByPage = wiki.getCategoryIDs(pageIds);
+```
+
 ## Persistence
 
 The entities live in `org.dkpro.jwpl.api.hibernate` and are mapped with JPA annotations. The

@@ -346,6 +346,12 @@ public class Page
      * Returns the categories of this page. The categories are loaded in batches rather than one by
      * one, and those held by the category cache are not queried again. Categories that do not
      * exist are left out.
+     * <p>
+     * To check whether this page belongs to certain categories, use {@link #getCategoryIDs()}
+     * instead and compare page ids. That reads only the page ids of the categories, while this
+     * method needs a second query for every category that is not in the category cache, and it
+     * creates a {@link Category} object for each of them. For many pages at once, see
+     * {@link Wikipedia#getCategoryIDs(java.util.Collection)}.
      *
      * @return A set of categories that this page belongs to. A new, modifiable set is returned on
      *         each call, so callers may modify it without affecting this page.
@@ -355,6 +361,23 @@ public class Page
         Set<Integer> tmp = loadIds("categories");
 
         return wiki.__getCategoriesByPageIds(tmp);
+    }
+
+    /**
+     * Returns the page ids of the categories of this page, without loading the categories. This is
+     * one query, and no {@link Category} objects are created, so it is the cheap way to check
+     * whether this page belongs to certain categories, e.g.
+     * {@code !Collections.disjoint(page.getCategoryIDs(), categoryPageIds)}.
+     * <p>
+     * Unlike {@link #getCategories()}, the result may contain the ids of categories that do not
+     * exist. For many pages at once, see {@link Wikipedia#getCategoryIDs(java.util.Collection)}.
+     *
+     * @return The page ids of the categories of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
+     */
+    public Set<Integer> getCategoryIDs()
+    {
+        return loadCollection("categories", Integer.class);
     }
 
     /**
