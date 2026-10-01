@@ -114,6 +114,10 @@ public final class ContractFixture
         s.add(new Stored(Kind.PAGE, 800062, 800062, "Pct%Literal", false));
         s.add(new Stored(Kind.PAGE, 800063, 800063, "Discussion:Under_scoreA/Archive_1", false));
         s.add(new Stored(Kind.PAGE, 800064, 800064, "Discussion:UnderXscoreA/Archive_1", false));
+
+        // a lower-case first letter, which only the as-given exact lookup can reach
+        s.add(new Stored(Kind.PAGE, 800070, 800070, "iPod_probe", false));
+        s.add(new Stored(Kind.PAGE, 800071, 800071, "IPod_probe", false));
         STORED = Collections.unmodifiableList(s);
     }
 

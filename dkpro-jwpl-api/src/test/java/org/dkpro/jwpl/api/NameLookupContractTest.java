@@ -183,6 +183,8 @@ public class NameLookupContractTest
                 case GET_PAGE -> "page:" + wiki.getPage(probe).getPageId();
                 case GET_PAGE_BY_EXACT_TITLE -> "page:" + wiki.getPageByExactTitle(probe)
                         .getPageId();
+                case GET_PAGE_BY_EXACT_TITLE_AS_GIVEN -> "page:"
+                        + wiki.getPageByExactTitle(probe, TitleMatch.AS_GIVEN).getPageId();
                 case GET_PAGE_IDS -> "ids:" + NameLookupOracle.sorted(wiki.getPageIds(probe));
                 case GET_PAGE_IDS_CI -> "ids:"
                         + NameLookupOracle.sorted(wiki.getPageIdsCaseInsensitive(probe));

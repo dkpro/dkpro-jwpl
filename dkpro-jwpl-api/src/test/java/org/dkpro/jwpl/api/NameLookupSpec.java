@@ -60,6 +60,11 @@ final class NameLookupSpec
          * first-letter capitalization of {@link Title}.
          */
         GET_PAGE_BY_EXACT_TITLE(true),
+        /**
+         * {@link Wikipedia#getPageByExactTitle(String, TitleMatch)} with
+         * {@link TitleMatch#AS_GIVEN}; exact, without normalization.
+         */
+        GET_PAGE_BY_EXACT_TITLE_AS_GIVEN(true),
         /** {@link Wikipedia#getPageIds(String)}; ideally exact, follows the collation. */
         GET_PAGE_IDS(false),
         /** {@link Wikipedia#getPageIdsCaseInsensitive(String)}. */

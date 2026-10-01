@@ -180,6 +180,61 @@ public class WikipediaTest
     }
 
     @Test
+    public void testGetPageByExactTitleCapitalizesFirstLetter() throws WikiApiException
+    {
+        // the stored name is TK2; the default mode upper-cases the first letter only
+        assertEquals(105, wiki.getPageByExactTitle("tK2").getPageId());
+        assertEquals(105,
+                wiki.getPageByExactTitle("tK2", TitleMatch.CAPITALIZE_FIRST_LETTER).getPageId());
+        assertThrows(WikiPageNotFoundException.class, () -> wiki.getPageByExactTitle("tk2"));
+    }
+
+    @Test
+    public void testGetPageByExactTitleAsGiven() throws WikiApiException
+    {
+        assertEquals(105, wiki.getPageByExactTitle("TK2", TitleMatch.AS_GIVEN).getPageId());
+        Page page = wiki.getPageByExactTitle("Wikipedia_API", TitleMatch.AS_GIVEN);
+        assertEquals(1014, page.getPageId());
+        assertFalse(page.isRedirect());
+    }
+
+    @Test
+    public void testGetPageByExactTitleAsGivenDoesNotNormalize()
+    {
+        // the stored names are TK2 and Wikipedia_API
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("tK2", TitleMatch.AS_GIVEN));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("wikipedia_API", TitleMatch.AS_GIVEN));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("Wikipedia API", TitleMatch.AS_GIVEN));
+    }
+
+    @Test
+    public void testGetPageByExactTitleAsGivenRedirect() throws WikiApiException
+    {
+        Page page = wiki.getPageByExactTitle("SIR", TitleMatch.AS_GIVEN);
+        assertEquals(1011, page.getPageId());
+        assertTrue(page.isRedirect());
+    }
+
+    @Test
+    public void testGetPageByExactTitleAsGivenNullOrEmpty()
+    {
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle(null, TitleMatch.AS_GIVEN));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("", TitleMatch.AS_GIVEN));
+    }
+
+    @Test
+    public void testGetPageByExactTitleNullTitleMatch()
+    {
+        assertThrows(IllegalArgumentException.class,
+                () -> wiki.getPageByExactTitle("TK2", null));
+    }
+
+    @Test
     public void testGetPageByExactTitleNull()
     {
         try {

@@ -54,11 +54,11 @@ public class Page
     public static final String HIDDEN_CATEGORIES_TITLE = "Hidden_categories";
 
     /**
-     * The native query {@link #fetchByTitle(Title, boolean)} runs to find the entries of a title,
-     * taking the title as parameter {@code pagetitle}. It yields the name and the page id of each
-     * entry found, ordered by the id of the entry. The comparison is done in the collation of the
-     * column, which keeps the index on the column usable, so the caller has to pick the exact
-     * match.
+     * The native query {@link #fetchByTitle(String, boolean, TitleMatch)} runs to find the entries
+     * of a title, taking the title as parameter {@code pagetitle}. It yields the name and the page
+     * id of each entry found, ordered by the id of the entry. The comparison is done in the
+     * collation of the column, which keeps the index on the column usable, so the caller has to
+     * pick the exact match.
      *
      * @see Wikipedia#PAGE_NAMES_BY_NAME_QUERY
      */
@@ -140,19 +140,47 @@ public class Page
      * @param useExactTitle
      *            Whether to use the exact title, i.e. the stored wiki-style name, or try to guess
      *            the correct wiki-style title. The exact title is only adjusted by the
-     *            first-letter capitalization of {@link Title}.
+     *            first-letter capitalization of {@link Title}, i.e. it is matched like
+     *            {@link TitleMatch#CAPITALIZE_FIRST_LETTER}.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
     public Page(Wikipedia wiki, String pName, boolean useExactTitle) throws WikiApiException
     {
+        this(wiki, pName, useExactTitle, TitleMatch.CAPITALIZE_FIRST_LETTER);
+    }
+
+    /**
+     * Creates a page object.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param pName
+     *            The name of the page.
+     * @param useExactTitle
+     *            Whether to use the exact title, i.e. the stored wiki-style name, or try to guess
+     *            the correct wiki-style title.
+     * @param titleMatch
+     *            How the exact title is matched: {@link TitleMatch#CAPITALIZE_FIRST_LETTER}
+     *            upper-cases its first letter, {@link TitleMatch#AS_GIVEN} takes it as given.
+     *            Ignored unless {@code useExactTitle} is set.
+     * @throws WikiApiException
+     *             Thrown if errors occurred.
+     * @throws IllegalArgumentException
+     *             Thrown if {@code titleMatch} is {@code null}.
+     */
+    public Page(Wikipedia wiki, String pName, boolean useExactTitle, TitleMatch titleMatch)
+        throws WikiApiException
+    {
         if (pName == null || pName.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
+        if (titleMatch == null) {
+            throw new IllegalArgumentException("titleMatch must not be null");
+        }
         this.wiki = wiki;
         this.pageDAO = wiki.getPageDAO();
-        Title pageTitle = new Title(pName);
-        fetchByTitle(pageTitle, useExactTitle);
+        fetchByTitle(pName, useExactTitle, titleMatch);
     }
 
     /**
@@ -232,20 +260,32 @@ public class Page
      * the entry whose name equals the title by code point is picked in Java. Among several entries
      * of that name, the one with the lowest id wins. A title the column cannot hold is not found.
      *
-     * @param pTitle
+     * @param pName
      *            The title of the page.
      * @param useExactTitle
-     *            Whether to look up the title as given, apart from the first-letter
-     *            capitalization of {@link Title}, instead of the wiki-style title.
+     *            Whether to look up the exact title, matched as {@code titleMatch} says, instead
+     *            of the wiki-style title.
+     * @param titleMatch
+     *            How the exact title is matched.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
-    private void fetchByTitle(Title pTitle, boolean useExactTitle) throws WikiApiException
+    private void fetchByTitle(String pName, boolean useExactTitle, TitleMatch titleMatch)
+        throws WikiApiException
     {
-        // The names are stored wiki-style, so the exact title is looked up as given. The plain
-        // title would have blanks instead of the underscores of a multi-word name.
-        final String searchString = useExactTitle ? pTitle.getRawTitleText()
-                : pTitle.getWikiStyleTitle();
+        // parsing validates the title in every mode
+        Title pTitle = new Title(pName);
+        final boolean asGiven = useExactTitle && titleMatch == TitleMatch.AS_GIVEN;
+        // The names are stored wiki-style, so the exact title is looked up as given, apart from
+        // the first-letter capitalization of Title unless asGiven. The plain title would have
+        // blanks instead of the underscores of a multi-word name.
+        final String searchString;
+        if (!useExactTitle) {
+            searchString = pTitle.getWikiStyleTitle();
+        }
+        else {
+            searchString = asGiven ? pName : pTitle.getRawTitleText();
+        }
 
         // Both lookups share one transaction.
         try {
@@ -282,8 +322,11 @@ public class Page
                     "No page with name " + searchString + " was found.");
         }
         // The entry matches the title exactly, so a page of another name was reached through a
-        // redirect. A recursive call below starts with isRedirect set and so cannot loop.
-        if (!this.isRedirect && !searchString.equals(getTitle().getRawTitleText())) {
+        // redirect. A recursive call below starts with isRedirect set and so cannot loop. Title
+        // would upper-case the first letter of the stored name, which asGiven must not do.
+        final String foundName = asGiven ? hibernatePage.getName()
+                : getTitle().getRawTitleText();
+        if (!this.isRedirect && !searchString.equals(foundName)) {
             this.isRedirect = true;
             /*
              * WORKAROUND in our page is a redirect to a discussion page, we might not retrieve the
@@ -294,14 +337,14 @@ public class Page
              * https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
              */
             if (searchString.startsWith(DISCUSSION_PREFIX)
-                    && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
+                    && !foundName.startsWith(DISCUSSION_PREFIX)) {
                 try {
-                    fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()),
-                            useExactTitle);
+                    fetchByTitle(DISCUSSION_PREFIX + foundName, useExactTitle, titleMatch);
                 }
                 catch (WikiPageNotFoundException e) {
-                    throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX
-                            + getTitle().getRawTitleText() + " was found.", e);
+                    throw new WikiPageNotFoundException(
+                            "No page with name " + DISCUSSION_PREFIX + foundName + " was found.",
+                            e);
                 }
             }
         }

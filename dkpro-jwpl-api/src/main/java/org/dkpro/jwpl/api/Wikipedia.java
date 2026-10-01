@@ -252,7 +252,9 @@ public class Wikipedia
      * Note that when using this method you are responsible for converting a normal search string
      * into the right wiki-style, e.g. {@code Steam_boat} instead of {@code Steam boat}. Apart from
      * upper-casing the first letter, the title is not normalized, and it is matched by code point
-     * like in {@link #getPage(String)}.<br>
+     * like in {@link #getPage(String)}. So {@code tK2} finds the page {@code TK2}; use
+     * {@link #getPageByExactTitle(String, TitleMatch)} with {@link TitleMatch#AS_GIVEN} to match
+     * the first letter as given, too.<br>
      * <p>
      * If the title is a redirect, the corresponding page is returned.<br>
      *
@@ -260,9 +262,36 @@ public class Wikipedia
      * @return The page object for a given title.
      * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly
      *                          parsed.
+     * @see #getPageByExactTitle(String, TitleMatch)
      */
     public Page getPageByExactTitle(String exactTitle) throws WikiApiException {
-        return new Page(this, exactTitle, true);
+        return getPageByExactTitle(exactTitle, TitleMatch.CAPITALIZE_FIRST_LETTER);
+    }
+
+    /**
+     * Gets the page with exactly the given title, matched as {@code titleMatch} says.<br>
+     * <p>
+     * Note that when using this method you are responsible for converting a normal search string
+     * into the right wiki-style, e.g. {@code Steam_boat} instead of {@code Steam boat}: blanks are
+     * never converted to underscores. The title is matched by code point like in
+     * {@link #getPage(String)}, after this normalization:
+     * <ul>
+     * <li>{@link TitleMatch#CAPITALIZE_FIRST_LETTER}: the first letter is upper-cased, as by
+     * {@link #getPageByExactTitle(String)}. {@code tK2} finds the page {@code TK2}.</li>
+     * <li>{@link TitleMatch#AS_GIVEN}: none. {@code tK2} does not find the page {@code TK2}, only
+     * a page stored as {@code tK2}.</li>
+     * </ul>
+     * If the title is a redirect, the corresponding page is returned.<br>
+     *
+     * @param exactTitle The exact title of the page.
+     * @param titleMatch How the title is matched; must not be {@code null}.
+     * @return The page object for a given title.
+     * @throws WikiApiException If no page or redirect with this title exists or the title could not be properly
+     *                          parsed.
+     * @throws IllegalArgumentException If {@code titleMatch} is {@code null}.
+     */
+    public Page getPageByExactTitle(String exactTitle, TitleMatch titleMatch) throws WikiApiException {
+        return new Page(this, exactTitle, true, titleMatch);
     }
 
     /**
