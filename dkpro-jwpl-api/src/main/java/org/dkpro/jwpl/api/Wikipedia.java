@@ -231,6 +231,11 @@ public class Wikipedia
      * <p>
      * For example, the article "Steam boat" could be queried with - "Steam boat" - "steam boat" -
      * "Steam_boat" - "steam_boat" and additionally all redirects that might point to that article.
+     * <p>
+     * Apart from this normalization, the title is matched exactly, i.e. by code point, whatever
+     * the collation of the database: a case, accent or {@code ß}/{@code ss} variant of a stored
+     * title, or a title the database cannot hold, is not found. If several entries have the title,
+     * the one with the lowest id wins.
      *
      * @param title The title of the page.
      * @return The page object for a given title.

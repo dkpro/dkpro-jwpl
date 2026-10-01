@@ -53,8 +53,8 @@ final class NameLookupSpec
         EXISTS_PAGE(true),
         /** {@link Wikipedia#getCategory(String)}; exact. */
         GET_CATEGORY(true),
-        /** {@link Wikipedia#getPage(String)}; ideally exact, follows the collation. */
-        GET_PAGE(false),
+        /** {@link Wikipedia#getPage(String)}; exact. */
+        GET_PAGE(true),
         /** {@link Wikipedia#getPageByExactTitle(String)}; exact, without normalization. */
         GET_PAGE_BY_EXACT_TITLE(true),
         /** {@link Wikipedia#getPageIds(String)}; ideally exact, follows the collation. */
