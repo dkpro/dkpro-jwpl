@@ -26,7 +26,7 @@ import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.StringUtils;
-import org.hibernate.query.Query;
+import org.hibernate.query.NativeQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,121 +56,58 @@ public class PageQueryIterable
 
         this.wiki = wiki;
         this.pageIdList = new ArrayList<>();
-        boolean hasTitlePattern = false;
 
-        // get a list with all pageIDs of the pages conforming with the query
-        String hql = "select p.pageId from Page as p ";
-        List<String> conditions = new ArrayList<>();
-        if (q.onlyDisambiguationPages()) {
-            conditions.add("p.isDisambiguation = true");
-        }
-        if (q.onlyArticlePages()) {
-            conditions.add("p.isDisambiguation = false");
-        }
-        if (q.getTitlePattern() != null && !q.getTitlePattern().isBlank()) {
-            conditions.add("p.name like :name");
-            hasTitlePattern = true;
-        }
+        normalizeRanges(q);
+        final boolean checkRedirects = isConstrained(q.getMinRedirects(), q.getMaxRedirects());
+        final boolean checkCategories = isConstrained(q.getMinCategories(),
+                q.getMaxCategories());
+        final boolean checkTokens = isConstrained(q.getMinTokens(), q.getMaxTokens());
 
-        String conditionString = StringUtils.join(conditions, " AND ");
-        if (!conditionString.isEmpty()) {
-            hql += "where " + conditionString;
-        }
-
-        final String finalHql = hql;
-        final boolean titlePattern = hasTitlePattern;
+        // get a list with all pageIDs of the pages conforming with the constraints that can be
+        // evaluated in the database
+        final String sql = "select p.pageId " + buildFromAndWhereClause(q);
         List<Integer> idList = wiki.__inTransaction(session -> {
-            Query<Integer> query = session.createQuery(finalHql, Integer.class);
-            if (titlePattern) {
-                query.setParameter("name", q.getTitlePattern());
-            }
+            NativeQuery<Integer> query = session.createNativeQuery(sql, Integer.class);
+            bindParameters(query, q);
             return query.list();
         });
 
+        // shortcut to fasten queries that do not have constraints that require loading the pages
+        if (!checkRedirects && !checkCategories && !checkTokens) {
+            pageIdList.addAll(idList);
+            logger.info("Query selected {} pages.", pageIdList.size());
+            return;
+        }
+
+        final String progressMessage = "searching " + idList.size() + " pages ... ";
         int progress = 0;
         for (Integer pageID : idList) {
             progress++;
             ApiUtilities.printProgressInfo(progress, idList.size(), 100,
-                    ApiUtilities.ProgressInfoMode.TEXT,
-                    "searching " + idList.size() + " pages ... ");
+                    ApiUtilities.ProgressInfoMode.TEXT, progressMessage);
 
-            // shortcut to fasten queries that do not have such constraints
-            if (q.getMaxCategories() == Integer.MAX_VALUE && q.getMaxIndegree() == Integer.MAX_VALUE
-                    && q.getMaxOutdegree() == Integer.MAX_VALUE
-                    && q.getMaxRedirects() == Integer.MAX_VALUE
-                    && q.getMaxTokens() == Integer.MAX_VALUE && q.getMinCategories() == 0
-                    && q.getMinIndegree() == 0 && q.getMinOutdegree() == 0
-                    && q.getMinRedirects() == 0 && q.getMinTokens() == 0) {
-                pageIdList.add(pageID);
-                continue;
-            }
-
-            Page page = null;
+            Page page;
             try {
                 page = wiki.getPage(pageID);
             }
             catch (WikiPageNotFoundException e) {
-                logger.warn("Page with pageID {} could not be found. Fatal error. Terminating.",
-                        pageID, e);
-            }
-
-            if (!(q.getMinIndegree() >= 0 && q.getMaxIndegree() >= 0
-                    && q.getMinIndegree() <= q.getMaxIndegree())) {
-                q.setMinIndegree(0);
-                q.setMaxIndegree(Integer.MAX_VALUE);
-            }
-
-            if (!(q.getMinOutdegree() >= 0 && q.getMaxOutdegree() >= 0
-                    && q.getMinOutdegree() <= q.getMaxOutdegree())) {
-                q.setMinOutdegree(0);
-                q.setMaxOutdegree(Integer.MAX_VALUE);
-            }
-
-            if (!(q.getMinRedirects() >= 0 && q.getMaxRedirects() >= 0
-                    && q.getMinRedirects() <= q.getMaxRedirects())) {
-                q.setMinRedirects(0);
-                q.setMaxRedirects(Integer.MAX_VALUE);
-            }
-
-            if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0
-                    && q.getMinCategories() <= q.getMaxCategories())) {
-                q.setMinCategories(0);
-                q.setMaxCategories(Integer.MAX_VALUE);
-            }
-
-            if (!(q.getMinCategories() >= 0 && q.getMaxCategories() >= 0
-                    && q.getMinCategories() <= q.getMaxCategories())) {
-                q.setMinCategories(0);
-                q.setMaxCategories(Integer.MAX_VALUE);
-            }
-
-            if (!(q.getMinTokens() >= 0 && q.getMaxTokens() >= 0
-                    && q.getMinTokens() <= q.getMaxTokens())) {
-                q.setMinTokens(0);
-                q.setMaxTokens(Integer.MAX_VALUE);
-            }
-
-            int inlinkSize = page.getNumberOfInlinks();
-            if (inlinkSize < q.getMinIndegree() || inlinkSize > q.getMaxIndegree()) {
+                logger.warn("Page with pageID {} could not be found, skipping.", pageID, e);
                 continue;
             }
 
-            int outlinkSize = page.getNumberOfOutlinks();
-            if (outlinkSize < q.getMinOutdegree() || outlinkSize > q.getMaxOutdegree()) {
-                continue;
-            }
-            if (page.getRedirects().size() < q.getMinRedirects()
-                    || page.getRedirects().size() > q.getMaxRedirects()) {
+            if (checkRedirects && !isInRange(page.getRedirects().size(), q.getMinRedirects(),
+                    q.getMaxRedirects())) {
                 continue;
             }
 
-            int categoriesSize = page.getCategories().size();
-            if (categoriesSize < q.getMinCategories() || categoriesSize > q.getMaxCategories()) {
+            if (checkCategories && !isInRange(page.getCategories().size(),
+                    q.getMinCategories(), q.getMaxCategories())) {
                 continue;
             }
 
-            String[] tokens = page.getPlainText().split(" ");
-            if (tokens.length < q.getMinTokens() || tokens.length > q.getMaxTokens()) {
+            // parsing the page is the most expensive check, so it is done last
+            if (checkTokens && !isInRange(page.getPlainText().split(" ").length,
+                    q.getMinTokens(), q.getMaxTokens())) {
                 continue;
             }
 
@@ -178,6 +115,145 @@ public class PageQueryIterable
             pageIdList.add(pageID);
         } // for
         logger.info("Query selected {} pages.", pageIdList.size());
+    }
+
+    /**
+     * Counts the pages matching a {@link PageQuery}. If the query only has constraints that can be
+     * evaluated in the database, the pages are counted there without selecting or loading them.
+     * Otherwise, the query is evaluated as in {@link #PageQueryIterable(Wikipedia, PageQuery)}.
+     *
+     * @param wiki A valid, full initialized {@link Wikipedia} instance. Must not be {@code null}.
+     * @param q The {@link PageQuery} to process. Must not be {@code null}.
+     * @return The number of pages that match the query.
+     * @throws WikiApiException Thrown if errors occurred.
+     */
+    static int countPages(Wikipedia wiki, PageQuery q) throws WikiApiException
+    {
+        normalizeRanges(q);
+        if (isConstrained(q.getMinRedirects(), q.getMaxRedirects())
+                || isConstrained(q.getMinCategories(), q.getMaxCategories())
+                || isConstrained(q.getMinTokens(), q.getMaxTokens())) {
+            return new PageQueryIterable(wiki, q).size();
+        }
+
+        final String sql = "select count(p.pageId) " + buildFromAndWhereClause(q);
+        Long count = wiki.__inTransaction(session -> {
+            NativeQuery<Long> query = session.createNativeQuery(sql, Long.class);
+            bindParameters(query, q);
+            return query.uniqueResult();
+        });
+        return count == null ? 0 : count.intValue();
+    }
+
+    /**
+     * Builds the part of the SQL query that selects the pages conforming with the constraints of
+     * the query that can be evaluated in the database. The in- and outlinks are counted in the
+     * same way as in {@link Page#getNumberOfInlinks()} and {@link Page#getNumberOfOutlinks()}.
+     */
+    private static String buildFromAndWhereClause(PageQuery q)
+    {
+        List<String> conditions = new ArrayList<>();
+        if (q.onlyDisambiguationPages()) {
+            conditions.add("p.isDisambiguation = true");
+        }
+        if (q.onlyArticlePages()) {
+            conditions.add("p.isDisambiguation = false");
+        }
+        if (hasTitlePattern(q)) {
+            conditions.add("p.name like :name");
+        }
+
+        String inlinks = "(select count(pi.inLinks) from page_inlinks pi where pi.id = p.id)";
+        if (q.getMinIndegree() > 0) {
+            conditions.add(inlinks + " >= :minIndegree");
+        }
+        if (q.getMaxIndegree() < Integer.MAX_VALUE) {
+            conditions.add(inlinks + " <= :maxIndegree");
+        }
+
+        String outlinks = "(select count(po.outLinks) from page_outlinks po where po.id = p.id)";
+        if (q.getMinOutdegree() > 0) {
+            conditions.add(outlinks + " >= :minOutdegree");
+        }
+        if (q.getMaxOutdegree() < Integer.MAX_VALUE) {
+            conditions.add(outlinks + " <= :maxOutdegree");
+        }
+
+        String clause = "from Page p";
+        if (!conditions.isEmpty()) {
+            clause += " where " + StringUtils.join(conditions, " and ");
+        }
+        return clause;
+    }
+
+    private static void bindParameters(NativeQuery<?> query, PageQuery q)
+    {
+        if (hasTitlePattern(q)) {
+            query.setParameter("name", q.getTitlePattern());
+        }
+        if (q.getMinIndegree() > 0) {
+            query.setParameter("minIndegree", q.getMinIndegree());
+        }
+        if (q.getMaxIndegree() < Integer.MAX_VALUE) {
+            query.setParameter("maxIndegree", q.getMaxIndegree());
+        }
+        if (q.getMinOutdegree() > 0) {
+            query.setParameter("minOutdegree", q.getMinOutdegree());
+        }
+        if (q.getMaxOutdegree() < Integer.MAX_VALUE) {
+            query.setParameter("maxOutdegree", q.getMaxOutdegree());
+        }
+    }
+
+    private static boolean hasTitlePattern(PageQuery q)
+    {
+        return q.getTitlePattern() != null && !q.getTitlePattern().isBlank();
+    }
+
+    /**
+     * Resets every invalid range of the query to its unconstrained default.
+     */
+    private static void normalizeRanges(PageQuery q)
+    {
+        if (!isValidRange(q.getMinIndegree(), q.getMaxIndegree())) {
+            q.setMinIndegree(0);
+            q.setMaxIndegree(Integer.MAX_VALUE);
+        }
+
+        if (!isValidRange(q.getMinOutdegree(), q.getMaxOutdegree())) {
+            q.setMinOutdegree(0);
+            q.setMaxOutdegree(Integer.MAX_VALUE);
+        }
+
+        if (!isValidRange(q.getMinRedirects(), q.getMaxRedirects())) {
+            q.setMinRedirects(0);
+            q.setMaxRedirects(Integer.MAX_VALUE);
+        }
+
+        if (!isValidRange(q.getMinCategories(), q.getMaxCategories())) {
+            q.setMinCategories(0);
+            q.setMaxCategories(Integer.MAX_VALUE);
+        }
+
+        if (!isValidRange(q.getMinTokens(), q.getMaxTokens())) {
+            q.setMinTokens(0);
+            q.setMaxTokens(Integer.MAX_VALUE);
+        }
+    }
+
+    private static boolean isValidRange(int min, int max)
+    {
+        return min >= 0 && max >= 0 && min <= max;
+    }
+
+    private static boolean isConstrained(int min, int max)
+    {
+        return min > 0 || max < Integer.MAX_VALUE;
+    }
+
+    private static boolean isInRange(int value, int min, int max)
+    {
+        return value >= min && value <= max;
     }
 
     @Override
