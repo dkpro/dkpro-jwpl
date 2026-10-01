@@ -537,6 +537,43 @@ public class WikipediaTest
         }
     }
 
+    /**
+     * The title is normalized like {@link Wikipedia#getPage(String)} does it: blanks become
+     * underscores and the first letter is upper-cased.
+     */
+    @Test
+    public void testGetCategoriesByPageTitleNormalizes() throws WikiApiException
+    {
+        String plain = A_FAMOUS_PAGE.replace('_', ' ');
+        String lowerFirst = Character.toLowerCase(plain.charAt(0)) + plain.substring(1);
+        Set<Integer> categoryIds = new TreeSet<>();
+        wiki.getCategories(lowerFirst).forEach(c -> categoryIds.add(c.getPageId()));
+        Set<Integer> expectedIds = new TreeSet<>();
+        wiki.getCategories(A_FAMOUS_PAGE).forEach(c -> expectedIds.add(c.getPageId()));
+        assertFalse(categoryIds.isEmpty());
+        assertEquals(expectedIds, categoryIds);
+    }
+
+    /**
+     * The lookup is exact: a case variant of a title that names no page of its own has no
+     * categories, whatever the collation of the name column.
+     */
+    @Test
+    public void testGetCategoriesByPageTitleCaseVariant() throws WikiApiException
+    {
+        assertTrue(wiki.getCategories(A_FAMOUS_PAGE.replace("Potential", "potential")).isEmpty());
+        assertTrue(wiki.getCategories(A_FAMOUS_PAGE.toUpperCase(Locale.ROOT)).isEmpty());
+    }
+
+    /**
+     * An unknown title yields an empty set rather than a {@link WikiPageNotFoundException}.
+     */
+    @Test
+    public void testGetCategoriesByPageTitleUnknown() throws WikiApiException
+    {
+        assertTrue(wiki.getCategories(UUID.randomUUID().toString()).isEmpty());
+    }
+
     @Test
     public void testGetLanguage()
     {

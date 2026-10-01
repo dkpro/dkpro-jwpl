@@ -956,27 +956,58 @@ public class Wikipedia
     /**
      * Gets the {@link Category categories} for a given {@link Page} identified by its
      * {@code pageTitle}.
+     * <p>
+     * The title is normalized like {@link #getPage(String)} does it, see
+     * {@link Title#getWikiStyleTitle()}, and compared by code point: only the categories of the
+     * page whose name equals the normalized title are returned, whatever the collation of the
+     * column. Unlike {@link #getPage(String)}, redirects are not followed.
      *
      * @param pageTitle The title of a {@link Page}, not a category.
-     * @return The category objects which are associated with the given {@code pageTitle}.
-     * @throws WikiPageNotFoundException Thrown if no {@link Page} exists for the given {@code pageTitle}.
+     * @return The category objects which are associated with the given {@code pageTitle}. Empty if
+     *         no {@link Page} exists for the given {@code pageTitle} or the page has no categories.
+     * @throws WikiPageNotFoundException Thrown if {@code pageTitle} is {@code null}, empty or
+     *                                   cannot be parsed as a title.
      */
     public Set<Category> getCategories(String pageTitle) throws WikiPageNotFoundException {
         if (pageTitle == null || pageTitle.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
+        String encodedTitle;
+        try {
+            encodedTitle = new Title(pageTitle).getWikiStyleTitle();
+        } catch (WikiTitleParsingException e) {
+            throw new WikiPageNotFoundException("Cannot parse the title '" + pageTitle + "'", e);
+        }
 
-        String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
+        // The query compares in the collation of the column to use the name index, so it can
+        // yield the pages of other names, see PAGE_NAMES_BY_NAME_QUERY. Only the exact one counts.
         // The elements of the collection are the page ids of the categories. The left join yields
         // a single null for a page without categories, which is skipped.
-        List<Integer> categoryPageIds = __inTransaction(session -> session
-                .createQuery(sql, Integer.class).setParameter("pageTitle", pageTitle).list());
+        String sql = "select p.name, c from Page p left join p.categories c "
+                + "where p.name = :pageTitle";
+        List<Object[]> rows;
+        try {
+            rows = __inTransaction(session -> session.createQuery(sql, Object[].class)
+                    .setParameter("pageTitle", encodedTitle, String.class).list());
+        } catch (JDBCException e) {
+            if (isCollationMismatch(e)) {
+                // the column cannot hold the title, so no page can have it as its name
+                return new HashSet<>();
+            }
+            throw e;
+        }
+        List<Integer> categoryPageIds = new ArrayList<>();
+        for (Object[] row : rows) {
+            if (encodedTitle.equals(row[0])) {
+                categoryPageIds.add((Integer) row[1]);
+            }
+        }
 
         Set<Category> categorySet = __getCategoriesByPageIds(categoryPageIds);
         long expected = categoryPageIds.stream().filter(Objects::nonNull).distinct().count();
         if (categorySet.size() < expected) {
             logger.warn("Could not load {} of the {} categories of the page '{}'",
-                    expected - categorySet.size(), expected, pageTitle);
+                    expected - categorySet.size(), expected, encodedTitle);
         }
         return categorySet;
     }

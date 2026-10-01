@@ -53,8 +53,8 @@ CREATE INDEX page_redirects_index    ON page_redirects (id, redirects);
 * Exact title lookups (`Wikipedia#getPage(String)`, `getPageIds(String)`, `existsPage(String)`,
   `getCategory(String)`) are case-sensitive. On MySQL and MariaDB, `existsPage(String)` and
   `getCategory(String)` query in the collation of the column, so the name index is used, and keep
-  only the exact match. The other lookups follow the collation of the column, so they ignore case
-  there if that collation does.
+  only the exact match. `getCategories(String)` does the same on the `Page.name` column. The other
+  lookups follow the collation of the column, so they ignore case there if that collation does.
 * `LIKE` is case-sensitive, so the title pattern of a `PageQuery` and the discussion archives
   lookup of `Wikipedia#getDiscussionArchives` match case-sensitively. With a case-insensitive
   MySQL or MariaDB collation, they do not.
