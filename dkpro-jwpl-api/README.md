@@ -63,6 +63,25 @@ CREATE INDEX page_redirects_index    ON page_redirects (id, redirects);
   depends on their collations. An expression index lets PostgreSQL look the name up instead:
   `CREATE INDEX pagemapline_lower_name_index ON PageMapLine (lower(name));`
 
+**Collations.** Keep a deterministic collation, such as the default one, for the `name` columns of
+`Page`, `PageMapLine` and `Category`. Up to PostgreSQL 17, `LIKE` is not supported on a column with
+a nondeterministic collation, for example a case-insensitive ICU collation created with
+`CREATE COLLATION jwpl_ci (provider = icu, locale = 'und-u-ks-level2', deterministic = false)`. On
+such columns, the title pattern of a `PageQuery` (`Wikipedia#getPages(PageQuery)`) and
+`Wikipedia#getDiscussionArchives` fail with SQLSTATE `0A000` ("nondeterministic collations are not
+supported for LIKE"), while the exact lookups and `Wikipedia#getPageIdsCaseInsensitive(String)`
+work. PostgreSQL 18 supports `LIKE` on such columns. On older versions, switch the columns back to
+the default collation; this rebuilds their indexes:
+
+```sql
+ALTER TABLE Page        ALTER COLUMN name TYPE VARCHAR(255) COLLATE "default";
+ALTER TABLE PageMapLine ALTER COLUMN name TYPE VARCHAR(255) COLLATE "default";
+ALTER TABLE Category    ALTER COLUMN name TYPE VARCHAR(255) COLLATE "default";
+```
+
+To look titles up regardless of case, use `Wikipedia#getPageIdsCaseInsensitive(String)` instead of
+a case-insensitive collation.
+
 **Importing.** Loading the output of the DataMachine or the TimeMachine into PostgreSQL and the
 RevisionMachine are not supported yet, see
 [issue #674](https://github.com/dkpro/dkpro-jwpl/issues/674).
