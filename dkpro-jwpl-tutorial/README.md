@@ -284,9 +284,9 @@ reading the revisions.
 
 **RevisionIterator** (`T4_RevisionIterator`) iterates over all revisions in the database, article
 by article. It rebuilds each revision from the previous one, which is the fastest way to process
-the complete history. `next()` returns `null` for a revision that cannot be rebuilt. With
-`new RevisionIterator(config, true)`, the iterator does not rebuild the text. The text is then
-loaded when `getRevisionText()` is called.
+the complete history. `next()` returns `null` for a revision that cannot be rebuilt. After
+`setLazyLoading(true)`, the iterator does not rebuild the text. The text is then loaded when
+`getRevisionText()` is called.
 
 ```java
 try (RevisionIterator it = new RevisionIterator(config)) {
