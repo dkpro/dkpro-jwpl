@@ -99,7 +99,7 @@ abstract class SQLFileParser implements AutoCloseable
     protected void init(InputStream inputStream) throws IOException
     {
         stream = inputStream;
-        // StreamTokenizer reads one char at a time; an unsynchronised buffer avoids taking a lock
+        // StreamTokenizer reads one char at a time; an unsynchronized buffer avoids taking a lock
         // per char (see issue #552). The InputStreamReader remains the UTF-8 decoder.
         st = new StreamTokenizer(new UnsyncBufferedReader(
                 new InputStreamReader(stream, StandardCharsets.UTF_8)));

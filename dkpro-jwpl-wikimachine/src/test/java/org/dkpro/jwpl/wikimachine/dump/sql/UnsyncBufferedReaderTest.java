@@ -102,9 +102,12 @@ class UnsyncBufferedReaderTest
     @Test
     void rejectsInvalidArguments()
     {
-        assertThrows(NullPointerException.class, () -> new UnsyncBufferedReader(null));
+        assertThrows(IllegalArgumentException.class, () -> new UnsyncBufferedReader(null));
+        assertThrows(IllegalArgumentException.class, () -> new UnsyncBufferedReader(null, 16));
         assertThrows(IllegalArgumentException.class,
                 () -> new UnsyncBufferedReader(new StringReader(""), 0));
+        assertThrows(IllegalArgumentException.class,
+                () -> new UnsyncBufferedReader(new StringReader(""), -1));
     }
 
     /**

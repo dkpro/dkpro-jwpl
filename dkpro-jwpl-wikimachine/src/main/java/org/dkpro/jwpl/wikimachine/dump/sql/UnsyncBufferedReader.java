@@ -22,7 +22,7 @@ import java.io.Reader;
 import java.util.Objects;
 
 /**
- * A single threaded, unsynchronised {@link Reader} that buffers another {@link Reader} in a large
+ * A single threaded, unsynchronized {@link Reader} that buffers another {@link Reader} in a large
  * {@code char[]}.
  * <p>
  * {@link java.io.StreamTokenizer} pulls its input one {@code char} at a time through
@@ -32,8 +32,10 @@ import java.util.Objects;
  * wrapped reader to refill the buffer in bulk. The sequence of characters it delivers is exactly
  * the sequence of the wrapped reader.
  * <p>
- * Instances are <em>not</em> thread safe. {@link #mark(int)} and {@link #reset()} are not
- * supported.
+ * Instances are <em>not</em> thread safe. {@link #mark(int)} and {@link #reset()} are
+ * <em>not</em> supported.
+ *
+ * @see Reader
  */
 final class UnsyncBufferedReader
     extends Reader
@@ -52,7 +54,10 @@ final class UnsyncBufferedReader
     private boolean eof;
 
     /**
+     * Creates a reader with a buffer of {@link #DEFAULT_BUFFER_SIZE} {@code char}s.
+     *
      * @param in The {@link Reader} to buffer. Must not be {@code null}.
+     * @throws IllegalArgumentException if {@code in} is {@code null}.
      */
     UnsyncBufferedReader(Reader in)
     {
@@ -60,12 +65,19 @@ final class UnsyncBufferedReader
     }
 
     /**
+     * Creates a reader with a buffer of the given size.
+     *
      * @param in   The {@link Reader} to buffer. Must not be {@code null}.
      * @param size The size of the buffer in {@code char}s. Must be positive.
+     * @throws IllegalArgumentException if {@code in} is {@code null} or {@code size} is not
+     *                                  positive.
      */
     UnsyncBufferedReader(Reader in, int size)
     {
-        this.in = Objects.requireNonNull(in, "in");
+        if (in == null) {
+            throw new IllegalArgumentException("Parameter 'in' must not be null");
+        }
+        this.in = in;
         if (size <= 0) {
             throw new IllegalArgumentException("Buffer size must be positive, got " + size);
         }
