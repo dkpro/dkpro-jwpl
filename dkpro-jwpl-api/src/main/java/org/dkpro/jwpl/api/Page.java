@@ -27,6 +27,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.PageDAO;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
+import org.hibernate.JDBCException;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
@@ -51,6 +52,18 @@ public class Page
      * The title of the category that holds the hidden categories in English Wikipedia.
      */
     public static final String HIDDEN_CATEGORIES_TITLE = "Hidden_categories";
+
+    /**
+     * The native query {@link #fetchByTitle(Title, boolean)} runs to find the entries of a title,
+     * taking the title as parameter {@code pagetitle}. It yields the name and the page id of each
+     * entry found, ordered by the id of the entry. The comparison is done in the collation of the
+     * column, which keeps the index on the column usable, so the caller has to pick the exact
+     * match.
+     *
+     * @see Wikipedia#PAGE_NAMES_BY_NAME_QUERY
+     */
+    static final String PAGE_ENTRIES_BY_NAME_QUERY = "select pml.name, pml.pageID"
+            + " from PageMapLine as pml where pml.name = :pagetitle order by pml.id";
 
     private final Wikipedia wiki;
 
@@ -211,9 +224,16 @@ public class Page
     }
 
     /**
-     * CAUTION: Only returns 1 result, even if several results are possible.
+     * Fetches the page with the given title, or the page a redirect of that title points to.
+     * <p>
+     * The name is compared in the collation of the column, so the name index stays usable, and
+     * the entry whose name equals the title by code point is picked in Java. Among several entries
+     * of that name, the one with the lowest id wins. A title the column cannot hold is not found.
      *
      * @param pTitle
+     *            The title of the page.
+     * @param useExactTitle
+     *            Whether to look up the plain title instead of the wiki-style title.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
@@ -222,63 +242,61 @@ public class Page
         final String searchString = useExactTitle ? pTitle.getPlainTitle()
                 : pTitle.getWikiStyleTitle();
 
-        String sql = "select pml.pageID from PageMapLine as pml where pml.name = :pagetitle LIMIT 1";
-        // Both lookups share one transaction. They stay two statements so that the PageMapLine
-        // row picked by LIMIT 1 is the same as before, which the redirect handling below relies on.
-        hibernatePage = wiki.__inTransaction(session -> {
-            Integer pageId = session.createNativeQuery(sql, Integer.class)
-                    .setParameter("pagetitle", searchString, String.class).uniqueResult();
-            if (pageId == null) {
-                return null;
+        // Both lookups share one transaction.
+        try {
+            hibernatePage = wiki.__inTransaction(session -> {
+                List<Object[]> entries = session
+                        .createNativeQuery(PAGE_ENTRIES_BY_NAME_QUERY, Object[].class)
+                        .setParameter("pagetitle", searchString, String.class).list();
+                Integer pageId = null;
+                for (Object[] entry : entries) {
+                    if (searchString.equals(entry[0])) {
+                        pageId = ((Number) entry[1]).intValue();
+                        break;
+                    }
+                }
+                if (pageId == null) {
+                    return null;
+                }
+                return session
+                        .createQuery("from Page where pageId = :id",
+                                org.dkpro.jwpl.api.hibernate.Page.class)
+                        .setParameter("id", pageId, Integer.class).uniqueResult();
+            });
+        }
+        catch (JDBCException e) {
+            if (!Wikipedia.isCollationMismatch(e)) {
+                throw e;
             }
-            return session
-                    .createQuery("from Page where pageId = :id",
-                            org.dkpro.jwpl.api.hibernate.Page.class)
-                    .setParameter("id", pageId, Integer.class).uniqueResult();
-        });
+            // the column cannot hold the title, so no entry can have it as its name
+            hibernatePage = null;
+        }
 
         if (hibernatePage == null) {
             throw new WikiPageNotFoundException(
                     "No page with name " + searchString + " was found.");
         }
-        if (!this.isRedirect && searchString != null
-                && !searchString.equals(getTitle().getRawTitleText())) {
-            if (this.isRedirect) {
-                // in case we already tried to re-retrieve the discussion page unsuccessfully,
-                // we have to give up here or we end up in an infinite loop.
-
-                // reasons for this happening might be several entries in PageMapLine with the same
-                // name but different upper/lower case variants
-                // if the database does not allow case-sensitive queries, then the API will always
-                // retrieve only the first result and if this is a redirect to a different writing
-                // variant, we are stuck in a loop.
-                // To fix this, either a case-sensitive collation should be used or the API should
-                // be able to deal with set valued results and pick the correct one from the set.
-                // For now, we gracefully return without retrieving the Talk page for this article
-                // and throw an appropriate exception.
-                throw new WikiPageNotFoundException("No discussion page with name " + searchString
-                        + " could be retrieved. This is most likely due to multiple writing variants of the same page in the database");
-            }
-            else {
-                this.isRedirect = true;
-                /*
-                 * WORKAROUND in our page is a redirect to a discussion page, we might not retrieve
-                 * the target discussion page as expected but rather the article associated with the
-                 * target discussion page we check this here and re-retrieve the correct page. this
-                 * error should be avoided by keeping the namespace information in the database This
-                 * fix has been provided by Shiri Dori-Hacohen and is discussed in the Google Group
-                 * under https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
-                 */
-                if (searchString.startsWith(DISCUSSION_PREFIX)
-                        && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
-                    try {
-                        fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()),
-                                useExactTitle);
-                    }
-                    catch (WikiPageNotFoundException e) {
-                        throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX
-                                + getTitle().getRawTitleText() + " was found.", e);
-                    }
+        // The entry matches the title exactly, so a page of another name was reached through a
+        // redirect. A recursive call below starts with isRedirect set and so cannot loop.
+        if (!this.isRedirect && !searchString.equals(getTitle().getRawTitleText())) {
+            this.isRedirect = true;
+            /*
+             * WORKAROUND in our page is a redirect to a discussion page, we might not retrieve the
+             * target discussion page as expected but rather the article associated with the target
+             * discussion page we check this here and re-retrieve the correct page. this error
+             * should be avoided by keeping the namespace information in the database This fix has
+             * been provided by Shiri Dori-Hacohen and is discussed in the Google Group under
+             * https://groups.google.com/forum/#!topic/jwpl/2nlr55yp87I/discussion
+             */
+            if (searchString.startsWith(DISCUSSION_PREFIX)
+                    && !getTitle().getRawTitleText().startsWith(DISCUSSION_PREFIX)) {
+                try {
+                    fetchByTitle(new Title(DISCUSSION_PREFIX + getTitle().getRawTitleText()),
+                            useExactTitle);
+                }
+                catch (WikiPageNotFoundException e) {
+                    throw new WikiPageNotFoundException("No page with name " + DISCUSSION_PREFIX
+                            + getTitle().getRawTitleText() + " was found.", e);
                 }
             }
         }
