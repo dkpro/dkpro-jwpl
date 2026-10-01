@@ -29,6 +29,8 @@ import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * An abstraction for DumpVersion realization.
  */
@@ -181,6 +183,20 @@ public interface IDumpVersion
      * Clears internal state after a page link parsing phase.
      */
     void freeAfterPageLinksParsing();
+
+    /**
+     * Adds the ids of all text rows {@link #processTextRow(TextParser)} may make use of to
+     * {@code textIds}, so that the text table can skip the text of every other revision. Only
+     * valid after the revision and page parsing phases and before the text parsing phase.
+     *
+     * @param textIds The set to add the text ids to.
+     * @return {@code true} if the ids were added, or {@code false} if this version cannot tell
+     *         and needs to see every text row. The latter is the default.
+     */
+    default boolean addWantedTextIds(IntSet textIds)
+    {
+        return false;
+    }
 
     /**
      * Starts the parsing of a text row.
