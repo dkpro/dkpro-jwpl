@@ -122,8 +122,8 @@ final class NameLookupSpec
     static final String CASES = "contract/name-lookups.tsv";
     static final String DIVERGENCES = "contract/name-lookups-divergences.tsv";
 
-    /** The issue reference a divergence must carry: an issue number or a placeholder to file. */
-    static final Pattern ISSUE = Pattern.compile("#(\\d+|NEW-[a-z0-9-]+)");
+    /** The issue reference a divergence must carry: the number of the issue tracking it. */
+    static final Pattern ISSUE = Pattern.compile("#\\d+");
 
     private static final Pattern ESCAPE = Pattern.compile("\\\\u([0-9A-Fa-f]{4})");
 
