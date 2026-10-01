@@ -25,6 +25,28 @@ case-ids-unstored	GET_PAGE_IDS	MiXed_Case	NOT_FOUND	exact entries only
 case-ids-ci	GET_PAGE_IDS_CI	MiXed_Case	ids:[800001, 800002, 800003]	all case variants
 exact-title-multiword	GET_PAGE_BY_EXACT_TITLE	Mixed_Case	page:800001	the exact title as given
 exact-title-single	GET_PAGE_BY_EXACT_TITLE	TK2	page:105	the exact title as given
+exact-title-case-variant	GET_PAGE_BY_EXACT_TITLE	Mixed_case	page:800002	each stored case variant resolves to itself
+exact-title-case-unstored	GET_PAGE_BY_EXACT_TITLE	MiXed_Case	NOT_FOUND	a case variant that is not stored is not found
+exact-title-blanks	GET_PAGE_BY_EXACT_TITLE	Mixed\u0020Case	NOT_FOUND	blanks are not converted to underscores
+exact-title-first-letter	GET_PAGE_BY_EXACT_TITLE	mixed_Case	page:800001	Title upper-cases the first letter
+exact-title-accent-stripped	GET_PAGE_BY_EXACT_TITLE	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+exact-title-emoji-unstored	GET_PAGE_BY_EXACT_TITLE	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+exact-title-ambiguous	GET_PAGE_BY_EXACT_TITLE	Ambiguous_Title	page:101	the entry with the lowest id
+exact-title-single-lower	GET_PAGE_BY_EXACT_TITLE	tK2	page:105	Title upper-cases the first letter
+exact-title-lower-first	GET_PAGE_BY_EXACT_TITLE	iPod_probe	page:800071	Title upper-cases the first letter, so a lower-case first letter is not reachable
+exact-title-upper-first	GET_PAGE_BY_EXACT_TITLE	IPod_probe	page:800071	the exact title as given
+as-given-multiword	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Mixed_Case	page:800001	the exact title as given
+as-given-single	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	TK2	page:105	the exact title as given
+as-given-single-lower	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	tK2	NOT_FOUND	the first letter is not upper-cased
+as-given-case-variant	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Mixed_case	page:800002	each stored case variant resolves to itself
+as-given-case-unstored	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	MiXed_Case	NOT_FOUND	a case variant that is not stored is not found
+as-given-first-letter	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	mixed_Case	NOT_FOUND	the first letter is not upper-cased
+as-given-lower-first	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	iPod_probe	page:800070	a stored lower-case first letter is reachable
+as-given-upper-first	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	IPod_probe	page:800071	the exact title as given
+as-given-blanks	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Mixed\u0020Case	NOT_FOUND	blanks are not converted to underscores
+as-given-accent-stripped	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+as-given-emoji-unstored	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+as-given-ambiguous	GET_PAGE_BY_EXACT_TITLE_AS_GIVEN	Ambiguous_Title	page:101	the entry with the lowest id
 categories-of-exact	GET_CATEGORIES_OF	Mixed_Case	cats:[800001]	categories of the exact page
 categories-of-normalized	GET_CATEGORIES_OF	mixed_Case	cats:[800001]	the title is normalized like getPage
 categories-of-unstored	GET_CATEGORIES_OF	MiXed_Case	cats:[]	no page of that exact name
