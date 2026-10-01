@@ -57,8 +57,8 @@ final class NameLookupSpec
         GET_PAGE(false),
         /** {@link Wikipedia#getPageByExactTitle(String)}; exact, without normalization. */
         GET_PAGE_BY_EXACT_TITLE(true),
-        /** {@link Wikipedia#getPageIds(String)}; ideally exact, follows the collation. */
-        GET_PAGE_IDS(false),
+        /** {@link Wikipedia#getPageIds(String)}; exact. */
+        GET_PAGE_IDS(true),
         /** {@link Wikipedia#getPageIdsCaseInsensitive(String)}. */
         GET_PAGE_IDS_CI(false),
         /** {@link Wikipedia#getCategories(String)}; ideally exact, follows the collation. */
