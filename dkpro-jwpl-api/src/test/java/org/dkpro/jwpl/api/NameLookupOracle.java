@@ -74,6 +74,7 @@ final class NameLookupOracle
                     .orElse(NOT_FOUND);
             case GET_PAGE -> firstPage(stored, norm);
             case GET_PAGE_BY_EXACT_TITLE -> firstPage(stored, capitalize(probe));
+            case GET_PAGE_BY_EXACT_TITLE_AS_GIVEN -> firstPage(stored, probe);
             case GET_PAGE_IDS -> idsOrNotFound(
                     pages(stored).filter(s -> s.name().equals(norm)).map(Stored::pageId).toList());
             case GET_PAGE_IDS_CI -> {
