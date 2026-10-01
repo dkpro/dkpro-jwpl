@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import org.dkpro.jwpl.api.util.LikePatterns;
+
 /**
  * Builds {@code like} patterns that let a {@code lower(name) = :title} lookup on
  * {@code PageMapLine} seek {@code name_index} instead of scanning the whole table, see
@@ -43,7 +45,7 @@ import java.util.Locale;
 final class CaseVariantPrefixes
 {
     /** The character escaping {@code %}, {@code _}, and itself in the returned patterns. */
-    static final char ESCAPE = '!';
+    static final char ESCAPE = LikePatterns.ESCAPE_CHAR;
 
     /**
      * Upper bound for the number of patterns, i.e. of index ranges a lookup is split into. A longer
