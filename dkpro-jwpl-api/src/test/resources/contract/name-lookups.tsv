@@ -33,33 +33,44 @@ foo-upper-category	GET_CATEGORY	FOO_BAR_PROBE	NOT_FOUND	case variant of two stor
 foo-upper-page	GET_PAGE	FOO_BAR_PROBE	NOT_FOUND	case variant of two stored names
 foo-second-exists	EXISTS_PAGE	Foo_Bar_probe	true	second of two case variants
 foo-second-category	GET_CATEGORY	Foo_Bar_probe	cat:800011	second of two case variants
+foo-second-page	GET_PAGE	Foo_Bar_probe	page:800011	second of two case variants
 accent-stripped-exists	EXISTS_PAGE	Koln_probe	false	accent variant of K\u00f6ln_probe
 accent-stripped-category	GET_CATEGORY	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
 accent-stripped-page	GET_PAGE	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
 accent-exact-exists	EXISTS_PAGE	K\u00f6ln_probe	true	the accented name itself
+accent-exact-page	GET_PAGE	K\u00f6ln_probe	page:800020	the accented name itself
 sharp-s-ss-exists	EXISTS_PAGE	Strasse_probe	false	ss variant of Stra\u00dfe_probe
 sharp-s-ss-category	GET_CATEGORY	Strasse_probe	NOT_FOUND	ss variant of Stra\u00dfe_probe
 sharp-s-ss-page	GET_PAGE	Strasse_probe	NOT_FOUND	ss variant of Stra\u00dfe_probe
 sharp-s-upper-exists	EXISTS_PAGE	STRASSE_probe	false	upper-case ss variant of Stra\u00dfe_probe
 sharp-s-upper-category	GET_CATEGORY	STRASSE_probe	NOT_FOUND	upper-case ss variant of Stra\u00dfe_probe
+sharp-s-upper-page	GET_PAGE	STRASSE_probe	NOT_FOUND	upper-case ss variant of Stra\u00dfe_probe
 sharp-s-exact-exists	EXISTS_PAGE	Stra\u00dfe_probe	true	the name itself
+sharp-s-exact-page	GET_PAGE	Stra\u00dfe_probe	page:800021	the name itself
 nfd-exists	EXISTS_PAGE	Cafe\u0301_probe	false	NFD form of the stored NFC name; titles are not normalized
 nfd-category	GET_CATEGORY	Cafe\u0301_probe	NOT_FOUND	NFD form of the stored NFC name; titles are not normalized
+nfd-page	GET_PAGE	Cafe\u0301_probe	NOT_FOUND	NFD form of the stored NFC name; titles are not normalized
 nfc-exists	EXISTS_PAGE	Caf\u00e9_probe	true	the NFC name itself
 ae-ligature-exists	EXISTS_PAGE	Aether_probe	false	expansion of \u00c6ther_probe
 ae-ligature-category	GET_CATEGORY	Aether_probe	NOT_FOUND	expansion of \u00c6ther_probe
+ae-ligature-page	GET_PAGE	Aether_probe	NOT_FOUND	expansion of \u00c6ther_probe
 dotted-i-exists	EXISTS_PAGE	Istanbul_probe	false	variant of \u0130stanbul_probe
 dotted-i-category	GET_CATEGORY	Istanbul_probe	NOT_FOUND	variant of \u0130stanbul_probe
+dotted-i-page	GET_PAGE	Istanbul_probe	NOT_FOUND	variant of \u0130stanbul_probe
 dotless-i-exists	EXISTS_PAGE	\u0131stanbul_probe	false	Title upper-cases it to Istanbul_probe
 dotless-i-category	GET_CATEGORY	\u0131stanbul_probe	NOT_FOUND	Title upper-cases it to Istanbul_probe
+dotless-i-page	GET_PAGE	\u0131stanbul_probe	NOT_FOUND	Title upper-cases it to Istanbul_probe
 dotted-i-exact-exists	EXISTS_PAGE	\u0130stanbul_probe	true	the name itself, where storable
 fullwidth-exists	EXISTS_PAGE	Fullwidth_probe	false	width variant of \uff26ullwidth_probe
 fullwidth-category	GET_CATEGORY	Fullwidth_probe	NOT_FOUND	width variant of \uff26ullwidth_probe
+fullwidth-page	GET_PAGE	Fullwidth_probe	NOT_FOUND	width variant of \uff26ullwidth_probe
 fullwidth-exact-exists	EXISTS_PAGE	\uff26ullwidth_probe	true	the name itself, where storable
 soft-hyphen-exists	EXISTS_PAGE	Softhyphen_probe	false	the stored name contains an ignorable soft hyphen
 soft-hyphen-category	GET_CATEGORY	Softhyphen_probe	NOT_FOUND	the stored name contains an ignorable soft hyphen
+soft-hyphen-page	GET_PAGE	Softhyphen_probe	NOT_FOUND	the stored name contains an ignorable soft hyphen
 zwsp-exists	EXISTS_PAGE	Zwsp_probe	false	the stored name contains an ignorable zero width space
 zwsp-category	GET_CATEGORY	Zwsp_probe	NOT_FOUND	the stored name contains an ignorable zero width space
+zwsp-page	GET_PAGE	Zwsp_probe	NOT_FOUND	the stored name contains an ignorable zero width space
 emoji-stored-exists	EXISTS_PAGE	Emoji_\ud83d\ude00_probe	true	the name itself, where storable
 emoji-stored-category	GET_CATEGORY	Emoji_\ud83d\ude00_probe	cat:800040	the name itself, where storable
 emoji-stored-page	GET_PAGE	Emoji_\ud83d\ude00_probe	page:800040	the name itself, where storable
@@ -69,6 +80,7 @@ emoji-unstored-page	GET_PAGE	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; m
 supplementary-stored-exists	EXISTS_PAGE	\ud840\udc00	true	the name itself, where storable
 supplementary-unstored-exists	EXISTS_PAGE	\ud840\udc01	false	collates equal to U+20000 in general_ci and unicode_ci
 supplementary-unstored-category	GET_CATEGORY	\ud840\udc01	NOT_FOUND	collates equal to U+20000 in general_ci and unicode_ci
+supplementary-unstored-page	GET_PAGE	\ud840\udc01	NOT_FOUND	collates equal to U+20000 in general_ci and unicode_ci
 cjk-unstored-exists	EXISTS_PAGE	\u6771\u4eac_probe	false	latin1 cannot hold it; must not throw
 cjk-unstored-category	GET_CATEGORY	\u6771\u4eac_probe	NOT_FOUND	latin1 cannot hold it; must not throw
 cjk-unstored-page	GET_PAGE	\u6771\u4eac_probe	NOT_FOUND	latin1 cannot hold it; must not throw
