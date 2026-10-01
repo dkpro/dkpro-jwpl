@@ -227,6 +227,38 @@ public class WikipediaTest
         }
     }
 
+    /**
+     * The title is normalized like {@link Wikipedia#getPage(String)} does it: blanks become
+     * underscores and the first letter is upper-cased.
+     */
+    @Test
+    public void testGetPageIdsByTitleNormalizes() throws WikiApiException
+    {
+        String plain = A_FAMOUS_PAGE.replace('_', ' ');
+        String lowerFirst = Character.toLowerCase(plain.charAt(0)) + plain.substring(1);
+        assertEquals(wiki.getPageIds(A_FAMOUS_PAGE), wiki.getPageIds(lowerFirst));
+    }
+
+    /**
+     * The lookup is exact: a case variant of a title that has no entry of its own is not found,
+     * whatever the collation of the name column.
+     */
+    @Test
+    public void testGetPageIdsByTitleCaseVariant()
+    {
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageIds(A_FAMOUS_PAGE.replace("Potential", "potential")));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageIds(A_FAMOUS_PAGE.toUpperCase(Locale.ROOT)));
+    }
+
+    @Test
+    public void testGetPageIdsByTitleNullOrEmpty()
+    {
+        assertThrows(WikiPageNotFoundException.class, () -> wiki.getPageIds(null));
+        assertThrows(WikiPageNotFoundException.class, () -> wiki.getPageIds(""));
+    }
+
     @Test
     public void testGetPageIdsCaseInsensitive()
     {

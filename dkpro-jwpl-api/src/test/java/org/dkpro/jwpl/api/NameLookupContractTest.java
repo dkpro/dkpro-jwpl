@@ -114,8 +114,8 @@ public class NameLookupContractTest
         if (!observed.startsWith("page:") && !observed.startsWith("ids:")) {
             return;
         }
-        String bound = c.lookup() == Lookup.GET_PAGE ? NameLookupOracle.normalize(c.probe())
-                : c.probe();
+        // both lookups normalize the title before they bind it
+        String bound = NameLookupOracle.normalize(c.probe());
         Set<Integer> matched = new HashSet<>();
         Set<Integer> exact = new HashSet<>();
         try (Connection conn = JwplTestDatabase
