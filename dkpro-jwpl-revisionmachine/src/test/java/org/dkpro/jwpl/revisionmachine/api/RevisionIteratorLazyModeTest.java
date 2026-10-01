@@ -109,7 +109,7 @@ public class RevisionIteratorLazyModeTest
             while (iterator.hasNext()) {
                 if (i == 100) {
                     // takes effect with the next page
-                    iterator.setShouldLoadRevisionText(true);
+                    iterator.setLazyLoading(true);
                 }
                 Revision revision = iterator.next();
                 assertNotNull(revision);
@@ -175,7 +175,7 @@ public class RevisionIteratorLazyModeTest
         List<Revision> revisions = new ArrayList<>();
         try (RevisionIterator iterator = new RevisionIterator(config, 0, Integer.MAX_VALUE,
                 recordingConnection(config), null)) {
-            iterator.setShouldLoadRevisionText(lazy);
+            iterator.setLazyLoading(lazy);
             while (iterator.hasNext()) {
                 Revision revision = iterator.next();
                 assertNotNull(revision);
