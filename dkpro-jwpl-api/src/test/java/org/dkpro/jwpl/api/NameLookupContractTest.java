@@ -82,7 +82,7 @@ public class NameLookupContractTest
         String expected = NameLookupOracle.expected(c.lookup(), c.probe(), profile::canStore);
         String observed = invoke(wiki, c);
         String record = c.caseId() + "\t" + engine + "\t" + profile + "\t"
-                + NameLookupSpec.escape(observed) + "\t#NEW-";
+                + NameLookupSpec.escape(observed) + "\t#<issue>";
         Optional<Divergence> divergence = NameLookupSpec.divergence(divergences, c.caseId(),
                 engine, profile);
         if (divergence.isPresent()) {
