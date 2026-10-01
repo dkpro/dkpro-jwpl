@@ -1137,8 +1137,8 @@ public class RevisionApi
                 }
 
             }
-
-            return buildRevisionMetaData(revisionPK, -1);
+            
+            return buildRevisionMetaData(revisionPK);
 
         }
         catch (WikiPageNotFoundException e) {
@@ -1558,11 +1558,12 @@ public class RevisionApi
                         + " has no revision number " + revisionIndex);
             }
 
+            // The revisions of a chain have consecutive PKs, starting at the full revision
             fullRevPK = Integer.parseInt(fullRev);
             revisionPK = fullRevPK + (revisionIndex - revA);
 
             // Build the revision
-            return buildRevisionMetaData(revisionPK, articleID);
+            return buildRevisionMetaData(revisionPK);
 
         }
         catch (WikiPageNotFoundException e) {
@@ -1649,62 +1650,53 @@ public class RevisionApi
 
     /**
      * This method queries the metadata of the specified revision and builds the revision object.
-     * The revision text is not loaded, see {@link #setRevisionTextAndParts(Revision)}.
+     * The revision text is loaded lazily, see {@link #setRevisionTextAndParts(Revision)}.
      *
      * @param revisionPK
      *            PK of the revision
-     * @param articleID
-     *            ID of the article the revision is expected to belong to, or a value
-     *            {@code < 1} to skip this check
-     * @return Revision, or {@code null} if no matching revision exists
+     * @return Revision, or {@code null} if no revision with this PK exists
      * @throws SQLException
      *             if an error occurs while retrieving data from the SQL database.
      */
-    private Revision buildRevisionMetaData(final int revisionPK, final int articleID)
-        throws SQLException
+    private Revision buildRevisionMetaData(final int revisionPK) throws SQLException
     {
 
         final boolean namespaceColumn = hasNamespaceColumn();
         final String query = "SELECT PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered"
                 + (namespaceColumn ? ", Namespace" : "") + " FROM revisions "
-                + "WHERE PrimaryKey = ?" + (articleID > 0 ? " AND ArticleID = ?" : "");
-
+                + "WHERE PrimaryKey = ?";
         try (PreparedStatement statement = this.connection.prepareStatement(query)) {
 
             statement.setInt(1, revisionPK);
-            if (articleID > 0) {
-                statement.setInt(2, articleID);
-            }
+            ResultSet result = statement.executeQuery();
 
-            try (ResultSet result = statement.executeQuery()) {
+            Revision revision = null;
 
-                Revision revision = null;
+            if (result.next()) {
+                revision = new Revision(result.getInt(2), this);
 
-                if (result.next()) {
-                    revision = new Revision(result.getInt(2), this);
+                revision.setPrimaryKey(result.getInt(1));
+                revision.setRevisionID(result.getInt(3));
+                revision.setArticleID(result.getInt(4));
+                revision.setTimeStamp(new Timestamp(result.getLong(5)));
+                revision.setComment(result.getString(6));
+                revision.setMinor(result.getBoolean(7));
+                revision.setContributorName(result.getString(8));
 
-                    revision.setPrimaryKey(result.getInt(1));
-                    revision.setRevisionID(result.getInt(3));
-                    revision.setArticleID(result.getInt(4));
-                    revision.setTimeStamp(new Timestamp(result.getLong(5)));
-                    revision.setComment(result.getString(6));
-                    revision.setMinor(result.getBoolean(7));
-                    revision.setContributorName(result.getString(8));
+                // we should not use getInt(), because result may be null
+                String contribIdString = result.getString(9);
+                Integer contributorId = contribIdString == null ? null
+                        : Integer.parseInt(contribIdString);
+                revision.setContributorId(contributorId);
 
-                    // we should not use getInt(), because result may be null
-                    String contribIdString = result.getString(9);
-                    Integer contributorId = contribIdString == null ? null
-                            : Integer.parseInt(contribIdString);
-                    revision.setContributorId(contributorId);
+                revision.setContributorIsRegistered(result.getBoolean(10));
 
-                    revision.setContributorIsRegistered(result.getBoolean(10));
-
-                    if (namespaceColumn) {
-                        revision.setNamespace(RevisionsTable.getNamespace(result, 11));
-                    }
+                if (namespaceColumn) {
+                    revision.setNamespace(RevisionsTable.getNamespace(result, 11));
                 }
-                return revision;
             }
+            return revision;
+
         }
 
     }
