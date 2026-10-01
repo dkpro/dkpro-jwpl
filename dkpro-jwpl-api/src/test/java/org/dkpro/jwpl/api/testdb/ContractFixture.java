@@ -114,6 +114,10 @@ public final class ContractFixture
         s.add(new Stored(Kind.PAGE, 800062, 800062, "Pct%Literal", false));
         s.add(new Stored(Kind.PAGE, 800063, 800063, "Discussion:Under_scoreA/Archive_1", false));
         s.add(new Stored(Kind.PAGE, 800064, 800064, "Discussion:UnderXscoreA/Archive_1", false));
+        s.add(new Stored(Kind.PAGE, 800065, 800065, "Discussion:Pct%Literal/Archive_1", false));
+        s.add(new Stored(Kind.PAGE, 800066, 800066, "Discussion:PctXYLiteral/Archive_1", false));
+        s.add(new Stored(Kind.PAGE, 800067, 800067, "Bang!x", false));
+        s.add(new Stored(Kind.PAGE, 800068, 800068, "Discussion:Bang!x/Archive_1", false));
         STORED = Collections.unmodifiableList(s);
     }
 

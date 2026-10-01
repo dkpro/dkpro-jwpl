@@ -41,6 +41,7 @@ import org.dkpro.jwpl.api.Page;
 import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
+import org.dkpro.jwpl.api.util.LikePatterns;
 import org.dkpro.jwpl.api.util.StringUtils;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
@@ -913,12 +914,14 @@ public class WikipediaTemplateInfo
      * @param nameCount
      *            the number of template names (or fragments) to match
      * @param prefix
-     *            whether to match with {@code LIKE} (true) or with {@code =} (false)
+     *            whether to match with {@code LIKE} and {@link LikePatterns#ESCAPE_CLAUSE} (true)
+     *            or with {@code =} (false)
      * @return the condition
      */
     static String buildTemplateNameCondition(int nameCount, boolean prefix)
     {
-        String single = prefix ? "tpl.templateName LIKE ?" : "tpl.templateName = ?";
+        String single = prefix ? "tpl.templateName LIKE ?" + LikePatterns.ESCAPE_CLAUSE
+                : "tpl.templateName = ?";
         StringBuilder condition = new StringBuilder("(");
         for (int i = 0; i < nameCount; i++) {
             if (i > 0) {
@@ -932,7 +935,8 @@ public class WikipediaTemplateInfo
     /**
      * Binds the given template names (or fragments) to the parameters of a statement built with
      * {@link #buildTemplateNameCondition(int, boolean)}. The names are normalized the way they are
-     * stored in the template index (lower case, trimmed, spaces replaced by underscores).
+     * stored in the template index (lower case, trimmed, spaces replaced by underscores). Prefix
+     * patterns match the fragment literally, {@code _} and {@code %} in it included.
      *
      * @param statement
      *            the statement to bind the names to, starting at parameter index 1
@@ -950,7 +954,7 @@ public class WikipediaTemplateInfo
         int curIdx = 1;
         for (String name : templateNames) {
             name = name.toLowerCase().trim().replaceAll(" ", "_");
-            statement.setString(curIdx++, prefix ? name + "%" : name);
+            statement.setString(curIdx++, prefix ? LikePatterns.prefix(name) : name);
         }
     }
 

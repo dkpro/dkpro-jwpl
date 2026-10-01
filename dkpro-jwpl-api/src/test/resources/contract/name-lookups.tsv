@@ -87,3 +87,5 @@ like-case	PAGE_QUERY_LIKE	under%	ids:[]	LIKE is case-sensitive
 like-percent	PAGE_QUERY_LIKE	Pct%	ids:[800062]	a plain prefix
 archives-underscore	DISCUSSION_ARCHIVES	Under_scoreA	ids:[800063]	the '_' of the title is literal
 archives-plain	DISCUSSION_ARCHIVES	UnderXscoreA	ids:[800064]	a title without wildcards
+archives-percent	DISCUSSION_ARCHIVES	Pct%Literal	ids:[800065]	the '%' of the title is literal
+archives-escape-char	DISCUSSION_ARCHIVES	Bang!x	ids:[800068]	the LIKE escape character of the title is literal
