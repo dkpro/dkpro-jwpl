@@ -250,7 +250,9 @@ public class Wikipedia
      * Gets the page with exactly the given title.<br>
      * <p>
      * Note that when using this method you are responsible for converting a normal search string
-     * into the right wiki-style.<br>
+     * into the right wiki-style, e.g. {@code Steam_boat} instead of {@code Steam boat}. Apart from
+     * upper-casing the first letter, the title is not normalized, and it is matched by code point
+     * like in {@link #getPage(String)}.<br>
      * <p>
      * If the title is a redirect, the corresponding page is returned.<br>
      *

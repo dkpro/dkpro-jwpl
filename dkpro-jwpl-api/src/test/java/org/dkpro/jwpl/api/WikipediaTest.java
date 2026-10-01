@@ -153,6 +153,33 @@ public class WikipediaTest
     }
 
     @Test
+    public void testGetPageByExactTitleMultiWord() throws WikiApiException
+    {
+        Page page = wiki.getPageByExactTitle("Wikipedia_API");
+        assertEquals(1014, page.getPageId());
+        assertFalse(page.isRedirect());
+        assertEquals("Wikipedia_API", page.getTitle().getWikiStyleTitle());
+    }
+
+    @Test
+    public void testGetPageByExactTitleDoesNotNormalize()
+    {
+        // the stored name is Wikipedia_API; blanks are not converted, and the case must match
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("Wikipedia API"));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> wiki.getPageByExactTitle("Wikipedia_api"));
+    }
+
+    @Test
+    public void testGetPageByExactTitleRedirect() throws WikiApiException
+    {
+        Page page = wiki.getPageByExactTitle("SIR");
+        assertEquals(1011, page.getPageId());
+        assertTrue(page.isRedirect());
+    }
+
+    @Test
     public void testGetPageByExactTitleNull()
     {
         try {

@@ -25,6 +25,13 @@ case-ids-unstored	GET_PAGE_IDS	MiXed_Case	NOT_FOUND	exact entries only
 case-ids-ci	GET_PAGE_IDS_CI	MiXed_Case	ids:[800001, 800002, 800003]	all case variants
 exact-title-multiword	GET_PAGE_BY_EXACT_TITLE	Mixed_Case	page:800001	the exact title as given
 exact-title-single	GET_PAGE_BY_EXACT_TITLE	TK2	page:105	the exact title as given
+exact-title-case-variant	GET_PAGE_BY_EXACT_TITLE	Mixed_case	page:800002	each stored case variant resolves to itself
+exact-title-case-unstored	GET_PAGE_BY_EXACT_TITLE	MiXed_Case	NOT_FOUND	a case variant that is not stored is not found
+exact-title-blanks	GET_PAGE_BY_EXACT_TITLE	Mixed\u0020Case	NOT_FOUND	blanks are not converted to underscores
+exact-title-first-letter	GET_PAGE_BY_EXACT_TITLE	mixed_Case	page:800001	Title upper-cases the first letter
+exact-title-accent-stripped	GET_PAGE_BY_EXACT_TITLE	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+exact-title-emoji-unstored	GET_PAGE_BY_EXACT_TITLE	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+exact-title-ambiguous	GET_PAGE_BY_EXACT_TITLE	Ambiguous_Title	page:101	the entry with the lowest id
 categories-of-exact	GET_CATEGORIES_OF	Mixed_Case	cats:[800001]	categories of the exact page
 categories-of-normalized	GET_CATEGORIES_OF	mixed_Case	cats:[800001]	the title is normalized like getPage
 categories-of-unstored	GET_CATEGORIES_OF	MiXed_Case	cats:[]	no page of that exact name
