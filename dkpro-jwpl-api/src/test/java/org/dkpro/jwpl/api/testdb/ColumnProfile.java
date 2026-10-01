@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,6 +63,10 @@ public enum ColumnProfile
     public static final String PROFILES_PROPERTY = "jwpl.test.collation.profiles";
 
     static final List<String> NAME_COLUMNS = List.of("PageMapLine", "Page", "Category");
+
+    /** The indexes on the name columns in {@code schema-hsqldb.sql}. */
+    private static final Map<String, String> HSQLDB_NAME_INDEXES = Map.of("PageMapLine",
+            "name_index", "Page", "page_name_index", "Category", "nameIndex");
 
     private final Set<Engine> engines;
     private final String charset;
@@ -114,8 +119,15 @@ public enum ColumnProfile
             case DEFAULT -> {
                 // the columns keep the server default
             }
-            case IGNORECASE -> NAME_COLUMNS.forEach(t -> ddl.add("ALTER TABLE " + t
-                    + " ALTER COLUMN name SET DATA TYPE VARCHAR_IGNORECASE(255)"));
+            case IGNORECASE -> NAME_COLUMNS.forEach(t -> {
+                // HSQLDB keeps the order of an existing index when the column type changes, so
+                // the index on name is created anew to compare case-insensitively as well.
+                String index = HSQLDB_NAME_INDEXES.get(t);
+                ddl.add("DROP INDEX " + index);
+                ddl.add("ALTER TABLE " + t
+                        + " ALTER COLUMN name SET DATA TYPE VARCHAR_IGNORECASE(255)");
+                ddl.add("CREATE INDEX " + index + " ON " + t + " (name)");
+            });
             case MB4_BIN, MB4_GENERAL_CI, MB3_GENERAL_CI, LATIN1_SWEDISH_CI -> NAME_COLUMNS
                     .forEach(t -> ddl.add("ALTER TABLE " + t + " MODIFY name VARCHAR(255)"
                             + " CHARACTER SET " + charset + " COLLATE " + collation));
