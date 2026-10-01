@@ -138,7 +138,9 @@ public class Page
      * @param pName
      *            The name of the page.
      * @param useExactTitle
-     *            Whether to use the exact title or try to guess the correct wiki-style title.
+     *            Whether to use the exact title, i.e. the stored wiki-style name, or try to guess
+     *            the correct wiki-style title. The exact title is only adjusted by the
+     *            first-letter capitalization of {@link Title}.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
@@ -233,13 +235,16 @@ public class Page
      * @param pTitle
      *            The title of the page.
      * @param useExactTitle
-     *            Whether to look up the plain title instead of the wiki-style title.
+     *            Whether to look up the title as given, apart from the first-letter
+     *            capitalization of {@link Title}, instead of the wiki-style title.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
     private void fetchByTitle(Title pTitle, boolean useExactTitle) throws WikiApiException
     {
-        final String searchString = useExactTitle ? pTitle.getPlainTitle()
+        // The names are stored wiki-style, so the exact title is looked up as given. The plain
+        // title would have blanks instead of the underscores of a multi-word name.
+        final String searchString = useExactTitle ? pTitle.getRawTitleText()
                 : pTitle.getWikiStyleTitle();
 
         // Both lookups share one transaction.
