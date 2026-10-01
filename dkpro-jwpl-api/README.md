@@ -55,9 +55,11 @@ CREATE INDEX page_redirects_index    ON page_redirects (id, redirects);
   `getCategory(String)` query in the collation of the column, so the name index is used, and keep
   only the exact match. The other lookups follow the collation of the column, so they ignore case
   there if that collation does.
-* `LIKE` is case-sensitive, so the title pattern of a `PageQuery` and the discussion archives
-  lookup of `Wikipedia#getDiscussionArchives` match case-sensitively. With a case-insensitive
-  MySQL or MariaDB collation, they do not.
+* The title pattern of a `PageQuery` matches case- and accent-sensitively on every backend and
+  collation: `LIKE` selects the candidates in the collation of the column, so the name index is
+  used, and JWPL keeps only the names that match exactly. `LIKE` is case-sensitive on
+  PostgreSQL, so the discussion archives lookup of `Wikipedia#getDiscussionArchives` matches
+  case-sensitively. With a case-insensitive MySQL or MariaDB collation, it does not.
 * `Wikipedia#getPageIdsCaseInsensitive(String)` compares `lower(name)` and so works on PostgreSQL
   too, but scans all of `PageMapLine`, since the prefix narrowing used on HSQLDB, MySQL and MariaDB
   depends on their collations. An expression index lets PostgreSQL look the name up instead:

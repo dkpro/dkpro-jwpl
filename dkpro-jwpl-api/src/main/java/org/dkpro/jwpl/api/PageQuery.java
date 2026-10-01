@@ -36,7 +36,7 @@ public class PageQuery
     private boolean onlyDisambiguationPages;
 
     /**
-     * A regular expression style titlePattern for the page's title
+     * A {@code LIKE} pattern for the page's title, see {@link #setTitlePattern(String)}.
      */
     private String titlePattern;
 
@@ -348,12 +348,19 @@ public class PageQuery
     }
 
     /**
-     * Sets a regular expression that pages have to match. % for any number of arbitrary characters
-     * (can only be used at the end of a string) _ for a single arbitrary character (can also be
-     * used inside a string)
+     * Sets a {@code LIKE} pattern that the titles of the pages have to match, in the form they are
+     * stored, i.e. with underscores instead of blanks. {@code %} stands for any number of
+     * arbitrary characters, {@code _} for a single arbitrary character.
+     * <p>
+     * The pattern matches case- and accent-sensitively on every backend and collation: the
+     * database selects the candidates with {@code LIKE} in the collation of the name column, so
+     * the name index is used for a pattern with a literal prefix, and names that match only
+     * because the collation ignores case or accents are removed afterwards. A backslash before a
+     * character matches that character literally on MySQL, MariaDB and PostgreSQL, which use it as
+     * escape character, but a literal backslash on HSQLDB, which does not.
      *
      * @param pattern
-     *            A regular expression pattern.
+     *            A {@code LIKE} pattern. {@code null} or a blank pattern selects all pages.
      */
     public void setTitlePattern(String pattern)
     {
