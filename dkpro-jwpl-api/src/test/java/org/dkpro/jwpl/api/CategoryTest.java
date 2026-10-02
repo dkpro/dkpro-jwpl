@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -342,11 +343,23 @@ public class CategoryTest
         }
     }
 
+    /**
+     * Category lookups are exact: a case variant of a name that has no entry of its own does not
+     * denote a category, whatever the collation of the name column.
+     */
+    @Test
+    public void testCreateCategoryByNameCaseVariant()
+    {
+        assertThrows(WikiPageNotFoundException.class,
+                () -> new Category(wiki, A_FAMOUS_CATEGORY.toLowerCase(Locale.ROOT)));
+        assertThrows(WikiPageNotFoundException.class,
+                () -> new Category(wiki, A_FAMOUS_CATEGORY.toUpperCase(Locale.ROOT)));
+    }
+
     @Test
     public void testCreateCategoryByNameIsCaseSensitive()
     {
-        // the name lookup uses a binary collation where supported, so a variant that only
-        // differs in case must not match
+        // the name lookup is exact, so a variant that only differs in case must not match
         assertThrows(WikiPageNotFoundException.class, () -> new Category(wiki, "People of ukp"));
     }
 
