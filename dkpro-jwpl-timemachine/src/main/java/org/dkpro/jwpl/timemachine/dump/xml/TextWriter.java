@@ -19,6 +19,7 @@ package org.dkpro.jwpl.timemachine.dump.xml;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.function.IntPredicate;
 
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.mwdumper.importer.Page;
@@ -32,10 +33,22 @@ public class TextWriter
 {
 
     private final UTFDataOutputStream stream;
+    private final IntPredicate wantedTextIds;
 
     public TextWriter(OutputStream output)
     {
+        this(output, textId -> true);
+    }
+
+    /**
+     * @param output        The stream to write the text table to.
+     * @param wantedTextIds Accepts the ids of the revisions whose text is written. The text of
+     *                      all other revisions is skipped without being escaped or encoded.
+     */
+    public TextWriter(OutputStream output, IntPredicate wantedTextIds)
+    {
         this.stream = new UTFDataOutputStream(output);
+        this.wantedTextIds = wantedTextIds;
     }
 
     @Override
@@ -58,6 +71,9 @@ public class TextWriter
     @Override
     public void writeRevision(Revision revision) throws IOException
     {
+        if (!wantedTextIds.test(revision.Id)) {
+            return;
+        }
         stream.writeInt(revision.Id);
         stream.writeUTFAsArray(SQLEscape.escape(revision.Text));
     }

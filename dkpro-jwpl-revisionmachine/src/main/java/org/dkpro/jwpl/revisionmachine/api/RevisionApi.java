@@ -1128,18 +1128,15 @@ public class RevisionApi
                 throw new IllegalArgumentException();
             }
 
-            int fullRevPK;
-            int limit;
+            int revisionPK;
 
-            final String sql = "SELECT FullRevisionPK, RevisionPK FROM index_revisionID WHERE revisionID=? LIMIT 1";
+            final String sql = "SELECT RevisionPK FROM index_revisionID WHERE revisionID=? LIMIT 1";
             try (PreparedStatement statement = this.connection.prepareStatement(sql)) {
                 statement.setInt(1, revisionID);
                 ResultSet result = statement.executeQuery();
 
                 if (result.next()) {
-                    fullRevPK = result.getInt(1);
-                    limit = (result.getInt(2) - fullRevPK) + 1;
-
+                    revisionPK = result.getInt(1);
                 }
                 else {
                     throw new WikiPageNotFoundException(
@@ -1148,7 +1145,7 @@ public class RevisionApi
 
             }
             
-            return buildRevisionMetaData(fullRevPK, limit);
+            return buildRevisionMetaData(revisionPK);
 
         }
         catch (WikiPageNotFoundException e) {
@@ -1450,7 +1447,7 @@ public class RevisionApi
                 ResultSet result = statement.executeQuery();
 
                 while (result.next()) {
-                    revisions.add(readRevisionMetaData(result, 1, namespaceColumn));
+                    revisions.add(readRevisionMetaData(result, namespaceColumn));
                 }
             }
             return revisions;
@@ -1603,7 +1600,7 @@ public class RevisionApi
 
         try {
             int fullRevPK;
-            int limit;
+            int revisionPK;
 
             String fullRev = null;
 
@@ -1643,11 +1640,12 @@ public class RevisionApi
                         + " has no revision number " + revisionIndex);
             }
 
+            // The revisions of a chain have consecutive PKs, starting at the full revision
             fullRevPK = Integer.parseInt(fullRev);
-            limit = (revisionIndex - revA) + 1;
+            revisionPK = fullRevPK + (revisionIndex - revA);
 
             // Build the revision
-            return buildRevisionMetaData(fullRevPK, limit);
+            return buildRevisionMetaData(revisionPK);
 
         }
         catch (WikiPageNotFoundException e) {
@@ -1667,7 +1665,7 @@ public class RevisionApi
     {
 
         int fullRevPK;
-        int limit;
+        int revisionPK;
 
         try {
             final String sql = "SELECT FullRevisionPK, RevisionPK FROM index_revisionID  WHERE revisionID=? LIMIT 1";
@@ -1677,8 +1675,7 @@ public class RevisionApi
 
                 if (result.next()) {
                     fullRevPK = result.getInt(1);
-                    limit = (result.getInt(2) - fullRevPK) + 1;
-
+                    revisionPK = result.getInt(2);
                 }
                 else {
                     throw new WikiPageNotFoundException(
@@ -1686,10 +1683,11 @@ public class RevisionApi
                 }
             }
             
-            final String query = "SELECT Revision, PrimaryKey, RevisionCounter, RevisionID, ArticleID, Timestamp, Comment, Minor, ContributorName, ContributorId, ContributorIsRegistered "
-                            + "FROM revisions " + "WHERE PrimaryKey >= ? LIMIT " + limit;
+            final String query = "SELECT Revision FROM revisions "
+                    + "WHERE PrimaryKey BETWEEN ? AND ? ORDER BY PrimaryKey";
             try (PreparedStatement statement = this.connection.prepareStatement(query)) {
                 statement.setInt(1, fullRevPK);
+                statement.setInt(2, revisionPK);
                 ResultSet result = statement.executeQuery();
 
                 String previousRevision = null, currentRevision = null;
@@ -1733,41 +1731,31 @@ public class RevisionApi
     }
 
     /**
-     * This method queries and builds the specified revision.
+     * This method queries the metadata of the specified revision and builds the revision object.
+     * The revision text is loaded lazily, see {@link #setRevisionTextAndParts(Revision)}.
      *
-     * @param fullRevPK
-     *            PK of the full revision
-     * @param limit
-     *            number of revision to query
-     * @return Revision
+     * @param revisionPK
+     *            PK of the revision
+     * @return Revision, or {@code null} if no revision with this PK exists
      * @throws SQLException
      *             if an error occurs while retrieving data from the SQL database.
      */
-    private Revision buildRevisionMetaData(final int fullRevPK, final int limit) throws SQLException
+    private Revision buildRevisionMetaData(final int revisionPK) throws SQLException
     {
 
         final boolean namespaceColumn = hasNamespaceColumn();
-        final String query = "SELECT Revision, " + META_DATA_COLUMNS
+        final String query = "SELECT " + META_DATA_COLUMNS
                 + (namespaceColumn ? ", Namespace" : "") + " FROM revisions "
-                + "WHERE PrimaryKey >= ? LIMIT " + limit;
-        /*
-         * As HSQL does not support ResultSet.last() per default, we have to specify these extra
-         * parameters here.
-         *
-         * With these parameters in place, the 'last()' call works as expected.
-         *
-         * See also: https://stackoverflow.com/q/19533991
-         */
-        try (PreparedStatement statement = this.connection.prepareStatement(query,
-                ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY)) {
+                + "WHERE PrimaryKey = ?";
+        try (PreparedStatement statement = this.connection.prepareStatement(query)) {
 
-            statement.setInt(1, fullRevPK);
+            statement.setInt(1, revisionPK);
             ResultSet result = statement.executeQuery();
 
             Revision revision = null;
 
-            if (result.last()) {
-                revision = readRevisionMetaData(result, 2, namespaceColumn);
+            if (result.next()) {
+                revision = readRevisionMetaData(result, namespaceColumn);
             }
             return revision;
 
@@ -1777,42 +1765,39 @@ public class RevisionApi
 
     /**
      * Builds a revision without its text from the meta data columns of the current row, which
-     * are expected in the order of {@link #META_DATA_COLUMNS}, followed by the Namespace column if
-     * it exists. The text is loaded when it is accessed for the first time.
+     * are expected as the first columns in the order of {@link #META_DATA_COLUMNS}, followed by
+     * the Namespace column if it exists. The text is loaded when it is accessed for the first time.
      *
      * @param result
      *            the result set positioned at the row to read
-     * @param firstColumn
-     *            index of the PrimaryKey column, the first of the meta data columns
      * @param namespaceColumn
      *            whether the Namespace column is selected
      * @return Revision
      * @throws SQLException
      *             if an error occurs while reading the result set
      */
-    private Revision readRevisionMetaData(final ResultSet result, final int firstColumn,
-            final boolean namespaceColumn)
+    private Revision readRevisionMetaData(final ResultSet result, final boolean namespaceColumn)
         throws SQLException
     {
-        Revision revision = new Revision(result.getInt(firstColumn + 1), this);
+        Revision revision = new Revision(result.getInt(2), this);
 
-        revision.setPrimaryKey(result.getInt(firstColumn));
-        revision.setRevisionID(result.getInt(firstColumn + 2));
-        revision.setArticleID(result.getInt(firstColumn + 3));
-        revision.setTimeStamp(new Timestamp(result.getLong(firstColumn + 4)));
-        revision.setComment(result.getString(firstColumn + 5));
-        revision.setMinor(result.getBoolean(firstColumn + 6));
-        revision.setContributorName(result.getString(firstColumn + 7));
+        revision.setPrimaryKey(result.getInt(1));
+        revision.setRevisionID(result.getInt(3));
+        revision.setArticleID(result.getInt(4));
+        revision.setTimeStamp(new Timestamp(result.getLong(5)));
+        revision.setComment(result.getString(6));
+        revision.setMinor(result.getBoolean(7));
+        revision.setContributorName(result.getString(8));
 
         // we should not use getInt(), because result may be null
-        String contribIdString = result.getString(firstColumn + 8);
+        String contribIdString = result.getString(9);
         Integer contributorId = contribIdString == null ? null : Integer.parseInt(contribIdString);
         revision.setContributorId(contributorId);
 
-        revision.setContributorIsRegistered(result.getBoolean(firstColumn + 9));
+        revision.setContributorIsRegistered(result.getBoolean(10));
 
         if (namespaceColumn) {
-            revision.setNamespace(RevisionsTable.getNamespace(result, firstColumn + 10));
+            revision.setNamespace(RevisionsTable.getNamespace(result, 11));
         }
         return revision;
     }
