@@ -1,0 +1,31 @@
+__TOC__
+Start <!-- a comment with [[Hidden link]] --> of text with [[Visible]].
+<!-- whole line comment -->
+Line with <nowiki>[[not a link]] {{not a template}}</nowiki> and [[After nowiki]].
+ Preformatted line with [[Pre link]]
+<pre>
+Pre block [[not a link either]]
+</pre>
+Math <math>a^2 + b^2 = c^2</math> inline with [[Pythagoras]] and <math>\sqrt{2}</math>.
+Another <nowiki>''no italics''</nowiki> nowiki after pre.
+Tags <span style="color:red">red [[Red link]]</span> and <br/> break and <ref name="r1">Ref [[Ref link]]</ref> and <ref name="r1"/>.
+<div>
+Div content with {{tpl|x}} and [[Div link]].
+</div>
+<small>Small</small> <sup>1</sup> <sub>2</sub> <u>under</u> <s>strike</s>
+
+== Gallery ==
+<gallery caption="Some images">
+File:G1.jpg|Caption one with [[G link]]
+G2.jpg
+Image:G3.png|Third
+</gallery>
+Text after gallery [[After gallery]].
+
+== Formatting ==
+'''Bold''' and ''italic'' and '''''both''''' and ''italic with [[Link]]'' and '''bold {{tpl}}'''.
+'''Unclosed bold on one line
+''Unclosed italic
+Mixed '''bold ''and italic''''' end.
+Unclosed <span>tag and <math>unclosed math
+__NOTOC__

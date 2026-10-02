@@ -1,0 +1,30 @@
+{{Infobox person
+| name = Jane [[Doe]]
+| birth_place = [[Springfield|the city]], {{flag|USA}}
+| image = [[File:Jane.jpg|thumb|Jane at work]]
+}}
+'''Jane Doe''' (born {{birth date|1970|1|1}}) is a [[fiction|fictional]] ''person'' who lives in [[Springfield]].<ref>{{cite web|url=http://example.org|title=Source}}</ref>
+She is known for [[Foo]], [[Bar|bars]] and [[Baz]]{{citation needed}}. See [http://example.org the site] and http://example.com/plain for details.
+
+[[Image:Portrait.png|thumb|left|A portrait with a [[Link in caption]] and ''italics'']]
+[[File:Params.jpg|[[Link in parameter]]|thumb|caption after the link]]
+[[File:Nested.jpg|thumb|[[Only link]]]]
+[[File:Multiline.jpg|thumb|first line
+second line with [[Second line link]]]]
+
+== Career ==
+{{Main|Career of Jane Doe}}
+In {{year|1990}} she joined [[Acme Corporation|Acme]].{{sfn|Smith|2001|p=12}} Later she moved to [[Globex]] and [[Initech]].
+{{quote|text=Life is [[good]].|author=[[Jane Doe]]}}
+{{outer|{{inner|{{innermost|x}}}}|[[Link inside template]]}}
+A paragraph with {{{param|default}}} and {{{another}}} triple braces and [[Trailing link]].
+
+=== Awards ===
+'''''Bold italic''''' text with [[Award A]], [[Award B]]{{efn|Note}}, [[Award C|C]] and [[:Category:Awards|the category]].
+Unclosed link [[Broken and unclosed template {{broken
+Next line [[Recovered]].
+
+== See also ==
+[[Wiktionary:Doe]] [[Special link]] [[de:Jane Doe]] [[Category:People]]
+[[Category:Fictional people|Doe, Jane]]
+[[fr:Jane Doe]]
