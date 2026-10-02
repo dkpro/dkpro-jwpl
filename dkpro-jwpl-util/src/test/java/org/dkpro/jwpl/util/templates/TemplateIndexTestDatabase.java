@@ -145,6 +145,36 @@ final class TemplateIndexTestDatabase
         return values;
     }
 
+    /**
+     * @return the connection to the database
+     */
+    Connection connection()
+    {
+        return connection;
+    }
+
+    /**
+     * Runs {@link WikipediaTemplateInfo#TEMPLATE_ID_QUERY} with the given template name normalized
+     * by {@link WikipediaTemplateInfo#toStoredTemplateName(String)}, as
+     * {@link WikipediaTemplateInfo#checkTemplateId(String)} does.
+     *
+     * @param escapedTemplateName
+     *            the SQL escaped template name
+     * @return the id of the template or {@code -1} if no template with that name exists
+     * @throws SQLException
+     *             If the query failed
+     */
+    int queryTemplateId(String escapedTemplateName) throws SQLException
+    {
+        try (PreparedStatement statement = connection
+                .prepareStatement(WikipediaTemplateInfo.TEMPLATE_ID_QUERY)) {
+            statement.setString(1, WikipediaTemplateInfo.toStoredTemplateName(escapedTemplateName));
+            try (ResultSet result = statement.executeQuery()) {
+                return result.next() ? result.getInt(1) : -1;
+            }
+        }
+    }
+
     @Override
     public void close() throws SQLException
     {

@@ -62,6 +62,13 @@ public class WikipediaTemplateInfo
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
+    /**
+     * Selects the smallest id of the templates with a given name, bound as the only parameter.
+     */
+    static final String TEMPLATE_ID_QUERY = "SELECT tpl.templateId FROM "
+            + GeneratorConstants.TABLE_TPLID_TPLNAME
+            + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
+
     private final Wikipedia wiki;
     private RevisionApi revApi = null;
     private MediaWikiParser parser = null;
@@ -242,9 +249,13 @@ public class WikipediaTemplateInfo
      * Returns the id of the template with the given name.
      * <p>
      * As in previous versions, the name is expected in the SQL escaped form produced by
-     * {@link StringUtils#sqlEscape(String)}. Leading and trailing whitespace is removed and blanks
-     * are replaced by underscores, then the name is unescaped and bound as a statement parameter.
-     * If several templates share the name, the smallest id is returned.
+     * {@link StringUtils#sqlEscape(String)}. It is normalized the way the template info generator
+     * stores template names: leading and trailing whitespace is removed, blanks are replaced by
+     * underscores, the name is unescaped and lower cased with {@link String#toLowerCase()}, then
+     * it is bound as a statement parameter. The lookup thus ignores the case of the name on every
+     * database, including those with a case-sensitive {@code templateName} column, like
+     * {@link #loadTemplateIds()} does. If several templates share the name, the smallest id is
+     * returned.
      *
      * @param templateName
      *            the SQL escaped name of the template
@@ -255,11 +266,8 @@ public class WikipediaTemplateInfo
     public int checkTemplateId(String templateName) throws WikiApiException
     {
         try {
-            String sqlString = "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
-                statement.setString(1, sqlUnescape(templateName.trim().replace(' ', '_')));
+            try (PreparedStatement statement = connection.prepareStatement(TEMPLATE_ID_QUERY)) {
+                statement.setString(1, toStoredTemplateName(templateName));
                 ResultSet result = execute(statement);
 
                 if (result == null) {
@@ -276,6 +284,23 @@ public class WikipediaTemplateInfo
         catch (Exception e) {
             throw new WikiApiException(e);
         }
+    }
+
+    /**
+     * Normalizes an SQL escaped template name to the form in which the template info generator
+     * stores template names: leading and trailing whitespace is removed, blanks are replaced by
+     * underscores, the name is unescaped via {@link #sqlUnescape(String)} and lower cased with
+     * {@link String#toLowerCase()}, as the generator does. The name is lower cased after it is
+     * unescaped, so escape sequences like {@code \Z} keep their meaning.
+     *
+     * @param escapedTemplateName
+     *            a template name escaped via {@link StringUtils#sqlEscape(String)}, must not be
+     *            {@code null}
+     * @return the name as stored in the template name table
+     */
+    static String toStoredTemplateName(String escapedTemplateName)
+    {
+        return sqlUnescape(escapedTemplateName.trim().replace(' ', '_')).toLowerCase();
     }
 
     /**
@@ -378,9 +403,8 @@ public class WikipediaTemplateInfo
 
     /**
      * Normalizes an SQL escaped template name for looking it up in {@link TemplateIds}. It applies
-     * the normalization of {@link #checkTemplateId(String)} (trimming, blanks replaced by
-     * underscores) and mimics the default case-insensitive MySQL collation by lower casing the
-     * name.
+     * the normalization of {@link #checkTemplateId(String)}: trimming, blanks replaced by
+     * underscores and lower casing with {@link String#toLowerCase()}.
      *
      * @param escapedTemplateName
      *            a template name escaped via {@link StringUtils#sqlEscape(String)}
