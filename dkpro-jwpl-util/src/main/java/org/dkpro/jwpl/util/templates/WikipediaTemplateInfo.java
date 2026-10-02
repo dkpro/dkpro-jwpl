@@ -69,6 +69,15 @@ public class WikipediaTemplateInfo
             + GeneratorConstants.TABLE_TPLID_TPLNAME
             + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
 
+    /**
+     * Selects the names of the templates that the revision template index associates with a
+     * revision, whose id is bound as the only parameter.
+     */
+    static final String REVISION_TEMPLATE_NAMES_QUERY = "SELECT tpl.templateName FROM "
+            + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl, "
+            + GeneratorConstants.TABLE_TPLID_REVISIONID
+            + " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?";
+
     private final Wikipedia wiki;
     private RevisionApi revApi = null;
     private MediaWikiParser parser = null;
@@ -402,17 +411,71 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Normalizes an SQL escaped template name for looking it up in {@link TemplateIds}. It applies
-     * the normalization of {@link #checkTemplateId(String)}: trimming, blanks replaced by
-     * underscores and lower casing with {@link String#toLowerCase()}.
+     * Normalizes a template name (or fragment) the way the template info generator stores template
+     * names, apart from unescaping: leading and trailing whitespace is removed, blanks are replaced
+     * by underscores and the name is lower cased with {@link String#toLowerCase()}. It is used for
+     * the lookups in {@link TemplateIds}, which take SQL escaped names, as well as for the names
+     * bound by {@link #bindTemplateNames(PreparedStatement, List, boolean)} and compared by the
+     * {@code revisionContainsTemplate*} methods, which take plain names. As it does not unescape,
+     * the name stays SQL escaped if it was.
      *
-     * @param escapedTemplateName
-     *            a template name escaped via {@link StringUtils#sqlEscape(String)}
+     * @param templateName
+     *            a template name or fragment, plain or escaped via
+     *            {@link StringUtils#sqlEscape(String)}, must not be {@code null}
      * @return the normalized template name
      */
-    private static String normalizeTemplateName(String escapedTemplateName)
+    static String normalizeTemplateName(String templateName)
     {
-        return escapedTemplateName.trim().replace(' ', '_').toLowerCase();
+        return templateName.trim().replace(' ', '_').toLowerCase();
+    }
+
+    /**
+     * Checks whether any of the given template names equals any of the names to look for. Both are
+     * normalized via {@link #normalizeTemplateName(String)} before they are compared, so the
+     * comparison ignores the case and treats blanks like underscores, as the index lookups do.
+     *
+     * @param names
+     *            the names of the templates of a revision, as stored in the template index or as
+     *            parsed from the revision text
+     * @param templateNames
+     *            the plain template names to look for
+     * @return {@code true} if any of {@code names} equals any of {@code templateNames}
+     */
+    static boolean containsTemplateName(List<String> names, List<String> templateNames)
+    {
+        Set<String> normalized = new HashSet<>();
+        for (String templateName : templateNames) {
+            normalized.add(normalizeTemplateName(templateName));
+        }
+        for (String name : names) {
+            if (normalized.contains(normalizeTemplateName(name))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether any of the given template names starts with the given fragment. Both are
+     * normalized via {@link #normalizeTemplateName(String)} before they are compared, so the
+     * comparison ignores the case and treats blanks like underscores, as the index lookups do.
+     *
+     * @param names
+     *            the names of the templates of a revision, as stored in the template index or as
+     *            parsed from the revision text
+     * @param templateFragment
+     *            the plain beginning of the template names to look for
+     * @return {@code true} if any of {@code names} starts with {@code templateFragment}
+     */
+    static boolean containsTemplateFragment(List<String> names, String templateFragment)
+    {
+        String normalized = normalizeTemplateName(templateFragment);
+        for (String name : names) {
+            if (normalizeTemplateName(name).startsWith(normalized)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -956,7 +1019,8 @@ public class WikipediaTemplateInfo
     /**
      * Binds the given template names (or fragments) to the parameters of a statement built with
      * {@link #buildTemplateNameCondition(int, boolean)}. The names are normalized the way they are
-     * stored in the template index (lower case, trimmed, spaces replaced by underscores).
+     * stored in the template index (lower case, trimmed, spaces replaced by underscores) via
+     * {@link #normalizeTemplateName(String)}.
      *
      * @param statement
      *            the statement to bind the names to, starting at parameter index 1
@@ -973,7 +1037,7 @@ public class WikipediaTemplateInfo
     {
         int curIdx = 1;
         for (String name : templateNames) {
-            name = name.toLowerCase().trim().replaceAll(" ", "_");
+            name = normalizeTemplateName(name);
             statement.setString(curIdx++, prefix ? name + "%" : name);
         }
     }
@@ -1524,11 +1588,8 @@ public class WikipediaTemplateInfo
         }
         List<String> templateNames = new LinkedList<>();
         try {
-            final String sql = "SELECT tpl.templateName FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                    + " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?";
-            
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement(REVISION_TEMPLATE_NAMES_QUERY)) {
                 statement.setInt(1, revid);
 
                 ResultSet result = execute(statement);
@@ -1551,6 +1612,10 @@ public class WikipediaTemplateInfo
 
     /**
      * Determines whether a given revision contains a given template name.
+     * <p>
+     * The name is compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateNames(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox person"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateName A template name to check for.
@@ -1565,6 +1630,10 @@ public class WikipediaTemplateInfo
 
     /**
      * Determines whether a given revision contains a given template name.
+     * <p>
+     * The names are compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateNames(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox person"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateNames A list of template names.
@@ -1575,19 +1644,15 @@ public class WikipediaTemplateInfo
     public boolean revisionContainsTemplateNames(int revId, List<String> templateNames)
         throws WikiApiException
     {
-        List<String> tplList = getTemplateNamesFromRevision(revId);
-        for (String tpl : tplList) {
-            for (String templateName : templateNames) {
-                if (tpl.equalsIgnoreCase(templateName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return containsTemplateName(getTemplateNamesFromRevision(revId), templateNames);
     }
 
     /**
      * Determines whether a given revision contains a template starting with the given fragment.
+     * <p>
+     * The fragment is compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateFragments(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox pers"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateFragment A (partial) template name to check for.
@@ -1598,13 +1663,7 @@ public class WikipediaTemplateInfo
     public boolean revisionContainsTemplateFragment(int revId, String templateFragment)
         throws WikiApiException
     {
-        List<String> tplList = getTemplateNamesFromRevision(revId);
-        for (String tpl : tplList) {
-            if (tpl.toLowerCase().startsWith(templateFragment.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        return containsTemplateFragment(getTemplateNamesFromRevision(revId), templateFragment);
     }
 
     /**
@@ -1631,12 +1690,7 @@ public class WikipediaTemplateInfo
 
         List<Template> tplList = parser
                 .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
-        for (Template tpl : tplList) {
-            if (tpl.getName().equalsIgnoreCase(templateName)) {
-                return true;
-            }
-        }
-        return false;
+        return containsTemplateName(templateNames(tplList), List.of(templateName));
     }
 
     /**
@@ -1665,12 +1719,21 @@ public class WikipediaTemplateInfo
 
         List<Template> tplList = parser
                 .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
-        for (Template tpl : tplList) {
-            if (tpl.getName().toLowerCase().startsWith(templateFragment.toLowerCase())) {
-                return true;
-            }
+        return containsTemplateFragment(templateNames(tplList), templateFragment);
+    }
+
+    /**
+     * @param templates
+     *            parsed templates
+     * @return the names of the given templates, in the same order
+     */
+    private static List<String> templateNames(List<Template> templates)
+    {
+        List<String> names = new ArrayList<>(templates.size());
+        for (Template tpl : templates) {
+            names.add(tpl.getName());
         }
-        return false;
+        return names;
     }
 
     /**
