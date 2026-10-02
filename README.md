@@ -44,20 +44,20 @@ Upgrading an existing JWPL database? See [dkpro-jwpl-api/README.md](dkpro-jwpl-a
 
 ## Running the DataMachine in parallel
 
-By default, the DataMachine processes the dump files one after another. With the system property `jwpl.datamachine.parallelism`, the categorylinks, pagelinks and revision passes run at the same time once the page pass has finished. The generated files are byte-identical to a sequential run.
+By default, the DataMachine processes the dump files one after another. With the system property `jwpl.datamachine.parallelism`, the categorylinks and pagelinks passes run at the same time once the page pass has finished. The generated files are byte-identical to a sequential run.
 
 | Property | Default | Effect |
 |---|---|---|
-| `-Djwpl.datamachine.parallelism=<n>` | `1` | Runs up to `n` of the three passes above at the same time. `1` keeps the sequential run; values above `3` have no further effect. |
+| `-Djwpl.datamachine.parallelism=<n>` | `1` | Runs up to `n` of the two passes above at the same time. `1` keeps the sequential run; values above `2` have no further effect. |
 | `-Djwpl.decompressor.readahead=true` | `false` | Decompresses each built-in bz2/gz/7z input on its own thread while the dump is parsed. |
 
 Because the passes run at the same time, their data is held in memory at the same time, so allow for more heap than for a sequential run.
 
-Example for a machine with eight cores: the three passes each use one core. The read-ahead adds one decompression thread each for the compressed categorylinks and pagelinks dumps (the revision pass reads a file the DataMachine generated itself), and it also speeds up the preceding pass over the XML dump. That is five busy threads at most, which leaves room for the JVM and the operating system.
+Example for a machine with eight cores: the two passes each use one core. The read-ahead adds one decompression thread each for the compressed categorylinks and pagelinks dumps, and it also speeds up the preceding pass over the XML dump. That is four busy threads at most, which leaves room for the JVM and the operating system.
 
 ```shell
 java -Xmx8g \
-     -Djwpl.datamachine.parallelism=3 \
+     -Djwpl.datamachine.parallelism=2 \
      -Djwpl.decompressor.readahead=true \
      -jar JWPLDataMachine.jar english Contents All_article_disambiguation_pages /data/enwiki
 ```
