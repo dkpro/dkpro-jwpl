@@ -37,7 +37,6 @@ public class OutputFactory
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    private static String PATH_PROGRAM_7ZIP = null;
     private static OutputType MODE_OUTPUT = null;
     private static ConfigurationManager config = null;
 
@@ -56,16 +55,17 @@ public class OutputFactory
         throws ConfigurationException
     {
 
-        PATH_PROGRAM_7ZIP = (String) config.getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
+        String program7Zip = (String) config
+                .getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
 
-        if (PATH_PROGRAM_7ZIP == null) {
+        if (program7Zip == null) {
             throw ErrorFactory
                     .createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
         }
 
         try {
             Runtime runtime = Runtime.getRuntime();
-            Process p = runtime.exec(PATH_PROGRAM_7ZIP + " a -t7z -si " + archivePath);
+            Process p = runtime.exec(program7Zip + " a -t7z -si " + archivePath);
             return p.getOutputStream();
 
         }

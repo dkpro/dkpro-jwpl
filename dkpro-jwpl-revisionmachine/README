@@ -34,6 +34,8 @@ classes is in [dkpro-jwpl-tutorial/README.md](../dkpro-jwpl-tutorial/README.md).
 		<LIMIT_TASK_SIZE_REVISIONS>5000000</LIMIT_TASK_SIZE_REVISIONS>
 		<LIMIT_TASK_SIZE_DIFFS>1000000</LIMIT_TASK_SIZE_DIFFS>
 		<LIMIT_SQLSERVER_MAX_ALLOWED_PACKET>1000000</LIMIT_SQLSERVER_MAX_ALLOWED_PACKET>
+		<!-- Optional: number of archives converted in parallel (default: 1) -->
+		<LIMIT_ARCHIVE_THREADS>1</LIMIT_ARCHIVE_THREADS>
 	</cache>
 	<logging>
 		<root_folder>""</root_folder>
@@ -60,6 +62,26 @@ classes is in [dkpro-jwpl-tutorial/README.md](../dkpro-jwpl-tutorial/README.md).
 </config>
 
 ```
+
+### Converting several archives in parallel
+
+Full-history dumps of large Wikipedias are split into many archives
+(`pages-meta-history1.xml-p1p812.bz2`, ...). List all of them as `<archive>`
+entries and set `LIMIT_ARCHIVE_THREADS` to the number of archives that should
+be converted at the same time. By default (`1`) the archives are converted one
+after another on a single thread and written to the same output files
+(`output_1.sql`, `output_2.sql`, ...).
+
+With a value greater than `1`, every archive is converted by its own worker
+and written to its own output files, named after the archive:
+`pages-meta-history1.xml-p1p812.bz2` becomes
+`output_pages-meta-history1.xml-p1p812_1.sql.bz2` (and `_2`, `_3`, ... once
+`LIMIT_SQL_ARCHIVE_SIZE` / `LIMIT_SQL_FILE_SIZE` is reached). The file names
+and their content therefore do not depend on the order in which the workers
+finish, and the rows are the same as those of a single-threaded run. Each
+worker keeps its own article task in memory, so size the heap for
+`LIMIT_ARCHIVE_THREADS` times the task limits above. The `DATABASE` output
+mode writes over a single connection and always runs on one thread.
 
 ## Index Generator Config
 

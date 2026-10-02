@@ -48,11 +48,6 @@ public class InputFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
     /**
-     * Configuration parameter - Path to the 7Zip executable
-     */
-    private static String PATH_PROGRAM_7ZIP = null;
-
-    /**
      * Configuration parameter - Charset name of the input data
      */
     private static String WIKIPEDIA_ENCODING = null;
@@ -100,16 +95,17 @@ public class InputFactory
     private static InputStreamReader decompressWith7Zip(final String archivePath)
         throws ConfigurationException
     {
-        PATH_PROGRAM_7ZIP = (String) config.getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
+        String program7Zip = (String) config
+                .getConfigParameter(ConfigurationKeys.PATH_PROGRAM_7ZIP);
 
-        if (PATH_PROGRAM_7ZIP == null) {
+        if (program7Zip == null) {
             throw ErrorFactory
                     .createConfigurationException(ErrorKeys.CONFIGURATION_PARAMETER_UNDEFINED);
         }
 
         try {
             Runtime runtime = Runtime.getRuntime();
-            Process p = runtime.exec(PATH_PROGRAM_7ZIP + " e " + archivePath + " -so");
+            Process p = runtime.exec(program7Zip + " e " + archivePath + " -so");
 
             return new InputStreamReader(p.getInputStream(), WIKIPEDIA_ENCODING);
 

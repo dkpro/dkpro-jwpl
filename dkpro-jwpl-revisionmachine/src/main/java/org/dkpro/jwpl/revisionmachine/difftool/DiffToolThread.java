@@ -19,6 +19,9 @@ package org.dkpro.jwpl.revisionmachine.difftool;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.dkpro.jwpl.revisionmachine.api.Revision;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ArticleReaderException;
@@ -57,8 +60,11 @@ import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.writer.TimedSQLFile
 import org.dkpro.jwpl.revisionmachine.difftool.data.OutputType;
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveDescription;
 import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveManager;
+import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveScheduler;
+import org.dkpro.jwpl.revisionmachine.difftool.data.archive.ArchiveScheduler.ArchiveJob;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.Task;
 import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
+import org.slf4j.event.Level;
 
 /**
  * This class represents the main method for the DiffTool application
@@ -68,9 +74,14 @@ public class DiffToolThread
 {
 
     /**
-     * Reference to the DiffTool Logger
+     * Name prefix of the output files
      */
-    private static Logger logger;
+    private static final String OUTPUT_NAME = "output";
+
+    /**
+     * Reference to the DiffTool Logger, shared by all workers (its methods are synchronized)
+     */
+    private final Logger logger;
 
     /**
      * Reference to the Configuration
@@ -83,9 +94,14 @@ public class DiffToolThread
     private boolean MODE_STATISTICAL_OUTPUT;
 
     /**
-     * Whether an archive, article or diff was skipped because of an error
+     * Configuration Parameter - Number of archives processed in parallel
      */
-    private boolean failed;
+    private final int LIMIT_ARCHIVE_THREADS;
+
+    /**
+     * Whether an archive, article or diff was skipped because of an error; set by all workers
+     */
+    private volatile boolean failed;
 
     /**
      * (Constructor) Creates a DiffToolThread object.
@@ -109,6 +125,16 @@ public class DiffToolThread
             // disabled. The exception carries no information beyond that, hence it is not chained.
             MODE_STATISTICAL_OUTPUT = false;
         }
+
+        int threads;
+        try {
+            threads = (Integer) cconfig.getConfigParameter(ConfigurationKeys.LIMIT_ARCHIVE_THREADS);
+        }
+        catch (ConfigurationException e) {
+            // Optional parameter: without it, the archives are processed one after another.
+            threads = 1;
+        }
+        LIMIT_ARCHIVE_THREADS = threads;
 
         logger = LoggingFactory.createLogger(LoggerType.DIFF_TOOL, "DiffTool");
     }
@@ -144,6 +170,8 @@ public class DiffToolThread
         /**
          * (Constructor) Creates a TaskTransmitter object.
          *
+         * @param outputName
+         *            prefix of the output files (not used by the DATABASE output mode)
          * @throws ConfigurationException
          *             if an error occurs while accessing the configuration
          * @throws IOException
@@ -151,7 +179,8 @@ public class DiffToolThread
          * @throws LoggingException
          *             if an error occurs while logging
          */
-        public TaskTransmitter() throws ConfigurationException, IOException, LoggingException
+        public TaskTransmitter(final String outputName)
+            throws ConfigurationException, IOException, LoggingException
         {
 
             ConfigurationManager config = ConfigurationManager.getInstance();
@@ -166,14 +195,14 @@ public class DiffToolThread
 
             case UNCOMPRESSED:
                 if (MODE_DATAFILE_OUTPUT) {
-                    this.dumpWriter = new DataFileWriter("output");
+                    this.dumpWriter = new DataFileWriter(outputName);
                 }
                 else {
                     if (MODE_STATISTICAL_OUTPUT) {
-                        this.dumpWriter = new TimedSQLFileWriter("output", logger);
+                        this.dumpWriter = new TimedSQLFileWriter(outputName, logger);
                     }
                     else {
-                        this.dumpWriter = new SQLFileWriter("output", logger);
+                        this.dumpWriter = new SQLFileWriter(outputName, logger);
                     }
                 }
                 break;
@@ -182,14 +211,14 @@ public class DiffToolThread
             case BZIP2:
             case ALTERNATE:
                 if (MODE_DATAFILE_OUTPUT) {
-                    this.dumpWriter = new DataFileArchiveWriter("output");
+                    this.dumpWriter = new DataFileArchiveWriter(outputName);
                 }
                 else {
                     if (MODE_STATISTICAL_OUTPUT) {
-                        this.dumpWriter = new TimedSQLArchiveWriter("output", logger);
+                        this.dumpWriter = new TimedSQLArchiveWriter(outputName, logger);
                     }
                     else {
-                        this.dumpWriter = new SQLArchiveWriter("output", logger);
+                        this.dumpWriter = new SQLArchiveWriter(outputName, logger);
                     }
                 }
                 break;
@@ -281,98 +310,50 @@ public class DiffToolThread
      * @throws IllegalStateException
      *             if any input was skipped because of an error
      * @throws RuntimeException
-     *             if a critical error aborted the process
+     *             if a critical error aborted the process, or, with several archive threads, if
+     *             any archive could not be processed; the other archives are processed first
      */
     @Override
     public void run()
+    {
+        try {
+            if (LIMIT_ARCHIVE_THREADS > 1 && !isDatabaseOutput()) {
+                runParallel();
+            }
+            else {
+                if (LIMIT_ARCHIVE_THREADS > 1) {
+                    logger.logMessage(Level.WARN, "The DATABASE output mode uses a single "
+                            + "connection: ignoring LIMIT_ARCHIVE_THREADS = "
+                            + LIMIT_ARCHIVE_THREADS + " and processing the archives sequentially");
+                }
+                runSequential();
+            }
+        }
+        finally {
+            logger.flush();
+        }
+
+        if (failed) {
+            throw new IllegalStateException(
+                    "Input was skipped because of errors, see the DiffTool error log.");
+        }
+    }
+
+    /**
+     * Processes all archives one after another and writes them to the same output.
+     */
+    private void runSequential()
     {
 
         DiffCalculatorInterface diffCalc = null;
         try {
             ArchiveManager archives = new ArchiveManager();
-            ArticleReaderInterface articleReader;
-            ArchiveDescription description = null;
-            Task<Revision> task;
+            ArchiveDescription description;
 
-            if (MODE_STATISTICAL_OUTPUT) {
-                diffCalc = new TimedDiffCalculator(new TaskTransmitter());
-            }
-            else {
-                diffCalc = new DiffCalculator(new TaskTransmitter());
-            }
+            diffCalc = createDiffCalculator(OUTPUT_NAME);
 
-            long start, time;
-
-            while (archives.hasArchive()) {
-
-                // Retrieve Archive
-                try {
-                    description = archives.getArchive();
-
-                    // initialize filter
-                    ArticleFilter nameFilter = new ArticleFilter();
-
-                    articleReader = InputFactory.getTaskReader(description, nameFilter);
-                    ArticleConsumerLogMessages.logArchiveRetrieved(logger, description);
-
-                    // Exception while accessing the archive
-                }
-                catch (ArticleReaderException e) {
-
-                    articleReader = null;
-                    ArticleConsumerLogMessages.logExceptionRetrieveArchive(logger, description, e);
-                    failed = true;
-                }
-
-                // Process Archive
-                while (articleReader != null) {
-                    try {
-                        if (articleReader.hasNext()) {
-
-                            start = System.currentTimeMillis();
-                            // read the next article (may be null if filtered)
-                            task = articleReader.next();
-                            time = System.currentTimeMillis() - start;
-
-                            // task will be null if the name filter removed that
-                            // article
-                            if (task == null) {
-                                continue;
-                            }
-
-                            ArticleConsumerLogMessages.logArticleRead(logger, task, time,
-                                    articleReader.getBytePosition());
-
-                            start = System.currentTimeMillis();
-                            // calculate the diff for this article version
-                            diffCalc.process(task);
-                            time = System.currentTimeMillis() - start;
-
-                            DiffConsumerLogMessages.logArticleProcessed(logger, task, time);
-
-                        }
-                        else {
-                            ArticleConsumerLogMessages.logNoMoreArticles(logger, description);
-                            articleReader = null;
-                        }
-
-                        // Reset current article
-                    }
-                    catch (ArticleReaderException e) {
-
-                        ArticleConsumerLogMessages.logTaskReaderException(logger, e);
-                        articleReader.resetTaskCompleted();
-                        failed = true;
-
-                    }
-                    catch (DiffException e) {
-
-                        DiffConsumerLogMessages.logDiffException(logger, e);
-                        articleReader.resetTaskCompleted();
-                        diffCalc.reset();
-                        failed = true;
-                    }
-                }
+            while ((description = archives.getArchive()) != null) {
+                processArchive(description, diffCalc);
             }
             diffCalc.closeTransmitter();
 
@@ -393,13 +374,192 @@ public class DiffToolThread
             }
             throw new RuntimeException(e);
         }
-        finally {
-            logger.flush();
+    }
+
+    /**
+     * Processes the archives on {@link #LIMIT_ARCHIVE_THREADS} worker threads. Every archive gets
+     * its own diff calculator and writer, and its own output files named after the archive, so
+     * the workers share no mutable state and the output does not depend on the scheduling.
+     */
+    private void runParallel()
+    {
+        Map<ArchiveJob, Throwable> failures;
+        int archiveCount;
+        try {
+            List<ArchiveDescription> archives = new ArrayList<>();
+            ArchiveManager manager = new ArchiveManager();
+            ArchiveDescription description;
+            while ((description = manager.getArchive()) != null) {
+                archives.add(description);
+            }
+
+            List<ArchiveJob> jobs = ArchiveScheduler.plan(archives, OUTPUT_NAME + "_");
+            archiveCount = jobs.size();
+            logger.logMessage(Level.INFO, "Processing " + archiveCount + " archives on "
+                    + Math.min(LIMIT_ARCHIVE_THREADS, Math.max(1, archiveCount)) + " threads");
+
+            failures = ArchiveScheduler.run(jobs, LIMIT_ARCHIVE_THREADS, this::processJob);
+
+            ArticleConsumerLogMessages.logNoMoreArchives(logger);
+        }
+        catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            DiffToolLogMessages.logException(logger, e);
+            throw new RuntimeException(e);
+        }
+        catch (Exception e) {
+            DiffToolLogMessages.logException(logger, e);
+            throw new RuntimeException(e);
         }
 
-        if (failed) {
-            throw new IllegalStateException(
-                    "Input was skipped because of errors, see the DiffTool error log.");
+        // the failures have already been logged by the workers
+        if (!failures.isEmpty()) {
+            RuntimeException e = new RuntimeException(failures.size() + " of " + archiveCount
+                    + " archives could not be processed: " + failures.keySet().stream()
+                            .map(job -> job.archive().getPath()).toList());
+            failures.values().forEach(e::addSuppressed);
+            throw e;
+        }
+    }
+
+    /**
+     * Processes one archive with its own diff calculator and output writer.
+     *
+     * @param job
+     *            the archive and its output name
+     * @throws Exception
+     *             if a critical error occurred; the output written so far is closed
+     */
+    private void processJob(final ArchiveJob job) throws Exception
+    {
+        DiffCalculatorInterface diffCalc = createDiffCalculator(job.outputName());
+        try {
+            processArchive(job.archive(), diffCalc);
+        }
+        catch (Exception e) {
+            DiffToolLogMessages.logException(logger, e);
+            try {
+                diffCalc.closeTransmitter();
+            }
+            catch (Exception ce) {
+                e.addSuppressed(ce);
+            }
+            throw e;
+        }
+        diffCalc.closeTransmitter();
+    }
+
+    /**
+     * @return whether the output is written directly to a database
+     */
+    private boolean isDatabaseOutput()
+    {
+        try {
+            return cconfig.getConfigParameter(ConfigurationKeys.MODE_OUTPUT) == OutputType.DATABASE;
+        }
+        catch (ConfigurationException e) {
+            // reported by the TaskTransmitter when the output is created
+            return false;
+        }
+    }
+
+    /**
+     * Creates a diff calculator that writes to a new output.
+     *
+     * @param outputName
+     *            prefix of the output files
+     * @return the diff calculator
+     */
+    private DiffCalculatorInterface createDiffCalculator(final String outputName)
+        throws ConfigurationException, IOException, LoggingException
+    {
+        if (MODE_STATISTICAL_OUTPUT) {
+            return new TimedDiffCalculator(new TaskTransmitter(outputName));
+        }
+        return new DiffCalculator(new TaskTransmitter(outputName));
+    }
+
+    /**
+     * Reads all articles of one archive and passes them to the diff calculator.
+     *
+     * @param description
+     *            the archive
+     * @param diffCalc
+     *            the diff calculator
+     */
+    private void processArchive(final ArchiveDescription description,
+            final DiffCalculatorInterface diffCalc)
+        throws Exception
+    {
+        ArticleReaderInterface articleReader;
+        Task<Revision> task;
+        long start, time;
+
+        // Retrieve Archive
+        try {
+            // initialize filter
+            ArticleFilter nameFilter = new ArticleFilter();
+
+            articleReader = InputFactory.getTaskReader(description, nameFilter);
+            ArticleConsumerLogMessages.logArchiveRetrieved(logger, description);
+
+            // Exception while accessing the archive
+        }
+        catch (ArticleReaderException e) {
+
+            articleReader = null;
+            ArticleConsumerLogMessages.logExceptionRetrieveArchive(logger, description, e);
+            failed = true;
+        }
+
+        // Process Archive
+        while (articleReader != null) {
+            try {
+                if (articleReader.hasNext()) {
+
+                    start = System.currentTimeMillis();
+                    // read the next article (may be null if filtered)
+                    task = articleReader.next();
+                    time = System.currentTimeMillis() - start;
+
+                    // task will be null if the name filter removed that
+                    // article
+                    if (task == null) {
+                        continue;
+                    }
+
+                    ArticleConsumerLogMessages.logArticleRead(logger, task, time,
+                            articleReader.getBytePosition());
+
+                    start = System.currentTimeMillis();
+                    // calculate the diff for this article version
+                    diffCalc.process(task);
+                    time = System.currentTimeMillis() - start;
+
+                    DiffConsumerLogMessages.logArticleProcessed(logger, task, time);
+
+                }
+                else {
+                    ArticleConsumerLogMessages.logNoMoreArticles(logger, description);
+                    articleReader = null;
+                }
+
+                // Reset current article
+            }
+            catch (ArticleReaderException e) {
+
+                ArticleConsumerLogMessages.logTaskReaderException(logger, e);
+                articleReader.resetTaskCompleted();
+                failed = true;
+
+            }
+            catch (DiffException e) {
+
+                DiffConsumerLogMessages.logDiffException(logger, e);
+                articleReader.resetTaskCompleted();
+                diffCalc.reset();
+                failed = true;
+            }
         }
     }
 }
