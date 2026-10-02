@@ -61,6 +61,26 @@ classes is in [dkpro-jwpl-tutorial/README.md](../dkpro-jwpl-tutorial/README.md).
 
 ```
 
+### Binary revision storage
+
+With the `DATABASE` output mode, the DiffTool stores each diff base 64 encoded
+in the `MEDIUMTEXT` column `Revision`, the same way as the SQL file output. The
+optional setting
+
+```xml
+	<output>
+		<OUTPUT_MODE>DATABASE</OUTPUT_MODE>
+		...
+		<MODE_BINARY_OUTPUT_ENABLED>true</MODE_BINARY_OUTPUT_ENABLED>
+	</output>
+```
+
+creates the column as `MEDIUMBLOB` instead and stores the diffs binary through
+a prepared statement, which saves the base 64 overhead of about a quarter of
+the column size. The default is `false`. The setting has no effect on the SQL
+file and archive output. The RevisionApi and the iterators read both kinds of
+tables, but a binary table must not be filled with the statements of SQL files.
+
 ## Index Generator Config
 
 ```

@@ -20,6 +20,7 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.writer;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -42,6 +43,12 @@ import org.dkpro.jwpl.revisionmachine.difftool.data.tasks.content.Diff;
 
 /**
  * This class writes the output to a database.
+ * <p>
+ * By default, the diffs are stored base 64 encoded in a {@code MEDIUMTEXT} column, using the same
+ * statements as the SQL file output. If {@link ConfigurationKeys#MODE_BINARY_OUTPUT_ENABLED} is
+ * set, the revisions table is created with a {@code MEDIUMBLOB} column instead, and the diffs are
+ * stored binary through a prepared statement. This saves the base 64 overhead, about a quarter of
+ * the size of the column. The readers of the RevisionMachine support both kinds of tables.
  */
 public class SQLDatabaseWriter
     implements WriterInterface
@@ -51,6 +58,17 @@ public class SQLDatabaseWriter
      * Reference to the database connection
      */
     private Connection connection;
+
+    /**
+     * Flag, which indicates whether the diffs are stored binary ({@code MEDIUMBLOB}) instead of
+     * base 64 encoded ({@code MEDIUMTEXT})
+     */
+    private final boolean binaryOutput;
+
+    /**
+     * Statement which inserts the rows in the binary mode, {@code null} in the textual mode
+     */
+    private PreparedStatement insertStatement;
 
     /**
      * Reference to the logger
@@ -83,6 +101,8 @@ public class SQLDatabaseWriter
         String user = (String) config.getConfigParameter(ConfigurationKeys.SQL_USERNAME);
         String password = (String) config.getConfigParameter(ConfigurationKeys.SQL_PASSWORD);
         String sTable = (String) config.getConfigParameter(ConfigurationKeys.SQL_DATABASE);
+        this.binaryOutput = (Boolean) config
+                .getConfigParameter(ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED);
 
         try {
             String driverDB = "com.mysql.jdbc.Driver";
@@ -100,6 +120,9 @@ public class SQLDatabaseWriter
         try {
             init();
             writeHeader();
+            if (binaryOutput) {
+                this.insertStatement = connection.prepareStatement(SQLEncoder.INSERT_REVISION);
+            }
         }
         catch (SQLException e) {
             ConfigurationException wrapped = new ConfigurationException(e);
@@ -156,7 +179,15 @@ public class SQLDatabaseWriter
      */
     private void closeConnection() throws SQLException
     {
-        this.connection.close();
+        try {
+            if (this.insertStatement != null) {
+                this.insertStatement.close();
+                this.insertStatement = null;
+            }
+        }
+        finally {
+            this.connection.close();
+        }
         this.connection = null;
     }
 
@@ -189,6 +220,11 @@ public class SQLDatabaseWriter
     public void process(final Task<Diff> task)
         throws ConfigurationException, IOException, SQLConsumerException
     {
+
+        if (binaryOutput) {
+            processBinary(task);
+            return;
+        }
 
         int i = -1;
         SQLEncoding[] queries = null;
@@ -228,6 +264,39 @@ public class SQLDatabaseWriter
     }
 
     /**
+     * Stores the given DiffTask with binary encoded diffs.
+     *
+     * @param task
+     *            DiffTask
+     * @throws ConfigurationException
+     *             if problems occurred while initializing the components
+     * @throws IOException
+     *             if the character encoding of the revision text is not supported
+     * @throws SQLConsumerException
+     *             if problems occurred while encoding the task or writing it to the database
+     */
+    private void processBinary(final Task<Diff> task)
+        throws ConfigurationException, IOException, SQLConsumerException
+    {
+        try {
+            sqlEncoder.binaryTask(task, insertStatement);
+        }
+        catch (SQLException e) {
+            throw ErrorFactory.createSQLConsumerException(
+                    ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION,
+                    "Binary insert of the revisions of " + task.getHeader().getArticleName(), e);
+        }
+        catch (DecodingException e) {
+            throw ErrorFactory.createSQLConsumerException(
+                    ErrorKeys.DIFFTOOL_SQLCONSUMER_DATABASEWRITER_EXCEPTION, e);
+        }
+        catch (EncodingException e) {
+            throw ErrorFactory.createSQLConsumerException(
+                    ErrorKeys.DIFFTOOL_SQLCONSUMER_FILEWRITER_EXCEPTION, e);
+        }
+    }
+
+    /**
      * Retrieves the encoded SQL orders and executes them.
      *
      * @throws SQLException
@@ -236,7 +305,8 @@ public class SQLDatabaseWriter
     private void writeHeader() throws SQLException
     {
 
-        String[] revTableHeaderQueries = sqlEncoder.getTable();
+        String[] revTableHeaderQueries = binaryOutput ? sqlEncoder.getBinaryTable()
+                : sqlEncoder.getTable();
 
         // commit revision table header
         for (String revTableHeaderQuery : revTableHeaderQueries) {

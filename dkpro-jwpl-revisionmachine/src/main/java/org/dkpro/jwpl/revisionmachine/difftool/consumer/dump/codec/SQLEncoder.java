@@ -19,6 +19,9 @@ package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
@@ -33,6 +36,7 @@ import org.dkpro.jwpl.revisionmachine.common.util.FilePaths;
 import org.dkpro.jwpl.revisionmachine.common.util.WikipediaXMLWriter;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationKeys;
 import org.dkpro.jwpl.revisionmachine.difftool.config.ConfigurationManager;
+import org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.SQLEscape;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionCodecData;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionDecoder;
 import org.dkpro.jwpl.revisionmachine.difftool.data.codec.RevisionEncoder;
@@ -60,6 +64,21 @@ public class SQLEncoder
      * issue it once their load is done.
      */
     public static final String ENABLE_KEYS = "ALTER TABLE revisions ENABLE KEYS;";
+
+    /**
+     * Parameterised statement which inserts one row into the revisions table. It is the statement
+     * that {@link #binaryTask(Task, PreparedStatement)} binds its rows to.
+     */
+    public static final String INSERT_REVISION = "INSERT INTO revisions (FullRevisionID,"
+            + " RevisionCounter, RevisionID, ArticleID, Timestamp, Revision, Comment, Minor,"
+            + " ContributorName, ContributorId, ContributorIsRegistered, Namespace)"
+            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+    /**
+     * Estimated number of bytes a row of {@link #INSERT_REVISION} needs besides the revision, the
+     * comment and the contributor name, used to keep a batch below the maximum packet size.
+     */
+    private static final int ROW_OVERHEAD = 128;
 
     /**
      * UNCOMPRESSED Statement for tables containing binary encoded diff information
@@ -171,7 +190,7 @@ public class SQLEncoder
                 + "FullRevisionID INTEGER UNSIGNED NOT NULL, "
                 + "RevisionCounter INTEGER UNSIGNED NOT NULL, "
                 + "RevisionID INTEGER UNSIGNED NOT NULL, " + "ArticleID INTEGER UNSIGNED NOT NULL, "
-                + "Timestamp BIGINT NOT NULL, " + "Revision MEDIUMBLOB NOT NULL,"
+                + "Timestamp BIGINT NOT NULL, " + "Revision MEDIUMBLOB NOT NULL, "
                 + "Comment MEDIUMTEXT, " + "Minor TINYINT NOT NULL, "
                 + "ContributorName TEXT NOT NULL, " + "ContributorId INTEGER UNSIGNED, "
                 + "ContributorIsRegistered TINYINT NOT NULL, " + "Namespace INTEGER, "
@@ -200,13 +219,19 @@ public class SQLEncoder
         return encoding;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * The comment and the contributor name are unescaped before they are bound, as they come
+     * SQL-escaped from the XML reader for the textual encoding. The values stored this way are the
+     * same as the ones stored by the statements of {@link #encodeTask(Task)}.
+     */
     @Override
-    public SQLEncoding[] binaryTask(final Task<Diff> task)
+    public long binaryTask(final Task<Diff> task, final PreparedStatement statement)
         throws ConfigurationException, UnsupportedEncodingException, DecodingException,
-        EncodingException, SQLConsumerException
+        EncodingException, SQLConsumerException, SQLException
     {
 
-        // this.task = task;
         if (task.getTaskType() == TaskTypes.TASK_FULL
                 || task.getTaskType() == TaskTypes.TASK_PARTIAL_FIRST) {
             this.lastFullRevID = -1;
@@ -214,72 +239,76 @@ public class SQLEncoder
 
         int articleId = task.getHeader().getArticleId();
         Integer namespace = task.getHeader().getNamespace();
-        Diff diff;
 
-        ArrayList<SQLEncoding> list = new ArrayList<>();
-
-        SQLEncoding revisionsEncoding = new SQLEncoding();
-        SQLEncoding usersEncoding = new SQLEncoding();
-        revisionsEncoding.append("INSERT INTO revisions VALUES");
-        usersEncoding.append("INSERT INTO users VALUES");
-
-        byte[] tempBinaryData;
-        String tempData;
+        long taskSize = 0;
+        long batchSize = 0;
+        boolean pending = false;
 
         int size = task.size();
         for (int i = 0; i < size; i++) {
-            diff = task.get(i);
+            Diff diff = task.get(i);
 
-            /*
-             * Process revision table
-             */
             if (diff.isFullRevision()) {
                 this.lastFullRevID = diff.getRevisionID();
             }
 
-            // prepare values that might be null
-            // because we don't want quotes if they are null
-            String comm = diff.getComment();
-            String comment = comm == null ? null : "'" + comm + "'";
+            byte[] revision = binaryDiff(task, diff);
+            String comment = SQLEscape.unescape(diff.getComment());
+            // the textual encoding writes a missing name as 'null' into the NOT NULL column
+            String contributorName = String.valueOf(SQLEscape.unescape(diff.getContributorName()));
 
-            Integer cId = diff.getContributorId();
-            String contributorId = cId == null ? null : cId.toString();
+            long rowSize = ROW_OVERHEAD + revision.length + contributorName.length()
+                    + (comment == null ? 0 : comment.length());
 
-            // save the query and binary data temporary
-            tempData = "(null, " + this.lastFullRevID + "," + diff.getRevisionCounter() + ","
-                    + diff.getRevisionID() + "," + articleId + "," + diff.getTimeStamp().getTime()
-                    + ",?," + comment + "," + (diff.isMinor() ? "1" : "0") + "," + contributorId
-                    + "," + (diff.getContributorIsRegistered() ? "1" : "0") + ","
-                    + namespace + ")";
-            tempBinaryData = binaryDiff(task, diff);
-
-            // if the limit would be reached start a new encoding
-            if ((revisionsEncoding.byteSize() + tempBinaryData.length
-                    + tempData.length() >= LIMIT_SQL_STATEMENT_SIZE) && (i != 0)) {
-                revisionsEncoding.append(";");
-                list.add(revisionsEncoding);
-
-                revisionsEncoding = new SQLEncoding();
-                revisionsEncoding.append("INSERT INTO revisions VALUES");
+            // if the limit would be reached send the pending rows first
+            if (pending && batchSize + rowSize >= LIMIT_SQL_STATEMENT_SIZE) {
+                statement.executeBatch();
+                batchSize = 0;
             }
 
-            if (revisionsEncoding.size() > 0) {
-                revisionsEncoding.append(",");
+            statement.setInt(1, this.lastFullRevID);
+            statement.setInt(2, diff.getRevisionCounter());
+            statement.setInt(3, diff.getRevisionID());
+            statement.setInt(4, articleId);
+            statement.setLong(5, diff.getTimeStamp().getTime());
+            statement.setBytes(6, revision);
+            if (comment == null) {
+                statement.setNull(7, Types.VARCHAR);
             }
-            revisionsEncoding.append(tempData);
-            revisionsEncoding.addBinaryData(tempBinaryData);
+            else {
+                statement.setString(7, comment);
+            }
+            statement.setInt(8, diff.isMinor() ? 1 : 0);
+            statement.setString(9, contributorName);
+            setNullableInt(statement, 10, diff.getContributorId());
+            statement.setInt(11, diff.getContributorIsRegistered() ? 1 : 0);
+            setNullableInt(statement, 12, namespace);
+            statement.addBatch();
 
+            pending = true;
+            batchSize += rowSize;
+            taskSize += rowSize;
         }
 
-        // Add the pending encoding
-        if (revisionsEncoding.size() > 0) {
-            revisionsEncoding.append(";");
-            list.add(revisionsEncoding);
+        if (pending) {
+            statement.executeBatch();
         }
+        return taskSize;
+    }
 
-        // Transform the list into an array
-        SQLEncoding[] queries = new SQLEncoding[list.size()];
-        return list.toArray(queries);
+    /**
+     * Binds an integer that might be {@code null}.
+     */
+    private static void setNullableInt(final PreparedStatement statement, final int index,
+            final Integer value)
+        throws SQLException
+    {
+        if (value == null) {
+            statement.setNull(index, Types.INTEGER);
+        }
+        else {
+            statement.setInt(index, value);
+        }
     }
 
     /**

@@ -131,6 +131,9 @@ public class ConfigurationManager
         else if (configParameter == ConfigurationKeys.MODE_DATAFILE_OUTPUT) {
             return false;
         }
+        else if (configParameter == ConfigurationKeys.MODE_BINARY_OUTPUT_ENABLED) {
+            return false;
+        }
         else {
             throw ErrorFactory.createConfigurationException(
                     ErrorKeys.CONFIGURATION_CONFIGURATIONMANAGER_UNKNOWN_CONFIG_PARAMETER,
