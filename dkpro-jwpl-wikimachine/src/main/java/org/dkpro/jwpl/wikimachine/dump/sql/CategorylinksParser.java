@@ -33,7 +33,10 @@ import org.slf4j.LoggerFactory;
  * MediaWiki 1.43+
  * {@code (cl_from, cl_sortkey, cl_timestamp, cl_sortkey_prefix, cl_type, cl_collation_id, cl_target_id)}
  * are supported. On the normalised layout the target title is resolved through the
- * {@code linktarget} table, which the caller has to supply as a {@link LinkTargetResolver}.
+ * {@code linktarget} table, which the caller has to supply as a {@link LinkTargetResolver}. If
+ * that resolver is a {@link ResolvedLinkTargets}, the target is resolved straight to the page id of
+ * the category, which is exposed through {@link #getResolvedTargetId()}; {@link #getClTo()} is
+ * {@code null} in that case.
  * <p>
  * A fix for Issue #102 has been provided by Google Code user {@code astronautguo}.
  *
@@ -70,9 +73,11 @@ public class CategorylinksParser
     private int clFrom;
     private String clTo;
     private long clTargetId;
+    private int resolvedTargetId = ResolvedLinkTargets.UNRESOLVED;
     private CategoryLinkType clType = CategoryLinkType.UNKNOWN;
 
     private final LinkTargetResolver resolver;
+    private final ResolvedLinkTargets resolvedTargets;
     private final SQLRowReader rowReader;
 
     private Layout layout;
@@ -103,7 +108,8 @@ public class CategorylinksParser
      *
      * @param inputStream A valid {@link InputStream} to read SQL content from.
      * @param resolver    The resolver for {@code cl_target_id} values, or {@code null} if none is
-     *                    available. Mandatory for dumps using the normalised layout.
+     *                    available. Mandatory for dumps using the normalised layout. A
+     *                    {@link ResolvedLinkTargets} resolves targets to page ids instead of titles.
      * @throws IOException Thrown if IO errors occurred or if the layout of the dump is not
      *                     supported.
      */
@@ -111,6 +117,7 @@ public class CategorylinksParser
         throws IOException
     {
         this.resolver = resolver;
+        this.resolvedTargets = resolver instanceof ResolvedLinkTargets resolved ? resolved : null;
         init(inputStream);
         configureLayout();
         rowReader = new SQLRowReader(st, TABLE);
@@ -173,11 +180,40 @@ public class CategorylinksParser
     /**
      * @return Returns the {@code cl_to}, that is, the SQL escaped title of the target category.
      *         On the normalised layout this value is resolved through the {@code linktarget}
-     *         table.
+     *         table. It is {@code null} if targets are resolved to ids by a
+     *         {@link ResolvedLinkTargets}; use {@link #getResolvedTargetId()} then.
      */
     public String getClTo()
     {
         return clTo;
+    }
+
+    /**
+     * @return {@code true} if the dump uses the normalised layout and its targets are resolved to
+     *         page ids by a {@link ResolvedLinkTargets}, so that {@link #getResolvedTargetId()}
+     *         and {@link #isDisambiguationTarget()} apply instead of {@link #getClTo()}.
+     */
+    public boolean hasResolvedTargetIds()
+    {
+        return layout == Layout.NORMALISED && resolvedTargets != null;
+    }
+
+    /**
+     * @return The page id of the category the current row points to, or
+     *         {@link ResolvedLinkTargets#UNRESOLVED} unless {@link #hasResolvedTargetIds()}.
+     */
+    public int getResolvedTargetId()
+    {
+        return resolvedTargetId;
+    }
+
+    /**
+     * @return {@code true} if {@link #hasResolvedTargetIds()} and the current row points to the
+     *         disambiguation category.
+     */
+    public boolean isDisambiguationTarget()
+    {
+        return hasResolvedTargetIds() && resolvedTargets.isDisambiguationTarget(clTargetId);
     }
 
     /**
@@ -207,7 +243,9 @@ public class CategorylinksParser
     }
 
     /**
-     * @return The number of tuples whose target title could be determined.
+     * @return The number of tuples whose target title could be determined. If targets are
+     *         resolved to ids by a {@link ResolvedLinkTargets}, the number of tuples pointing to a
+     *         registered category.
      */
     public long getResolvedCount()
     {
@@ -216,7 +254,8 @@ public class CategorylinksParser
 
     /**
      * @return The number of tuples that were skipped because their {@code cl_target_id} could not
-     *         be resolved.
+     *         be resolved. If targets are resolved to ids by a {@link ResolvedLinkTargets}, this
+     *         includes tuples pointing to categories without a registered category page.
      */
     public long getUnresolvedCount()
     {
@@ -239,7 +278,11 @@ public class CategorylinksParser
                     + "this categorylinks dump. Aborting instead of producing an empty category "
                     + "graph (see issue #491).");
         }
-        if (unresolvedCount > 0) {
+        if (unresolvedCount > 0 && hasResolvedTargetIds()) {
+            LOG.info("{} of {} categorylinks rows did not point to a registered category and were "
+                    + "skipped.", unresolvedCount, rowCount);
+        }
+        else if (unresolvedCount > 0) {
             LOG.warn("{} of {} categorylinks rows referenced a link target that was not loaded and "
                     + "were skipped.", unresolvedCount, rowCount);
         }
@@ -272,7 +315,11 @@ public class CategorylinksParser
                     : CategoryLinkType.fromDumpValue(rowReader.requireString(CL_TYPE, idxType));
 
             final boolean usable;
-            if (layout == Layout.NORMALISED) {
+            if (hasResolvedTargetIds()) {
+                clTargetId = rowReader.requireLong(CL_TARGET_ID, idxTargetId);
+                usable = resolveToId();
+            }
+            else if (layout == Layout.NORMALISED) {
                 clTargetId = rowReader.requireLong(CL_TARGET_ID, idxTargetId);
                 final String title = resolver.getTitle(clTargetId);
                 if (title == null) {
@@ -300,6 +347,20 @@ public class CategorylinksParser
                 return true;
             }
         }
+    }
+
+    private boolean resolveToId()
+    {
+        clTo = null;
+        resolvedTargetId = resolvedTargets.getCategoryId(clTargetId);
+        if (resolvedTargetId == ResolvedLinkTargets.UNRESOLVED) {
+            unresolvedCount++;
+            LOG.debug("Skipping categorylinks row: cl_target_id {} does not denote a registered "
+                    + "category.", clTargetId);
+            return false;
+        }
+        resolvedCount++;
+        return true;
     }
 
     private void consumeRowSeparator() throws IOException
