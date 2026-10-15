@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.invoke.MethodHandles;
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -54,34 +55,59 @@ public class WikipediaTemplateInfoDumpWriter
 
     private final boolean tableExists;
 
+    /**
+     * The maximum size in bytes of a single statement of the dump, see the MySQL setting
+     * {@code max_allowed_packet}.
+     */
+    private final long maxAllowedPacket;
+
+    /**
+     * Creates a dump writer that does not limit the size of a single statement.
+     */
     public WikipediaTemplateInfoDumpWriter(String outputPath, String charset,
             Map<String, Integer> tplNameToTplId, boolean tableExists)
+    {
+        this(outputPath, charset, tplNameToTplId, tableExists, Long.MAX_VALUE);
+    }
+
+    /**
+     * Creates a dump writer that splits the rows of a template over several statements whenever a
+     * single statement would exceed {@code maxAllowedPacket} bytes.
+     */
+    public WikipediaTemplateInfoDumpWriter(String outputPath, String charset,
+            Map<String, Integer> tplNameToTplId, boolean tableExists, long maxAllowedPacket)
     {
         this.tplNameToTplId = tplNameToTplId;
         this.outputPath = outputPath;
         this.charset = charset;
         this.tableExists = tableExists;
+        this.maxAllowedPacket = maxAllowedPacket;
     }
 
     /**
-     * Generate SQL statement for data defined in {@code dataSourceToUse} and for table in
-     * {@code tableToWrite}
+     * Write SQL statements for data defined in {@code dataSourceToUse} and for table in
+     * {@code tableToWrite}. The ids of a template are split over as many {@code REPLACE}
+     * statements as needed to keep each of them within {@link #maxAllowedPacket} encoded bytes.
      *
+     * @param writer
+     *            writer to write the statements to
      * @param dataSourceToUse
-     *            source to use for string generation
+     *            source to use for statement generation, mapping a template name to its sorted
+     *            ids
      * @param tableToWrite
      *            table to use to store data
-     * @return generated SQL string
      */
-    private String generateSQLStatementForDataInTable(Map<String, Set<Integer>> dataSourceToUse,
-            String tableToWrite)
+    private void writeSQLStatementsForDataInTable(Writer writer,
+            Map<String, int[]> dataSourceToUse, String tableToWrite)
+        throws IOException
     {
-        StringBuffer output = new StringBuffer();
-        for (Entry<String, Set<Integer>> e : dataSourceToUse.entrySet()) {
+        String prefix = "REPLACE INTO " + tableToWrite + " VALUES ";
+        long prefixBytes = encodedLength(prefix);
+        for (Entry<String, int[]> e : dataSourceToUse.entrySet()) {
             String curTemplateName = e.getKey();
-            Set<Integer> curPageIds = e.getValue();
+            int[] curPageIds = e.getValue();
 
-            if (!curTemplateName.isEmpty() && !curPageIds.isEmpty()) {
+            if (!curTemplateName.isEmpty() && curPageIds.length > 0) {
                 String id;
                 if (tplNameToTplId.containsKey(curTemplateName)) {
                     // if template name has an id in the tplname-id map
@@ -89,9 +115,9 @@ public class WikipediaTemplateInfoDumpWriter
                 }
                 else if (insertedTemplateNames.add(curTemplateName)) {
                     // if template name does not have an id in the tplname-id map
-                    output.append("INSERT INTO " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                    writer.write("INSERT INTO " + GeneratorConstants.TABLE_TPLID_TPLNAME
                             + " (templateName) VALUES ('" + curTemplateName + "');");
-                    output.append("\r\n");
+                    writer.write("\r\n");
                     id = "LAST_INSERT_ID()";
                 }
                 else {
@@ -102,56 +128,65 @@ public class WikipediaTemplateInfoDumpWriter
                             + " WHERE templateName = '" + curTemplateName + "' LIMIT 1)";
                 }
 
-                StringBuilder curValues = new StringBuilder();
-                for (Integer pId : curPageIds) {
-                    if (!curValues.isEmpty()) {
-                        curValues.append(",");
+                // a tuple is "(" + id + ", " + pId + ")"; the id is the only part that may hold
+                // characters outside ASCII, so only its length has to be measured in bytes
+                long idTupleBytes = encodedLength(id) + 4;
+                long statementBytes = 0;
+                for (int pId : curPageIds) {
+                    String curPageId = Integer.toString(pId);
+                    long tupleBytes = idTupleBytes + curPageId.length();
+                    if (statementBytes == 0) {
+                        writer.write(prefix);
+                        statementBytes = prefixBytes + tupleBytes;
                     }
-                    curValues.append("(" + id + ", ");
-                    curValues.append(pId);
-                    curValues.append(")");
+                    else if (statementBytes + 1 + tupleBytes + 1 > maxAllowedPacket) {
+                        // the tuple (plus separator and terminating ';') would exceed the packet
+                        writer.write(";\r\n");
+                        writer.write(prefix);
+                        statementBytes = prefixBytes + tupleBytes;
+                    }
+                    else {
+                        writer.write(",");
+                        statementBytes += 1 + tupleBytes;
+                    }
+                    writer.write("(" + id + ", ");
+                    writer.write(curPageId);
+                    writer.write(")");
                 }
-                output.append("REPLACE INTO " + tableToWrite + " VALUES " + curValues + ";");
-                output.append("\r\n");
-
+                writer.write(";\r\n");
             }
         }
-
-        return output.toString();
     }
 
     /**
-     * Generate sql statement for table template id -> page id
+     * Writes the SQL statements for table template id -&gt; page id
      *
+     * @param writer
+     *            writer to write the statements to
      * @param tableExists
      *            if table does not exist create index for this table
      * @param dataSourceToUse
      *            data source to use for sql statement generation
-     * @return sql statement string
      */
-    private String generatePageSQLStatement(boolean tableExists,
-            Map<String, Set<Integer>> dataSourceToUse)
+    private void writePageSQLStatement(Writer writer, boolean tableExists,
+            Map<String, int[]> dataSourceToUse)
+        throws IOException
     {
-        StringBuffer output = new StringBuffer();
-
         // Statement creates table for Template Id -> Page Id
-        output.append("CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_PAGEID
+        writer.write("CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_PAGEID
                 + " (templateId INTEGER UNSIGNED NOT NULL,"
                 + "pageId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, pageId));\r\n");
 
         // Statement for data into templateId -> pageId
-        output.append(this.generateSQLStatementForDataInTable(dataSourceToUse,
-                GeneratorConstants.TABLE_TPLID_PAGEID));
+        writeSQLStatementsForDataInTable(writer, dataSourceToUse,
+                GeneratorConstants.TABLE_TPLID_PAGEID);
 
         if (!tableExists) {
             // Create index statement if table does not exist
-            output.append("CREATE INDEX pageIdx ON " + GeneratorConstants.TABLE_TPLID_PAGEID
+            writer.write("CREATE INDEX pageIdx ON " + GeneratorConstants.TABLE_TPLID_PAGEID
                     + "(pageId);");
-            output.append("\r\n");
+            writer.write("\r\n");
         }
-
-        return output.toString();
-
     }
 
     /**
@@ -182,36 +217,42 @@ public class WikipediaTemplateInfoDumpWriter
     }
 
     /**
-     * Generate SQL statement for table template id -> revision id
+     * Writes the SQL statements for table template id -&gt; revision id
      *
+     * @param writer
+     *            writer to write the statements to
      * @param tableExists
      *            if table does not exist create index for this table
      * @param dataSourceToUse
      *            data source to use for SQL statement generation
-     * @return The SQL statement string
      */
-    private String generateRevisionSQLStatement(boolean tableExists,
-            Map<String, Set<Integer>> dataSourceToUse)
+    private void writeRevisionSQLStatement(Writer writer, boolean tableExists,
+            Map<String, int[]> dataSourceToUse)
+        throws IOException
     {
-        StringBuffer output = new StringBuffer();
-
         // Statement creates table for Template Id -> Revision Id
-        output.append("CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_REVISIONID
+        writer.write("CREATE TABLE IF NOT EXISTS " + GeneratorConstants.TABLE_TPLID_REVISIONID
                 + " (templateId INTEGER UNSIGNED NOT NULL,"
                 + "revisionId INTEGER UNSIGNED NOT NULL, UNIQUE(templateId, revisionId));\r\n");
 
         // Statement for data into templateId -> revisionId
-        output.append(this.generateSQLStatementForDataInTable(dataSourceToUse,
-                GeneratorConstants.TABLE_TPLID_REVISIONID));
+        writeSQLStatementsForDataInTable(writer, dataSourceToUse,
+                GeneratorConstants.TABLE_TPLID_REVISIONID);
 
         if (!tableExists) {
             // Create index statement if table does not exist
-            output.append("CREATE INDEX revisionIdx ON " + GeneratorConstants.TABLE_TPLID_REVISIONID
+            writer.write("CREATE INDEX revisionIdx ON " + GeneratorConstants.TABLE_TPLID_REVISIONID
                     + "(revisionID);");
-            output.append("\r\n");
+            writer.write("\r\n");
         }
+    }
 
-        return output.toString();
+    /**
+     * @return the length of {@code s} in bytes when encoded with the charset of the dump
+     */
+    private long encodedLength(String s)
+    {
+        return s.getBytes(Charset.forName(charset)).length;
     }
 
     /**
@@ -228,18 +269,14 @@ public class WikipediaTemplateInfoDumpWriter
     {
         try (Writer writer = new BufferedWriter(new OutputStreamWriter(
                 new BufferedOutputStream(new FileOutputStream(outputPath)), charset))) {
-            StringBuilder dataToDump = new StringBuilder();
-            dataToDump.append(generateTemplateIdSQLStatement(this.tableExists));
+            writer.write(generateTemplateIdSQLStatement(this.tableExists));
 
             if (mode.active_for_pages) {
-                dataToDump.append(
-                        generatePageSQLStatement(pageTableExists, mode.templateNameToPageId));
+                writePageSQLStatement(writer, pageTableExists, mode.templateNameToPageId);
             }
             if (mode.active_for_revisions) {
-                dataToDump.append(
-                        generateRevisionSQLStatement(revTableExists, mode.templateNameToRevId));
+                writeRevisionSQLStatement(writer, revTableExists, mode.templateNameToRevId);
             }
-            writer.write(dataToDump.toString());
         }
         catch (IOException e) {
             logger.error("Error writing SQL file: {}", e.getMessage(), e);
