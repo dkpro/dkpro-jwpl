@@ -60,10 +60,13 @@
 
 	<!-- single variant
 		org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor
-		TODO: maybe a multi-threaded dump version processor will be added
 		
 		step2Log, step2GC and step2Flush are settings used to find/ to aboid memory leaks
 		use property's value="0" to disable it 
+
+		versionThreads is the number of worker threads that process the page and link tables
+		for several dump versions (TimeMachine snapshots) concurrently; "0" (default) uses one
+		per available processor, "1" processes all versions on the thread reading the dump
 	-->
 	<bean id="dumpVersionProcessor" class="org.dkpro.jwpl.wikimachine.domain.DumpVersionProcessor" >
 		<constructor-arg ref="logger" />
