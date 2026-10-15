@@ -1,0 +1,75 @@
+FIRST_PARAGRAPH: 0
+CATEGORIES:
+  ContentElement "Category:People - Doe, Jane"
+    LINK UNKNOWN "Category:People" (0, 15) src=(1401, 1420) "Category:People" []
+    LINK UNKNOWN "Category:Fictional_people" (18, 27) src=(1421, 1460) "Doe, Jane" []
+LANGUAGES:
+  ContentElement "de:Jane Doe - fr:Jane Doe"
+    LINK UNKNOWN "de:Jane_Doe" (0, 11) src=(1385, 1400) "de:Jane Doe" []
+    LINK UNKNOWN "fr:Jane_Doe" (14, 25) src=(1461, 1476) "fr:Jane Doe" []
+SectionContent level=2 src=(144, 741)
+  TITLE:
+    null
+  Paragraph src=(144, 463) "
+Jane Doe (born ) is a fictional person who lives in Springfield.<ref></ref>
+She is known for Foo, bars and Baz. See the site and http://example.com/plain for details."
+    BOLD: (1, 9) src=(144, 158)
+    ITALIC: (33, 39) src=(217, 227)
+    TAG: (65, 70) src=(257, 262) (65, 71) src=(310, 316)
+    LINK INTERNAL "fiction" (23, 32) src=(195, 216) "fictional" []
+    LINK INTERNAL "Springfield" (53, 64) src=(241, 256) "Springfield" []
+    LINK INTERNAL "Foo" (94, 97) src=(334, 341) "Foo" []
+    LINK INTERNAL "Bar" (99, 103) src=(343, 355) "bars" []
+    LINK INTERNAL "Baz" (108, 111) src=(360, -1) "Baz" []
+    LINK EXTERNAL "http://example.org" (117, 125) src=(392, 421) "the site" []
+    LINK EXTERNAL "http://example.com/plain" (130, 154) src=(426, 450) "http://example.com/plain" []
+  Paragraph src=(465, 741) "A portrait with a Link in caption and italics
+caption after the link
+Only link
+first line second line with Second line link"
+    ITALIC: (38, 45) src=(539, 550)
+    LINK IMAGE "Image:Portrait.png" (0, 45) src=(465, 552) "A portrait with a Link in caption and italics" [thumb, left, A portrait with a Link in caption and ''italics'']
+    LINK INTERNAL "Link_in_caption" (18, 33) src=(515, 534) "Link in caption" []
+    LINK IMAGE "File:Params.jpg" (46, 68) src=(553, 623) "caption after the link" [Link in parameter, thumb, caption after the link]
+    LINK INTERNAL "Link_in_parameter" (46, 46) src=(571, 592) "Link_in_parameter" []
+    LINK IMAGE "File:Nested.jpg" (69, 78) src=(624, 663) "Only link" [thumb, Only link]
+    LINK INTERNAL "Only_link" (69, 78) src=(648, 661) "Only link" []
+    LINK IMAGE "File:Multiline.jpg" (79, 123) src=(664, 741) "first line second line with Second line link" [thumb, first line
+second line with Second line link]
+    LINK INTERNAL "Second_line_link" (107, 123) src=(719, 739) "Second line link" []
+SectionContainer level=2 src=(743, -1)
+  TITLE:
+    ContentElement src=(746, 752) "Career"
+  SectionContent level=3 src=(743, 1114)
+    TITLE:
+      null
+    Paragraph src=(812, 1114) "
+In  she joined Acme. Later she moved to Globex and Initech.
+
+
+A paragraph with {} and {} triple braces and Trailing link."
+      LINK INTERNAL "Acme_Corporation" (16, 20) src=(812, 837) "Acme" []
+      LINK INTERNAL "Globex" (41, 47) src=(881, 891) "Globex" []
+      LINK INTERNAL "Initech" (52, 59) src=(896, 907) "Initech" []
+      LINK INTERNAL "Trailing_link" (108, 121) src=(1096, 1113) "Trailing link" []
+  SectionContent level=3 src=(1116, 1332)
+    TITLE:
+      ContentElement src=(1120, 1126) "Awards"
+    ContentElement src=(1120, 1126) "Awards"
+    Paragraph src=(1131, 1332) "Bold italic text with Award A, Award B, C and the category.
+Unclosed link [[Broken and unclosed template {{broken
+Next line Recovered."
+      BOLD: (0, 11) src=(1131, 1150)
+      ITALIC: (0, 11) src=(1134, 1152)
+      LINK INTERNAL "Award_A" (22, 29) src=(1163, 1174) "Award A" []
+      LINK INTERNAL "Award_B" (31, 38) src=(1176, -1) "Award B" []
+      LINK INTERNAL "Award_C" (40, 41) src=(1201, 1214) "C" []
+      LINK UNKNOWN ":Category:Awards" (46, 58) src=(1219, 1252) "the category" []
+      LINK INTERNAL "Recovered" (124, 133) src=(1318, 1331) "Recovered" []
+SectionContent level=2 src=(1334, 1384)
+  TITLE:
+    ContentElement src=(1337, 1345) "See also"
+  ContentElement src=(1337, 1345) "See also"
+  Paragraph src=(1349, 1384) "Wiktionary:Doe Special link"
+    LINK UNKNOWN "Wiktionary:Doe" (0, 14) src=(1349, 1367) "Wiktionary:Doe" []
+    LINK INTERNAL "Special_link" (15, 27) src=(1368, 1384) "Special link" []

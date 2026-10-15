@@ -381,6 +381,8 @@ public class ModularParser
         ppResult.setLanguagesElement(
                 getSpecialLinks(sm, cepp.linkSpans, cepp.links, " - ", languageIdentifiers));
 
+        cepp.checkOrder();
+
         // Parsing and Setting the Sections... the main work is done in parse
         // sections!
         ppResult.setSections(
@@ -1879,6 +1881,7 @@ public class ModularParser
         LinkedList<Span> lineSpans = new LinkedList<>();
         getLineSpans(sm, lineSpans);
         sm.removeManagedList(lineSpans);
+        cepp.checkOrder();
         return (parseContentElement(sm, cepp, lineSpans, new ContentElement()));
     }
 
@@ -1953,7 +1956,7 @@ public class ModularParser
 
         // Links
         int i;
-        i = 0;
+        i = firstCandidate(cepp.linkSpans, cepp.linkSpansDescending, contentElementRange);
         while (i < cepp.linkSpans.size()) {
             if (contentElementRange.hits(cepp.linkSpans.get(i))) {
                 Span linkSpan = cepp.linkSpans.remove(i);
@@ -1971,7 +1974,7 @@ public class ModularParser
         }
 
         // Templates
-        i = 0;
+        i = firstCandidate(cepp.templateSpans, cepp.templateSpansDescending, contentElementRange);
         while (i < cepp.templateSpans.size()) {
             Span ts = cepp.templateSpans.get(i);
             if (contentElementRange.hits(ts)) {
@@ -2008,6 +2011,9 @@ public class ModularParser
         List<Span> tags = new ArrayList<>();
         while (i < cepp.tagSpans.size()) {
             Span s = cepp.tagSpans.get(i);
+            if (cepp.tagSpansAscending && s.getStart() >= contentElementRange.getEnd()) {
+                break;
+            }
             if (contentElementRange.hits(s)) {
                 cepp.tagSpans.remove(i);
                 if (deleteTags) {
@@ -2028,6 +2034,9 @@ public class ModularParser
         List<Span> localNoWikiSpans = new ArrayList<>();
         while (i < cepp.noWikiSpans.size()) {
             Span s = cepp.noWikiSpans.get(i);
+            if (cepp.noWikiSpansAscending && s.getStart() >= contentElementRange.getEnd()) {
+                break;
+            }
             if (contentElementRange.hits(s)) {
                 cepp.noWikiSpans.remove(i);
                 sm.replace(s, cepp.noWikiStrings.remove(i));
@@ -2044,6 +2053,9 @@ public class ModularParser
         List<Span> mathSpans = new ArrayList<>();
         while (i < cepp.mathSpans.size()) {
             Span s = cepp.mathSpans.get(i);
+            if (cepp.mathSpansAscending && s.getStart() >= contentElementRange.getEnd()) {
+                break;
+            }
             if (contentElementRange.hits(s)) {
                 cepp.mathSpans.remove(i);
 
@@ -2091,6 +2103,42 @@ public class ModularParser
         result.setTemplates(sortTemplates(localTemplates));
 
         return result;
+    }
+
+    /**
+     * Returns the index from which on the spans of a page-wide list have to be matched against a
+     * content element. The lists of links and templates are built from the end of the page to its
+     * start, so the spans of the element being parsed are found at the tail of the list. If the
+     * list is ordered by descending start, every span before the returned index starts at or after
+     * the end of the range, and can never hit it, as the edits of the {@link SpanManager} keep the
+     * order of the positions.
+     */
+    private static int firstCandidate(List<Span> spans, boolean descending, Span range)
+    {
+        if (!descending) {
+            return 0;
+        }
+        int i = spans.size();
+        while (i > 0 && spans.get(i - 1).getStart() < range.getEnd()) {
+            i--;
+        }
+        return i;
+    }
+
+    /**
+     * Returns whether the starts of the spans are ordered, ascending or descending, with equal
+     * starts allowed.
+     */
+    private static boolean isOrderedByStart(List<Span> spans, boolean descending)
+    {
+        for (int i = 1; i < spans.size(); i++) {
+            int previous = spans.get(i - 1).getStart();
+            int current = spans.get(i).getStart();
+            if (descending ? current > previous : current < previous) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -2202,6 +2250,18 @@ public class ModularParser
         final List<Span> mathSpans;
         final List<String> mathStrings;
 
+        /*
+         * Whether the page-wide span lists are ordered by start. If so, parseContentElement(..)
+         * skips the spans which cannot hit the element being parsed, else it scans the whole
+         * list. The edits of the SpanManager keep the order of the positions, and spans are only
+         * removed from the lists, so the order checked once holds until the end of the parsing.
+         */
+        boolean linkSpansDescending;
+        boolean templateSpansDescending;
+        boolean tagSpansAscending;
+        boolean noWikiSpansAscending;
+        boolean mathSpansAscending;
+
         ContentElementParsingParameters()
         {
             noWikiSpans = new ArrayList<>();
@@ -2213,6 +2273,15 @@ public class ModularParser
             tagSpans = new ArrayList<>();
             mathSpans = new ArrayList<>();
             mathStrings = new ArrayList<>();
+        }
+
+        void checkOrder()
+        {
+            linkSpansDescending = isOrderedByStart(linkSpans, true);
+            templateSpansDescending = isOrderedByStart(templateSpans, true);
+            tagSpansAscending = isOrderedByStart(tagSpans, false);
+            noWikiSpansAscending = isOrderedByStart(noWikiSpans, false);
+            mathSpansAscending = isOrderedByStart(mathSpans, false);
         }
     }
 }

@@ -1,0 +1,59 @@
+FIRST_PARAGRAPH: 0
+CATEGORIES:
+  ContentElement ""
+LANGUAGES:
+  ContentElement ""
+SectionContent level=2 src=(8, 683)
+  TITLE:
+    null
+  Paragraph src=(8, 190) "Start  of text with Visible.
+Line with [[not a link]] {{not a template}} and After nowiki."
+    NOWIKI: (39, 47) src=(118, 168)
+    LINK INTERNAL "Visible" (20, 27) src=(67, 78) "Visible" []
+    LINK INTERNAL "After_nowiki" (77, 89) src=(173, 189) "After nowiki" []
+  Paragraph src=(192, 272) "Preformatted line with Pre link
+ 
+Pre block [[not a link either]]
+"
+    NOWIKI: (33, 38) src=(228, 272)
+    LINK INTERNAL "Pre_link" (23, 31) src=(215, 227) "Pre link" []
+  Paragraph src=(273, 683) "Math  inline with Pythagoras and .
+Another ''no italics'' nowiki after pre.
+Tags <span style="color:red">red Red link</span> and <br/> break and <ref name="r1">Ref Ref link</ref> and <ref name="r1"/>.
+<div>
+Div content with  and Div link.
+</div>
+<small>Small</small> <sup>1</sup> <sub>2</sub> <u>under</u> <s>strike</s>"
+    NOWIKI: (43, 51) src=(369, 400)
+    TAG: (81, 105) src=(424, 448) (117, 124) src=(464, 471) (129, 134) src=(476, 481) (145, 160) src=(492, 507) (172, 178) src=(523, 529) (183, 199) src=(534, 550) (201, 206) src=(552, 557) (239, 245) src=(603, 609) (246, 253) src=(610, 617) (258, 266) src=(622, 630) (267, 272) src=(631, 636) (273, 279) src=(637, 643) (280, 285) src=(644, 649) (286, 292) src=(650, 656) (293, 296) src=(657, 660) (301, 305) src=(665, 669) (306, 309) src=(670, 673) (315, 319) src=(679, 683)
+    LINK INTERNAL "Pythagoras" (18, 28) src=(319, 333) "Pythagoras" []
+    LINK INTERNAL "Red_link" (109, 117) src=(452, 464) "Red link" []
+    LINK INTERNAL "Ref_link" (164, 172) src=(511, 523) "Ref link" []
+    LINK INTERNAL "Div_link" (229, 237) src=(589, 601) "Div link" []
+SectionContent level=2 src=(685, 845)
+  TITLE:
+    ContentElement src=(688, 695) "Gallery"
+  ContentElement src=(688, 695) "Gallery"
+  Paragraph src=(-1, -1) "Some images
+Caption one with G link
+Image:G2.jpg
+Third"
+    LINK IMAGE "File:G1.jpg" (12, 35) src=(-1, -1) "Caption one with G link" [Caption one with G link]
+    LINK INTERNAL "G_link" (29, 35) src=(-1, -1) "G link" []
+    LINK IMAGE "Image:G2.jpg" (36, 48) src=(-1, -1) "Image:G2.jpg" []
+    LINK IMAGE "Image:G3.png" (49, 54) src=(-1, -1) "Third" [Third]
+  Paragraph src=(808, 845) "Text after gallery After gallery."
+    LINK INTERNAL "After_gallery" (19, 32) src=(827, 844) "After gallery" []
+SectionContent level=2 src=(847, 1099)
+  TITLE:
+    ContentElement src=(850, 860) "Formatting"
+  ContentElement src=(850, 860) "Formatting"
+  Paragraph src=(864, 1099) "Bold and italic and both and italic with Link and bold .
+Unclosed bold on one line
+Unclosed italic
+Mixed bold and italic end.
+Unclosed <span>tag and "
+    BOLD: (0, 4) src=(864, 874) (20, 24) src=(894, 906) (50, 55) src=(942, 960) (57, 82) src=(962, 990) (105, 120) src=(1015, 1038)
+    ITALIC: (9, 15) src=(879, 889) (20, 24) src=(897, 908) (29, 45) src=(913, 937) (83, 98) src=(991, 1008) (110, 120) src=(1023, 1040)
+    TAG: (135, 141) src=(1055, 1061)
+    LINK INTERNAL "Link" (41, 45) src=(927, 935) "Link" []
