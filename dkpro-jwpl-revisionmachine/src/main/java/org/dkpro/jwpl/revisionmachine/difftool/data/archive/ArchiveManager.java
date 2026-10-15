@@ -53,7 +53,7 @@ public class ArchiveManager
      *
      * @return TRUE | FALSE
      */
-    public boolean hasArchive()
+    public synchronized boolean hasArchive()
     {
         return !this.archives.isEmpty();
     }
@@ -79,7 +79,7 @@ public class ArchiveManager
      *
      * @return number of available archives
      */
-    public int size()
+    public synchronized int size()
     {
         return this.archives.size();
     }
@@ -89,7 +89,7 @@ public class ArchiveManager
      *
      * @return [ number of archives ]
      */
-    public String toString()
+    public synchronized String toString()
     {
         return "ArchiveManager:\t[" + this.size() + "]";
     }
