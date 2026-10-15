@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
  * A full {@code linktarget} table of a large wiki holds hundreds of millions of rows, so neither
  * boxing the keys nor allocating one wrapper object per entry is affordable. Only the namespaces a
  * caller is actually interested in should be loaded; see
- * {@link #load(LinktargetParser, IntPredicate)} and {@link #ARTICLE_TALK_AND_CATEGORY}.
+ * {@link #load(LinktargetParser, IntPredicate)} and {@link #ARTICLE_AND_CATEGORY}.
  */
 public final class FastUtilLinkTargetResolver
     implements LinkTargetResolver
@@ -41,8 +41,18 @@ public final class FastUtilLinkTargetResolver
     private static final Logger LOG = LoggerFactory.getLogger(FastUtilLinkTargetResolver.class);
 
     /**
-     * Keeps the namespaces the JWPL import pipeline is able to match a link against: articles
-     * ({@code 0}), article talk pages ({@code 1}) and categories ({@code 14}).
+     * Keeps the namespaces the JWPL import pipeline actually consumes: articles ({@code 0}) and
+     * categories ({@code 14}). Page links are only kept when they point into the main namespace
+     * and category links are only matched against categories, so no other target is ever used.
+     */
+    public static final IntPredicate ARTICLE_AND_CATEGORY = ns -> ns == 0 || ns == 14;
+
+    /**
+     * Keeps articles ({@code 0}), article talk pages ({@code 1}) and categories ({@code 14}).
+     * <p>
+     * Retained for compatibility only: no link into namespace {@code 1} is ever written, so
+     * loading those targets costs memory without affecting the output. Prefer
+     * {@link #ARTICLE_AND_CATEGORY}.
      */
     public static final IntPredicate ARTICLE_TALK_AND_CATEGORY = ns -> ns == 0 || ns == 1
             || ns == 14;

@@ -28,6 +28,7 @@ package org.dkpro.jwpl.wikimachine.dump.sql;
  *
  * @see LinktargetParser
  * @see FastUtilLinkTargetResolver
+ * @see ResolvedLinkTargets
  */
 public interface LinkTargetResolver
 {
@@ -38,7 +39,8 @@ public interface LinkTargetResolver
     /**
      * @param ltId A {@code linktarget.lt_id} value.
      * @return The SQL escaped, underscore-form, namespace-stripped title registered for
-     *         {@code ltId}, or {@code null} if that id is unknown.
+     *         {@code ltId}, or {@code null} if that id is unknown or if the resolver does not
+     *         retain titles (see {@link ResolvedLinkTargets}).
      */
     String getTitle(long ltId);
 
