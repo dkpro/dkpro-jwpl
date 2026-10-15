@@ -37,6 +37,11 @@ import org.dkpro.jwpl.wikimachine.util.UTFDataOutputStream;
 
 /**
  * A basic {@link DumpWriter} implementation to write binary dumps.
+ * <p>
+ * Two files are written: {@code page.bin} holds one
+ * {@code (page id, namespace, title, is redirect)} record per page, and {@code text.bin} holds one
+ * {@code (page id, text)} record per page, taken from the last revision of that page. Category
+ * pages get no {@code text.bin} record, because the DataMachine never uses their text.
  *
  * @see DumpWriter
  */
@@ -44,9 +49,11 @@ public class SimpleBinaryDumpWriter
     implements DumpWriter
 {
 
+    // Namespace of category pages; their text is never used by the DataMachine
+    private static final int NS_CATEGORY = 14;
+
     private final DataMachineFiles files;
     private UTFDataOutputStream pageFile;
-    private UTFDataOutputStream revisionFile;
     private UTFDataOutputStream textFile;
 
     private Page currentPage;
@@ -73,14 +80,12 @@ public class SimpleBinaryDumpWriter
     private void createUncompressed() throws IOException
     {
         pageFile = openUTFDataOutputStream(files.getGeneratedPage(), false);
-        revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), false);
         textFile = openUTFDataOutputStream(files.getGeneratedText(), false);
     }
 
     private void createCompressed() throws IOException
     {
         pageFile = openUTFDataOutputStream(files.getGeneratedPage(), true);
-        revisionFile = openUTFDataOutputStream(files.getGeneratedRevision(), true);
         textFile = openUTFDataOutputStream(files.getGeneratedText(), true);
     }
 
@@ -124,6 +129,15 @@ public class SimpleBinaryDumpWriter
         pageFile.writeBoolean(Redirects.isRedirect(revision.Text));
     }
 
+    private void updateText(Page page, Revision revision) throws IOException
+    {
+        if (page.Title.Namespace != NS_CATEGORY) {
+            // keyed by the page id, so the text can be joined against page.bin directly
+            textFile.writeInt(page.Id);
+            textFile.writeUTFAsArray(SQLEscape.escape(revision.Text));
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -131,7 +145,6 @@ public class SimpleBinaryDumpWriter
     public void close() throws IOException
     {
         pageFile.close();
-        revisionFile.close();
         textFile.close();
     }
 
@@ -143,6 +156,7 @@ public class SimpleBinaryDumpWriter
     {
         if (lastRevision != null) {
             updatePage(currentPage, lastRevision);
+            updateText(currentPage, lastRevision);
         }
         currentPage = null;
         lastRevision = null;
@@ -155,7 +169,6 @@ public class SimpleBinaryDumpWriter
     public void writeEndWiki() throws IOException
     {
         pageFile.flush();
-        revisionFile.flush();
         textFile.flush();
     }
 
@@ -163,15 +176,10 @@ public class SimpleBinaryDumpWriter
      * {@inheritDoc}
      */
     @Override
-    public void writeRevision(Revision revision) throws IOException
+    public void writeRevision(Revision revision)
     {
+        // only the last revision of a page is written, see writeEndPage()
         lastRevision = revision;
-
-        revisionFile.writeInt(currentPage.Id);
-        revisionFile.writeInt(revision.Id);
-
-        textFile.writeInt(revision.Id);
-        textFile.writeUTFAsArray(SQLEscape.escape(revision.Text));
     }
 
     /**

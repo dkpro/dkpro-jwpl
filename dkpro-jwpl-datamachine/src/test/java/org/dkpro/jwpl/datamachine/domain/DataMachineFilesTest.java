@@ -201,18 +201,6 @@ class DataMachineFilesTest {
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
-  void testGetGeneratedRevision(boolean useCompression) {
-    if (useCompression) {
-      dmFiles.setCompressGeneratedFiles(true);
-      assertEquals(TEST_OUTPUT_DIR + "revision.bin.gz", dmFiles.getGeneratedRevision());
-    } else {
-      dmFiles.setCompressGeneratedFiles(false);
-      assertEquals(TEST_OUTPUT_DIR + "revision.bin", dmFiles.getGeneratedRevision());
-    }
-  }
-
-  @ParameterizedTest
-  @ValueSource(booleans = {true, false})
   void testGetGeneratedText(boolean useCompression) {
     if (useCompression) {
       dmFiles.setCompressGeneratedFiles(true);
