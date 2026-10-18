@@ -301,6 +301,17 @@ public class WikipediaTest
         assertFalse(wiki.existsPage(" (X)"));
     }
 
+    /**
+     * Title lookups are exact: a case variant of a title that has no entry of its own does not
+     * exist, whatever the collation of the name column.
+     */
+    @Test
+    public void testExistsPageByTitleCaseVariant()
+    {
+        assertFalse(wiki.existsPage(A_FAMOUS_PAGE.replace("Potential", "potential")));
+        assertFalse(wiki.existsPage(A_FAMOUS_PAGE.toUpperCase(Locale.ROOT)));
+    }
+
     @Test
     public void testExistsPageByTitleNullOrEmpty()
     {

@@ -25,6 +25,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dkpro.jwpl.api.DatabaseConfiguration;
 import org.dkpro.jwpl.api.WikiConstants;
@@ -53,6 +55,12 @@ public final class JwplTestDatabase
     private static final String HSQLDB_SCHEMA = "db/schema-hsqldb.sql";
     private static final String MYSQL_SCHEMA = "db/schema-mysql.sql";
     private static final String POSTGRESQL_SCHEMA = "db/schema-postgresql.sql";
+
+    private static final String VARIANT_PREFIX = "jwpl_cv_";
+    private static final String STATEMENT_INSPECTOR = "hibernate.session_factory.statement_inspector";
+
+    private static final Map<ColumnProfile, DatabaseConfiguration> VARIANTS =
+            new ConcurrentHashMap<>();
 
     private static volatile JwplTestDatabase instance;
 
@@ -161,6 +169,115 @@ public final class JwplTestDatabase
         db.setLanguage(WikiConstants.Language._test);
         db.setJdbcURL(jdbcUrl);
         db.setDatabaseDriver(driver);
+        return db;
+    }
+
+    /**
+     * Provisions, once per JVM, a database of the selected engine whose name columns have the
+     * given profile. It holds {@code db/data.sql} plus the {@link ContractFixture}, and its
+     * configuration records the SQL Hibernate issues, see {@link CapturingStatementInspector}.
+     * The shared fixture is left untouched.
+     *
+     * @param profile The profile of the name columns.
+     * @return The configuration of the variant database.
+     */
+    public static DatabaseConfiguration provisionVariant(ColumnProfile profile)
+    {
+        return VARIANTS.computeIfAbsent(profile, p -> instance().createVariant(p));
+    }
+
+    /**
+     * Opens a plain JDBC connection with the credentials of a configuration.
+     *
+     * @param db The configuration.
+     * @return A new connection, to be closed by the caller.
+     * @throws SQLException If the connection cannot be opened.
+     */
+    public static Connection rawConnection(DatabaseConfiguration db) throws SQLException
+    {
+        return DriverManager.getConnection(db.getJdbcURL(), db.getUser(), db.getPassword());
+    }
+
+    /**
+     * Opens a JDBC connection to the database of a configuration as a user that may also read
+     * server status, e.g. {@code FLUSH STATUS} on MySQL and MariaDB, where it is root.
+     *
+     * @param db The configuration.
+     * @return A new connection, to be closed by the caller.
+     * @throws SQLException If the connection cannot be opened.
+     */
+    public static Connection privilegedConnection(DatabaseConfiguration db) throws SQLException
+    {
+        return switch (selectEngine()) {
+            case MARIADB, MYSQL -> DriverManager.getConnection(db.getJdbcURL(), "root",
+                    db.getPassword());
+            case HSQLDB, POSTGRESQL -> rawConnection(db);
+        };
+    }
+
+    private DatabaseConfiguration createVariant(ColumnProfile profile)
+    {
+        if (!profile.appliesTo(engine)) {
+            throw new IllegalArgumentException(profile + " does not apply to " + engine);
+        }
+        String name = VARIANT_PREFIX + profile.name().toLowerCase(Locale.ROOT);
+        String url;
+        String user = configuration.getUser();
+        String password = configuration.getPassword();
+        String schema;
+        try {
+            switch (engine) {
+                case HSQLDB -> {
+                    url = "jdbc:hsqldb:mem:" + name;
+                    schema = HSQLDB_SCHEMA;
+                }
+                case MARIADB, MYSQL -> {
+                    url = container.getJdbcUrl().replace("/" + DB_NAME, "/" + name);
+                    schema = MYSQL_SCHEMA;
+                    try (Connection root = DriverManager.getConnection(container.getJdbcUrl(),
+                            "root", password); Statement s = root.createStatement()) {
+                        s.execute("CREATE DATABASE " + name);
+                        s.execute("GRANT ALL ON " + name + ".* TO '" + user + "'@'%'");
+                    }
+                }
+                case POSTGRESQL -> {
+                    url = container.getJdbcUrl().replace("/" + DB_NAME, "/" + name);
+                    schema = POSTGRESQL_SCHEMA;
+                    try (Connection c = DriverManager.getConnection(container.getJdbcUrl(), user,
+                            password); Statement s = c.createStatement()) {
+                        s.execute("CREATE DATABASE " + name);
+                    }
+                }
+                default -> throw new IllegalStateException("Unknown engine " + engine);
+            }
+            // Connector/J sends a batch row by row unless told to rewrite it
+            String loadUrl = engine == Engine.MYSQL
+                    ? url + (url.contains("?") ? "&" : "?") + "rewriteBatchedStatements=true"
+                    : url;
+            try (Connection c = DriverManager.getConnection(loadUrl, user, password)) {
+                executeScript(c, readResource(schema));
+                for (String ddl : profile.ddl(engine)) {
+                    executeStatement(c, ddl);
+                }
+                executeScript(c, readResource(DATA_SCRIPT));
+                ContractFixture.load(c, profile);
+                switch (engine) {
+                    case MARIADB, MYSQL -> executeStatement(c,
+                            "ANALYZE TABLE PageMapLine, Page, Category");
+                    case POSTGRESQL -> executeStatement(c, "ANALYZE");
+                    case HSQLDB -> {
+                        // no statistics to refresh
+                    }
+                }
+            }
+        }
+        catch (IOException | SQLException e) {
+            throw new IllegalStateException(
+                    "Failed to provision the " + profile + " variant on " + engine, e);
+        }
+        DatabaseConfiguration db = buildConfiguration(configuration.getDatabaseDriver(), url,
+                configuration.getHost(), name, user, password);
+        db.setHibernateProperty(STATEMENT_INSPECTOR, CapturingStatementInspector.class.getName());
         return db;
     }
 

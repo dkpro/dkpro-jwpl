@@ -54,8 +54,8 @@ jobs:
           { "java": 21, "db": "mysql" }
           { "java": 21, "db": "postgresql" }
           { "java": 21, "db": "hsqldb", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
-          { "java": 21, "db": "mariadb", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
-          { "java": 21, "db": "mysql", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
+          { "java": 21, "db": "mariadb", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0 -Djwpl.test.collation.profiles=default,mb3_general_ci" }
+          { "java": 21, "db": "mysql", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0 -Djwpl.test.collation.profiles=default,mb3_general_ci" }
           { "java": 21, "db": "postgresql", "label": " / Hibernate 7", "args": "-Dhibernate.version=7.4.9.Final -Djakarta.persistence.version=3.2.0" }
           EOF
           echo "include=$(cat include.json)" >> "$GITHUB_OUTPUT"
