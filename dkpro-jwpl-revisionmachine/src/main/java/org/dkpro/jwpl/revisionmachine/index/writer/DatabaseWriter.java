@@ -58,6 +58,21 @@ public class DatabaseWriter
             + " ON revisions(ArticleID, Timestamp, RevisionCounter)";
 
     /**
+     * Statement which creates the revision index table. The table gets no primary key here, as its
+     * rows arrive grouped by article, i.e. in close to random RevisionID order. The key is added
+     * once after the load by {@link #ADD_REVISION_INDEX_KEY}.
+     */
+    static final String CREATE_REVISION_INDEX_TABLE = "CREATE TABLE index_revisionID ("
+            + "RevisionID INTEGER UNSIGNED NOT NULL, " + "RevisionPK INTEGER UNSIGNED NOT NULL, "
+            + "FullRevisionPK INTEGER UNSIGNED NOT NULL);";
+
+    /**
+     * Statement which adds the primary key of the revision index table after the load
+     */
+    static final String ADD_REVISION_INDEX_KEY = "ALTER TABLE index_revisionID"
+            + " ADD PRIMARY KEY (RevisionID);";
+
+    /**
      * Reference to the database connection
      */
     private final Connection connection;
@@ -86,29 +101,13 @@ public class DatabaseWriter
         statement.close();
 
         statement = connection.createStatement();
-        statement.execute("CREATE TABLE index_revisionID ("
-                + "RevisionID INTEGER UNSIGNED NOT NULL, "
-                + "RevisionPK INTEGER UNSIGNED NOT NULL, "
-                + "FullRevisionPK INTEGER UNSIGNED NOT NULL, " + "PRIMARY KEY(RevisionID));");
+        statement.execute(CREATE_REVISION_INDEX_TABLE);
         statement.close();
 
         statement = connection.createStatement();
         statement.execute("CREATE TABLE index_chronological ("
                 + "ArticleID INTEGER UNSIGNED NOT NULL, " + "Mapping MEDIUMTEXT NOT NULL, "
                 + "ReverseMapping MEDIUMTEXT NOT NULL, " + "PRIMARY KEY(ArticleID));");
-        statement.close();
-
-        // disable keys now - reenable after inserts
-
-        statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;");
-        statement.close();
-        statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_revisionID DISABLE KEYS;");
-        statement.close();
-
-        statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_chronological DISABLE KEYS;");
         statement.close();
     }
 
@@ -158,14 +157,9 @@ public class DatabaseWriter
         // by older versions lack one or both of them
         createIndexIfMissing(ARTICLE_INDEX, CREATE_ARTICLE_INDEX);
         createIndexIfMissing(ARTICLE_TIMESTAMP_INDEX, CREATE_ARTICLE_TIMESTAMP_INDEX);
+        // build the primary key of the revision index in one pass after the load
         statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;");
-        statement.close();
-        statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_revisionID ENABLE KEYS;");
-        statement.close();
-        statement = connection.createStatement();
-        statement.execute("ALTER TABLE index_chronological ENABLE KEYS;");
+        statement.execute(ADD_REVISION_INDEX_KEY);
         statement.close();
     }
 

@@ -25,6 +25,7 @@ import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.IntPredicate;
 
 import org.dkpro.jwpl.timemachine.dump.xml.XMLDumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.domain.AbstractSnapshotGenerator;
@@ -36,7 +37,6 @@ import org.dkpro.jwpl.wikimachine.dump.sql.LinkTargetResolver;
 import org.dkpro.jwpl.wikimachine.dump.sql.LinktargetParser;
 import org.dkpro.jwpl.wikimachine.dump.sql.PagelinksParser;
 import org.dkpro.jwpl.wikimachine.dump.version.IDumpVersion;
-import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
 import org.dkpro.jwpl.wikimachine.dump.xml.PageParser;
 import org.dkpro.jwpl.wikimachine.dump.xml.RevisionParser;
@@ -154,7 +154,8 @@ public class TimeMachineGenerator
         dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
 
         logger.log("Processing the text table");
-        dumpVersionProcessor.processText(createTextParser());
+        dumpVersionProcessor.processText(
+                createTextParser(dumpVersionProcessor.getWantedTextIds()));
 
         logger.log("Writing meta data");
         dumpVersionProcessor.writeMetaData();
@@ -179,12 +180,8 @@ public class TimeMachineGenerator
     private XMLDumpTableInputStream createRevisionAndPageTableInputStream(Path pageTable)
         throws IOException
     {
-        final DumpTableInputStream tableInputStream = envFactory.getDumpTableInputStream();
-        if (!(tableInputStream instanceof XMLDumpTableInputStream xmlTableInputStream)) {
-            throw new IllegalStateException("Reading the revision and page table in one pass "
-                    + "requires an " + XMLDumpTableInputStream.class.getSimpleName() + ", got "
-                    + tableInputStream.getClass().getName());
-        }
+        final XMLDumpTableInputStream xmlTableInputStream = createXmlDumpTableInputStream(
+                "Reading the revision and page table in one pass");
         final OutputStream pageOutput = java.nio.file.Files.newOutputStream(pageTable);
         xmlTableInputStream.initializeRevisionAndPage(openMetaHistoryStreams(), pageOutput);
         return xmlTableInputStream;
@@ -254,10 +251,26 @@ public class TimeMachineGenerator
 
     }
 
-    private TextParser createTextParser() throws IOException
+    private XMLDumpTableInputStream createXmlDumpTableInputStream(String purpose)
     {
-        DumpTableInputStream textTableInputStream = envFactory.getDumpTableInputStream();
-        textTableInputStream.initialize(openMetaHistoryStreams(), DumpTableEnum.TEXT);
+        final DumpTableInputStream tableInputStream = envFactory.getDumpTableInputStream();
+        if (!(tableInputStream instanceof XMLDumpTableInputStream xmlTableInputStream)) {
+            throw new IllegalStateException(purpose + " requires an "
+                    + XMLDumpTableInputStream.class.getSimpleName() + ", got "
+                    + tableInputStream.getClass().getName());
+        }
+        return xmlTableInputStream;
+    }
+
+    /**
+     * @param wantedTextIds Accepts the ids of the revisions whose text the dump versions use.
+     *                      The text of all other revisions is skipped while reading the dump.
+     */
+    private TextParser createTextParser(IntPredicate wantedTextIds) throws IOException
+    {
+        final XMLDumpTableInputStream textTableInputStream = createXmlDumpTableInputStream(
+                "Skipping unused revision texts");
+        textTableInputStream.initializeText(openMetaHistoryStreams(), wantedTextIds);
 
         TextParser textParser = envFactory.getTextParser();
         textParser.setInputStream(textTableInputStream);
@@ -267,9 +280,8 @@ public class TimeMachineGenerator
 
     /**
      * Opens a decompressed stream per configured meta-history part, preserving order. A
-     * single-file dump yields a list of size 1; the call site hands the list to
-     * {@link DumpTableInputStream#initialize(List, DumpTableEnum)} which dispatches to the
-     * single- or multi-part SAX pipeline transparently.
+     * single-file dump yields a list of size 1; the call sites hand the list to the multi-part
+     * SAX pipeline of {@link XMLDumpTableInputStream}, which handles a single part transparently.
      */
     private List<InputStream> openMetaHistoryStreams() throws IOException
     {

@@ -170,6 +170,21 @@ public class ChronoFullRevision
      */
     public Revision getNearest(final int revisionCounter)
     {
+        ChronoStorageBlock block = getNearestBlock(revisionCounter);
+        return block == null ? null : block.getRev();
+    }
+
+    /**
+     * Returns the chrono storage block of the nearest available revision to the specified
+     * revision counter.
+     *
+     * @param revisionCounter
+     *            revision counter
+     * @return the block of the nearest revision, or {@code null} if no revision up to the revision
+     *         counter is available
+     */
+    ChronoStorageBlock getNearestBlock(final int revisionCounter)
+    {
 
         if (first != null) {
 
@@ -179,9 +194,7 @@ public class ChronoFullRevision
                 current = current.getCounterNext();
             }
 
-            if (previous != null) {
-                return previous.getRev();
-            }
+            return previous;
         }
 
         return null;

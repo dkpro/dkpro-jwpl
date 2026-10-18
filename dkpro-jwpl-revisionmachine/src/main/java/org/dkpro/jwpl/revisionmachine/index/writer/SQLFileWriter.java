@@ -58,19 +58,13 @@ public class SQLFileWriter
                 + "RevisionCounter MEDIUMTEXT NOT NULL, " + "FirstAppearance BIGINT NOT NULL, "
                 + "LastAppearance BIGINT NOT NULL, " + "PRIMARY KEY(ArticleID));");
 
-        writer.write("CREATE TABLE index_revisionID (" + "RevisionID INTEGER UNSIGNED NOT NULL, "
-                + "RevisionPK INTEGER UNSIGNED NOT NULL, "
-                + "FullRevisionPK INTEGER UNSIGNED NOT NULL, " + "PRIMARY KEY(RevisionID));");
+        // the primary key of the revision index is added at the end of the SQL file
+        writer.write(DatabaseWriter.CREATE_REVISION_INDEX_TABLE);
 
         writer.write("CREATE TABLE index_chronological (" + "ArticleID INTEGER UNSIGNED NOT NULL, "
                 + "Mapping MEDIUMTEXT NOT NULL, " + "ReverseMapping MEDIUMTEXT NOT NULL, "
                 + "PRIMARY KEY(ArticleID));");
         writer.write("\r\n");
-
-        // disable keys now - re-enable at the end of the SQL file
-        writer.write("ALTER TABLE index_articleID_rc_ts DISABLE KEYS;\r\n");
-        writer.write("ALTER TABLE index_revisionID DISABLE KEYS;\r\n");
-        writer.write("ALTER TABLE index_chronological DISABLE KEYS;\r\n");
 
         writer.flush();
     }
@@ -129,9 +123,8 @@ public class SQLFileWriter
                 DatabaseWriter.CREATE_ARTICLE_INDEX);
         writeCreateIndexIfMissing(DatabaseWriter.ARTICLE_TIMESTAMP_INDEX,
                 DatabaseWriter.CREATE_ARTICLE_TIMESTAMP_INDEX);
-        writer.write("ALTER TABLE index_articleID_rc_ts ENABLE KEYS;\r\n");
-        writer.write("ALTER TABLE index_revisionID ENABLE KEYS;\r\n");
-        writer.write("ALTER TABLE index_chronological ENABLE KEYS;\r\n");
+        // build the primary key of the revision index in one pass after the load
+        writer.write(DatabaseWriter.ADD_REVISION_INDEX_KEY + "\r\n");
         writer.flush();
 
     }

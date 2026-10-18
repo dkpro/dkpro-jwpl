@@ -40,6 +40,23 @@ import org.slf4j.LoggerFactory;
  * Part of the JWPL Revision API
  * <p>
  * This class represents the interface to iterate through multiple revisions.
+ * <p>
+ * By default the iterator loads the revision texts eagerly, i.e. it decodes the stored diffs while
+ * iterating and every returned {@link Revision} carries its text. With lazy loading enabled (see
+ * {@link #setLazyLoading(boolean)}) the stored diffs are not read and the revisions only carry
+ * their metadata, the text is reconstructed on the first call of
+ * {@link Revision#getRevisionText()}.
+ * <p>
+ * If the revision texts are loaded eagerly and the iteration reaches a diff whose preceding
+ * revision it did not decode itself, e.g. because it started in the middle of a diff chain or
+ * switched from lazy to eager loading, the chain is rebuilt from the full revision that
+ * {@code index_revisionID} records for the current revision:
+ * <ul>
+ * <li>If the current revision is not indexed, the chain cannot be rebuilt and {@link #next()}
+ * fails with a {@link RuntimeException} caused by a {@link WikiApiException}.</li>
+ * <li>If a diff of the chain cannot be decoded, the failure is logged and {@link #next()} returns
+ * {@code null}, as for any other reconstruction failure.</li>
+ * </ul>
  */
 public class RevisionIterator
     extends AbstractRevisionService
@@ -47,6 +64,19 @@ public class RevisionIterator
 {
 
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    /**
+     * Looks up the primary key of the full revision the diff chain of a revision is based on
+     */
+    private static final String SELECT_FULL_REVISION_PK =
+            "SELECT FullRevisionPK FROM index_revisionID WHERE RevisionID=? LIMIT 1";
+
+    /**
+     * Selects the diffs of a chain in the order they have to be applied
+     */
+    private static final String SELECT_DIFF_CHAIN =
+            "SELECT Revision FROM revisions WHERE PrimaryKey >= ? AND PrimaryKey < ?"
+                    + " ORDER BY PrimaryKey";
 
     /**
      * Reference to the ResultSet
@@ -64,6 +94,12 @@ public class RevisionIterator
     private String pageQuery;
 
     /**
+     * Whether {@link #pageQuery} was built for lazy loading, i.e. does not select the
+     * {@code Revision} column
+     */
+    private boolean pageQueryIsLazy;
+
+    /**
      * Binary Data Flag
      */
     private boolean binaryData;
@@ -72,6 +108,17 @@ public class RevisionIterator
      * Text of the previous revision
      */
     private String previousRevision;
+
+    /**
+     * Primary key of the revision whose text is stored in {@link #previousRevision}, {@code -1}
+     * if none has been reconstructed yet
+     */
+    private int previousRevisionPK = -1;
+
+    /**
+     * Whether no revision has been read yet
+     */
+    private boolean firstRevision = true;
 
     /**
      * Current primary key
@@ -99,9 +146,10 @@ public class RevisionIterator
     private final int MAX_NUMBER_RESULTS;
 
     /**
-     * Should load revision text?
+     * {@code true} if the revision texts are loaded lazily, i.e. not decoded while iterating,
+     * {@code false} (the default) if they are loaded eagerly, see {@link #setLazyLoading(boolean)}
      */
-    private boolean shouldLoadRevisionText;
+    private boolean lazyLoading;
 
     /**
      * The revision-api for this iterator - used by the Revision object in case of lazy loading
@@ -113,27 +161,89 @@ public class RevisionIterator
      */
     private Boolean hasNamespaceColumn;
 
-    public boolean shouldLoadRevisionText()
+    /**
+     * @return {@code true} if the revision texts are loaded lazily, i.e. not decoded while
+     *         iterating, {@code false} (the default) if they are loaded eagerly, see
+     *         {@link #setLazyLoading(boolean)}
+     */
+    public boolean isLazyLoading()
     {
-        return shouldLoadRevisionText;
+        return lazyLoading;
     }
 
+    /**
+     * Switches between eager and lazy loading of the revision texts.
+     * <p>
+     * With eager loading (the default) the stored diffs are read and applied one by one while
+     * iterating, so every returned {@link Revision} carries its text at the cost of one diff per
+     * revision. Use it whenever the text of (almost) every revision is needed.
+     * <p>
+     * With lazy loading the stored diffs are not read at all, the returned revisions only carry
+     * their metadata. It is meant for metadata-only passes or sparse text access: every call of
+     * {@link Revision#getRevisionText()} on such a revision issues two queries and reconstructs
+     * the text from the last full revision, which can mean applying up to about a thousand diffs.
+     * <p>
+     * A switch to eager loading takes effect for the next page read from the database, a switch to
+     * lazy loading for the next revision. When switching to eager loading, the diff chain of the
+     * next revision is rebuilt from {@code index_revisionID}, see the
+     * {@link RevisionIterator class description} for the case the revision is not indexed.
+     *
+     * @param lazy
+     *            {@code true} to load the revision texts lazily, i.e. not to decode them while
+     *            iterating, {@code false} to load them eagerly
+     */
+    public void setLazyLoading(boolean lazy)
+    {
+        this.lazyLoading = lazy;
+    }
+
+    /**
+     * @return {@code true} if the revision texts are loaded lazily, i.e. <em>not</em> decoded
+     *         while iterating
+     * @deprecated The name is inverted: {@code true} means lazy loading, the revision text is
+     *             <em>not</em> loaded while iterating. Use {@link #isLazyLoading()} instead,
+     *             which returns the same value.
+     */
+    @Deprecated(since = "2.3.1")
+    public boolean shouldLoadRevisionText()
+    {
+        return isLazyLoading();
+    }
+
+    /**
+     * @param shouldLoadRevisionText
+     *            {@code true} for lazy loading, i.e. the revision text is <em>not</em> loaded
+     *            while iterating, {@code false} for eager loading
+     * @deprecated The name is inverted: {@code true} means lazy loading, the revision text is
+     *             <em>not</em> loaded while iterating. Use {@link #setLazyLoading(boolean)}
+     *             instead, which takes the same value.
+     */
+    @Deprecated(since = "2.3.1")
     public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
     {
-        this.shouldLoadRevisionText = shouldLoadRevisionText;
+        setLazyLoading(shouldLoadRevisionText);
     }
 
     /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
      * @param startPK
-     *            Start index
+     *            Start index, not negative
      * @param endPK
-     *            End index
+     *            End index, at least {@code startPK}
      * @param connection
-     *            Reference to the connection
+     *            Reference to the connection, not {@code null}
+     * @throws IllegalArgumentException
+     *             if {@code startPK} is negative, {@code endPK} is less than {@code startPK} or
+     *             {@code connection} is {@code null}
      * @throws WikiApiException
      *             if an error occurs
      */
@@ -141,9 +251,70 @@ public class RevisionIterator
             final int endPK, final Connection connection)
         throws WikiApiException
     {
+        this(config, connection, startPK, endPK);
+        if (startPK < 0 || endPK < startPK) {
+            throw new IllegalArgumentException("Expected 0 <= startPK <= endPK, but got startPK "
+                    + startPK + " and endPK " + endPK);
+        }
+    }
 
-        if (startPK < 0 || endPK < 0 || startPK > endPK || connection == null) {
-            throw new IllegalArgumentException("Illegal argument");
+    /**
+     * Creates a new RevisionIterator object for which the presence of the Namespace column is
+     * already known, so that the revisions table does not have to be probed again.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}. Unlike for the
+     * public constructors, {@code endPK} may be {@code startPK - 1}, so that the iteration
+     * returns the revision at {@code startPK} only.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param startPK
+     *            Start index, not negative
+     * @param endPK
+     *            End index, at least {@code startPK - 1}
+     * @param connection
+     *            Reference to the connection, not {@code null}
+     * @param hasNamespaceColumn
+     *            whether the revisions table has a Namespace column, {@code null} if unknown
+     * @throws IllegalArgumentException
+     *             if {@code startPK} is negative, {@code endPK} is less than {@code startPK - 1}
+     *             or {@code connection} is {@code null}
+     * @throws WikiApiException
+     *             if an error occurs
+     */
+    RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
+            final Connection connection, final Boolean hasNamespaceColumn)
+        throws WikiApiException
+    {
+        this(config, connection, startPK, endPK);
+        if (startPK < 0 || endPK < startPK - 1) {
+            throw new IllegalArgumentException("Expected 0 <= startPK <= endPK + 1, but got"
+                    + " startPK " + startPK + " and endPK " + endPK);
+        }
+        this.hasNamespaceColumn = hasNamespaceColumn;
+    }
+
+    /**
+     * Initializes the fields shared by the constructors that iterate over a range of primary
+     * keys with a given connection. The range is validated by the calling constructor.
+     *
+     * @param config
+     *            Reference to the configuration object
+     * @param connection
+     *            Reference to the connection, not {@code null}
+     * @param startPK
+     *            Start index
+     * @param endPK
+     *            End index
+     * @throws IllegalArgumentException
+     *             if {@code connection} is {@code null}
+     */
+    private RevisionIterator(final RevisionAPIConfiguration config, final Connection connection,
+            final int startPK, final int endPK)
+    {
+        if (connection == null) {
+            throw new IllegalArgumentException("The connection must not be null");
         }
 
         this.primaryKey = startPK - 1;
@@ -159,32 +330,10 @@ public class RevisionIterator
     }
 
     /**
-     * Creates a new RevisionIterator object for which the presence of the Namespace column is
-     * already known, so that the revisions table does not have to be probed again.
-     *
-     * @param config
-     *            Reference to the configuration object
-     * @param startPK
-     *            Start index
-     * @param endPK
-     *            End index
-     * @param connection
-     *            Reference to the connection
-     * @param hasNamespaceColumn
-     *            whether the revisions table has a Namespace column, {@code null} if unknown
-     * @throws WikiApiException
-     *             if an error occurs
-     */
-    RevisionIterator(final RevisionAPIConfiguration config, final int startPK, final int endPK,
-            final Connection connection, final Boolean hasNamespaceColumn)
-        throws WikiApiException
-    {
-        this(config, startPK, endPK, connection);
-        this.hasNamespaceColumn = hasNamespaceColumn;
-    }
-
-    /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
@@ -208,6 +357,12 @@ public class RevisionIterator
 
     /**
      * Creates a new RevisionIterator object.
+     * <p>
+     * The iteration returns the revisions with a primary key from {@code startPK} to
+     * {@code endPK} and, if there is one, the revision that follows {@code endPK}.
+     * <p>
+     * If the iteration starts inside a diff chain, the chain is rebuilt from
+     * {@code index_revisionID}, see the {@link RevisionIterator class description}.
      *
      * @param config
      *            Reference to the configuration object
@@ -260,15 +415,20 @@ public class RevisionIterator
      * @param config
      *            Reference to the configuration object
      * @param shouldLoadRevisionText
-     *            should load revision text
+     *            {@code true} for lazy loading, i.e. the revision text is <em>not</em> loaded
+     *            while iterating, {@code false} for eager loading
      * @throws WikiApiException
      *             if an error occurs
+     * @deprecated The parameter is inverted: {@code true} means lazy loading. Use
+     *             {@link #RevisionIterator(RevisionAPIConfiguration)} followed by
+     *             {@link #setLazyLoading(boolean)} instead.
      */
+    @Deprecated(since = "2.3.1")
     public RevisionIterator(final RevisionAPIConfiguration config, boolean shouldLoadRevisionText)
         throws WikiApiException
     {
         this(config);
-        this.shouldLoadRevisionText = shouldLoadRevisionText;
+        setLazyLoading(shouldLoadRevisionText);
     }
 
     public RevisionIterator(final DatabaseConfiguration db) throws WikiApiException
@@ -318,9 +478,18 @@ public class RevisionIterator
             limit = endPK - primaryKey + 1;
         }
 
-        if (pageQuery == null) {
-            // The keyset paging continues after the last primary key read, hence the explicit order
-            pageQuery = "SELECT PrimaryKey, Revision, RevisionCounter,"
+        if (pageQuery == null || pageQueryIsLazy != lazyLoading) {
+            // Built on first use and again after a mode switch, the reused statement is replaced
+            if (statement != null) {
+                statement.close();
+                statement = null;
+            }
+            pageQueryIsLazy = lazyLoading;
+            // The keyset paging continues after the last primary key read, hence the explicit order.
+            // Lazy loading never reads the Revision blob, so PrimaryKey takes its place to keep
+            // the column positions of both modes the same.
+            pageQuery = "SELECT PrimaryKey, " + (pageQueryIsLazy ? "PrimaryKey" : "Revision")
+                    + ", RevisionCounter,"
                     + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
                     + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions"
                     + " WHERE PrimaryKey > ? ORDER BY PrimaryKey"
@@ -391,9 +560,11 @@ public class RevisionIterator
             articleID = result.getInt(5);
 
             if (articleID != this.currentArticleID) {
-                this.currentRevCounter = 0;
+                // The first revision of the iteration may be in the middle of an article
+                this.currentRevCounter = firstRevision ? revCount - 1 : 0;
                 this.currentArticleID = articleID;
             }
+            firstRevision = false;
 
             if (revCount - 1 != this.currentRevCounter) {
 
@@ -411,21 +582,25 @@ public class RevisionIterator
 
             Revision revision = new Revision(revCount);
             revision.setPrimaryKey(this.primaryKey);
-            if (!shouldLoadRevisionText) {
+            // A page read with lazy loading has no Revision column to decode, even if eager
+            // loading was switched on in the meantime
+            final boolean decodeText = !lazyLoading && !pageQueryIsLazy;
+            if (decodeText) {
                 String currentRevision;
 
-                Diff diff;
-                RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
+                Diff diff = decode(result, 2, binaryData);
 
-                if (binaryData) {
-                    decoder.setInput(result.getBytes(2));
+                int fullRevisionPK = -1;
+                if (!diff.isFullRevision() && previousRevisionPK != this.primaryKey - 1) {
+                    // The iteration did not decode the preceding revision of the diff chain,
+                    // e.g. due to the start position or a switch from lazy loading
+                    fullRevisionPK = findFullRevisionPK(result.getInt(4));
                 }
-                else {
-                    decoder.setInput(result.getString(2));
-                }
-                diff = decoder.decode();
 
                 try {
+                    if (fullRevisionPK != -1) {
+                        previousRevision = reconstructPreviousRevision(fullRevisionPK);
+                    }
                     currentRevision = diff.buildRevision(previousRevision);
                 }
                 catch (Exception e) {
@@ -436,9 +611,14 @@ public class RevisionIterator
                 }
 
                 previousRevision = currentRevision;
+                previousRevisionPK = this.primaryKey;
                 revision.setRevisionText(currentRevision);
             }
             else {
+                // The texts are not reconstructed, the next one cannot build on this revision and
+                // has to rebuild its diff chain
+                previousRevision = null;
+                previousRevisionPK = -1;
                 if (revApi == null) {
                     revApi = new RevisionApi(config);
                 }
@@ -465,6 +645,92 @@ public class RevisionIterator
         catch (DecodingException | SQLException | IOException | WikiApiException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Looks up the full revision the diff chain of a revision is based on.
+     *
+     * @param revisionID
+     *            ID of the revision
+     * @return primary key of the full revision
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws WikiApiException
+     *             if the revision is not indexed in {@code index_revisionID}
+     */
+    private int findFullRevisionPK(final int revisionID) throws SQLException, WikiApiException
+    {
+        try (PreparedStatement indexStatement = connection.prepareStatement(SELECT_FULL_REVISION_PK)) {
+            indexStatement.setInt(1, revisionID);
+            try (ResultSet indexResult = indexStatement.executeQuery()) {
+                if (!indexResult.next()) {
+                    throw new WikiApiException("The diff chain of the revision with the ID "
+                            + revisionID + " cannot be reconstructed, it is not indexed.");
+                }
+                return indexResult.getInt(1);
+            }
+        }
+    }
+
+    /**
+     * Reconstructs the text of the revision that precedes the current one in its diff chain,
+     * starting from the full revision the chain is based on.
+     *
+     * @param fullRevisionPK
+     *            primary key of the full revision the chain is based on
+     * @return text of the preceding revision
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws DecodingException
+     *             if a diff could not be decoded
+     * @throws IOException
+     *             if a diff could not be read
+     */
+    private String reconstructPreviousRevision(final int fullRevisionPK)
+        throws SQLException, DecodingException, IOException
+    {
+        String text = null;
+        try (PreparedStatement chainStatement = connection.prepareStatement(SELECT_DIFF_CHAIN)) {
+            chainStatement.setInt(1, fullRevisionPK);
+            chainStatement.setInt(2, primaryKey);
+            try (ResultSet chain = chainStatement.executeQuery()) {
+                boolean binary = chain.getMetaData().getColumnType(1) == Types.LONGVARBINARY;
+                while (chain.next()) {
+                    text = decode(chain, 1, binary).buildRevision(text);
+                }
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Decodes the diff stored in a column of the current row of a result set.
+     *
+     * @param resultSet
+     *            the result set positioned on the row
+     * @param column
+     *            index of the column holding the encoded diff
+     * @param binary
+     *            whether the column is of type {@link Types#LONGVARBINARY}
+     * @return the decoded diff
+     * @throws SQLException
+     *             if an error occurs while accessing the database.
+     * @throws DecodingException
+     *             if the diff could not be decoded
+     * @throws IOException
+     *             if the diff could not be read
+     */
+    private Diff decode(final ResultSet resultSet, final int column, final boolean binary)
+        throws SQLException, DecodingException, IOException
+    {
+        RevisionDecoder decoder = new RevisionDecoder(config.getCharacterSet());
+        if (binary) {
+            decoder.setInput(resultSet.getBytes(column));
+        }
+        else {
+            decoder.setInput(resultSet.getString(column));
+        }
+        return decoder.decode();
     }
 
     /**

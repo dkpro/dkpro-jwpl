@@ -24,6 +24,7 @@ import java.io.InterruptedIOException;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.function.IntPredicate;
 
 import org.dkpro.jwpl.mwdumper.importer.DumpWriter;
 import org.dkpro.jwpl.mwdumper.importer.MultiWriter;
@@ -130,6 +131,26 @@ class XMLDumpTableInputStreamThread
         // PageReader and RevisionReader handle the very same elements.
         this.parseTask = () -> MultiPartXmlDumpReader.readDumps(iStreams, writer,
                 RevisionReader::new);
+        this.abortAction = () -> { /* no-op, see the other multi-part constructor */ };
+    }
+
+    /**
+     * Drive the conversion of the text table of a (multi-part) dump, restricted to the text of
+     * the revisions accepted by {@code wantedTextIds}.
+     *
+     * @param iStreams      Ordered list of XML part input streams (ascending page-range).
+     * @param oStream       Output stream for the text table.
+     * @param wantedTextIds Accepts the ids of the revisions whose text is written.
+     */
+    public XMLDumpTableInputStreamThread(List<InputStream> iStreams, OutputStream oStream,
+            IntPredicate wantedTextIds)
+    {
+        super("xml2sql");
+        final DumpWriter writer = new NamespaceFilter(new TextWriter(
+                new BufferedOutputStream(oStream, WRITE_BUFFER_SIZE), wantedTextIds),
+                ENABLED_NAMESPACES);
+        this.parseTask = () -> MultiPartXmlDumpReader.readDumps(iStreams, writer,
+                TextReader::new);
         this.abortAction = () -> { /* no-op, see the other multi-part constructor */ };
     }
 

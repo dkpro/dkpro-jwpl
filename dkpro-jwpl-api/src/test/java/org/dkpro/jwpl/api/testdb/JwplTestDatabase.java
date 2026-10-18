@@ -31,19 +31,20 @@ import org.dkpro.jwpl.api.WikiConstants;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 /**
  * Lazily initialized singleton that owns the test database for dkpro-jwpl-api.
  * <p>
  * The {@code jwpl.test.db} system property picks the backend:
- * {@code hsqldb} (default), {@code mariadb}, or {@code mysql}. HSQLDB uses
- * an in-memory instance; {@code mariadb}/{@code mysql} spin up a shared
- * Testcontainers container for the JVM lifetime. All three load the
+ * {@code hsqldb} (default), {@code mariadb}, {@code mysql}, or {@code postgresql}.
+ * HSQLDB uses an in-memory instance; the others spin up a shared
+ * Testcontainers container for the JVM lifetime. All of them load the
  * fixture from {@code src/test/resources/db/}.
  */
 public final class JwplTestDatabase
 {
-    public enum Engine { HSQLDB, MARIADB, MYSQL }
+    public enum Engine { HSQLDB, MARIADB, MYSQL, POSTGRESQL }
 
     public static final String SYSTEM_PROPERTY = "jwpl.test.db";
 
@@ -51,6 +52,7 @@ public final class JwplTestDatabase
     private static final String DATA_SCRIPT = "db/data.sql";
     private static final String HSQLDB_SCHEMA = "db/schema-hsqldb.sql";
     private static final String MYSQL_SCHEMA = "db/schema-mysql.sql";
+    private static final String POSTGRESQL_SCHEMA = "db/schema-postgresql.sql";
 
     private static volatile JwplTestDatabase instance;
 
@@ -77,8 +79,9 @@ public final class JwplTestDatabase
             case "", "hsqldb" -> Engine.HSQLDB;
             case "mariadb" -> Engine.MARIADB;
             case "mysql" -> Engine.MYSQL;
-            default -> throw new IllegalStateException(
-                    "Unknown " + SYSTEM_PROPERTY + " value: '" + raw + "' (expected hsqldb, mariadb, or mysql)");
+            case "postgresql" -> Engine.POSTGRESQL;
+            default -> throw new IllegalStateException("Unknown " + SYSTEM_PROPERTY + " value: '"
+                    + raw + "' (expected hsqldb, mariadb, mysql, or postgresql)");
         };
     }
 
@@ -106,9 +109,11 @@ public final class JwplTestDatabase
         switch (engine) {
             case HSQLDB -> initHsqldb();
             case MARIADB -> initContainer(new MariaDBContainer<>("mariadb:11.4"),
-                    "org.mariadb.jdbc.Driver");
+                    "org.mariadb.jdbc.Driver", MYSQL_SCHEMA);
             case MYSQL -> initContainer(new MySQLContainer<>("mysql:8.4"),
-                    "com.mysql.cj.jdbc.Driver");
+                    "com.mysql.cj.jdbc.Driver", MYSQL_SCHEMA);
+            case POSTGRESQL -> initContainer(new PostgreSQLContainer<>("postgres:17"),
+                    "org.postgresql.Driver", POSTGRESQL_SCHEMA);
         }
     }
 
@@ -120,14 +125,14 @@ public final class JwplTestDatabase
                 "localhost", DB_NAME, "sa", "");
     }
 
-    private void initContainer(JdbcDatabaseContainer<?> c, String driverClass)
+    private void initContainer(JdbcDatabaseContainer<?> c, String driverClass, String schema)
     {
         this.container = c.withDatabaseName(DB_NAME).withUsername("jwpl").withPassword("jwpl");
         container.start();
         Runtime.getRuntime().addShutdownHook(new Thread(this::stopContainerQuietly,
                 "jwpl-testdb-shutdown"));
         applyScripts(container.getJdbcUrl(), container.getUsername(), container.getPassword(),
-                MYSQL_SCHEMA, DATA_SCRIPT);
+                schema, DATA_SCRIPT);
         configuration = buildConfiguration(driverClass, container.getJdbcUrl(),
                 container.getHost(), container.getDatabaseName(),
                 container.getUsername(), container.getPassword());

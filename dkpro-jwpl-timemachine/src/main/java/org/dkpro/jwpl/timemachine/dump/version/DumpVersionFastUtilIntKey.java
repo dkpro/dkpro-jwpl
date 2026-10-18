@@ -285,6 +285,13 @@ public class DumpVersionFastUtilIntKey
     }
 
     @Override
+    public boolean addWantedTextIds(IntSet textIds)
+    {
+        textIds.addAll(textIdPageIdMap.keySet());
+        return true;
+    }
+
+    @Override
     public void processTextRow(TextParser textParser)
     {
         int text_id = textParser.getOldId();

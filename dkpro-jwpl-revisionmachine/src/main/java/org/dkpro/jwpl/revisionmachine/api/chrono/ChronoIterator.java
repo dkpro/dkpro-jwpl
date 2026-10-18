@@ -259,8 +259,8 @@ public class ChronoIterator
 
         // Determine the nearest revision that could be used to construct
         // the specified revision
-        revision = cfr.getNearest(revCount);
-        if (revision == null) {
+        ChronoStorageBlock nearest = cfr.getNearestBlock(revCount);
+        if (nearest == null) {
 
             // Create query bounds (all revisions from the full revision till
             // now)
@@ -274,11 +274,12 @@ public class ChronoIterator
         else {
 
             // Create query bounds (only new revisions, last known + 1 till now)
-            queryPK = revision.getPrimaryKey() + 1;
-            limit = revCount - revision.getRevisionCounter();
+            queryPK = nearest.getRev().getPrimaryKey() + 1;
+            limit = revCount - nearest.getRevisionCounter();
 
-            previousRevision = revision.getRevisionText();
-            previousRevisionCounter = revision.getRevisionCounter();
+            // Rebuild from the escaped text, getRevisionText() returns it unescaped
+            previousRevision = nearest.getEscapedText();
+            previousRevisionCounter = nearest.getRevisionCounter();
 
         }
 
@@ -361,7 +362,7 @@ public class ChronoIterator
 
                 // Add the reconstructed revision to the storage
                 if (revision != null) {
-                    chronoStorage.add(revision);
+                    chronoStorage.add(revision, currentRevision);
                 }
             }
 

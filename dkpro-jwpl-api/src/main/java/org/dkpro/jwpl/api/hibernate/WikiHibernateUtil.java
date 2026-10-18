@@ -428,16 +428,25 @@ public class WikiHibernateUtil
      * Hibernate 6 reassociates the given instance itself, without a round trip to the database.
      * Hibernate 7 no longer supports reassociation, so the managed instance with the same
      * identifier is loaded instead. Callers must therefore continue with the returned instance.
+     * The same happens on Hibernate 6 for a {@link Page} that holds metadata only (see
+     * {@link Page#isTextLoaded()}), as such an instance was never loaded by Hibernate and cannot
+     * be reassociated.
      *
      * @param session The {@link Session} to use the entity in. Must not be {@code null}.
      * @param entity  The detached entity. Must not be {@code null}.
      * @param <T>     The type of the entity.
      * @return An instance of the entity that is associated with {@code session}.
+     * @deprecated JWPL no longer uses this. On Hibernate 7 it loads the whole row of the entity
+     *             again, and on Hibernate 6 it associates the given instance with the session,
+     *             which is unsafe if the instance is shared between threads. Query the required
+     *             data by the identifier of the entity instead, e.g.
+     *             {@code select l from Page p join p.inLinks l where p.id = :id}.
      */
+    @Deprecated(since = "2.3.0", forRemoval = true)
     @SuppressWarnings("unchecked")
     public static <T> T reattach(Session session, T entity)
     {
-        if (REASSOCIATION_SUPPORTED) {
+        if (REASSOCIATION_SUPPORTED && !(entity instanceof Page page && !page.isTextLoaded())) {
             session.lock(entity, LockMode.NONE);
             return entity;
         }
@@ -513,6 +522,7 @@ public class WikiHibernateUtil
         Properties p = new Properties();
         boolean useMySQL = false;
         boolean useMariaDB = false;
+        boolean usePostgreSQL = false;
         boolean useHSQL = false;
         // XXX other backends might be interesting here as well...
         if (jdbcURL.toLowerCase().contains("mysql")) {
@@ -521,9 +531,13 @@ public class WikiHibernateUtil
         else if (jdbcURL.toLowerCase().contains("mariadb")) {
             useMariaDB = true;
         }
+        else if (jdbcURL.toLowerCase().contains("postgresql")) {
+            usePostgreSQL = true;
+        }
         else if (jdbcURL.toLowerCase().contains("hsql")) {
             useHSQL = true;
         }
+        boolean useServerBackend = useMySQL || useMariaDB || usePostgreSQL;
 
         // Database connection settings
         p.setProperty("hibernate.connection.driver_class", databaseDriverClass);
@@ -549,7 +563,7 @@ public class WikiHibernateUtil
         p.setProperty("hibernate.show_sql", "false");
 
         // Do only update schema on changes
-        if (useMySQL || useMariaDB) {
+        if (useServerBackend) {
             p.setProperty("hibernate.hbm2ddl.auto", "validate");
         }
 
@@ -560,7 +574,7 @@ public class WikiHibernateUtil
         // Leave this set 'true' as this is required for dynamic Dialect resolution!
         p.setProperty("hibernate.temp.use_jdbc_metadata_defaults", "true");
 
-        if ((useMySQL || useMariaDB) && C3P0_AVAILABLE) {
+        if (useServerBackend && C3P0_AVAILABLE) {
             // Set C3P0 Connection Pool in case somebody wants to use it in production settings.
             // Only if it is available at runtime: Hibernate 6 falls back to the built-in CP
             // otherwise, but Hibernate 7 then ends up without any connection provider.

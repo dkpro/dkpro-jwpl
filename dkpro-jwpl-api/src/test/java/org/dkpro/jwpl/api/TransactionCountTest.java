@@ -18,6 +18,10 @@
 package org.dkpro.jwpl.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.hibernate.stat.Statistics;
@@ -107,5 +111,20 @@ public class TransactionCountTest
         before = statistics.getTransactionCount();
         cat.getNumberOfPages();
         assertEquals(before + 1, statistics.getTransactionCount());
+    }
+
+    @Test
+    public void testGetPagesRunsOneTransactionPerBatch() throws Exception
+    {
+        // 501 ids need two batches, however few of them match a page
+        List<Integer> pageIds = new ArrayList<>();
+        for (int pageId = 1000; pageId <= 1500; pageId++) {
+            pageIds.add(pageId);
+        }
+
+        long before = statistics.getTransactionCount();
+        List<Page> pages = wiki.getPages(pageIds);
+        assertEquals(before + 2, statistics.getTransactionCount());
+        assertTrue(pages.stream().anyMatch(p -> p.getPageId() == A_FAMOUS_PAGE_ID));
     }
 }
