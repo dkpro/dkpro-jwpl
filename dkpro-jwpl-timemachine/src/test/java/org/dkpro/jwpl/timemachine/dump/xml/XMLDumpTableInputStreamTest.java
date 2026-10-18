@@ -23,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.dkpro.jwpl.wikimachine.dump.sql.SQLEscape;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
@@ -109,6 +111,36 @@ class XMLDumpTableInputStreamTest
             assertTrue(parser.next());
             assertEquals(30, parser.getOldId());
             assertEquals(SQLEscape.escape(small), parser.getOldText());
+
+            assertFalse(parser.next());
+        }
+    }
+
+    @Test
+    void textTableSkipsTheTextOfUnwantedRevisions() throws IOException
+    {
+        final String xml = HEADER
+                + pageBlock(1, 10, "first")
+                + pageBlock(2, 20, largeText(200_000))
+                + pageBlock(3, 30, "third")
+                + pageBlock(4, 40, "unwanted")
+                + FOOTER;
+
+        final XMLDumpTableInputStream sut = new XMLDumpTableInputStream();
+        final List<InputStream> parts = List
+                .of(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        sut.initializeText(parts, textId -> textId == 10 || textId == 30);
+
+        try (TextParser parser = new TextParser()) {
+            parser.setInputStream(sut);
+
+            assertTrue(parser.next());
+            assertEquals(10, parser.getOldId());
+            assertEquals(SQLEscape.escape("first"), parser.getOldText());
+
+            assertTrue(parser.next());
+            assertEquals(30, parser.getOldId());
+            assertEquals(SQLEscape.escape("third"), parser.getOldText());
 
             assertFalse(parser.next());
         }

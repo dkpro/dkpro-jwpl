@@ -41,10 +41,16 @@ import org.slf4j.LoggerFactory;
  * <p>
  * This class represents the interface to iterate through multiple revisions.
  * <p>
- * If the revision texts are loaded eagerly (see {@link #setShouldLoadRevisionText(boolean)}) and
- * the iteration reaches a diff whose preceding revision it did not decode itself, e.g. because it
- * started in the middle of a diff chain or switched from lazy to eager loading, the chain is
- * rebuilt from the full revision that {@code index_revisionID} records for the current revision:
+ * By default the iterator loads the revision texts eagerly, i.e. it decodes the stored diffs while
+ * iterating and every returned {@link Revision} carries its text. With lazy loading enabled (see
+ * {@link #setLazyLoading(boolean)}) the stored diffs are not read and the revisions only carry
+ * their metadata, the text is reconstructed on the first call of
+ * {@link Revision#getRevisionText()}.
+ * <p>
+ * If the revision texts are loaded eagerly and the iteration reaches a diff whose preceding
+ * revision it did not decode itself, e.g. because it started in the middle of a diff chain or
+ * switched from lazy to eager loading, the chain is rebuilt from the full revision that
+ * {@code index_revisionID} records for the current revision:
  * <ul>
  * <li>If the current revision is not indexed, the chain cannot be rebuilt and {@link #next()}
  * fails with a {@link RuntimeException} caused by a {@link WikiApiException}.</li>
@@ -86,6 +92,12 @@ public class RevisionIterator
      * SQL of the reused page statement, {@code null} until the first query
      */
     private String pageQuery;
+
+    /**
+     * Whether {@link #pageQuery} was built for lazy loading, i.e. does not select the
+     * {@code Revision} column
+     */
+    private boolean pageQueryIsLazy;
 
     /**
      * Binary Data Flag
@@ -134,9 +146,10 @@ public class RevisionIterator
     private final int MAX_NUMBER_RESULTS;
 
     /**
-     * Should load revision text?
+     * {@code true} if the revision texts are loaded lazily, i.e. not decoded while iterating,
+     * {@code false} (the default) if they are loaded eagerly, see {@link #setLazyLoading(boolean)}
      */
-    private boolean shouldLoadRevisionText;
+    private boolean lazyLoading;
 
     /**
      * The revision-api for this iterator - used by the Revision object in case of lazy loading
@@ -148,23 +161,67 @@ public class RevisionIterator
      */
     private Boolean hasNamespaceColumn;
 
-    public boolean shouldLoadRevisionText()
+    /**
+     * @return {@code true} if the revision texts are loaded lazily, i.e. not decoded while
+     *         iterating, {@code false} (the default) if they are loaded eagerly, see
+     *         {@link #setLazyLoading(boolean)}
+     */
+    public boolean isLazyLoading()
     {
-        return shouldLoadRevisionText;
+        return lazyLoading;
     }
 
     /**
-     * Sets whether the revision texts are loaded lazily. When switching to eager loading, the diff
-     * chain of the next revision is rebuilt from {@code index_revisionID}, see the
+     * Switches between eager and lazy loading of the revision texts.
+     * <p>
+     * With eager loading (the default) the stored diffs are read and applied one by one while
+     * iterating, so every returned {@link Revision} carries its text at the cost of one diff per
+     * revision. Use it whenever the text of (almost) every revision is needed.
+     * <p>
+     * With lazy loading the stored diffs are not read at all, the returned revisions only carry
+     * their metadata. It is meant for metadata-only passes or sparse text access: every call of
+     * {@link Revision#getRevisionText()} on such a revision issues two queries and reconstructs
+     * the text from the last full revision, which can mean applying up to about a thousand diffs.
+     * <p>
+     * A switch to eager loading takes effect for the next page read from the database, a switch to
+     * lazy loading for the next revision. When switching to eager loading, the diff chain of the
+     * next revision is rebuilt from {@code index_revisionID}, see the
      * {@link RevisionIterator class description} for the case the revision is not indexed.
      *
-     * @param shouldLoadRevisionText
-     *            {@code true} to load the revision texts lazily, {@code false} to decode them
-     *            during the iteration
+     * @param lazy
+     *            {@code true} to load the revision texts lazily, i.e. not to decode them while
+     *            iterating, {@code false} to load them eagerly
      */
+    public void setLazyLoading(boolean lazy)
+    {
+        this.lazyLoading = lazy;
+    }
+
+    /**
+     * @return {@code true} if the revision texts are loaded lazily, i.e. <em>not</em> decoded
+     *         while iterating
+     * @deprecated The name is inverted: {@code true} means lazy loading, the revision text is
+     *             <em>not</em> loaded while iterating. Use {@link #isLazyLoading()} instead,
+     *             which returns the same value.
+     */
+    @Deprecated(since = "2.3.1")
+    public boolean shouldLoadRevisionText()
+    {
+        return isLazyLoading();
+    }
+
+    /**
+     * @param shouldLoadRevisionText
+     *            {@code true} for lazy loading, i.e. the revision text is <em>not</em> loaded
+     *            while iterating, {@code false} for eager loading
+     * @deprecated The name is inverted: {@code true} means lazy loading, the revision text is
+     *             <em>not</em> loaded while iterating. Use {@link #setLazyLoading(boolean)}
+     *             instead, which takes the same value.
+     */
+    @Deprecated(since = "2.3.1")
     public void setShouldLoadRevisionText(boolean shouldLoadRevisionText)
     {
-        this.shouldLoadRevisionText = shouldLoadRevisionText;
+        setLazyLoading(shouldLoadRevisionText);
     }
 
     /**
@@ -358,15 +415,20 @@ public class RevisionIterator
      * @param config
      *            Reference to the configuration object
      * @param shouldLoadRevisionText
-     *            should load revision text, see {@link #setShouldLoadRevisionText(boolean)}
+     *            {@code true} for lazy loading, i.e. the revision text is <em>not</em> loaded
+     *            while iterating, {@code false} for eager loading
      * @throws WikiApiException
      *             if an error occurs
+     * @deprecated The parameter is inverted: {@code true} means lazy loading. Use
+     *             {@link #RevisionIterator(RevisionAPIConfiguration)} followed by
+     *             {@link #setLazyLoading(boolean)} instead.
      */
+    @Deprecated(since = "2.3.1")
     public RevisionIterator(final RevisionAPIConfiguration config, boolean shouldLoadRevisionText)
         throws WikiApiException
     {
         this(config);
-        this.shouldLoadRevisionText = shouldLoadRevisionText;
+        setLazyLoading(shouldLoadRevisionText);
     }
 
     public RevisionIterator(final DatabaseConfiguration db) throws WikiApiException
@@ -416,9 +478,18 @@ public class RevisionIterator
             limit = endPK - primaryKey + 1;
         }
 
-        if (pageQuery == null) {
-            // The keyset paging continues after the last primary key read, hence the explicit order
-            pageQuery = "SELECT PrimaryKey, Revision, RevisionCounter,"
+        if (pageQuery == null || pageQueryIsLazy != lazyLoading) {
+            // Built on first use and again after a mode switch, the reused statement is replaced
+            if (statement != null) {
+                statement.close();
+                statement = null;
+            }
+            pageQueryIsLazy = lazyLoading;
+            // The keyset paging continues after the last primary key read, hence the explicit order.
+            // Lazy loading never reads the Revision blob, so PrimaryKey takes its place to keep
+            // the column positions of both modes the same.
+            pageQuery = "SELECT PrimaryKey, " + (pageQueryIsLazy ? "PrimaryKey" : "Revision")
+                    + ", RevisionCounter,"
                     + " RevisionID, ArticleID, Timestamp, FullRevisionID, ContributorName, ContributorId, Comment, Minor, ContributorIsRegistered"
                     + (hasNamespaceColumn ? ", Namespace" : "") + " FROM revisions"
                     + " WHERE PrimaryKey > ? ORDER BY PrimaryKey"
@@ -511,7 +582,10 @@ public class RevisionIterator
 
             Revision revision = new Revision(revCount);
             revision.setPrimaryKey(this.primaryKey);
-            if (!shouldLoadRevisionText) {
+            // A page read with lazy loading has no Revision column to decode, even if eager
+            // loading was switched on in the meantime
+            final boolean decodeText = !lazyLoading && !pageQueryIsLazy;
+            if (decodeText) {
                 String currentRevision;
 
                 Diff diff = decode(result, 2, binaryData);
@@ -519,7 +593,7 @@ public class RevisionIterator
                 int fullRevisionPK = -1;
                 if (!diff.isFullRevision() && previousRevisionPK != this.primaryKey - 1) {
                     // The iteration did not decode the preceding revision of the diff chain,
-                    // e.g. due to the start position or a switch from lazy mode
+                    // e.g. due to the start position or a switch from lazy loading
                     fullRevisionPK = findFullRevisionPK(result.getInt(4));
                 }
 
@@ -541,6 +615,10 @@ public class RevisionIterator
                 revision.setRevisionText(currentRevision);
             }
             else {
+                // The texts are not reconstructed, the next one cannot build on this revision and
+                // has to rebuild its diff chain
+                previousRevision = null;
+                previousRevisionPK = -1;
                 if (revApi == null) {
                     revApi = new RevisionApi(config);
                 }

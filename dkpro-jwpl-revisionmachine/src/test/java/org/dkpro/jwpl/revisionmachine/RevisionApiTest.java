@@ -182,6 +182,45 @@ public class RevisionApiTest
     }
 
     @Test
+    public void getRevisionOverloadsReturnSameMetaDataAlongChain()
+    {
+        try {
+            int pageId = wiki.getPage("Car").getPageId();
+            int nrOfRevisions = revisionApi.getNumberOfRevisions(pageId);
+
+            // start, middle and end of the full revision chain
+            for (int counter : new int[] { 1, nrOfRevisions / 2, nrOfRevisions }) {
+                Revision byCounter = revisionApi.getRevision(pageId, counter);
+                assertNotNull(byCounter);
+                assertEquals(counter, byCounter.getRevisionCounter());
+                assertEquals(pageId, byCounter.getArticleID());
+
+                Revision byId = revisionApi.getRevision(byCounter.getRevisionID());
+                Revision byTimestamp = revisionApi.getRevision(pageId, byCounter.getTimeStamp());
+
+                for (Revision other : new Revision[] { byId, byTimestamp }) {
+                    assertNotNull(other);
+                    assertEquals(byCounter.getPrimaryKey(), other.getPrimaryKey());
+                    assertEquals(byCounter.getRevisionID(), other.getRevisionID());
+                    assertEquals(byCounter.getRevisionCounter(), other.getRevisionCounter());
+                    assertEquals(byCounter.getArticleID(), other.getArticleID());
+                    assertEquals(byCounter.getTimeStamp(), other.getTimeStamp());
+                    assertEquals(byCounter.getComment(), other.getComment());
+                    assertEquals(byCounter.isMinor(), other.isMinor());
+                    assertEquals(byCounter.getContributorName(), other.getContributorName());
+                    assertEquals(byCounter.getContributorId(), other.getContributorId());
+                    assertEquals(byCounter.contributorIsRegistered(),
+                            other.contributorIsRegistered());
+                    assertEquals(byCounter.getRevisionText(), other.getRevisionText());
+                }
+            }
+        }
+        catch (WikiApiException e) {
+            fail(e.getMessage(), e);
+        }
+    }
+
+    @Test
     public void articleIDTests()
     {
         Calendar calendar = Calendar.getInstance();

@@ -200,7 +200,8 @@ public class RevisionIteratorTest
 
         // create new iterator with lazy loading
         try {
-            revisionIterator = new RevisionIterator(config, true);
+            revisionIterator = new RevisionIterator(config);
+            revisionIterator.setLazyLoading(true);
         }
         catch (WikiApiException e) {
             fail("RevisionIterator could not be initialized with lazy loading = 'true': "
@@ -248,7 +249,8 @@ public class RevisionIteratorTest
     @ValueSource(ints = { 1, 10, 100 })
     public void switchFromLazyToEagerTest(int switchIndex) throws WikiApiException, SQLException
     {
-        try (RevisionIterator iterator = new RevisionIterator(config, true)) {
+        try (RevisionIterator iterator = new RevisionIterator(config)) {
+            iterator.setLazyLoading(true);
             assertTextsOfRemainingRevisions(iterator, 0, switchIndex);
         }
     }
@@ -260,10 +262,10 @@ public class RevisionIteratorTest
             int i = 0;
             while (iterator.hasNext()) {
                 if (i == SWITCH_TO_LAZY_INDEX) {
-                    iterator.setShouldLoadRevisionText(true);
+                    iterator.setLazyLoading(true);
                 }
                 else if (i == SWITCH_TO_EAGER_INDEX) {
-                    iterator.setShouldLoadRevisionText(false);
+                    iterator.setLazyLoading(false);
                 }
                 Revision revision = iterator.next();
                 assertNotNull(revision);
@@ -272,6 +274,36 @@ public class RevisionIteratorTest
                 i++;
             }
             assertEquals(revisionIDs.size(), i);
+        }
+    }
+
+    /**
+     * The deprecated, inversely named text loading methods must keep their meaning: {@code true}
+     * means lazy loading.
+     */
+    @Test
+    @SuppressWarnings("deprecation")
+    public void deprecatedTextLoadingMethodsMapToLazyLoadingTest()
+        throws WikiApiException, SQLException
+    {
+        try (RevisionIterator iterator = new RevisionIterator(config)) {
+            assertFalse(iterator.isLazyLoading());
+            assertFalse(iterator.shouldLoadRevisionText());
+
+            iterator.setShouldLoadRevisionText(true);
+            assertTrue(iterator.isLazyLoading());
+
+            iterator.setShouldLoadRevisionText(false);
+            assertFalse(iterator.isLazyLoading());
+
+            iterator.setLazyLoading(true);
+            assertTrue(iterator.shouldLoadRevisionText());
+        }
+        try (RevisionIterator iterator = new RevisionIterator(config, true)) {
+            assertTrue(iterator.isLazyLoading());
+        }
+        try (RevisionIterator iterator = new RevisionIterator(config, false)) {
+            assertFalse(iterator.isLazyLoading());
         }
     }
 
@@ -313,7 +345,8 @@ public class RevisionIteratorTest
         throws WikiApiException, SQLException
     {
         Map<Integer, Integer> revisionIDs = new LinkedHashMap<>();
-        try (RevisionIterator iterator = new RevisionIterator(config, true)) {
+        try (RevisionIterator iterator = new RevisionIterator(config)) {
+            iterator.setLazyLoading(true);
             while (iterator.hasNext()) {
                 Revision revision = iterator.next();
                 revisionIDs.put(revision.getPrimaryKey(), revision.getRevisionID());
@@ -357,7 +390,7 @@ public class RevisionIteratorTest
         int i = 0;
         while (iterator.hasNext()) {
             if (i == switchIndex) {
-                iterator.setShouldLoadRevisionText(false);
+                iterator.setLazyLoading(false);
             }
             Revision revision = iterator.next();
             assertNotNull(revision, "Revision " + expectedIDs.get(i) + " is missing");
