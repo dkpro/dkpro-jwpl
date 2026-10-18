@@ -149,10 +149,8 @@ public class BitWriter
 
         writeFillBits();
 
-        int l = bText.length;
-        for (int i = 0; i < l; i++) {
-            write(0xFF & bText[i]);
-        }
+        // The stream is byte-aligned after writeFillBits(), so the bytes can be copied at once.
+        this.stream.write(bText, 0, bText.length);
     }
 
     /**

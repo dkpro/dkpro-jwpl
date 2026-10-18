@@ -40,10 +40,10 @@
     <fau.utils.version>3.0.8</fau.utils.version>
     <org.sweble.wikitext.version>4.1.0</org.sweble.wikitext.version>
 
-    <commons.codec.version>1.22.1</commons.codec.version>
+    <commons.codec.version>1.23.0</commons.codec.version>
     <commons.compress.version>1.28.0</commons.compress.version>
     <commons.io.version>2.20.0</commons.io.version>
-    <commons.lang3.version>3.20.0</commons.lang3.version>
+    <commons.lang3.version>3.21.0</commons.lang3.version>
     <commons.logging.version>1.3.5</commons.logging.version>
     <!--
       Required for 7z support in commons-compress,  see:
@@ -56,7 +56,7 @@
     <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
     <mysql.version>8.0.33</mysql.version>
     <mariadb.version>3.5.10</mariadb.version>
-    <postgresql.version>42.7.13</postgresql.version>
+    <postgresql.version>42.7.14</postgresql.version>
     <hsqldb.version>2.7.4</hsqldb.version>
 
     <!-- Logger specific dependency versions -->
@@ -208,7 +208,7 @@
       <dependency>
         <groupId>uk.co.foundationsedge</groupId>
         <artifactId>nv-i18n</artifactId>
-        <version>1.35.0</version>
+        <version>1.36.0</version>
       </dependency>
       <dependency>
         <groupId>mysql</groupId>
