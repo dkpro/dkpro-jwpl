@@ -29,22 +29,20 @@ import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
-import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.util.ApiUtilities;
 import org.dkpro.jwpl.api.util.CommonUtilities;
 import org.dkpro.jwpl.api.util.GraphSerialization;
 import org.jgrapht.GraphPath;
+import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.AsUndirectedGraph;
@@ -130,6 +128,12 @@ public class CategoryGraph
      * The depth of a category graph. Initially: {@link Double#NEGATIVE_INFINITY}.
      */
     private double depth = Double.NEGATIVE_INFINITY;
+
+    /**
+     * Whether the graph parameters (average shortest path length, diameter, average degree,
+     * cluster coefficient and degree distribution) have already been computed.
+     */
+    private boolean graphParametersComputed = false;
 
     /**
      * Creates an {@link CategoryGraph} using a serialized DirectedGraph object.
@@ -266,69 +270,14 @@ public class CategoryGraph
             List<String> filterList)
         throws WikiApiException
     {
+        wiki = pWiki;
+
         // create the graph as a directed Graph
         // algorithms that need to be called on an undirected graph or should ignore direction
         // can be called on an AsUndirectedGraph view of the directed graph
-        graph = new DefaultDirectedGraph<>(DefaultEdge.class);
-
-        wiki = pWiki;
-
-        degreeDistribution = new HashMap<>();
-
-        for (int pageID : pPageIDs) {
-            if (filterList != null) {
-                Category cat = loadCategory(pageID);
-                if (matchesFilter(cat, filterList)) {
-                    continue;
-                }
-            }
-
-            graph.addVertex(pageID);
-        }
-
+        graph = buildGraph(pWiki, pPageIDs, filterList,
+                CategoryGraphData.load(pWiki, pPageIDs, filterList != null));
         numberOfNodes = graph.vertexSet().size();
-
-        // add edges
-        int progress = 0;
-        for (int pageID : graph.vertexSet()) {
-            progress++;
-            ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
-                    ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
-
-            // get the category
-            Category cat = loadCategory(pageID);
-
-            // get parents and children
-            // if the corresponding nodes are in the graph (it could be a subset) => add them to the
-            // graph
-            Set<Integer> inLinks = cat.getParentIDs();
-            Set<Integer> outLinks = cat.getChildrenIDs();
-
-            // add edges
-            // If an edge already exits, it is silently ignored by JGraphT. So we do not have to
-            // check this.
-            for (int inLink : inLinks) {
-                if (graph.vertexSet().contains(inLink)) {
-                    if (inLink == pageID) {
-                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
-                    }
-                    else {
-                        graph.addEdge(inLink, pageID);
-                    }
-                }
-            }
-            for (int outLink : outLinks) {
-                if (graph.vertexSet().contains(outLink)) {
-                    if (outLink == pageID) {
-                        logger.debug("Self-loop for node {} ({})", pageID, cat.getTitle());
-                    }
-                    else {
-                        graph.addEdge(pageID, outLink);
-                    }
-                }
-            }
-        }
-
         numberOfEdges = graph.edgeSet().size();
 
         logger.info("Added {} nodes.", this.getNumberOfNodes());
@@ -345,21 +294,103 @@ public class CategoryGraph
     }
 
     /**
-     * Loads the category with the given pageId.
+     * Builds the category graph over the given categories, before any cycles are removed.
      *
-     * @param pageID
-     *            The pageId of the category.
-     * @return The category with the given pageId.
+     * @param pWiki
+     *            The wiki object, only used to look up titles for debug logging.
+     * @param pPageIDs
+     *            The page ids of the categories to add as nodes.
+     * @param filterList
+     *            A list of strings. All categories starting with such a string are not added to
+     *            the graph. May be {@code null}.
+     * @param data
+     *            The category rows and links of (at least) the given categories. The names must
+     *            have been loaded if {@code filterList} is not {@code null}.
+     * @return The graph, with its nodes and edges in the order the per-category loading produced.
      * @throws WikiApiException
-     *             Thrown if there is no category with the given pageId.
+     *             Thrown if a page id is not the page id of a category, or if errors occurred.
      */
-    private Category loadCategory(int pageID) throws WikiApiException
+    static DefaultDirectedGraph<Integer, DefaultEdge> buildGraph(Wikipedia pWiki,
+            Set<Integer> pPageIDs, List<String> filterList, CategoryGraphData data)
+        throws WikiApiException
     {
-        try {
-            return new Category(this.wiki, pageID);
+        DefaultDirectedGraph<Integer, DefaultEdge> directedGraph = new DefaultDirectedGraph<>(
+                DefaultEdge.class);
+
+        for (int pageID : pPageIDs) {
+            if (filterList != null) {
+                requireId(data, pageID);
+                if (matchesFilter(new Title(data.getName(pageID)), filterList)) {
+                    continue;
+                }
+            }
+
+            directedGraph.addVertex(pageID);
         }
-        catch (WikiPageNotFoundException e) {
-            throw new WikiApiException(pageID + " is not a valid pageID", e);
+
+        // add edges
+        int progress = 0;
+        for (int pageID : directedGraph.vertexSet()) {
+            progress++;
+            ApiUtilities.printProgressInfo(progress, pPageIDs.size(), 10,
+                    ApiUtilities.ProgressInfoMode.TEXT, "Adding edges");
+
+            long id = requireId(data, pageID);
+
+            // get parents and children
+            // if the corresponding nodes are in the graph (it could be a subset) => add them to the
+            // graph
+            Set<Integer> inLinks = data.getParentIDs(id);
+            Set<Integer> outLinks = data.getChildrenIDs(id);
+
+            // add edges
+            // If an edge already exits, it is silently ignored by JGraphT. So we do not have to
+            // check this.
+            for (int inLink : inLinks) {
+                if (directedGraph.vertexSet().contains(inLink)) {
+                    if (inLink == pageID) {
+                        logSelfLoop(pWiki, data, pageID);
+                    }
+                    else {
+                        directedGraph.addEdge(inLink, pageID);
+                    }
+                }
+            }
+            for (int outLink : outLinks) {
+                if (directedGraph.vertexSet().contains(outLink)) {
+                    if (outLink == pageID) {
+                        logSelfLoop(pWiki, data, pageID);
+                    }
+                    else {
+                        directedGraph.addEdge(pageID, outLink);
+                    }
+                }
+            }
+        }
+        return directedGraph;
+    }
+
+    /**
+     * @return The hibernate id of the category with the given page id.
+     * @throws WikiApiException
+     *             Thrown if there is no category with the given page id.
+     */
+    private static long requireId(CategoryGraphData data, int pageID) throws WikiApiException
+    {
+        Long id = data.getId(pageID);
+        if (id == null) {
+            throw new WikiApiException(pageID + " is not a valid pageID");
+        }
+        return id;
+    }
+
+    private static void logSelfLoop(Wikipedia pWiki, CategoryGraphData data, int pageID)
+        throws WikiApiException
+    {
+        if (logger.isDebugEnabled()) {
+            String name = data.getName(pageID);
+            Title title = name != null ? new Title(name) : pWiki.getCategory(pageID).getTitle();
+            logger.debug("Self-loop for node {} ({})", pageID, title);
         }
     }
 
@@ -367,8 +398,8 @@ public class CategoryGraph
      * Checks whether the category title matches the filter (a filter matches a string, if the
      * string starts with the filter expression).
      *
-     * @param cat
-     *            A category.
+     * @param title
+     *            The title of a category.
      * @param filterList
      *            A list of filter strings.
      * @return True, if the category title starts with or is equal to a string in the filter list.
@@ -376,10 +407,10 @@ public class CategoryGraph
      * @throws WikiTitleParsingException
      *             Thrown if errors occurred.
      */
-    private boolean matchesFilter(Category cat, List<String> filterList)
+    private static boolean matchesFilter(Title title, List<String> filterList)
         throws WikiTitleParsingException
     {
-        String categoryTitle = cat.getTitle().getPlainTitle();
+        String categoryTitle = title.getPlainTitle();
         for (String filter : filterList) {
             if (categoryTitle.startsWith(filter)) {
                 logger.info("{} starts with {} => removing", categoryTitle, filter);
@@ -491,88 +522,7 @@ public class CategoryGraph
     public Category getLCS(int categoryPageId1, int categoryPageId2) throws WikiApiException
     {
         int lcsid = getLCSId(categoryPageId1, categoryPageId2);
-        return lcsid > -1 ? wiki.getCategory(getLCSId(categoryPageId1, categoryPageId2)) : null;
-    }
-
-    /**
-     * Returns the shortest path from node to root as a list of pageIds of the nodes on the path.
-     * Node and root are included in the path node list.
-     *
-     * @param root
-     *            The root node of the graph.
-     * @param node
-     *            A node of the graph.
-     * @return The shortest path from node to root as a list of pagIs of the nodes on the path; or
-     *         null if no path exists
-     * @throws WikiApiException
-     *             Thrown if errors occurred.
-     */
-    private List<Integer> getPathToRoot(int root, int node) throws WikiApiException
-    {
-        List<Integer> pathToRoot = new LinkedList<>();
-        List<Integer> shortestPath = new ArrayList<>();
-
-        expandPath(root, node, pathToRoot, shortestPath);
-
-        if (shortestPath.isEmpty()) {
-            return null;
-        }
-        else {
-            return shortestPath;
-        }
-    }
-
-    private void expandPath(int root, int currentNode, List<Integer> currentPath,
-            List<Integer> shortestPath)
-    {
-
-        // add the current node to the path
-        currentPath.add(currentNode);
-
-        // if root node reached, check whether it is the shortest path
-        if (currentNode == root) {
-            logger.debug("found root");
-
-            if (!shortestPath.isEmpty()) {
-                if (currentPath.size() < shortestPath.size()) {
-                    logger.debug("setting new shortest path");
-                    shortestPath.clear();
-                    shortestPath.addAll(currentPath);
-                }
-            }
-            else {
-                logger.debug("initializing shortest path");
-                shortestPath.addAll(currentPath);
-            }
-        }
-
-        // do not expand paths that are longer or equal than the current shortest path
-        // this is a runtime efficiency optimization!
-        if (!shortestPath.isEmpty() && currentPath.size() >= shortestPath.size()) {
-            return;
-        }
-
-        Set<DefaultEdge> incomingEdges = this.graph.incomingEdgesOf(currentNode);
-
-        // no incoming edges => return path without adding this node
-        if (incomingEdges == null || incomingEdges.isEmpty()) {
-            logger.debug("found non-root source");
-            return;
-        }
-
-        for (DefaultEdge incomingEdge : incomingEdges) {
-            int sourceNode = graph.getEdgeSource(incomingEdge);
-
-            if (sourceNode == currentNode) {
-                logger.warn("Source node equals current node.");
-                System.exit(1);
-            }
-            List<Integer> savedPath = new LinkedList<>(currentPath);
-            expandPath(root, sourceNode, currentPath, shortestPath);
-            currentPath.clear();
-            currentPath.addAll(savedPath);
-        }
-
+        return lcsid > -1 ? wiki.getCategory(lcsid) : null;
     }
 
     /**
@@ -939,13 +889,14 @@ public class CategoryGraph
     }
 
     /**
-     * Computes the paths from each category node to the root. Computing n paths will take some
-     * time. Thus, efficient computing is based on the assumption that all subpaths in the shortest
-     * path to the root, are also the shortest paths for the corresponding nodes. Starting with the
-     * leaf nodes gives the longest initial paths with most subpaths.
+     * Computes the shortest path from each category node to the root. The paths are computed with
+     * a single breadth-first search that starts at the root and follows the edges from the parent
+     * to the child categories. A category that is not reachable from the root is mapped to an
+     * empty path.
      *
      * @throws WikiApiException
      *             Thrown if errors occurred.
+     * @see #getRootPathMap()
      */
     public void createRootPathMap() throws WikiApiException
     {
@@ -967,35 +918,22 @@ public class CategoryGraph
         }
 
         logger.info("Computing rootPathMap");
-        rootPathMap = new HashMap<>();
+        int root = wiki.getMetaData().getMainCategory().getPageId();
+        rootPathMap = __computeRootPathMap(root);
 
-        // a queue holding the nodes to process
-        Deque<Integer> queue = new ArrayDeque<>();
-
-        // initialize the queue with all leaf nodes
-        Set<Integer> leafNodes = this.__getLeafNodes();
-        queue.addAll(leafNodes);
-
-        logger.info("{} leaf nodes.", queue.size());
-        fillRootPathMap(queue);
-
-        queue.clear(); // queue should be empty now, but clear anyway
-
-        // add non-leaf nodes that have not been on the shortest, yet
+        // categories that are not part of this graph have no path to the root either
         for (Category cat : wiki.getCategories()) {
-            if (!rootPathMap.containsKey(cat.getPageId())) {
-                queue.add(cat.getPageId());
-            }
+            rootPathMap.putIfAbsent(cat.getPageId(), new ArrayList<>());
         }
 
-        logger.info("{} non leaf nodes not on a shortest leaf-node to root path.", queue.size());
-        fillRootPathMap(queue);
-
-        for (Category cat : wiki.getCategories()) {
-            if (!rootPathMap.containsKey(cat.getPageId())) {
-                logger.info("no path for {}", cat.getPageId());
+        int withoutPath = 0;
+        for (List<Integer> path : rootPathMap.values()) {
+            if (path.isEmpty()) {
+                withoutPath++;
             }
         }
+        logger.info("{} of {} categories have no path to the root.", withoutPath,
+                rootPathMap.size());
 
         // from the root path map, we can very easily get the depth
         this.depth = getDepthFromRootPathMap();
@@ -1006,59 +944,84 @@ public class CategoryGraph
         this.serializeMap(rootPathMap, rootPathFile);
     }
 
-    private void fillRootPathMap(Deque<Integer> queue) throws WikiApiException
+    /**
+     * Computes the shortest path from each node of the graph to the given root, using a single
+     * breadth-first search that starts at the root and follows the outgoing edges, i.e. the edges
+     * from a parent to its children. This takes time linear in the size of the graph and also
+     * terminates on graphs that still contain cycles.
+     * <p>
+     * If a node has more than one shortest path to the root, the path is chosen in the same way as
+     * the depth-first search that was used before: at each node, the first parent (in the order of
+     * the incoming edges of the node) that lies on a shortest path is taken. As a consequence, each
+     * suffix of a path is the path of the node it starts with.
+     *
+     * @param root
+     *            The pageId of the root node.
+     * @return A map from each node of the graph to the list of nodes on its shortest path to the
+     *         root, starting with the node itself and ending with the root. Nodes that are not
+     *         reachable from the root are mapped to an empty list.
+     */
+    Map<Integer, List<Integer>> __computeRootPathMap(int root)
     {
-        int root = wiki.getMetaData().getMainCategory().getPageId();
+        Map<Integer, List<Integer>> result = new HashMap<>();
+        if (!graph.containsVertex(root)) {
+            logger.warn("The root node {} is not part of this graph.", root);
+            for (int node : graph.vertexSet()) {
+                result.put(node, new ArrayList<>());
+            }
+            return result;
+        }
 
-        // while the queue is not empty
+        // breadth-first search from the root: the distance of each reachable node to the root,
+        // and the reachable nodes in the order of increasing distance
+        Map<Integer, Integer> distances = new HashMap<>();
+        List<Integer> nodesByDistance = new ArrayList<>();
+        Deque<Integer> queue = new ArrayDeque<>();
+        distances.put(root, 0);
+        queue.add(root);
         while (!queue.isEmpty()) {
-            // remove first element from queue
             int currentNode = queue.poll();
+            nodesByDistance.add(currentNode);
+            int childDistance = distances.get(currentNode) + 1;
+            for (DefaultEdge outgoingEdge : graph.outgoingEdgesOf(currentNode)) {
+                int child = graph.getEdgeTarget(outgoingEdge);
+                if (!distances.containsKey(child)) {
+                    distances.put(child, childDistance);
+                    queue.add(child);
+                }
+            }
+        }
 
-            logger.debug("Queue size: {}", queue.size());
-
-            // if we have already inserted a path for this node => continue with the next
-            if (getRootPathMap().containsKey(currentNode)) {
+        // the path of a node is the node itself followed by the path of its first parent that is
+        // one step closer to the root; as the nodes are processed in the order of increasing
+        // distance, the path of that parent is always known already
+        for (int node : nodesByDistance) {
+            if (node == root) {
+                List<Integer> path = new ArrayList<>(1);
+                path.add(root);
+                result.put(root, path);
                 continue;
             }
-
-            // compute path from current node to root
-            List<Integer> nodesOnPath = getPathToRoot(root, currentNode);
-
-            // if there is no path => skip
-            if (nodesOnPath == null) {
-                getRootPathMap().put(currentNode, new ArrayList<>());
-                continue;
-            }
-
-            // the first entry should be the current Node, the last entry should be the root
-            // check whether this assumption is valid
-            if (nodesOnPath.get(0) != currentNode || // the first node of the list should always be
-                                                     // the current node
-                    nodesOnPath.get(nodesOnPath.size() - 1) != root) { // the last node of the list
-                                                                       // should always be the root
-                                                                       // node
-                logger.error("Something is wrong with the path to the root");
-                logger.error("{} -- {}", nodesOnPath.get(0), currentNode);
-                logger.error("{} -- {}", nodesOnPath.get(nodesOnPath.size() - 1), root);
-                logger.error("size = {}", nodesOnPath.size());
-                System.exit(1);
-            }
-
-            int i = 0;
-            for (int nodeOnPath : nodesOnPath) {
-                // if we have already inserted a path for this node => continue with the next
-                if (getRootPathMap().containsKey(nodeOnPath)) {
-                    continue;
+            int parentDistance = distances.get(node) - 1;
+            for (DefaultEdge incomingEdge : graph.incomingEdgesOf(node)) {
+                int parent = graph.getEdgeSource(incomingEdge);
+                Integer distance = distances.get(parent);
+                if (distance != null && distance == parentDistance) {
+                    List<Integer> parentPath = result.get(parent);
+                    List<Integer> path = new ArrayList<>(parentPath.size() + 1);
+                    path.add(node);
+                    path.addAll(parentPath);
+                    result.put(node, path);
+                    break;
                 }
-                // insert path
-                else {
-                    getRootPathMap().put(nodeOnPath,
-                            new ArrayList<>(nodesOnPath.subList(i, nodesOnPath.size())));
-                }
-                i++;
             }
-        } // while queue not empty
+        }
+
+        // nodes that are not reachable from the root have no path
+        for (int node : graph.vertexSet()) {
+            result.putIfAbsent(node, new ArrayList<>());
+        }
+        return result;
     }
 
     /**
@@ -1179,7 +1142,7 @@ public class CategoryGraph
      */
     public double getAverageShortestPathLength()
     {
-        if (averageShortestPathLength < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1196,7 +1159,7 @@ public class CategoryGraph
      */
     public double getDiameter()
     {
-        if (diameter < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1213,7 +1176,7 @@ public class CategoryGraph
      */
     public double getAverageDegree()
     {
-        if (averageDegree < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1231,7 +1194,7 @@ public class CategoryGraph
      */
     public double getClusterCoefficient()
     {
-        if (clusterCoefficient < 0) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1248,7 +1211,7 @@ public class CategoryGraph
      */
     public Map<Integer, Integer> getDegreeDistribution()
     {
-        if (degreeDistribution == null) { // has not been initialized
+        if (!graphParametersComputed) {
             logger.debug("Calling setGraphParameters");
             setGraphParameters();
         }
@@ -1271,15 +1234,13 @@ public class CategoryGraph
 
         if (!neighbors.isEmpty()) {
             // for each pair of neighbors, test if there is a connection
-            Object[] nodeArray = neighbors.toArray();
-            // sort the Array so we can use a simple iteration with two for loops to access all
-            // pairs
-            Arrays.sort(nodeArray);
+            // the order of the nodes does not matter, as each pair i < j is visited exactly once
+            Integer[] nodeArray = neighbors.toArray(new Integer[0]);
 
-            for (int i = 0; i < neighbors.size(); i++) {
-                int outerNode = (Integer) nodeArray[i];
-                for (int j = i + 1; j < neighbors.size(); j++) {
-                    int innerNode = (Integer) nodeArray[j];
+            for (int i = 0; i < nodeArray.length; i++) {
+                int outerNode = nodeArray[i];
+                for (int j = i + 1; j < nodeArray.length; j++) {
+                    int innerNode = nodeArray[j];
                     // in case of a connection - increade connection counter
                     // order of the nodes doesn't matter for undirected graphs
                     if (undirectedGraph.containsEdge(innerNode, outerNode)) {
@@ -1317,16 +1278,6 @@ public class CategoryGraph
         return neighbors;
     }
 
-    private void updateDegreeDistribution(int nodeDegree)
-    {
-        if (degreeDistribution.containsKey(nodeDegree)) {
-            degreeDistribution.put(nodeDegree, (degreeDistribution.get(nodeDegree) + 1));
-        }
-        else {
-            degreeDistribution.put(nodeDegree, 1);
-        }
-    }
-
     /**
      * Computes and sets the diameter, the average degree and the average shortest path length of
      * the graph. Do not call this in the constructor. May run a while. It is called in the getters,
@@ -1334,6 +1285,9 @@ public class CategoryGraph
      */
     private void setGraphParameters()
     {
+        if (graphParametersComputed) {
+            return;
+        }
 
         // Diameter is the maximum of all shortest path lengths
         // Average shortest path length is (as the name says) the average of the shortest path
@@ -1343,6 +1297,7 @@ public class CategoryGraph
         double shortestPathLengthSum = 0.0;
         double degreeSum = 0.0;
         double clusterCoefficientSum = 0.0;
+        Map<Integer, Integer> degreeCounts = new HashMap<>();
 
         // iterate over all node pairs
         Set<Integer> nodes = undirectedGraph.vertexSet();
@@ -1360,7 +1315,7 @@ public class CategoryGraph
 
             int nodeDegree = undirectedGraph.degreeOf(node);
             degreeSum += nodeDegree;
-            updateDegreeDistribution(nodeDegree);
+            degreeCounts.merge(nodeDegree, 1, Integer::sum);
 
             // cluster coefficient of a node is C_v is the fraction of the connections that exist
             // between the neighbor nodes (k_v) of this node and all allowable connections between
@@ -1370,7 +1325,7 @@ public class CategoryGraph
             if (undirectedGraph.degreeOf(node) > 1) {
                 double numberOfNeighborConnections = getNumberOfNeighborConnections(node);
                 clusterCoefficientSum += (numberOfNeighborConnections
-                        / (nodeDegree * (nodeDegree - 1)));
+                        / ((double) nodeDegree * (nodeDegree - 1)));
             }
 
             // Returns the new shortestPathLengthSum and the new maxPathLength.
@@ -1386,9 +1341,10 @@ public class CategoryGraph
         }
 
         if (nodes.size() > 1) {
-            this.averageShortestPathLength = shortestPathLengthSum
-                    / (nodes.size() * (nodes.size() - 1) / 2); // sum of path lengths / (number of
-                                                               // node pairs)
+            // sum of path lengths / (number of node pairs), computed in long arithmetic to avoid
+            // an int overflow for graphs with more than 46341 nodes
+            long numberOfNodePairs = (long) nodes.size() * (nodes.size() - 1) / 2;
+            this.averageShortestPathLength = shortestPathLengthSum / numberOfNodePairs;
         }
         else {
             this.averageShortestPathLength = 0; // there is only one node
@@ -1396,6 +1352,8 @@ public class CategoryGraph
         this.diameter = maxPathLength;
         this.averageDegree = degreeSum / nodes.size();
         this.clusterCoefficient = clusterCoefficientSum / nodes.size();
+        this.degreeDistribution = degreeCounts;
+        this.graphParametersComputed = true;
     }
 
     /**
@@ -1423,56 +1381,46 @@ public class CategoryGraph
             double pMaxPathLength, Set<Integer> pWasSource)
     {
 
-        // a set of nodes that have already been expanded -> algorithm should expand nodes
-        // monotonically and not go back
-        Set<Integer> alreadyExpanded = new HashSet<>();
+        // a set of nodes that have already been discovered. Nodes are marked on enqueue, so that
+        // each node enters the queue at most once and is assigned its (minimal) BFS distance
+        Set<Integer> alreadyDiscovered = new HashSet<>();
 
-        // a queue holding the newly discovered nodes with their distance to the start node
-        Deque<int[]> queue = new ArrayDeque<>();
+        // two parallel queues holding the newly discovered nodes and their distance to the start
+        // node
+        Deque<Integer> nodeQueue = new ArrayDeque<>();
+        Deque<Integer> distanceQueue = new ArrayDeque<>();
 
         // initialize queue with start node
-        int[] innerList = new int[2];
-        innerList[0] = pStartNode; // the node
-        innerList[1] = 0; // the distance to the start node
-        queue.add(innerList);
+        alreadyDiscovered.add(pStartNode);
+        nodeQueue.add(pStartNode);
+        distanceQueue.add(0);
 
         // while the queue is not empty
-        while (!queue.isEmpty()) {
+        while (!nodeQueue.isEmpty()) {
             // remove first element from queue
-            int[] queueElement = queue.poll();
-            int currentNode = queueElement[0];
-            int distance = queueElement[1];
+            int currentNode = nodeQueue.poll();
+            int distance = distanceQueue.poll();
 
-            // if the node was not already expanded
-            if (!alreadyExpanded.contains(currentNode)) {
-                // the node gets expanded now
-                alreadyExpanded.add(currentNode);
-
-                // if the node was a source node in a previous run, we already have added this path
-                if (!pWasSource.contains(currentNode)) {
-                    // add the distance of this node to shortestPathLengthSum
-                    // check if maxPathLength must be updated
-                    pShortestPathLengthSum += distance;
-                    if (distance > pMaxPathLength) {
-                        pMaxPathLength = distance;
-                    }
+            // if the node was a source node in a previous run, we already have added this path
+            if (!pWasSource.contains(currentNode)) {
+                // add the distance of this node to shortestPathLengthSum
+                // check if maxPathLength must be updated
+                pShortestPathLengthSum += distance;
+                if (distance > pMaxPathLength) {
+                    pMaxPathLength = distance;
                 }
-                // even if the node was a source node in a previous run there can be a path to other
-                // nodes over this node, so go on
+            }
+            // even if the node was a source node in a previous run there can be a path to other
+            // nodes over this node, so go on
 
-                // get the neighbors of the queue element
-                Set<Integer> neighbors = getNeighbors(currentNode);
-
-                // iterate over all neighbors
-                for (int neighbor : neighbors) {
-                    // if the node was not already expanded
-                    if (!alreadyExpanded.contains(neighbor)) {
-                        // add the node to the queue, increase node distance by one
-                        int[] tmpList = new int[2];
-                        tmpList[0] = neighbor;
-                        tmpList[1] = (distance + 1);
-                        queue.add(tmpList);
-                    }
+            // iterate over all neighbors of the queue element
+            for (DefaultEdge edge : undirectedGraph.edgesOf(currentNode)) {
+                int neighbor = Graphs.getOppositeVertex(undirectedGraph, edge, currentNode);
+                // add the node to the queue if it was not discovered yet,
+                // increase node distance by one
+                if (alreadyDiscovered.add(neighbor)) {
+                    nodeQueue.add(neighbor);
+                    distanceQueue.add(distance + 1);
                 }
             }
         }

@@ -22,11 +22,15 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -37,6 +41,7 @@ import java.util.UUID;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
+import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -541,6 +546,74 @@ public class WikipediaTest
         assertTrue(entry.getValue() <= 1);
     }
 
+    /**
+     * The result must equal the one of the former algorithm, which rebuilt a {@link TreeSet} of all
+     * kept entries for every row, including the entries chosen among equal distances and the
+     * distance of the last name read for a page with several names.
+     */
+    @Test
+    public void testGetSimilarPagesMatchesFormerAlgorithm() throws WikiApiException
+    {
+        // TK1 (103), TK2 (105) and TK3 (107) are equally distant from "TK", so ties decide which
+        // one is kept. The later names of 103 and 105 replace their distance with a larger one.
+        assertEquals(Map.of(107, 1.0), toIds(wiki.getSimilarPages("TK", 1)));
+        assertEquals(Map.of(107, 1.0, 108, 3.0), toIds(wiki.getSimilarPages("TK", 2)));
+
+        String[] patterns = { "TK", "TK2", "Wikipedia_API", "NCS", "UKP", "Ambiguous_Title", "a",
+                "Semantic_Information", "Zzzz" };
+        int[] sizes = { -1, 0, 1, 2, 3, 5, 10, 17, 30, 100 };
+        for (String pattern : patterns) {
+            for (int size : sizes) {
+                assertEquals(toIds(formerSimilarPages(pattern, size)),
+                        toIds(wiki.getSimilarPages(pattern, size)),
+                        "pattern=" + pattern + ", size=" + size);
+            }
+        }
+    }
+
+    /** The implementation of {@link Wikipedia#getSimilarPages(String, int)} before issue #573. */
+    private static Map<Page, Double> formerSimilarPages(String pPattern, int pSize)
+        throws WikiApiException
+    {
+        String pattern = new Title(pPattern).getWikiStyleTitle();
+        Map<Page, Double> pageMap = new HashMap<>();
+        Map<Integer, Double> distanceMap = new HashMap<>();
+        LevenshteinStringDistance lsd = new LevenshteinStringDistance();
+        String query = "select pml.pageID, pml.name from PageMapLine as pml";
+        for (Object[] o : wiki.__inTransaction(
+                session -> session.createQuery(query, Object[].class).list())) {
+            double distance = lsd.distance((String) o[1], pattern);
+            distanceMap.put((Integer) o[0], distance);
+            if (distanceMap.size() > pSize) {
+                Set<Map.Entry<Integer, Double>> valueSortedSet = new TreeSet<>(
+                        (e1, e2) -> Double.compare(e2.getValue(), e1.getValue()));
+                valueSortedSet.addAll(distanceMap.entrySet());
+                Iterator<Map.Entry<Integer, Double>> it = valueSortedSet.iterator();
+                if (it.hasNext()) {
+                    distanceMap.remove(it.next().getKey());
+                }
+            }
+        }
+        for (int pageID : distanceMap.keySet()) {
+            Page page = null;
+            try {
+                page = wiki.getPage(pageID);
+            }
+            catch (WikiPageNotFoundException e) {
+                // kept as a null key, as before
+            }
+            pageMap.put(page, distanceMap.get(pageID));
+        }
+        return pageMap;
+    }
+
+    private static Map<Integer, Double> toIds(Map<Page, Double> pages)
+    {
+        Map<Integer, Double> ids = new HashMap<>();
+        pages.forEach((page, distance) -> ids.put(page == null ? null : page.getPageId(), distance));
+        return ids;
+    }
+
     // ---- Tests targeting surviving PIT mutants ----
 
     /** Verifies that repeated page hibernate ID lookups return the same ID. */
@@ -793,6 +866,62 @@ public class WikipediaTest
         int pageId = 1022;
         assertEquals(wiki.getTitle(pageId).getPlainTitle(),
                 wiki.getTitles(List.of(pageId)).get(pageId).getPlainTitle());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsKeepsTheirOrder() throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(List.of(1041, 1014, 1022));
+        assertEquals(3, pages.size());
+        assertEquals(1041, pages.get(0).getPageId());
+        assertEquals(1014, pages.get(1).getPageId());
+        assertEquals(1022, pages.get(2).getPageId());
+        assertEquals("UKP", pages.get(0).getTitle().getPlainTitle());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsMatchesGetPage() throws WikiApiException
+    {
+        int pageId = 1014;
+        Page expected = wiki.getPage(pageId);
+        Page actual = wiki.getPages(List.of(pageId)).get(0);
+        assertEquals(expected.getTitle().getPlainTitle(), actual.getTitle().getPlainTitle());
+        assertEquals(expected.getText(), actual.getText());
+        assertEquals(expected.getNumberOfInlinks(), actual.getNumberOfInlinks());
+        assertEquals(expected.getNumberOfCategories(), actual.getNumberOfCategories());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsSkipsUnknownIds() throws WikiApiException
+    {
+        // Page id 1012 has no matching page
+        List<Page> pages = wiki.getPages(List.of(1012, 1014));
+        assertEquals(1, pages.size());
+        assertEquals(1014, pages.get(0).getPageId());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsEmpty() throws WikiApiException
+    {
+        assertTrue(wiki.getPages(Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsKeepsDuplicates() throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(List.of(1014, 1041, 1014));
+        assertEquals(3, pages.size());
+        assertEquals(1014, pages.get(0).getPageId());
+        assertEquals(1041, pages.get(1).getPageId());
+        assertEquals(1014, pages.get(2).getPageId());
+    }
+
+    @Test
+    public void testGetPagesForPageIdsRejectsNull()
+    {
+        assertThrows(IllegalArgumentException.class, () -> wiki.getPages((List<Integer>) null));
+        assertThrows(IllegalArgumentException.class,
+                () -> wiki.getPages(Arrays.asList(1014, null)));
     }
 
     private void checkGetPageByExactTitle(String pageTitle) throws WikiApiException

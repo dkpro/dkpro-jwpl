@@ -61,6 +61,14 @@ public class DatabaseConfiguration
 
     /**
      * A constructor for MySQL backends, i.e. the default production setting.
+     * <p>
+     * It always uses the MySQL driver {@code com.mysql.jdbc.Driver} and a {@code jdbc:mysql://}
+     * url. For any other backend, such as MariaDB or PostgreSQL, use
+     * {@link #DatabaseConfiguration(String, String, String, String, String, String,
+     * WikiConstants.Language)} with the driver and url of that backend, for example
+     * {@code new DatabaseConfiguration("org.postgresql.Driver",
+     * "jdbc:postgresql://localhost/wikiapi_en", "localhost", "wikiapi_en", user, password,
+     * language)}. The backend is selected by the url, not by the drivers on the classpath.
      *
      * @param host
      *            The hostname the machine the database is hosted on.

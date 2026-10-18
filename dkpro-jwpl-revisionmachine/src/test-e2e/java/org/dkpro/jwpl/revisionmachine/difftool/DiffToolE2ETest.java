@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -35,9 +36,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
+import org.dkpro.jwpl.revisionmachine.common.util.ExitStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class DiffToolE2ETest {
 
@@ -120,17 +123,41 @@ public class DiffToolE2ETest {
     String sql = Files.readString(Path.of(OUTPUT_DIR, "output_1.sql"));
     assertTrue(sql.contains("Namespace INTEGER"), sql);
     // The fixture holds four pages in the configured namespaces 0 and 1, each with a single
-    // revision. The text of "Main Page" is empty (a self-closing <text/> element) and skipped,
-    // the other three revisions are written as rows: (null, FullRevisionID, RevisionCounter,
+    // revision. The text of "Main Page" (1269) is empty (a self-closing <text bytes="0"/>
+    // element). Each revision is written as a row: (null, FullRevisionID, RevisionCounter,
     // RevisionID, ArticleID, ...)
     List<String> revisions = ROW.matcher(sql).results().map(r -> r.group(1)).toList();
-    assertEquals(List.of("1271", "1426", "1508"), revisions.stream().sorted().toList(), sql);
+    assertEquals(List.of("1269", "1271", "1426", "1508"), revisions.stream().sorted().toList(),
+            sql);
     // No article failed to be read or processed
     Path errors = Path.of(LOGS_DIR, "DiffToolErrors.log");
     if (Files.exists(errors)) {
       String errorLog = Files.readString(errors);
       assertTrue(errorLog.isBlank(), errorLog);
     }
+  }
+
+  @Test
+  void testExecJWPLDiffToolWithMissingConfigFileShouldFail() {
+    cmd.add(TARGET + File.separator + "non-existent-difftool-config.xml");
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
+  }
+
+  @Test
+  void testExecJWPLDiffToolWithTruncatedArchiveShouldFail(@TempDir Path dir) throws IOException {
+    // The fixture archive cut in half, and a copy of the configuration that reads it
+    String archiveName = WIKI_NAME + "-20260101-pages-meta-current.xml.bz2";
+    byte[] content = Files.readAllBytes(Path.of(OUTPUT_DIR, archiveName));
+    Files.write(dir.resolve(archiveName), Arrays.copyOf(content, content.length / 2));
+    Path logsDir = Files.createDirectories(dir.resolve("logs"));
+    String config = Files.readString(Path.of(CONF_FILE))
+            .replace("\"./tool-exec/logs/\"", "\"" + logsDir + File.separator + "\"")
+            .replace("\"./tool-exec/" + archiveName + "\"", "\"" + dir.resolve(archiveName) + "\"")
+            .replace("\"./tool-exec/\"", "\"" + dir + File.separator + "\"");
+    Path configFile = dir.resolve("difftool-config-truncated.xml");
+    Files.writeString(configFile, config);
+    cmd.add(configFile.toString());
+    assertEquals(ExitStatus.EXIT_FAILURE, execTool(cmd));
   }
 
   @Test

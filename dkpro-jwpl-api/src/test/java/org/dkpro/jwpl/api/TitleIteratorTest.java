@@ -21,8 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TitleIteratorTest
     extends BaseJWPLTest
@@ -58,5 +64,32 @@ public class TitleIteratorTest
         }
         assertEquals(42, nrOfTitles, "Number of titles == 42");
 
+    }
+
+    /**
+     * Every title must be returned exactly once, independent of the batch boundaries.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 3, 5, 41, 42, 43, 500 })
+    public void test_titleIteratorCompleteAndWithoutDuplicates(int bufferSize) throws Exception
+    {
+        final String sql = "select p.name from PageMapLine as p";
+        List<String> names = wiki
+                .__inTransaction(session -> session.createQuery(sql, String.class).list());
+        List<String> expected = new ArrayList<>();
+        for (String name : names) {
+            expected.add(new Title(name).getWikiStyleTitle());
+        }
+
+        List<String> actual = new ArrayList<>();
+        for (Title t : new TitleIterable(wiki, bufferSize)) {
+            assertNotNull(t);
+            actual.add(t.getWikiStyleTitle());
+        }
+
+        assertEquals(42, actual.size());
+        Collections.sort(expected);
+        Collections.sort(actual);
+        assertEquals(expected, actual);
     }
 }

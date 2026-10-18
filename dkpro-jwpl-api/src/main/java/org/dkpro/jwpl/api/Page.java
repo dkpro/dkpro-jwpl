@@ -17,16 +17,16 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.PageDAO;
-import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.sweble.PlainTextConverter;
-import org.dkpro.jwpl.api.util.UnmodifiableArraySet;
 import org.sweble.wikitext.engine.PageId;
 import org.sweble.wikitext.engine.PageTitle;
 import org.sweble.wikitext.engine.WtEngineImpl;
@@ -64,6 +64,11 @@ public class Page
     // In that case, isRedirect is set to true, to indicate that.
     // Note: The page itself is _not_ a redirect, it is just a page.
     private boolean isRedirect = false;
+
+    // The text of a page that was loaded without it (see hibernatePage.isTextLoaded()), queried on
+    // the first call of getText(). Concurrent first calls may each query it, and all of them read
+    // the same, immutable row.
+    private volatile String lazyText;
 
     /**
      * Instantiates a {@link Page} object.
@@ -153,6 +158,30 @@ public class Page
         this.wiki = wiki;
         this.pageDAO = wiki.getPageDAO();
         this.hibernatePage = hibernatePage;
+    }
+
+    // Private and wrapped by of(..), as a (Wikipedia, null) call of Page(Wikipedia, String) would
+    // be ambiguous otherwise.
+    private Page(Wikipedia wiki, org.dkpro.jwpl.api.hibernate.Page hibernatePage)
+    {
+        this.wiki = wiki;
+        this.pageDAO = wiki.getPageDAO();
+        this.hibernatePage = hibernatePage;
+    }
+
+    /**
+     * Creates a Page object from a hibernate Page that has already been retrieved, possibly
+     * without its text (see {@link org.dkpro.jwpl.api.hibernate.Page#isTextLoaded()}).
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param hibernatePage
+     *            The {@code api.hibernate.Page} that has already been retrieved.
+     * @return A page object for the given hibernate Page.
+     */
+    static Page of(Wikipedia wiki, org.dkpro.jwpl.api.hibernate.Page hibernatePage)
+    {
+        return new Page(wiki, hibernatePage);
     }
 
     /**
@@ -256,6 +285,44 @@ public class Page
     }
 
     /**
+     * Loads the elements of one of the collections of this page. The collection is read by the id
+     * of this page instead of via a reattached entity, so the page row, including its text, is not
+     * loaded again, and the entity of this page is never associated with a session.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks},
+     *            {@code categories} or {@code redirects}.
+     * @param elementType
+     *            The type of the elements of the collection.
+     * @param <T>
+     *            The type of the elements of the collection.
+     * @return A new, modifiable set containing the elements of the collection. It is handed out
+     *         as is by the public getters of the id and redirect collections.
+     */
+    private <T> Set<T> loadCollection(String collection, Class<T> elementType)
+    {
+        final String hql = "select l from Page p join p." + collection + " l where p.id = :id";
+        final long id = __getId();
+        List<T> elements = wiki.__inTransaction(session -> session
+                .createQuery(hql, elementType).setParameter("id", id).list());
+        return new HashSet<>(elements);
+    }
+
+    /**
+     * Loads the page ids of one of the collections of this page for internal use only, i.e. to
+     * resolve them to {@link Page} or {@link Category} objects. The result is never exposed.
+     *
+     * @param collection
+     *            The name of the collection property: {@code inLinks}, {@code outLinks} or
+     *            {@code categories}.
+     * @return An unmodifiable set containing the page ids of the collection.
+     */
+    private Set<Integer> loadIds(String collection)
+    {
+        return Collections.unmodifiableSet(loadCollection(collection, Integer.class));
+    }
+
+    /**
      * @return Returns the id.
      */
     /*
@@ -276,21 +343,41 @@ public class Page
     }
 
     /**
-     * @return A set of categories that this page belongs to.
+     * Returns the categories of this page. The categories are loaded in batches rather than one by
+     * one, and those held by the category cache are not queried again. Categories that do not
+     * exist are left out.
+     * <p>
+     * To check whether this page belongs to certain categories, use {@link #getCategoryIDs()}
+     * instead and compare page ids. That reads only the page ids of the categories, while this
+     * method needs a second query for every category that is not in the category cache, and it
+     * creates a {@link Category} object for each of them. For many pages at once, see
+     * {@link Wikipedia#getCategoryIDs(java.util.Collection)}.
+     *
+     * @return A set of categories that this page belongs to. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Category> getCategories()
     {
-        Set<Integer> tmp = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getCategories());
-        });
+        Set<Integer> tmp = loadIds("categories");
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmp) {
-            categories.add(wiki.getCategory(pageID));
-        }
+        return wiki.__getCategoriesByPageIds(tmp);
+    }
 
-        return categories;
+    /**
+     * Returns the page ids of the categories of this page, without loading the categories. This is
+     * one query, and no {@link Category} objects are created, so it is the cheap way to check
+     * whether this page belongs to certain categories, e.g.
+     * {@code !Collections.disjoint(page.getCategoryIDs(), categoryPageIds)}.
+     * <p>
+     * Unlike {@link #getCategories()}, the result may contain the ids of categories that do not
+     * exist. For many pages at once, see {@link Wikipedia#getCategoryIDs(java.util.Collection)}.
+     *
+     * @return The page ids of the categories of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
+     */
+    public Set<Integer> getCategoryIDs()
+    {
+        return loadCollection("categories", Integer.class);
     }
 
     /**
@@ -325,7 +412,9 @@ public class Page
      * edition's hidden-categories category.
      *
      * @return The categories of this page that are not hidden. If there is no
-     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page.
+     *         {@value #HIDDEN_CATEGORIES_TITLE} category, all categories of this page. A new,
+     *         modifiable set is returned on each call, so callers may modify it without affecting
+     *         this page.
      * @throws WikiApiException
      *             Thrown if errors occurred.
      */
@@ -342,7 +431,8 @@ public class Page
      *            The title of the category that holds the hidden categories, e.g.
      *            {@value #HIDDEN_CATEGORIES_TITLE}. Must not be {@code null} or blank.
      * @return The categories of this page that are not hidden. If there is no category with the
-     *         given title, all categories of this page.
+     *         given title, all categories of this page. A new, modifiable set is returned on each
+     *         call, so callers may modify it without affecting this page.
      * @throws IllegalArgumentException
      *             Thrown if {@code hiddenCategoriesTitle} is {@code null} or blank.
      * @throws WikiApiException
@@ -379,29 +469,20 @@ public class Page
      * <b>Warning:</b> Do not use this for getting the number of inlinks with
      * {@link Page#getInlinks()}.size(). This is too slow. Use {@link Page#getNumberOfInlinks()}
      * instead.
+     * <p>
+     * The pages are loaded without their text, in batches rather than one by one. The text of a
+     * returned page is queried on the first call of its {@link Page#getText()}, which therefore
+     * requires the {@link Wikipedia} this page belongs to to still be usable.
      *
-     * @return The set of pages that have a link pointing to this page.
+     * @return The set of pages that have a link pointing to this page. A new, modifiable set is
+     *         returned on each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getInlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> pageIDs = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        Set<Integer> pageIDs = loadIds("inLinks");
 
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : pageIDs) {
-            try {
-                pages.add(wiki.getPage(pageID));
-            }
-            catch (WikiApiException e) {
-                // Silently ignore if a page could not be found
-                // There may be inlinks that do not come from an existing page.
-            }
-        }
-
-        return pages;
+        // Inlinks that do not come from an existing page are left out.
+        return wiki.__getPagesWithoutText(pageIDs);
     }
 
     /**
@@ -430,23 +511,21 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the inLinks of this page.
+     * @return Returns the IDs of the inLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getInlinkIDs()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getInLinks());
-        });
+        return loadCollection("inLinks", Integer.class);
     }
 
     /**
      * Returns the titles of the pages that have a link pointing to this page.
      * <p>
      * This is a more efficient shortcut for collecting {@link Page#getTitle()} over
-     * {@link Page#getInlinks()}, as that would load every linking page - article text included -
-     * just to read its title. As with {@link Page#getInlinks()}, inlinks that do not come from an
-     * existing page are not part of the result.
+     * {@link Page#getInlinks()}, as that would load every linking page just to read its title. As
+     * with {@link Page#getInlinks()}, inlinks that do not come from an existing page are not part
+     * of the result.
      *
      * @return The titles of the pages that have a link pointing to this page.
      */
@@ -460,28 +539,20 @@ public class Page
      * to non-existing pages. They are not included in the result set. <b>Warning:</b> Do not use
      * this for getting the number of outlinks with {@link Page#getOutlinks()}.size(). This is too
      * slow. Use {@link Page#getNumberOfOutlinks()} instead.
+     * <p>
+     * The pages are loaded without their text, in batches rather than one by one. The text of a
+     * returned page is queried on the first call of its {@link Page#getText()}, which therefore
+     * requires the {@link Wikipedia} this page belongs to to still be usable.
      *
-     * @return The set of pages that are linked from this page.
+     * @return The set of pages that are linked from this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Page> getOutlinks()
     {
-        // Have to copy links here since getPage later will close the session.
-        Set<Integer> tmpSet = wiki.__inTransaction(session -> {
-            return new UnmodifiableArraySet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        Set<Integer> tmpSet = loadIds("outLinks");
 
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : tmpSet) {
-            try {
-                pages.add(wiki.getPage(pageID));
-            }
-            catch (WikiApiException e) {
-                // Silently ignore if a page could not be found.
-                // There may be outlinks pointing to non-existing pages.
-            }
-        }
-        return pages;
+        // Outlinks pointing to non-existing pages are left out.
+        return wiki.__getPagesWithoutText(tmpSet);
     }
 
     /**
@@ -510,24 +581,21 @@ public class Page
      * The result set may also contain links from non-existing pages. It is in the responsibility of
      * the user to check whether the page exists.
      *
-     * @return Returns the IDs of the outLinks of this page.
+     * @return Returns the IDs of the outLinks of this page. A new, modifiable set is returned on
+     *         each call, so callers may modify it without affecting this page.
      */
     public Set<Integer> getOutlinkIDs()
     {
-
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getOutLinks());
-        });
+        return loadCollection("outLinks", Integer.class);
     }
 
     /**
      * Returns the titles of the pages that are linked from this page.
      * <p>
      * This is a more efficient shortcut for collecting {@link Page#getTitle()} over
-     * {@link Page#getOutlinks()}, as that would load every linked page - article text included -
-     * just to read its title. As with {@link Page#getOutlinks()}, outlinks pointing to
-     * non-existing pages are not part of the result.
+     * {@link Page#getOutlinks()}, as that would load every linked page just to read its title. As
+     * with {@link Page#getOutlinks()}, outlinks pointing to non-existing pages are not part of the
+     * result.
      *
      * @return The titles of the pages that are linked from this page.
      */
@@ -548,27 +616,48 @@ public class Page
     }
 
     /**
-     * @return The set of strings that are redirects to this page.
+     * @return The set of strings that are redirects to this page. A new, modifiable set is returned
+     *         on each call, so callers may modify it without affecting this page.
      */
     public Set<String> getRedirects()
     {
-        return wiki.__inTransaction(session -> {
-            return new HashSet<>(
-                    WikiHibernateUtil.reattach(session, hibernatePage).getRedirects());
-        });
+        return loadCollection("redirects", String.class);
     }
 
     /**
+     * Returns the text of this page. Pages obtained by navigating links or categories, e.g. via
+     * {@link #getInlinks()}, {@link #getOutlinks()} or {@link Category#getArticles()}, are loaded
+     * without their text. For those, the first call queries the text, which requires the
+     * {@link Wikipedia} this page belongs to to still be usable, and later calls return the
+     * cached text.
+     *
      * @return The text of the page with media wiki markup.
      */
     public String getText()
     {
-        String text = hibernatePage.getText();
+        String text = hibernatePage.isTextLoaded() ? hibernatePage.getText() : loadText();
         // Texts without '\r' already use "\n" for all line breaks and need no copy.
         if (text.indexOf('\r') < 0) {
             return text;
         }
         return normalizeLineBreaks(text);
+    }
+
+    /**
+     * @return The text of a page that was loaded without it, queried on the first call.
+     */
+    private String loadText()
+    {
+        String text = lazyText;
+        if (text == null) {
+            long id = __getId();
+            // Queried by id, so the entity of this page is never associated with a session.
+            text = wiki.__inTransaction(session -> session
+                    .createQuery("select p.text from Page as p where p.id = :id", String.class)
+                    .setParameter("id", id).uniqueResult());
+            lazyText = text;
+        }
+        return text;
     }
 
     /**

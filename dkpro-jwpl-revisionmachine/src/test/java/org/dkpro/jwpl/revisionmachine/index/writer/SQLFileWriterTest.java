@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.revisionmachine.index.writer;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
@@ -51,5 +52,29 @@ public class SQLFileWriterTest
                 sql);
         assertTrue(sql.indexOf("ALTER TABLE revisions ENABLE KEYS;") < sql
                 .indexOf("CREATE INDEX articleTsIdx"), sql);
+    }
+
+    @Test
+    public void testRevisionIndexKeyIsAddedAfterTheLoad() throws Exception
+    {
+        RevisionAPIConfiguration config = new RevisionAPIConfiguration();
+        config.setOutputPath(outputDir.toString());
+
+        SQLFileWriter writer = new SQLFileWriter(config);
+        String header = Files.readString(outputDir.resolve("revisionIndex.sql"));
+        writer.finish();
+        writer.close();
+
+        String sql = Files.readString(outputDir.resolve("revisionIndex.sql"));
+        assertTrue(header.contains("CREATE TABLE index_revisionID (RevisionID INTEGER UNSIGNED"
+                + " NOT NULL, RevisionPK INTEGER UNSIGNED NOT NULL,"
+                + " FullRevisionPK INTEGER UNSIGNED NOT NULL);"), header);
+        assertFalse(header.contains("PRIMARY KEY(RevisionID)"), header);
+        assertTrue(sql.trim().endsWith("ALTER TABLE index_revisionID ADD PRIMARY KEY (RevisionID);"),
+                sql);
+        // DISABLE/ENABLE KEYS never cover a primary key, so they are not written for the index tables
+        assertFalse(sql.contains("DISABLE KEYS"), sql);
+        assertFalse(sql.contains("ALTER TABLE index_articleID_rc_ts"), sql);
+        assertFalse(sql.contains("ALTER TABLE index_chronological"), sql);
     }
 }

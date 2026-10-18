@@ -21,7 +21,6 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,9 +29,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,11 +65,67 @@ public class Wikipedia
 
     /**
      * Upper bound for the number of page ids bound into a single {@code in (..)} clause of
-     * {@link Wikipedia#getTitles(Collection)}. Pages with several thousand outgoing links exist,
-     * and neither the JDBC drivers nor the query planners deal well with parameter lists of that
-     * size.
+     * {@link Wikipedia#getTitles(Collection)} and {@link Wikipedia#getPages(List)}. Pages with
+     * several thousand outgoing links exist, and neither the JDBC drivers nor the query planners
+     * deal well with parameter lists of that size.
      */
-    private static final int TITLE_BATCH_SIZE = 500;
+    private static final int ID_BATCH_SIZE = 500;
+
+    /**
+     * Fetch size that makes MySQL Connector/J stream a forward-only, read-only result set row by
+     * row. Any other value, positive ones included, makes it read the complete result set into
+     * memory unless the connection property {@code useCursorFetch=true} is set. While the result
+     * set is open, no other query may be issued on the connection.
+     *
+     * @see <a href=
+     *      "https://dev.mysql.com/doc/connector-j/en/connector-j-reference-implementation-notes.html">
+     *      MySQL Connector/J: JDBC API Implementation Notes, ResultSet</a>
+     */
+    static final int MYSQL_STREAMING_FETCH_SIZE = Integer.MIN_VALUE;
+
+    /**
+     * Number of rows MariaDB Connector/J keeps in memory while streaming a result set. It rejects a
+     * negative fetch size with an {@link java.sql.SQLException}, so the MySQL Connector/J value
+     * {@link Integer#MIN_VALUE} must not be passed to it. A query issued on the same connection
+     * before the result set is read completely makes it read all remaining rows into memory.
+     *
+     * @see <a href=
+     *      "https://mariadb.com/docs/connectors/mariadb-connector-j/about-mariadb-connector-j">
+     *      About MariaDB Connector/J, Streaming Result Sets</a>
+     */
+    static final int MARIADB_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Number of rows pgJDBC fetches per round trip from a server-side cursor. The driver uses a
+     * cursor only if the fetch size is positive, the connection is not in autocommit mode, the
+     * result set is {@link java.sql.ResultSet#TYPE_FORWARD_ONLY} and the query is a single
+     * statement; otherwise it silently reads the complete result set.
+     *
+     * @see <a href="https://jdbc.postgresql.org/documentation/query/">pgJDBC: Issuing a Query and
+     *      Processing the Result, Getting results based on a cursor</a>
+     */
+    static final int POSTGRESQL_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Fetch size passed to HSQLDB and to any driver not handled explicitly. The JDBC specification
+     * defines it as a hint that must be {@code >= 0}; HSQLDB uses it as such and may process more
+     * or fewer rows.
+     *
+     * @see <a href=
+     *      "https://docs.oracle.com/en/java/javase/17/docs/api/java.sql/java/sql/Statement.html#setFetchSize(int)">
+     *      java.sql.Statement#setFetchSize(int)</a>
+     * @see <a href=
+     *      "https://hsqldb.org/doc/2.0/apidocs/org.hsqldb/org/hsqldb/jdbc/JDBCStatement.html#setFetchSize(int)">
+     *      HSQLDB: JDBCStatement#setFetchSize(int)</a>
+     */
+    static final int DEFAULT_STREAMING_FETCH_SIZE = 1000;
+
+    /**
+     * Selects the metadata columns of a page, i.e. every column but its text, in the order
+     * {@link #toPageWithoutText(Object[])} expects them. The alias of the page is {@code p}.
+     */
+    static final String PAGE_METADATA_SELECT =
+            "select p.id, p.pageId, p.name, p.isDisambiguation from Page as p";
 
     private final Language language;
     private final DatabaseConfiguration dbConfig;
@@ -213,6 +269,67 @@ public class Wikipedia
     }
 
     /**
+     * Loads the pages with the given ids, in one query per {@value Wikipedia#ID_BATCH_SIZE} ids
+     * instead of one query per page as {@link Wikipedia#getPage(int)} does.
+     * <p>
+     * The result is positional: the pages are returned in the order of the given ids, and an id
+     * that occurs several times yields a page at each of its positions. This is why the ids are
+     * passed as a {@link List}, while {@link Wikipedia#getTitles(Collection)} accepts any
+     * {@link Collection}: its result is keyed by page id, so neither order nor duplicates matter
+     * there.
+     * <p>
+     * Ids that have no matching page are skipped; callers that need to detect them have to compare
+     * the result against the ids they passed in. Like {@link Wikipedia#getPage(int)}, every page is
+     * loaded including its text, so the result of a large number of ids can occupy a lot of
+     * memory.
+     *
+     * @param pageIds The ids of the pages to load. Must not be {@code null} and must not contain
+     *                {@code null}.
+     * @return The loaded pages, in the order of {@code pageIds}. Never {@code null}.
+     * @throws IllegalArgumentException Thrown if {@code pageIds} is {@code null} or contains
+     *                                  {@code null}.
+     * @throws WikiApiException Declared for consistency with {@link Wikipedia#getPage(int)}, but
+     *                          not thrown by this implementation: missing pages are skipped, and a
+     *                          failing query surfaces as the unchecked
+     *                          {@link org.hibernate.HibernateException} of the underlying
+     *                          Hibernate call, as in {@link Wikipedia#getTitles(Collection)}.
+     */
+    public List<Page> getPages(List<Integer> pageIds) throws WikiApiException {
+        if (pageIds == null) {
+            throw new IllegalArgumentException("pageIds must not be null");
+        }
+        // Not List#contains(null): immutable lists such as List.of(..) reject a null argument.
+        for (Integer pageId : pageIds) {
+            if (pageId == null) {
+                throw new IllegalArgumentException("pageIds must not contain null");
+            }
+        }
+
+        List<Page> pages = new ArrayList<>(pageIds.size());
+        Map<Integer, org.dkpro.jwpl.api.hibernate.Page> rowsByPageId = new HashMap<>();
+        for (int from = 0; from < pageIds.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = pageIds.subList(from,
+                    Math.min(from + ID_BATCH_SIZE, pageIds.size()));
+            List<org.dkpro.jwpl.api.hibernate.Page> rows = __inTransaction(session -> session
+                    .createQuery("from Page as p where p.pageId in (:ids)",
+                            org.dkpro.jwpl.api.hibernate.Page.class)
+                    .setParameterList("ids", batch).list());
+
+            rowsByPageId.clear();
+            for (org.dkpro.jwpl.api.hibernate.Page row : rows) {
+                rowsByPageId.put(row.getPageId(), row);
+            }
+            for (Integer pageId : batch) {
+                org.dkpro.jwpl.api.hibernate.Page row = rowsByPageId.get(pageId);
+                if (row != null) {
+                    pages.add(new Page(this, row.getId(), row));
+                }
+            }
+        }
+        return pages;
+    }
+
+    /**
      * Gets the title for a given pageId.
      *
      * @param pageId The id of the page.
@@ -241,7 +358,7 @@ public class Wikipedia
      * <p>
      * Obtaining the same titles via {@link Wikipedia#getPage(int)} and {@link Page#getTitle()}
      * costs one full entity load - article text included - per page. This reads nothing but the
-     * page names, in one query per {@value Wikipedia#TITLE_BATCH_SIZE} ids.
+     * page names, in one query per {@value Wikipedia#ID_BATCH_SIZE} ids.
      * <p>
      * Ids that have no matching page are absent from the result, as are pages whose name cannot be
      * parsed into a {@link Title}. Callers that need to tell those cases apart have to compare the
@@ -257,8 +374,8 @@ public class Wikipedia
         }
 
         List<Integer> ids = new ArrayList<>(pageIds);
-        for (int from = 0; from < ids.size(); from += TITLE_BATCH_SIZE) {
-            List<Integer> batch = ids.subList(from, Math.min(from + TITLE_BATCH_SIZE, ids.size()));
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
             // A session is acquired per batch on purpose: the thread-bound session context unbinds
             // and closes the session once its transaction completes, so it must not be reused
             // across batches.
@@ -281,6 +398,148 @@ public class Wikipedia
             }
         }
         return titles;
+    }
+
+    /**
+     * Reads the page ids of the categories of many pages at once, without loading the pages or the
+     * categories.
+     * <p>
+     * Calling {@link Page#getCategoryIDs()} on each page costs one query per page. This reads the
+     * category ids of all given pages in one query per {@value Wikipedia#ID_BATCH_SIZE} page ids,
+     * so a caller that knows its pages in advance can prefetch their categories and check
+     * membership without further queries.
+     * <p>
+     * A page without categories maps to an empty set. Ids that have no matching page are absent
+     * from the result, so callers that need to detect them have to compare the key set of the
+     * result against the ids they passed in. As with {@link Page#getCategoryIDs()}, the sets may
+     * contain the ids of categories that do not exist.
+     *
+     * @param pageIds The ids of the pages to read the category ids for. Must not be {@code null}
+     *                and must not contain {@code null}.
+     * @return The page ids of the categories, keyed by the page id of the page they belong to. The
+     *         map and its sets are new and modifiable. Never {@code null}.
+     * @throws IllegalArgumentException Thrown if {@code pageIds} is {@code null} or contains
+     *                                  {@code null}.
+     */
+    public Map<Integer, Set<Integer>> getCategoryIDs(Collection<Integer> pageIds) {
+        if (pageIds == null) {
+            throw new IllegalArgumentException("pageIds must not be null");
+        }
+        // Copied into a set first, which also drops duplicates. Not Collection#contains(null), as
+        // immutable collections such as Set.of(..) reject a null argument.
+        Set<Integer> distinct = new HashSet<>();
+        for (Integer pageId : pageIds) {
+            if (pageId == null) {
+                throw new IllegalArgumentException("pageIds must not contain null");
+            }
+            distinct.add(pageId);
+        }
+
+        Map<Integer, Set<Integer>> categoryIds = new HashMap<>();
+        List<Integer> ids = new ArrayList<>(distinct);
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
+            // A session is acquired per batch, as in getTitles(Collection). The left join yields a
+            // single null category for a page without categories, so that it maps to an empty set.
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery("select p.pageId, c from Page p left join p.categories c"
+                            + " where p.pageId in (:ids)", Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] row : rows) {
+                Set<Integer> categories = categoryIds.computeIfAbsent((Integer) row[0],
+                        pageId -> new HashSet<>());
+                if (row[1] != null) {
+                    categories.add((Integer) row[1]);
+                }
+            }
+        }
+        return categoryIds;
+    }
+
+    /**
+     * Loads the pages with the given page ids without their text, in one query per
+     * {@value Wikipedia#ID_BATCH_SIZE} ids. The text of each page is queried on the first call
+     * of {@link Page#getText()}.
+     * <p>
+     * Ids that have no matching page are absent from the result.
+     *
+     * @param pageIds The ids of the pages to load. Must not be {@code null}.
+     * @return A new, modifiable set with the loaded pages. Never {@code null}.
+     */
+    Set<Page> __getPagesWithoutText(Collection<Integer> pageIds) {
+        Set<Page> pages = new HashSet<>();
+        // Copied first, as the isEmpty() of UnmodifiableArraySet cannot be relied upon.
+        List<Integer> ids = new ArrayList<>(pageIds);
+        for (int from = 0; from < ids.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = ids.subList(from, Math.min(from + ID_BATCH_SIZE, ids.size()));
+            // A session is acquired per batch, as in getTitles(Collection).
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery(PAGE_METADATA_SELECT + " where p.pageId in (:ids)",
+                            Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] row : rows) {
+                pages.add(Page.of(this, toPageWithoutText(row)));
+            }
+        }
+        return pages;
+    }
+
+    /**
+     * @param row A row selected by {@link #PAGE_METADATA_SELECT}.
+     * @return A hibernate page that holds the metadata of the row, but no text.
+     */
+    static org.dkpro.jwpl.api.hibernate.Page toPageWithoutText(Object[] row) {
+        return new org.dkpro.jwpl.api.hibernate.Page((Long) row[0], (Integer) row[1],
+                (String) row[2], Boolean.TRUE.equals(row[3]));
+    }
+
+    /**
+     * Loads the categories with the given page ids. Categories held by the category cache of this
+     * instance are taken from there, the others are read in one query per
+     * {@value Wikipedia#ID_BATCH_SIZE} ids and added to the cache, as
+     * {@link #getCategory(int)} does.
+     * <p>
+     * Ids that have no matching category are absent from the result.
+     *
+     * @param pageIds The page ids of the categories to load. Must not be {@code null}.
+     * @return A new, modifiable set with the loaded categories. Never {@code null}.
+     */
+    Set<Category> __getCategoriesByPageIds(Collection<Integer> pageIds) {
+        Set<Category> categories = new HashSet<>();
+        List<Integer> missing = new ArrayList<>();
+        // Copied into a set first, so that a duplicate id yields a single category, and iterated
+        // rather than checked with isEmpty(), which UnmodifiableArraySet gets wrong.
+        for (Integer pageId : new HashSet<>(pageIds)) {
+            if (pageId == null) {
+                continue;
+            }
+            Category.Row row = categoryCache.get(pageId);
+            if (row != null) {
+                categories.add(Category.fromRow(this, row));
+            } else {
+                missing.add(pageId);
+            }
+        }
+
+        for (int from = 0; from < missing.size(); from += ID_BATCH_SIZE) {
+            List<Integer> batch = missing.subList(from,
+                    Math.min(from + ID_BATCH_SIZE, missing.size()));
+            // A session is acquired per batch, as in getTitles(Collection).
+            List<Object[]> rows = __inTransaction(session -> session
+                    .createQuery("select c.id, c.pageId, c.name from Category as c"
+                            + " where c.pageId in (:ids)", Object[].class)
+                    .setParameterList("ids", batch).list());
+
+            for (Object[] columns : rows) {
+                Category.Row row = new Category.Row((Long) columns[0], (Integer) columns[1],
+                        (String) columns[2]);
+                categoryCache.put(row);
+                categories.add(Category.fromRow(this, row));
+            }
+        }
+        return categories;
     }
 
     /**
@@ -577,35 +836,40 @@ public class Wikipedia
         Map<Page, Double> pageMap = new HashMap<>();
 
         // holds a mapping of the best distance values to page IDs
-        Map<Integer, Double> distanceMap = new HashMap<>();
+        final Map<Integer, Double> distanceMap = new HashMap<>();
+        // how many entries of distanceMap carry each distance value, the largest one last
+        final TreeMap<Double, Integer> distanceCounts = new TreeMap<>();
 
         final LevenshteinStringDistance lsd = new LevenshteinStringDistance();
         final String query = "select new org.dkpro.jwpl.api.Wikipedia$PageTuple(pml.pageID, pml.name)"
                 + " from PageMapLine as pml";
-        // The whole table is materialized by the query anyway, so the scoring below runs outside
-        // the transaction rather than holding a connection for its duration.
-        for (PageTuple o : __inTransaction(
-                session -> session.createQuery(query, PageTuple.class).list())) {
+        final int fetchSize = streamingFetchSize(dbConfig.getDatabaseDriver());
+        // The rows are streamed rather than materialized, so the heap holds the current top
+        // entries only. This keeps the connection open for the duration of the scan; no other
+        // query may run on it until the stream is closed (see MYSQL_STREAMING_FETCH_SIZE).
+        __inTransaction(session -> {
+            try (Stream<PageTuple> rows = session.createQuery(query, PageTuple.class)
+                    .setFetchSize(fetchSize).getResultStream()) {
+                rows.forEach(o -> {
+                    // this returns a similarity - if we want to use it, we have to change the
+                    // semantics the ordering of the results
+                    double distance = lsd.distance(o.name(), pattern);
 
-            // this returns a similarity - if we want to use it, we have to change the semantics the
-            // ordering of the results
-            double distance = lsd.distance(o.name(), pattern);
+                    Double previous = distanceMap.put(o.id(), distance);
+                    if (previous != null) {
+                        decrementDistanceCount(distanceCounts, previous);
+                    }
+                    distanceCounts.merge(distance, 1, Integer::sum);
 
-            distanceMap.put(o.id(), distance);
-
-            // if there are more than "pSize" entries in the map remove the last one (it has the
-            // biggest distance)
-            if (distanceMap.size() > pSize) {
-                Set<Entry<Integer, Double>> valueSortedSet = new TreeSet<>(new ValueComparator());
-                valueSortedSet.addAll(distanceMap.entrySet());
-                Iterator<Entry<Integer, Double>> it = valueSortedSet.iterator();
-                // remove the first element
-                if (it.hasNext()) {
-                    // get the id of this entry and remove it in the distanceMap
-                    distanceMap.remove(it.next().getKey());
-                }
+                    // if there are more than "pSize" entries in the map remove the one with the
+                    // biggest distance
+                    if (distanceMap.size() > pSize) {
+                        removeLargestDistance(distanceMap, distanceCounts, o.id(), distance);
+                    }
+                });
             }
-        }
+            return null;
+        });
 
         for (int pageID : distanceMap.keySet()) {
             Page page = null;
@@ -681,16 +945,16 @@ public class Wikipedia
         }
 
         String sql = "select c from Page p left join p.categories c where p.name = :pageTitle";
-        List<Integer> categoryHibernateIds = __inTransaction(session -> session
+        // The elements of the collection are the page ids of the categories. The left join yields
+        // a single null for a page without categories, which is skipped.
+        List<Integer> categoryPageIds = __inTransaction(session -> session
                 .createQuery(sql, Integer.class).setParameter("pageTitle", pageTitle).list());
 
-        Set<Category> categorySet = new HashSet<>(categoryHibernateIds.size());
-        for (int hibernateId : categoryHibernateIds) {
-            try {
-                categorySet.add(new Category(this, hibernateId));
-            } catch (WikiPageNotFoundException e) {
-                logger.warn("Could not load Category by it's HibernateId = '{}'", hibernateId, e);
-            }
+        Set<Category> categorySet = __getCategoriesByPageIds(categoryPageIds);
+        long expected = categoryPageIds.stream().filter(Objects::nonNull).distinct().count();
+        if (categorySet.size() < expected) {
+            logger.warn("Could not load {} of the {} categories of the page '{}'",
+                    expected - categorySet.size(), expected, pageTitle);
         }
         return categorySet;
     }
@@ -1037,13 +1301,70 @@ public class Wikipedia
         return sb.toString();
     }
 
-    private static class ValueComparator
-            implements Comparator<Entry<Integer, Double>> {
-
-        @Override
-        public int compare(Entry<Integer, Double> e1, Entry<Integer, Double> e2) {
-            return Double.compare(e2.getValue(), e1.getValue());
+    /**
+     * Removes the entry with the largest distance from {@code distanceMap}. Among several entries
+     * with that distance, the first one in the iteration order of {@code distanceMap} is removed,
+     * which is the entry a {@link java.util.TreeSet} ordering the entries by descending distance
+     * alone would yield first.
+     *
+     * @param distanceMap    The distances by page ID.
+     * @param distanceCounts The number of entries in {@code distanceMap} per distance value.
+     * @param latestId       The page ID put into {@code distanceMap} last.
+     * @param latestDistance The distance put into {@code distanceMap} last.
+     */
+    private static void removeLargestDistance(Map<Integer, Double> distanceMap,
+            TreeMap<Double, Integer> distanceCounts, int latestId, double latestDistance) {
+        Entry<Double, Integer> largest = distanceCounts.lastEntry();
+        Integer victim = null;
+        if (largest.getValue() == 1 && Double.compare(latestDistance, largest.getKey()) == 0) {
+            // the latest entry is the only one with the largest distance
+            victim = latestId;
         }
+        else {
+            for (Entry<Integer, Double> e : distanceMap.entrySet()) {
+                if (Double.compare(e.getValue(), largest.getKey()) == 0) {
+                    victim = e.getKey();
+                    break;
+                }
+            }
+        }
+        distanceMap.remove(victim);
+        decrementDistanceCount(distanceCounts, largest.getKey());
+    }
+
+    private static void decrementDistanceCount(TreeMap<Double, Integer> distanceCounts,
+            Double distance) {
+        distanceCounts.computeIfPresent(distance, (d, count) -> count == 1 ? null : count - 1);
+    }
+
+    /**
+     * Selects the fetch size for streaming a result set through
+     * {@link Query#getResultStream()}, which Hibernate executes as a
+     * {@link java.sql.ResultSet#TYPE_FORWARD_ONLY}, {@link java.sql.ResultSet#CONCUR_READ_ONLY}
+     * result set, within the transaction of {@link #__inTransaction(Function)} and thus with
+     * autocommit disabled.
+     *
+     * @param databaseDriver The fully qualified class name of the JDBC driver, may be {@code null}.
+     * @return {@link #MYSQL_STREAMING_FETCH_SIZE} for MySQL Connector/J ({@code com.mysql.*}),
+     * {@link #MARIADB_STREAMING_FETCH_SIZE} for MariaDB Connector/J ({@code org.mariadb.*}),
+     * {@link #POSTGRESQL_STREAMING_FETCH_SIZE} for pgJDBC ({@code org.postgresql.*}), else
+     * {@link #DEFAULT_STREAMING_FETCH_SIZE}. The driver decides, not the server: MySQL Connector/J
+     * connected to a MariaDB server needs {@link #MYSQL_STREAMING_FETCH_SIZE}.
+     */
+    static int streamingFetchSize(String databaseDriver) {
+        if (databaseDriver == null) {
+            return DEFAULT_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("com.mysql.")) {
+            return MYSQL_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.mariadb.")) {
+            return MARIADB_STREAMING_FETCH_SIZE;
+        }
+        if (databaseDriver.startsWith("org.postgresql.")) {
+            return POSTGRESQL_STREAMING_FETCH_SIZE;
+        }
+        return DEFAULT_STREAMING_FETCH_SIZE;
     }
 
     private record PageTuple(int id, String name) {

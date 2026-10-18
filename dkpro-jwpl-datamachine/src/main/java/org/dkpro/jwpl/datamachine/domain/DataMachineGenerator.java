@@ -53,17 +53,60 @@ public class DataMachineGenerator
     extends AbstractSnapshotGenerator
 {
 
+    /**
+     * The system property that configures the {@link #setParallelism(int) parallelism}.
+     */
+    public static final String PARALLELISM_PROPERTY = "jwpl.datamachine.parallelism";
+
     private DataMachineFiles files = null;
     private IDumpVersion version = null;
+    private int parallelism = 1;
 
     /**
      * Instantiates a {@link DataMachineGenerator} within the provided environment.
+     * <p>
+     * The {@link #setParallelism(int) parallelism} is taken from the system property
+     * {@value #PARALLELISM_PROPERTY}, and is {@code 1} if the property is not set.
      *
      * @param environmentFactory The {@link IEnvironmentFactory factory} to use for bean creation.
+     * @throws IllegalArgumentException Thrown if {@value #PARALLELISM_PROPERTY} is set to a value
+     *                                  that is not a positive integer.
      */
     public DataMachineGenerator(IEnvironmentFactory environmentFactory)
     {
         super(environmentFactory);
+        final String configured = System.getProperty(PARALLELISM_PROPERTY);
+        if (configured != null) {
+            try {
+                setParallelism(Integer.parseInt(configured.trim()));
+            }
+            catch (NumberFormatException e) {
+                throw new IllegalArgumentException("The system property " + PARALLELISM_PROPERTY
+                        + " must be a positive integer, got '" + configured + "'.", e);
+            }
+        }
+    }
+
+    /**
+     * Configures how many of the mutually independent processing passes may run at the same time.
+     * <p>
+     * With the default of {@code 1} every pass runs on the calling thread, one after another. With
+     * a larger value the {@code categorylinks}, {@code pagelinks} and {@code revision} passes,
+     * which only depend on the {@code page} pass, run concurrently on up to that many worker
+     * threads. The generated tables are identical in both modes, since each of them is still
+     * written by exactly one pass, in input order. The peak heap usage may grow, though, because
+     * the in-memory state of the concurrent passes is alive at the same time.
+     *
+     * @param parallelism The maximum number of passes to run at the same time. Must be positive.
+     * @throws IllegalArgumentException Thrown if {@code parallelism} is less than {@code 1}.
+     */
+    public void setParallelism(int parallelism)
+    {
+        if (parallelism < 1) {
+            throw new IllegalArgumentException(
+                    "The parallelism must be at least 1, got " + parallelism + ".");
+        }
+        this.parallelism = parallelism;
     }
 
     /**
@@ -111,14 +154,18 @@ public class DataMachineGenerator
         logger.log("Processing table linktarget...");
         final LinkTargetResolver linkTargets = loadLinkTargets();
 
-        logger.log("Processing table categorylinks...");
-        dumpVersionProcessor.processCategorylinks(createCategorylinksParser(linkTargets));
-
-        logger.log("Processing table pagelinks...");
-        dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
-
-        logger.log("Processing table revision...");
-        dumpVersionProcessor.processRevision(createRevisionParser());
+        // These passes only read what the page pass and the linktarget dump provided, and each
+        // writes its own output files and fields, so they may run concurrently (see #559).
+        ConcurrentStages.run(parallelism, List.of(() -> {
+            logger.log("Processing table categorylinks...");
+            dumpVersionProcessor.processCategorylinks(createCategorylinksParser(linkTargets));
+        }, () -> {
+            logger.log("Processing table pagelinks...");
+            dumpVersionProcessor.processPagelinks(createPagelinksParser(linkTargets));
+        }, () -> {
+            logger.log("Processing table revision...");
+            dumpVersionProcessor.processRevision(createRevisionParser());
+        }));
 
         logger.log("Processing table text...");
         dumpVersionProcessor.processText(createTextParser());

@@ -42,7 +42,6 @@ import org.dkpro.jwpl.api.Wikipedia;
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.util.StringUtils;
-import org.dkpro.jwpl.parser.ParsedPage;
 import org.dkpro.jwpl.parser.Template;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParser;
 import org.dkpro.jwpl.parser.mediawiki.MediaWikiParserFactory;
@@ -62,6 +61,22 @@ public class WikipediaTemplateInfo
 
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
+
+    /**
+     * Selects the smallest id of the templates with a given name, bound as the only parameter.
+     */
+    static final String TEMPLATE_ID_QUERY = "SELECT tpl.templateId FROM "
+            + GeneratorConstants.TABLE_TPLID_TPLNAME
+            + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
+
+    /**
+     * Selects the names of the templates that the revision template index associates with a
+     * revision, whose id is bound as the only parameter.
+     */
+    static final String REVISION_TEMPLATE_NAMES_QUERY = "SELECT tpl.templateName FROM "
+            + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl, "
+            + GeneratorConstants.TABLE_TPLID_REVISIONID
+            + " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?";
 
     private final Wikipedia wiki;
     private RevisionApi revApi = null;
@@ -97,58 +112,22 @@ public class WikipediaTemplateInfo
     private Integer countFragmentFilteredPages(List<String> templateFragments, boolean whitelist)
         throws WikiApiException
     {
-        try {
-            int count = 0;
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT distinct(count(*)) FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " as tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                            + " AS p WHERE tpl.templateId = p.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase();
-                    fragment = fragment.trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    return 0;
-                }
-
-                if (result.next()) {
-                    count = result.getInt(1);
-                }
-            }
-
-            return count;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return countIndexedPages(templateFragments, true, whitelist);
     }
 
     /**
      * Returns the number of all pages that contain a template the name of which starts with any of
      * the given Strings.
      *
+     * <p>
+     * Each page is counted once, however many of its templates match.
+     * An empty list of templates matches no page, so the count is 0.
+     *
      * @param templateFragments
      *            a list Strings containing the beginnings of the desired templates
      * @return the number of pages that contain any template starting with templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -160,12 +139,19 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Returns the number of all pages that contain a template the name of which starts with any of
-     * the given Strings.
+     * Returns the number of all pages that do not contain a template the name of which starts with
+     * any of the given Strings.
+     *
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not counted if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is counted.
      *
      * @param templateFragments
      *            a list Strings containing the beginnings of the desired templates
-     * @return the number of pages that contain any template starting with templateFragment
+     * @return the number of pages that do not contain any template starting with templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -194,61 +180,23 @@ public class WikipediaTemplateInfo
     private Integer countFilteredPages(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-
-        int count = 0;
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append(
-                    "SELECT distinct(count(*)) FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                            + " as tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                            + " AS p WHERE tpl.templateId = p.templateId "
-                            + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    return 0;
-                }
-
-                if (result.next()) {
-                    count = result.getInt(1);
-                }
-            }
-
-            return count;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return countIndexedPages(templateNames, false, whitelist);
     }
 
     /**
      * Returns the number of all pages that contain a template the name of which equals the given
      * String.
      *
+     * <p>
+     * Each page is counted once, however many of its templates match.
+     * An empty list of templates matches no page, so the count is 0.
+     *
      * @param templateNames
      *            a list of String containing the beginnings of the templates that have to be
      *            matched
      * @return the number of pages that contain a template starting with any templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -263,10 +211,17 @@ public class WikipediaTemplateInfo
      * Returns the number of all pages that do not contain a template the name of which equals the
      * given String.
      *
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not counted if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is counted.
+     *
      * @param templateNames
      *            a list of String containing the beginnings of the templates that have to be
      *            matched
      * @return the number of pages that do not contain a template starting with any templateFragment
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -296,60 +251,20 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-
-        List<Page> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase().trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    int pageID = result.getInt(1);
-                    matchedPages.add(wiki.getPage(pageID));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return loadPages(selectIndexedPageIds(templateFragments, true, whitelist));
     }
 
     /**
      * Returns the id of the template with the given name.
      * <p>
      * As in previous versions, the name is expected in the SQL escaped form produced by
-     * {@link StringUtils#sqlEscape(String)}. Leading and trailing whitespace is removed and blanks
-     * are replaced by underscores, then the name is unescaped and bound as a statement parameter.
-     * If several templates share the name, the smallest id is returned.
+     * {@link StringUtils#sqlEscape(String)}. It is normalized the way the template info generator
+     * stores template names: leading and trailing whitespace is removed, blanks are replaced by
+     * underscores, the name is unescaped and lower cased with {@link String#toLowerCase()}, then
+     * it is bound as a statement parameter. The lookup thus ignores the case of the name on every
+     * database, including those with a case-sensitive {@code templateName} column, like
+     * {@link #loadTemplateIds()} does. If several templates share the name, the smallest id is
+     * returned.
      *
      * @param templateName
      *            the SQL escaped name of the template
@@ -360,11 +275,8 @@ public class WikipediaTemplateInfo
     public int checkTemplateId(String templateName) throws WikiApiException
     {
         try {
-            String sqlString = "SELECT tpl.templateId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl WHERE tpl.templateName = ? ORDER BY tpl.templateId LIMIT 1";
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
-                statement.setString(1, sqlUnescape(templateName.trim().replace(' ', '_')));
+            try (PreparedStatement statement = connection.prepareStatement(TEMPLATE_ID_QUERY)) {
+                statement.setString(1, toStoredTemplateName(templateName));
                 ResultSet result = execute(statement);
 
                 if (result == null) {
@@ -381,6 +293,23 @@ public class WikipediaTemplateInfo
         catch (Exception e) {
             throw new WikiApiException(e);
         }
+    }
+
+    /**
+     * Normalizes an SQL escaped template name to the form in which the template info generator
+     * stores template names: leading and trailing whitespace is removed, blanks are replaced by
+     * underscores, the name is unescaped via {@link #sqlUnescape(String)} and lower cased with
+     * {@link String#toLowerCase()}, as the generator does. The name is lower cased after it is
+     * unescaped, so escape sequences like {@code \Z} keep their meaning.
+     *
+     * @param escapedTemplateName
+     *            a template name escaped via {@link StringUtils#sqlEscape(String)}, must not be
+     *            {@code null}
+     * @return the name as stored in the template name table
+     */
+    static String toStoredTemplateName(String escapedTemplateName)
+    {
+        return sqlUnescape(escapedTemplateName.trim().replace(' ', '_')).toLowerCase();
     }
 
     /**
@@ -482,18 +411,71 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Normalizes an SQL escaped template name for looking it up in {@link TemplateIds}. It applies
-     * the normalization of {@link #checkTemplateId(String)} (trimming, blanks replaced by
-     * underscores) and mimics the default case-insensitive MySQL collation by lower casing the
-     * name.
+     * Normalizes a template name (or fragment) the way the template info generator stores template
+     * names, apart from unescaping: leading and trailing whitespace is removed, blanks are replaced
+     * by underscores and the name is lower cased with {@link String#toLowerCase()}. It is used for
+     * the lookups in {@link TemplateIds}, which take SQL escaped names, as well as for the names
+     * bound by {@link #bindTemplateNames(PreparedStatement, List, boolean)} and compared by the
+     * {@code revisionContainsTemplate*} methods, which take plain names. As it does not unescape,
+     * the name stays SQL escaped if it was.
      *
-     * @param escapedTemplateName
-     *            a template name escaped via {@link StringUtils#sqlEscape(String)}
+     * @param templateName
+     *            a template name or fragment, plain or escaped via
+     *            {@link StringUtils#sqlEscape(String)}, must not be {@code null}
      * @return the normalized template name
      */
-    private static String normalizeTemplateName(String escapedTemplateName)
+    static String normalizeTemplateName(String templateName)
     {
-        return escapedTemplateName.trim().replace(' ', '_').toLowerCase();
+        return templateName.trim().replace(' ', '_').toLowerCase();
+    }
+
+    /**
+     * Checks whether any of the given template names equals any of the names to look for. Both are
+     * normalized via {@link #normalizeTemplateName(String)} before they are compared, so the
+     * comparison ignores the case and treats blanks like underscores, as the index lookups do.
+     *
+     * @param names
+     *            the names of the templates of a revision, as stored in the template index or as
+     *            parsed from the revision text
+     * @param templateNames
+     *            the plain template names to look for
+     * @return {@code true} if any of {@code names} equals any of {@code templateNames}
+     */
+    static boolean containsTemplateName(List<String> names, List<String> templateNames)
+    {
+        Set<String> normalized = new HashSet<>();
+        for (String templateName : templateNames) {
+            normalized.add(normalizeTemplateName(templateName));
+        }
+        for (String name : names) {
+            if (normalized.contains(normalizeTemplateName(name))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks whether any of the given template names starts with the given fragment. Both are
+     * normalized via {@link #normalizeTemplateName(String)} before they are compared, so the
+     * comparison ignores the case and treats blanks like underscores, as the index lookups do.
+     *
+     * @param names
+     *            the names of the templates of a revision, as stored in the template index or as
+     *            parsed from the revision text
+     * @param templateFragment
+     *            the plain beginning of the template names to look for
+     * @return {@code true} if any of {@code names} starts with {@code templateFragment}
+     */
+    static boolean containsTemplateFragment(List<String> names, String templateFragment)
+    {
+        String normalized = normalizeTemplateName(templateFragment);
+        for (String name : names) {
+            if (normalizeTemplateName(name).startsWith(normalized)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -538,10 +520,20 @@ public class WikipediaTemplateInfo
      * Return an iterable containing all pages that contain a template the name of which starts with
      * any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsContainingTemplateFragments(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return An iterable with the page objects that contain templates beginning with any String in
      *         templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -553,13 +545,26 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Return an iterable containing all pages that contain a template the name of which starts with
-     * any of the given Strings.
+     * Return an iterable containing all pages that do not contain a template the name of which
+     * starts with any of the given Strings.
+     *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsNotContainingTemplateFragments(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates excludes no page, so every page in the index is returned.
      *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
-     * @return An iterable with the page objects that contain templates beginning with any String in
-     *         templateFragments
+     * @return An iterable with the page objects that do not contain templates beginning with any
+     *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -587,60 +592,26 @@ public class WikipediaTemplateInfo
     private Iterable<Page> getFilteredPages(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-        List<Page> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    int pageID = result.getInt(1);
-                    matchedPages.add(wiki.getPage(pageID));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return loadPages(selectIndexedPageIds(templateNames, false, whitelist));
     }
 
     /**
      * Return an iterable containing all pages that contain a template the name of which equals any
      * of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsContainingTemplateNames(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return An iterable with the page objects that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -655,10 +626,23 @@ public class WikipediaTemplateInfo
      * Return an iterable containing all pages that do NOT contain a template the name of which
      * equals of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * <p>
+     * All matching pages are loaded, including their text, before this method returns. Use
+     * {@link #getPageIdsNotContainingTemplateNames(List)} if the page ids are sufficient.
+     * <p>
+     * An empty list of templates excludes no page, so every page in the index is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return An iterable with the page objects that do NOT contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -729,9 +713,8 @@ public class WikipediaTemplateInfo
                 }
 
                 // Parse templates and check if the revision contains the template
-                ParsedPage pp = parser.parse(rev.getRevisionText());
                 boolean containsTpl = false;
-                tplLoop: for (Template tpl : pp.getTemplates()) {
+                tplLoop: for (Template tpl : parser.parseTemplatesOnly(rev.getRevisionText())) {
                     if (tpl.getName().equalsIgnoreCase(templateName)) {
                         containsTpl = true;
                         break tplLoop;
@@ -772,59 +755,23 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-            for (@SuppressWarnings("unused")
-            String fragment : templateFragments) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName LIKE ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String fragment : templateFragments) {
-                    fragment = fragment.toLowerCase().trim();
-                    fragment = fragment.replaceAll(" ", "_");
-                    statement.setString(curIdx++, fragment + "%");
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedPageIds(templateFragments, true, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all pages that contain a template the name of which
      * starts with any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the pages that contain templates beginning with any String in
      *         templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -836,13 +783,22 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Returns a list containing the ids of all pages that contain a template the name of which
-     * starts with any of the given Strings.
+     * Returns a list containing the ids of all pages that do not contain a template the name of
+     * which starts with any of the given Strings.
+     *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is returned.
      *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the pages that do not contain templates beginning with any
      *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -862,8 +818,8 @@ public class WikipediaTemplateInfo
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @param whitelist
-     *            whether to return pages containing these templates (true) or return pages NOT
-     *            containing these templates (false)
+     *            whether to return revisions containing these templates (true) or return
+     *            revisions NOT containing these templates (false)
      * @return A list with the ids of the revisions that contain templates beginning with any
      *         String in templateFragments
      * @throws WikiApiException
@@ -874,45 +830,23 @@ public class WikipediaTemplateInfo
             boolean whitelist)
         throws WikiApiException
     {
-
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            String sqlString = "SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                    + " AS r WHERE tpl.templateId = r.templateId "
-                    + (whitelist ? "AND " : "AND NOT ")
-                    + buildTemplateNameCondition(templateFragments.size(), true);
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
-
-                bindTemplateNames(statement, templateFragments, true);
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedRevisionIds(templateFragments, true, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all revisions that contain a template the name of which
      * starts with any of the given Strings.
      *
+     * <p>
+     * Each revision is returned once, ordered by revision id. An empty list of templates returns
+     * no revisions.
+     *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the revisions that contain templates beginning with any
      *         String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -924,13 +858,22 @@ public class WikipediaTemplateInfo
     }
 
     /**
-     * Returns a list containing the ids of all revisions that contain a template the name of which
-     * starts with any of the given Strings.
+     * Returns a list containing the ids of all revisions that do not contain a template the name
+     * of which starts with any of the given Strings.
+     *
+     * <p>
+     * Each revision is returned once, ordered by revision id.
+     * <p>
+     * The revision template index is evaluated per revision: only revisions that contain at least
+     * one template are considered, and a revision is not returned if any of its templates matches.
+     * An empty list of templates returns every revision in the index.
      *
      * @param templateFragments
      *            the beginning of the templates that have to be matched
      * @return A list with the ids of the revisions that do not contain templates beginning with
      *         any String in templateFragments
+     * @throws IllegalArgumentException
+     *             If {@code templateFragments} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the template
      *             templates are corrupted)
@@ -1076,7 +1019,8 @@ public class WikipediaTemplateInfo
     /**
      * Binds the given template names (or fragments) to the parameters of a statement built with
      * {@link #buildTemplateNameCondition(int, boolean)}. The names are normalized the way they are
-     * stored in the template index (lower case, trimmed, spaces replaced by underscores).
+     * stored in the template index (lower case, trimmed, spaces replaced by underscores) via
+     * {@link #normalizeTemplateName(String)}.
      *
      * @param statement
      *            the statement to bind the names to, starting at parameter index 1
@@ -1093,8 +1037,311 @@ public class WikipediaTemplateInfo
     {
         int curIdx = 1;
         for (String name : templateNames) {
-            name = name.toLowerCase().trim().replaceAll(" ", "_");
+            name = normalizeTemplateName(name);
             statement.setString(curIdx++, prefix ? name + "%" : name);
+        }
+    }
+
+    /**
+     * Selects the ids of the pages that the page template index ({@code templateId_pageId})
+     * associates with any of the given templates (whitelist), or of the pages in the index that
+     * are associated with none of them (blacklist). Each page id is returned once, in ascending
+     * order.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select pages containing these templates (true) or pages NOT
+     *            containing these templates (false)
+     * @return the distinct ids of the matching pages in ascending order
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     * @throws WikiApiException
+     *             If there was any error retrieving the page ids
+     */
+    private List<Integer> selectIndexedPageIds(List<String> templateNames, boolean prefix,
+            boolean whitelist)
+        throws WikiApiException
+    {
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return selectIds(buildIndexedPageIdQuery(templateNames.size(), prefix, whitelist),
+                templateNames, prefix);
+    }
+
+    /**
+     * Selects the ids of the revisions that the revision template index
+     * ({@code templateId_revisionId}) associates with any of the given templates (whitelist), or
+     * of the revisions in the index that are associated with none of them (blacklist). Each
+     * revision id is returned once, in ascending order.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select revisions containing these templates (true) or revisions NOT
+     *            containing these templates (false)
+     * @return the distinct ids of the matching revisions in ascending order
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     * @throws WikiApiException
+     *             If there was any error retrieving the revision ids
+     */
+    private List<Integer> selectIndexedRevisionIds(List<String> templateNames, boolean prefix,
+            boolean whitelist)
+        throws WikiApiException
+    {
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return selectIds(buildIndexedRevisionIdQuery(templateNames.size(), prefix, whitelist),
+                templateNames, prefix);
+    }
+
+    /**
+     * Runs a query built by {@link #buildIndexedPageIdQuery(int, boolean, boolean)} or
+     * {@link #buildIndexedRevisionIdQuery(int, boolean, boolean)}.
+     *
+     * @param query
+     *            the query, with one parameter per template name
+     * @param templateNames
+     *            the template names or fragments to bind
+     * @param prefix
+     *            whether the names are bound as prefix patterns
+     * @return the ids the query selected, in the order of the result
+     * @throws WikiApiException
+     *             If there was any error running the query
+     */
+    private List<Integer> selectIds(String query, List<String> templateNames, boolean prefix)
+        throws WikiApiException
+    {
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            bindTemplateNames(statement, templateNames, prefix);
+
+            try (ResultSet result = execute(statement)) {
+                while (result.next()) {
+                    ids.add(result.getInt(1));
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+        return ids;
+    }
+
+    /**
+     * Counts the pages {@link #selectIndexedPageIds(List, boolean, boolean)} would select.
+     *
+     * @param templateNames
+     *            template names or template name fragments to look for
+     * @param prefix
+     *            whether the given Strings are matched as name prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to count pages containing these templates (true) or pages NOT containing
+     *            these templates (false)
+     * @return the number of distinct matching pages
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     * @throws WikiApiException
+     *             If there was any error counting the pages
+     */
+    private Integer countIndexedPages(List<String> templateNames, boolean prefix,
+            boolean whitelist)
+        throws WikiApiException
+    {
+        checkTemplateNames(templateNames);
+        if (whitelist && templateNames.isEmpty()) {
+            return 0;
+        }
+
+        try (PreparedStatement statement = connection.prepareStatement(
+                buildIndexedPageCountQuery(templateNames.size(), prefix, whitelist))) {
+            bindTemplateNames(statement, templateNames, prefix);
+
+            try (ResultSet result = execute(statement)) {
+                return result.next() ? result.getInt(1) : 0;
+            }
+        }
+        catch (SQLException e) {
+            throw new WikiApiException(e);
+        }
+    }
+
+    /**
+     * Rejects a {@code null} list of template names or fragments, and {@code null} elements in
+     * it. Up to 2.2.0 such a list failed with a {@link WikiApiException} wrapping a
+     * {@link NullPointerException}; an empty list is valid and has a defined meaning.
+     *
+     * @param templateNames
+     *            the template names or fragments passed to a public method
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
+     */
+    static void checkTemplateNames(List<String> templateNames)
+    {
+        if (templateNames == null) {
+            throw new IllegalArgumentException("The list of templates must not be null");
+        }
+        // Not List#contains(null): immutable lists such as List.of(..) reject a null argument.
+        for (String name : templateNames) {
+            if (name == null) {
+                throw new IllegalArgumentException("The list of templates must not contain null");
+            }
+        }
+    }
+
+    /**
+     * Loads the pages with the given ids, in the given order, with one query per batch of ids.
+     *
+     * @param pageIds
+     *            the ids of the pages to load
+     * @return the loaded pages
+     * @throws WikiApiException
+     *             If a page could not be loaded, in particular a {@link WikiPageNotFoundException}
+     *             if the template index refers to a page that does not exist
+     */
+    private List<Page> loadPages(List<Integer> pageIds) throws WikiApiException
+    {
+        List<Page> pages = wiki.getPages(pageIds);
+        if (pages.size() != pageIds.size()) {
+            throw new WikiPageNotFoundException((pageIds.size() - pages.size())
+                    + " of the pages referenced by the template index were not found.");
+        }
+        return pages;
+    }
+
+    /**
+     * Builds the query that selects the distinct ids of the pages in the page template index
+     * ({@code templateId_pageId}) that contain any of the given templates (whitelist) or none of
+     * them (blacklist), ordered by page id. The blacklist is evaluated per page, not per template
+     * of a page: a page is selected only if none of its templates matches. Pages that do not
+     * appear in the index, i.e. pages without any template, are never selected.
+     * <p>
+     * The blacklist excludes the pages of a non-correlated {@code NOT IN} subquery, which the
+     * database can evaluate once instead of once per row of the index. This is equivalent to a
+     * per-page {@code NOT EXISTS} only because the id columns of the index are {@code NOT NULL}:
+     * a single {@code NULL} in the subquery would make {@code NOT IN} select nothing.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match; must be
+     *            positive for a whitelist, a blacklist without names selects every indexed page
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select pages containing the templates (true) or pages not containing
+     *            them (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildIndexedPageIdQuery(int nameCount, boolean prefix, boolean whitelist)
+    {
+        return buildIndexedIdQuery(TemplateIndex.PAGES, nameCount, prefix, whitelist);
+    }
+
+    /**
+     * Builds the query that selects the distinct ids of the revisions in the revision template
+     * index ({@code templateId_revisionId}) that contain any of the given templates (whitelist) or
+     * none of them (blacklist), ordered by revision id. The blacklist is evaluated per revision,
+     * not per template of a revision: a revision is selected only if none of its templates
+     * matches. Revisions that do not appear in the index, i.e. revisions without any template,
+     * are never selected.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match; must be
+     *            positive for a whitelist, a blacklist without names selects every indexed
+     *            revision
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to select revisions containing the templates (true) or revisions not
+     *            containing them (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildIndexedRevisionIdQuery(int nameCount, boolean prefix, boolean whitelist)
+    {
+        return buildIndexedIdQuery(TemplateIndex.REVISIONS, nameCount, prefix, whitelist);
+    }
+
+    private static String buildIndexedIdQuery(TemplateIndex index, int nameCount, boolean prefix,
+            boolean whitelist)
+    {
+        return "SELECT DISTINCT i." + index.idColumn
+                + buildIndexFilter(index, nameCount, prefix, whitelist)
+                + " ORDER BY i." + index.idColumn;
+    }
+
+    /**
+     * Builds the query that counts the pages selected by
+     * {@link #buildIndexedPageIdQuery(int, boolean, boolean)}.
+     *
+     * @param nameCount
+     *            the number of template names (or fragments) the query has to match
+     * @param prefix
+     *            whether the template names are matched as prefixes (true) or as full names
+     *            (false)
+     * @param whitelist
+     *            whether to count pages containing the templates (true) or pages not containing
+     *            them (false)
+     * @return the SQL query with one parameter per template name
+     */
+    static String buildIndexedPageCountQuery(int nameCount, boolean prefix, boolean whitelist)
+    {
+        return "SELECT COUNT(DISTINCT i." + TemplateIndex.PAGES.idColumn + ")"
+                + buildIndexFilter(TemplateIndex.PAGES, nameCount, prefix, whitelist);
+    }
+
+    private static String buildIndexFilter(TemplateIndex index, int nameCount, boolean prefix,
+            boolean whitelist)
+    {
+        if (whitelist) {
+            if (nameCount < 1) {
+                throw new IllegalArgumentException("A whitelist needs at least one template name");
+            }
+            return " FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME + " AS tpl JOIN "
+                    + index.table + " AS i ON i.templateId = tpl.templateId WHERE "
+                    + buildTemplateNameCondition(nameCount, prefix);
+        }
+        String from = " FROM " + index.table + " AS i";
+        if (nameCount < 1) {
+            return from;
+        }
+        return from + " WHERE i." + index.idColumn + " NOT IN (SELECT i2." + index.idColumn
+                + " FROM " + index.table + " AS i2 JOIN " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                + " AS tpl ON tpl.templateId = i2.templateId WHERE "
+                + buildTemplateNameCondition(nameCount, prefix) + ")";
+    }
+
+    /**
+     * The template index tables the id queries select from, each with the column that holds the
+     * ids it associates templates with.
+     */
+    private enum TemplateIndex
+    {
+        /** The page template index, {@code templateId_pageId}. */
+        PAGES(GeneratorConstants.TABLE_TPLID_PAGEID, "pageId"),
+
+        /** The revision template index, {@code templateId_revisionId}. */
+        REVISIONS(GeneratorConstants.TABLE_TPLID_REVISIONID, "revisionId");
+
+        private final String table;
+        private final String idColumn;
+
+        TemplateIndex(String table, String idColumn)
+        {
+            this.table = table;
+            this.idColumn = idColumn;
         }
     }
 
@@ -1117,59 +1364,22 @@ public class WikipediaTemplateInfo
     private List<Integer> getFilteredPageIds(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            StringBuilder sqlString = new StringBuilder();
-            StringBuilder subconditions = new StringBuilder();
-            sqlString.append("SELECT p.pageId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_PAGEID
-                    + " AS p WHERE tpl.templateId = p.templateId "
-                    + (whitelist ? "AND" : "AND NOT") + " (");
-
-            for (@SuppressWarnings("unused")
-            String name : templateNames) {
-                if (!subconditions.isEmpty()) {
-                    subconditions.append("OR ");
-                }
-                subconditions.append("tpl.templateName = ?");
-            }
-            sqlString.append(subconditions);
-            sqlString.append(")");
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString.toString())) {
-
-                int curIdx = 1;
-                for (String name : templateNames) {
-                    name = name.toLowerCase().trim();
-                    name = name.replaceAll(" ", "_");
-                    statement.setString(curIdx++, name);
-                }
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedPageIds(templateNames, false, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all pages that contain a template the name of which
      * equals any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * An empty list of templates matches no page, so no page is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all pages that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1184,10 +1394,19 @@ public class WikipediaTemplateInfo
      * Returns a list containing the ids of all pages that do not contain a template the name of
      * which equals any of the given Strings.
      *
+     * <p>
+     * Each page is returned once, ordered by page id.
+     * <p>
+     * The page template index is evaluated per page: only pages that contain at least one
+     * template are considered, and a page is not returned if any of its templates matches.
+     * An empty list of templates excludes no page, so every page in the index is returned.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all pages that do not contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1205,8 +1424,8 @@ public class WikipediaTemplateInfo
      * @param templateNames
      *            the names of the template that we want to match
      * @param whitelist
-     *            whether to return pages containing these templates (true) or return pages NOT
-     *            containing these templates (false)
+     *            whether to return revisions containing these templates (true) or return
+     *            revisions NOT containing these templates (false)
      * @return A list with the ids of all revisions that contain any of the specified templates
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
@@ -1215,43 +1434,22 @@ public class WikipediaTemplateInfo
     private List<Integer> getFilteredRevisionIds(List<String> templateNames, boolean whitelist)
         throws WikiApiException
     {
-        List<Integer> matchedPages = new LinkedList<>();
-        try {
-            String sqlString = "SELECT r.revisionId FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                    + " AS r WHERE tpl.templateId = r.templateId "
-                    + (whitelist ? "AND " : "AND NOT ")
-                    + buildTemplateNameCondition(templateNames.size(), false);
-
-            try (PreparedStatement statement = connection.prepareStatement(sqlString)) {
-
-                bindTemplateNames(statement, templateNames, false);
-
-                ResultSet result = execute(statement);
-
-                if (result == null) {
-                    throw new WikiPageNotFoundException("Nothing was found");
-                }
-
-                while (result.next()) {
-                    matchedPages.add(result.getInt(1));
-                }
-            }
-
-            return matchedPages;
-        }
-        catch (Exception e) {
-            throw new WikiApiException(e);
-        }
+        return selectIndexedRevisionIds(templateNames, false, whitelist);
     }
 
     /**
      * Returns a list containing the ids of all revisions that contain a template the name of which
      * equals any of the given Strings.
      *
+     * <p>
+     * Each revision is returned once, ordered by revision id. An empty list of templates returns
+     * no revisions.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all revisions that contain any of the specified templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1266,10 +1464,19 @@ public class WikipediaTemplateInfo
      * Returns a list containing the ids of all revisions that do not contain a template the name of
      * which equals any of the given Strings.
      *
+     * <p>
+     * Each revision is returned once, ordered by revision id.
+     * <p>
+     * The revision template index is evaluated per revision: only revisions that contain at least
+     * one template are considered, and a revision is not returned if any of its templates matches.
+     * An empty list of templates returns every revision in the index.
+     *
      * @param templateNames
      *            the names of the template that we want to match
      * @return A list with the ids of all revisions that do not contain any of the specified
      *         templates
+     * @throws IllegalArgumentException
+     *             If {@code templateNames} is {@code null} or contains {@code null}
      * @throws WikiApiException
      *             If there was any error retrieving the page object (most likely if the templates
      *             are corrupted)
@@ -1381,11 +1588,8 @@ public class WikipediaTemplateInfo
         }
         List<String> templateNames = new LinkedList<>();
         try {
-            final String sql = "SELECT tpl.templateName FROM " + GeneratorConstants.TABLE_TPLID_TPLNAME
-                    + " AS tpl, " + GeneratorConstants.TABLE_TPLID_REVISIONID
-                    + " AS p WHERE tpl.templateId = p.templateId AND p.revisionId = ?";
-            
-            try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement(REVISION_TEMPLATE_NAMES_QUERY)) {
                 statement.setInt(1, revid);
 
                 ResultSet result = execute(statement);
@@ -1408,6 +1612,10 @@ public class WikipediaTemplateInfo
 
     /**
      * Determines whether a given revision contains a given template name.
+     * <p>
+     * The name is compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateNames(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox person"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateName A template name to check for.
@@ -1422,6 +1630,10 @@ public class WikipediaTemplateInfo
 
     /**
      * Determines whether a given revision contains a given template name.
+     * <p>
+     * The names are compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateNames(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox person"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateNames A list of template names.
@@ -1432,19 +1644,15 @@ public class WikipediaTemplateInfo
     public boolean revisionContainsTemplateNames(int revId, List<String> templateNames)
         throws WikiApiException
     {
-        List<String> tplList = getTemplateNamesFromRevision(revId);
-        for (String tpl : tplList) {
-            for (String templateName : templateNames) {
-                if (tpl.equalsIgnoreCase(templateName)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return containsTemplateName(getTemplateNamesFromRevision(revId), templateNames);
     }
 
     /**
      * Determines whether a given revision contains a template starting with the given fragment.
+     * <p>
+     * The fragment is compared like the index lookups, e.g.
+     * {@link #getRevisionIdsContainingTemplateFragments(List)}, do: the case is ignored and blanks
+     * match underscores, so {@code "Infobox pers"} matches the template {@code infobox_person}.
      *
      * @param revId The revision identifier to use.
      * @param templateFragment A (partial) template name to check for.
@@ -1455,13 +1663,7 @@ public class WikipediaTemplateInfo
     public boolean revisionContainsTemplateFragment(int revId, String templateFragment)
         throws WikiApiException
     {
-        List<String> tplList = getTemplateNamesFromRevision(revId);
-        for (String tpl : tplList) {
-            if (tpl.toLowerCase().startsWith(templateFragment.toLowerCase())) {
-                return true;
-            }
-        }
-        return false;
+        return containsTemplateFragment(getTemplateNamesFromRevision(revId), templateFragment);
     }
 
     /**
@@ -1486,14 +1688,9 @@ public class WikipediaTemplateInfo
             parser = pf.createParser();
         }
 
-        List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText())
-                .getTemplates();
-        for (Template tpl : tplList) {
-            if (tpl.getName().equalsIgnoreCase(templateName)) {
-                return true;
-            }
-        }
-        return false;
+        List<Template> tplList = parser
+                .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
+        return containsTemplateName(templateNames(tplList), List.of(templateName));
     }
 
     /**
@@ -1520,14 +1717,23 @@ public class WikipediaTemplateInfo
             parser = pf.createParser();
         }
 
-        List<Template> tplList = parser.parse(revApi.getRevision(revId).getRevisionText())
-                .getTemplates();
-        for (Template tpl : tplList) {
-            if (tpl.getName().toLowerCase().startsWith(templateFragment.toLowerCase())) {
-                return true;
-            }
+        List<Template> tplList = parser
+                .parseTemplatesOnly(revApi.getRevision(revId).getRevisionText());
+        return containsTemplateFragment(templateNames(tplList), templateFragment);
+    }
+
+    /**
+     * @param templates
+     *            parsed templates
+     * @return the names of the given templates, in the same order
+     */
+    private static List<String> templateNames(List<Template> templates)
+    {
+        List<String> names = new ArrayList<>(templates.size());
+        for (Template tpl : templates) {
+            names.add(tpl.getName());
         }
-        return false;
+        return names;
     }
 
     /**

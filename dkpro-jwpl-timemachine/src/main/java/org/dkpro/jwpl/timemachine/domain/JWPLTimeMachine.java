@@ -17,6 +17,10 @@
  */
 package org.dkpro.jwpl.timemachine.domain;
 
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_FAILURE;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_SUCCESS;
+import static org.dkpro.jwpl.wikimachine.util.ExitStatus.EXIT_USAGE;
+
 import java.util.Optional;
 import java.util.ServiceLoader;
 
@@ -24,6 +28,7 @@ import org.dkpro.jwpl.wikimachine.debug.ILogger;
 import org.dkpro.jwpl.wikimachine.domain.Configuration;
 import org.dkpro.jwpl.wikimachine.domain.ISnapshotGenerator;
 import org.dkpro.jwpl.wikimachine.factory.IEnvironmentFactory;
+import org.dkpro.jwpl.wikimachine.util.ExitStatus;
 
 /**
  * The command line tool of the DBMapping Tool of the JWPL.<br>
@@ -70,7 +75,27 @@ public class JWPLTimeMachine
         return args.length > 0;
     }
 
+    /**
+     * The entry point of the TimeMachine tool.
+     * <p>
+     * Terminates the JVM with exit status 255 if the arguments are incomplete, and with 1 if the
+     * configuration is invalid or the processing fails.
+     *
+     * @param args args[0] the settings file like described in {@link SettingsXML}
+     */
     public static void main(String[] args)
+    {
+        ExitStatus.exitOnFailure(run(args));
+    }
+
+    /**
+     * Runs the TimeMachine tool.
+     *
+     * @param args The arguments as described for {@link #main(String[])}.
+     * @return {@code 0} on success, {@code 255} if the arguments are incomplete, and {@code 1} if
+     *         the configuration is invalid or the processing failed.
+     */
+    private static int run(String[] args)
     {
         try {
             if (checkArgs(args)) {
@@ -93,15 +118,18 @@ public class JWPLTimeMachine
 
                         logger.log("End of the application. Working time = "
                                 + (System.currentTimeMillis() - startTime) + " ms");
+                        return EXIT_SUCCESS;
                     }
                 }
+                return EXIT_FAILURE;
             } else {
                 logger.log("Usage: java -jar JWPLTimeMachine.jar <CONFIG_FILE>");
-                System.exit(255);
+                return EXIT_USAGE;
             }
         }
         catch (Exception e) {
             logger.log(e);
+            return EXIT_FAILURE;
         }
     }
 }

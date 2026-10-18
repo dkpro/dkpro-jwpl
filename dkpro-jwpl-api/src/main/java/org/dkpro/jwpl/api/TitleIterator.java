@@ -81,7 +81,7 @@ public class TitleIterator
                                          // database.
         private int bufferFillSize; // even a 500 slot buffer can be filled with only 5 elements
         private int bufferOffset; // the offset in the buffer
-        private int dataOffset; // the overall offset in the data
+        private long lastId; // the id of the last title retrieved from the database
 
         public TitleBuffer(int bufferSize, Wikipedia wiki)
         {
@@ -90,7 +90,7 @@ public class TitleIterator
             this.titleStringBuffer = new ArrayList<>();
             this.bufferFillSize = 0;
             this.bufferOffset = 0;
-            this.dataOffset = 0;
+            this.lastId = Long.MIN_VALUE;
         }
 
         /**
@@ -139,17 +139,18 @@ public class TitleIterator
                 logger.error("Could not parse title '{}'.", titleString, e);
             }
             bufferOffset++;
-            dataOffset++;
             return title;
         }
 
         private boolean fillBuffer()
         {
 
-            final String sql = "select p.name from PageMapLine as p";
-            List<String> returnList = wiki
-                    .__inTransaction(session -> session.createNativeQuery(sql, String.class)
-                            .setFirstResult(dataOffset).setMaxResults(maxBufferSize)
+            // keyset paging: ordered by the primary key, continue after the last retrieved id
+            final String sql = "select p.id, p.name from PageMapLine as p"
+                    + " where p.id > :lastId order by p.id";
+            List<Object[]> returnList = wiki
+                    .__inTransaction(session -> session.createQuery(sql, Object[].class)
+                            .setParameter("lastId", lastId).setMaxResults(maxBufferSize)
                             .setFetchSize(maxBufferSize).list());
 
             // clear the old buffer and all variables regarding the state of the buffer
@@ -157,7 +158,10 @@ public class TitleIterator
             bufferOffset = 0;
             bufferFillSize = 0;
 
-            titleStringBuffer.addAll(returnList);
+            for (Object[] row : returnList) {
+                lastId = ((Number) row[0]).longValue();
+                titleStringBuffer.add((String) row[1]);
+            }
 
             if (!titleStringBuffer.isEmpty()) {
                 bufferFillSize = titleStringBuffer.size();

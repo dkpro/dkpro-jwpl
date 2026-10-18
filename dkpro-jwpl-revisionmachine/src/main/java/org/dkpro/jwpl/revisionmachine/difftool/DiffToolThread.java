@@ -83,6 +83,11 @@ public class DiffToolThread
     private boolean MODE_STATISTICAL_OUTPUT;
 
     /**
+     * Whether an archive, article or diff was skipped because of an error
+     */
+    private boolean failed;
+
+    /**
      * (Constructor) Creates a DiffToolThread object.
      *
      * @param config
@@ -256,6 +261,7 @@ public class DiffToolThread
             catch (SQLConsumerException e) {
 
                 SQLConsumerLogMessages.logSQLConsumerException(logger, e);
+                failed = true;
 
                 // Critical Exceptions
             }
@@ -267,7 +273,15 @@ public class DiffToolThread
     }
 
     /**
-     * Runs the diff creation process
+     * Runs the diff creation process.
+     * <p>
+     * An archive, article or diff that cannot be read or processed is logged and skipped, and the
+     * remaining input is still processed.
+     *
+     * @throws IllegalStateException
+     *             if any input was skipped because of an error
+     * @throws RuntimeException
+     *             if a critical error aborted the process
      */
     @Override
     public void run()
@@ -307,6 +321,7 @@ public class DiffToolThread
 
                     articleReader = null;
                     ArticleConsumerLogMessages.logExceptionRetrieveArchive(logger, description, e);
+                    failed = true;
                 }
 
                 // Process Archive
@@ -347,6 +362,7 @@ public class DiffToolThread
 
                         ArticleConsumerLogMessages.logTaskReaderException(logger, e);
                         articleReader.resetTaskCompleted();
+                        failed = true;
 
                     }
                     catch (DiffException e) {
@@ -354,6 +370,7 @@ public class DiffToolThread
                         DiffConsumerLogMessages.logDiffException(logger, e);
                         articleReader.resetTaskCompleted();
                         diffCalc.reset();
+                        failed = true;
                     }
                 }
             }
@@ -378,6 +395,11 @@ public class DiffToolThread
         }
         finally {
             logger.flush();
+        }
+
+        if (failed) {
+            throw new IllegalStateException(
+                    "Input was skipped because of errors, see the DiffTool error log.");
         }
     }
 }

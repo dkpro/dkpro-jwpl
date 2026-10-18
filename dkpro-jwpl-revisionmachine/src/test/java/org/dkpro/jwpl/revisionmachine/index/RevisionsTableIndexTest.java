@@ -366,6 +366,13 @@ public class RevisionsTableIndexTest
                 assertFalse(result.next(), table);
             }
         }
+        // index_revisionID is loaded without a key, which is added once after the load
+        assertEquals(Map.of("PRIMARY", List.of("ArticleID")),
+                indexes(connection, "index_articleID_rc_ts"));
+        assertEquals(Map.of("PRIMARY", List.of("RevisionID")),
+                indexes(connection, "index_revisionID"));
+        assertEquals(Map.of("PRIMARY", List.of("ArticleID")),
+                indexes(connection, "index_chronological"));
     }
 
     /**
@@ -378,18 +385,19 @@ public class RevisionsTableIndexTest
         assertEquals(Map.of("PRIMARY", List.of("PrimaryKey"), //
                 "articleIdx", List.of("ArticleID", "RevisionCounter"), //
                 "articleTsIdx", List.of("ArticleID", "Timestamp", "RevisionCounter")),
-                indexes(connection));
+                indexes(connection, "revisions"));
     }
 
     /**
-     * Returns the columns of each index of the revisions table. {@code SHOW INDEX} lists the
-     * columns of an index in their order within the index.
+     * Returns the columns of each index of the given table. {@code SHOW INDEX} lists the columns
+     * of an index in their order within the index.
      */
-    private static Map<String, List<String>> indexes(Connection connection) throws SQLException
+    private static Map<String, List<String>> indexes(Connection connection, String table)
+        throws SQLException
     {
         Map<String, List<String>> indexes = new HashMap<>();
         try (Statement statement = connection.createStatement();
-                ResultSet result = statement.executeQuery("SHOW INDEX FROM revisions")) {
+                ResultSet result = statement.executeQuery("SHOW INDEX FROM " + table)) {
             while (result.next()) {
                 indexes.computeIfAbsent(result.getString("Key_name"), k -> new ArrayList<>())
                         .add(result.getString("Column_name"));

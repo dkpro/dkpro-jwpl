@@ -114,6 +114,18 @@ public class Span
         return start < s.getEnd() && s.getStart() < end;
     }
 
+    /**
+     * Checks whether the given span lies inside this span. As with {@link #hits(Span)}, the end is
+     * exclusive, so an empty span at the end of this span does not lie inside it.
+     *
+     * @param s The span to check.
+     * @return {@code true} if {@code s} lies inside this span, {@code false} otherwise.
+     */
+    public boolean contains(Span s)
+    {
+        return start <= s.getStart() && s.getStart() < end && s.getEnd() <= end;
+    }
+
     public String toString()
     {
         return "(" + start + ", " + end + ")";

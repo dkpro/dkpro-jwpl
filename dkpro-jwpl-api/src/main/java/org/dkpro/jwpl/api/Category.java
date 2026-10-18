@@ -17,6 +17,7 @@
  */
 package org.dkpro.jwpl.api;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,6 +69,12 @@ public class Category
         }
     }
 
+    /**
+     * Upper bound for the number of parent ids bound into a single {@code in (..)} clause of
+     * {@link #getSiblings()}, as for the batches of {@link Wikipedia#getTitles(java.util.Collection)}.
+     */
+    private static final int SIBLING_BATCH_SIZE = 500;
+
     private final CategoryDAO catDAO;
     private Row row;
     private final Wikipedia wiki;
@@ -87,6 +94,29 @@ public class Category
         this.wiki = wiki;
         catDAO = wiki.getCategoryDAO();
         createCategory(id);
+    }
+
+    /**
+     * Creates a category object from an already retrieved row, without querying the database. The
+     * row is not added to the category cache; callers that want it cached add it themselves.
+     *
+     * @param wiki
+     *            The wikipedia object.
+     * @param row
+     *            The {@link Row} of a category entity that has already been retrieved.
+     * @return A category object backed by {@code row}.
+     */
+    static Category fromRow(Wikipedia wiki, Row row)
+    {
+        return new Category(wiki, row);
+    }
+
+    // private, so that it does not make public calls like new Category(wiki, null) ambiguous
+    private Category(Wikipedia wiki, Row row)
+    {
+        this.wiki = wiki;
+        this.catDAO = wiki.getCategoryDAO();
+        this.row = row;
     }
 
     /**
@@ -230,17 +260,17 @@ public class Category
     }
 
     /**
+     * Returns the parents of this category. The categories are loaded in batches rather than one
+     * by one, and those held by the category cache are not queried again. Parents that do not
+     * exist as a category are left out.
+     *
      * @return A set containing parents (super categories) of this category.
      */
     public Set<Category> getParents()
     {
         Set<Integer> tmpSet = loadCollection("inLinks");
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmpSet) {
-            categories.add(this.wiki.getCategory(pageID));
-        }
-        return categories;
+        return wiki.__getCategoriesByPageIds(tmpSet);
     }
 
     /**
@@ -274,17 +304,17 @@ public class Category
     }
 
     /**
+     * Returns the children of this category. The categories are loaded in batches rather than one
+     * by one, and those held by the category cache are not queried again. Children that do not
+     * exist as a category are left out.
+     *
      * @return A set containing the children (subcategories) of this category.
      */
     public Set<Category> getChildren()
     {
         Set<Integer> tmpSet = loadCollection("outLinks");
 
-        Set<Category> categories = new HashSet<>();
-        for (int pageID : tmpSet) {
-            categories.add(this.wiki.getCategory(pageID));
-        }
-        return categories;
+        return wiki.__getCategoriesByPageIds(tmpSet);
     }
 
     /**
@@ -329,16 +359,24 @@ public class Category
     }
 
     /**
+     * Returns the articles that are categorized under this category.
+     * <p>
+     * The pages are loaded without their text, in batches rather than one by one. The text of a
+     * returned page is queried on the first call of its {@link Page#getText()}, which therefore
+     * requires the {@link Wikipedia} this category belongs to to still be usable.
+     *
      * @return The set of articles that are categorized under this category.
      * @throws WikiApiException
-     *             Thrown if errors occurred.
+     *             Thrown if errors occurred, e.g. if an article of this category does not exist.
      */
     public Set<Page> getArticles() throws WikiApiException
     {
         Set<Integer> tmpSet = getArticleIds();
-        Set<Page> pages = new HashSet<>();
-        for (int pageID : tmpSet) {
-            pages.add(this.wiki.getPage(pageID));
+        Set<Page> pages = wiki.__getPagesWithoutText(tmpSet);
+        if (pages.size() < tmpSet.size()) {
+            // As before, when every article was loaded by its own getPage(int) call.
+            throw new WikiPageNotFoundException("Not all of the " + tmpSet.size()
+                    + " articles of the category with page id " + getPageId() + " were found.");
         }
         return pages;
     }
@@ -413,23 +451,31 @@ public class Category
     }
 
     /**
-     * Returns the siblings of this category.
+     * Returns the siblings of this category, i.e. the children of its parents. The child ids of
+     * the parents are read with one query per {@value #SIBLING_BATCH_SIZE} parents and the
+     * categories are loaded in batches, without loading the parents themselves.
+     * <p>
+     * This category is one of the children of its parents, so it is part of the result, too. That
+     * was already the case when the siblings were collected via {@link #getParents()} and
+     * {@link #getChildren()}: removing {@code this} from that set had no effect, as
+     * {@link Category} does not override {@link Object#equals(Object)}.
      *
-     * @return Returns the siblings of this category or {@code null}, if there are none.
+     * @return Returns the siblings of this category, or an empty set if there are none.
      */
     public Set<Category> getSiblings()
     {
-        Set<Category> siblings = new HashSet<>();
-
-        // add siblings
-        for (Category parent : this.getParents()) {
-            siblings.addAll(parent.getChildren());
+        List<Integer> parentIds = new ArrayList<>(getParentIDs());
+        Set<Integer> siblingIds = new HashSet<>();
+        for (int from = 0; from < parentIds.size(); from += SIBLING_BATCH_SIZE) {
+            List<Integer> batch = parentIds.subList(from,
+                    Math.min(from + SIBLING_BATCH_SIZE, parentIds.size()));
+            siblingIds.addAll(wiki.__inTransaction(session -> session
+                    .createQuery("select o from Category c join c.outLinks o"
+                            + " where c.pageId in (:ids)", Integer.class)
+                    .setParameterList("ids", batch).list()));
         }
 
-        // remove this category from list
-        siblings.remove(this);
-
-        return siblings;
+        return wiki.__getCategoriesByPageIds(siblingIds);
     }
 
     /**

@@ -321,8 +321,10 @@ public class ChronoRevisionIterator
 
                     int currentPK = Integer.parseInt(fullRevisionPKs.substring(0, index));
 
-                    // TODO CHECK! -2 instead of -1 gets rid of the extra
-                    // revision from the next article
+                    // The revisions of the article are stored under consecutive primary keys,
+                    // the last one is currentPK + maxRevision - 1. RevisionIterator also returns
+                    // the revision after its end key, hence the end key is the one before the
+                    // last. For an article with a single revision it is currentPK - 1.
                     this.revisionIterator = new RevisionIterator(config, currentPK,
                             currentPK + maxRevision - 2, connection, hasNamespaceColumn());
 

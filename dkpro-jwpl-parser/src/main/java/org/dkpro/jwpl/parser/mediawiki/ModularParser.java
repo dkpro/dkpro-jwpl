@@ -55,6 +55,8 @@ public class ModularParser
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
     public static final String SYMBOL_PIPE = "|";
+    private static final String LINK_OPEN = "[[";
+    private static final String LINK_CLOSE = "]]";
 
     // Options, set by the ParserFactory
     private String lineSeparator;
@@ -350,38 +352,16 @@ public class ModularParser
         // Creating a new Parameter Container
         ContentElementParsingParameters cepp = new ContentElementParsingParameters();
 
-        // Deletes comments out of the Source
-        deleteComments(sm);
-
-        // Deletes any TOC Tags, these are not used in this parser.
-        deleteTOCTag(sm);
-
-        // Removing the Content which should not parsed but integrated later in
-        // the resulting text
-        sm.manageList(cepp.noWikiSpans);
-        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "PRE", " ");
-        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "NOWIKI");
-        if (cepp.noWikiSpans.isEmpty()) {
-            sm.removeManagedList(cepp.noWikiSpans);
-        }
-
-        // Parsing the Math Tags...
-        sm.manageList(cepp.mathSpans);
-        parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
-        if (cepp.mathSpans.isEmpty()) {
-            sm.removeManagedList(cepp.mathSpans);
-        }
-
-        // Parsing the Templates (the Span List will be added to the managed
-        // lists by the function)
-        parseTemplates(sm, cepp.templateSpans, cepp.templates, ppResult);
+        // Deletes comments and TOC tags, masks the <pre>, <nowiki> and <math>
+        // content, and parses the templates.
+        preprocessAndParseTemplates(sm, cepp, ppResult);
 
         // Parsing all other Tags
         parseTags(sm, cepp.tagSpans);
 
         // Converting &lt;gallery>s to normal Images, this is not beautiful, but
         // a simple solution...
-        convertGalleriesToImages(sm, cepp.tagSpans);
+        convertGalleriesToImages(sm, cepp.tagSpans, cepp.templateSpans, cepp.templates);
 
         // Parsing Links and Images.
         parseImagesAndInternalLinks(sm, cepp.linkSpans, cepp.links);
@@ -416,6 +396,86 @@ public class ModularParser
 
         // So it is done...
         return ppResult;
+    }
+
+    /**
+     * Parses only the templates of the given MediaWiki source, skipping the parsing of links, tags,
+     * lines, sections and paragraphs that {@link #parse(String)} does afterwards. The source is
+     * preprocessed exactly as by {@link #parse(String)}, so templates in comments or in
+     * {@code <nowiki>}, {@code <pre>} and {@code <math>} content are not returned, and nested
+     * templates are resolved in the same order.
+     * <p>
+     * The templates are those the configured template parser resolves to a {@link Template}, as
+     * {@link ParsedPage#getTemplates()} returns them after a full parse. Unlike there, templates
+     * which the full parse does not attach to any content element of the page are included, too.
+     * The list is ordered from the last template of the page to the first, with nested templates
+     * before the templates containing them.
+     *
+     * @param src
+     *            the MediaWiki source to parse
+     * @return the templates of the source; an empty list if the source is {@code null} or empty,
+     *         or if the configuration of the parser is not runnable
+     */
+    @Override
+    public List<Template> parseTemplatesOnly(String src)
+    {
+        if (!runConfig() || src == null || src.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        SpanManager sm = new SpanManager(src.replace('\t', ' ') + lineSeparator);
+        if (calculateSrcSpans) {
+            sm.enableSrcPosCalculation();
+        }
+        ContentElementParsingParameters cepp = new ContentElementParsingParameters();
+        preprocessAndParseTemplates(sm, cepp, new ParsedPage());
+
+        // collect the templates as parseContentElement(..) attaches them
+        List<Template> result = new ArrayList<>(cepp.templates.size());
+        for (ResolvedTemplate rt : cepp.templates) {
+            Object parsedObject = rt.getParsedObject();
+            if (parsedObject == null || parsedObject.getClass() == Link.class) {
+                continue;
+            }
+            result.add(parsedObject.getClass() == Template.class ? (Template) parsedObject
+                    : rt.getTemplate());
+        }
+        return result;
+    }
+
+    /**
+     * The first steps of {@link #parse(String)}, shared with {@link #parseTemplatesOnly(String)}:
+     * deletes comments and TOC tags, moves the {@code <pre>}, {@code <nowiki>} and {@code <math>}
+     * content out of the way, and parses the templates into {@code cepp}.
+     */
+    private void preprocessAndParseTemplates(SpanManager sm, ContentElementParsingParameters cepp,
+            ParsedPage pp)
+    {
+        // Deletes comments out of the Source
+        deleteComments(sm);
+
+        // Deletes any TOC Tags, these are not used in this parser.
+        deleteTOCTag(sm);
+
+        // Removing the Content which should not parsed but integrated later in
+        // the resulting text
+        sm.manageList(cepp.noWikiSpans);
+        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "PRE", " ");
+        parseSpecifiedTag(sm, cepp.noWikiSpans, cepp.noWikiStrings, "NOWIKI");
+        if (cepp.noWikiSpans.isEmpty()) {
+            sm.removeManagedList(cepp.noWikiSpans);
+        }
+
+        // Parsing the Math Tags...
+        sm.manageList(cepp.mathSpans);
+        parseSpecifiedTag(sm, cepp.mathSpans, cepp.mathStrings, "MATH");
+        if (cepp.mathSpans.isEmpty()) {
+            sm.removeManagedList(cepp.mathSpans);
+        }
+
+        // Parsing the Templates (the Span List will be added to the managed
+        // lists by the function)
+        parseTemplates(sm, cepp.templateSpans, cepp.templates, pp);
     }
 
     /**
@@ -794,7 +854,12 @@ public class ModularParser
 
     private String getTagText(SpanManager sm, Span tag)
     {
-        return sm.substring(new Span(tag.getStart() + 1, tag.getEnd() - 1).trim(sm));
+        return sm.substring(getTagTextSpan(sm, tag));
+    }
+
+    private static Span getTagTextSpan(SpanManager sm, Span tag)
+    {
+        return new Span(tag.getStart() + 1, tag.getEnd() - 1).trim(sm);
     }
 
     private void parseSpecifiedTag(SpanManager sm, List<Span> spans, List<String> strings,
@@ -914,10 +979,23 @@ public class ModularParser
 
             ResolvedTemplate rt = templateParser.parseTemplate(t, pp);
 
+            // the spans are in descending start order, so the nested templates are the tail
+            int nestedFrom = resolvedTemplateSpans.size();
+            while (nestedFrom > 0 && ts.contains(resolvedTemplateSpans.get(nestedFrom - 1))) {
+                nestedFrom--;
+                resolvedTemplates.get(nestedFrom).setPostParseReplacement(null);
+            }
+            int nestedTo = resolvedTemplateSpans.size();
+
             resolvedTemplateSpans.add(ts);
             resolvedTemplates.add(rt);
 
             sm.replace(ts, rt.getPreParseReplacement());
+
+            // the nested templates now share the replacement of this template
+            for (int i = nestedFrom; i < nestedTo; i++) {
+                resolvedTemplateSpans.get(i).setStart(ts.getStart()).setEnd(ts.getEnd());
+            }
         }
 
         if (resolvedTemplateSpans.isEmpty()) {
@@ -925,13 +1003,15 @@ public class ModularParser
         }
     }
 
-    private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans)
+    private void convertGalleriesToImages(SpanManager sm, List<Span> tagSpans,
+            List<Span> templateSpans, List<ResolvedTemplate> templates)
     {
         // Quick Hack, not very efficient, should be improved, won't work with
         // calculateSrcSpans == true !
 
         for (int i = 0; i < tagSpans.size() - 1; i++) {
-            String openText = getTagText(sm, tagSpans.get(i));
+            Span openTextSpan = getTagTextSpan(sm, tagSpans.get(i));
+            String openText = sm.substring(openTextSpan);
             if (startsWithIgnoreCase(openText, "GALLERY")) {
 
                 if (startsWithIgnoreCase(getTagText(sm, tagSpans.get(i + 1)), "/GALLERY")) {
@@ -942,8 +1022,11 @@ public class ModularParser
                     i--;
 
                     StringBuilder sb = new StringBuilder();
+                    GalleryTemplates galleryTemplates = new GalleryTemplates(templateSpans,
+                            templates, new Span(startSpan.getStart(), endSpan.getEnd()));
 
                     // caption (any option will be treated as caption)
+                    int openTextStart = openTextSpan.getStart();
                     int eqPos = openText.indexOf('=');
                     if (eqPos != -1) {
                         int captionStart = eqPos + 1;
@@ -956,18 +1039,29 @@ public class ModularParser
                         }
 
                         if (captionStart < captionEnd) {
+                            galleryTemplates.copied(new Span(openTextStart + captionStart,
+                                    openTextStart + captionEnd), sb.length());
                             sb.append(openText.substring(captionStart, captionEnd) + lineSeparator);
                         }
                     }
 
                     // images
+                    int entryStart = startSpan.getEnd();
                     for (String s : tokenize(sm, startSpan.getEnd(), endSpan.getStart(),
                             lineSeparator)) {
-                        sb.append("[[" + qualifyGalleryEntry(s) + "]]" + lineSeparator);
+                        String qualified = qualifyGalleryEntry(s);
+                        entryStart = sm.indexOf(s, entryStart, endSpan.getStart());
+                        // the entry follows the link markup and the prefix qualifyGalleryEntry adds
+                        galleryTemplates.copied(new Span(entryStart, entryStart + s.length()),
+                                sb.length() + LINK_OPEN.length() + qualified.length() - s.length());
+                        entryStart += s.length();
+                        sb.append(LINK_OPEN + qualified + LINK_CLOSE + lineSeparator);
                     }
 
                     // replace the source and remove the tags
-                    sm.replace(startSpan.getStart(), endSpan.getEnd(), sb.toString());
+                    int replacementStart = startSpan.getStart();
+                    sm.replace(replacementStart, endSpan.getEnd(), sb.toString());
+                    galleryTemplates.moveTo(replacementStart);
                 }
             }
         }
@@ -997,6 +1091,121 @@ public class ModularParser
         // prefix is conventionally capitalized
         String identifier = imageIdentifiers.get(0);
         return Character.toUpperCase(identifier.charAt(0)) + identifier.substring(1) + ":" + entry;
+    }
+
+    /**
+     * Deletes the text of an image, except for the placeholders of the templates in it, which the
+     * templates replace afterwards, and sets the span of the image to the empty span at its start.
+     *
+     * @param sm The span manager holding the text.
+     * @param linkSpan The span of the image.
+     * @param templateSpans The spans of the templates not attached yet, in descending start order.
+     * @param templates The templates of {@code templateSpans}, in the same order.
+     */
+    private static void deleteImageText(SpanManager sm, Span linkSpan, List<Span> templateSpans,
+            List<ResolvedTemplate> templates)
+    {
+        // walking backwards goes through the templates in ascending start order
+        int i = templateSpans.size() - 1;
+        while (i >= 0 && templateSpans.get(i).getStart() < linkSpan.getStart()) {
+            i--;
+        }
+        if (i < 0 || !linkSpan.contains(templateSpans.get(i))) {
+            sm.delete(linkSpan);
+            return;
+        }
+
+        int keptEnd = linkSpan.getStart();
+        for (; i >= 0 && templateSpans.get(i).getStart() < linkSpan.getEnd(); i--) {
+            Span ts = templateSpans.get(i);
+            if (linkSpan.contains(ts) && templates.get(i).getPostParseReplacement() != null) {
+                sm.delete(keptEnd, ts.getStart());
+                keptEnd = ts.getEnd();
+            }
+        }
+        sm.delete(keptEnd, linkSpan.getEnd());
+        linkSpan.setEnd(linkSpan.getStart());
+    }
+
+    /**
+     * Moves the spans of the templates in a gallery to the copies of their text in the replacement
+     * of the gallery.
+     */
+    private static class GalleryTemplates
+    {
+        private final List<Span> templateSpans;
+        private final List<ResolvedTemplate> templates;
+        private final int from;
+        private final int[] lengths;
+        private final int[] offsets;
+
+        /**
+         * Collects the templates in a gallery.
+         *
+         * @param templateSpans The spans of the templates, in descending start order.
+         * @param templates The templates of {@code templateSpans}, in the same order.
+         * @param gallery The span of the gallery, including its tags.
+         */
+        GalleryTemplates(List<Span> templateSpans, List<ResolvedTemplate> templates, Span gallery)
+        {
+            this.templateSpans = templateSpans;
+            this.templates = templates;
+
+            int i = templateSpans.size();
+            while (i > 0 && templateSpans.get(i - 1).getStart() < gallery.getStart()) {
+                i--;
+            }
+            int to = i;
+            while (i > 0 && gallery.contains(templateSpans.get(i - 1))) {
+                i--;
+            }
+            from = i;
+
+            lengths = new int[to - from];
+            offsets = new int[to - from];
+            for (int k = 0; k < lengths.length; k++) {
+                lengths[k] = templateSpans.get(from + k).length();
+                offsets[k] = -1;
+            }
+        }
+
+        /**
+         * Notes that the given text of the gallery is copied to the given offset of the
+         * replacement.
+         *
+         * @param source The span of the copied text.
+         * @param offset The offset of the copy in the replacement.
+         */
+        void copied(Span source, int offset)
+        {
+            for (int k = 0; k < offsets.length; k++) {
+                Span s = templateSpans.get(from + k);
+                if (source.contains(s)) {
+                    offsets[k] = offset + s.getStart() - source.getStart();
+                }
+            }
+        }
+
+        /**
+         * Moves the spans to their copies in the replacement. A template whose text is not copied
+         * gets the empty span at the start of the replacement and no post-parse replacement.
+         *
+         * @param replacementStart The position of the replacement.
+         */
+        void moveTo(int replacementStart)
+        {
+            for (int k = 0; k < offsets.length; k++) {
+                Span s = templateSpans.get(from + k);
+                if (offsets[k] < 0) {
+                    s.setStart(replacementStart).setEnd(replacementStart);
+                    templates.get(from + k).setPostParseReplacement(null);
+                }
+                else {
+                    s.setStart(replacementStart + offsets[k])
+                            .setEnd(replacementStart + offsets[k] + lengths[k]);
+                }
+            }
+        }
     }
 
     private Table buildTable(SpanManager sm, ContentElementParsingParameters cepp,
@@ -1753,7 +1962,7 @@ public class ModularParser
                 localLinks.add(l);
                 if (!showImageText && l.getType() == Link.type.IMAGE) {
                     // deletes the Image Text from the ContentElement Text.
-                    sm.delete(linkSpan);
+                    deleteImageText(sm, linkSpan, cepp.templateSpans, cepp.templates);
                 }
             }
             else {

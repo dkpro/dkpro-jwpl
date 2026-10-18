@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
+import java.util.function.IntPredicate;
 
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableEnum;
 import org.dkpro.jwpl.wikimachine.dump.xml.DumpTableInputStream;
@@ -102,6 +103,27 @@ public class XMLDumpTableInputStream
         final PipedOutputStream decodedStream = openPipe();
         xmlInputThread = new XMLDumpTableInputStreamThread(inputStreams, decodedStream,
                 pageOutput);
+        xmlInputThread.start();
+    }
+
+    /**
+     * Reads the text table of a (multi-part) dump like
+     * {@link #initialize(List, DumpTableEnum)} with {@link DumpTableEnum#TEXT} does, but delivers
+     * only the rows of the revisions accepted by {@code wantedTextIds}. The text of all other
+     * revisions is neither escaped nor encoded nor sent through the pipe.
+     *
+     * @param inputStreams  Ordered list of XML part streams (ascending page-range). Must not be
+     *                      {@code null} or empty and must not contain {@code null} elements.
+     * @param wantedTextIds Accepts the ids of the revisions whose text is delivered. Must not be
+     *                      {@code null}.
+     * @throws IOException Thrown if IO errors occurred while setting up the pipe.
+     */
+    public void initializeText(List<InputStream> inputStreams, IntPredicate wantedTextIds)
+        throws IOException
+    {
+        final PipedOutputStream decodedStream = openPipe();
+        xmlInputThread = new XMLDumpTableInputStreamThread(inputStreams, decodedStream,
+                wantedTextIds);
         xmlInputThread.start();
     }
 
