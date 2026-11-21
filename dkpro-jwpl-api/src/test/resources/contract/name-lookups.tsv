@@ -83,7 +83,8 @@ normalized-exists	EXISTS_PAGE	wikipedia\u0020API	true	Title normalizes case and 
 normalized-page	GET_PAGE	wikipedia\u0020API	page:1014	Title normalizes case and blanks
 normalized-ids	GET_PAGE_IDS	wikipedia\u0020API	ids:[1014]	the title is normalized like getPage
 like-underscore	PAGE_QUERY_LIKE	Under_score%	ids:[800060, 800061]	'_' is a wildcard in a LIKE pattern
-like-case	PAGE_QUERY_LIKE	under%	ids:[]	LIKE is case-sensitive
+like-case	PAGE_QUERY_LIKE	under%	ids:[]	a title pattern is case-sensitive
+like-accent	PAGE_QUERY_LIKE	Cafe%	ids:[]	a title pattern is accent-sensitive
 like-percent	PAGE_QUERY_LIKE	Pct%	ids:[800062]	a plain prefix
 archives-underscore	DISCUSSION_ARCHIVES	Under_scoreA	ids:[800063]	the '_' of the title is literal
 archives-plain	DISCUSSION_ARCHIVES	UnderXscoreA	ids:[800064]	a title without wildcards
