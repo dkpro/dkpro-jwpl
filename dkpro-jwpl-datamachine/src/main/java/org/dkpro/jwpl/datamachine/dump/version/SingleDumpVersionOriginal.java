@@ -39,7 +39,6 @@ import org.dkpro.jwpl.wikimachine.dump.xml.TextParser;
 import org.dkpro.jwpl.wikimachine.util.Redirects;
 import org.dkpro.jwpl.wikimachine.util.TxtFileWriter;
 
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -84,10 +83,6 @@ public class SingleDumpVersionOriginal
     // to their names.
     private IntSet disambiguations; // caches the page id's of
     // disambiguation pages.
-    private Int2IntOpenHashMap textIdPageIdMap;// maps text id's to the page
-
-    // id's.
-
     // galkin: moved from local variables to fields
     private TxtFileWriter txtFW;
     private TxtFileWriter pageCategories;
@@ -231,7 +226,6 @@ public class SingleDumpVersionOriginal
         this.cNamePageIdMap = new HashMap<>();
         this.rPageIdNameMap = new HashMap<>();
         this.disambiguations = new IntArraySet();
-        this.textIdPageIdMap = new Int2IntOpenHashMap();
 
     }
 
@@ -365,7 +359,7 @@ public class SingleDumpVersionOriginal
     @Override
     public void processRevisionRow(RevisionParser revisionParser)
     {
-        textIdPageIdMap.put(revisionParser.getRevTextId(), revisionParser.getRevPage());
+        // nothing to do: text rows already carry the id of their page
     }
 
     @Override
@@ -373,14 +367,10 @@ public class SingleDumpVersionOriginal
     {
 
         String destination;
-        int text_id;
         int page_id;
 
-        text_id = textParser.getOldId();
-        if (!textIdPageIdMap.containsKey(text_id)) {
-            return;
-        }
-        page_id = textIdPageIdMap.get(text_id);
+        // text rows are keyed by page id; ids unknown to the page table are dropped
+        page_id = textParser.getOldId();
         if (pPageIdNameMap.containsKey(page_id)) { // pages
             page.addRow(page_id, page_id, pPageIdNameMap.get(page_id), textParser.getOldText(),
                     formatBoolean(disambiguations.contains(page_id)));
