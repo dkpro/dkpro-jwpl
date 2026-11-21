@@ -18,6 +18,8 @@
 package org.dkpro.jwpl.revisionmachine.difftool.consumer.dump.codec;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import org.dkpro.jwpl.revisionmachine.common.exceptions.ConfigurationException;
 import org.dkpro.jwpl.revisionmachine.common.exceptions.DecodingException;
@@ -145,5 +147,16 @@ public class TimedSQLEncoder
         }
 
         return encoding;
+    }
+
+    @Override
+    public long binaryTask(final Task<Diff> task, final PreparedStatement statement)
+        throws ConfigurationException, UnsupportedEncodingException, DecodingException,
+        EncodingException, SQLConsumerException, SQLException
+    {
+
+        long size = super.binaryTask(task, statement);
+        this.encodedSQLSize += size;
+        return size;
     }
 }
