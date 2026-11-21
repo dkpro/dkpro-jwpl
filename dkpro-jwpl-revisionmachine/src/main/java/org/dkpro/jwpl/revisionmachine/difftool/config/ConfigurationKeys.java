@@ -198,6 +198,20 @@ public enum ConfigurationKeys
      */
     LIMIT_TASK_SIZE_DIFFS,
 
+    /**
+     * Type: Integer Used by: DiffToolThread
+     * <p>
+     * Description: Number of input archives that are processed in parallel. With a value greater
+     * than 1 every archive is processed by its own worker and written to its own output files,
+     * named after the archive (output_&lt;archive name&gt;_&lt;n&gt;). The DATABASE output mode
+     * always runs with a single thread.
+     * <p>
+     * Recommendation / Default: 1 (single-threaded, all archives are written to the same output
+     * files). Each worker holds its own article task in memory, so the memory limits above apply
+     * per thread.
+     */
+    LIMIT_ARCHIVE_THREADS,
+
     /*
      * +EXTERNAL+PROGRAMS++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
