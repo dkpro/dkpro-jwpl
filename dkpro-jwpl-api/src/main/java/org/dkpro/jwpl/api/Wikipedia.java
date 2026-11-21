@@ -18,6 +18,7 @@
 package org.dkpro.jwpl.api;
 
 import java.lang.invoke.MethodHandles;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
+import org.hibernate.JDBCException;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
@@ -59,9 +61,29 @@ public class Wikipedia
     private static final Logger logger = LoggerFactory
             .getLogger(MethodHandles.lookup().lookupClass());
 
-    // Note well: The whitespace at the beginning of this constant is here on purpose. Do NOT remove
-    // it!
-    static final String SQL_COLLATION = " COLLATE utf8mb4_bin"; /* " COLLATE utf8_bin"; */
+    /**
+     * The native query {@link #existsPage(String)} runs to find the entries of a title, taking the
+     * title as parameter {@code pName}. It yields the names of the entries found.
+     * <p>
+     * Whether the comparison is case-sensitive depends on the collation of the column, and MySQL
+     * and MariaDB default to case-insensitive ones. An explicit binary collation in the query,
+     * though, keeps these databases from using the index on the column, which turns every lookup
+     * into a full scan. So the query compares in the collation of the column, and the caller keeps
+     * only the entries whose name equals the title exactly. These are the names the collation of
+     * the column treats as equal to the title: its case variants, and with accent-insensitive
+     * collations also accent, {@code ß}/{@code ss} or width variants.
+     */
+    static final String PAGE_NAMES_BY_NAME_QUERY = "select p.name from PageMapLine as p "
+            + "where p.name = :pName";
+
+    /**
+     * The MySQL and MariaDB error codes for comparing strings whose collations cannot be
+     * reconciled: {@code ER_CANT_AGGREGATE_2COLLATIONS}, {@code ER_CANT_AGGREGATE_3COLLATIONS} and
+     * {@code ER_CANT_AGGREGATE_NCOLLATIONS}. A comparison of a column with a parameter fails this
+     * way when the column charset, e.g. {@code utf8mb3} or {@code latin1}, cannot represent a
+     * character of the parameter.
+     */
+    private static final Set<Integer> COLLATION_MISMATCH_ERRORS = Set.of(1267, 1270, 1271);
 
     /**
      * Upper bound for the number of page ids bound into a single {@code in (..)} clause of
@@ -1117,23 +1139,23 @@ public class Wikipedia
 
         String encodedTitle = t.getWikiStyleTitle();
 
-        final String query = "select p.id from PageMapLine as p where p.name = :pName"
-                + (dbConfig.supportsCollation() ? SQL_COLLATION : "");
-
-        return __inTransaction(session -> {
-            // Eclipse somehow thinks that setParameter returns a MutationQuery instead of a
-            // NativeQuery...
-            // A name is not unique in PageMapLine: case variants of one title map to their own
-            // entry, and a database whose charset cannot represent a title stores the substituted
-            // characters, which lets unrelated titles collapse onto one name. Asking for a unique
-            // result made this method throw NonUniqueResultException - unchecked, and out of a
-            // method that promises a boolean instead of an exception. One entry is all it takes to
-            // answer the question.
-            var nativeQuery = session.createNativeQuery(query, Long.class)
-                    .setParameter("pName", encodedTitle, String.class)
-                    .setMaxResults(1);
-            return nativeQuery.uniqueResult();
-        }) != null;
+        // A name is not unique in PageMapLine: case variants of one title map to their own
+        // entry, and a database whose charset cannot represent a title stores the substituted
+        // characters, which lets unrelated titles collapse onto one name. So all entries found
+        // are fetched, and one of them matching the title exactly is all it takes.
+        List<String> names;
+        try {
+            names = __inTransaction(
+                    session -> session.createNativeQuery(PAGE_NAMES_BY_NAME_QUERY, String.class)
+                            .setParameter("pName", encodedTitle, String.class).list());
+        } catch (JDBCException e) {
+            if (isCollationMismatch(e)) {
+                // the column cannot hold the title, so no entry can have it as its name
+                return false;
+            }
+            throw e;
+        }
+        return names.contains(encodedTitle);
     }
 
     /**
@@ -1281,6 +1303,21 @@ public class Wikipedia
      * @param <T>  The type of the result of {@code work}.
      * @return Whatever {@code work} returned.
      */
+    /**
+     * Tells whether {@code e} was raised because a name compared in a query holds characters the
+     * charset of the column cannot represent. No row can have such a name, so the lookups that
+     * promise a not-found answer treat it as one.
+     *
+     * @param e The exception thrown by a query.
+     * @return {@code true} if MySQL or MariaDB refused to compare the collations of the column
+     *         and the parameter.
+     */
+    static boolean isCollationMismatch(JDBCException e) {
+        SQLException sqlException = e.getSQLException();
+        return sqlException != null
+                && COLLATION_MISMATCH_ERRORS.contains(sqlException.getErrorCode());
+    }
+
     protected <T> T __inTransaction(Function<Session, T> work) {
         return WikiHibernateUtil.inTransaction(__getHibernateSession(), work);
     }
