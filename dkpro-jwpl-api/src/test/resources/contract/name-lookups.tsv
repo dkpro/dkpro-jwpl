@@ -28,6 +28,10 @@ exact-title-single	GET_PAGE_BY_EXACT_TITLE	TK2	page:105	the exact title as given
 categories-of-exact	GET_CATEGORIES_OF	Mixed_Case	cats:[800001]	categories of the exact page
 categories-of-normalized	GET_CATEGORIES_OF	mixed_Case	cats:[800001]	the title is normalized like getPage
 categories-of-unstored	GET_CATEGORIES_OF	MiXed_Case	cats:[]	no page of that exact name
+categories-of-case-variant	GET_CATEGORIES_OF	MIXED_CASE	cats:[]	a stored case variant without categories
+categories-of-emoji-stored	GET_CATEGORIES_OF	Emoji_\ud83d\ude00_probe	cats:[]	the name itself, where storable; no categories
+categories-of-emoji-unstored	GET_CATEGORIES_OF	Emoji_\ud83d\ude01_probe	cats:[]	another emoji; must not throw where the column cannot hold it
+categories-of-cjk-unstored	GET_CATEGORIES_OF	\u6771\u4eac_probe	cats:[]	latin1 cannot hold it; must not throw
 foo-upper-exists	EXISTS_PAGE	FOO_BAR_PROBE	false	case variant of two stored names
 foo-upper-category	GET_CATEGORY	FOO_BAR_PROBE	NOT_FOUND	case variant of two stored names
 foo-upper-page	GET_PAGE	FOO_BAR_PROBE	NOT_FOUND	case variant of two stored names

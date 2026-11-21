@@ -61,8 +61,8 @@ final class NameLookupSpec
         GET_PAGE_IDS(false),
         /** {@link Wikipedia#getPageIdsCaseInsensitive(String)}. */
         GET_PAGE_IDS_CI(false),
-        /** {@link Wikipedia#getCategories(String)}; ideally exact, follows the collation. */
-        GET_CATEGORIES_OF(false),
+        /** {@link Wikipedia#getCategories(String)}; exact. */
+        GET_CATEGORIES_OF(true),
         /** {@link Wikipedia#getPages(PageQuery)} with a title pattern; SQL LIKE semantics. */
         PAGE_QUERY_LIKE(false),
         /** {@link Wikipedia#getDiscussionArchives(int)}; the probe names the article. */
