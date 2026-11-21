@@ -32,7 +32,9 @@ import org.slf4j.LoggerFactory;
  * layout {@code (pl_from, pl_namespace, pl_to, pl_from_namespace)} and the normalised layout of
  * MediaWiki 1.43+ {@code (pl_from, pl_from_namespace, pl_target_id)} are all supported. On the
  * normalised layout the target namespace and title are resolved through the {@code linktarget}
- * table, which the caller has to supply as a {@link LinkTargetResolver}.
+ * table, which the caller has to supply as a {@link LinkTargetResolver}. If that resolver is a
+ * {@link ResolvedLinkTargets}, the target is resolved straight to a page id, which is exposed
+ * through {@link #getResolvedTargetId()}; {@link #getPlTo()} is {@code null} in that case.
  * <p>
  * A fix for Issue #102 has been provided by Google Code user {@code astronautguo}.
  *
@@ -70,8 +72,10 @@ public class PagelinksParser
     private int plNamespace;
     private String plTo;
     private long plTargetId;
+    private int resolvedTargetId = ResolvedLinkTargets.UNRESOLVED;
 
     private final LinkTargetResolver resolver;
+    private final ResolvedLinkTargets resolvedTargets;
     private final SQLRowReader rowReader;
 
     private Layout layout;
@@ -103,7 +107,8 @@ public class PagelinksParser
      *
      * @param inputStream A valid {@link InputStream} to read SQL content from.
      * @param resolver    The resolver for {@code pl_target_id} values, or {@code null} if none is
-     *                    available. Mandatory for dumps using the normalised layout.
+     *                    available. Mandatory for dumps using the normalised layout. A
+     *                    {@link ResolvedLinkTargets} resolves targets to page ids instead of titles.
      *
      * @throws IOException Thrown if IO errors occurred or if the layout of the dump is not
      *                     supported.
@@ -111,6 +116,7 @@ public class PagelinksParser
     public PagelinksParser(InputStream inputStream, LinkTargetResolver resolver) throws IOException
     {
         this.resolver = resolver;
+        this.resolvedTargets = resolver instanceof ResolvedLinkTargets resolved ? resolved : null;
         init(inputStream);
         configureLayout();
         rowReader = new SQLRowReader(st, TABLE);
@@ -188,7 +194,11 @@ public class PagelinksParser
             plFrom = rowReader.requireInt(PL_FROM, idxFrom);
 
             final boolean usable;
-            if (layout == Layout.NORMALISED) {
+            if (hasResolvedTargetIds()) {
+                plTargetId = rowReader.requireLong(PL_TARGET_ID, idxTargetId);
+                usable = resolveToId();
+            }
+            else if (layout == Layout.NORMALISED) {
                 plTargetId = rowReader.requireLong(PL_TARGET_ID, idxTargetId);
                 final String title = resolver.getTitle(plTargetId);
                 if (title == null) {
@@ -219,6 +229,23 @@ public class PagelinksParser
                 return true;
             }
         }
+    }
+
+    private boolean resolveToId()
+    {
+        plTo = null;
+        resolvedTargetId = resolvedTargets.getPageId(plTargetId);
+        if (resolvedTargetId == ResolvedLinkTargets.UNRESOLVED) {
+            unresolvedCount++;
+            LOG.debug("Skipping pagelinks row: pl_target_id {} does not denote a registered "
+                    + "article.", plTargetId);
+            plNamespace = LinkTargetResolver.NAMESPACE_UNKNOWN;
+            return false;
+        }
+        // only article targets are resolved to a page id
+        plNamespace = 0;
+        resolvedCount++;
+        return true;
     }
 
     private void consumeRowSeparator() throws IOException
@@ -254,11 +281,32 @@ public class PagelinksParser
 
     /**
      * @return Returns the {@code pl_to}, that is, the SQL escaped title of the link target. On the
-     *         normalised layout this value is resolved through the {@code linktarget} table.
+     *         normalised layout this value is resolved through the {@code linktarget} table. It is
+     *         {@code null} if targets are resolved to ids by a {@link ResolvedLinkTargets}; use
+     *         {@link #getResolvedTargetId()} then.
      */
     public String getPlTo()
     {
         return plTo;
+    }
+
+    /**
+     * @return {@code true} if the dump uses the normalised layout and its targets are resolved to
+     *         page ids by a {@link ResolvedLinkTargets}, so that {@link #getResolvedTargetId()}
+     *         applies instead of {@link #getPlTo()}.
+     */
+    public boolean hasResolvedTargetIds()
+    {
+        return layout == Layout.NORMALISED && resolvedTargets != null;
+    }
+
+    /**
+     * @return The page id of the article the current row links to, or
+     *         {@link ResolvedLinkTargets#UNRESOLVED} unless {@link #hasResolvedTargetIds()}.
+     */
+    public int getResolvedTargetId()
+    {
+        return resolvedTargetId;
     }
 
     /**
@@ -279,7 +327,9 @@ public class PagelinksParser
     }
 
     /**
-     * @return The number of tuples whose target title could be determined.
+     * @return The number of tuples whose target title could be determined. If targets are
+     *         resolved to ids by a {@link ResolvedLinkTargets}, the number of tuples linking to a
+     *         registered article.
      */
     public long getResolvedCount()
     {
@@ -288,7 +338,8 @@ public class PagelinksParser
 
     /**
      * @return The number of tuples that were skipped because their {@code pl_target_id} could not
-     *         be resolved.
+     *         be resolved. If targets are resolved to ids by a {@link ResolvedLinkTargets}, this
+     *         includes links to red links, to unknown titles and to non-article namespaces.
      */
     public long getUnresolvedCount()
     {
@@ -311,7 +362,11 @@ public class PagelinksParser
                     + "this pagelinks dump. Aborting instead of producing an empty page link graph "
                     + "(see issue #491).");
         }
-        if (unresolvedCount > 0) {
+        if (unresolvedCount > 0 && hasResolvedTargetIds()) {
+            LOG.info("{} of {} pagelinks rows did not link to a registered article and were "
+                    + "skipped.", unresolvedCount, rowCount);
+        }
+        else if (unresolvedCount > 0) {
             LOG.warn("{} of {} pagelinks rows referenced a link target that was not loaded and "
                     + "were skipped.", unresolvedCount, rowCount);
         }
