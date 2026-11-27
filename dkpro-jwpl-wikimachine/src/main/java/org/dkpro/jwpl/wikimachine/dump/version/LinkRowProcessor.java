@@ -42,6 +42,10 @@ public final class LinkRowProcessor
      * otherwise it is inferred from whether the source page id is a registered article or a
      * registered category, which is the behaviour of all dumps predating that column. In either
      * case a row is only written for a source page that is actually registered.
+     * <p>
+     * If the parser resolves its targets to ids (see
+     * {@link CategorylinksParser#hasResolvedTargetIds()}), the row is handed to
+     * {@link #processCategoryLinkResolved(CategorylinksParser, LinkRowSink)}.
      *
      * @param parser The parser positioned on the row to process.
      * @param sink   The sink to look up ids in and to write the resulting rows to.
@@ -50,6 +54,10 @@ public final class LinkRowProcessor
     public static void processCategoryLink(CategorylinksParser parser, LinkRowSink sink)
         throws IOException
     {
+        if (parser.hasResolvedTargetIds()) {
+            processCategoryLinkResolved(parser, sink);
+            return;
+        }
         final String clTo = parser.getClTo();
         if (clTo == null) {
             throw new IOException("Parsing error." + CategorylinksParser.class.getName()
@@ -60,11 +68,38 @@ public final class LinkRowProcessor
             // discard links with non-registered targets
             return;
         }
+        classifyCategoryLink(parser, sink, categoryId,
+                clTo.equals(sink.getDisambiguationCategoryTitle()));
+    }
+
+    /**
+     * Processes one row of the {@code categorylinks} table whose target has already been resolved
+     * to the page id of a registered category by a
+     * {@link org.dkpro.jwpl.wikimachine.dump.sql.ResolvedLinkTargets}. The row is classified
+     * exactly as in {@link #processCategoryLink(CategorylinksParser, LinkRowSink)}.
+     *
+     * @param parser The parser positioned on the row to process. Its targets must have been
+     *               resolved against {@code sink}.
+     * @param sink   The sink to look up ids in and to write the resulting rows to.
+     */
+    public static void processCategoryLinkResolved(CategorylinksParser parser, LinkRowSink sink)
+    {
+        final int categoryId = parser.getResolvedTargetId();
+        if (categoryId < 0) {
+            // discard links with non-registered targets
+            return;
+        }
+        classifyCategoryLink(parser, sink, categoryId, parser.isDisambiguationTarget());
+    }
+
+    private static void classifyCategoryLink(CategorylinksParser parser, LinkRowSink sink,
+            int categoryId, boolean disambiguation)
+    {
         final int clFrom = parser.getClFrom();
         switch (parser.getClType()) {
         case PAGE:
             if (sink.isKnownArticleId(clFrom)) {
-                emitMembership(sink, categoryId, clFrom, clTo);
+                emitMembership(sink, categoryId, clFrom, disambiguation);
             }
             break;
         case SUBCAT:
@@ -78,7 +113,7 @@ public final class LinkRowProcessor
         case UNKNOWN:
         default:
             if (sink.isKnownArticleId(clFrom)) {
-                emitMembership(sink, categoryId, clFrom, clTo);
+                emitMembership(sink, categoryId, clFrom, disambiguation);
             }
             else if (sink.isKnownCategoryId(clFrom)) {
                 sink.writeSubcategory(categoryId, clFrom);
@@ -87,10 +122,11 @@ public final class LinkRowProcessor
         }
     }
 
-    private static void emitMembership(LinkRowSink sink, int categoryId, int clFrom, String clTo)
+    private static void emitMembership(LinkRowSink sink, int categoryId, int clFrom,
+            boolean disambiguation)
     {
         sink.writeCategoryMembership(categoryId, clFrom);
-        if (clTo.equals(sink.getDisambiguationCategoryTitle())) {
+        if (disambiguation) {
             sink.recordDisambiguation(clFrom);
         }
     }
@@ -105,12 +141,19 @@ public final class LinkRowProcessor
      * non-article namespace whose title happens to match an article is written as a link to that
      * article (see issue #97). Article links are the only ones the JWPL page link tables model;
      * adding the remaining namespaces is issue #38.
+     * <p>
+     * If the parser resolves its targets to ids (see {@link PagelinksParser#hasResolvedTargetIds()}),
+     * the row is handed to {@link #processPageLinkResolved(PagelinksParser, LinkRowSink)}.
      *
      * @param parser The parser positioned on the row to process.
      * @param sink   The sink to look up ids in and to write the resulting rows to.
      */
     public static void processPageLink(PagelinksParser parser, LinkRowSink sink)
     {
+        if (parser.hasResolvedTargetIds()) {
+            processPageLinkResolved(parser, sink);
+            return;
+        }
         final String plTo = parser.getPlTo();
         if (plTo == null) {
             return;
@@ -126,6 +169,31 @@ public final class LinkRowProcessor
         }
         final Integer pageId = sink.pageIdByTitle(plTo);
         if (pageId == null) {
+            return;
+        }
+        sink.writePageLink(plFrom, pageId);
+    }
+
+    /**
+     * Processes one row of the {@code pagelinks} table whose target has already been resolved to
+     * the page id of a registered article by a
+     * {@link org.dkpro.jwpl.wikimachine.dump.sql.ResolvedLinkTargets}. Only article targets are
+     * ever resolved, so the namespace check of
+     * {@link #processPageLink(PagelinksParser, LinkRowSink)} is implied.
+     *
+     * @param parser The parser positioned on the row to process. Its targets must have been
+     *               resolved against {@code sink}.
+     * @param sink   The sink to look up ids in and to write the resulting rows to.
+     */
+    public static void processPageLinkResolved(PagelinksParser parser, LinkRowSink sink)
+    {
+        final int pageId = parser.getResolvedTargetId();
+        if (pageId < 0) {
+            return;
+        }
+        final int plFrom = parser.getPlFrom();
+        // skip redirects if skipPage is enabled
+        if (sink.isSkipPageEnabled() && !sink.isKnownArticleId(plFrom)) {
             return;
         }
         sink.writePageLink(plFrom, pageId);
