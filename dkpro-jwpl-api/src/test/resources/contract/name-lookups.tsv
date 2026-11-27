@@ -1,0 +1,89 @@
+# The name lookup contract. Columns: caseId, lookup, probe, expected, why.
+# Probes use \uXXXX escapes. The expected outcome holds on a column that can hold every
+# name of ContractFixture; NameLookupOracle computes it for columns that cannot.
+# C0: no exception other than WikiApiException, whatever the probe.
+# C1: exact lookups compare by code point after Title.getWikiStyleTitle().
+# C2: among categories of the same name, the lowest id wins.
+# C6: getPage and getPageIds return a subset of what the column collation matches.
+case-exact-1-exists	EXISTS_PAGE	Mixed_Case	true	each stored case variant resolves to itself
+case-exact-1-category	GET_CATEGORY	Mixed_Case	cat:800001	each stored case variant resolves to itself
+case-exact-1-page	GET_PAGE	Mixed_Case	page:800001	each stored case variant resolves to itself
+case-exact-2-exists	EXISTS_PAGE	Mixed_case	true	each stored case variant resolves to itself
+case-exact-2-category	GET_CATEGORY	Mixed_case	cat:800002	each stored case variant resolves to itself
+case-exact-2-page	GET_PAGE	Mixed_case	page:800002	each stored case variant resolves to itself
+case-exact-3-exists	EXISTS_PAGE	MIXED_CASE	true	each stored case variant resolves to itself
+case-exact-3-category	GET_CATEGORY	MIXED_CASE	cat:800003	each stored case variant resolves to itself
+case-exact-3-page	GET_PAGE	MIXED_CASE	page:800003	each stored case variant resolves to itself
+case-unstored-exists-page	EXISTS_PAGE	MiXed_Case	false	a case variant that is not stored is not found
+case-unstored-get-category	GET_CATEGORY	MiXed_Case	NOT_FOUND	a case variant that is not stored is not found
+case-unstored-get-page	GET_PAGE	MiXed_Case	NOT_FOUND	a case variant that is not stored is not found
+case-normalized-exists-page	EXISTS_PAGE	mixed_Case	true	Title upper-cases the first letter
+case-normalized-get-category	GET_CATEGORY	mixed_Case	cat:800001	Title upper-cases the first letter
+case-normalized-get-page	GET_PAGE	mixed_Case	page:800001	Title upper-cases the first letter
+case-ids	GET_PAGE_IDS	Mixed_case	ids:[800002]	exact entries only
+case-ids-unstored	GET_PAGE_IDS	MiXed_Case	NOT_FOUND	exact entries only
+case-ids-ci	GET_PAGE_IDS_CI	MiXed_Case	ids:[800001, 800002, 800003]	all case variants
+exact-title-multiword	GET_PAGE_BY_EXACT_TITLE	Mixed_Case	page:800001	the exact title as given
+exact-title-single	GET_PAGE_BY_EXACT_TITLE	TK2	page:105	the exact title as given
+categories-of-exact	GET_CATEGORIES_OF	Mixed_Case	cats:[800001]	categories of the exact page
+categories-of-normalized	GET_CATEGORIES_OF	mixed_Case	cats:[800001]	the title is normalized like getPage
+categories-of-unstored	GET_CATEGORIES_OF	MiXed_Case	cats:[]	no page of that exact name
+foo-upper-exists	EXISTS_PAGE	FOO_BAR_PROBE	false	case variant of two stored names
+foo-upper-category	GET_CATEGORY	FOO_BAR_PROBE	NOT_FOUND	case variant of two stored names
+foo-upper-page	GET_PAGE	FOO_BAR_PROBE	NOT_FOUND	case variant of two stored names
+foo-second-exists	EXISTS_PAGE	Foo_Bar_probe	true	second of two case variants
+foo-second-category	GET_CATEGORY	Foo_Bar_probe	cat:800011	second of two case variants
+accent-stripped-exists	EXISTS_PAGE	Koln_probe	false	accent variant of K\u00f6ln_probe
+accent-stripped-category	GET_CATEGORY	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+accent-stripped-page	GET_PAGE	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+accent-exact-exists	EXISTS_PAGE	K\u00f6ln_probe	true	the accented name itself
+sharp-s-ss-exists	EXISTS_PAGE	Strasse_probe	false	ss variant of Stra\u00dfe_probe
+sharp-s-ss-category	GET_CATEGORY	Strasse_probe	NOT_FOUND	ss variant of Stra\u00dfe_probe
+sharp-s-ss-page	GET_PAGE	Strasse_probe	NOT_FOUND	ss variant of Stra\u00dfe_probe
+sharp-s-upper-exists	EXISTS_PAGE	STRASSE_probe	false	upper-case ss variant of Stra\u00dfe_probe
+sharp-s-upper-category	GET_CATEGORY	STRASSE_probe	NOT_FOUND	upper-case ss variant of Stra\u00dfe_probe
+sharp-s-exact-exists	EXISTS_PAGE	Stra\u00dfe_probe	true	the name itself
+nfd-exists	EXISTS_PAGE	Cafe\u0301_probe	false	NFD form of the stored NFC name; titles are not normalized
+nfd-category	GET_CATEGORY	Cafe\u0301_probe	NOT_FOUND	NFD form of the stored NFC name; titles are not normalized
+nfc-exists	EXISTS_PAGE	Caf\u00e9_probe	true	the NFC name itself
+ae-ligature-exists	EXISTS_PAGE	Aether_probe	false	expansion of \u00c6ther_probe
+ae-ligature-category	GET_CATEGORY	Aether_probe	NOT_FOUND	expansion of \u00c6ther_probe
+dotted-i-exists	EXISTS_PAGE	Istanbul_probe	false	variant of \u0130stanbul_probe
+dotted-i-category	GET_CATEGORY	Istanbul_probe	NOT_FOUND	variant of \u0130stanbul_probe
+dotless-i-exists	EXISTS_PAGE	\u0131stanbul_probe	false	Title upper-cases it to Istanbul_probe
+dotless-i-category	GET_CATEGORY	\u0131stanbul_probe	NOT_FOUND	Title upper-cases it to Istanbul_probe
+dotted-i-exact-exists	EXISTS_PAGE	\u0130stanbul_probe	true	the name itself, where storable
+fullwidth-exists	EXISTS_PAGE	Fullwidth_probe	false	width variant of \uff26ullwidth_probe
+fullwidth-category	GET_CATEGORY	Fullwidth_probe	NOT_FOUND	width variant of \uff26ullwidth_probe
+fullwidth-exact-exists	EXISTS_PAGE	\uff26ullwidth_probe	true	the name itself, where storable
+soft-hyphen-exists	EXISTS_PAGE	Softhyphen_probe	false	the stored name contains an ignorable soft hyphen
+soft-hyphen-category	GET_CATEGORY	Softhyphen_probe	NOT_FOUND	the stored name contains an ignorable soft hyphen
+zwsp-exists	EXISTS_PAGE	Zwsp_probe	false	the stored name contains an ignorable zero width space
+zwsp-category	GET_CATEGORY	Zwsp_probe	NOT_FOUND	the stored name contains an ignorable zero width space
+emoji-stored-exists	EXISTS_PAGE	Emoji_\ud83d\ude00_probe	true	the name itself, where storable
+emoji-stored-category	GET_CATEGORY	Emoji_\ud83d\ude00_probe	cat:800040	the name itself, where storable
+emoji-stored-page	GET_PAGE	Emoji_\ud83d\ude00_probe	page:800040	the name itself, where storable
+emoji-unstored-exists	EXISTS_PAGE	Emoji_\ud83d\ude01_probe	false	another emoji; must not throw where the column cannot hold it
+emoji-unstored-category	GET_CATEGORY	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+emoji-unstored-page	GET_PAGE	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+supplementary-stored-exists	EXISTS_PAGE	\ud840\udc00	true	the name itself, where storable
+supplementary-unstored-exists	EXISTS_PAGE	\ud840\udc01	false	collates equal to U+20000 in general_ci and unicode_ci
+supplementary-unstored-category	GET_CATEGORY	\ud840\udc01	NOT_FOUND	collates equal to U+20000 in general_ci and unicode_ci
+cjk-unstored-exists	EXISTS_PAGE	\u6771\u4eac_probe	false	latin1 cannot hold it; must not throw
+cjk-unstored-category	GET_CATEGORY	\u6771\u4eac_probe	NOT_FOUND	latin1 cannot hold it; must not throw
+cjk-unstored-page	GET_PAGE	\u6771\u4eac_probe	NOT_FOUND	latin1 cannot hold it; must not throw
+trailing-space-exists	EXISTS_PAGE	Trailing_probe	false	only 'Trailing_probe ' is stored; PAD SPACE must not match
+trailing-space-category	GET_CATEGORY	Trailing_probe	NOT_FOUND	only 'Trailing_probe ' is stored; PAD SPACE must not match
+trailing-space-page	GET_PAGE	Trailing_probe	NOT_FOUND	only 'Trailing_probe ' is stored; PAD SPACE must not match
+dup-category	GET_CATEGORY	Dup_Cat	cat:9003	C2: the lowest id wins among equal names
+ambiguous-exists	EXISTS_PAGE	Ambiguous_Title	true	two entries share the name
+ambiguous-ids	GET_PAGE_IDS	Ambiguous_Title	ids:[101, 1017]	two entries share the name
+ambiguous-page	GET_PAGE	Ambiguous_Title	page:101	the entry with the lowest id
+normalized-exists	EXISTS_PAGE	wikipedia\u0020API	true	Title normalizes case and blanks
+normalized-page	GET_PAGE	wikipedia\u0020API	page:1014	Title normalizes case and blanks
+normalized-ids	GET_PAGE_IDS	wikipedia\u0020API	ids:[1014]	the title is normalized like getPage
+like-underscore	PAGE_QUERY_LIKE	Under_score%	ids:[800060, 800061]	'_' is a wildcard in a LIKE pattern
+like-case	PAGE_QUERY_LIKE	under%	ids:[]	LIKE is case-sensitive
+like-percent	PAGE_QUERY_LIKE	Pct%	ids:[800062]	a plain prefix
+archives-underscore	DISCUSSION_ARCHIVES	Under_scoreA	ids:[800063]	the '_' of the title is literal
+archives-plain	DISCUSSION_ARCHIVES	UnderXscoreA	ids:[800064]	a title without wildcards
