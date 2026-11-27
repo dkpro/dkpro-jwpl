@@ -82,6 +82,13 @@ ambiguous-page	GET_PAGE	Ambiguous_Title	page:101	the entry with the lowest id
 normalized-exists	EXISTS_PAGE	wikipedia\u0020API	true	Title normalizes case and blanks
 normalized-page	GET_PAGE	wikipedia\u0020API	page:1014	Title normalizes case and blanks
 normalized-ids	GET_PAGE_IDS	wikipedia\u0020API	ids:[1014]	the title is normalized like getPage
+case-normalized-ids	GET_PAGE_IDS	mixed_Case	ids:[800001]	Title upper-cases the first letter
+accent-stripped-ids	GET_PAGE_IDS	Koln_probe	NOT_FOUND	accent variant of K\u00f6ln_probe
+sharp-s-ss-ids	GET_PAGE_IDS	Strasse_probe	NOT_FOUND	ss variant of Stra\u00dfe_probe
+emoji-stored-ids	GET_PAGE_IDS	Emoji_\ud83d\ude00_probe	ids:[800040]	the name itself, where storable
+emoji-unstored-ids	GET_PAGE_IDS	Emoji_\ud83d\ude01_probe	NOT_FOUND	another emoji; must not throw where the column cannot hold it
+cjk-unstored-ids	GET_PAGE_IDS	\u6771\u4eac_probe	NOT_FOUND	latin1 cannot hold it; must not throw
+trailing-space-ids	GET_PAGE_IDS	Trailing_probe	NOT_FOUND	only 'Trailing_probe ' is stored; PAD SPACE must not match
 like-underscore	PAGE_QUERY_LIKE	Under_score%	ids:[800060, 800061]	'_' is a wildcard in a LIKE pattern
 like-case	PAGE_QUERY_LIKE	under%	ids:[]	LIKE is case-sensitive
 like-percent	PAGE_QUERY_LIKE	Pct%	ids:[800062]	a plain prefix

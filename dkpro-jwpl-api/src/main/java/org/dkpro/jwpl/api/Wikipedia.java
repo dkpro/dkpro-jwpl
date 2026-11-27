@@ -566,23 +566,52 @@ public class Wikipedia
 
     /**
      * Gets the page ids for a given title.
+     * <p>
+     * The title is normalized like {@link #getPage(String)} does it, see
+     * {@link Title#getWikiStyleTitle()}, and compared by code point: only the entries whose name
+     * equals the normalized title are returned, whatever the collation of the column. Use
+     * {@link #getPageIdsCaseInsensitive(String)} to get the ids of the case variants as well.
      *
      * @param title The title of the page.
-     * @return The id for the page with the given title.
+     * @return The ids of the pages or redirects with the given title, never empty.
+     * @throws WikiPageNotFoundException Thrown if no page or redirect with the given title exists,
+     *                                   or if the title is {@code null} or cannot be parsed.
      * @throws WikiApiException Thrown if errors occurred.
      */
     public List<Integer> getPageIds(String title) throws WikiApiException {
-        String sql = "select p.pageID from PageMapLine as p where p.name = :pName";
-        Iterator<Integer> results = __inTransaction(session -> session
-                .createQuery(sql, Integer.class)
-                .setParameter("pName", title, String.class).list()).iterator();
-
-        if (!results.hasNext()) {
+        if (title == null || title.isEmpty()) {
             throw new WikiPageNotFoundException();
         }
+        String encodedTitle;
+        try {
+            encodedTitle = new Title(title).getWikiStyleTitle();
+        } catch (WikiTitleParsingException e) {
+            throw new WikiPageNotFoundException("Cannot parse the title '" + title + "'", e);
+        }
+
+        // The query compares in the collation of the column to use the name index, so it can
+        // yield entries of other names, see PAGE_NAMES_BY_NAME_QUERY. Only the exact ones count.
+        String sql = "select p.name, p.pageID from PageMapLine as p where p.name = :pName";
+        List<Object[]> rows;
+        try {
+            rows = __inTransaction(session -> session.createQuery(sql, Object[].class)
+                    .setParameter("pName", encodedTitle, String.class).list());
+        } catch (JDBCException e) {
+            if (isCollationMismatch(e)) {
+                // the column cannot hold the title, so no entry can have it as its name
+                throw new WikiPageNotFoundException();
+            }
+            throw e;
+        }
+
         List<Integer> resultList = new LinkedList<>();
-        while (results.hasNext()) {
-            resultList.add(results.next());
+        for (Object[] row : rows) {
+            if (encodedTitle.equals(row[0])) {
+                resultList.add((Integer) row[1]);
+            }
+        }
+        if (resultList.isEmpty()) {
+            throw new WikiPageNotFoundException();
         }
         return resultList;
     }
