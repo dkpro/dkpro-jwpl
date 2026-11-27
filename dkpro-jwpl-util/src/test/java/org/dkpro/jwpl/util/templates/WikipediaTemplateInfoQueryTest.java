@@ -111,6 +111,23 @@ class WikipediaTemplateInfoQueryTest
     }
 
     @Test
+    void testFragmentsMatchWildcardsLiterally() throws SQLException
+    {
+        database.execute("INSERT INTO " + GeneratorConstants.TABLE_TPLID_TPLNAME
+                + " VALUES (5, 'infoboxxperson'), (6, '50%_off'), (7, '50xy_off'), (8, 'bang!x')",
+                // infoboxxperson and 50xy_off in page 30, 50%_off in page 10, bang!x in page 20
+                "INSERT INTO " + GeneratorConstants.TABLE_TPLID_REVISIONID
+                        + " VALUES (5, 300), (6, 100), (7, 300), (8, 200)");
+
+        // the blank becomes '_', which must not match the 'x' of infoboxxperson
+        assertEquals(List.of(20), queryPageIds(List.of("infobox person"), true));
+        assertEquals(List.of(10), queryPageIds(List.of("50%"), true));
+        assertEquals(List.of(10), queryPageIds(List.of("50%_"), true));
+        assertEquals(List.of(20), queryPageIds(List.of("bang!"), true));
+        assertEquals(List.of(20), queryPageIds(List.of("bang!x"), true));
+    }
+
+    @Test
     void testRevisionsMissingInRevisionTablesAreIgnored() throws SQLException
     {
         assertEquals(List.of(30), queryPageIds(List.of("stub"), false));
@@ -121,7 +138,7 @@ class WikipediaTemplateInfoQueryTest
     {
         assertEquals("(tpl.templateName = ?)",
                 WikipediaTemplateInfo.buildTemplateNameCondition(1, false));
-        assertEquals("(tpl.templateName LIKE ? OR tpl.templateName LIKE ?)",
+        assertEquals("(tpl.templateName LIKE ? escape '!' OR tpl.templateName LIKE ? escape '!')",
                 WikipediaTemplateInfo.buildTemplateNameCondition(2, true));
     }
 }

@@ -43,6 +43,7 @@ import org.dkpro.jwpl.api.exception.WikiInitializationException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
 import org.dkpro.jwpl.api.exception.WikiTitleParsingException;
 import org.dkpro.jwpl.api.hibernate.WikiHibernateUtil;
+import org.dkpro.jwpl.api.util.LikePatterns;
 import org.dkpro.jwpl.api.util.distance.LevenshteinStringDistance;
 import org.hibernate.JDBCException;
 import org.hibernate.Session;
@@ -810,6 +811,10 @@ public class Wikipedia
      * with {@link #getDiscussionPage(Page)}. <br>
      * The provided page Object must not be a discussion page itself! If it is a discussion page, is
      * returned unchanged.
+     * <p>
+     * The archives are the pages whose name starts with the discussion page name of the article
+     * followed by {@code /}. That prefix is matched literally: {@code _} and {@code %} in the
+     * title match only themselves.
      *
      * @param articlePage the article page for which a discussion archives should be retrieved
      * @return An iterable with the discussion archive page objects for the given article page
@@ -825,8 +830,10 @@ public class Wikipedia
 
         List<Page> discussionArchives = new LinkedList<>();
 
-        String sql = "SELECT pageID FROM PageMapLine where name like :name";
-        final String namePattern = articleTitle + "/%";
+        String sql = "SELECT pageID FROM PageMapLine where name like :name"
+                + LikePatterns.ESCAPE_CLAUSE;
+        // '_' and '%' in the title, e.g. the '_' every blank is stored as, must match literally
+        final String namePattern = LikePatterns.prefix(articleTitle + "/");
         Iterator<Integer> results = __inTransaction(session -> session
                 .createQuery(sql, Integer.class)
                 .setParameter("name", namePattern, String.class).list()).iterator();
