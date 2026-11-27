@@ -21,6 +21,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.dkpro.jwpl.api.exception.WikiApiException;
 import org.dkpro.jwpl.api.exception.WikiPageNotFoundException;
@@ -59,7 +60,7 @@ public class PageQueryIterable
         boolean hasTitlePattern = false;
 
         // get a list with all pageIDs of the pages conforming with the query
-        String hql = "select p.pageId from Page as p ";
+        String hql = "select p.pageId, p.name from Page as p ";
         List<String> conditions = new ArrayList<>();
         if (q.onlyDisambiguationPages()) {
             conditions.add("p.isDisambiguation = true");
@@ -79,12 +80,20 @@ public class PageQueryIterable
 
         final String finalHql = hql;
         final boolean titlePattern = hasTitlePattern;
+        // LIKE selects the candidates in the collation of the name column, so the name index is
+        // used; the matcher keeps the names that match case- and accent-sensitively
+        final TitlePatternMatcher matcher = titlePattern
+                ? new TitlePatternMatcher(q.getTitlePattern())
+                : null;
         List<Integer> idList = wiki.__inTransaction(session -> {
-            Query<Integer> query = session.createQuery(finalHql, Integer.class);
+            Query<Object[]> query = session.createQuery(finalHql, Object[].class);
             if (titlePattern) {
                 query.setParameter("name", q.getTitlePattern());
             }
-            return query.list();
+            try (Stream<Object[]> rows = query.getResultStream()) {
+                return rows.filter(row -> matcher == null || matcher.matches((String) row[1]))
+                        .map(row -> (Integer) row[0]).toList();
+            }
         });
 
         int progress = 0;
