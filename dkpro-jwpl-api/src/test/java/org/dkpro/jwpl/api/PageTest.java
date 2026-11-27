@@ -433,6 +433,22 @@ public class PageTest
     }
 
     @Test
+    public void testRedirectResolvesToItsTarget() throws WikiApiException
+    {
+        Page p = wiki.getPage("SIR");
+        assertTrue(p.isRedirect());
+        assertEquals("Semantic_Information_Retrieval", p.getTitle().getWikiStyleTitle());
+    }
+
+    @Test
+    public void testCaseVariantOfARedirectIsNotFound()
+    {
+        // only "SIR" is stored; Title upper-cases the first letter only
+        assertThrows(WikiPageNotFoundException.class, () -> wiki.getPage("sir"));
+        assertThrows(WikiPageNotFoundException.class, () -> wiki.getPage("SIr"));
+    }
+
+    @Test
     public void testIsDisambiguation()
     {
         assertFalse(page.isDisambiguation());
