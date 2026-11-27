@@ -73,7 +73,8 @@ final class NameLookupOracle
                     .min(Comparator.comparingInt(Stored::id)).map(s -> "cat:" + s.pageId())
                     .orElse(NOT_FOUND);
             case GET_PAGE -> firstPage(stored, norm);
-            case GET_PAGE_BY_EXACT_TITLE -> firstPage(stored, probe);
+            case GET_PAGE_BY_EXACT_TITLE -> firstPage(stored, capitalize(probe));
+            case GET_PAGE_BY_EXACT_TITLE_AS_GIVEN -> firstPage(stored, probe);
             case GET_PAGE_IDS -> idsOrNotFound(
                     pages(stored).filter(s -> s.name().equals(norm)).map(Stored::pageId).toList());
             case GET_PAGE_IDS_CI -> {
@@ -117,6 +118,21 @@ final class NameLookupOracle
     {
         try {
             return new Title(probe).getWikiStyleTitle();
+        }
+        catch (WikiTitleParsingException e) {
+            return probe;
+        }
+    }
+
+    /**
+     * @param probe A title.
+     * @return The title as {@link Title#getRawTitleText()} has it, i.e. with the first letter
+     *         upper-cased.
+     */
+    static String capitalize(String probe)
+    {
+        try {
+            return new Title(probe).getRawTitleText();
         }
         catch (WikiTitleParsingException e) {
             return probe;
