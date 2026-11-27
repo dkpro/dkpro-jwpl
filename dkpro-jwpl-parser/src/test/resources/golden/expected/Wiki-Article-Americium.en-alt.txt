@@ -1,0 +1,473 @@
+FIRST_PARAGRAPH: 0
+CATEGORIES:
+  ContentElement ""
+LANGUAGES:
+  ContentElement ""
+SectionContent level=2 src=(7297, 8779)
+  TITLE:
+    null
+  Paragraph src=(7297, 7760) "Americium (; Elementsymbol Am) ist ein chemisches Element mit der Ordnungszahl 95. Im Periodensystem steht es in der Gruppe der Actinoide (7.&nbsp;Periode, f-Block) und zählt auch zu den Transuranen. Americium ist neben Europium das einzige nach einem Erdteil benannte Element. Es ist ein leicht verformbares radioaktives Metall silbrig-weißen Aussehens."
+    BOLD: (0, 9) src=(7297, 7312)
+    LINK INTERNAL "Elementsymbol" (13, 26) src=(7342, 7359) "Elementsymbol" []
+    LINK INTERNAL "chemisches_Element" (39, 57) src=(7372, 7394) "chemisches Element" []
+    LINK INTERNAL "Ordnungszahl" (66, 78) src=(7403, 7419) "Ordnungszahl" []
+    LINK INTERNAL "Periodensystem" (86, 100) src=(7427, 7445) "Periodensystem" []
+    LINK INTERNAL "Actinoide" (128, 137) src=(7473, 7486) "Actinoide" []
+    LINK INTERNAL "Periode-7-Element" (139, 154) src=(7488, 7525) "7.&nbsp;Periode" []
+    LINK INTERNAL "f-Block" (156, 163) src=(7527, 7538) "f-Block" []
+    LINK INTERNAL "Transurane" (187, 198) src=(7562, 7576) "Transuranen" []
+    LINK INTERNAL "Europium" (220, 228) src=(7599, 7611) "Europium" []
+    LINK INTERNAL "Erdteil" (252, 259) src=(7635, 7646) "Erdteil" []
+    LINK INTERNAL "Radioaktivität" (309, 321) src=(7696, 7727) "radioaktives" []
+  Paragraph src=(7762, 8167) "Von Americium gibt es kein stabiles Isotop. Auf der Erde kommt es ausschließlich in künstlich erzeugter Form vor. Das Element wurde erstmals im Spätherbst 1944 erzeugt, die Entdeckung jedoch zunächst nicht veröffentlicht. Kurioserweise wurde seine Existenz in einer amerikanischen Radiosendung für Kinder durch den Entdecker Glenn T. Seaborg, den Gast der Sendung, der Öffentlichkeit preisgegeben."
+    LINK INTERNAL "Isotop" (36, 42) src=(7798, 7808) "Isotop" []
+    LINK INTERNAL "Glenn_T._Seaborg" (325, 341) src=(8091, 8111) "Glenn T. Seaborg" []
+  Paragraph src=(8169, 8779) "Americium wird in Kernreaktoren gebildet, eine Tonne abgebrannten Kernbrennstoffs enthält durchschnittlich etwa 100&nbsp;g des Elements. Es wird als Quelle ionisierender Strahlung eingesetzt, z.&nbsp;B. in der Fluoreszenzspektroskopie und in Ionisationsrauchmeldern. Das Americiumisotop <sup>241</sup>Am wurde wegen seiner gegenüber Plutonium (<sup>238</sup>Pu) wesentlich längeren Halbwertszeit von 432,2&nbsp;Jahren zur Befüllung von Radionuklidbatterien (RTG) für Raumsonden vorgeschlagen, welche dann hunderte Jahre lang elektrische Energie zum Betrieb bereitstellen würden."
+    TAG: (287, 292) src=(8472, 8477) (295, 301) src=(8480, 8486) (344, 349) src=(8533, 8538) (352, 358) src=(8541, 8547)
+    LINK INTERNAL "Kernreaktor" (18, 31) src=(8187, 8202) "Kernreaktoren" []
+    LINK INTERNAL "Kernbrennstoff" (66, 81) src=(8239, 8257) "Kernbrennstoffs" []
+    LINK INTERNAL "Fluoreszenzspektroskopie" (210, 234) src=(8387, 8415) "Fluoreszenzspektroskopie" []
+    LINK INTERNAL "Ionisationsrauchmelder" (242, 265) src=(8423, 8449) "Ionisationsrauchmeldern" []
+    LINK INTERNAL "Plutonium" (333, 342) src=(8518, 8531) "Plutonium" []
+    LINK INTERNAL "Halbwertszeit" (382, 395) src=(8571, 8588) "Halbwertszeit" []
+    LINK INTERNAL "Radionuklidbatterie" (436, 456) src=(8629, 8652) "Radionuklidbatterien" []
+    LINK INTERNAL "Raumsonde" (467, 477) src=(8664, 8677) "Raumsonden" []
+SectionContent level=2 src=(8781, 14976)
+  TITLE:
+    ContentElement src=(8784, 8794) "Geschichte"
+  ContentElement src=(8784, 8794) "Geschichte"
+  Paragraph src=(8798, 8930) "mini|links|Glenn T. Seaborg
+mini|links|60-Inch-Cyclotron"
+    LINK UNKNOWN "Datei:Glenn_Seaborg_-_1964.jpg" (0, 27) src=(8798, 8860) "mini|links|Glenn T. Seaborg" []
+    LINK UNKNOWN "Datei:Berkeley_60-inch_cyclotron.jpg" (28, 56) src=(8861, 8930) "mini|links|60-Inch-Cyclotron" []
+  Paragraph src=(8932, 11081) "Americium wurde im Spätherbst&nbsp;1944 von Glenn T. Seaborg, Ralph A. James, Leon O. Morgan und Albert Ghiorso im 60-Zoll-Cyclotron an der Universität von Kalifornien in Berkeley sowie am metallurgischen Laboratorium der Universität von Chicago (heute: Argonne National Laboratory) erzeugt. Nach Neptunium und Plutonium war Americium das vierte Transuran, das seit dem Jahr 1940 entdeckt wurde; das um eine Ordnungszahl höhere Curium wurde als drittes schon im Sommer&nbsp;1944 erzeugt. Der Name für das Element wurde in Anlehnung zum Erdteil Amerika gewählt – in Analogie zu Europium, dem Seltene-Erden-Metall, das im Periodensystem genau über Americium steht: The name americium (after the Americas) and the symbol Am are suggested for the element on the basis of its position as the sixth member of the actinide rare-earth series, analogous to europium, Eu, of the lanthanide series.<ref>G. T. Seaborg, R. A. James, L. O. Morgan: The New Element Americium (Atomic Number 95), NNES PPR (National Nuclear Energy Series, Plutonium Project Record), Vol.&nbsp;14&nbsp;B The Transuranium Elements: Research Papers, Paper No.&nbsp;22.1, McGraw-Hill Book Co., Inc., New York, 1949 (Abstract; Maschinoskript (Januar&nbsp;1948)).</ref><ref>K. Street, Jr., A. Ghiorso, G. T. Seaborg: The Isotopes of Americium, in: Physical Review, 1950, 79&nbsp;(3), S.&nbsp;530–531 (doi:10.1103/PhysRev.79.530; Maschinoskript (11.&nbsp;April 1950)).</ref><ref>Übersetzung: Der Name Americium (nach den beiden Amerikas) und das Symbol Am werden für das Element vorgeschlagen – basierend auf seiner Position als sechstes Mitglied der Actinoid-Seltenerdmetalle-Serie, in Analogie zum Europium, Eu, aus der Lanthanoiden-Serie.</ref>"
+    BOLD: (1325, 1329) src=(10603, 10613)
+    ITALIC: (663, 887) src=(9746, 9974) (934, 978) src=(10021, 10069) (989, 1047) src=(10080, 10142) (1069, 1111) src=(10164, 10210) (1277, 1302) src=(10543, 10572) (1308, 1323) src=(10578, 10601) (1331, 1333) src=(10615, 10621) (1451, 1699) src=(10822, 11074)
+    TAG: (887, 892) src=(9974, 9979) (1223, 1229) src=(10489, 10495) (1229, 1234) src=(10495, 10500) (1427, 1433) src=(10798, 10804) (1433, 1438) src=(10804, 10809) (1700, 1706) src=(11075, 11081)
+    LINK INTERNAL "Glenn_T._Seaborg" (44, 60) src=(8976, 8996) "Glenn T. Seaborg" []
+    LINK INTERNAL "Ralph_A._James" (62, 76) src=(8998, 9016) "Ralph A. James" []
+    LINK INTERNAL "Leon_O._Morgan" (78, 92) src=(9018, 9036) "Leon O. Morgan" []
+    LINK INTERNAL "Albert_Ghiorso" (97, 111) src=(9041, 9059) "Albert Ghiorso" []
+    LINK INTERNAL "Cyclotron" (123, 132) src=(9071, 9084) "Cyclotron" []
+    LINK INTERNAL "University_of_California,_Berkeley" (140, 179) src=(9092, 9170) "Universität von Kalifornien in Berkeley" []
+    LINK INTERNAL "Metallurgie" (189, 204) src=(9180, 9211) "metallurgischen" []
+    LINK INTERNAL "Laboratorium" (205, 217) src=(9212, 9228) "Laboratorium" []
+    LINK INTERNAL "University_of_Chicago" (222, 245) src=(9233, 9282) "Universität von Chicago" []
+    LINK INTERNAL "Argonne_National_Laboratory" (254, 281) src=(9291, 9322) "Argonne National Laboratory" []
+    LINK INTERNAL "Neptunium" (297, 306) src=(9338, 9351) "Neptunium" []
+    LINK INTERNAL "Plutonium" (311, 320) src=(9356, 9369) "Plutonium" []
+    LINK INTERNAL "Transuran" (346, 355) src=(9395, 9408) "Transuran" []
+    LINK INTERNAL "Curium" (428, 434) src=(9481, 9491) "Curium" []
+    LINK INTERNAL "Europium" (577, 585) src=(9634, 9646) "Europium" []
+    LINK INTERNAL "Seltene_Erden" (591, 611) src=(9652, 9690) "Seltene-Erden-Metall" []
+    LINK INTERNAL "Periodensystem" (620, 634) src=(9699, 9717) "Periodensystem" []
+    LINK EXTERNAL "https://www.osti.gov/cgi-bin/rd_accomplishments/display_biblio.cgi?id=ACC0046&numPages=43&fp=N" (1178, 1186) src=(10277, 10382) "Abstract" []
+    LINK EXTERNAL "https://www.osti.gov/accomplishments/documents/fullText/ACC0046.pdf" (1188, 1221) src=(10384, 10487) "Maschinoskript (Januar&nbsp;1948)" []
+    LINK INTERNAL "Physical_Review" (1308, 1323) src=(10580, 10599) "Physical Review" []
+    LINK UNKNOWN "doi:10.1103/PhysRev.79.530" (1361, 1387) src=(10649, 10679) "doi:10.1103/PhysRev.79.530" []
+    LINK EXTERNAL "https://repositories.cdlib.org/cgi/viewcontent.cgi?article=7073&context=lbnl" (1389, 1425) src=(10681, 10796) "Maschinoskript (11.&nbsp;April 1950)" []
+  Paragraph src=(11083, 11883) "Zur Erzeugung des neuen Elements wurden in der Regel die Oxide der Ausgangselemente verwendet. Dazu wurde zunächst Plutoniumnitratlösung (mit dem Isotop <sup>239</sup>Pu) auf eine Platinfolie von etwa 0,5&nbsp;cm<sup>2</sup> aufgetragen; die Lösung danach eingedampft und der Rückstand dann zum Oxid (PuO<sub>2</sub>) geglüht. Nach dem Beschuss im Cyclotron wurde die Beschichtung mittels Salpetersäure gelöst, anschließend wieder mit einer konzentrierten wässrigen Ammoniaklösung als Hydroxid ausgefällt; der Rückstand wurde in Perchlorsäure gelöst. Die weitere Trennung erfolgte mit Ionenaustauschern. In ihren Versuchsreihen wurden der Reihe nach vier verschiedene Isotope erzeugt: <sup>241</sup>Am, <sup>242</sup>Am, <sup>239</sup>Am und <sup>238</sup>Am."
+    TAG: (153, 158) src=(11244, 11249) (161, 167) src=(11252, 11258) (212, 217) src=(11303, 11308) (218, 224) src=(11309, 11315) (304, 309) src=(11395, 11400) (310, 316) src=(11401, 11407) (685, 690) src=(11809, 11814) (693, 699) src=(11817, 11823) (703, 708) src=(11827, 11832) (711, 717) src=(11835, 11841) (721, 726) src=(11845, 11850) (729, 735) src=(11853, 11859) (742, 747) src=(11866, 11871) (750, 756) src=(11874, 11880)
+    LINK INTERNAL "Oxide" (57, 62) src=(11140, 11149) "Oxide" []
+    LINK INTERNAL "Isotop" (146, 152) src=(11233, 11243) "Isotop" []
+    LINK INTERNAL "Salpetersäure" (389, 402) src=(11480, 11497) "Salpetersäure" []
+    LINK INTERNAL "Ammoniumhydroxid" (466, 480) src=(11561, 11596) "Ammoniaklösung" []
+    LINK INTERNAL "Perchlorsäure" (529, 542) src=(11645, 11662) "Perchlorsäure" []
+    LINK INTERNAL "Ionenaustauscher" (585, 602) src=(11705, 11725) "Ionenaustauschern" []
+  Paragraph src=(11885, 12582) "Als erstes Isotop isolierten sie <sup>241</sup>Am aus einer Plutonium-Probe, die mit Neutronen bestrahlt wurde. Es zerfällt durch Aussendung eines α-Teilchens in <sup>237</sup>Np. Die Halbwertszeit dieses α-Zerfalls wurde zunächst auf 510&nbsp;±&nbsp;20&nbsp;Jahre bestimmt; der heute allgemein akzeptierte Wert ist 432,2&nbsp;a.<ref name="nubase">G. Audi, O. Bersillon, J. Blachot, A. H. Wapstra: The NUBASE evaluation of nuclear and decay properties, in: Nuclear Physics A, 729, 2003, S.&nbsp;3–128. . (PDF; 1,0&nbsp;MB).</ref>"
+    ITALIC: (398, 451) src=(12328, 12385) (457, 474) src=(12391, 12432)
+    TAG: (33, 38) src=(11918, 11923) (41, 47) src=(11926, 11932) (162, 167) src=(12074, 12079) (170, 176) src=(12082, 12088) (329, 348) src=(12259, 12278) (523, 529) src=(12576, 12582)
+    LINK INTERNAL "Plutonium" (60, 69) src=(11945, 11958) "Plutonium" []
+    LINK INTERNAL "Neutron" (85, 94) src=(11974, 11985) "Neutronen" []
+    LINK INTERNAL "Alpha-Teilchen" (147, 158) src=(12040, 12070) "α-Teilchens" []
+    LINK INTERNAL "Alpha-Zerfall" (205, 215) src=(12117, 12145) "α-Zerfalls" []
+    LINK INTERNAL "Nuclear_Physics" (457, 474) src=(12393, 12430) "Nuclear Physics A" []
+    LINK EXTERNAL "http://amdc.in2p3.fr/nubase/nubase2003/Nubase2003.pdf" (505, 508) src=(12502, 12561) "PDF" []
+  Paragraph src=(12838, 12901) "<small>Die angegebenen Zeiten sind Halbwertszeiten.</small>"
+    TAG: (0, 7) src=(12838, 12845) (51, 59) src=(12893, 12901)
+    LINK INTERNAL "Halbwertszeit" (35, 50) src=(12873, 12890) "Halbwertszeiten" []
+  Paragraph src=(12903, 13311) "Als zweites Isotop wurde <sup>242</sup>Am durch erneuten Neutronenbeschuss des zuvor erzeugten <sup>241</sup>Am gefunden. Durch nachfolgenden raschen β-Zerfall entsteht dabei <sup>242</sup>Cm, das zuvor schon entdeckte Curium. Die Halbwertszeit dieses β-Zerfalls wurde zunächst auf 17&nbsp;Stunden bestimmt, der heute als gültig ermittelte Wert beträgt 16,02&nbsp;h.<ref name="nubase" />"
+    TAG: (25, 30) src=(12928, 12933) (33, 39) src=(12936, 12942) (95, 100) src=(12998, 13003) (103, 109) src=(13006, 13012) (175, 180) src=(13095, 13100) (183, 189) src=(13103, 13109) (366, 387) src=(13290, 13311)
+    LINK INTERNAL "Beta-Zerfall" (150, 159) src=(13053, 13079) "β-Zerfall" []
+    LINK INTERNAL "Curium" (219, 225) src=(13139, 13149) "Curium" []
+  Paragraph src=(13468, 14177) "Erstmals öffentlich bekannt gemacht wurde die Entdeckung des Elements in der amerikanischen Radiosendung Quiz Kids am 11.&nbsp;November 1945 durch Glenn T. Seaborg, noch vor der eigentlichen Bekanntmachung bei einem Symposium der American Chemical Society: Einer der jungen Zuhörer fragte den Gast der Sendung, Seaborg, ob während des Zweiten Weltkrieges im Zuge der Erforschung von Nuklearwaffen neue Elemente entdeckt wurden. Seaborg bejahte die Frage und enthüllte dabei auch gleichzeitig die Entdeckung des nächsthöheren Elements, Curium.<ref>Rachel Sheremeta Pepling: Americium. Chemical & Engineering News, 2003.</ref>"
+    ITALIC: (105, 114) src=(13573, 13586) (573, 583) src=(14121, 14135)
+    TAG: (542, 547) src=(14044, 14049) (618, 624) src=(14171, 14177)
+    LINK INTERNAL "American_Chemical_Society" (230, 255) src=(13702, 13731) "American Chemical Society" []
+    LINK INTERNAL "Zweiter_Weltkrieg" (335, 354) src=(13811, 13852) "Zweiten Weltkrieges" []
+    LINK INTERNAL "Curium" (535, 541) src=(14033, 14043) "Curium" []
+    LINK EXTERNAL "https://pubs.acs.org/cen/80th/americium.html" (573, 583) src=(14075, 14136) "Americium." []
+  Paragraph src=(14179, 14615) "Americium (<sup>241</sup>Am und <sup>242</sup>Am) und seine Produktion wurde später unter dem Namen Element 95 and method of producing said element patentiert, wobei als Erfinder nur Glenn T. Seaborg angegeben wurde.<ref></ref>"
+    ITALIC: (100, 147) src=(14279, 14330)
+    TAG: (11, 16) src=(14190, 14195) (19, 25) src=(14198, 14204) (32, 37) src=(14211, 14216) (40, 46) src=(14219, 14225) (216, 221) src=(14399, 14404) (221, 227) src=(14609, 14615)
+  Paragraph src=(14617, 14976) "In elementarer Form wurde es erstmals im Jahr 1951 durch Reduktion von Americium(III)-fluorid mit Barium dargestellt.<ref name="AM_METALL1">Edgar F. Westrum, Jr., LeRoy Eyring: The Preparation and Some Properties of Americium Metal, in: J. Am. Chem. Soc., 1951, 73&nbsp;(7), S.&nbsp;3396–3398 (doi:10.1021/ja01151a116).</ref>"
+    BOLD: (256, 260) src=(14893, 14903)
+    ITALIC: (177, 231) src=(14802, 14860) (237, 254) src=(14866, 14891) (262, 264) src=(14905, 14911)
+    TAG: (117, 140) src=(14742, 14765) (319, 325) src=(14970, 14976)
+    LINK INTERNAL "Americium(III)-fluorid" (71, 93) src=(14688, 14714) "Americium(III)-fluorid" []
+    LINK INTERNAL "Barium" (98, 104) src=(14719, 14729) "Barium" []
+    LINK INTERNAL "J._Am._Chem._Soc." (237, 254) src=(14868, 14889) "J. Am. Chem. Soc." []
+    LINK UNKNOWN "doi:10.1021/ja01151a116" (294, 317) src=(14941, 14968) "doi:10.1021/ja01151a116" []
+SectionContent level=2 src=(14978, 16830)
+  TITLE:
+    ContentElement src=(14981, 14990) "Vorkommen"
+  ContentElement src=(14981, 14990) "Vorkommen"
+  Paragraph src=(14994, 15178) "Americiumisotope entstehen im r-Prozess in Supernovae und kommen auf der Erde wegen ihrer im Vergleich zum Alter der Erde zu geringen Halbwertszeit nicht natürlich vor."
+    LINK INTERNAL "r-Prozess" (30, 39) src=(15024, 15037) "r-Prozess" []
+    LINK INTERNAL "Supernova" (43, 53) src=(15041, 15054) "Supernovae" []
+    LINK INTERNAL "Erde" (73, 77) src=(15075, 15083) "Erde" []
+    LINK INTERNAL "Halbwertszeit" (134, 147) src=(15140, 15157) "Halbwertszeit" []
+  Paragraph src=(15180, 16830) "Heutzutage wird jedoch Americium als Nebenprodukt in Kernkraftwerken erbrütet; das Americiumisotop <sup>241</sup>Am entsteht als Zerfallsprodukt (u.&nbsp;a. in abgebrannten Brennstäben) aus dem Plutoniumisotop <sup>241</sup>Pu. Eine Tonne abgebrannten Kernbrennstoffs enthält durchschnittlich etwa 100&nbsp;g verschiedener Americiumisotope.<ref>Klaus Hoffmann: Kann man Gold machen? Gauner, Gaukler und Gelehrte. Aus der Geschichte der chemischen Elemente, Urania-Verlag; Leipzig, Jena, Berlin 1979, , S.&nbsp;233.</ref> Es handelt sich dabei hauptsächlich um die α-Strahler <sup>241</sup>Am und <sup>243</sup>Am, die aufgrund ihrer relativ langen Halbwertszeiten in der Endlagerung unerwünscht sind und deshalb zum Transuranabfall zählen. Eine Verminderung der Langzeitradiotoxizität in nuklearen Endlagern wäre durch Abtrennung langlebiger Isotope aus abgebrannten Kernbrennstoffen möglich. Zur Beseitigung des Americiums wird derzeit die Partitioning & Transmutation-Strategie untersucht.<ref>L. H. Baetsle:  (PDF; 2,4&nbsp;MB), September 2001.</ref><ref>Gabriele Fioni, Michel Cribier, Frédéric Marie: .</ref>"
+    ITALIC: (361, 455) src=(15559, 15657)
+    TAG: (99, 104) src=(15283, 15288) (107, 113) src=(15291, 15297) (210, 215) src=(15408, 15413) (218, 224) src=(15416, 15422) (340, 345) src=(15538, 15543) (514, 520) src=(15733, 15739) (575, 580) src=(15794, 15799) (583, 589) src=(15802, 15808) (596, 601) src=(15815, 15820) (604, 610) src=(15823, 15829) (991, 996) src=(16235, 16240) (1047, 1053) src=(16505, 16511) (1053, 1058) src=(16511, 16516) (1107, 1113) src=(16824, 16830)
+    LINK INTERNAL "Kernkraftwerk" (53, 68) src=(15233, 15250) "Kernkraftwerken" []
+    LINK INTERNAL "Brennstab" (173, 184) src=(15357, 15382) "Brennstäben" []
+    LINK INTERNAL "Endlagerung" (671, 682) src=(15890, 15905) "Endlagerung" []
+    LINK INTERNAL "Transuranabfall" (716, 731) src=(15939, 15958) "Transuranabfall" []
+    LINK INTERNAL "Partitioning" (941, 969) src=(16168, 16213) "Partitioning & Transmutation" []
+SectionContainer level=2 src=(16832, -1)
+  TITLE:
+    ContentElement src=(16835, 16860) "Gewinnung und Darstellung"
+  SectionContent level=3 src=(16864, 20150)
+    TITLE:
+      ContentElement src=(16868, 16899) "Gewinnung von Americiumisotopen"
+    ContentElement src=(16868, 16899) "Gewinnung von Americiumisotopen"
+    Paragraph src=(16904, 17833) "Americium fällt in geringen Mengen in Kernreaktoren an. Es steht heute in Mengen von wenigen Kilogramm zur Verfügung. Durch die aufwändige Gewinnung aus abgebrannten Brennstäben hat es einen sehr hohen Preis. Seit der Markteinführung 1962 soll der Preis für Americium(IV)-oxid mit dem Isotop <sup>241</sup>Am bei etwa 1500&nbsp;US-Dollar pro Gramm liegen.<ref name="smoke"> </ref> Das Americiumisotop <sup>243</sup>Am entsteht in geringeren Mengen im Reaktor aus <sup>241</sup>Am und ist deshalb mit 160&nbsp;US-Dollar pro Milligramm <sup>243</sup>Am<ref name="speclab">Informationen zum Element Americium bei www.speclab.com (engl.); Zugriff: 8.&nbsp;Oktober 2008.</ref> noch wesentlich teurer."
+      ITALIC: (626, 633) src=(17760, 17771)
+      TAG: (292, 297) src=(17218, 17223) (300, 306) src=(17226, 17232) (355, 373) src=(17310, 17328) (374, 380) src=(17456, 17462) (401, 406) src=(17483, 17488) (409, 415) src=(17491, 17497) (463, 468) src=(17545, 17550) (471, 477) src=(17553, 17559) (534, 539) src=(17620, 17625) (542, 548) src=(17628, 17634) (550, 570) src=(17636, 17656) (665, 671) src=(17803, 17809)
+      LINK INTERNAL "Kernreaktor" (38, 51) src=(16942, 16957) "Kernreaktoren" []
+      LINK INTERNAL "Brennstab" (166, 177) src=(17074, 17099) "Brennstäben" []
+      LINK INTERNAL "Americium(IV)-oxid" (258, 276) src=(17180, 17202) "Americium(IV)-oxid" []
+      LINK INTERNAL "United_States_Dollar" (328, 337) src=(17254, 17288) "US-Dollar" []
+      LINK INTERNAL "Gramm" (342, 347) src=(17293, 17302) "Gramm" []
+      LINK INTERNAL "Milligramm" (523, 533) src=(17605, 17619) "Milligramm" []
+      LINK EXTERNAL "http://www.speclab.com/elements/americium.htm" (570, 625) src=(17656, 17759) "Informationen zum Element Americium bei www.speclab.com" []
+    Paragraph src=(17835, 18134) "Americium wird über das Plutoniumisotop <sup>239</sup>Pu in Kernreaktoren mit hohem <sup>238</sup>U-Anteil zwangsläufig erbrütet, da es aus diesem durch Neutroneneinfang und zwei anschließende β-Zerfälle (über <sup>239</sup>U und <sup>239</sup>Np) entsteht."
+      TAG: (40, 45) src=(17875, 17880) (48, 54) src=(17883, 17889) (84, 89) src=(17919, 17924) (92, 98) src=(17927, 17933) (210, 215) src=(18087, 18092) (218, 224) src=(18095, 18101) (230, 235) src=(18107, 18112) (238, 244) src=(18115, 18121)
+      LINK INTERNAL "Neutronenanlagerung" (153, 169) src=(17988, 18028) "Neutroneneinfang" []
+      LINK INTERNAL "Betastrahlung" (193, 203) src=(18052, 18080) "β-Zerfälle" []
+    Paragraph src=(18329, 18392) "<small>Die angegebenen Zeiten sind Halbwertszeiten.</small>"
+      TAG: (0, 7) src=(18329, 18336) (51, 59) src=(18384, 18392)
+      LINK INTERNAL "Halbwertszeit" (35, 50) src=(18364, 18381) "Halbwertszeiten" []
+    Paragraph src=(18394, 18614) "Danach wird, wenn es nicht zur Kernspaltung kommt, aus dem <sup>239</sup>Pu, neben anderen Nukliden, durch stufenweisen Neutroneneinfang (n,γ) und anschließenden β-Zerfall <sup>241</sup>Am oder <sup>243</sup>Am erbrütet."
+      TAG: (59, 64) src=(18453, 18458) (67, 73) src=(18461, 18467) (172, 177) src=(18566, 18571) (180, 186) src=(18574, 18580) (194, 199) src=(18588, 18593) (202, 208) src=(18596, 18602)
+    Paragraph src=(18756, 19274) "Das Plutonium, welches aus abgebrannten Brennstäben von Leistungsreaktoren gewonnen werden kann, besteht zu etwa 12 % aus dem Isotop <sup>241</sup>Pu.<ref name="smoke" /> Deshalb erreichen erst 70 Jahre, nachdem der Brutprozess beendet wurde, die abgebrannten Brennstäbe ihren Maximalgehalt von <sup>241</sup>Am; danach nimmt der Gehalt wieder (langsamer als der Anstieg) ab.<ref>.</ref>"
+      TAG: (133, 138) src=(18889, 18894) (141, 147) src=(18897, 18903) (150, 170) src=(18906, 18926) (295, 300) src=(19051, 19056) (303, 309) src=(19059, 19065) (375, 380) src=(19131, 19136) (381, 387) src=(19268, 19274)
+    Paragraph src=(19276, 19848) "Aus dem so entstandenen <sup>241</sup>Am kann durch weiteren Neutroneneinfang im Reaktor <sup>242</sup>Am entstehen. Bei Leichtwasserreaktoren soll aus dem <sup>241</sup>Am zu 79 % <sup>242</sup>Am und zu 10 % <sup>242m</sup>Am entstehen:<ref>Akihiro Sasahara, Tetsuo Matsumura, Giorgos Nicolaou, Dimitri Papaioannou: Neutron and Gamma Ray Source Evaluation of LWR High Burn-up UO<sub>2</sub> and MOX Spent Fuels, in: Journal of Nuclear Science and Technology, 2004, 41&nbsp;(4), S.&nbsp;448–456 (doi:10.1080/18811248.2004.9715507).</ref>"
+      BOLD: (461, 465) src=(19757, 19767)
+      ITALIC: (218, 219) src=(19498, 19503) (318, 412) src=(19602, 19700) (418, 459) src=(19706, 19755) (467, 469) src=(19769, 19775)
+      TAG: (24, 29) src=(19300, 19305) (32, 38) src=(19308, 19314) (89, 94) src=(19365, 19370) (97, 103) src=(19373, 19379) (156, 161) src=(19436, 19441) (164, 170) src=(19444, 19450) (181, 186) src=(19461, 19466) (189, 195) src=(19469, 19475) (210, 215) src=(19490, 19495) (219, 225) src=(19503, 19509) (238, 243) src=(19522, 19527) (380, 385) src=(19666, 19671) (386, 392) src=(19672, 19678) (532, 538) src=(19842, 19848)
+      LINK INTERNAL "Leichtwasserreaktor" (121, 142) src=(19397, 19420) "Leichtwasserreaktoren" []
+      LINK INTERNAL "Journal_of_Nuclear_Science_and_Technology" (418, 459) src=(19708, 19753) "Journal of Nuclear Science and Technology" []
+      LINK UNKNOWN "doi:10.1080/18811248.2004.9715507" (497, 530) src=(19803, 19840) "doi:10.1080/18811248.2004.9715507" []
+    Paragraph src=(19850, 19941) "zu 79 %: "
+    Paragraph src=(19943, 20039) "zu 10 %: "
+    Paragraph src=(20041, 20150) "Für die Erbrütung von <sup>243</sup>Am ist ein vierfacher Neutroneneinfang des <sup>239</sup>Pu erforderlich:"
+      TAG: (22, 27) src=(20063, 20068) (30, 36) src=(20071, 20077) (79, 84) src=(20120, 20125) (87, 93) src=(20128, 20134)
+  SectionContent level=3 src=(20292, 21074)
+    TITLE:
+      ContentElement src=(20296, 20330) "Darstellung elementaren Americiums"
+    ContentElement src=(20296, 20330) "Darstellung elementaren Americiums"
+    Paragraph src=(20335, 20839) "Metallisches Americium kann durch Reduktion aus seinen Verbindungen erhalten werden. Zuerst wurde Americium(III)-fluorid zur Reduktion verwendet. Dieses wird hierzu in wasser- und sauerstofffreier Umgebung in Reaktionsapparaturen aus Tantal und Wolfram mit elementarem Barium zur Reaktion gebracht.<ref name="AM_METALL1" /><ref name="Gmelin">Gmelins Handbuch der anorganischen Chemie, System Nr.&nbsp;71, Transurane, Teil&nbsp;B&nbsp;1, S.&nbsp;57–67.</ref>"
+      ITALIC: (342, 383) src=(20716, 20765)
+      TAG: (298, 323) src=(20672, 20697) (323, 342) src=(20697, 20716) (451, 457) src=(20833, 20839)
+      LINK INTERNAL "Reduktion_(Chemie)" (34, 43) src=(20369, 20401) "Reduktion" []
+      LINK INTERNAL "Americium(III)-fluorid" (98, 120) src=(20456, 20482) "Americium(III)-fluorid" []
+      LINK INTERNAL "Tantal" (234, 240) src=(20596, 20606) "Tantal" []
+      LINK INTERNAL "Wolfram" (245, 252) src=(20611, 20622) "Wolfram" []
+      LINK INTERNAL "Barium" (269, 275) src=(20639, 20649) "Barium" []
+      LINK INTERNAL "Gmelins_Handbuch_der_anorganischen_Chemie" (342, 383) src=(20718, 20763) "Gmelins Handbuch der anorganischen Chemie" []
+    Paragraph src=(20843, 20886) "<chem>2 AmF3 + 3 Ba -> 2 Am + 3 BaF2</chem>"
+      TAG: (0, 6) src=(20843, 20849) (36, 43) src=(20879, 20886)
+    Paragraph src=(20888, 21026) "Auch die Reduktion von Americium(IV)-oxid mittels Lanthan oder Thorium ergibt metallisches Americium.<ref name="AM_METALL2" />"
+      TAG: (101, 126) src=(21001, 21026)
+      LINK INTERNAL "Americium(IV)-oxid" (23, 41) src=(20911, 20933) "Americium(IV)-oxid" []
+      LINK INTERNAL "Lanthan" (50, 57) src=(20942, 20953) "Lanthan" []
+      LINK INTERNAL "Thorium" (63, 70) src=(20959, 20970) "Thorium" []
+    Paragraph src=(21030, 21074) "<chem>3 AmO2 + 4 La -> 3 Am + 2 La2O3</chem>"
+      TAG: (0, 6) src=(21030, 21036) (37, 44) src=(21067, 21074)
+SectionContainer level=2 src=(21076, -1)
+  TITLE:
+    ContentElement src=(21079, 21092) "Eigenschaften"
+  SectionContent level=3 src=(21076, 21601)
+    TITLE:
+      null
+    Paragraph src=(21096, 21601) "mini|Am-241 unter dem Mikroskop
+mini|Doppelt-hexagonal dichteste Kugelpackung mit der Schichtfolge ABAC in der Kristallstruktur von α-Am (A:&nbsp;grün; B:&nbsp;blau; C:&nbsp;rot)
+Im Periodensystem steht das Americium mit der Ordnungszahl 95 in der Reihe der Actinoide, sein Vorgänger ist das Plutonium, das nachfolgende Element ist das Curium. Sein Analogon in der Reihe der Lanthanoiden ist das Europium."
+      LINK UNKNOWN "Datei:Americium_microscope.jpg" (0, 31) src=(21096, 21162) "mini|Am-241 unter dem Mikroskop" []
+      LINK UNKNOWN "Datei:Closest_packing_ABAC.png" (32, 178) src=(21163, 21344) "mini|Doppelt-hexagonal dichteste Kugelpackung mit der Schichtfolge ABAC in der Kristallstruktur von α-Am (A:&nbsp;grün; B:&nbsp;blau; C:&nbsp;rot)" []
+      LINK INTERNAL "Periodensystem" (182, 196) src=(21348, 21366) "Periodensystem" []
+      LINK INTERNAL "Analogon_(Chemie)" (349, 357) src=(21519, 21549) "Analogon" []
+      LINK INTERNAL "Europium" (396, 404) src=(21588, 21600) "Europium" []
+  SectionContent level=3 src=(21603, 24382)
+    TITLE:
+      ContentElement src=(21607, 21634) "Physikalische Eigenschaften"
+    ContentElement src=(21607, 21634) "Physikalische Eigenschaften"
+    Paragraph src=(21639, 22263) "Americium ist ein radioaktives Metall. Frisch hergestelltes Americium ist ein silberweißes Metall, welches jedoch bei Raumtemperatur langsam matt wird. Es ist leicht verformbar. Sein Schmelzpunkt beträgt 1176&nbsp;°C<ref name="AM_METALL2">W. Z. Wade, T. Wolf: Preparation and Some Properties of Americium Metal, in: J. Inorg. Nucl. Chem., 1967, 29&nbsp;(10), S.&nbsp;2577–2587 (doi:10.1016/0022-1902(67)80183-0).</ref>, der Siedepunkt liegt bei 2607&nbsp;°C. Die Dichte beträgt 13,67&nbsp;g·cm<sup>−3</sup><ref name="AM_METALL2" />.<ref name="AM_METALL4" /> Es tritt in zwei Modifikationen auf."
+      BOLD: (339, 343) src=(21994, 22004)
+      ITALIC: (260, 310) src=(21903, 21957) (316, 337) src=(21963, 21992) (345, 347) src=(22006, 22012)
+      TAG: (216, 239) src=(21859, 21882) (412, 418) src=(22081, 22087) (493, 498) src=(22162, 22167) (500, 506) src=(22169, 22175) (506, 531) src=(22175, 22200) (532, 557) src=(22201, 22226)
+      LINK INTERNAL "Raumtemperatur" (118, 132) src=(21757, 21775) "Raumtemperatur" []
+      LINK INTERNAL "J._Inorg._Nucl._Chem." (316, 337) src=(21965, 21990) "J. Inorg. Nucl. Chem." []
+      LINK UNKNOWN "doi:10.1016/0022-1902(67)80183-0" (378, 410) src=(22043, 22079) "doi:10.1016/0022-1902(67)80183-0" []
+    Paragraph src=(22265, 23155) "Die bei Standardbedingungen stabile Modifikation α-Am kristallisiert im hexagonalen Kristallsystem in der  mit den Gitterparametern a&nbsp;=&nbsp;346,8&nbsp;pm und c&nbsp;=&nbsp;1124&nbsp;pm sowie vier Formeleinheiten pro Elementarzelle. Die Kristallstruktur besteht aus einer doppelt-hexagonal dichtesten Kugelpackung (d.&nbsp;h.c.p.) mit der Schichtfolge ABAC und ist damit isotyp zur Struktur von α-La.<ref name="AM_METALL4">D. B. McWhan, B. B. Cunningham, J. C. Wallmann: Crystal Structure, Thermal Expansion and Melting Point of Americium Metal, in: J. Inorg. Nucl. Chem., 1962, 24&nbsp;(9), S.&nbsp;1025–1038 (doi:10.1016/0022-1902(62)80246-2).</ref><ref name="Gmelin" />"
+      BOLD: (578, 582) src=(23042, 23052)
+      ITALIC: (132, 133) src=(22498, 22503) (164, 165) src=(22548, 22553) (476, 549) src=(22928, 23005) (555, 576) src=(23011, 23040) (584, 586) src=(23054, 23060)
+      TAG: (405, 428) src=(22857, 22880) (650, 656) src=(23128, 23134) (656, 677) src=(23134, 23155)
+      LINK INTERNAL "Standardbedingungen" (8, 27) src=(22273, 22296) "Standardbedingungen" []
+      LINK INTERNAL "Polymorphie_(Stoffeigenschaft)" (36, 48) src=(22305, 22352) "Modifikation" []
+      LINK INTERNAL "Hexagonales_Kristallsystem" (72, 98) src=(22376, 22433) "hexagonalen Kristallsystem" []
+      LINK INTERNAL "Gitterparameter" (115, 131) src=(22477, 22496) "Gitterparametern" []
+      LINK INTERNAL "Pikometer" (157, 159) src=(22527, 22543) "pm" []
+      LINK INTERNAL "Formeleinheit" (202, 217) src=(22590, 22607) "Formeleinheiten" []
+      LINK INTERNAL "Elementarzelle" (222, 236) src=(22614, 22632) "Elementarzelle" []
+      LINK INTERNAL "Kristallstruktur" (242, 258) src=(22638, 22658) "Kristallstruktur" []
+      LINK INTERNAL "Dichteste_Kugelpackung" (285, 318) src=(22685, 22745) "hexagonal dichtesten Kugelpackung" []
+      LINK INTERNAL "Isotypie" (376, 382) src=(22803, 22822) "isotyp" []
+      LINK INTERNAL "Lanthan" (400, 404) src=(22840, 22856) "α-La" []
+      LINK INTERNAL "J._Inorg._Nucl._Chem." (555, 576) src=(23013, 23038) "J. Inorg. Nucl. Chem." []
+      LINK UNKNOWN "doi:10.1016/0022-1902(62)80246-2" (616, 648) src=(23090, 23126) "doi:10.1016/0022-1902(62)80246-2" []
+    Paragraph src=(23157, 23618) "Bei hohem Druck geht α-Am in β-Am über. Die β-Modifikation kristallisiert im kubischen Kristallsystem in der Raumgruppe&nbsp; mit dem Gitterparameter a&nbsp;=&nbsp;489&nbsp;pm<ref name="AM_METALL4" /><ref name="Gmelin" />, was einem kubisch flächenzentrierten Gitter (f.c.c.) beziehungsweise einer kubisch dichtesten Kugelpackung mit der Stapelfolge ABC entspricht."
+      ITALIC: (150, 151) src=(23361, 23366)
+      TAG: (175, 200) src=(23390, 23415) (200, 221) src=(23415, 23436)
+      LINK INTERNAL "Kubisches_Kristallsystem" (77, 101) src=(23234, 23287) "kubischen Kristallsystem" []
+      LINK INTERNAL "Kubisch_flächenzentriertes_Gitter" (233, 266) src=(23448, 23519) "kubisch flächenzentrierten Gitter" []
+    Paragraph src=(23620, 24382) "Die Lösungsenthalpie von Americium-Metall in Salzsäure bei Standardbedingungen beträgt −620,6&nbsp;±&nbsp;1,3&nbsp;kJ·mol<sup>−1</sup>. Ausgehend von diesem Wert erfolgte die erstmalige Berechnung der Standardbildungsenthalpie (Δ<sub>f</sub>H<sup>0</sup>) von Am<sup>3+</sup><sub>(aq)</sub> auf −621,2&nbsp;±&nbsp;2,0&nbsp;kJ·mol<sup>−1</sup> und des Standardpotentials Am<sup>3+</sup>&nbsp;/&nbsp;Am<sup>0</sup> auf −2,08&nbsp;±&nbsp;0,01&nbsp;V.<ref>J. U. Mondal, D. L. Raschella, R. G. Haire, J. R. Peterson: The Enthalpy of Solution of <sup>243</sup>Am Metal and the Standard Enthalpy of Formation of Am<sup>3+</sup>(aq), in: Thermochim. Acta, 1987, 116, S.&nbsp;235–240 (doi:10.1016/0040-6031(87)88183-2).</ref>"
+      BOLD: (648, 652) src=(24300, 24310)
+      ITALIC: (241, 242) src=(23873, 23878) (512, 624) src=(24152, 24268) (630, 646) src=(24274, 24298) (654, 657) src=(24312, 24319)
+      TAG: (121, 126) src=(23749, 23754) (128, 134) src=(23756, 23762) (229, 234) src=(23861, 23866) (235, 241) src=(23867, 23873) (242, 247) src=(23878, 23883) (248, 254) src=(23884, 23890) (262, 267) src=(23898, 23903) (269, 275) src=(23905, 23911) (275, 280) src=(23911, 23916) (284, 290) src=(23920, 23926) (329, 334) src=(23965, 23970) (336, 342) src=(23972, 23978) (372, 377) src=(24012, 24017) (379, 385) src=(24019, 24025) (400, 405) src=(24040, 24045) (406, 412) src=(24046, 24052) (447, 452) src=(24087, 24092) (540, 545) src=(24182, 24187) (548, 554) src=(24190, 24196) (607, 612) src=(24249, 24254) (614, 620) src=(24256, 24262) (710, 716) src=(24376, 24382)
+      LINK INTERNAL "Lösungsenthalpie" (4, 20) src=(23624, 23644) "Lösungsenthalpie" []
+      LINK INTERNAL "Salzsäure" (45, 54) src=(23669, 23682) "Salzsäure" []
+      LINK INTERNAL "Standardbildungsenthalpie" (201, 226) src=(23829, 23858) "Standardbildungsenthalpie" []
+      LINK INTERNAL "Standardpotential" (351, 369) src=(23987, 24008) "Standardpotentials" []
+      LINK INTERNAL "Thermochim._Acta" (630, 646) src=(24276, 24296) "Thermochim. Acta" []
+      LINK UNKNOWN "doi:10.1016/0040-6031(87)88183-2" (676, 708) src=(24338, 24374) "doi:10.1016/0040-6031(87)88183-2" []
+  SectionContent level=3 src=(24384, 28840)
+    TITLE:
+      ContentElement src=(24388, 24411) "Chemische Eigenschaften"
+    ContentElement src=(24388, 24411) "Chemische Eigenschaften"
+    Paragraph src=(24416, 24603) "Americium ist ein sehr reaktionsfähiges Element, das schon mit Luftsauerstoff reagiert und sich gut in Säuren löst. Gegenüber Alkalien ist es stabil."
+      LINK INTERNAL "Sauerstoff" (63, 77) src=(24479, 24508) "Luftsauerstoff" []
+      LINK INTERNAL "Säure" (103, 109) src=(24534, 24543) "Säuren" []
+      LINK INTERNAL "Basen_(Chemie)" (126, 134) src=(24561, 24588) "Alkalien" []
+    Paragraph src=(24605, 24881) "Die stabilste Oxidationsstufe für Americium ist +3, die Am(III)-Verbindungen sind gegen Oxidation und Reduktion sehr stabil. Mit dem Americium liegt der erste Vertreter der Actinoiden vor, der in seinem Verhalten eher den Lanthanoiden ähnelt als den d-Block-Elementen."
+      LINK INTERNAL "Oxidationsstufe" (14, 29) src=(24619, 24638) "Oxidationsstufe" []
+      LINK INTERNAL "Lanthanoide" (222, 234) src=(24831, 24846) "Lanthanoiden" []
+    Paragraph src=(24883, 25364) "Es ist auch in den Oxidationsstufen +2 sowie +4, +5, +6 und +7 zu finden. Je nach Oxidationszahl variiert die Farbe von Americium in wässriger Lösung ebenso wie in festen Verbindungen:<br />Am<sup>3+</sup>&nbsp;(gelbrosa), Am<sup>4+</sup>&nbsp;(gelbrot), Am<sup>V</sup>O<sub>2</sub><sup>+</sup>&nbsp;(gelb), Am<sup>VI</sup>O<sub>2</sub><sup>2+</sup>&nbsp;(zitronengelb), Am<sup>VII</sup>O<sub>6</sub><sup>5−</sup>&nbsp;(dunkelgrün)."
+      TAG: (184, 190) src=(25116, 25122) (192, 197) src=(25124, 25129) (199, 205) src=(25131, 25137) (225, 230) src=(25157, 25162) (232, 238) src=(25164, 25170) (257, 262) src=(25189, 25194) (263, 269) src=(25195, 25201) (270, 275) src=(25202, 25207) (276, 282) src=(25208, 25214) (282, 287) src=(25214, 25219) (288, 294) src=(25220, 25226) (310, 315) src=(25242, 25247) (317, 323) src=(25249, 25255) (324, 329) src=(25256, 25261) (330, 336) src=(25262, 25268) (336, 341) src=(25268, 25273) (343, 349) src=(25275, 25281) (373, 378) src=(25305, 25310) (381, 387) src=(25313, 25319) (388, 393) src=(25320, 25325) (394, 400) src=(25326, 25332) (400, 405) src=(25332, 25337) (407, 413) src=(25339, 25345)
+      LINK INTERNAL "Oxidationszahl" (82, 96) src=(24965, 24983) "Oxidationszahl" []
+      LINK INTERNAL "Lösung_(Chemie)" (143, 149) src=(25030, 25056) "Lösung" []
+      LINK INTERNAL "Chemische_Verbindung" (171, 183) src=(25078, 25115) "Verbindungen" []
+    Paragraph src=(25366, 25598) "Im Gegensatz zum homologen Europium – Americium hat eine zu Europium analoge Elektronenkonfiguration – kann Am<sup>3+</sup> in wässriger Lösung nicht zu Am<sup>2+</sup> reduziert werden."
+      TAG: (110, 115) src=(25499, 25504) (117, 123) src=(25506, 25512) (155, 160) src=(25544, 25549) (162, 168) src=(25551, 25557)
+      LINK INTERNAL "Homologe_Reihe" (17, 26) src=(25383, 25411) "homologen" []
+      LINK INTERNAL "Elektronenkonfiguration" (77, 100) src=(25462, 25489) "Elektronenkonfiguration" []
+      LINK INTERNAL "Reduktion_(Chemie)" (169, 178) src=(25558, 25590) "reduziert" []
+    Paragraph src=(25600, 25863) "Verbindungen mit Americium ab Oxidationszahl +4 aufwärts sind starke Oxidationsmittel, vergleichbar dem Permanganat-Ion (MnO<sub>4</sub><sup>−</sup>) in saurer Lösung.<ref name="HOWI_1956"></ref>"
+      TAG: (124, 129) src=(25732, 25737) (130, 136) src=(25738, 25744) (136, 141) src=(25744, 25749) (142, 148) src=(25750, 25756) (167, 189) src=(25775, 25797) (189, 195) src=(25857, 25863)
+      LINK INTERNAL "Oxidationsmittel" (69, 85) src=(25669, 25689) "Oxidationsmittel" []
+      LINK INTERNAL "Permanganat" (104, 115) src=(25708, 25723) "Permanganat" []
+    Paragraph src=(25865, 26181) "Die in wässriger Lösung nicht beständigen Am<sup>4+</sup>-Ionen lassen sich nur noch mit starken Oxidationsmitteln aus Am(III) darstellen. In fester Form sind zwei Verbindungen des Americiums in der Oxidationsstufe +4 bekannt: Americium(IV)-oxid (AmO<sub>2</sub>) und Americium(IV)-fluorid (AmF<sub>4</sub>)."
+      TAG: (44, 49) src=(25909, 25914) (51, 57) src=(25916, 25922) (250, 255) src=(26119, 26124) (256, 262) src=(26125, 26131) (294, 299) src=(26167, 26172) (300, 306) src=(26173, 26179)
+      LINK INTERNAL "Americium(IV)-oxid" (227, 245) src=(26092, 26114) "Americium(IV)-oxid" []
+      LINK INTERNAL "Americium(IV)-fluorid" (268, 289) src=(26137, 26162) "Americium(IV)-fluorid" []
+    Paragraph src=(26183, 27114) "Der fünfwertige Oxidationszustand wurde beim Americium erstmals 1951 beobachtet.<ref>L. B. Werner, I. Perlman: The Pentavalent State of Americium, in: J. Am. Chem. Soc., 1951, 73&nbsp;(1), S.&nbsp;495–496 (doi:10.1021/ja01145a540).</ref> In wässriger Lösung liegen primär AmO<sub>2</sub><sup>+</sup>-Ionen (sauer) oder AmO<sub>3</sub><sup>−</sup>-Ionen (alkalisch) vor, die jedoch instabil sind und einer raschen Disproportionierung unterliegen:<ref>G. R. Hall, T. L. Markin: The Self-reduction of Americium(V) and (VI) and the Disproportionation of Americium(V) in Aqueous Solution, in: J. Inorg. Nucl. Chem., 1957, 4&nbsp;(5–6), S.&nbsp;296–303 (doi:10.1016/0022-1902(57)80011-6).</ref><ref>James S. Coleman: The Kinetics of the Disproportionation of Americium(V), in: Inorg. Chem., 1963, 2&nbsp;(1), S.&nbsp;53–57 (doi:10.1021/ic50005a016).</ref>"
+      BOLD: (170, 174) src=(26365, 26375) (611, 615) src=(26836, 26846) (785, 789) src=(27036, 27046)
+      ITALIC: (111, 145) src=(26294, 26332) (151, 168) src=(26338, 26363) (176, 178) src=(26377, 26383) (476, 582) src=(26689, 26799) (588, 609) src=(26805, 26834) (617, 618) src=(26848, 26853) (711, 765) src=(26950, 27008) (771, 783) src=(27014, 27034) (791, 792) src=(27048, 27053)
+      TAG: (80, 85) src=(26263, 26268) (231, 237) src=(26440, 26446) (275, 280) src=(26484, 26489) (281, 287) src=(26490, 26496) (287, 292) src=(26496, 26501) (293, 299) src=(26502, 26508) (322, 327) src=(26531, 26536) (328, 334) src=(26537, 26543) (334, 339) src=(26543, 26548) (340, 346) src=(26549, 26555) (445, 450) src=(26658, 26663) (682, 688) src=(26921, 26927) (688, 693) src=(26927, 26932) (843, 849) src=(27108, 27114)
+      LINK INTERNAL "J._Am._Chem._Soc." (151, 168) src=(26340, 26361) "J. Am. Chem. Soc." []
+      LINK UNKNOWN "doi:10.1021/ja01145a540" (206, 229) src=(26411, 26438) "doi:10.1021/ja01145a540" []
+      LINK INTERNAL "Disproportionierung" (413, 432) src=(26622, 26645) "Disproportionierung" []
+      LINK INTERNAL "J._Inorg._Nucl._Chem." (588, 609) src=(26807, 26832) "J. Inorg. Nucl. Chem." []
+      LINK UNKNOWN "doi:10.1016/0022-1902(57)80011-6" (648, 680) src=(26883, 26919) "doi:10.1016/0022-1902(57)80011-6" []
+      LINK INTERNAL "Inorg._Chem." (771, 783) src=(27016, 27032) "Inorg. Chem." []
+      LINK UNKNOWN "doi:10.1021/ic50005a016" (818, 841) src=(27079, 27106) "doi:10.1021/ic50005a016" []
+    Paragraph src=(27118, 27176) "<chem>3 AmO2^+ + 4 H^+ -> 2 AmO2^2+ + Am^3+ + 2 H2O</chem>"
+      TAG: (0, 6) src=(27118, 27124) (51, 58) src=(27169, 27176)
+    Paragraph src=(27178, 27262) "Zunächst ist von einer Disproportionierung zur Oxidationsstufe +6 und +4 auszugehen:"
+    Paragraph src=(27266, 27308) "<chem>2 Am (V) -> Am (VI) + Am (IV)</chem>"
+      TAG: (0, 6) src=(27266, 27272) (35, 42) src=(27301, 27308)
+    Paragraph src=(27310, 28495) "Etwas beständiger als Am(IV) und Am(V) sind die Americium(VI)-Verbindungen. Sie lassen sich aus Am(III) durch Oxidation mit Ammoniumperoxodisulfat in verdünnter Salpetersäure herstellen. Der typische rosafarbene Ton verschwindet in Richtung zu einer starken Gelbfärbung.<ref>L. B. Asprey, S. E. Stephanou, R. A. Penneman: A New Valence State of Americium, Am(VI), in: J. Am. Chem. Soc., 1950, 72&nbsp;(3), S.&nbsp;1425–1426 (doi:10.1021/ja01159a528).</ref> Zudem kann die Oxidation mit Silber(I)-oxid in Perchlorsäure quantitativ erreicht werden.<ref>L. B. Asprey, S. E. Stephanou, R. A. Penneman: Hexavalent Americium, in: J. Am. Chem. Soc., 1951, 73&nbsp;(12), S.&nbsp;5715–5717 (doi:10.1021/ja01156a065).</ref> In Natriumcarbonat- oder Natriumhydrogencarbonat-Lösungen ist eine Oxidation mit Ozon oder Natriumperoxodisulfat gleichfalls möglich.<ref>J. S. Coleman, T. K. Keenan, L. H. Jones, W. T. Carnall, R. A. Penneman: Preparation and Properties of Americium(VI) in Aqueous Carbonate Solutions, in: Inorg. Chem., 1963, 2&nbsp;(1), S.&nbsp;58–61 (doi:10.1021/ic50005a017).</ref>"
+      BOLD: (387, 391) src=(27713, 27723) (643, 647) src=(27999, 28009) (1019, 1023) src=(28417, 28427)
+      ITALIC: (322, 362) src=(27636, 27680) (368, 385) src=(27686, 27711) (393, 395) src=(27725, 27731) (598, 618) src=(27942, 27966) (624, 641) src=(27972, 27997) (649, 651) src=(28011, 28017) (925, 999) src=(28311, 28389) (1005, 1017) src=(28395, 28415) (1025, 1026) src=(28429, 28434)
+      TAG: (270, 275) src=(27584, 27589) (450, 456) src=(27790, 27796) (546, 551) src=(27890, 27895) (707, 713) src=(28077, 28083) (847, 852) src=(28233, 28238) (1077, 1083) src=(28489, 28495)
+      LINK INTERNAL "Ammoniumperoxodisulfat" (124, 146) src=(27434, 27460) "Ammoniumperoxodisulfat" []
+      LINK INTERNAL "J._Am._Chem._Soc." (368, 385) src=(27688, 27709) "J. Am. Chem. Soc." []
+      LINK UNKNOWN "doi:10.1021/ja01159a528" (425, 448) src=(27761, 27788) "doi:10.1021/ja01159a528" []
+      LINK INTERNAL "Silber(I)-oxid" (486, 500) src=(27826, 27844) "Silber(I)-oxid" []
+      LINK INTERNAL "J._Am._Chem._Soc." (624, 641) src=(27974, 27995) "J. Am. Chem. Soc." []
+      LINK UNKNOWN "doi:10.1021/ja01156a065" (682, 705) src=(28048, 28075) "doi:10.1021/ja01156a065" []
+      LINK INTERNAL "Natriumcarbonat" (717, 732) src=(28087, 28106) "Natriumcarbonat" []
+      LINK INTERNAL "Natriumhydrogencarbonat" (739, 762) src=(28113, 28140) "Natriumhydrogencarbonat" []
+      LINK INTERNAL "Ozon" (795, 799) src=(28173, 28181) "Ozon" []
+      LINK INTERNAL "Natriumperoxodisulfat" (805, 826) src=(28187, 28212) "Natriumperoxodisulfat" []
+      LINK INTERNAL "Inorg._Chem." (1005, 1017) src=(28397, 28413) "Inorg. Chem." []
+      LINK UNKNOWN "doi:10.1021/ic50005a017" (1052, 1075) src=(28460, 28487) "doi:10.1021/ic50005a017" []
+    Paragraph src=(28497, 28521) "<gallery class="center">"
+      TAG: (0, 24) src=(28497, 28521)
+    Paragraph src=(28523, 28829) "Americium III in 2M Na2CO3.jpg|Americium(III)<br />in 2&nbsp;M Na<sub>2</sub>CO<sub>3</sub>-Lösung
+ Americium IV in 2M Na2CO3.jpg|Americium(IV)<br />in 2&nbsp;M Na<sub>2</sub>CO<sub>3</sub>-Lösung
+ Americium IV VI in 2M Na2CO3.jpg|Americium(IV) und (VI)<br />in 2&nbsp;M Na<sub>2</sub>CO<sub>3</sub>-Lösung"
+      TAG: (45, 51) src=(28568, 28574) (65, 70) src=(28588, 28593) (71, 77) src=(28594, 28600) (79, 84) src=(28602, 28607) (85, 91) src=(28608, 28614) (143, 149) src=(28666, 28672) (163, 168) src=(28686, 28691) (169, 175) src=(28692, 28698) (177, 182) src=(28700, 28705) (183, 189) src=(28706, 28712) (253, 259) src=(28776, 28782) (273, 278) src=(28796, 28801) (279, 285) src=(28802, 28808) (287, 292) src=(28810, 28815) (293, 299) src=(28816, 28822)
+    Paragraph src=(28830, 28840) "</gallery>"
+      TAG: (0, 10) src=(28830, 28840)
+  SectionContent level=3 src=(28842, 54189)
+    TITLE:
+      ContentElement src=(28846, 28865) "Biologische Aspekte"
+    ContentElement src=(28846, 28865) "Biologische Aspekte"
+    Paragraph src=(28870, 54189) "Eine biologische Funktion des Americiums ist nicht bekannt.<ref>The Biochemical Periodic Tables – Americium.</ref> Vorgeschlagen wurde der Einsatz immobilisierter Bakterienzellen zur Entfernung von Americium und anderen Schwermetallen aus Fließgewässern. So können Enterobakterien der Gattung Citrobacter durch die Phosphataseaktivität in ihrer [[Zellwand]] bestimmte Americiumnuklide aus wässriger Lösung ausfällen und als Metall-Phosphat-Komplex binden.<ref>L. E. Macaskie, B. C. Jeong, M. R. Tolley: ''Enzymically Accelerated Biomineralization of Heavy Metals: Application to the Removal of Americium and Plutonium from Aqueous Flows'', in: ''[[FEMS Microbiol. Rev.]]'', '''1994''', ''14''&nbsp;(4), S.&nbsp;351–367 (PMID 7917422).</ref> Ferner wurden die Faktoren untersucht, die die [[Biosorption]] und [[Bioakkumulation]] des Americiums durch Bakterien<ref>E. A. Wurtz, T. H. Sibley, W. R. Schell: ''Interactions of Escherichia coli and Marine Bacteria with <sup>241</sup>Am in Laboratory Cultures'', in: ''[[Health Phys.]]'', '''1986''', ''50''&nbsp;(1), S.&nbsp;79–88 (PMID 3511007).</ref><ref>A. J. Francis, J. B. Fillow, C. J. Dodge, M. Dunn, K. Mantione, B. A. Strietelmeier, M. E. Pansoy-Hjelvik, H. W. Papenguth: ''Role of Bacteria as Biocolloids in the Transport of Actinides from a Deep Underground Radioactive Waste Repository'', in: ''[[Radiochimica Acta]]'', '''1998''', ''82'', S.&nbsp;347–354 ([https://www.osti.gov/scitech/biblio/2439 Abstract und PDF-Download]).</ref> und Pilze<ref>N. Liu, Y. Yang, S. Luo, T. Zhang, J. Jin, J. Liao, X. Hua: ''Biosorption of <sup>241</sup>Am by Rhizopus arrihizus: Preliminary Investigation and Evaluation'', in: ''[[Appl. Radiat. Isot.]]'', '''2002''', ''57''&nbsp;(2), S.&nbsp;139–143 (PMID 12150270).</ref> beeinflussen.
+
+=== Spaltbarkeit ===
+Das Isotop <sup>242''m''1</sup>Am hat mit rund 5700&nbsp;[[barn]] den höchsten bisher (10/2008) gemessenen thermischen [[Wirkungsquerschnitt#Spezielle Bezeichnungen|Spaltquerschnitt]].<ref name="karlsruhe">G. Pfennig, H. Klewe-Nebenius, W. Seelmann-Eggebert (Hrsg.): ''Karlsruher [[Nuklidkarte]]'', 7. Auflage 2006.</ref> Damit geht eine kleine [[kritische Masse]] einher, weswegen <sup>242''m''1</sup>Am als Spaltmaterial vorgeschlagen wurde, um beispielsweise Raumschiffe mit Kernenergieantrieb anzutreiben.<ref>Science daily: [https://www.sciencedaily.com/releases/2001/01/010103073253.htm ''Extremely Efficient Nuclear Fuel Could Take Man To Mars In Just Two Weeks''], 3. Januar 2001.</ref>
+
+Dieses Isotop eignet sich prinzipiell auch zum Bau von [[Kernwaffe]]n. Die kritische Masse einer reinen <sup>242''m''1</sup>Am-Kugel beträgt etwa 9–14&nbsp;kg. Die Unsicherheiten der verfügbaren [[Wirkungsquerschnitt]]e lassen derzeit keine genauere Aussage zu. Mit Reflektor beträgt die kritische Masse noch etwa 3–5&nbsp;kg.<ref>H. Dias, N. Tancock, A. Clayton: ''Critical Mass Calculations for <sup>241</sup>Am, <sup>242m</sup>Am and <sup>243</sup>Am'', in: ''[[Nippon Genshiryoku Kenkyujo JAERI, Conf]]'', '''2003''', S.&nbsp;618–623 ([https://www.researchgate.net/publication/237569718_Critical_Mass_Calculations_for_241Am_242mAm_and_243Am Abstract]; [https://www.iaea.org/inis/collection/NCLCollectionStore/_Public/36/116/36116528.pdf PDF]).</ref> In wässriger Lösung wird sie nochmals stark herabgesetzt. Auf diese Weise ließen sich sehr kompakte Sprengköpfe bauen. Nach öffentlichem Kenntnisstand wurden bisher keine Kernwaffen aus <sup>242''m''1</sup>Am gebaut, was mit der geringen Verfügbarkeit und dem hohen Preis begründet werden kann.
+
+Aus denselben Gründen wird <sup>242''m''1</sup>Am auch nicht als [[Kernbrennstoff]] in [[Kernreaktor]]en eingesetzt, obwohl es dazu prinzipiell sowohl in thermischen als auch in [[Schneller Brüter|schnellen Reaktoren]] geeignet wäre.<ref>Y. Ronen, M. Aboudy, D. Regev: ''A novel method for energy production using <sup>242m</sup>Am as a nuclear fuel'', in: ''[[Nuclear Technology]]'', '''2000''', ''129''&nbsp;(3), S.&nbsp;407–417 ([http://www.new.ans.org/pubs/journals/nt/a_3071 Abstract]).</ref> Auch die beiden anderen häufiger verfügbaren Isotope, <sup>241</sup>Am und <sup>243</sup>Am können in einem schnellen Reaktor eine Kettenreaktion aufrechterhalten. Die kritischen Massen sind hier jedoch sehr hoch. Sie betragen unreflektiert 57,6–75,6&nbsp;kg bei <sup>241</sup>Am und 209&nbsp;kg bei <sup>243</sup>Am<ref name="irsn">[[Institut de Radioprotection et de Sûreté Nucléaire]]: ''Evaluation of nuclear criticality safety data and limits for actinides in transport'', S.&nbsp;16 ({{Webarchiv | url=http://ec.europa.eu/energy/nuclear/transport/doc/irsn_sect03_146.pdf | webciteID=618baD0Up | text=PDF}}).</ref>, so dass sich durch die Verwendung keine Vorteile gegenüber herkömmlichen Spaltstoffen ergeben.
+
+Entsprechend ist Americium rechtlich nach {{§|2|atg|juris}} Abs. 1 des [[Atomgesetz (Deutschland)|Atomgesetzes]] nicht den Kernbrennstoffen zugeordnet. Es existieren jedoch Vorschläge, sehr kompakte Reaktoren mit einem Americium-Inventar von lediglich knapp 20&nbsp;g zu konstruieren, die in Krankenhäusern als [[Neutronenquelle]] für die [[Bor-Neutroneneinfangtherapie|Neutroneneinfangtherapie]] verwendet werden können.<ref>Y. Ronen, M. Aboudy, D. Regev: ''Homogeneous <sup>242m</sup>Am-Fueled Reactor for Neutron Capture Therapy'', in: ''[[Nuclear Science and Engineering]]'', '''2001''', ''138''&nbsp;(3), S.&nbsp;295–304 ([https://www.osti.gov/scitech/biblio/20804726 Abstract]).</ref>
+
+== Isotope ==
+Von Americium sind 16 [[Isotop]]e und 11 [[Kernisomer]]e mit [[Halbwertszeit]]en zwischen Bruchteilen von Mikrosekunden und 7370&nbsp;Jahren bekannt. Es gibt zwei langlebige [[Alphastrahlung|α-strahlende]] Isotope <sup>241</sup>Am mit 432,2 und <sup>243</sup>Am mit 7370&nbsp;Jahren Halbwertszeit. Außerdem hat das Kernisomer <sup>242''m''1</sup>Am mit 141&nbsp;Jahren eine lange Halbwertszeit. Die restlichen Kernisomere und Isotope haben mit 0,64&nbsp;µs bei <sup>245''m''1</sup>Am bis 50,8&nbsp;Stunden bei <sup>240</sup>Am kurze Halbwertszeiten.<ref name="nubase" />
+
+<sup>241</sup>Am ist das am häufigsten erbrütete Americiumisotop und liegt auf der [[Neptunium-Reihe]]. Es zerfällt mit einer Halbwertszeit von 432,2&nbsp;Jahren<ref name="nubase" /> mit einem [[Alphazerfall|α-Zerfall]] zu <sup>237</sup>Np. <sup>241</sup>Am gibt nur mit einer Wahrscheinlichkeit von 0,35 % die gesamte Zerfallsenergie mit dem α-Teilchen ab, sondern emittiert meistens noch ein oder mehrere [[Gammastrahlung|Gammaquanten]].<ref>{{Webarchiv | url=http://87.139.25.178:81/ger/theory.htm | wayback=20080624193652 | text=α-Zerfall von <sup>241</sup>Am mit Entstehung von Gammastrahlen}}.</ref>
+
+<sup>242</sup>Am ist kurzlebig und zerfällt mit einer Halbwertszeit von 16,02&nbsp;h<ref name="nubase" /> zu 82,7 % durch β-Zerfall zu <sup>242</sup>Cm und zu 17,3 % durch [[Elektroneneinfang]] zu <sup>242</sup>Pu. Das <sup>242</sup>Cm zerfällt zu <sup>238</sup>Pu und dieses weiter zu <sup>234</sup>U, das auf der [[Uran-Radium-Reihe]] liegt. Das <sup>242</sup>Pu zerfällt über die gleiche Zerfallskette wie <sup>238</sup>Pu. Während jedoch <sup>238</sup>Pu als Seitenarm beim <sup>234</sup>U auf die Zerfallskette kommt, steht <sup>242</sup>Pu noch vor dem <sup>238</sup>U. <sup>242</sup>Pu zerfällt durch α-Zerfall in <sup>238</sup>U, den Beginn der natürlichen Uran-Radium-Reihe.
+
+<sup>242''m''1</sup>Am zerfällt mit einer Halbwertszeit von 141&nbsp;Jahren<ref name="nubase" /> zu 99,541 % durch [[Innere Konversion]] zu <sup>242</sup>Am und zu 0,459 % durch α-Zerfall zu <sup>238</sup>Np. Dieses zerfällt zu <sup>238</sup>Pu und dann weiter zu <sup>234</sup>U, das auf der [[Uran-Radium-Reihe]] liegt.
+
+<sup>243</sup>Am ist mit einer Halbwertszeit von 7370&nbsp;Jahren<ref name="nubase" /> das langlebigste Americiumisotop. Es geht zunächst durch α-Strahlung in <sup>239</sup>Np über, das durch β-Zerfall weiter zu <sup>239</sup>Pu zerfällt. Das <sup>239</sup>Pu zerfällt durch α-Strahlung zu Uran <sup>235</sup>U, dem offiziellen Anfang der [[Uran-Actinium-Reihe]].
+
+Die Americiumisotope mit [[Parität (Mathematik)|ungerader]] [[Neutron]]enzahl, also gerader [[Massenzahl]], sind gut durch [[thermische Neutronen]] [[Kernspaltung#Thermische Neutronen|spaltbar]].
+
+''→ [[Liste der Isotope/Ordnungszahl 91 bis Ordnungszahl 100#95 Americium|Liste der Americiumisotope]]''
+
+== Verwendung ==
+Für die Verwendung von Americium sind vor allem die beiden langlebigsten Isotope <sup>241</sup>Am und <sup>243</sup>Am von Interesse. In der Regel wird es in Form des Oxids (AmO<sub>2</sub>) verwendet.
+[[Datei:Americio-alarma.jpg|mini|hochkant=1.5|Americium 241 in einem Rauchmelder]]
+
+=== Ionisationsrauchmelder ===
+Die [[Alphastrahlung|α-Strahlung]] des <sup>241</sup>Am wird in [[Ionisationsrauchmelder]]n genutzt.<ref name="smoke" /> Es wird gegenüber <sup>226</sup>[[Radium|Ra]] bevorzugt, da es vergleichsweise wenig [[γ-Strahlung]] emittiert. Dafür muss aber die Aktivität gegenüber Radium ca. das Fünffache betragen. Die Zerfallsreihe von <sup>241</sup>Am „endet“ für den Verwendungszeitraum quasi direkt nach dessen α-Zerfall bei <sup>237</sup>[[Neptunium|Np]], das eine Halbwertszeit von rund 2,144 Millionen Jahren besitzt.
+
+=== Radionuklidbatterien ===
+<sup>241</sup>Am wird wegen besserer Verfügbarkeit von der [[ESA]] zur Befüllung von [[Radionuklidbatterie]]n (RTG) von [[Raumsonde]]n untersucht. Die ESA-Mitgliedsstaaten verfügen über keinen Brutreaktor, der das bisher häufig eingesetzte <sup>238</sup>Pu in den notwendigen Mengen produzieren könnte, somit ist man bisher für Missionen jenseits der Jupiterumlaufbahn auf eine Zusammenarbeit mit der NASA angewiesen. <sup>241</sup>Am lässt sich hingegen deutlich preiswerter aus leicht verfügbaren abgebrannten Kernbrennstäben oder dem sogenannten [[Radioaktiver Abfall|Atommüll]] in ausreichenden Mengen isolieren. Der Leistungsabfall über eine Missionsdauer von 15 bis 20 Jahren ist mit 3,2 % deutlich geringer als bei Einheiten auf Basis von <sup>238</sup>Pu mit 15 %.<ref>{{Literatur |Autor=R.M. Ambrosi et al. |Titel=DEVELOPMENT AND TESTING OF AMERICIUM-241 RADIOISOTOPE THERMOELECTRIC GENERATOR: CONCEPT DESIGNS AND BREADBOARD SYSTEM. |Sammelwerk=Nuclear and Emerging Technologies for Space (2012) |Datum=2012 |Online=https://www.lpi.usra.edu/meetings/nets2012/pdf/3043.pdf |Format=PDF |KBytes=}}</ref> Die ESA plant, ab Mitte der 2020er{{Zukunft|2025}} Radionuklidbatterien in Missionsstudien zu berücksichtigen.<ref>{{Literatur |Autor=Richard M. Ambrosi et al. |Titel=European Radioisotope Thermoelectric Generators (RTGs) and Radioisotope Heater Units (RHUs) for Space Science and Exploration |Sammelwerk=Space Science Reviews |Datum=2019 |DOI=10.1007/s11214-019-0623-9}}</ref> Die Zerfallsprodukte eines solchen RTG sind in erster Linie die sehr langlebigen Alphastrahler <sup>237</sup>Np und <sup>233</sup>U. Ein RTG aus <sup>241</sup>Am benötigt allerdings die vierfache Masse als ein RTG mit vergleichbarer anfänglicher Leistung aus <sup>238</sup>Pu. Besondere Vorteile hätte ein solcher RTG für sehr langlebige Missionen.
+
+=== Neutronenquellen ===
+<sup>241</sup>Am als Oxid mit [[Beryllium]] verpresst stellt eine [[Neutronenquelle]] dar, die beispielsweise für radiochemische Untersuchungen eingesetzt wird.<ref name="Binder" /> Hierzu wird der hohe Wirkungsquerschnitt des Berylliums für (α,n)-Kernreaktionen ausgenutzt, wobei das Americium als Produzent der α-Teilchen dient. Die entsprechenden Reaktionsgleichungen lauten:
+
+: <math>\mathrm{^{241\!\,}_{\ 95}Am\ \longrightarrow \ ^{237}_{\ 93}Np\ +\ ^{4}_{2}He\ +\ \gamma}</math>
+
+: <math>\mathrm{^{9}_{4}Be\ +\ ^{4}_{2}He\ \longrightarrow \ ^{12}_{\ 6}C\ +\ ^{1}_{0}n\ +\ \gamma}</math>
+
+Derartige Neutronenquellen kommen beispielsweise in der [[Neutronenradiographie]] und [[Neutronentomografie|-tomographie]] zum Einsatz.
+
+=== Ionisator ===
+[[Datei:Am-241 Brush.jpg|mini|hochkant=1.5|Americium 241 im Bürstenkopf]]
+Neben dem häufig verwendeten <sup>210</sup>Po als [[Ionisator]] zur Beseitigung von unerwünschter [[Elektrostatik|elektrostatischer Aufladung]] kam auch <sup>241</sup>Am zum Einsatz. Dazu wurde z.&nbsp;B. die Quelle am Kopf einer Bürste montiert mit der man langsam über die zu behandelnden Oberflächen strich und dadurch eine Wiederverschmutzung durch elektrostatisch angezogene Staubpartikel vermeiden konnte.
+
+=== Herstellung anderer Elemente ===
+Americium ist Ausgangsmaterial zur Erzeugung höherer [[Transurane]] und auch der [[Transactinoide]]. Aus <sup>242</sup>Am entsteht zu 82,7 % Curium (<sup>242</sup>Cm) und zu 17,3 % Plutonium (<sup>242</sup>Pu). Im Kernreaktor wird zwangsläufig in geringen Mengen durch Neutroneneinfang aus <sup>243</sup>Am das <sup>244</sup>Am erbrütet, das durch β-Zerfall zum Curiumisotop <sup>244</sup>Cm zerfällt.
+
+: <math>\mathrm{^{243}_{\ 95}Am\ \xrightarrow {(n,\gamma)} \ ^{244}_{\ 95}Am\ \xrightarrow [10,1 \ h]{\beta^-} \ ^{244}_{\ 96}Cm}</math>
+
+In [[Teilchenbeschleuniger]]n führt zum Beispiel der Beschuss von <sup>241</sup>Am mit Kohlenstoffkernen (<sup>12</sup>C) beziehungsweise Neonkernen (<sup>22</sup>Ne) zu den Elementen [[Einsteinium]] <sup>247</sup>Es beziehungsweise [[Dubnium]] <sup>260</sup>Db.<ref name="Binder" />
+
+=== Spektrometer ===
+Mit seiner intensiven [[Gammastrahlung]]s-[[Spektrallinie]] bei 60&nbsp;[[keV]] eignet sich <sup>241</sup>Am gut als Strahlenquelle für die Röntgen-[[Fluoreszenzspektroskopie]]. Dies wird auch zur [[Kalibrierung]] von [[Gammaspektrometer]]n im niederenergetischen Bereich verwendet, da die benachbarten Linien vergleichsweise schwach sind und so ein einzeln stehender Peak entsteht. Zudem wird der Peak nur vernachlässigbar durch das [[Compton-Kontinuum]] höherenergetischer Linien gestört, da diese ebenfalls höchstens mit einer um mindestens drei Größenordnungen geringeren Intensität auftreten.<ref>Nuclear Data Viewer 2.4, NNDC, abgefragt am 11. September 2008; [https://www.nndc.bnl.gov/nudat2/indx_dec.jsp Sucheingabe].</ref>
+
+== Sicherheitshinweise und Gefahren ==
+Einstufungen nach der [[Verordnung (EG) Nr. 1272/2008 (CLP)|CLP-Verordnung]] liegen nicht vor, weil diese nur die chemische Gefährlichkeit umfassen, welche eine völlig untergeordnete Rolle gegenüber den auf der [[Radioaktivität]] beruhenden Gefahren spielt. Eine chemische Gefahr liegt überhaupt nur dann vor, wenn es sich um eine dafür relevante Stoffmenge handelt.
+
+Da von Americium nur radioaktive Isotope existieren, darf es selbst sowie seine Verbindungen nur in geeigneten Laboratorien unter speziellen Vorkehrungen gehandhabt werden. Die meisten gängigen Americiumisotope sind α-Strahler, weshalb eine [[Inkorporation (Medizin)|Inkorporation]] unbedingt vermieden werden muss. Das breite Spektrum der hieraus resultierenden meist ebenfalls radioaktiven Tochternuklide stellt ein weiteres Risiko dar, das bei der Wahl der Sicherheitsvorkehrungen berücksichtigt werden muss.<ref>Lenntech: [https://www.lenntech.com/deutsch/Data-PSE/Am.htm ''Americium (Am)''].</ref> <sup>241</sup>Am gibt beim radioaktiven Zerfall große Mengen relativ weicher Gammastrahlung ab, die sich gut abschirmen lässt.<ref>[https://www.atsdr.cdc.gov/phs/phs.asp?id=809&tid=158 ''Public Health Statement for Americium''] Abschnitt 1.5.</ref>
+
+Nach Untersuchungen des Forschers Arnulf Seidel vom Institut für Strahlenbiologie des [[Forschungszentrum Karlsruhe|Kernforschungszentrums Karlsruhe]] erzeugt Americium (wie [[Plutonium]]), bei Aufnahme in den Körper, mehr [[Knochentumor]]e als dieselbe Dosis [[Radium]].<ref>Franz Frisch: ''Klipp und klar, 100 x Energie'', Bibliographisches Institut AG, Mannheim 1977, ISBN 3-411-01704-X, S.&nbsp;184.</ref>
+
+Die biologische Halbwertszeit von <sup>241</sup>Am beträgt in den [[Knochen]] 50 Jahre und in der [[Leber]] 20 Jahre. In den [[Gonade]]n verbleibt es dagegen offensichtlich dauerhaft.<ref>{{Webarchiv | url=http://www.doh.wa.gov/ehp/rp/factsheets/factsheets-pdf/fs23am241.pdf | webciteID=5wa9xi6X1 | text=Division of Environmental Health, Office of Radiation Protection, Fact Sheet #23 (November 2002): Americium-241}}.</ref>
+
+== Verbindungen ==
+''→ Kategorie: [[:Kategorie:Americiumverbindung|Americiumverbindung]]''
+
+=== Oxide ===
+Von Americium existieren [[Oxide]] der [[Oxidationsstufe]]n +3 (Am<sub>2</sub>O<sub>3</sub>) und +4 (AmO<sub>2</sub>).
+
+[[Americium(III)-oxid]] (Am<sub>2</sub>O<sub>3</sub>) ist ein rotbrauner Feststoff und hat einen Schmelzpunkt von 2205&nbsp;°C.<ref name="HOWI_1972">{{Holleman-Wiberg|Auflage=102 |Startseite=1972 |Endseite= }}</ref>
+
+[[Americium(IV)-oxid]] (AmO<sub>2</sub>) ist die wichtigste Verbindung dieses Elements. Nahezu alle Anwendungen dieses Elements basieren auf dieser Verbindung. Sie entsteht unter anderem implizit in Kernreaktoren beim Bestrahlen von [[Urandioxid]] (UO<sub>2</sub>) bzw. [[Plutoniumdioxid]] (PuO<sub>2</sub>) mit Neutronen. Es ist ein schwarzer Feststoff und kristallisiert – wie die anderen [[Actinoide#Oxide|Actinoiden(IV)-oxide]] – im [[Kubisches Kristallsystem|kubischen Kristallsystem]] in der [[Fluorit#Kristallstruktur|Fluorit]]-Struktur.
+
+=== Halogenide ===
+Halogenide sind für die Oxidationsstufen +2, +3 und +4 bekannt.<ref name="HOWI_1969">{{Holleman-Wiberg|Auflage=102 |Startseite=1969 |Endseite= }}</ref> Die stabilste Stufe +3 ist für sämtliche Verbindungen von Fluor bis Iod bekannt und in wässriger Lösung stabil.<ref>L. B. Asprey, T. K. Keenan, F. H. Kruse: ''Crystal Structures of the Trifluorides, Trichlorides, Tribromides, and Triiodides of Americium and Curium'', in: ''[[Inorg. Chem.]]'', '''1965''', ''4''&nbsp;(7), S.&nbsp;985–986 ([[doi:10.1021/ic50029a013]]).</ref>
+
+{| class="wikitable left" style="text-align:center; font-size:90%;"
+|-
+! Oxidations-<br />zahl || F || Cl || Br || I
+|-
+| +4
+| style="background-color:#FFFCFC;" | [[Americium(IV)-fluorid]]<br />AmF<sub>4</sub><br />schwach rosa
+| style="background-color:#FFFFFF;" colspan="3" |
+|-
+| +3
+| style="background-color:#FFF0F0;" | [[Americium(III)-fluorid]]<br />AmF<sub>3</sub><br />rosa
+| style="background-color:#FFF0F0;" | [[Americium(III)-chlorid]]<br />AmCl<sub>3</sub><br />rosa
+| style="background-color:#FFFFE0;" | [[Americium(III)-bromid]]<br />AmBr<sub>3</sub><br />hellgelb
+| style="background-color:#FFFFE0;" | [[Americium(III)-iodid]]<br />AmI<sub>3</sub><br />hellgelb
+|-
+| +2
+| style="background-color:#FFFFFF;" |
+| style="background-color:#000; color:#FFF;" | '''[[Americium(II)-chlorid]]<br />AmCl<sub>2</sub><br />schwarz'''
+| style="background-color:#000; color:#FFF;" | '''[[Americium(II)-bromid]]<br />AmBr<sub>2</sub><br />schwarz'''
+| style="background-color:#000; color:#FFF;" | '''[[Americium(II)-iodid]]<br />AmI<sub>2</sub><br />schwarz'''
+|}
+
+[[Americium(III)-fluorid]] (AmF<sub>3</sub>) ist schwerlöslich und kann durch die Umsetzung einer wässrigen Americiumlösung mit Fluoridsalzen im schwach [[Säure|Sauren]] durch Fällung hergestellt werden:
+
+: <math>\mathrm{Am^{3+}\ _{(aq)} +\ 3\ F^-\ _{(aq)} \longrightarrow \ AmF_3\ _{(s)} \downarrow}</math>
+
+Das tetravalente [[Americium(IV)-fluorid]] (AmF<sub>4</sub>) ist durch die Umsetzung von Americium(III)-fluorid mit molekularem [[Fluor]] zugänglich:<ref>L. B. Asprey: ''New Compounds of Quadrivalent Americium, AmF<sub>4</sub>, KAmF<sub>5</sub>'', in: ''[[J. Am. Chem. Soc.]]'', '''1954''', ''76''&nbsp;(7), S.&nbsp;2019–2020 ([[doi:10.1021/ja01636a094]]).</ref>
+
+: <math>\mathrm{2\ AmF_3\ +\ F_2\ \longrightarrow\ 2\ AmF_4}</math>
+
+In der wässrigen Phase wurde das vierwertige Americium auch beobachtet.<ref>L. B. Asprey, R. A. Penneman: ''First Observation of Aqueous Tetravalent Americium'', in: ''[[J. Am. Chem. Soc.]]'', '''1961''', ''83''&nbsp;(9), S.&nbsp;2200–2200 ([[doi:10.1021/ja01470a040]]).</ref>
+
+[[Americium(III)-chlorid]] (AmCl<sub>3</sub>) bildet rosafarbene [[Hexagonales Kristallsystem|hexagonale]] Kristalle. Seine [[Kristallstruktur]] ist [[Isotypie|isotyp]] mit [[Uran(III)-chlorid]]. Der Schmelzpunkt der Verbindung liegt bei 715&nbsp;°C.<ref name="HOWI_1969" /> Das Hexahydrat (AmCl<sub>3</sub>·6&nbsp;H<sub>2</sub>O) weist eine [[Monoklines Kristallsystem|monokline]] Kristallstruktur auf.<ref>John H. Burns, Joseph Richard Peterson: ''The Crystal Structures of Americium Trichloride Hexahydrate and Berkelium Trichloride Hexahydrate'', in: ''[[Inorg. Chem.]]'', '''1971''', ''10''&nbsp;(1), S.&nbsp;147–151 ([[doi:10.1021/ic50095a029]]).</ref>
+
+Durch Reduktion mit Na-[[Amalgam]] aus Am(III)-Verbindungen sind Am(II)-Salze zugänglich: die schwarzen Halogenide AmCl<sub>2</sub>, AmBr<sub>2</sub> und AmI<sub>2</sub>. Sie sind sehr sauerstoffempfindlich, und oxidieren in Wasser unter Freisetzung von Wasserstoff zu Am(III)-Verbindungen.
+
+=== Chalkogenide und Pentelide ===
+Von den [[Chalkogenide]]n sind bekannt: das [[Sulfide|Sulfid]] (AmS<sub>2</sub>)<ref name="AM_S_SE">D. Damien, J. Jove: ''Americium Disulfide and Diselenide'', in: ''[[Inorg. Nucl. Chem. Lett.]]'', '''1971''', ''7''&nbsp;(7), S.&nbsp;685–688 ([[doi:10.1016/0020-1650(71)80055-7]]).</ref>, zwei [[Selenide]] (AmSe<sub>2</sub> und Am<sub>3</sub>Se<sub>4</sub>)<ref name="AM_S_SE" /><ref name="AM_METALLIDE">J. W. Roddy: ''Americium Metallides: AmAs, AmSb, AmBi, Am<sub>3</sub>Se<sub>4</sub>, and AmSe<sub>2</sub>'', in: ''[[J. Inorg. Nucl. Chem.]]'', '''1974''', ''36''&nbsp;(11), S.&nbsp;2531–2533 ([[doi:10.1016/0022-1902(74)80466-5]]).</ref> und zwei [[Telluride]] (Am<sub>2</sub>Te<sub>3</sub> und AmTe<sub>2</sub>).<ref>D. Damien: ''Americium Tritelluride and Ditelluride'', in: ''[[Inorg. Nucl. Chem. Lett.]]'', '''1972''', ''8''&nbsp;(5), S.&nbsp;501–504 ([[doi:10.1016/0020-1650(72)80262-9]]).</ref>
+
+Die [[Pentelide]] des Americiums (<sup>243</sup>Am) des Typs AmX sind für die Elemente [[Phosphor]], [[Arsen]],<ref>J. P. Charvillat, D. Damien: ''Americium Monoarsenide'', in: ''[[Inorg. Nucl. Chem. Lett.]]'', '''1973''', ''9''&nbsp;(5), S.&nbsp;559–563 ([[doi:10.1016/0020-1650(73)80191-6]]).</ref> [[Antimon]] und [[Bismut]] dargestellt worden. Sie kristallisieren im NaCl-Gitter.<ref name="AM_METALLIDE" />
+
+=== Silicide und Boride ===
+Americiummono[[silicid]] (AmSi) und Americium„disilicid“ (AmSi<sub>x</sub> mit: 1,87 < x < 2,0) wurden durch Reduktion von [[Americium(III)-fluorid]] mit elementaren [[Silicium]] im Vakuum bei 1050&nbsp;°C (AmSi) und 1150–1200&nbsp;°C (AmSi<sub>x</sub>) dargestellt. AmSi ist eine schwarze Masse, isomorph mit LaSi. AmSi<sub>x</sub> ist eine hellsilbrige Verbindung mit einem tetragonalen Kristallgitter.<ref>F. Weigel, F. D. Wittmann, R. Marquart: ''Americium Monosilicide and “Disilicide”'', in: ''[[Journal of the Less Common Metals]]'', '''1977''', ''56''&nbsp;(1), S.&nbsp;47–53 ([[doi:10.1016/0022-5088(77)90217-X]]).</ref>
+
+[[Boride]] der Zusammensetzungen AmB<sub>4</sub> und AmB<sub>6</sub> sind gleichfalls bekannt.<ref>Harry A. Eick, R. N. R. Mulford: ''Americium and Neptunium Borides'', in: ''[[J. Inorg. Nucl. Chem.]]'', '''1969''', ''31''&nbsp;(2), S.&nbsp;371–375 ([[doi:10.1016/0022-1902(69)80480-X]]).</ref>
+
+=== Metallorganische Verbindungen ===
+Analog zu [[Uranocen]], einer [[Organometallverbindungen|Organometallverbindung]] in der Uran von zwei [[Cyclooctatetraen]]-Liganden komplexiert ist, wurden die entsprechenden Komplexe von [[Thorium]], [[Protactinium]], Neptunium, Plutonium und auch des Americiums, (η<sup>8</sup>-C<sub>8</sub>H<sub>8</sub>)<sub>2</sub>Am, dargestellt.<ref>[[Christoph Elschenbroich]]: ''Organometallchemie'', 6. Auflage, Wiesbaden 2008, ISBN 978-3-8351-0167-8, S.&nbsp;589.</ref>
+
+== Literatur ==
+* Wolfgang H. Runde, Wallace W. Schulz: [http://radchem.nevada.edu/classes/rdch710/files/Americium.pdf ''Americium''], in: Lester R. Morss, Norman M. Edelstein, Jean Fuger (Hrsg.): ''The Chemistry of the Actinide and Transactinide Elements'', Springer, Dordrecht 2006; ISBN 1-4020-3555-1, S.&nbsp;1265–1395 ([[doi:10.1007/1-4020-3598-5_8]]).
+* ''[[Gmelins Handbuch der anorganischen Chemie]]'', System Nr.&nbsp;71, Transurane: Teil&nbsp;A&nbsp;1&nbsp;I, S.&nbsp;30–34; Teil A&nbsp;1&nbsp;II, S.&nbsp;18, 315–326, 343–344; Teil&nbsp;A&nbsp;2, S.&nbsp;42–44, 164–175, 185–188; Teil&nbsp;B&nbsp;1, S.&nbsp;57–67.
+
+== Weblinks ==
+{{Commonscat|audio=1|video=1}}
+{{Wiktionary}}
+* {{RömppOnline|ID=RD-01-01920|Name=Americium|Abruf=2015-01-03}}
+* Rachel Sheremeta Pepling: [https://pubs.acs.org/cen/80th/americium.html ''Americium.''] Chemical & Engineering News, 2003.
+
+== Einzelnachweise ==
+<references />
+
+{{Navigationsleiste Periodensystem}}
+
+{{Exzellent|8. Januar 2010|68928609}}
+
+{{Normdaten|TYP=s|GND=4191405-3|LCCN=sh85004443|NDL=00575178}}
+"
+      ITALIC: (64, 107) src=(28986, 29033) (293, 304) src=(29224, 29243)
+      NOWIKI: (326, 334) src=(29269, 54189)
+      TAG: (59, 64) src=(28929, 28934) (108, 114) src=(29035, 29041)
+      LINK EXTERNAL "http://eawag-bbd.ethz.ch/periodic/elements/am.html" (64, 107) src=(28934, 29034) "The Biochemical Periodic Tables – Americium" []
+      LINK INTERNAL "Enterobakterien" (265, 280) src=(29192, 29211) "Enterobakterien" []
+      LINK INTERNAL "Citrobacter" (293, 304) src=(29226, 29241) "Citrobacter" []
+      LINK INTERNAL "Phosphatase" (315, 326) src=(29254, -1) "Phosphatase" []
